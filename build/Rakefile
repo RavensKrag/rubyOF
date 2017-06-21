@@ -1,0 +1,73 @@
+ require 'rake/testtask'
+require 'rake/clean'
+
+require 'fileutils'
+require 'open3'
+require 'yaml'
+
+
+# require './build_libs/common'
+# ^ this file declares GEM_ROOT constant, other constants, and a some functions
+
+
+
+# invoke a particular rake task by name (and then allow it to be run again later)
+def run_task(task)
+	Rake::Task[task].reenable
+	Rake::Task[task].invoke
+	# Rake::Task[task].reenable
+	# src: http://stackoverflow.com/questions/577944/how-to-run-rake-tasks-from-within-rake-tasks
+end
+
+
+# temporarily swap out the makefile for an alternate version
+# 
+# main_filepath, alt_filepath:  Paths to main and alt makefile, relative to common_root.
+# common_root:                  As above.
+# work_dir:                     Path under which to run the commands specified in the block.
+def swap_makefile(common_root, main_filepath, alt_filepath, &block)
+	swap_ext = ".temp"
+	swap_filepath = File.join(common_root, "Makefile#{swap_ext}")
+	
+	
+	main_filepath = File.expand_path(File.join(common_root, main_filepath))
+	alt_filepath  = File.expand_path(File.join(common_root, alt_filepath))
+	
+	
+	
+	
+	# run tasks associated with the alternate file
+	begin
+		FileUtils.mv main_filepath, swap_filepath # rename main makefile
+		FileUtils.cp alt_filepath, main_filepath  # switch to .a-creating mkfile
+		
+		block.call
+	ensure
+		FileUtils.cp swap_filepath, main_filepath # restore temp
+		FileUtils.rm swap_filepath                # delete temp		
+		# I think this ensure block should make it so the Makefile always restores,
+		# even if there is an error in the block.
+		# src: http://stackoverflow.com/questions/2191632/begin-rescue-and-ensure-in-ruby
+	end
+end
+
+
+
+
+
+# generate depend file for gcc dependencies
+# sh "gcc -MM *.c > depend"
+
+
+
+
+
+# use 'rake clean' and 'rake clobber' to
+# easily delete generated files
+CLEAN.include('ext/**/*{.o,.log,.so}')
+CLEAN.include('ext/**/*{.a}')
+# CLEAN.include('ext/**/Makefile')
+CLOBBER.include('lib/**/*.so')
+# CLOBBER.include('lib/**/*.gem') # fix this up. I do want to clobber the gem tho
+
+
