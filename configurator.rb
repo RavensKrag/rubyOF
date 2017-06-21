@@ -44,8 +44,12 @@ name     = config[:current_name]
 new_name = config[:name]
 
 if new_name != name
+	# Directories
 	FileUtils.mv("./ext/#{name}", "./ext/#{new_name}")
 	FileUtils.mv("./lib/#{name}", "./lib/#{new_name}")
+	
+	# Files
+	FileUtils.mv("./lib/#{name}.rb", "./lib/#{new_name}.rb")
 end
 
 
