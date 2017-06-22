@@ -140,6 +140,7 @@ namespace :oF_project do
 	
 	# show the .o files generated that are specific to this project
 	# (these are the files used to generate the static lib)
+	desc "DEBUG: show the .o files generated that are specific to this project"
 	task :examine do
 		path = File.expand_path("obj/#{PLATFORM}/#{TARGET}/src", OF_SKETCH_ROOT)
 		Dir.chdir path do
