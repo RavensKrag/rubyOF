@@ -39,8 +39,7 @@ OF_CUSTOM_DEPS_PATH = "/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_lib
 
 
 # === this path is most likely not going to be under the root directory of the Ruby gem
-# OF_ROOT = "/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_linux64_release/"
-OF_ROOT = "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/"
+OF_ROOT = File.join(GEM_ROOT, "ext", "openFrameworks")
 
 
 
@@ -53,23 +52,25 @@ OF_ROOT = "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/"
 # 	'./mySketch/lib'
 
 cpp_root = File.expand_path("ext/#{NAME}/cpp/", GEM_ROOT)
-	
-	# This way, you can set OF_SKETCH_ROOT to some other value before requiring this file,
-	# and everything else will update to match.
-	OF_SKETCH_NAME = "testApp"
-	
-	unless defined? OF_SKETCH_ROOT
-		OF_SKETCH_ROOT = File.expand_path("./#{OF_SKETCH_NAME}", cpp_root)
-	end
-		
-		OF_SKETCH_SRC_DIR         = File.expand_path('src', OF_SKETCH_ROOT)
-		OF_SKETCH_SRC_FILES       = Dir.glob(File.join(OF_SKETCH_SRC_DIR, '*{.cpp,.h}'))
-		
-		OF_SKETCH_LIB_OUTPUT_PATH = File.expand_path('lib', OF_SKETCH_ROOT)
-		OF_SKETCH_LIB_FILE = File.join(OF_SKETCH_LIB_OUTPUT_PATH, 'libOFSketch.a')
-		
-		
-		OF_BUILD_VARIABLE_FILE = File.expand_path("./oF_build_variables.yaml", OF_SKETCH_ROOT)
+
+OF_APP_DIR    = File.join(GEM_ROOT, "ext", "oF_apps")
+
+# This way, you can set OF_SKETCH_ROOT to some other value before requiring this file,
+# and everything else will update to match.
+OF_SKETCH_NAME = "testApp"
+
+unless defined? OF_SKETCH_ROOT
+OF_SKETCH_ROOT = File.join(OF_APP_DIR, OF_SKETCH_NAME)
+end
+
+OF_SKETCH_SRC_DIR   = File.expand_path('src', OF_SKETCH_ROOT)
+OF_SKETCH_SRC_FILES = Dir.glob(File.join(OF_SKETCH_SRC_DIR, '*{.cpp,.h}'))
+
+OF_SKETCH_LIB_OUTPUT_PATH = File.expand_path('lib', OF_SKETCH_ROOT)
+OF_SKETCH_LIB_FILE = File.join(OF_SKETCH_LIB_OUTPUT_PATH, 'libOFSketch.a')
+
+
+OF_BUILD_VARIABLE_FILE = File.expand_path("./oF_build_variables.yaml", OF_SKETCH_ROOT)
 
 
 

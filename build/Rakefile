@@ -101,3 +101,51 @@ namespace :oF do
 		
 	end
 end
+
+namespace :oF_project do
+	desc "Run just the C++ components for the oF sketch"
+	task :run => :build do
+		Dir.chdir OF_SKETCH_ROOT do
+			run_i "make RunRelease"
+		end
+	end
+	
+	desc "Build the oF project (C++ only) - generates .o files"
+	task :build do
+		Dir.chdir OF_SKETCH_ROOT do
+			run_i "make -j#{NUMBER_OF_CORES}" do
+				"ERROR: Could not build oF sketch."
+			end
+		end
+	end
+	
+	desc "Clean the oF project (C++ only) [also cleans addons]"
+	task :clean do
+		Dir.chdir OF_SKETCH_ROOT do
+			run_i "make clean"
+		end
+	end
+	
+	
+	
+	# rebuilding the project should rebuild the addons too
+	desc "Rebuld the project."
+	task :rebuild do
+		run_task('oF_sketch:clean')
+		run_task('oF_sketch:build')
+	end
+	
+	
+	
+	
+	# show the .o files generated that are specific to this project
+	# (these are the files used to generate the static lib)
+	task :examine do
+		path = File.expand_path("obj/#{PLATFORM}/#{TARGET}/src", OF_SKETCH_ROOT)
+		Dir.chdir path do
+			puts "local oF build directory:"
+			puts Dir.pwd
+			p Dir['./*']
+		end
+	end
+end
