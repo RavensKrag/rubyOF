@@ -6,7 +6,7 @@ require 'open3'
 require 'yaml'
 
 
-# require './build_libs/common'
+require './common'
 # ^ this file declares GEM_ROOT constant, other constants, and a some functions
 
 
@@ -71,3 +71,25 @@ CLOBBER.include('lib/**/*.so')
 # CLOBBER.include('lib/**/*.gem') # fix this up. I do want to clobber the gem tho
 
 
+
+namespace :oF do
+	desc "Use the openFrameworks project generator to create a new project in the correct directory."
+	task :project_generator, [:oF_project_name] do |t, args|
+		project = args[:project_name]
+		
+		dir = "ext/openFrameworks/apps/projectGenerator/commandLine/bin"
+		full_dir = File.expand_path dir, GEM_ROOT
+		
+		a = "../../../../../openFrameworks"
+		b = "../../../../../of_apps/test"
+		
+		
+		Dir.chdir full_dir do
+			# p Dir.pwd
+			
+			run_i "./projectGenerator -o\"#{a}\" #{b}" 
+		end
+		
+		
+	end
+end

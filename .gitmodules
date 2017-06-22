@@ -1,6 +1,3 @@
-[submodule "openFrameworks"]
-	path = openFrameworks
-	url = ./ext/openFrameworks/
 [submodule "ext/openFrameworks"]
 	path = ext/openFrameworks
 	url = git@github.com:RavensKrag/openFrameworks.git
