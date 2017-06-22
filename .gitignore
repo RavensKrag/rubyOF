@@ -1,7 +1,11 @@
 # Do not track files that are created by the build system
+ext/oF_apps/*/obj
+ext/oF_apps/*/bin
+
+
 Oni/ext/oni/cpp/mySketch/bin/
 Oni/ext/oni/Makefile
-#ext/oni/cpp/build_*
+
 
 
 
