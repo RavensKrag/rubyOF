@@ -72,17 +72,25 @@ CLOBBER.include('lib/**/*.so')
 
 
 
+# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.
+
 namespace :oF do
 	desc "Use the openFrameworks project generator to create a new project in the correct directory."
 	task :project_generator, [:oF_project_name] do |t, args|
-		project = args[:project_name]
+		project = args[:oF_project_name]
+		
+		if project.nil?
+			raise "ERROR: must specify oF_project_name"
+		end
+		
+		
 		
 		dir = "ext/openFrameworks/apps/projectGenerator/commandLine/bin"
 		full_dir = File.expand_path dir, GEM_ROOT
 		
-		a = "../../../../../openFrameworks"
-		b = "../../../../../of_apps/test"
 		
+		a = File.join(GEM_ROOT, "ext", "openFrameworks")
+		b = File.join(GEM_ROOT, "ext", "oF_apps", project)
 		
 		Dir.chdir full_dir do
 			# p Dir.pwd
