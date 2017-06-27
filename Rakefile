@@ -332,9 +332,34 @@ namespace :c_extension do
 	
 end
 
-desc "Build the whole project"
-task :build => ['c_extension:build']
 
+desc "Set up environment on a new machine."
+task :setup => [
+	'oF:download_libs',
+	'oF:build',
+	'c_extension:build_clang_db'
+] do
+	# TODO: need to set up system with -fPIC flag so that it will correctly link into the dynamic lib needed by Ruby
+end
+
+
+desc "Build the whole project (Ruby and C++ combined)"
+task :build => ['c_extension:build'] do
+	# TOOD: move the "ext/oF_apps/testApp/bin/libfmodex.so" into the correct directory (moving from build location, to somewhere in the "lib/" directory)
+	# (may want a patten that moves all dynamic libs?)
+	
+	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
+end
+
+
+task :run do
+	
+end
+
+
+task :build_and_run => [:build, :run] do
+	
+end
 
 
 
