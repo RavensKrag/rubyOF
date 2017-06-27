@@ -25,8 +25,7 @@ path_to_file = File.absolute_path(File.dirname(__FILE__))
 
 COMMON_CONFIG = File.absolute_path(__FILE__)
 
-GEM_ROOT = File.expand_path('../', path_to_file)
-
+GEM_ROOT = File.expand_path('./', path_to_file)
 DYNAMIC_LIB_PATH = File.expand_path("./bin/libs/", GEM_ROOT)
 
 

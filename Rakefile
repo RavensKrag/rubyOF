@@ -64,18 +64,57 @@ end
 
 # use 'rake clean' and 'rake clobber' to
 # easily delete generated files
+
+# NOTE: Clean / clobber tasks may accidentally clobber oF dependencies if you are not careful.
+
 CLEAN.include('ext/**/*{.o,.log,.so}')
 CLEAN.include('ext/**/*{.a}')
-# CLEAN.include('ext/**/Makefile')
 CLEAN.include('ext/rubyOF/Makefile')
+	# c1 = CLEAN.clone
+	# p CLEAN
+CLEAN.exclude('ext/openFrameworks/**/*')
+# ^ remove the openFrameworks core
+	# c2 = CLEAN.clone
+	# p CLEAN
+# CLEAN.exclude('ext/oF_apps/**/*')
+# # ^ remove the test apps as well
+
+
 CLOBBER.include('lib/**/*.so')
+	# c3 = CLOBBER.clone
+	# p CLOBBER
 # CLOBBER.include('lib/**/*.gem') # fix this up. I do want to clobber the gem tho
 
+	# require 'irb'
+	# binding.irb
+
+	# exit
+	# raise "WHOOPS"
 
 
-# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.
+
+
+
 
 namespace :oF do
+	desc "Download openFrameworks libraries (build deps)"
+	task :download_libs do
+		run_i "ext/openFrameworks/scripts/linux/download_libs.sh"
+		# ^ this script basically just triggers another script:
+		#   ext/openFrameworks/scripts/dev/download_libs.sh
+	end
+	
+	# NOTE: If there is a problem with the core, try downloading libs again.
+	# NOTE: If there is a problem with building the oF project, download libs again, build the core again, and then rebuild the project.
+	desc "Build openFrameworks core (ubuntu)."
+	task :build do
+		Dir.chdir "./ext/openFrameworks/scripts/linux/" do
+			run_i "./compileOF.sh -j#{NUMBER_OF_CORES}"
+		end
+	end
+	
+	
+	# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.
 	desc "Use the openFrameworks project generator to create a new project in the correct directory."
 	task :project_generator, [:oF_project_name] do |t, args|
 		project = args[:oF_project_name]
@@ -85,7 +124,7 @@ namespace :oF do
 		end
 		
 		
-		
+		# NOTE: These paths need to be full paths, because they are being passed to another system, which is executing from a different directory.
 		dir = "ext/openFrameworks/apps/projectGenerator/commandLine/bin"
 		full_dir = File.expand_path dir, GEM_ROOT
 		
@@ -99,8 +138,8 @@ namespace :oF do
 			run_i "./projectGenerator -o\"#{a}\" #{b}" 
 		end
 		
-		
 	end
+	
 end
 
 namespace :oF_project do
@@ -198,12 +237,10 @@ namespace :c_extension do
 	# TODO: Re-examine the history of creating the build system, and attempt to refactor such that this (largely) vestigital pathway can actually be removed safely.
 	
 	# Ruby / Rice CPP files
-	source_files += Dir.glob( File.expand_path(
-								"ext/#{NAME}/cpp/lib/**/*{.cpp,.h}",
-								GEM_ROOT ))
+	source_files += Dir.glob("ext/#{NAME}/cpp/lib/**/*{.cpp,.h}")
 	
 	# 
-	source_files << File.expand_path("ext/#{NAME}/extconf.rb", GEM_ROOT)
+	source_files << "ext/#{NAME}/extconf.rb"
 	source_files << __FILE__
 	
 	# source_files << OF_BUILD_VARIABLE_FILE
@@ -233,7 +270,7 @@ namespace :c_extension do
 	# * execute the resultant makefile
 	# * move the .so to it's correct location
 	file c_library => source_files do
-		Dir.chdir(File.expand_path("ext/#{NAME}", GEM_ROOT)) do
+		Dir.chdir("ext/#{NAME}") do
 			# this does essentially the same thing
 			# as what RubyGems does
 			puts "=== starting extconf..."
