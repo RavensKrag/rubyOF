@@ -33,6 +33,16 @@ def dump_config(config_filepath, config)
 	end
 end
 
+def find_and_replace(filepath, target, replacement)
+	text = File.read(filepath)
+	
+	text.gsub! target, replacement
+	
+	File.open(filepath, "w") do |f|
+		f.write text
+	end
+end
+
 
 
 config_filepath = "./config.yaml"
@@ -50,6 +60,12 @@ if new_name != name
 	
 	# Files
 	FileUtils.mv("./lib/#{name}.rb", "./lib/#{new_name}.rb")
+	
+	# Build system constant
+	filepath      = "./build/common.rb"
+	target_string = "NAME = '#{name}'"
+	replacement   = "NAME = '#{new_name}'"
+	find_and_replace(filepath, target_string, replacement)
 end
 
 
