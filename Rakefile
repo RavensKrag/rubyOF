@@ -55,6 +55,7 @@ end
 
 
 
+
 # generate depend file for gcc dependencies
 # sh "gcc -MM *.c > depend"
 
@@ -195,7 +196,10 @@ namespace :oF do
 	}
 	
 	desc "Use custom libs compiled with -fPIC for Ruby compatability."
-	task :inject_custom_libs => ["oF_deps:kiss:package"] do
+	task :inject_custom_libs => [
+		"oF_deps:kiss:package",
+		"oF_deps:tess2:package"
+	] do
 		unless foo[default_libs] == foo[custom_libs]
 			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
 		end
@@ -259,6 +263,8 @@ namespace :oF_deps do
 		
 		desc "Move files to mimic what oF expects."
 		task :package => :build do
+			puts "Packaging kisstff..."
+			
 			Dir.chdir File.join(GEM_ROOT, basedir) do
 				# kiss_fft.h
 				# kiss_fftr.h
@@ -317,14 +323,95 @@ namespace :oF_deps do
 	end
 	
 	namespace :tess2 do
+		# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.
+		basedir = 'ext/oF_deps/master/custom/tess2/'
+		subdir  = 'repo/'
+		
+		# src: https://github.com/memononen/libtess2
+		
+		# NOTE: assumes that premake is installed
+			# sudo apt-get install premake4
+		# NOTE: need to clean before building, otherwise changes to the patch procedure below not affect the build
+			# (this forces a build every time though...)
 		desc "testing"
-		task :build do
+		task :build => :clean do
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
+				p Dir.pwd
+				
+				# run premake (generate GNU makefile system)
+				run_i "premake4 gmake"
+				
+				# patch files (add the -fPIC flag)
+				filepath = "./Build/tess2.make"
+				lines = File.readlines(filepath)
+				
+					puts "Patching tess2 makefile..."
+					target_string = "CFLAGS    +="
+					lines
+					.select{  |line| line.include? target_string  }
+					.each do  |line|
+						line.sub! "\n", " -fPIC\n"
+						puts line
+					end
+				
+				File.open(filepath, "w") do |f|
+					f.write lines.join('')
+				end
+				
+				# build
+				Dir.chdir "Build" do 
+					run_i "make"
+				end
+			end
+		end
+		
+		desc "Move files to mimic what oF expects."
+		task :package => :build do
+			puts "Packaging tess2..."
 			
+			Dir.chdir File.join(GEM_ROOT, basedir) do
+				# Include/tesselator.h
+				# # => include/
+				FileUtils.mkdir_p "./include"
+				FileUtils.cp(
+					"./repo/Include/tesselator.h",
+					"./include/tesselator.h",
+				)
+				
+				# LICENSE.txt
+				# # => license/
+				FileUtils.mkdir_p "./license"
+				FileUtils.cp(
+					"./repo/LICENSE.txt",
+					"./license/LICENSE.txt",
+				)
+				
+				# Build/libtess2.a
+				# # => lib/linux64/libtess2.a
+				output_dir = "./lib/#{PLATFORM}/"
+				FileUtils.mkdir_p output_dir
+				FileUtils.cp(
+					"./repo/Build/libtess2.a",
+					File.join(output_dir, "libtess2.a")
+				)
+				
+			end
 		end
 		
 		desc "testing"
 		task :clean do
-			
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
+				Dir.chdir "Build" do 
+					run_i "make clean"
+				end
+			end
+		end
+		
+		desc "testing"
+		task :clobber do
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
+				FileUtils.rm_rf "Build"
+			end
 		end
 	end
 end
