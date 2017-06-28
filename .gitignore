@@ -2,13 +2,17 @@
 ext/oF_apps/*/obj
 ext/oF_apps/*/bin
 
+
 ext/oF_deps/master/custom/kiss/include/*
 ext/oF_deps/master/custom/kiss/lib/*
 ext/oF_deps/master/custom/kiss/license/*
 
+
 ext/oF_deps/master/custom/tess2/include/*
 ext/oF_deps/master/custom/tess2/lib/*
 ext/oF_deps/master/custom/tess2/license/*
+
+ext/oF_deps/master/custom/tess2/repo/Build/*
 
 
 

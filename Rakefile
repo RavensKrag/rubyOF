@@ -162,8 +162,11 @@ namespace :oF do
 		
 	end
 	
-	
-	
+end
+
+
+# NOTE: Build deps under the oF_deps folder, and then copy over the results
+namespace :oF_deps do
 	# ===== Setup Custom OpenFrameworks Dependencies =====
 	
 	# declare configuration
@@ -196,7 +199,7 @@ namespace :oF do
 	}
 	
 	desc "Use custom libs compiled with -fPIC for Ruby compatability."
-	task :inject_custom_libs => [
+	task :inject => [
 		"oF_deps:kiss:package",
 		"oF_deps:tess2:package"
 	] do
@@ -225,7 +228,7 @@ namespace :oF do
 	end
 	
 	desc "Undo inject_custom_libs (return to default libs)"
-	task :revert_custom_libs do
+	task :revert do
 		unless foo[default_libs] == foo[custom_libs]
 			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
 		end
@@ -241,27 +244,40 @@ namespace :oF do
 		puts "Done!"
 	end
 	
+	
+	
 	# ====================================================
-end
-
-
-# NOTE: Build deps under the oF_deps folder, and then copy over the results
-namespace :oF_deps do
+	
+	
+	desc "Clean all custom deps"
+	task :clean => ['kiss:clean', 'tess2:clean']
+	
+	desc "Clobber all custom deps"
+	task :clobber => ['kiss:clobber', 'tess2:clobber']
+	
+	
+	# ====================================================
+	
+	
+	
+	
 	namespace :kiss do
 		# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.
 		basedir = 'ext/oF_deps/master/custom/kiss/'
-		subdir  = 'repo/'
+		subdir  = 'custom_build/'
 		
 		
-		desc "testing"
+		# NOTE: This build process currently only guaranteed to work with 64-bit linux. Uses the openframeworks apothecary build process, ammended to add the -fPIC flag.
+		# desc "testing"
 		task :build do
 			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
 				p Dir.pwd
+				FileUtils.mkdir_p "./lib/"
 				run_i "make"
 			end
 		end
 		
-		desc "Move files to mimic what oF expects."
+		# desc "Move files to mimic what oF expects."
 		task :package => :build do
 			puts "Packaging kisstff..."
 			
@@ -292,32 +308,31 @@ namespace :oF_deps do
 				output_dir = "./lib/#{PLATFORM}/"
 				FileUtils.mkdir_p output_dir
 				FileUtils.cp(
-					"./repo/libkissfft.a",
+					"./custom_build/lib/libkiss.a",
 					File.join(output_dir, "libkiss.a")
 				)
 				
 			end
 		end
 		
-		desc "testing"
+		# desc "testing"
 		task :clean do
 			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
 				run_i "make clean"
-				
-				# This makefile doesn't actually clean up everything...
-				# Need to clean some more stuff
-				FileUtils.rm "kiss_fft.o"
-				FileUtils.rm "libkissfft.a"
-				FileUtils.rm "libkissfft.so"
 			end
 		end
 		
-		desc "testing"
-		task :clobber do
-			Dir.chdir File.join(GEM_ROOT, basedir) do
-				FileUtils.rm_rf "include"
-				FileUtils.rm_rf "lib"
-				FileUtils.rm_rf "license"
+		# desc "testing"
+		task :clobber => :clean do
+			path = File.join(GEM_ROOT, basedir, subdir, "libkiss.a")
+			if File.exists? path
+				FileUtils.rm path
+			end
+			
+			FileUtils.rm_rf File.join(GEM_ROOT, basedir, subdir, "lib")
+			FileUtils.rm_rf File.join(GEM_ROOT, basedir, "lib")
+			
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
 			end
 		end
 	end
@@ -331,10 +346,10 @@ namespace :oF_deps do
 		
 		# NOTE: assumes that premake is installed
 			# sudo apt-get install premake4
-		# NOTE: need to clean before building, otherwise changes to the patch procedure below not affect the build
-			# (this forces a build every time though...)
-		desc "testing"
-		task :build => :clean do
+		# NOTE: changes to the patch procedure in this file will force a rebuild
+			# (other non-related changes to Rakefile will also force a rebuild)
+		# desc "testing"
+		task :build => [__FILE__] do
 			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
 				p Dir.pwd
 				
@@ -365,7 +380,7 @@ namespace :oF_deps do
 			end
 		end
 		
-		desc "Move files to mimic what oF expects."
+		# desc "Move files to mimic what oF expects."
 		task :package => :build do
 			puts "Packaging tess2..."
 			
@@ -398,16 +413,18 @@ namespace :oF_deps do
 			end
 		end
 		
-		desc "testing"
+		# desc "testing"
 		task :clean do
 			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				Dir.chdir "Build" do 
-					run_i "make clean"
+				if Dir.exists? "Build"
+					Dir.chdir "Build" do 
+						run_i "make clean"
+					end
 				end
 			end
 		end
 		
-		desc "testing"
+		# desc "testing"
 		task :clobber do
 			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
 				FileUtils.rm_rf "Build"
@@ -708,7 +725,7 @@ end
 
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
-	'oF:inject_custom_libs',
+	'oF_deps:inject',
 	'oF:build',
 	'c_extension:build', # <- will rebuild oF project / oF core as necessary
 	'c_extension:build_clang_db'
@@ -731,4 +748,33 @@ end
 
 
 
+
+
+
+# NOTE: Assumes you're running on Linux
+desc "Examine compiled libraries (linux)"
+task :examine, [:library_name] do |t, args|
+	name = args[:library_name].to_sym
+	path =
+		case name
+			when :kiss
+				"ext/oF_deps/master/custom/kiss/custom_build/lib/libkiss.a"
+			when :tess2
+				"ext/oF_deps/master/custom/tess2/lib/#{PLATFORM}/libtess2.a"
+		end
+	
+	case File.extname path
+		when ".a"
+			run_i "nm -C #{path}"
+		when ".so"
+			run_i "nm -C -D #{path}"
+	end
+	
+	# # the -C flag is for de-mangling the C++ function names
+	# run_i "nm -C #{path_to_lib}"
+	
+	# # this command will let you see inside an .so
+	# # nm -C -D libfmodex.so
+	# # src: http://stackoverflow.com/questions/4514745/how-do-i-view-the-list-of-functions-a-linux-shared-library-is-exporting
+end
 
