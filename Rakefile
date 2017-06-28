@@ -195,7 +195,7 @@ namespace :oF do
 	}
 	
 	desc "Use custom libs compiled with -fPIC for Ruby compatability."
-	task :inject_custom_libs do
+	task :inject_custom_libs => ["oF_deps:kiss:package"] do
 		unless foo[default_libs] == foo[custom_libs]
 			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
 		end
@@ -207,6 +207,15 @@ namespace :oF do
 		
 		# copy over new libs
 		replace_libs[oF_lib_path, custom_libs]
+		
+		# remove the "repo" directory under the copy of the custom libs
+		# (keep only the built packages, discard the source)
+		# (the source will still be stored elsewhere anyway)
+		["kiss", "tess2"].each do |name|
+			Dir.chdir File.join(oF_lib_path, name) do
+				FileUtils.rm_rf "./repo"
+			end
+		end
 		
 		puts "Done!"
 	end
@@ -231,6 +240,96 @@ namespace :oF do
 	# ====================================================
 end
 
+
+# NOTE: Build deps under the oF_deps folder, and then copy over the results
+namespace :oF_deps do
+	namespace :kiss do
+		# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.
+		basedir = 'ext/oF_deps/master/custom/kiss/'
+		subdir  = 'repo/'
+		
+		
+		desc "testing"
+		task :build do
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
+				p Dir.pwd
+				run_i "make"
+			end
+		end
+		
+		desc "Move files to mimic what oF expects."
+		task :package => :build do
+			Dir.chdir File.join(GEM_ROOT, basedir) do
+				# kiss_fft.h
+				# kiss_fftr.h
+				# # => include/
+				FileUtils.mkdir_p "./include"
+				FileUtils.cp(
+					"./repo/kiss_fft.h",
+					"./include/kiss_fft.h",
+				)
+				FileUtils.cp(
+					"./repo/tools/kiss_fftr.h",
+					"./include/kiss_fftr.h",
+				)
+				
+				# COPYING
+				# # => license/
+				FileUtils.mkdir_p "./license"
+				FileUtils.cp(
+					"./repo/COPYING",
+					"./license/COPYING",
+				)
+				
+				# libkiss.a
+				# => lib/linux64/
+				output_dir = "./lib/#{PLATFORM}/"
+				FileUtils.mkdir_p output_dir
+				FileUtils.cp(
+					"./repo/libkissfft.a",
+					File.join(output_dir, "libkiss.a")
+				)
+				
+			end
+		end
+		
+		desc "testing"
+		task :clean do
+			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
+				run_i "make clean"
+				
+				# This makefile doesn't actually clean up everything...
+				# Need to clean some more stuff
+				FileUtils.rm "kiss_fft.o"
+				FileUtils.rm "libkissfft.a"
+				FileUtils.rm "libkissfft.so"
+			end
+		end
+		
+		desc "testing"
+		task :clobber do
+			Dir.chdir File.join(GEM_ROOT, basedir) do
+				FileUtils.rm_rf "include"
+				FileUtils.rm_rf "lib"
+				FileUtils.rm_rf "license"
+			end
+		end
+	end
+	
+	namespace :tess2 do
+		desc "testing"
+		task :build do
+			
+		end
+		
+		desc "testing"
+		task :clean do
+			
+		end
+	end
+end
+
+
 namespace :oF_project do
 	desc "Run just the C++ components for the oF sketch"
 	task :run => :build do
@@ -252,8 +351,8 @@ namespace :oF_project do
 	end
 	
 	
-	desc "Update the timestamp by rebuilding the project."
-	file File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp') => :build
+	# desc "Update the timestamp by rebuilding the project."
+	# file File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp') => :build
 	
 	
 	desc "Clean the oF project (C++ only) [also cleans addons]"
@@ -522,6 +621,7 @@ end
 
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
+	'oF:inject_custom_libs',
 	'oF:build',
 	'c_extension:build', # <- will rebuild oF project / oF core as necessary
 	'c_extension:build_clang_db'
