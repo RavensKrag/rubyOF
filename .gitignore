@@ -56,9 +56,14 @@ ext/oF_apps/*/obj
 ext/oF_apps/*/bin
 
 
+
 ext/oF_deps/master/custom/kiss/include/*
 ext/oF_deps/master/custom/kiss/lib/*
 ext/oF_deps/master/custom/kiss/license/*
+
+ext/oF_deps/master/custom/kiss/custom_build/**/*.o
+ext/oF_deps/master/custom/kiss/custom_build/**/*.a
+
 
 
 ext/oF_deps/master/custom/tess2/include/*
