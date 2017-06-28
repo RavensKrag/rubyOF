@@ -1,0 +1,1559 @@
+---
+HOST_OS:
+- Linux
+with PKG_CONFIG_LIBDIR: []
+PLATFORM_PKG_CONFIG:
+- pkg-config
+"<D": []
+RUBY_VERSION:
+- ruby-2.4.0
+CORE_EXCLUSIONS:
+- "%.mm"
+- "%.m"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQtUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimeGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimePlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppEGLWindow.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glew/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/cairo/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/videoInput/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/freetype/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/FreeImage/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/assimp/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/rtAudio/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openssl/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/boost/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glfw/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/curl/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/uriparser/%"
+DESKTOP_SESSION:
+- "/usr/share/xsessions/plasma"
+".SHELLFLAGS":
+- "-c"
+"?F": []
+XDG_SESSION_CLASS:
+- user
+OF_CORE_HEADER_FILES:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofRectangle.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofParameterGroup.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofParameter.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofColor.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofPoint.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofTypes.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofBaseTypes.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofWindowSettings.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofBaseApp.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppRunner.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppEGLWindow.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofMainLoop.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofIcon.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppNoWindow.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppGlutWindow.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppBaseWindow.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppGLFWWindow.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events/ofEvent.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events/ofEventUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events/ofEvents.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication/ofArduino.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication/ofSerial.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofPath.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofRendererCollection.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofTrueTypeFont.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofBitmapFont.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofImage.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofCairoRenderer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofPixels.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofPolyline.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofTessellator.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofGraphics.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/of3dGraphics.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimePlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimeGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQtUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstVideoGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQTKitMovieRenderer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstVideoPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQTKitGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQTKitPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofVideoGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofAVFoundationVideoPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofAVFoundationPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofAVFoundationGrabber.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofVideoPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofNode.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/of3dPrimitives.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofEasyCam.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofCamera.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofMesh.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/of3dUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofQuaternion.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec4f.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec2f.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec3f.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMath.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVectorMath.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMatrix3x3.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMatrix4x4.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofFmodSoundPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundBuffer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofBaseSoundStream.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofRtAudioSoundStream.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofBaseSoundPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundStream.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofOpenALSoundPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundPlayer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofXml.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofConstants.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofThreadChannel.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofNoise.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofFileUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofSystemUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofLog.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofURLFileLoader.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofFpsCounter.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofJson.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofMatrixStack.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofTimer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofThread.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofVbo.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofMaterial.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofTexture.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofFbo.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLUtils.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofLight.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofShader.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLRenderer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLProgrammableRenderer.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofBufferObject.h"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofVboMesh.h"
+PLATFORM_SHARED_LIBRARIES: []
+OF_CORE_THIRDPARTY_STATIC_LIBS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/lib/linux64/libkiss.a"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/lib/linux64/libtess2.a"
+XDG_SESSION_TYPE:
+- x11
+CWEAVE:
+- cweave
+PROJECT_CFLAGS:
+- "-fPIC"
+"?D": []
+GTK_RC_FILES:
+- "/etc/gtk/gtkrc:/home/ravenskrag/.gtkrc:/home/ravenskrag/.config/gtkrc"
+GCC_MAJOR_GT_4:
+- '1'
+OF_CORE_THIRDPARTY_HEADER_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtx"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/detail"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtc"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/json/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include/utf8"
+OF_PROJECT_CFLAGS:
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+- "-fPIC"
+"@D":
+- "."
+XAUTHORITY:
+- "/tmp/xauth-1000-_0"
+"@F":
+- printvars
+MAKE_VERSION:
+- '4.1'
+CURDIR:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
+OF_LIBS_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs"
+SHELL:
+- "/bin/sh"
+RM:
+- rm
+- "-f"
+CO:
+- co
+VTE_VERSION:
+- '4205'
+_:
+- "/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin/rake"
+QT_AUTO_SCREEN_SCALE_FACTOR:
+- '0'
+PREPROCESS.F:
+- f77
+- "-F"
+ALL_CXXFLAGS: []
+LINK.m:
+- cc
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+XDG_CONFIG_DIRS:
+- "/etc/xdg/xdg-/usr/share/xsessions/plasma:/etc/xdg:/usr/share/kubuntu-default-settings/kf5-settings"
+OUTPUT_OPTION:
+- "-o"
+- printvars
+PLATFORM_OPTIMIZATION_CFLAGS_RELEASE:
+- "-O3"
+- "-march=native"
+- "-mtune=native"
+LESSOPEN:
+- "|"
+- "/usr/bin/lesspipe"
+- "%s"
+OF_PROJECT_LIBS: []
+COMPILE.cpp:
+- g++
+- "-c"
+_system_version:
+- '16.04'
+HAS_SYSTEM_GTK3:
+- '0'
+MAKEFILE_LIST:
+- Makefile
+- config.make
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/config.linux.common.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon/config.linux.common.mk"
+NODEPS:
+- clean
+PLATFORM_OPTIMIZATION_CFLAGS_DEBUG:
+- "-g3"
+OF_PROJECT_CXXFLAGS: []
+OF_ADDONS_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/addons"
+GNUMAKEFLAGS: []
+LINK.p:
+- pc
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+CXXFLAGS: []
+MANDATORY_PATH:
+- "/usr/share/gconf//usr/share/xsessions/plasma.mandatory.path"
+XDG_DATA_DIRS:
+- "/usr/share//usr/share/xsessions/plasma:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop"
+CROSS_COMPILING:
+- '0'
+PROJECT_ADDONS: []
+OPTIMIZATION_CFLAGS:
+- "-O3"
+- "-march=native"
+- "-mtune=native"
+- "-DNDEBUG"
+OF_CORE_LIB_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/lib/linux64"
+DBUS_SESSION_BUS_ADDRESS:
+- unix:abstract=/tmp/dbus-d2lFD9swoo,guid=efbb9e60605f9510dc92a7f959533a6c
+GCC_MAJOR_EQ_4:
+- '0'
+CC:
+- cc
+GCC_MINOR_GTEQ_9:
+- '0'
+PLATFORM_REQUIRED_ADDONS: []
+CHECKOUT,v:
+- "+co"
+- printvars
+OF_PROJECT_OBJS:
+- obj/linux64/Release/src/ofApp.o
+- obj/linux64/Release/src/main.o
+USER:
+- ravenskrag
+OF_PROJECT_DEFINES: []
+CPP:
+- cc
+- "-E"
+OF_APPS_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/apps"
+LINK.cc:
+- g++
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+PAM_KWALLET5_LOGIN:
+- "/tmp/kwallet5_ravenskrag.socket"
+XDG_SESSION_PATH:
+- "/org/freedesktop/DisplayManager/Session1"
+MAKE_HOST:
+- x86_64-pc-linux-gnu
+PATH:
+- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
+OF_CORE_LIBS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/lib/linux64/libkiss.a"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/lib/linux64/libtess2.a"
+- "-lz"
+- "-lgstapp-1.0"
+- "-lgstvideo-1.0"
+- "-lgstbase-1.0"
+- "-lgstreamer-1.0"
+- "-ludev"
+- "-lfontconfig"
+- "-lfreetype"
+- "-lsndfile"
+- "-lopenal"
+- "-lssl"
+- "-lcrypto"
+- "-lcurl"
+- "-lglfw"
+- "-lpulse-simple"
+- "-lpulse"
+- "-lasound"
+- "-lGLEW"
+- "-lGLU"
+- "-lGL"
+- "-lgtk-3"
+- "-lgdk-3"
+- "-lpangocairo-1.0"
+- "-lpango-1.0"
+- "-latk-1.0"
+- "-lcairo-gobject"
+- "-lcairo"
+- "-lgdk_pixbuf-2.0"
+- "-lgio-2.0"
+- "-lgobject-2.0"
+- "-lglib-2.0"
+- "-lmpg123"
+- "-lglut"
+- "-lX11"
+- "-lXrandr"
+- "-lXxf86vm"
+- "-lXi"
+- "-lXcursor"
+- "-ldl"
+- "-lpthread"
+- "-lfreeimage"
+- "-lboost_filesystem"
+- "-lboost_system"
+- "-lpugixml"
+- "-luriparser"
+- "-lXinerama"
+- "-lrtaudio"
+LD:
+- ld
+B_PROCESS_ADDONS:
+- 'yes'
+ALL_OF_CORE_LIBS_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/lib/linux64"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/lib/linux64"
+TEXI2DVI:
+- texi2dvi
+OF_CORE_THIRDPARTY_SHARED_LIBS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/libfmodex.so"
+XCURSOR_THEME:
+- breeze_cursors
+PG_OF_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo"
+SESSION_MANAGER:
+- local/ravensnest:@/tmp/.ICE-unix/1586,unix/ravensnest:/tmp/.ICE-unix/1586
+OF_LIBS_OF_COMPILED_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled"
+rvm_stored_umask:
+- '0002'
+XDG_RUNTIME_DIR:
+- "/run/user/1000"
+FIND:
+- find
+CFLAGS:
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+- "-fPIC"
+ARFLAGS:
+- rv
+LINK.r:
+- f77
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+WINDOWID:
+- '94371846'
+COMPILE.f:
+- f77
+- "-c"
+OF_CORE_SOURCE_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+LINT.c:
+- lint
+YACC.m:
+- yacc
+LINT:
+- lint
+YACC.y:
+- yacc
+_system_name:
+- Ubuntu
+AR:
+- ar
+PROJECT_ADDONS_CXXS: []
+GTK2_RC_FILES:
+- "/etc/gtk-2.0/gtkrc:/home/ravenskrag/.gtkrc-2.0:/home/ravenskrag/.config/gtkrc-2.0"
+".FEATURES":
+- target-specific
+- order-only
+- second-expansion
+- else-if
+- shortest-stem
+- undefine
+- oneshell
+- archives
+- jobserver
+- output-sync
+- check-symlink
+- load
+HAS_SYSTEM_MPG123:
+- '0'
+TANGLE:
+- tangle
+ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/*/lib/linux64"
+OF_CORE_LIBS_PLATFORM_LIBS_STATICS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/lib/linux64/libkiss.a"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/lib/linux64/libtess2.a"
+OPTIMIZATION_LDFLAGS: []
+LS_COLORS:
+- 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'
+PLATFORM_STATIC_LIBRARIES: []
+XDG_SESSION_DESKTOP:
+- KDE
+remove-dupes-func: []
+SSH_AUTH_SOCK:
+- "/tmp/ssh-Y1Om5GlTGRcn/agent.1403"
+OF_PROJECT_EXCLUSIONS:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/.git"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/%"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/%"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/.git/%"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/%.xcodeproj"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/%.xcodeproj/%"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/build"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/build/%"
+GET:
+- get
+"%F": []
+DISPLAY:
+- ":0"
+PROJECT_OPTIMIZATION_CFLAGS_DEBUG: []
+COMPILE.F:
+- f77
+- "-c"
+CTANGLE:
+- ctangle
+PLATFORM_CFLAGS:
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+".LIBPATTERNS":
+- lib%.so
+- lib%.a
+PLATFORM_OS:
+- Linux
+rvm_bin_path:
+- "/home/ravenskrag/.rvm/bin"
+PWD:
+- "/home/ravenskrag/Desktop/gem_structure"
+ALL_OF_PROJECT_SOURCE_PATHS:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/data"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/src"
+KDE_SESSION_VERSION:
+- '5'
+OF_CORE_HEADER_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+LINK.S:
+- cc
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+INVALID_PROJECT_ADDONS: []
+GEM_HOME:
+- "/home/ravenskrag/.rvm/gems/ruby-2.4.0"
+XDG_SEAT:
+- seat0
+PREPROCESS.r:
+- f77
+- "-F"
+SSH_AGENT_PID:
+- '1514'
+INVALID_GLOBAL_ADDONS: []
+OF_PROJECT_SOURCE_FILES:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.cpp"
+OF_CORE_LIBS_THAT_DONT_NEED_ORDER:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2"
+LINK.c:
+- cc
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+- "-fPIC"
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+LINK.s:
+- cc
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+HOME:
+- "/home/ravenskrag"
+SHARED_LIB_EXTENSION:
+- so
+OF_PROJECT_OBJ_FILES:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o"
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o"
+LESSCLOSE:
+- "/usr/bin/lesspipe"
+- "%s"
+- "%s"
+OF_CORE_DEFINES_CFLAGS:
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+PAM_KWALLET_LOGIN:
+- "/tmp/kwallet_ravenskrag.socket"
+LOGNAME:
+- ravenskrag
+QT_LINUX_ACCESSIBILITY_ALWAYS_ON:
+- '1'
+ABI_LIB_SUBPATH:
+- linux64
+OF_ADDON_INCLUDES_CFLAGS: []
+OF_SHARED_MAKEFILES_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/makefileCommon"
+KDE_FULL_SESSION:
+- 'true'
+PLATFORM_VARIANT:
+- default
+rvm_path:
+- "/home/ravenskrag/.rvm"
+"^D": []
+XDG_VTNR:
+- '7'
+OF_CORE_SOURCE_FILES:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofParameterGroup.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofRectangle.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofParameter.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofColor.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types/ofBaseTypes.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofMainLoop.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppNoWindow.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppGLFWWindow.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppRunner.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppGlutWindow.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events/ofEvents.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication/ofSerial.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication/ofArduino.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofRendererCollection.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofImage.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/of3dGraphics.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofPixels.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofPath.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofBitmapFont.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofGraphics.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofCairoRenderer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics/ofTessellator.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstVideoPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofVideoPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofVideoGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofGstVideoGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofCamera.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofNode.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/of3dPrimitives.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/ofEasyCam.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d/of3dUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec2f.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMatrix3x3.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMath.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec4f.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofQuaternion.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofMatrix4x4.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundBuffer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofBaseSoundStream.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundStream.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofRtAudioSoundStream.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofFmodSoundPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofOpenALSoundPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound/ofSoundPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofTimer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofSystemUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofFileUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofXml.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofURLFileLoader.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofFpsCounter.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofThread.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofMatrixStack.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils/ofLog.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofFbo.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofLight.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofVboMesh.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofTexture.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofVbo.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofShader.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofMaterial.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofBufferObject.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl/ofGLRenderer.cpp"
+MAKELEVEL:
+- '0'
+GEM_PATH:
+- "/home/ravenskrag/.rvm/gems/ruby-2.4.0:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global"
+OF_PLATFORM_MAKEFILES:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project/linux64"
+PROJECT_ADDONS_SS: []
+COMPILE.m:
+- cc
+- "-c"
+GCC_MINOR_GTEQ_7:
+- '1'
+MAKE:
+- make
+MAKECMDGOALS:
+- printvars
+VALID_PROJECT_ADDONS: []
+ABIS_TO_COMPILE: []
+IRBRC:
+- "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/.irbrc"
+SHLVL:
+- '1'
+PLATFORM_LIBRARIES:
+- glut
+- X11
+- Xrandr
+- Xxf86vm
+- Xi
+- Xcursor
+- dl
+- pthread
+- freeimage
+- boost_filesystem
+- boost_system
+- pugixml
+- uriparser
+- Xinerama
+- rtaudio
+OF_LIBS_OF_COMPILED_PROJECT_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/project"
+OF_PROJECT_LDFLAGS:
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+AS:
+- as
+TARGET_NAME:
+- Release
+OF_PROJECT_OBJ_OUTPUT_PATH:
+- obj/linux64/Release/
+PREPROCESS.S:
+- cc
+- "-E"
+ALL_LDFLAGS:
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+COMPILE.p:
+- pc
+- "-c"
+XDG_SESSION_ID:
+- '2'
+KDE_MULTIHEAD:
+- 'false'
+FC:
+- f77
+".DEFAULT_GOAL":
+- Release
+XDG_CURRENT_DESKTOP:
+- KDE
+PLATFORM_ARCH:
+- x86_64
+OF_PROJECT_DEPS:
+- obj/linux64/Release/src/ofApp.d
+- obj/linux64/Release/src/main.d
+OF_ROOT:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo"
+FAILED_PKG:
+- '0'
+rvm_version:
+- 1.28.0
+- "(latest)"
+"%D": []
+OF_EXAMPLES_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/examples"
+WEAVE:
+- weave
+MAKE_COMMAND:
+- make
+LINK.cpp:
+- g++
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+PROJECT_ADDONS_CPPS: []
+F77:
+- f77
+COMPILE.cc:
+- g++
+- "-c"
+REQUESTED_PROJECT_ADDONS: []
+OF_PROJECT_INCLUDES_CFLAGS:
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
+".VARIABLES":
+- PLATFORM_PKG_CONFIG
+- "<D"
+- RUBY_VERSION
+- CORE_EXCLUSIONS
+- DESKTOP_SESSION
+- ".SHELLFLAGS"
+- "?F"
+- XDG_SESSION_CLASS
+- OF_CORE_HEADER_FILES
+- PLATFORM_SHARED_LIBRARIES
+- OF_CORE_THIRDPARTY_STATIC_LIBS
+- XDG_SESSION_TYPE
+- CWEAVE
+- PROJECT_CFLAGS
+- "?D"
+- GTK_RC_FILES
+- GCC_MAJOR_GT_4
+- OF_CORE_THIRDPARTY_HEADER_PATHS
+- OF_PROJECT_CFLAGS
+- "@D"
+- XAUTHORITY
+- "@F"
+- MAKE_VERSION
+- CURDIR
+- OF_LIBS_PATH
+- SHELL
+- RM
+- CO
+- VTE_VERSION
+- _
+- QT_AUTO_SCREEN_SCALE_FACTOR
+- PREPROCESS.F
+- ALL_CXXFLAGS
+- LINK.m
+- XDG_CONFIG_DIRS
+- OUTPUT_OPTION
+- PLATFORM_OPTIMIZATION_CFLAGS_RELEASE
+- LESSOPEN
+- OF_PROJECT_LIBS
+- COMPILE.cpp
+- _system_version
+- HAS_SYSTEM_GTK3
+- MAKEFILE_LIST
+- NODEPS
+- PLATFORM_OPTIMIZATION_CFLAGS_DEBUG
+- OF_PROJECT_CXXFLAGS
+- OF_ADDONS_PATH
+- GNUMAKEFLAGS
+- LINK.p
+- CXXFLAGS
+- MANDATORY_PATH
+- XDG_DATA_DIRS
+- CROSS_COMPILING
+- PROJECT_ADDONS
+- OPTIMIZATION_CFLAGS
+- OF_CORE_LIB_PATH
+- DBUS_SESSION_BUS_ADDRESS
+- GCC_MAJOR_EQ_4
+- CC
+- GCC_MINOR_GTEQ_9
+- PLATFORM_REQUIRED_ADDONS
+- CHECKOUT,v
+- OF_PROJECT_OBJS
+- USER
+- OF_PROJECT_DEFINES
+- CPP
+- OF_APPS_PATH
+- LINK.cc
+- PAM_KWALLET5_LOGIN
+- XDG_SESSION_PATH
+- MAKE_HOST
+- PATH
+- OF_CORE_LIBS
+- LD
+- B_PROCESS_ADDONS
+- ALL_OF_CORE_LIBS_PATHS
+- TEXI2DVI
+- OF_CORE_THIRDPARTY_SHARED_LIBS
+- XCURSOR_THEME
+- PG_OF_PATH
+- SESSION_MANAGER
+- OF_LIBS_OF_COMPILED_PATH
+- rvm_stored_umask
+- XDG_RUNTIME_DIR
+- FIND
+- CFLAGS
+- ARFLAGS
+- LINK.r
+- WINDOWID
+- COMPILE.f
+- OF_CORE_SOURCE_PATHS
+- LINT.c
+- YACC.m
+- LINT
+- YACC.y
+- _system_name
+- AR
+- PROJECT_ADDONS_CXXS
+- GTK2_RC_FILES
+- ".FEATURES"
+- HAS_SYSTEM_MPG123
+- TANGLE
+- ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
+- OF_CORE_LIBS_PLATFORM_LIBS_STATICS
+- OPTIMIZATION_LDFLAGS
+- LS_COLORS
+- PLATFORM_STATIC_LIBRARIES
+- XDG_SESSION_DESKTOP
+- remove-dupes-func
+- SSH_AUTH_SOCK
+- OF_PROJECT_EXCLUSIONS
+- GET
+- "%F"
+- DISPLAY
+- PROJECT_OPTIMIZATION_CFLAGS_DEBUG
+- COMPILE.F
+- CTANGLE
+- PLATFORM_CFLAGS
+- ".LIBPATTERNS"
+- PLATFORM_OS
+- rvm_bin_path
+- PWD
+- ALL_OF_PROJECT_SOURCE_PATHS
+- KDE_SESSION_VERSION
+- OF_CORE_HEADER_PATHS
+- LINK.S
+- INVALID_PROJECT_ADDONS
+- GEM_HOME
+- XDG_SEAT
+- PREPROCESS.r
+- SSH_AGENT_PID
+- INVALID_GLOBAL_ADDONS
+- OF_PROJECT_SOURCE_FILES
+- OF_CORE_LIBS_THAT_DONT_NEED_ORDER
+- LINK.c
+- LINK.s
+- HOME
+- SHARED_LIB_EXTENSION
+- OF_PROJECT_OBJ_FILES
+- LESSCLOSE
+- OF_CORE_DEFINES_CFLAGS
+- PAM_KWALLET_LOGIN
+- LOGNAME
+- QT_LINUX_ACCESSIBILITY_ALWAYS_ON
+- ABI_LIB_SUBPATH
+- OF_ADDON_INCLUDES_CFLAGS
+- OF_SHARED_MAKEFILES_PATH
+- KDE_FULL_SESSION
+- PLATFORM_VARIANT
+- rvm_path
+- "^D"
+- XDG_VTNR
+- OF_CORE_SOURCE_FILES
+- MAKELEVEL
+- GEM_PATH
+- OF_PLATFORM_MAKEFILES
+- PROJECT_ADDONS_SS
+- COMPILE.m
+- GCC_MINOR_GTEQ_7
+- MAKE
+- MAKECMDGOALS
+- VALID_PROJECT_ADDONS
+- ABIS_TO_COMPILE
+- IRBRC
+- SHLVL
+- PLATFORM_LIBRARIES
+- OF_LIBS_OF_COMPILED_PROJECT_PATH
+- OF_PROJECT_LDFLAGS
+- AS
+- TARGET_NAME
+- OF_PROJECT_OBJ_OUTPUT_PATH
+- PREPROCESS.S
+- HOST_OS
+- ALL_LDFLAGS
+- COMPILE.p
+- XDG_SESSION_ID
+- KDE_MULTIHEAD
+- FC
+- ".DEFAULT_GOAL"
+- XDG_CURRENT_DESKTOP
+- PLATFORM_ARCH
+- OF_PROJECT_DEPS
+- OF_ROOT
+- FAILED_PKG
+- rvm_version
+- "%D"
+- OF_EXAMPLES_PATH
+- WEAVE
+- MAKE_COMMAND
+- LINK.cpp
+- PROJECT_ADDONS_CPPS
+- F77
+- COMPILE.cc
+- REQUESTED_PROJECT_ADDONS
+- OF_PROJECT_INCLUDES_CFLAGS
+- ".VARIABLES"
+- PC
+- "*F"
+- BUNDLER_ORIG_PATH
+- XDG_SEAT_PATH
+- PLATFORM_DEFINES
+- PLATFORM_LIBRARY_SEARCH_PATHS
+- COMPILE.def
+- LEX
+- MAKEFLAGS
+- PLATFORM_CORE_EXCLUSIONS
+- MFLAGS
+- "*D"
+- PROJECT_ADDONS_OBJ_PATH
+- OF_CORE_LIBS_THAT_NEED_ORDER
+- LEX.l
+- LEX.m
+- ALL_OF_CORE_SOURCE_PATHS
+- "+D"
+- PLATFORM_LDFLAGS
+- COMPILE.r
+- OBJS_WITH_PREFIX
+- OF_PROJECT_SOURCE_PATHS
+- rvm_user_install_flag
+- "+F"
+- M2C
+- PLATFORM_HEADER_SEARCH_PATHS
+- ALL_OF_CORE_LIBSORDER_MAKE_FILES
+- PROJECT_ADDONS_MS
+- APPNAME
+- ALL_OF_CORE_THIRDPARTY_SHARED_LIBS
+- QT_ACCESSIBILITY
+- PROJECT_ADDONS_MMS
+- AVAILABLE_PLATFORM_VARIANTS
+- DEFAULTS_PATH
+- LDFLAGS
+- BUNDLER_ORIG_GEM_PATH
+- PLATFORM_PKG_CONFIG_LIBRARIES
+- MAKEFILES
+- OF_PROJECT_DEFINES_CFLAGS
+- OF_PROJECT_DEPENDENCY_FILES
+- _system_type
+- YACC
+- ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
+- HOST_ARCH
+- "<F"
+- TARGET_LIBS
+- HAS_SYSTEM_GTK2
+- CXX
+- ALL_CFLAGS
+- COFLAGS
+- OF_CORE_LIBRARY_LDFLAGS
+- LINK.C
+- OF_CORE_INCLUDES_CFLAGS
+- COMPILE.C
+- COMPILE.mod
+- OF_LIBS_OPENFRAMEWORKS_PATH
+- "^F"
+- COMPILE.S
+- LINK.F
+- rvm_prefix
+- PROJECT_ROOT
+- SUFFIXES
+- GS_LIB
+- COMPILE.c
+- ADDON_INCLUDE_CFLAGS
+- OBJS_WITHOUT_EXTERNAL
+- _system_arch
+- COMPILE.s
+- ".INCLUDE_DIRS"
+- rvm_loaded_flag
+- CORE_PKG_CONFIG_LIBRARIES
+- ".RECIPEPREFIX"
+- MAKEINFO
+- MAKE_TERMERR
+- OBJC
+- PROJECT_ADDONS_CCS
+- LINK.f
+- TEX
+- GST_VERSION
+- LANG
+- TERM
+- F77FLAGS
+- LINK.o
+- ALL_INSTALLED_ADDONS
+- OF_CORE_BASE_CXXFLAGS
+- PLATFORM_LIB_SUBPATH
+- PROJECT_INCLUDE_CFLAGS
+- MY_RUBY_HOME
+- OF_CORE_BASE_CFLAGS
+- KDE_SESSION_UID
+PC:
+- pc
+"*F": []
+BUNDLER_ORIG_PATH:
+- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
+XDG_SEAT_PATH:
+- "/org/freedesktop/DisplayManager/Seat0"
+PLATFORM_DEFINES:
+- OF_USING_GTK
+- OF_USING_MPG123
+PLATFORM_LIBRARY_SEARCH_PATHS: []
+COMPILE.def:
+- m2c
+LEX:
+- lex
+MAKEFLAGS: []
+PLATFORM_CORE_EXCLUSIONS:
+- "%.mm"
+- "%.m"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQtUtils.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimeGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofQuickTimePlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowGrabber.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video/ofDirectShowPlayer.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app/ofAppEGLWindow.cpp"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glew/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/cairo/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/videoInput/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/freetype/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/FreeImage/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/assimp/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/rtAudio/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openssl/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/boost/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glfw/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/curl/%"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/uriparser/%"
+MFLAGS: []
+"*D": []
+PROJECT_ADDONS_OBJ_PATH:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons/"
+OF_CORE_LIBS_THAT_NEED_ORDER: []
+LEX.l:
+- lex
+- "-t"
+LEX.m:
+- lex
+- "-t"
+ALL_OF_CORE_SOURCE_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+"+D": []
+PLATFORM_LDFLAGS:
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+COMPILE.r:
+- f77
+- "-c"
+OBJS_WITH_PREFIX:
+- obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
+- obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
+OF_PROJECT_SOURCE_PATHS:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
+rvm_user_install_flag:
+- '1'
+"+F": []
+M2C:
+- m2c
+PLATFORM_HEADER_SEARCH_PATHS: []
+ALL_OF_CORE_LIBSORDER_MAKE_FILES: []
+PROJECT_ADDONS_MS: []
+APPNAME:
+- testApp
+ALL_OF_CORE_THIRDPARTY_SHARED_LIBS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/libfmodex.so"
+QT_ACCESSIBILITY:
+- '1'
+PROJECT_ADDONS_MMS: []
+AVAILABLE_PLATFORM_VARIANTS:
+- default
+- default
+DEFAULTS_PATH:
+- "/usr/share/gconf//usr/share/xsessions/plasma.default.path"
+LDFLAGS:
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+BUNDLER_ORIG_GEM_PATH:
+- "/home/ravenskrag/.rvm/gems/ruby-2.4.0:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global"
+PLATFORM_PKG_CONFIG_LIBRARIES:
+- cairo
+- zlib
+- gstreamer-app-1.0
+- gstreamer-1.0
+- gstreamer-video-1.0
+- gstreamer-base-1.0
+- libudev
+- freetype2
+- fontconfig
+- sndfile
+- openal
+- openssl
+- libcurl
+- glfw3
+- libpulse-simple
+- alsa
+- gl
+- glu
+- glew
+- gtk+-3.0
+- libmpg123
+MAKEFILES: []
+OF_PROJECT_DEFINES_CFLAGS: []
+OF_PROJECT_DEPENDENCY_FILES:
+- obj/linux64/Release/src/ofApp.d
+- obj/linux64/Release/src/main.d
+_system_type:
+- Linux
+YACC:
+- yacc
+ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtx"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/detail"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtc"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/json/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include"
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include/utf8"
+HOST_ARCH:
+- x86_64
+"<F": []
+TARGET_LIBS:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
+HAS_SYSTEM_GTK2:
+- '1'
+CXX:
+- g++
+ALL_CFLAGS:
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+- "-fPIC"
+COFLAGS: []
+OF_CORE_LIBRARY_LDFLAGS:
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+LINK.C:
+- g++
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+OF_CORE_INCLUDES_CFLAGS:
+- "-D_REENTRANT"
+- "-pthread"
+- "-I/usr/include/gstreamer-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include"
+- "-I/usr/include/AL"
+- "-I/usr/include/alsa"
+- "-I/usr/include/libdrm"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/at-spi2-atk/2.0"
+- "-I/usr/include/at-spi-2.0"
+- "-I/usr/include/dbus-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/gio-unix-2.0/"
+- "-I/usr/include/mirclient"
+- "-I/usr/include/mircore"
+- "-I/usr/include/mircookie"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/harfbuzz"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/atk-1.0"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pixman-1"
+- "-I/usr/include/freetype2"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/gdk-pixbuf-2.0"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/glib-2.0"
+- "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtx"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/detail"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtc"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/json/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include/utf8"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+COMPILE.C:
+- g++
+- "-c"
+COMPILE.mod:
+- m2c
+OF_LIBS_OPENFRAMEWORKS_PATH:
+- "/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks"
+"^F": []
+COMPILE.S:
+- cc
+- "-c"
+LINK.F:
+- f77
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+rvm_prefix:
+- "/home/ravenskrag"
+PROJECT_ROOT:
+- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
+SUFFIXES:
+- ".out"
+- ".a"
+- ".ln"
+- ".o"
+- ".c"
+- ".cc"
+- ".C"
+- ".cpp"
+- ".p"
+- ".f"
+- ".F"
+- ".m"
+- ".r"
+- ".y"
+- ".l"
+- ".ym"
+- ".yl"
+- ".s"
+- ".S"
+- ".mod"
+- ".sym"
+- ".def"
+- ".h"
+- ".info"
+- ".dvi"
+- ".tex"
+- ".texinfo"
+- ".texi"
+- ".txinfo"
+- ".w"
+- ".ch"
+- ".web"
+- ".sh"
+- ".elc"
+- ".el"
+GS_LIB:
+- "/home/ravenskrag/.fonts"
+COMPILE.c:
+- cc
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
+- "-DOF_USING_MPG123"
+- "-fPIC"
+- "-c"
+ADDON_INCLUDE_CFLAGS:
+- "-D_REENTRANT"
+- "-pthread"
+- "-I/usr/include/gstreamer-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include"
+- "-I/usr/include/AL"
+- "-I/usr/include/alsa"
+- "-I/usr/include/libdrm"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/at-spi2-atk/2.0"
+- "-I/usr/include/at-spi-2.0"
+- "-I/usr/include/dbus-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/gio-unix-2.0/"
+- "-I/usr/include/mirclient"
+- "-I/usr/include/mircore"
+- "-I/usr/include/mircookie"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/harfbuzz"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/atk-1.0"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pixman-1"
+- "-I/usr/include/freetype2"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/gdk-pixbuf-2.0"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/glib-2.0"
+- "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtx"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/detail"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtc"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/json/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include/utf8"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+OBJS_WITHOUT_EXTERNAL:
+- obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
+- obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
+_system_arch:
+- x86_64
+COMPILE.s:
+- as
+".INCLUDE_DIRS":
+- "/usr/include"
+- "/usr/local/include"
+- "/usr/include"
+rvm_loaded_flag:
+- '1'
+CORE_PKG_CONFIG_LIBRARIES:
+- cairo
+- zlib
+- gstreamer-app-1.0
+- gstreamer-1.0
+- gstreamer-video-1.0
+- gstreamer-base-1.0
+- libudev
+- freetype2
+- fontconfig
+- sndfile
+- openal
+- openssl
+- libcurl
+- glfw3
+- libpulse-simple
+- alsa
+- gl
+- glu
+- glew
+- gtk+-3.0
+- libmpg123
+".RECIPEPREFIX": []
+MAKEINFO:
+- makeinfo
+MAKE_TERMERR:
+- "/dev/pts/1"
+OBJC:
+- cc
+PROJECT_ADDONS_CCS: []
+LINK.f:
+- f77
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+TEX:
+- tex
+GST_VERSION:
+- '1.0'
+LANG:
+- en_US.UTF-8
+TERM:
+- xterm-256color
+F77FLAGS: []
+LINK.o:
+- cc
+- "-Wl,-rpath=./libs:./bin/libs"
+- "-Wl,--as-needed"
+- "-Wl,--gc-sections"
+- "-L/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/lib/linux64/"
+- "-lfmodex"
+ALL_INSTALLED_ADDONS:
+- ofxUnitTests
+- ofxThreadedImageLoader
+- ofxNetwork
+- ofxGPS
+- ofxTextInputField
+- ofxKinect
+- ofxVectorGraphics
+- ofxInputField
+- ofxXmlSettings
+- ofxAccelerometer
+- ofxOpenCv
+- ofxOsc
+- ofxSvg
+- obj
+- ofxEmscripten
+- ofxAssimpModelLoader
+- ofxPoco
+- ofxAndroid
+- ofxiOS
+- ofxGui
+OF_CORE_BASE_CXXFLAGS: []
+PLATFORM_LIB_SUBPATH:
+- linux64
+PROJECT_INCLUDE_CFLAGS:
+- "-D_REENTRANT"
+- "-pthread"
+- "-I/usr/include/gstreamer-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include"
+- "-I/usr/include/AL"
+- "-I/usr/include/alsa"
+- "-I/usr/include/libdrm"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/at-spi2-atk/2.0"
+- "-I/usr/include/at-spi-2.0"
+- "-I/usr/include/dbus-1.0"
+- "-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include"
+- "-I/usr/include/gtk-3.0"
+- "-I/usr/include/gio-unix-2.0/"
+- "-I/usr/include/mirclient"
+- "-I/usr/include/mircore"
+- "-I/usr/include/mircookie"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/harfbuzz"
+- "-I/usr/include/pango-1.0"
+- "-I/usr/include/atk-1.0"
+- "-I/usr/include/cairo"
+- "-I/usr/include/pixman-1"
+- "-I/usr/include/freetype2"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/gdk-pixbuf-2.0"
+- "-I/usr/include/libpng12"
+- "-I/usr/include/glib-2.0"
+- "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/fmodex/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtx"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/detail"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/glm/include/glm/gtc"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/json/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/kiss/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/tess2/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/utf8/include/utf8"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/types"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/app"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/events"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/communication"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/graphics"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/video"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/3d"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/sound"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/utils"
+- "-I/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/gl"
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
+MY_RUBY_HOME:
+- "/home/ravenskrag/.rvm/rubies/ruby-2.4.0"
+OF_CORE_BASE_CFLAGS:
+- "-Wall"
+- "-std=c++14"
+- "-DGCC_HAS_REGEX"
+KDE_SESSION_UID:
+- '1000'

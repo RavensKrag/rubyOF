@@ -5,13 +5,17 @@
 #include <iostream>
 
 // === C++ stuff
-#include "launcher.h"
+// ===== re-enable this asap =====
+// #include "launcher.h"
+// ===== re-enable this asap =====
 
 // === Rice glue code
 // #include "Window.h" 
-#include "Graphics.h"
-#include "Fbo.h"
-#include "TrueTypeFont.h"
+// ===== re-enable this asap =====
+// #include "Graphics.h"
+// #include "Fbo.h"
+// #include "TrueTypeFont.h"
+// ===== re-enable this asap =====
 
 // === Additional OpenFrameworks types
 // #include "ofApp.h"
@@ -27,11 +31,11 @@ void Init_oni()
 	std::cout << "c++: set up module: Oni\n";
 	Module rb_mOni = define_module("Oni");
 	
-	
-	Init_oni_graphics(rb_mOni);
-	Init_oni_fbo(rb_mOni);
-	Init_oni_trueTypeFont(rb_mOni);
-	
+	// ===== re-enable this asap =====
+	// Init_oni_graphics(rb_mOni);
+	// Init_oni_fbo(rb_mOni);
+	// Init_oni_trueTypeFont(rb_mOni);
+	// ===== re-enable this asap =====
 	
 	// ofPoint is the same as ofVec3
 	Data_Type<ofPoint> rb_cPoint =
@@ -53,55 +57,55 @@ void Init_oni()
 	// TODO: move different things to different files. way to crouded in here
 	
 	
+	// ===== re-enable this asap =====
+	// Data_Type<Launcher> rb_cWindow =
+	// 	define_class_under<Launcher>(rb_mOni, "Window");
 	
-	Data_Type<Launcher> rb_cWindow =
-		define_class_under<Launcher>(rb_mOni, "Window");
-	
-	rb_cWindow
-		.define_constructor(Constructor<Launcher, Rice::Object, int, int>())
-		// .define_method("initialize", &Launcher::initialize)
-		.define_method("show",   &Launcher::show)
-		.define_method("ofExit", &ofExit,
-			(
-				Arg("status") = 0
-			)
-		)
+	// rb_cWindow
+	// 	.define_constructor(Constructor<Launcher, Rice::Object, int, int>())
+	// 	// .define_method("initialize", &Launcher::initialize)
+	// 	.define_method("show",   &Launcher::show)
+	// 	.define_method("ofExit", &ofExit,
+	// 		(
+	// 			Arg("status") = 0
+	// 		)
+	// 	)
 		
-		.define_method("width",       &ofGetWidth)
-		.define_method("height",       &ofGetHeight)
+	// 	.define_method("width",       &ofGetWidth)
+	// 	.define_method("height",       &ofGetHeight)
 		
-		// mouse cursor
-		.define_method("show_cursor",       &Launcher::showCursor)
-		.define_method("hide_cursor",       &Launcher::hideCursor)
+	// 	// mouse cursor
+	// 	.define_method("show_cursor",       &Launcher::showCursor)
+	// 	.define_method("hide_cursor",       &Launcher::hideCursor)
 		
-		// fullscreen
-		.define_method("fullscreen",         &Launcher::setFullscreen)
-		.define_method("toggle_fullscreen",  &Launcher::toggleFullscreen)
+	// 	// fullscreen
+	// 	.define_method("fullscreen",         &Launcher::setFullscreen)
+	// 	.define_method("toggle_fullscreen",  &Launcher::toggleFullscreen)
 		
-		// window properties
-		.define_method("window_title=",       &Launcher::setWindowTitle)
-		.define_method("set_window_position", &Launcher::setWindowPosition)
-		.define_method("set_window_shape",    &Launcher::setWindowShape)
-		.define_method("window_position",     &Launcher::getWindowPosition)
-		.define_method("window_size",         &Launcher::getWindowSize)
-		.define_method("screen_size",         &Launcher::getScreenSize)
-		// .define_method("set_window_icon",     &Launcher::setWindowIcon) // private C++ method
+	// 	// window properties
+	// 	.define_method("window_title=",       &Launcher::setWindowTitle)
+	// 	.define_method("set_window_position", &Launcher::setWindowPosition)
+	// 	.define_method("set_window_shape",    &Launcher::setWindowShape)
+	// 	.define_method("window_position",     &Launcher::getWindowPosition)
+	// 	.define_method("window_size",         &Launcher::getWindowSize)
+	// 	.define_method("screen_size",         &Launcher::getScreenSize)
+	// 	// .define_method("set_window_icon",     &Launcher::setWindowIcon) // private C++ method
 		
 		
-		// timing and framerate
-		.define_method("ofGetLastFrameTime", &ofGetLastFrameTime)
-		.define_method("ofGetFrameRate", &ofGetFrameRate)
-		.define_method("ofSetFrameRate", &ofSetFrameRate)
+	// 	// timing and framerate
+	// 	.define_method("ofGetLastFrameTime", &ofGetLastFrameTime)
+	// 	.define_method("ofGetFrameRate", &ofGetFrameRate)
+	// 	.define_method("ofSetFrameRate", &ofSetFrameRate)
 		
 		
-		// clipboard support
-		.define_method("clipboard_string=",         &Launcher::setClipboardString)
-		.define_method("clipboard_string",          &Launcher::getClipboardString)
+	// 	// clipboard support
+	// 	.define_method("clipboard_string=",         &Launcher::setClipboardString)
+	// 	.define_method("clipboard_string",          &Launcher::getClipboardString)
 		
 		
-		.define_method("ofSetEscapeQuitsApp", &ofSetEscapeQuitsApp)
-	;
-	
+	// 	.define_method("ofSetEscapeQuitsApp", &ofSetEscapeQuitsApp)
+	// ;
+	// ===== re-enable this asap =====
 	
 	
 	
@@ -284,11 +288,13 @@ void Init_oni()
 	
 	typedef bool (*load_image_from_file)(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings);
 	
-	rb_cWindow
-		// textures
-		.define_method("ofLoadImage", load_image_from_file(&ofLoadImage))
-	;
 	
+	// ===== re-enable this asap =====
+	// rb_cWindow
+	// 	// textures
+	// 	.define_method("ofLoadImage", load_image_from_file(&ofLoadImage))
+	// ;
+	// ===== re-enable this asap =====
 	
 	
 	

@@ -86,16 +86,16 @@ c_flags =
 	of_build_variables['PROJECT_INCLUDE_CFLAGS'] # includes files for core, addons, everything
 	.reject{ |flag|
 		# reject these libraries, because they have already been specified in extconf.rb above
-		%w[
-			fmodex
-			glfw
-			kiss
-			poco
-			tess2
-			utf8cpp
-		].any?{ |keyword|
-			flag.include? keyword
-		}
+		# %w[
+		# 	fmodex
+		# 	glfw
+		# 	kiss
+		# 	poco
+		# 	tess2
+		# 	utf8cpp
+		# ].any?{ |keyword|
+		# 	flag.include? keyword
+		# }
 	}
 	.reject{ |flag|
 		# bunch of local paths in here, not sure if they are relevant at the Ruby level?
@@ -166,7 +166,7 @@ ld_flags = ->(){
 		.reject{ |flag|
 			flag.include? '-rpath'
 		}
-	ld_flags.unshift "-Wl,-rpath=./libs:./bin/libs:#{DYNAMIC_LIB_PATH}" # add to front
+	ld_flags.unshift "-Wl,-rpath=./libs:./bin/lib:#{DYNAMIC_LIB_PATH}" # add to front
 	ld_flags = ld_flags.join(' ')
 	
 	
