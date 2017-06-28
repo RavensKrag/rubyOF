@@ -9,8 +9,6 @@ require 'yaml'
 require './common'
 # ^ this file declares GEM_ROOT constant, other constants, and a some functions
 
-
-
 # invoke a particular rake task by name (and then allow it to be run again later)
 def run_task(task)
 	Rake::Task[task].reenable
@@ -77,6 +75,7 @@ CLEAN.include('ext/**/*{.a}')
 	# c1 = CLEAN.clone
 	# p CLEAN
 CLEAN.exclude('ext/openFrameworks/**/*')
+CLEAN.exclude('ext/oF_deps/**/*')
 # ^ remove the openFrameworks core
 	# c2 = CLEAN.clone
 	# p CLEAN
@@ -86,6 +85,8 @@ CLEAN.exclude('ext/openFrameworks/**/*')
 CLOBBER.include('bin/lib/*.so')
 CLOBBER.include('lib/**/*.so')
 CLOBBER.exclude('ext/openFrameworks/**/*')
+CLOBBER.exclude('ext/oF_deps/**/*')
+
 
 
 	# c3 = CLOBBER.clone
@@ -200,8 +201,8 @@ namespace :oF_deps do
 	
 	desc "Use custom libs compiled with -fPIC for Ruby compatability."
 	task :inject => [
-		"oF_deps:kiss:package",
-		"oF_deps:tess2:package"
+		"kiss:package",
+		"tess2:package"
 	] do
 		unless foo[default_libs] == foo[custom_libs]
 			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
@@ -626,7 +627,7 @@ namespace :c_extension do
 	c_library_deps << "ext/#{NAME}/extconf.rb"
 	c_library_deps << __FILE__ # depends on this Rakefile
 	
-	c_library_deps << OF_BUILD_VARIABLE_FILE
+	# c_library_deps << OF_BUILD_VARIABLE_FILE
 	# TODO: ^ re-enable this ASAP
 	
 	# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_library' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
@@ -709,15 +710,19 @@ namespace :c_extension do
 end
 
 
-# add dependencies to default 'clean' task
+# add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
-task :clean => ['oF:clean', 'oF_project:clean']
+task :clean   => ['oF_deps:clean', 'oF:clean', 'oF_project:clean']
+task :clobber => ['oF_deps:clobber']
+
 
 
 desc "Set up environment on a new machine."
 task :setup => [
-	'oF:download_libs',
-	'oF:build'
+	# 'oF:download_libs',
+	'oF_deps:inject',
+	'oF:build',
+	'oF_project:build'
 ] do
 	# TODO: need to set up system with -fPIC flag so that it will correctly link into the dynamic lib needed by Ruby
 end
@@ -725,9 +730,11 @@ end
 
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
-	'oF_deps:inject',
-	'oF:build',
-	'c_extension:build', # <- will rebuild oF project / oF core as necessary
+	'oF_project:build',
+	'oF_project:export_build_variables',
+	# ^ will rebuild oF project / oF core as necessary
+	
+	'c_extension:build', 
 	'c_extension:build_clang_db'
 ] do
 	# TOOD: move the "ext/oF_apps/testApp/bin/libfmodex.so" into the correct directory (moving from build location, to somewhere in the "lib/" directory)
@@ -750,7 +757,7 @@ end
 
 
 
-
+# TODO: move this into the oF_deps namespace, and then consolodate all path definitions.
 # NOTE: Assumes you're running on Linux
 desc "Examine compiled libraries (linux)"
 task :examine, [:library_name] do |t, args|
