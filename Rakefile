@@ -161,6 +161,74 @@ namespace :oF do
 		
 	end
 	
+	
+	
+	# ===== Setup Custom OpenFrameworks Dependencies =====
+	
+	# declare configuration
+	oF_lib_path  = File.join GEM_ROOT, "ext/openFrameworks/libs/"
+	default_libs = File.join GEM_ROOT, "ext/oF_deps/master/original/"
+	custom_libs  = File.join GEM_ROOT, "ext/oF_deps/master/custom/"
+	
+	# declare helper functions
+	foo = ->(dir){
+		Dir[dir + "*"]
+		.collect{  |x| x.sub dir, ""  }
+		.reject{   |x| x.downcase.include? "readme"  }
+	}
+	
+	remove_libs = ->(output_dir, source_dir){
+		Dir.chdir output_dir do
+			foo[source_dir].each{  |name|  FileUtils.rm_rf name  }
+		end
+	}
+	
+	replace_libs = ->(output_dir, source_dir){
+		Dir.chdir output_dir do
+			foo[source_dir].each do |name|
+				full_path = File.join(source_dir, name)
+				
+				FileUtils.copy_entry full_path, "./#{name}", true
+				# copy_entry(src, dest, preserve = false, dereference_root = false, remove_destination = false)
+			end
+		end
+	}
+	
+	desc "Use custom libs compiled with -fPIC for Ruby compatability."
+	task :inject_custom_libs do
+		unless foo[default_libs] == foo[custom_libs]
+			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
+		end
+		
+		puts "Injecting custom libs..."
+		
+		# remove default libs
+		remove_libs[oF_lib_path, default_libs]
+		
+		# copy over new libs
+		replace_libs[oF_lib_path, custom_libs]
+		
+		puts "Done!"
+	end
+	
+	desc "Undo inject_custom_libs (return to default libs)"
+	task :revert_custom_libs do
+		unless foo[default_libs] == foo[custom_libs]
+			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
+		end
+		
+		puts "Reverting OpenFrameworks core libs..."
+		
+		# remove injected libs
+		remove_libs[oF_lib_path, custom_libs]
+		
+		# restore default libs
+		replace_libs[oF_lib_path, default_libs]
+		
+		puts "Done!"
+	end
+	
+	# ====================================================
 end
 
 namespace :oF_project do
@@ -454,6 +522,7 @@ end
 
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
+	'oF:build',
 	'c_extension:build', # <- will rebuild oF project / oF core as necessary
 	'c_extension:build_clang_db'
 ] do
