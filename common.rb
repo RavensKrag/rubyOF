@@ -34,7 +34,9 @@ DYNAMIC_LIB_PATH = File.expand_path("./bin/libs/", GEM_ROOT)
 
 
 # === Base path for the custom recompiled dependencies to oF needed to convert this into a Ruby C-extension dynamic libraray.
-OF_CUSTOM_DEPS_PATH = "/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_libs/custom/"
+OF_CUSTOM_DEPS_PATH = File.expand_path "ext/oF_deps/v0.9.3/custom/", GEM_ROOT
+
+
 
 
 # === this path is most likely not going to be under the root directory of the Ruby gem

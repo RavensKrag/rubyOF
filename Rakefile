@@ -189,6 +189,81 @@ namespace :oF_project do
 			p Dir['./*']
 		end
 	end
+	
+	
+	
+	
+	
+	# actually generates two files:
+	# + oF_build_variables.yaml (aka OF_BUILD_VARIABLE_FILE)
+	# + raw_oF_variables.yaml   (intermediate representation of raw data)
+	file OF_BUILD_VARIABLE_FILE => 
+	[
+		File.expand_path("./Makefile.static_lib", OF_SKETCH_ROOT),
+		File.expand_path("./addons.make",         OF_SKETCH_ROOT),
+		__FILE__, # if the Rake task changes, then update the output file
+		COMMON_CONFIG # if config variables change, then build may be different
+	] do
+		swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
+			Dir.chdir OF_SKETCH_ROOT do
+				# run_i "make printvars"
+				
+				out = `make printvars`
+				# p out
+				
+				out = out.each_line.to_a
+				
+				
+				File.open("./raw_oF_variables.yaml", "w") do |f|
+					f.puts out.to_yaml
+				end
+				
+				
+				final = 
+					out.select{  |line|
+						line.include? '='
+					}.collect{   |line|
+						# can't just split on '='
+						# because there can be mulitple equal signs
+						# 
+						# The thing before the FIRST equal sign is the key,
+						# everything else on the line is the value associated with the key
+						i = line.index("=")
+						key   = line[0..(i-1)]
+						value = line[((i+1)..-1)]
+						
+						
+						key, value = [key, value].collect{ |x| x.strip }
+						
+						value = value.split()
+						
+						
+						[key, value]
+					}.to_h
+				
+				
+				
+				filepath = OF_BUILD_VARIABLE_FILE
+				File.open(filepath, "w") do |f|
+					f.puts final.to_yaml
+				end
+				
+				puts "=> Variables written to '#{filepath}'"
+			end
+		end
+	end
+	
+	desc "Export build variables from oF build system (linux)."
+	task :export_build_variables => OF_BUILD_VARIABLE_FILE
+	
+	
+	desc "Drop to IRB to explore oF build system variables."
+	task :explore => :export_build_variables do
+		of_build_variables = YAML.load_file(OF_BUILD_VARIABLE_FILE)
+		
+		require 'irb'
+		binding.irb
+	end
 end
 
 
@@ -243,7 +318,7 @@ namespace :c_extension do
 	source_files << "ext/#{NAME}/extconf.rb"
 	source_files << __FILE__
 	
-	# source_files << OF_BUILD_VARIABLE_FILE
+	source_files << OF_BUILD_VARIABLE_FILE
 	# TODO: ^ re-enable this ASAP
 	
 	# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_library' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
@@ -254,15 +329,7 @@ namespace :c_extension do
 	
 	
 	
-	file OF_BUILD_VARIABLE_FILE => 
-	[
-		File.expand_path("./Makefile.static_lib", OF_SKETCH_ROOT),
-		File.expand_path("./addons.make",         OF_SKETCH_ROOT),
-		__FILE__, # if the Rake task changes, then update the output file
-		COMMON_CONFIG # if config variables change, then build may be different
-	] do
-		run_task 'oF_sketch_lib:print_vars'
-	end
+	
 	
 	
 	# Mimic RubyGems gem install procedure, for testing purposes.
