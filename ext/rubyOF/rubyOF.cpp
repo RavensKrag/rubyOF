@@ -1,4 +1,4 @@
-#include "oni.h"
+#include "rubyOF.h"
 
 #include <iostream>
 
@@ -24,20 +24,20 @@
 using namespace Rice;
 
 extern "C"
-void Init_oni()
+void Init_rubyOF()
 {
-	std::cout << "c++: set up module: Oni\n";
-	Module rb_mOni = define_module("Oni");
+	std::cout << "c++: set up module: RubyOF\n";
+	Module rb_mRubyOF = define_module("RubyOF");
 	
 	// ===== re-enable this asap =====
-	// Init_oni_graphics(rb_mOni);
-	// Init_oni_fbo(rb_mOni);
-	// Init_oni_trueTypeFont(rb_mOni);
+	// Init_rubyOF_graphics(rb_mRubyOF);
+	// Init_rubyOF_fbo(rb_mRubyOF);
+	// Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	// ===== re-enable this asap =====
 	
 	// ofPoint is the same as ofVec3
 	Data_Type<ofPoint> rb_cPoint =
-		define_class_under<ofPoint>(rb_mOni, "Point");
+		define_class_under<ofPoint>(rb_mRubyOF, "Point");
 	
 	rb_cPoint
 		.define_constructor(Constructor<ofPoint, float, float, float>())
@@ -57,7 +57,7 @@ void Init_oni()
 	
 	// ===== re-enable this asap =====
 	// Data_Type<Launcher> rb_cWindow =
-	// 	define_class_under<Launcher>(rb_mOni, "Window");
+	// 	define_class_under<Launcher>(rb_mRubyOF, "Window");
 	
 	// rb_cWindow
 	// 	.define_constructor(Constructor<Launcher, Rice::Object, int, int>())
@@ -108,7 +108,7 @@ void Init_oni()
 	
 	
 	Data_Type<ofRectangle> rb_cRectangle = 
-		define_class_under<ofRectangle>(rb_mOni, "Rectangle");
+		define_class_under<ofRectangle>(rb_mRubyOF, "Rectangle");
 	
 	
 	typedef bool (ofRectangle::*ofRectangle_test_xy)(float px, float py) const;
@@ -183,7 +183,7 @@ void Init_oni()
 	
 	// NOTE: There is an interface for specifying colors in HSB space, but they are always stored in RGB space.
 	Data_Type<ofColor> rb_cColor = 
-		define_class_under<ofColor>(rb_mOni, "Color");
+		define_class_under<ofColor>(rb_mRubyOF, "Color");
 	
 	// typedef void (ofColor::*ofColor_allocWRAP)(int,int,int,int) const;
 	
@@ -266,7 +266,7 @@ void Init_oni()
 	// ofPixels
 	
 	Data_Type<ofTexture> rb_cTexture = 
-		define_class_under<ofTexture>(rb_mOni, "Texture");
+		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
 	
 	
 	
@@ -297,7 +297,7 @@ void Init_oni()
 	
 	
 	Rice::Module rb_cUtils = 
-		define_module_under(rb_mOni, "Utils");
+		define_module_under(rb_mRubyOF, "Utils");
 	
 	rb_cUtils
 		.define_module_function("ofGetElapsedTimeMicros",   &ofGetElapsedTimeMicros)

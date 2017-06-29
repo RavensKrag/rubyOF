@@ -82,10 +82,22 @@ CLEAN.exclude('ext/oF_deps/**/*')
 # CLEAN.exclude('ext/oF_apps/**/*')
 # # ^ remove the test apps as well
 
+
+
+# Clean up clang file index as well
+# (build from inspection of 'make' as it builds the c-library)
+CLEAN.include('ext/rubyOF/compile_commands.json')
+
+
+
+
+
 CLOBBER.include('bin/lib/*.so')
 CLOBBER.include('lib/**/*.so')
 CLOBBER.exclude('ext/openFrameworks/**/*')
 CLOBBER.exclude('ext/oF_deps/**/*')
+
+
 
 
 
@@ -755,15 +767,15 @@ end
 
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
-task :clean   => ['oF_deps:clean', 'oF:clean', 'oF_project:clean']
-task :clobber => ['oF_deps:clobber']
+task :clean   => ['oF_project:clean']
+task :clobber => ['oF_deps:clobber', 'oF:clean']
 
 
 
 desc "Set up environment on a new machine."
 task :setup => [
 	# 'oF:download_libs',
-	'oF_deps:inject',
+	'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
 	'oF:build',
 	'oF_project:build'
 ] do
@@ -771,7 +783,7 @@ task :setup => [
 end
 
 
-desc "Build just the pure CPP parts"
+desc "Build just the pure C++ parts"
 task :build_cpp => ['oF:build', 'oF_project:build']
 
 
