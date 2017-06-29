@@ -54,12 +54,12 @@ Oni/lib/projects/Scope/bin/data
 
 
 
-# Do not track files that are created by the build system
+# === Do not track files that are created by the build system
 ext/oF_apps/*/obj
 # ext/oF_apps/*/bin
 
 
-
+# Building up new dependencies
 ext/oF_deps/master/custom/kiss/include/*
 ext/oF_deps/master/custom/kiss/lib/*
 ext/oF_deps/master/custom/kiss/license/*
@@ -76,6 +76,8 @@ ext/oF_deps/master/custom/tess2/license/*
 ext/oF_deps/master/custom/tess2/repo/Build/*
 
 
+# Building the oF app
+ext/oF_apps/testApp/bin/testApp
 
-Oni/ext/oni/cpp/mySketch/bin/
-Oni/ext/oni/Makefile
+# Building the Ruby c-extension
+ext/rubyOF/Makefile

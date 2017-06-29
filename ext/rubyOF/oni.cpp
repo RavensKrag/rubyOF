@@ -1,7 +1,5 @@
 #include "oni.h"
 
-
-
 #include <iostream>
 
 // === C++ stuff

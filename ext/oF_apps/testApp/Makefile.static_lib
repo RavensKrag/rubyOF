@@ -63,6 +63,10 @@ variable_test:
 	
 	@echo "OF_CORE_THIRDPARTY_HEADER_PATHS"
 	@echo $(OF_CORE_THIRDPARTY_HEADER_PATHS)
+	
+	@echo "compiler settings"
+	@echo $(CXX)
+	@echo $(CC)
 	@echo "=================="
 
 

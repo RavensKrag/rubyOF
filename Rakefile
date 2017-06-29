@@ -579,6 +579,38 @@ namespace :oF_project do
 		require 'irb'
 		binding.irb
 	end
+	
+	
+	
+	namespace :static_lib do
+		# use a modified version of the oF build system
+		# to generate a C++ static lib
+		# (same make file used to generate OF_BUILD_VARIABLE_FILE)
+		
+		file OF_SKETCH_LIB_FILE => OF_SKETCH_SRC_FILES do
+			puts "Making oF sketch into a static library..."
+			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
+				Dir.chdir OF_SKETCH_ROOT do
+					run_i "make static_lib" do
+						"ERROR: Could not make a static library out of the oF sketch project."
+					end
+				end
+			end
+		end
+		
+		
+		desc "generate static lib from oF project"
+		task :build => OF_SKETCH_LIB_FILE
+		
+		task :clean do
+			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
+				Dir.chdir OF_SKETCH_ROOT do
+					run_i "make clean_static_lib"
+				end
+			end
+		end
+	end
+	
 end
 
 
@@ -739,17 +771,26 @@ task :setup => [
 end
 
 
+desc "Build just the pure CPP parts"
+task :build_cpp => ['oF:build', 'oF_project:build']
+
+
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
 	'oF_project:build',
 	'oF_project:export_build_variables',
 	# ^ will rebuild oF project / oF core as necessary
+	'oF_project:static_lib:build',
 	
-	'c_extension:build', 
+	'c_extension:build',
+	# ^ extconf.rb -> makefile
+	#   run the makefile -> build ruby dynamic lib (.so)
+	#   move ruby dynamic lib (.so) into proper position
 	'c_extension:build_clang_db'
 ] do
 	# TOOD: move the "ext/oF_apps/testApp/bin/libfmodex.so" into the correct directory (moving from build location, to somewhere in the "lib/" directory)
 	# (may want a patten that moves all dynamic libs?)
+		# ^ NOTE: Still need to do this. Still need to move the oF runtime dependencies, even though the movement of the ruby .so is taken care of.
 	
 	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
 end
@@ -778,7 +819,13 @@ task :examine, [:library_name] do |t, args|
 			when :tess2
 				"ext/oF_deps/master/custom/tess2/lib/#{PLATFORM}/libtess2.a"
 			when :oF_core
-				"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
+				"ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
+			when :oF_project
+				"ext/oF_apps/testApp/bin/testApp"
+			when :oF_project_lib
+				"ext/oF_apps/testApp/lib/libOFSketch.a"
+			when :rubyOF
+				"ext/rubyOF/rubyOF.so"
 		end
 	
 	case File.extname path
@@ -786,6 +833,8 @@ task :examine, [:library_name] do |t, args|
 			run_i "nm -C #{path}"
 		when ".so"
 			run_i "nm -C -D #{path}"
+		else # linux executable
+			run_i "nm -C #{path}"
 	end
 	
 	# # the -C flag is for de-mangling the C++ function names
