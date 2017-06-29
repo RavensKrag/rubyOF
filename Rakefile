@@ -137,6 +137,16 @@ namespace :oF do
 	end
 	
 	
+	
+	
+	
+	desc "Build the project generator."
+	task :compilePG => :build do
+		Dir.chdir File.join(GEM_ROOT, "ext/openFrameworks/scripts/linux/") do
+			run_i "./compilePG.sh"
+		end
+	end
+	
 	# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.
 	desc "Create a new openFrameworks project in the correct directory."
 	task :project_generator, [:oF_project_name] do |t, args|
@@ -222,6 +232,7 @@ namespace :oF_deps do
 		["kiss", "tess2"].each do |name|
 			Dir.chdir File.join(oF_lib_path, name) do
 				FileUtils.rm_rf "./repo"
+				FileUtils.rm_rf "./custom_build"
 			end
 		end
 		
@@ -437,7 +448,7 @@ end
 
 namespace :oF_project do
 	desc "Run just the C++ components for the oF sketch"
-	task :run => :build do
+	task :run do
 		Dir.chdir OF_SKETCH_ROOT do
 			run_i "make RunRelease"
 		end
@@ -744,9 +755,7 @@ task :build => [
 end
 
 
-task :run do
-	
-end
+task :run => 'oF_project:run'
 
 
 task :build_and_run => [:build, :run] do
@@ -768,6 +777,8 @@ task :examine, [:library_name] do |t, args|
 				"ext/oF_deps/master/custom/kiss/custom_build/lib/libkiss.a"
 			when :tess2
 				"ext/oF_deps/master/custom/tess2/lib/#{PLATFORM}/libtess2.a"
+			when :oF_core
+				"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
 		end
 	
 	case File.extname path

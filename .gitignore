@@ -29,6 +29,9 @@ Oni/lib/projects/Scope/bin/data
 # (so let everything through there)
 !ext/oF_deps/**/*
 
+# Want those precompiled deps to be moved into the app's bin/ directory
+!ext/oF_apps/*/bin/**/*.so
+
 
 # Packaged gems
 *.gem
@@ -53,7 +56,7 @@ Oni/lib/projects/Scope/bin/data
 
 # Do not track files that are created by the build system
 ext/oF_apps/*/obj
-ext/oF_apps/*/bin
+# ext/oF_apps/*/bin
 
 
 
