@@ -1,0 +1,5521 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"exp",
+				"export_build_variables"
+			],
+			[
+				"downlo",
+				"download_libs"
+			],
+			[
+				"ts",
+				"target_string"
+			],
+			[
+				"open",
+				"openFrameworks"
+			],
+			[
+				"pro",
+				"project"
+			],
+			[
+				"proj",
+				"project_name"
+			],
+			[
+				"nam",
+				"name"
+			],
+			[
+				"conf",
+				"config"
+			],
+			[
+				"OFB",
+				"OF_BUILD_VARIABLE_FILE"
+			],
+			[
+				"root",
+				"REPO_ROOT"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"exten",
+				"ofx_extension_name"
+			],
+			[
+				"repo",
+				"REPO_ROOT"
+			],
+			[
+				"expand",
+				"expand_path"
+			],
+			[
+				"onl",
+				"only_so"
+			],
+			[
+				"sketch",
+				"sketch_dump"
+			],
+			[
+				"dump",
+				"dump_so"
+			],
+			[
+				"cate",
+				"category_dir"
+			],
+			[
+				"trail",
+				"trail_dt"
+			],
+			[
+				"es",
+				"exit_status"
+			],
+			[
+				"have_",
+				"have_library"
+			],
+			[
+				"gstream",
+				"gstreamer"
+			],
+			[
+				"polib",
+				"poco_libs_dir"
+			],
+			[
+				"build_",
+				"build_tess2"
+			],
+			[
+				"depe",
+				"dependencies"
+			],
+			[
+				"ext",
+				"extconf"
+			],
+			[
+				"oF",
+				"oF_project"
+			],
+			[
+				"clb",
+				"c_library"
+			],
+			[
+				"work",
+				"work_dir"
+			],
+			[
+				"temp",
+				"temp_ext"
+			],
+			[
+				"mk",
+				"mySketch"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"bu",
+				"build"
+			],
+			[
+				"bur",
+				"build_library"
+			],
+			[
+				"clib",
+				"clean_library"
+			],
+			[
+				"ce",
+				"1.coerce"
+			],
+			[
+				"visua",
+				"visualizations"
+			],
+			[
+				"test_",
+				"test_package"
+			],
+			[
+				"prev",
+				"prev_tick"
+			],
+			[
+				"poss",
+				"possible_targets"
+			],
+			[
+				"const",
+				"constraint_target"
+			],
+			[
+				"data",
+				"data_dump"
+			],
+			[
+				"rec",
+				"resources"
+			],
+			[
+				"Hash",
+				"HashWrapper"
+			],
+			[
+				"remo",
+				"removal_flag"
+			],
+			[
+				"con",
+				"constraint"
+			],
+			[
+				"paramet",
+				"parameterization"
+			],
+			[
+				"visu",
+				"visualization"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"necessary",
+				"necessary_pairs"
+			],
+			[
+				"cont",
+				"constraint_type"
+			],
+			[
+				"nece",
+				"necessary_pairs"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"inti",
+				"initialize"
+			],
+			[
+				"ent",
+				"entities"
+			],
+			[
+				"segment",
+				"segment_query"
+			],
+			[
+				"compo",
+				"components"
+			],
+			[
+				"query",
+				"query_data"
+			],
+			[
+				"origi",
+				"original_color"
+			],
+			[
+				"active",
+				"active_cascade"
+			],
+			[
+				"var",
+				"var_name"
+			],
+			[
+				"projec",
+				"project_directory"
+			],
+			[
+				"other",
+				"other_stuff"
+			],
+			[
+				"unpa",
+				"unpack_with_class_name"
+			],
+			[
+				"compon",
+				"component"
+			],
+			[
+				"qu",
+				"query_components"
+			],
+			[
+				"styl",
+				"style_components"
+			],
+			[
+				"names",
+				"named_styles"
+			],
+			[
+				"comp",
+				"component"
+			],
+			[
+				"full",
+				"full_path"
+			],
+			[
+				"sc",
+				"style_component"
+			],
+			[
+				"primary",
+				"primary_style"
+			],
+			[
+				"casc",
+				"cascade_list"
+			],
+			[
+				"enti",
+				"entity_id"
+			],
+			[
+				"component",
+				"component_data"
+			],
+			[
+				"componen",
+				"component"
+			],
+			[
+				"collec",
+				"collection"
+			],
+			[
+				"activ",
+				"active_list"
+			],
+			[
+				"write",
+				"write_data"
+			],
+			[
+				"wri",
+				"write_data"
+			],
+			[
+				"par",
+				"packed_array"
+			],
+			[
+				"compd",
+				"component_data"
+			],
+			[
+				"each_",
+				"each_with_index"
+			],
+			[
+				"all",
+				"all_style_objects"
+			],
+			[
+				"style",
+				"style_component"
+			],
+			[
+				"righc",
+				"right_callbacks"
+			],
+			[
+				"lftc",
+				"left_callbacks"
+			],
+			[
+				"butt",
+				"mouse_button"
+			],
+			[
+				"actt",
+				"active_action"
+			],
+			[
+				"ti",
+				"text_input"
+			],
+			[
+				"acc",
+				"active_action"
+			],
+			[
+				"acti",
+				"active_action"
+			],
+			[
+				"mous",
+				"mouse_button"
+			],
+			[
+				"button",
+				"button_phase"
+			],
+			[
+				"hit",
+				"hitbox_color"
+			],
+			[
+				"clone",
+				"clone_factory"
+			],
+			[
+				"old",
+				"old_text"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"regist",
+				"register_prototype"
+			],
+			[
+				"inp",
+				"text_input"
+			],
+			[
+				"text",
+				"text_input"
+			],
+			[
+				"est",
+				"estimated_i"
+			],
+			[
+				"first",
+				"first_guess"
+			],
+			[
+				"esti",
+				"estimated_i"
+			],
+			[
+				"meas",
+				"measured_offset"
+			],
+			[
+				"disp",
+				"measured_displacement"
+			],
+			[
+				"caret",
+				"caret_pos"
+			],
+			[
+				"dir",
+				"dirty"
+			],
+			[
+				"no",
+				"normalized_anchor"
+			],
+			[
+				"nw",
+				"new_height"
+			],
+			[
+				"plac",
+				"place_to_look"
+			],
+			[
+				"original",
+				"original_width"
+			],
+			[
+				"na",
+				"normalized_anchor"
+			],
+			[
+				"ad",
+				"anchor_delta"
+			],
+			[
+				"anp",
+				"anchor_pre"
+			],
+			[
+				"top_ri",
+				"top_right"
+			],
+			[
+				"instance",
+				"instance_eval"
+			],
+			[
+				"meta",
+				"meta_eval"
+			],
+			[
+				"Input",
+				"InputSystem"
+			],
+			[
+				"revent",
+				"released_events"
+			],
+			[
+				"parti",
+				"partition"
+			],
+			[
+				"lev",
+				"launched_events"
+			],
+			[
+				"KbLeft",
+				"KbLeftControl"
+			],
+			[
+				"ni",
+				"new_input"
+			],
+			[
+				"call",
+				"callbacks"
+			],
+			[
+				"ac",
+				"assoc_time"
+			],
+			[
+				"at",
+				"array_time"
+			],
+			[
+				"colu",
+				"columns"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "project file time ordering\n\noF_core_setup\noF_deps\nc_extension_build_system",
+			"settings":
+			{
+				"buffer_size": 74,
+				"line_ending": "Unix",
+				"name": "project file time ordering"
+			}
+		},
+		{
+			"file": ".gitignore",
+			"settings":
+			{
+				"buffer_size": 1419,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/oF_apps/testApp/config.make",
+			"settings":
+			{
+				"buffer_size": 6543,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/oF_apps/testApp/addons.make",
+			"settings":
+			{
+				"buffer_size": 7,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "common.rb",
+			"settings":
+			{
+				"buffer_size": 2827,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Rakefile",
+			"settings":
+			{
+				"buffer_size": 24696,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/extconf.rb",
+			"settings":
+			{
+				"buffer_size": 7825,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/compile_commands.json",
+			"settings":
+			{
+				"buffer_size": 25577,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "        \"file\": \"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/app.cpp\"\n\n        \"file\": \"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/launcher.cpp\"\n\n        \"file\": \"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp\"\n",
+			"settings":
+			{
+				"buffer_size": 238,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			}
+		},
+		{
+			"contents": "want to move over code from old oF app / ruby wrapper\n\nneed to establish a pathway in teh build file\nsuch that you can clean / build along this pathway\nwithout clobbering too much of the existant work\n(optimize rebuild time)\n\n(don't clobber the core or anything dumb)",
+			"settings":
+			{
+				"buffer_size": 267,
+				"line_ending": "Unix",
+				"name": "want to move over code from old oF app / ruby wrap"
+			}
+		},
+		{
+			"file": "ext/rubyOF/rice.h",
+			"settings":
+			{
+				"buffer_size": 129,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/rubyOF.cpp",
+			"settings":
+			{
+				"buffer_size": 10821,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 28 files for \"ofLoadImage\"\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/template/lib/main.rb:\n   46  \t\t\n   47  \t\t@texture = RubyOF::Texture.new\n   48: \t\tofLoadImage(@texture, \"/home/ravenskrag/Pictures/Buddy Icons/100shinn1.png\")\n   49  \tend\n   50  \t\n\n/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp:\n  283  \trb_cWindow\n  284  \t\t// textures\n  285: \t\t.define_method(\"ofLoadImage\", load_image_from_file(&ofLoadImage))\n  286  \t;\n  287  \t\n\n3 matches across 2 files\n\n\nSearching 4942 files for \"ofLoadImage\"\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/template/lib/main.rb:\n   46  \t\t\n   47  \t\t@texture = RubyOF::Texture.new\n   48: \t\tofLoadImage(@texture, \"/home/ravenskrag/Pictures/Buddy Icons/100shinn1.png\")\n   49  \tend\n   50  \t\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAssimpModelLoader/src/ofxAssimpModelLoader.cpp:\n  267              } else {\n  268                  ofTexture texture;\n  269:                 bool bTextureLoadedOk = ofLoadImage(texture, realPath);\n  270                  if(bTextureLoadedOk) {\n  271                      textures.push_back(ofxAssimpTexture(texture, realPath));\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.cpp:\n   10  \t// load the texure\n   11  \tofDisableArbTex();\n   12: \tofLoadImage(texture, \"dot.png\");\n   13  \t\n   14  \t// set the camera distance\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp:\n   43  \t\n   44  \t// load the depth image into our texture\n   45: \tofLoadImage(mTexDepth, \"depth_image.png\");\n   46  \tofEnableArbTex();\n   47  \n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp:\n  346  void ofAppGLFWWindow::setWindowIcon(const string & path){\n  347      ofPixels iconPixels;\n  348: \tofLoadImage(iconPixels,path);\n  349  \tsetWindowIcon(iconPixels);\n  350  }\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGlutWindow.cpp:\n  340  void ofAppGlutWindow::setWindowIcon(const string & path){\n  341      ofPixels iconPixels;\n  342: \tofLoadImage(iconPixels,path);\n  343  \tsetWindowIcon(iconPixels);\n  344  }\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp:\n  205  \n  206  \tif(scheme == \"http\" || scheme == \"https\"){\n  207: \t\treturn ofLoadImage(pix, ofLoadURL(_fileName.string()).data);\n  208  \t}\n  209  \t\n  ...\n  296  \n  297  //----------------------------------------------------------------\n  298: bool ofLoadImage(ofPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings) {\n  299  \treturn loadImage(pix, path, settings);\n  300  }\n  301  \n  302  //----------------------------------------------------------------\n  303: bool ofLoadImage(ofPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings) {\n  304  \treturn loadImage(pix, buffer, settings);\n  305  }\n  306  \n  307  //----------------------------------------------------------------\n  308: bool ofLoadImage(ofShortPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings) {\n  309  \treturn loadImage(pix, path, settings);\n  310  }\n  311  \n  312  //----------------------------------------------------------------\n  313: bool ofLoadImage(ofShortPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings) {\n  314  \treturn loadImage(pix, buffer, settings);\n  315  }\n  316  \n  317  //----------------------------------------------------------------\n  318: bool ofLoadImage(ofFloatPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings) {\n  319  \treturn loadImage(pix, path, settings);\n  320  }\n  321  \n  322  //----------------------------------------------------------------\n  323: bool ofLoadImage(ofFloatPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings) {\n  324  \treturn loadImage(pix, buffer, settings);\n  325  }\n  326  \n  327  //----------------------------------------------------------------\n  328: bool ofLoadImage(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings){\n  329  \tofPixels pixels;\n  330: \tbool loaded = ofLoadImage(pixels, path, settings);\n  331  \tif(loaded){\n  332  \t\ttex.allocate(pixels.getWidth(), pixels.getHeight(), ofGetGlInternalFormat(pixels));\n  ...\n  337  \n  338  //----------------------------------------------------------------\n  339: bool ofLoadImage(ofTexture & tex, const ofBuffer & buffer, const ofImageLoadSettings &settings){\n  340  \tofPixels pixels;\n  341: \tbool loaded = ofLoadImage(pixels, buffer, settings);\n  342  \tif(loaded){\n  343  \t\ttex.allocate(pixels.getWidth(), pixels.getHeight(), ofGetGlInternalFormat(pixels));\n  ...\n  691  \tofAddListener(ofxAndroidEvents().reloadGL,this,&ofImage_<PixelType>::update);\n  692  \t#endif\n  693: \tbool bLoadedOk = ofLoadImage(pixels, fileName, settings);\n  694  \tif (!bLoadedOk) {\n  695  \t\tofLogError(\"ofImage\") << \"loadImage(): couldn't load image from \\\"\" << fileName << \"\\\"\";\n  ...\n  714  \tofAddListener(ofxAndroidEvents().reloadGL,this,&ofImage_<PixelType>::update);\n  715  \t#endif\n  716: \tbool bLoadedOk = ofLoadImage(pixels, buffer, settings);\n  717  \tif (!bLoadedOk) {\n  718  \t\tofLogError(\"ofImage\") << \"loadImage(): couldn't load image from ofBuffer\";\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.h:\n  128  \n  129  /// \\todo Needs documentation.\n  130: bool ofLoadImage(ofPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  131: bool ofLoadImage(ofPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  132: bool ofLoadImage(ofFloatPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  133: bool ofLoadImage(ofFloatPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  134: bool ofLoadImage(ofShortPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  135: bool ofLoadImage(ofShortPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  136  \n  137  /// \\todo Needs documentation.\n  138: bool ofLoadImage(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  139: bool ofLoadImage(ofTexture & tex, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());\n  140  \n  141  /// \\todo Needs documentation.\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.h:\n   18  /// ~~~~{.cpp}\n   19  /// ofPixels p;\n   20: /// ofLoadImage(p, \"pathToImage.jpg\");\n   21  /// ~~~~\n   22  ///\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils/ofThreadChannel.h:\n  195  \t/// // Fill the pixels with valid data, an image for example.\n  196  \t///\n  197: \t/// ofLoadImage(myPixelsToSend, \"myImage.jpg\");\n  198  \t///\n  199  \t/// // Send `myPixelsToSend` by copying it. `myPixelsToSend` is still valid\n  ...\n  233  \t/// // Fill the pixels with valid data, an image for example.\n  234  \t///\n  235: \t/// ofLoadImage(myPixelsToSend, \"myImage.jpg\");\n  236  \t///\n  237  \t/// // Send `myPixelsToSend` by moving it. `myPixelsToSend` will no longer\n\n/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp:\n  283  \trb_cWindow\n  284  \t\t// textures\n  285: \t\t.define_method(\"ofLoadImage\", load_image_from_file(&ofLoadImage))\n  286  \t;\n  287  \t\n\n32 matches across 11 files\n",
+			"settings":
+			{
+				"buffer_size": 7693,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.cpp",
+			"settings":
+			{
+				"buffer_size": 4523,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/rubyOF.h",
+			"settings":
+			{
+				"buffer_size": 933,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/launcher.cpp",
+			"settings":
+			{
+				"buffer_size": 3170,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/launcher.h",
+			"settings":
+			{
+				"buffer_size": 1580,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/rb_app.cpp",
+			"settings":
+			{
+				"buffer_size": 6041,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/rb_app.h",
+			"settings":
+			{
+				"buffer_size": 1236,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/Graphics.cpp",
+			"settings":
+			{
+				"buffer_size": 5329,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/Graphics.h",
+			"settings":
+			{
+				"buffer_size": 136,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/Fbo.cpp",
+			"settings":
+			{
+				"buffer_size": 6629,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/Fbo.h",
+			"settings":
+			{
+				"buffer_size": 87,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/TrueTypeFont.cpp",
+			"settings":
+			{
+				"buffer_size": 4405,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/TrueTypeFont.h",
+			"settings":
+			{
+				"buffer_size": 2133,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			}
+		},
+		{
+			"file": "lib/rubyOF/freezable.rb",
+			"settings":
+			{
+				"buffer_size": 837,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/rubyOF.rb",
+			"settings":
+			{
+				"buffer_size": 9192,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/template/lib/main.rb",
+			"settings":
+			{
+				"buffer_size": 4571,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 665.0,
+		"last_filter": "commi",
+		"selected_items":
+		[
+			[
+				"commi",
+				"Git: Commit"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"comm",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"git comm",
+				"Git: Commit"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"kra",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"kr",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"kraken",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"c++",
+				"Set Syntax: Objective-C++"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"package",
+				"Package Control: Enable Package"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			],
+			[
+				"anno",
+				"Git: Toggle Annotations"
+			]
+		],
+		"width": 1032.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/ravenskrag/Desktop/gem_structure",
+		"/home/ravenskrag/Desktop/gem_structure/ext"
+	],
+	"file_history":
+	[
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/lib/projects/ThoughtTrace/bin/main.rb",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Graphics.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Graphics.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/TrueTypeFont.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/TrueTypeFont.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Fbo.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Fbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/glm.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/freezable.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/version.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/compile_commands.json",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/Makefile",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/src/main.d",
+		"/home/ravenskrag/Desktop/gem_structure/README.md",
+		"/home/ravenskrag/Desktop/gem_structure/ext/of_apps/README.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/README.txt",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/build_libs/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/app.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/src/ofApp.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/raw_oF_variables.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Fbo.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/dev/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/android/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Desktop/gem_structure/build/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/build/Rakefile",
+		"/home/ravenskrag/Desktop/gem structure/.gitignore",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/.gitmodules",
+		"/home/ravenskrag/Desktop/gem_structure/.gitmodules",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/.git",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/apothecary/.git",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/.git",
+		"/home/ravenskrag/Desktop/gem_structure/.git/index",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/README.md",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/commandLine/readme.md",
+		"/home/ravenskrag/Desktop/gem structure/ext/rubyOF/extconf.rb",
+		"/home/ravenskrag/Desktop/gem structure/build/Rakefile",
+		"/home/ravenskrag/Desktop/gem structure/ext/of_apps/README.txt",
+		"/home/ravenskrag/Desktop/gem structure/README.md",
+		"/home/ravenskrag/Desktop/gem structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/version.rb",
+		"/home/ravenskrag/Desktop/gem structure/configurator.rb",
+		"/home/ravenskrag/Desktop/gem structure/config.yaml",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_linux64_release/apps/projectGenerator/commandLine/readme.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_linux64_release/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem structure/bin/apps/README.txt",
+		"/home/ravenskrag/Desktop/gem structure/docs/notes.txt",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/freezable.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/meta.rb",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec2f.h",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/addons/ofxiOS/src/app/ofAppiOSWindow.mm",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CODE_OF_CONDUCT.md",
+		"/home/ravenskrag/Applications/0_ local launchers/Cytoscape-0.desktop",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/INSTALL.md",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-workspace",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/config.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile.static_lib",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/mkmf.log",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/oF_build_variables.yaml",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/Makefile.backup",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxGamepad/example/src/gamepadExampleApp.cpp",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/Rakefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/of_build_variables.yaml",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/utf8cpp/include/utf8.h",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/lib/test.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAssimpModelLoader/addon_config.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/ofxAssimpModelLoader/src/ofxAssimpMeshHelper.d",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/extconf.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxOsc/addon_config.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination.txt",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination_clobbered.txt",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_WIN32.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_VX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_POSIX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventLogChannel.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventArgs.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.build",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.make",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/configure",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Event.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Thread.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/kiss/include/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/AbstractEvent.h"
+	],
+	"find":
+	{
+		"height": 64.0
+	},
+	"find_in_files":
+	{
+		"height": 170.0,
+		"where_history":
+		[
+			"",
+			"<open files>",
+			"<open folders>",
+			"",
+			"<open files>",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ofLoadImage",
+			"load",
+			"loadimage",
+			"@font",
+			"load_from",
+			"load",
+			"Oni",
+			"rb_mOni",
+			"fbo_allocate_from",
+			"rb_mOni",
+			"Rice",
+			"RICE",
+			"Rice",
+			"re-enable",
+			"cp ",
+			"cp",
+			"mv",
+			"fbo",
+			"path_to_file",
+			"x_pos",
+			"ofxpanel",
+			"-rpath",
+			"-path",
+			"PLATFORM",
+			"OF_SKETCH_LIB_FILE",
+			"obj/",
+			":oF_project",
+			"oF_project",
+			":build",
+			"mv ",
+			"mv",
+			"cp",
+			"oF_project:build",
+			"of_project",
+			"of_projcet",
+			"libopenFrameworksDebug.a",
+			":build",
+			"c_extension:build",
+			"DYNAMIC_LIB_PATH",
+			"bin/lib",
+			"bin/lib/fmodex",
+			"bin/lib",
+			"fileutils",
+			"files",
+			"json_data",
+			"build_clang_db",
+			"\"file\": ",
+			"raw_oF_variables",
+			"clang_symbol_file",
+			"re-enable",
+			"RBOF",
+			"rb_mRBOF",
+			"OF",
+			"rb_mOF",
+			"Oni",
+			"oni",
+			"rb_mOni",
+			"oni",
+			"_oni",
+			"cpp_root",
+			"OF_CUSTOM_DEPS_PATH",
+			".o",
+			"rb_cWindow",
+			"ofApp",
+			"app",
+			"libs",
+			"addons",
+			"binding",
+			"openframeworks",
+			"c++",
+			"rice",
+			"rubyof",
+			".o",
+			"lib",
+			"static",
+			".a",
+			".o",
+			"OF_BUILD",
+			".o",
+			"\",",
+			"gem_root",
+			"GEM_ROOT",
+			"cp",
+			"oni",
+			"c_library",
+			"c_extension",
+			"build",
+			"gem structure",
+			"run",
+			"[",
+			"glm",
+			"sudo",
+			"RubyOF",
+			"Oni",
+			"oni",
+			"testing",
+			"old_name",
+			"oni",
+			"Oni",
+			"glm",
+			"ofvec2",
+			"draw",
+			"parent",
+			"color",
+			"currentframe",
+			"render",
+			"render(",
+			"ofsetcolor",
+			"color",
+			"leavefocus",
+			"bguiactive =",
+			"bguiactive",
+			"disable",
+			"endediting",
+			"beginediting",
+			"active",
+			"pressCounter",
+			"setvalue",
+			"mouse",
+			"bg",
+			"bg ",
+			"bg",
+			"render",
+			"generatedraw",
+			"needsredraw",
+			"ofxBaseGui::setDefaultHeight",
+			"vec3",
+			"glm"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			" \n",
+			"module ThoughtTrace\n\n\n# Controls overall execution flow for all input systems.\n# Like a main method for the entire input system.\n# \n# As it is a \"main\", this class is more a portion of ThoughtTrace proper,\n# rather than something than can be externalized.\n# This is reflected in the module chosen to hold this class.\nclass InputManager\n\t# TODO: control mouseover effects from this class as well\n\t\n\tattr_reader :mouse, :buttons\n\t\n\tdef initialize(window, space, camera)\n\t\t@space = space\n\t\t@camera = camera\n\t\t\n\t\t\n\t\t# TODO: properly implement mouse.\n\t\t@mouse = InputSystem::Mouse.new window\n\t\t\n\t\t@selection = [] # TODO: create actual selection collection. Array is placeholder. May work, may not. Haven't actually thought about it at all.\n\t\t\n\t\t@text_input = ThoughtTrace::TextInput.new\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t# manages many input events\n\t\t# input events correspond to button presses\n\t\t# those buttons can be keyboard keys, mouse buttons, or gamepad buttons\n\t\t@buttons = InputSystem::ButtonParser.new\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t# hold actions flow controllers, so that input manager can direct action UI drawing\n\t\t# need to draw actions so that they can show polymorphic interface information\n\t\t# NOTE: storing actions this way means that the button parser doesn't have to know anything about the input system.\n\t\t@actions = Array.new\n\t\t\n\t\t# NOTE: Action names and Event names may not necessarily have the same requirements.\n\t\t\t# Action names\n\t\t\t\t# Control what sort of action will be fired\n\t\t\t\t# Like methods, specifics are resolved with polymorphism\n\t\t\t# Event names\n\t\t\t\t# unique ID for this specific Event\n\t\t\t\t# must be distinct among keyboard, mouse, joystick etc events\n\t\t\t\t# each Event is one combination of (name, binding, callback)\n\t\t\t\t# thus, it is possible for many events to trigger one Action\n\t\t\t\t# because you want multiple bindings on one Action\n\t\t\t\t# (thing mouse bindings vs keyboard, rather than multiple keyboard shortcuts)\n\t\t\n\t\t\n\t\t# action_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @stash)\n\t\t# # TODO: register action names in action flow controller\n\t\t# action_flow.bindings[categorization][phase] = action_name\n\t\t# # NOTE: There's no warning if you try to assign an action name to a phase that does not exist. This is really dangerous, and had me hunting bugs in a bunch of the wrong places.\n\t\t\n\t\t# \tevent_name = :click\n\t\t# \tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t# event = InputSystem::ButtonEvent.new event_name, callbacks\n\t\t# event.bind_to keys:[Gosu::MsLeft], modifiers:[]\n\t\t\n\t\t# @buttons.register event\n\t\t\n\t\t\n\t\t\n\t\t\n\t\taction_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @text_input)\n\t\tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t\n\t\t\tevent = InputSystem::ButtonEvent.new :click, callbacks\n\t\t\tevent.bind_to keys:[Gosu::MsLeft], modifiers:[]\n\t\t\t\n\t\t\taction_flow.bindings[:existing][:click] = :edit\n\t\t\taction_flow.bindings[:existing][:drag] = :move\n\t\t\t\n\t\t\taction_flow.bindings[:empty][:click] = :spawn_text \n\t\t\t# action_flow.bindings[:empty][:drag] = :move\n\t\t\n\t\t@actions << action_flow\n\t\t@buttons.register event\n\t\t\n\t\t\n\t\t\n\t\taction_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @text_input)\n\t\tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t\n\t\t\tevent = InputSystem::ButtonEvent.new :right_click, callbacks\n\t\t\tevent.bind_to keys:[Gosu::MsRight], modifiers:[]\n\t\t\t\n\t\t\taction_flow.bindings[:existing][:drag] = :resize\n\t\t\n\t\t@actions << action_flow\n\t\t@buttons.register event\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\tcallbacks = ThoughtTrace::Events::PressEnter.new @space, @text_input\n\t\tevent = InputSystem::ButtonEvent.new :enter, callbacks\n\t\t\n\t\tevent.bind_to keys:[Gosu::KbReturn], modifiers:[]\n\t\t\n\t\t@buttons.register event\n\t\t\n\tend\n\t\n\tdef button_down(id)\n\t\t@buttons.button_down(id)\n\tend\n\t\n\tdef update\n\t\t@buttons.update\n\t\t@text_input.update\n\tend\n\t\n\t# draw things in world space\n\tdef draw\n\t\t@actions.each do |action|\n\t\t\taction.draw @mouse.position_in_space\n\t\tend\n\t\t\n\t\t@text_input.draw\n\tend\n\t\n\tdef button_up(id)\n\t\t@buttons.button_up(id)\n\tend\n\t\n\tdef shutdown\n\t\t\n\tend\nend\n\n\n\nend",
+			"ThoughtTrace",
+			"\n",
+			"clerical"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 14,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 74,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								74,
+								74
+							]
+						],
+						"settings":
+						{
+							"auto_name": "project file time ordering",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": ".gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1419,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1419,
+								1419
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1922.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ext/oF_apps/testApp/config.make",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6543,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2511.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ext/oF_apps/testApp/addons.make",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7,
+								7
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "common.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2827,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								735,
+								735
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Rakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 24696,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21214,
+								21214
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										21219,
+										21222
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 25296.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "ext/rubyOF/extconf.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7825,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								572,
+								572
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "ext/rubyOF/compile_commands.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25577,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4245,
+								4245
+							],
+							[
+								4252,
+								4252
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4258,
+										4259
+									],
+									"2":
+									[
+										4258,
+										4259
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									],
+									"2":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4195,
+										4196
+									],
+									"2":
+									[
+										4195,
+										4196
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2170.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 238,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								238,
+								238
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 267,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								267,
+								267
+							]
+						],
+						"settings":
+						{
+							"auto_name": "want to move over code from old oF app / ruby wrap",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "ext/rubyOF/rice.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 129,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "ext/rubyOF/rubyOF.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9653,
+								9653
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										9653,
+										9654
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										9641,
+										9642
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8619.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7693,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										171,
+										182
+									],
+									[
+										397,
+										408
+									],
+									[
+										433,
+										444
+									],
+									[
+										667,
+										678
+									],
+									[
+										999,
+										1010
+									],
+									[
+										1333,
+										1344
+									],
+									[
+										1590,
+										1601
+									],
+									[
+										1876,
+										1887
+									],
+									[
+										2159,
+										2170
+									],
+									[
+										2409,
+										2420
+									],
+									[
+										2582,
+										2593
+									],
+									[
+										2834,
+										2845
+									],
+									[
+										3078,
+										3089
+									],
+									[
+										3335,
+										3346
+									],
+									[
+										3584,
+										3595
+									],
+									[
+										3841,
+										3852
+									],
+									[
+										4090,
+										4101
+									],
+									[
+										4239,
+										4250
+									],
+									[
+										4489,
+										4500
+									],
+									[
+										4628,
+										4639
+									],
+									[
+										4912,
+										4923
+									],
+									[
+										5209,
+										5220
+									],
+									[
+										5515,
+										5526
+									],
+									[
+										5652,
+										5663
+									],
+									[
+										5779,
+										5790
+									],
+									[
+										5921,
+										5932
+									],
+									[
+										6053,
+										6064
+									],
+									[
+										6195,
+										6206
+									],
+									[
+										6373,
+										6384
+									],
+									[
+										6511,
+										6522
+									],
+									[
+										6829,
+										6840
+									],
+									[
+										7089,
+										7100
+									],
+									[
+										7329,
+										7340
+									],
+									[
+										7596,
+										7607
+									],
+									[
+										7632,
+										7643
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								1262,
+								1262
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										1075,
+										1076
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"rainbowth.lispy": false,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 589.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4523,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								261,
+								261
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1027,
+										1028
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										105,
+										106
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "ext/rubyOF/rubyOF.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 933,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								373,
+								373
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "ext/rubyOF/launcher.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3170,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								540,
+								540
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1227,
+										1228
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										176,
+										177
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "ext/rubyOF/launcher.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1580,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								863,
+								863
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1576,
+										1577
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										728,
+										729
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "ext/rubyOF/rb_app.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6041,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								290,
+								290
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1804,
+										1805
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										246,
+										247
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "ext/rubyOF/rb_app.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1236,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								357,
+								357
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "ext/rubyOF/Graphics.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5329,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								493,
+								493
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										125,
+										126
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "ext/rubyOF/Graphics.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 136,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								136,
+								136
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "ext/rubyOF/Fbo.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6629,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2410,
+								2410
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										1923,
+										1924
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1767.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "ext/rubyOF/Fbo.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 87,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								87,
+								87
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "ext/rubyOF/TrueTypeFont.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4405,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								496,
+								496
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										495,
+										496
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										389,
+										390
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "ext/rubyOF/TrueTypeFont.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2133,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								60,
+								60
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										59,
+										60
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										52,
+										53
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "lib/rubyOF/freezable.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 837,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										833,
+										836
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										0,
+										6
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "lib/rubyOF.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9192,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6370,
+								6370
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										6603,
+										6604
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										6348,
+										6349
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 9300.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "bin/projects/template/lib/main.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4571,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1396,
+								1396
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1445,
+										1446
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1393,
+										1394
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 558.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 39.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "cpp_wrapper.sublime-project",
+	"replace":
+	{
+		"height": 74.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"main",
+				"bin/projects/template/lib/main.rb"
+			],
+			[
+				"glm",
+				"ext/openFrameworks/libs/glm/include/glm/glm.hpp"
+			],
+			[
+				"offbo",
+				"ext/openFrameworks/libs/openFrameworks/gl/ofFbo.cpp"
+			],
+			[
+				"rake",
+				"Rakefile"
+			],
+			[
+				"rubyof.rb",
+				"lib/rubyOF.rb"
+			],
+			[
+				"ext",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"compile",
+				"ext/rubyOF/compile_commands.json"
+			],
+			[
+				"rice",
+				"ext/rubyOF/rice.h"
+			],
+			[
+				"config",
+				"ext/oF_apps/testApp/config.make"
+			],
+			[
+				"commo",
+				"common.rb"
+			],
+			[
+				".git",
+				".gitignore"
+			],
+			[
+				"giti",
+				".gitignore"
+			],
+			[
+				"make",
+				"ext/oF_apps/testApp/Makefile"
+			],
+			[
+				"ex",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"makefilecommonconfigshared",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"openframeworkscompiledprojectmake",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"linuxof",
+				"ext/openFrameworks/scripts/linux/compileOF.sh"
+			],
+			[
+				"linuxdownlib",
+				"ext/openFrameworks/scripts/linux/download_libs.sh"
+			],
+			[
+				"downl",
+				"ext/openFrameworks/scripts/android/download_libs.sh"
+			],
+			[
+				"compilof",
+				"ext/openFrameworks/scripts/linux/compileOF.sh"
+			],
+			[
+				"rakefil",
+				"Rakefile"
+			],
+			[
+				"comm",
+				"common.rb"
+			],
+			[
+				"extc",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"gitmo",
+				".gitmodules"
+			],
+			[
+				"common.rb",
+				"build/common.rb"
+			],
+			[
+				"compilepg",
+				"ext/openFrameworks/scripts/linux/compilePG.sh"
+			],
+			[
+				"commandlinemakefile",
+				"ext/openFrameworks/apps/projectGenerator/commandLine/Makefile"
+			],
+			[
+				"linuxbuildpg",
+				"ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh"
+			],
+			[
+				"openframereadme",
+				"ext/openFrameworks/README.md"
+			],
+			[
+				"projgencommreadm",
+				"ext/openFrameworks/apps/projectGenerator/commandLine/readme.md"
+			],
+			[
+				"rakefile",
+				"build/Rakefile"
+			],
+			[
+				"readm",
+				"README.md"
+			],
+			[
+				"rubof",
+				"lib/rubyOF.rb"
+			],
+			[
+				"ver",
+				"lib/rubyOF/version.rb"
+			],
+			[
+				"configu",
+				"configurator.rb"
+			],
+			[
+				"con",
+				"config.yaml"
+			],
+			[
+				".gi",
+				".gitignore"
+			],
+			[
+				"projecgenerscriptsbuil",
+				"ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh"
+			],
+			[
+				"openframeworksreadme",
+				"ext/openFrameworks/README.md"
+			],
+			[
+				"read",
+				"README.md"
+			],
+			[
+				"rubyof",
+				"lib/ruby_of.rb"
+			],
+			[
+				"gitig",
+				".gitignore"
+			],
+			[
+				"ofxgui",
+				"addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				"pocorulescompile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile"
+			],
+			[
+				"custompocolinux",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux"
+			],
+			[
+				"custompocomakefile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile"
+			],
+			[
+				"compileprojectmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"configproject",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"configsharedmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"comple",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"configlinux6",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compiledmakefilecommcompile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"openframeworksmakefile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"install",
+				"of_v0.9.3_linux64_release/INSTALL.md"
+			],
+			[
+				"releasecompile",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags"
+			],
+			[
+				"compilerflags",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags"
+			],
+			[
+				"sketchstatic",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile.static_lib"
+			],
+			[
+				"sketchaddons",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/addons.make"
+			],
+			[
+				"ofbuildvaria",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/oF_build_variables.yaml"
+			],
+			[
+				"of_testadd",
+				"~/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make"
+			],
+			[
+				"addons",
+				"of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make"
+			],
+			[
+				"ofbuild",
+				"RubyCPP/Oni/oF_build_variables.yaml"
+			],
+			[
+				"variables",
+				"RubyCPP/Oni/ext/oni/of_build_variables.yaml"
+			],
+			[
+				"extvar",
+				"RubyCPP/Oni/ext/oni/extconf_variables.rb"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"event.h",
+				"poco-1.7.4-all/Foundation/include/Poco/Event.h"
+			],
+			[
+				"event",
+				"poco-1.7.4-all/Foundation/src/Event.cpp"
+			],
+			[
+				"thread",
+				"poco-1.7.4-all/Foundation/src/Thread.cpp"
+			],
+			[
+				"test",
+				"Oni/lib/test.rb"
+			],
+			[
+				"xt",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"mysketchmake",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"gem",
+				"Oni/oni.gemspec"
+			],
+			[
+				"log",
+				"Oni/ext/oni/mkmf.log"
+			],
+			[
+				"extco",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				"compileco",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"config.m",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/config.make"
+			],
+			[
+				"link",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compileof",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"git",
+				"~/Experiments/RubyCPP/.gitignore"
+			],
+			[
+				"e",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"confp",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"rubycppofmake",
+				"RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"rubycpprake",
+				"RubyCPP/Oni/Rakefile"
+			],
+			[
+				"rubycppext",
+				"RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"makefile",
+				"Oni/ext/oni/Makefile"
+			],
+			[
+				"extconf",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"trutype",
+				"libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+			],
+			[
+				"color",
+				"libs/openFrameworks/types/ofColor.cpp"
+			],
+			[
+				"freeim",
+				"libs/FreeImage/include/FreeImage.h"
+			],
+			[
+				"ofimage",
+				"libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"mainh",
+				"libs/openFrameworks/ofMain.h"
+			],
+			[
+				"project",
+				"libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"rubymain",
+				"SublimeREPL/config/Ruby/Main.sublime-menu"
+			],
+			[
+				"pythonmain",
+				"SublimeREPL/config/Python/Main.sublime-menu"
+			],
+			[
+				"rep",
+				"*REPL* [octave]"
+			],
+			[
+				"plat",
+				"ex1/plotData.m"
+			],
+			[
+				"ex1m",
+				"ex1/ex1_multi.m"
+			],
+			[
+				"warm",
+				"warmUpExercise.m"
+			],
+			[
+				"locking",
+				"locking things in place"
+			],
+			[
+				"groupedi",
+				"TODO: group edit and resize"
+			],
+			[
+				"styecompo",
+				"all classes using Style Component should define de"
+			],
+			[
+				"empyt",
+				"rewrite 'empty space actions' as 'zero target acti"
+			],
+			[
+				"back",
+				"TODO: background coloring"
+			],
+			[
+				"spawn",
+				"spawn action - prototype factory - nested document"
+			],
+			[
+				"manysp",
+				"many spawn actions"
+			],
+			[
+				"groure",
+				"group resize"
+			],
+			[
+				"resize",
+				"group resize"
+			],
+			[
+				"querysb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"visandg",
+				"NOTE: constraint Visualizations and Groups now bot"
+			],
+			[
+				"put",
+				"TODO: put the style data on the Constraint maybe?"
+			],
+			[
+				"how",
+				"how are Queries shown visually?"
+			],
+			[
+				"visua",
+				"Visualizations need to save Style component data"
+			],
+			[
+				"styda",
+				"NOTE: style data not currently duplicated when Ent"
+			],
+			[
+				"stylcomp",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"text",
+				"is Text Box a new type?"
+			],
+			[
+				"savemu",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"trasqsb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"fio",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"applys",
+				"apply Style to multiple Entities at once"
+			],
+			[
+				"stylcr",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"editorwor",
+				"editor workflow versus core coding backend interfa"
+			],
+			[
+				"wyhqu",
+				"why did I need queries the last time I wanted quer"
+			],
+			[
+				"thinka",
+				"think ahead into selection"
+			],
+			[
+				"reasont",
+				"is there any reason to keep Component?"
+			],
+			[
+				"locki",
+				"locking things in place"
+			],
+			[
+				"reasonto",
+				"is there any reason to keep Component?"
+			],
+			[
+				"changeent",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"addremove",
+				"add / remove whole entities (including components)"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 364.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
