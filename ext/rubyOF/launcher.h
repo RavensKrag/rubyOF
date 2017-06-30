@@ -12,7 +12,7 @@
 
 #include "ofPoint.h" // you can include this one. this is fine.
 
-#include "app.h"
+#include "rb_app.h"
 
 
 // // app.h sholud already be including the Rice stuff I think?
@@ -62,7 +62,7 @@ public:
 	
 	
 protected:
-	OniApp* mApp;
+	OniApp* mApp = NULL;
 	ofAppGLFWWindow* mWindow = NULL;
 };
 

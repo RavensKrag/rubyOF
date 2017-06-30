@@ -1,4 +1,4 @@
-#include "app.h"
+#include "rb_app.h"
 
 OniApp::OniApp(Rice::Object self) : 
 	ofApp()

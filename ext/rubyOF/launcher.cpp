@@ -2,7 +2,7 @@
 // #include "ofGraphics.h"
 
 #include "launcher.h"
-#include "app.h"
+#include "rb_app.h"
 
 #include <iostream>
 
