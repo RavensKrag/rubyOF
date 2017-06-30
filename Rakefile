@@ -3,7 +3,8 @@ require 'rake/clean'
 
 require 'fileutils'
 require 'open3'
-require 'yaml'
+require 'yaml' # used for config files
+require 'json' # used to parse Clang DB
 
 
 require './common'
@@ -86,7 +87,7 @@ CLEAN.exclude('ext/oF_deps/**/*')
 
 # Clean up clang file index as well
 # (build from inspection of 'make' as it builds the c-library)
-CLEAN.include('ext/rubyOF/compile_commands.json')
+CLEAN.include(CLANG_SYMBOL_FILE)
 
 
 
@@ -721,17 +722,52 @@ namespace :c_extension do
 			# flags += " -j#{NUMBER_OF_CORES}" if Dir.exists? '/home/ravenskrag' # if running on my machine
 			
 			
-			run_i "make #{flags}"  do
-				"ERROR: Could not build c extension."
+			# ======================================
+			# SPECIAL MOD
+			# regenerate the clang DB if necessary
+			if regenerate_clang_db? # see definition below
+				puts "Building and regenerating clang DB"
+				run_i "bear make #{flags}" do
+					"ERROR: Could not build c extension and / or clang DB"
+				end
+			else
+				# run normally
+				puts "Building..."
+				run_i "make #{flags}" do
+					"ERROR: Could not build c extension."
+				end
 			end
+			# ======================================
 		end
 		
 		puts "=== Moving dynamic library into correct location..."
-		cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
+		
+		FileUtils.cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
 		
 		
 		puts "=== C extension build complete!"
 	end
+	
+	# HELPER METHOD for c extension generation (managed clang DB)
+	# Number of known files on disk doesn't match up with the database.
+	# Must regenerate the database.
+	def regenerate_clang_db?
+		if File.exists? CLANG_SYMBOL_FILE
+			# check the contents of the DB to find out
+			data     = File.read(CLANG_SYMBOL_FILE)
+			clang_db = JSON.parse(data)
+			
+			directory        = File.expand_path('..', CLANG_SYMBOL_FILE)
+			cpp_source_files = Dir[File.join(directory, '*{.cpp}')]
+			
+			
+			return clang_db.length != cpp_source_files.length
+		else
+			# don't bother: you need to generate the DB
+			return true
+		end
+	end
+	
 	
 	# NOTE: This is a shortcut for the file task above.
 	desc "Build the C extension"
@@ -739,24 +775,12 @@ namespace :c_extension do
 	
 	
 	
-	clang_symbol_file = "/ext/#{NAME}/compile_commands.json"
+	
 	
 	# Not sure how often you want to regenerate this file, but not every time you build.
 	# You need to run make and have something happen. If nothing gets build from the makefile, the clang database will end up empty.
-	file clang_symbol_file do
-		Dir.chdir("ext/#{NAME}") do
-			run_i "make clean"
-			
-			run_i "bear make" do
-				"ERROR: Had a problem when Bear tried to examine the make process"
-			end
-		end
-	end
 	
-	desc "Generate clang symbol DB (will fail if build fails)"
-	task :build_clang_db do
-		run_task(clang_symbol_file)
-	end
+	
 	
 	# TODO: make sure the clang symbols are generated as part of the standard build process
 	# TODO: add clang symbols file to the .gitignore. Should be able to generate this, instead of saving it.
@@ -779,7 +803,12 @@ task :setup => [
 	'oF:build',
 	'oF_project:build'
 ] do
-	# TODO: need to set up system with -fPIC flag so that it will correctly link into the dynamic lib needed by Ruby
+	FileUtils.mkdir_p "bin/data"
+	FileUtils.mkdir_p "bin/lib"
+	FileUtils.mkdir_p "bin/projects"
+	FileUtils.mkdir_p "bin/projects/testProjectRuby/bin"
+	FileUtils.mkdir_p "bin/projects/testProjectRuby/ext"
+	FileUtils.mkdir_p "bin/projects/testProjectRuby/lib"
 end
 
 
@@ -795,10 +824,11 @@ task :build => [
 	'oF_project:static_lib:build',
 	
 	'c_extension:build',
-	# ^ extconf.rb -> makefile
-	#   run the makefile -> build ruby dynamic lib (.so)
-	#   move ruby dynamic lib (.so) into proper position
-	'c_extension:build_clang_db'
+	# ^ multiple steps:
+	#   +  extconf.rb -> makefile
+	#   +  run the makefile -> build ruby dynamic lib (.so)
+	#   +  move ruby dynamic lib (.so) into proper position
+	#   +  ALSO rebuilds the clang symbol DB as necessary.
 ] do
 	# TOOD: move the "ext/oF_apps/testApp/bin/libfmodex.so" into the correct directory (moving from build location, to somewhere in the "lib/" directory)
 	# (may want a patten that moves all dynamic libs?)

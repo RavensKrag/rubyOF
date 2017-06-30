@@ -166,7 +166,7 @@ ld_flags = ->(){
 		.reject{ |flag|
 			flag.include? '-rpath'
 		}
-	ld_flags.unshift "-Wl,-rpath=./libs:./bin/lib:#{DYNAMIC_LIB_PATH}" # add to front
+	ld_flags.unshift "-Wl,-rpath=.:#{DYNAMIC_LIB_PATH}" # add to front
 	ld_flags = ld_flags.join(' ')
 	
 	

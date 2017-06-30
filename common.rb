@@ -31,10 +31,11 @@ DYNAMIC_LIB_PATH = File.expand_path("./bin/lib/", GEM_ROOT)
 
 
 
+# === Clang database configuration
+# (used for SublimeText autocomplete)
+CLANG_SYMBOL_FILE = File.join GEM_ROOT, "ext/#{NAME}/compile_commands.json"
 
 
-# === Base path for the custom recompiled dependencies to oF needed to convert this into a Ruby C-extension dynamic libraray.
-OF_CUSTOM_DEPS_PATH = File.expand_path "ext/oF_deps/v0.9.3/custom/", GEM_ROOT
 
 
 
@@ -51,8 +52,6 @@ OF_ROOT = File.join(GEM_ROOT, "ext", "openFrameworks")
 # 'ext/oni/cpp/oF_Test'
 # 	'./mySketch'
 # 	'./mySketch/lib'
-
-cpp_root = File.expand_path("ext/#{NAME}/cpp/", GEM_ROOT)
 
 OF_APP_DIR    = File.join(GEM_ROOT, "ext", "oF_apps")
 

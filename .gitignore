@@ -81,3 +81,4 @@ ext/oF_apps/testApp/bin/testApp
 
 # Building the Ruby c-extension
 ext/rubyOF/Makefile
+ext/rubyOF/compile_commands.json
