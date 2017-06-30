@@ -63,14 +63,28 @@ unless defined? OF_SKETCH_ROOT
 OF_SKETCH_ROOT = File.join(OF_APP_DIR, OF_SKETCH_NAME)
 end
 
-OF_SKETCH_SRC_DIR   = File.expand_path('src', OF_SKETCH_ROOT)
-OF_SKETCH_SRC_FILES = Dir.glob(File.join(OF_SKETCH_SRC_DIR, '*{.cpp,.h}'))
+OF_SKETCH_SRC_DIR     = File.expand_path('src', OF_SKETCH_ROOT)
+OF_SKETCH_SRC_FILES   = Dir.glob(File.join(OF_SKETCH_SRC_DIR, '*{.cpp,.h}'))
+
+OF_SKETCH_BUILT_DIR   = File.expand_path(
+                             "obj/#{PLATFORM}/#{TARGET}/src",
+                             OF_SKETCH_ROOT
+                        )
+OF_SKETCH_BUILT_FILES = Dir[File.join(OF_SKETCH_BUILT_DIR, './*')]
+
 
 OF_SKETCH_LIB_OUTPUT_PATH = File.expand_path('lib', OF_SKETCH_ROOT)
 OF_SKETCH_LIB_FILE = File.join(OF_SKETCH_LIB_OUTPUT_PATH, 'libOFSketch.a')
 
 
-OF_BUILD_VARIABLE_FILE = File.expand_path("./oF_build_variables.yaml", OF_SKETCH_ROOT)
+OF_RAW_BUILD_VARIABLE_FILE = File.expand_path(
+	                               "./raw_oF_variables.yaml",
+	                               OF_SKETCH_ROOT
+	                          )
+OF_BUILD_VARIABLE_FILE     = File.expand_path(
+	                               "./oF_build_variables.yaml",
+	                               OF_SKETCH_ROOT
+	                          )
 
 
 

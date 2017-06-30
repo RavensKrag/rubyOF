@@ -129,6 +129,7 @@ namespace :oF do
 	# NOTE: If there is a problem with building the oF project, download libs again, build the core again, and then rebuild the project.
 	desc "Build openFrameworks core (ubuntu)."
 	task :build do
+		puts "=== Building OpenFrameworks core..."
 		Dir.chdir "./ext/openFrameworks/scripts/linux/" do
 			run_i "./compileOF.sh -j#{NUMBER_OF_CORES}"
 		end
@@ -470,6 +471,7 @@ namespace :oF_project do
 	# NOTE: building the project requires the core to be built correctly.
 	desc "Build the oF project (C++ only) - generates .o files"
 	task :build => 'oF:build' do
+		puts "=== Building oF project..."
 		Dir.chdir OF_SKETCH_ROOT do
 			run_i "make -j#{NUMBER_OF_CORES}" do
 				"ERROR: Could not build oF sketch."
@@ -507,8 +509,7 @@ namespace :oF_project do
 	# (these are the files used to generate the static lib)
 	desc "DEBUG: show the .o files generated that are specific to this project"
 	task :examine do
-		path = File.expand_path("obj/#{PLATFORM}/#{TARGET}/src", OF_SKETCH_ROOT)
-		Dir.chdir path do
+		Dir.chdir OF_SKETCH_BUILT_DIR do
 			puts "local oF build directory:"
 			puts Dir.pwd
 			p Dir['./*']
@@ -532,6 +533,8 @@ namespace :oF_project do
 		__FILE__, # if the Rake task changes, then update the output file
 		COMMON_CONFIG # if config variables change, then build may be different
 	] do
+		puts "=== Exporting oF project build variables..."
+		
 		swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
 			Dir.chdir OF_SKETCH_ROOT do
 				# run_i "make printvars"
@@ -542,7 +545,7 @@ namespace :oF_project do
 				out = out.each_line.to_a
 				
 				
-				File.open("./raw_oF_variables.yaml", "w") do |f|
+				File.open(OF_RAW_BUILD_VARIABLE_FILE, "w") do |f|
 					f.puts out.to_yaml
 				end
 				
@@ -577,6 +580,7 @@ namespace :oF_project do
 				end
 				
 				puts "=> Variables written to '#{filepath}'"
+				puts ""
 			end
 		end
 	end
@@ -600,8 +604,13 @@ namespace :oF_project do
 		# to generate a C++ static lib
 		# (same make file used to generate OF_BUILD_VARIABLE_FILE)
 		
-		file OF_SKETCH_LIB_FILE => OF_SKETCH_SRC_FILES do
-			puts "Making oF sketch into a static library..."
+		
+		# outputs OF_SKETCH_LIB_FILE
+		# but don't want to write this as a file task,
+		# because I want the makefile to determine if things should be rebuilt or not
+		desc "generate static lib from oF project"
+		task :build do
+			puts "=== Making oF sketch into a static library..."
 			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
 				Dir.chdir OF_SKETCH_ROOT do
 					run_i "make static_lib" do
@@ -610,10 +619,6 @@ namespace :oF_project do
 				end
 			end
 		end
-		
-		
-		desc "generate static lib from oF project"
-		task :build => OF_SKETCH_LIB_FILE
 		
 		task :clean do
 			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
@@ -804,7 +809,7 @@ task :setup => [
 	'oF_project:build'
 ] do
 	FileUtils.mkdir_p "bin/data"
-	FileUtils.mkdir_p "bin/lib"
+	FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
 	FileUtils.mkdir_p "bin/projects"
 	FileUtils.mkdir_p "bin/projects/testProjectRuby/bin"
 	FileUtils.mkdir_p "bin/projects/testProjectRuby/ext"
@@ -830,11 +835,27 @@ task :build => [
 	#   +  move ruby dynamic lib (.so) into proper position
 	#   +  ALSO rebuilds the clang symbol DB as necessary.
 ] do
-	# TOOD: move the "ext/oF_apps/testApp/bin/libfmodex.so" into the correct directory (moving from build location, to somewhere in the "lib/" directory)
-	# (may want a patten that moves all dynamic libs?)
-		# ^ NOTE: Still need to do this. Still need to move the oF runtime dependencies, even though the movement of the ruby .so is taken care of.
+	puts "=== Copying OpenFrameworks dynamic libs..."
+	
+	# -rpath flag specifies where to look for dynamic libraries
+	# (the system also has some paths that it checks for, but these are the "local dlls", basically)
+	
+	# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
+	# (specified in extconf.rb)
+	
+	src = File.expand_path(
+		        "./libs/fmodex/lib/#{PLATFORM}/libfmodex.so",
+	           OF_ROOT
+	      )
+	dest = DYNAMIC_LIB_PATH
+	FileUtils.copy(src, dest)
+	
+	# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)
+	# (does not reference the constant)
 	
 	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
+	
+	puts ">>> BUILD COMPLETE <<<"
 end
 
 

@@ -70,13 +70,13 @@ optimization_flags = of_build_variables['PLATFORM_OPTIMIZATION_CFLAGS_RELEASE'].
 cxx_flags          = of_build_variables['CFLAGS']
                      	.reject{ |flag|
                      		["-fPIC", "-Wall"].include? flag
-                 		}
+                     	}
                      	.join(' ')
 
 $CXXFLAGS += " " + [
-		optimization_flags,
-		cxx_flags,
-	].join(' ')
+                   	optimization_flags,
+                   	cxx_flags,
+                   ].join(' ')
 
 
 
@@ -166,7 +166,7 @@ ld_flags = ->(){
 		.reject{ |flag|
 			flag.include? '-rpath'
 		}
-	ld_flags.unshift "-Wl,-rpath=.:#{DYNAMIC_LIB_PATH}" # add to front
+	ld_flags.unshift "-Wl,-rpath=.:.bin/lib:#{DYNAMIC_LIB_PATH}" # add to front
 	ld_flags = ld_flags.join(' ')
 	
 	
@@ -214,18 +214,6 @@ $LDFLAGS += " " + more_linker_flags
 
 
 
-# === Copy over dynamic libraries to the correct location
-
-# -rpath flag specifies where to look for dynamic libraries
-# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-
-# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-
-src = File.expand_path("./libs/fmodex/lib/linux64/libfmodex.so", OF_ROOT)
-dest = DYNAMIC_LIB_PATH
-FileUtils.copy(src, dest)
-
-# TODO: make sure that the 'bin/libs' directory exists before copying. (Maybe fileutils will handle automatically? maybe not)
 
 
 
