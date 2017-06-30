@@ -731,14 +731,23 @@ namespace :c_extension do
 			# regenerate the clang DB if necessary
 			if regenerate_clang_db? # see definition below
 				puts "Building and regenerating clang DB"
+				
+				# need to recompile everything to get a proper DB
+				# so go ahead and clean out everything
+				run_i "make clean"
+				
+				# ok, now examine the build process and build the DB
 				run_i "bear make #{flags}" do
 					"ERROR: Could not build c extension and / or clang DB"
 				end
 				
 				# Clang DB file is generated here,
 				# but needs to be moved to the gem root to function
-				FileUtils.mv "./compile_commands.json", GEM_ROOT
+				FileUtils.mv "./compile_commands.json", CLANG_SYMBOL_FILE
+				# => CLANG_SYMBOL_FILE
+				
 				# TODO: consider analying the app build as well, and then merging the two JSON documents together into a single clang DB
+				
 			else
 				# run normally
 				puts "Building..."
@@ -766,7 +775,7 @@ namespace :c_extension do
 			data     = File.read(CLANG_SYMBOL_FILE)
 			clang_db = JSON.parse(data)
 			
-			directory        = File.expand_path('..', CLANG_SYMBOL_FILE)
+			directory        = File.join GEM_ROOT, "ext/#{NAME}"
 			cpp_source_files = Dir[File.join(directory, '*{.cpp}')]
 			
 			
@@ -776,6 +785,8 @@ namespace :c_extension do
 			return true
 		end
 	end
+	
+	
 	
 	
 	# NOTE: This is a shortcut for the file task above.
