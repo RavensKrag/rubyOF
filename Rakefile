@@ -794,6 +794,26 @@ namespace :c_extension do
 end
 
 
+
+
+# === Manage ruby-level code
+namespace :ruby do
+	desc "testing"
+	task :run do
+		project = "template"
+		Dir.chdir File.expand_path("bin/projects/#{project}/", GEM_ROOT) do
+			puts "ruby level execution"
+			
+			exe_path = "./lib/main.rb"
+			Kernel.exec "ruby #{exe_path}"
+		end
+	end
+end
+
+
+
+
+
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
 task :clean   => ['oF_project:clean']
