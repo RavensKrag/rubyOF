@@ -33,7 +33,7 @@ DYNAMIC_LIB_PATH = File.expand_path("./bin/lib/", GEM_ROOT)
 
 # === Clang database configuration
 # (used for SublimeText autocomplete)
-CLANG_SYMBOL_FILE = File.join GEM_ROOT, "ext/#{NAME}/compile_commands.json"
+CLANG_SYMBOL_FILE = File.join GEM_ROOT, "compile_commands.json"
 
 
 

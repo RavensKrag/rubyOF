@@ -20,9 +20,10 @@ void OniApp::setup(){
 	
 	
 	// font.load("DejaVu Sans", 20);
-	font.loadFont("DejaVu Sans", 20, true, true);
+	mFont.loadFont("DejaVu Sans", 20, true, true);
 	
 	
+	// mImage.load("bin/data/box.jpg");
 	
 	// font = ofTrueTypeFont();
 	
@@ -67,6 +68,26 @@ void OniApp::setup(){
 	// gui_sections.add(transforms);
 	
 	// gui.setup(gui_sections);
+	
+	
+	
+	
+	
+	// ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
+	ofTtfSettings settings("TakaoPGothic", 20); // This works fine
+	settings.antialiased = true;
+	settings.addRanges({
+	    ofUnicode::Space,
+	    ofUnicode::Latin1Supplement,
+	    ofUnicode::LatinExtendedAdditional,
+	    ofUnicode::Hiragana,
+	    ofUnicode::Katakana,
+	    ofUnicode::KatakanaPhoneticExtensions,
+	    ofUnicode::CJKLettersAndMonths,
+	    ofUnicode::CJKUnified,
+	});
+	mUnicodeFont.load(settings);
+	
 }
 
 void OniApp::update(){
@@ -107,11 +128,15 @@ void OniApp::draw(){
 		// ofDrawBitmapString("hello from C++!", 0, 0, 0);
 		
 		
-		int height = font.getLineHeight();
+		int height = mFont.getLineHeight();
 		ofDrawBitmapString("hello from C++!", 0, 800, 0);
 		
-		font.drawString("hello world", 0, 800 + height*1);
-		font.drawString("こんにちは",	 0, 800 + height*2); // no unicord support
+		mFont.drawString("hello world", 0, 800 + height*1);
+		mUnicodeFont.drawString("こんにちは",	 0, 800 + height*2);
+		
+		
+		
+		// mImage.draw(300,300);
 	ofPopStyle();
 	ofPopMatrix();
 	

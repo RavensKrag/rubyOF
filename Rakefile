@@ -470,7 +470,7 @@ namespace :oF_project do
 	
 	# NOTE: building the project requires the core to be built correctly.
 	desc "Build the oF project (C++ only) - generates .o files"
-	task :build => 'oF:build' do
+	task :build do # implicity requires 'oF:build' task
 		puts "=== Building oF project..."
 		Dir.chdir OF_SKETCH_ROOT do
 			run_i "make -j#{NUMBER_OF_CORES}" do
@@ -527,7 +527,6 @@ namespace :oF_project do
 	[
 		# # NOTE: slight indirection here - depend on timestamp file instead of build task directly, so that 
 		# File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp'),
-		:build, # no sense in exporting variables for a non-building system
 		File.expand_path("./Makefile.static_lib", OF_SKETCH_ROOT),
 		File.expand_path("./addons.make",         OF_SKETCH_ROOT),
 		__FILE__, # if the Rake task changes, then update the output file
@@ -735,6 +734,11 @@ namespace :c_extension do
 				run_i "bear make #{flags}" do
 					"ERROR: Could not build c extension and / or clang DB"
 				end
+				
+				# Clang DB file is generated here,
+				# but needs to be moved to the gem root to function
+				FileUtils.mv "./compile_commands.json", GEM_ROOT
+				# TODO: consider analying the app build as well, and then merging the two JSON documents together into a single clang DB
 			else
 				# run normally
 				puts "Building..."
@@ -841,11 +845,13 @@ desc "Build just the pure C++ parts"
 task :build_cpp => ['oF:build', 'oF_project:build']
 
 
+# Build dependencies shifted from explict to implied,
+# so that you don't duplicate the work being done in :setup.
+# This way, the build process will go a little faster.
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
-	'oF_project:build',
-	'oF_project:export_build_variables',
-	# ^ will rebuild oF project / oF core as necessary
+	'oF_project:build',                  # implicitly requires oF:build
+	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
 	
 	'c_extension:build',
@@ -879,8 +885,8 @@ task :build => [
 end
 
 
-task :run => 'oF_project:run'
-
+# task :run => 'oF_project:run'
+task :run => 'ruby:run'
 
 task :build_and_run => [:build, :run] do
 	

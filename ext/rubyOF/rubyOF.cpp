@@ -280,10 +280,16 @@ void Init_rubyOF()
 	typedef bool (*load_image_from_file)(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings);
 	
 	
-	rb_cWindow
-		// textures
-		.define_method("ofLoadImage", load_image_from_file(&ofLoadImage))
-	;
+	// rb_cWindow
+	// 	// textures
+	// 	.define_method("ofLoadImage", load_image_from_file(&ofLoadImage),
+	// 		(
+	// 			Arg("texture"),
+	// 			Arg("filesystem_path"),
+	// 			Arg("settings") = ofImageLoadSettings()
+	// 		)
+	// 	)
+	// ;
 	
 	
 	

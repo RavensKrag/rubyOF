@@ -891,7 +891,7 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "rwildcard = \t\t \t\t \t\t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
+- "rwildcard = \t\t \t\t \t\t \t\t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
   \t \t\t\n"
 - 'WEAVE = weave
 

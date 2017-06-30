@@ -52,7 +52,10 @@ class OniApp : public ofApp{
 		
 		ofParameter<int> gui_scale;
 		
-		ofTrueTypeFont font;
+		ofTrueTypeFont mFont;
+		ofTrueTypeFont mUnicodeFont;
+		
+		ofImage mImage;
 	
 	private:
 		Rice::Object mSelf;
