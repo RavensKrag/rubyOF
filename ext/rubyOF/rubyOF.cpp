@@ -7,11 +7,9 @@
 
 // === Rice glue code
 // #include "Window.h" 
-// ===== re-enable this asap =====
-// #include "Graphics.h"
-// #include "Fbo.h"
-// #include "TrueTypeFont.h"
-// ===== re-enable this asap =====
+#include "Graphics.h"
+#include "Fbo.h"
+#include "TrueTypeFont.h"
 
 // === Additional OpenFrameworks types
 // #include "ofApp.h"
@@ -27,11 +25,9 @@ void Init_rubyOF()
 	std::cout << "c++: set up module: RubyOF\n";
 	Module rb_mRubyOF = define_module("RubyOF");
 	
-	// ===== re-enable this asap =====
-	// Init_rubyOF_graphics(rb_mRubyOF);
-	// Init_rubyOF_fbo(rb_mRubyOF);
-	// Init_rubyOF_trueTypeFont(rb_mRubyOF);
-	// ===== re-enable this asap =====
+	Init_rubyOF_graphics(rb_mRubyOF);
+	Init_rubyOF_fbo(rb_mRubyOF);
+	Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	
 	// ofPoint is the same as ofVec3
 	Data_Type<ofPoint> rb_cPoint =
