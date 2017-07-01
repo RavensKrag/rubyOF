@@ -1,3 +1,4 @@
+# encoding: UTF-8
 this_dir     = File.absolute_path(File.dirname(__FILE__))
 project_root = File.expand_path('../',          this_dir)
 gem_root     = File.expand_path('../../../../', this_dir)
@@ -26,7 +27,7 @@ class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Test App", 1024,768)
+		super("Test App", 1024,1024)
 		# ofSetEscapeQuitsApp false
 		
 		
@@ -42,6 +43,35 @@ class Window < RubyOF::Window
 		# @font = RubyOF::TrueTypeFont.new
 		# load_status = @font.load("DejaVu Sans", 20)
 		# puts "Font loaded?: #{load_status}"
+		
+		
+		# @font = RubyOF::TrueTypeFont.new.tap do |font|
+		# 	# font_settings = Oni::TtfSettings.new("DejaVu Sans", 20)
+		# 	font_settings = RubyOF::TtfSettings.new("TakaoPGothic", 20)
+		# 		# puts "name: #{font_settings.font_name}" 
+		# 		# puts "size: #{font_settings.font_size}"
+		# 	[
+		# 		:Space,
+		# 		:Latin1Supplement,
+		# 		:LatinExtendedAdditional,
+		# 		:Hiragana,
+		# 		:Katakana,
+		# 		:KatakanaPhoneticExtensions,
+		# 		:CJKLettersAndMonths,
+		# 		:CJKUnified,
+		# 	].each do |range|
+		# 		font_settings.add_unicode_range range
+		# 	end
+			
+		# 	load_status = font.load(font_settings)
+			
+		# 	raise "Could not load font" unless load_status
+			
+			
+		# 	font
+		# end
+		
+		# p @font.methods
 		
 		
 		# @texture = RubyOF::Texture.new
@@ -95,11 +125,10 @@ class Window < RubyOF::Window
 		ofSetColor(255, 255, 255, 255) # rgba
 		
 		
-		ofDrawBitmapString("hello again from ruby!", 300, 350, z);
-		ofDrawBitmapString("clipboard: #{self.clipboard_string.inspect}", 100, 400, z);
+		# ofDrawBitmapString("hello again from ruby!", 300, 350, z);
+		# ofDrawBitmapString("clipboard: #{self.clipboard_string.inspect}", 100, 400, z);
 		# ^ NOTE: I think this gives you an error when the contains something that is not a string?
 		# [ error ] ofAppGLFWWindow: 65545: X11: Failed to convert selection to string
-		
 		
 		# ofSetColor(255,0,0, 255) # rgba
 		# ofDrawCircle(*@p,z, 20)
@@ -116,12 +145,12 @@ class Window < RubyOF::Window
 		end
 		
 		
-		# ofSetColor(0, 141, 240, 255) # rgba
-		# x,y = @p
-		# 	# not sure why, but need to get variables again?
-		# 	# if you don't, the text trails behind the desired position by a couple seconds.
-		# @font.draw_string("TrueTypeFont Test!", x, y)
-		
+		ofSetColor(0, 141, 240, 255) # rgba
+		x,y = @p
+			# not sure why, but need to get variables again?
+			# if you don't, the text trails behind the desired position by a couple seconds.
+		# @font.draw_string("TrueTypeFont Test! こんにちは", x, y)
+		# puts "こんにちは"
 		
 		
 		

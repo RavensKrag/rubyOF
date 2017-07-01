@@ -2,7 +2,18 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+	// ofTtfSettings settings("TakaoPGothic", 20); // This works fine
+	// settings.antialiased = true;
+	// settings.addRanges({
+	// 	 ofUnicode::Space,
+	//     ofUnicode::Latin,
+	//     ofUnicode::Latin1Supplement,
+	//     // ofUnicode::LatinExtendedAdditional,
+	//     ofUnicode::Hiragana,
+	//     // ofUnicode::Katakana,
+	//     // ofUnicode::KatakanaPhoneticExtensions,
+	// });
+	// mUnicodeFont.load(settings);
 }
 
 //--------------------------------------------------------------
@@ -12,7 +23,14 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+	// ofPushStyle();
+	
+	// ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
+	// ofSetColor(color);
+	
+	// mUnicodeFont.drawString("Testing こんにちは", 200,200);
+	
+	// ofPopStyle();
 }
 
 //--------------------------------------------------------------

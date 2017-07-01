@@ -617,6 +617,17 @@ namespace :oF_project do
 					end
 				end
 			end
+			
+			
+			
+			
+			# TODO: update this task so it actually works correctly.
+			# Often, it fails to rebuild the archive correctly, which invaldates steps further down the chain
+			# (or at least that's what this looks like)
+			# (i'm not actually sure, but it's super confusing why old symbols are cropping up in my final Ruby executable.)
+			
+			# NOTE: could potentially use the exported build variables file (the one whose primary use is in extconf.rb) in order to get the build variables, if you really need them. Seems like that might actually end up being better than doing the weird makefile switcheroo?
+			# If you contain more of the work in the Rakefile, maybe rake will have a better idea of the dependency chain, and not have to remake stuff so much?
 		end
 		
 		task :clean do
@@ -861,6 +872,7 @@ task :build_cpp => ['oF:build', 'oF_project:build']
 # This way, the build process will go a little faster.
 desc "Build the whole project (Ruby and C++ combined)"
 task :build => [
+	'oF:build',
 	'oF_project:build',                  # implicitly requires oF:build
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',

@@ -308,7 +308,7 @@
 - 'OF_CORE_LIB_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64
 
 '
-- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-rIxI6VbNHN,guid=20df394fe915a5b38fe376045955d46e
+- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-8f7DraJ0qE,guid=c6472cfbd0e3c07081083d1d595729fd
 
 '
 - 'GCC_MAJOR_EQ_4 = 0
@@ -404,7 +404,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
 '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1548,unix/ravensnest:/tmp/.ICE-unix/1548
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1934,unix/ravensnest:/tmp/.ICE-unix/1934
 
 '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -432,7 +432,7 @@
 - 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
 
 '
-- 'WINDOWID = 92274694
+- 'WINDOWID = 92274925
 
 '
 - 'COMPILE.f = f77   -c
@@ -511,7 +511,7 @@
 
 '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-greSG8Ursgiw/agent.1355
+- 'SSH_AUTH_SOCK = /tmp/ssh-fLIUJI062W91/agent.1732
 
 '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -596,7 +596,7 @@
 - 'PREPROCESS.r = f77    -F
 
 '
-- 'SSH_AGENT_PID = 1467
+- 'SSH_AGENT_PID = 1843
 
 '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -1299,7 +1299,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/1
+- 'MAKE_TERMERR = /dev/pts/2
 
 '
 - 'OBJC = cc

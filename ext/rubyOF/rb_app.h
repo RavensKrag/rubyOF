@@ -54,6 +54,8 @@ class OniApp : public ofApp{
 		
 		ofTrueTypeFont mFont;
 		ofTrueTypeFont mUnicodeFont;
+		ofTrueTypeFont mFont1;
+		ofTrueTypeFont mFont2;
 		
 		ofImage mImage;
 	

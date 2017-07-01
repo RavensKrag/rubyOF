@@ -19,8 +19,73 @@ void OniApp::setup(){
 	mSelf.call("setup");
 	
 	
+	
+	// // mFont.loadFont("DejaVu Sans", 20, true, true);
+	// // ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
+	// ofTtfSettings settings_mFont("DejaVu Sans", 20); // This works fine
+	// settings_mFont.antialiased = true;
+	// mFont.load(settings_mFont);
+	
+	
+	
+	// // ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
+	// ofTtfSettings settings_mUnicodeFont("TakaoPGothic", 20); // This works fine
+	// settings_mUnicodeFont.antialiased = true;
+	// settings_mUnicodeFont.addRanges({
+	//     ofUnicode::Space,
+	//     ofUnicode::Latin1Supplement,
+	//     ofUnicode::LatinExtendedAdditional,
+	//     ofUnicode::Hiragana,
+	//     ofUnicode::Katakana,
+	//     ofUnicode::KatakanaPhoneticExtensions,
+	//     ofUnicode::CJKLettersAndMonths,
+	//     ofUnicode::CJKUnified,
+	// });
+	// mUnicodeFont.load(settings_mUnicodeFont);
+	
+	
+	
+	
+	// NOTE: These two fonts should display differently
+	// If they don't, then it means the font face is not loading properly.
+	bool flag;
+	
+	// ofTtfSettings settings1("DejaVu Sans", 50);
+	// settings1.antialiased = true;
+	// flag = mFont1.load(settings1);
+	// if(flag){
+	// 	cout << "font 1 loaded correctly\n";
+	// }
+	
+	// ofTtfSettings settings2("Liberation Serif", 50);
+	// settings2.antialiased = true;
+	// flag = mFont2.load(settings2);
+	// if(flag){
+	// 	cout << "font 2 loaded correctly\n";
+	// }
+	// The flag is beilg set correctly, but the system is lying.
+	// The font face is not, in fact, loading correctly, 
+	// as two faces that look quite different (sans serif v. roman)
+	// appear exactly the same.
+	// 
+	// Need to figure out why the font is not being loaded properly.
+	// The older version of ofTrueTypeFont I was using did work as I expected,
+	// and the current version does not.
+	// 
+	// Have the assumptions around font load paths changed?
+	// Do fonts have to be in the data dir?
+	// That used to be the case, but then it changed (maybe it changed back?)
+	
+	// of particular note:
+	// ofTrueTypeFont::load(settings) => loadFontFace() => ofToDataPath()
+	// 
+	// the inclusion of ofToDataPath() is something that has changed from 
+	// the commit on the OpenFrameworks master branch I was previously using.
+	// see the diff: https://github.com/openframeworks/openFrameworks/compare/a27821f5287b2430c6368f5a249f...RavensKrag:master
+	
+	
 	// font.load("DejaVu Sans", 20);
-	mFont.loadFont("DejaVu Sans", 20, true, true);
+	// mFont.loadFont("DejaVu Sans", 20, true, true);
 	
 	
 	// mImage.load("bin/data/box.jpg");
@@ -50,7 +115,7 @@ void OniApp::setup(){
 	
 	
 	// need to call these before gui.setup()
-	ofxGuiSetFont("DejaVu Sans", 20, true, true);
+	// ofxGuiSetFont("DejaVu Sans", 20, true, true);
 	// ofxGuiSetFont("DejaVu Sans", 200, _bAntiAliased, _bFullCharacterSet, int dpi=0)
 	
 	ofxGuiSetTextPadding(4);
@@ -68,26 +133,6 @@ void OniApp::setup(){
 	// gui_sections.add(transforms);
 	
 	// gui.setup(gui_sections);
-	
-	
-	
-	
-	
-	// ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
-	ofTtfSettings settings("TakaoPGothic", 20); // This works fine
-	settings.antialiased = true;
-	settings.addRanges({
-	    ofUnicode::Space,
-	    ofUnicode::Latin1Supplement,
-	    ofUnicode::LatinExtendedAdditional,
-	    ofUnicode::Hiragana,
-	    ofUnicode::Katakana,
-	    ofUnicode::KatakanaPhoneticExtensions,
-	    ofUnicode::CJKLettersAndMonths,
-	    ofUnicode::CJKUnified,
-	});
-	mUnicodeFont.load(settings);
-	
 }
 
 void OniApp::update(){
@@ -111,6 +156,23 @@ void OniApp::draw(){
 	ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
 	ofSetColor(color);
 		
+		// int height = mFont.getLineHeight();
+		// ofDrawBitmapString("hello from C++!", 0, 800, 0);
+		
+		// mFont.drawString("hello world", 0, 800 + height*1);
+		// mUnicodeFont.drawString("こんにちは",	 0, 800 + height*2);
+		
+		
+		// height = mFont1.getLineHeight();
+		// mFont1.drawString("Hello World", 200, 200 + height);
+		
+		// height += mFont2.getLineHeight();
+		// mFont2.drawString("Hello World",	 200, 200 + height);
+		
+		// cout << "こんにちは\n";
+		
+		
+		
 		
 		// // // Draw some shapes
 		// ofDrawRectangle(50, 50, 100, 100); // Top left corner at (50, 50), 100 wide x 100 high
@@ -126,14 +188,6 @@ void OniApp::draw(){
 		// height = 11;
 		// 	// ^ src: https://forum.openframeworks.cc/t/how-to-get-size-of-ofdrawbitmapstring/22578
 		// ofDrawBitmapString("hello from C++!", 0, 0, 0);
-		
-		
-		int height = mFont.getLineHeight();
-		ofDrawBitmapString("hello from C++!", 0, 800, 0);
-		
-		mFont.drawString("hello world", 0, 800 + height*1);
-		mUnicodeFont.drawString("こんにちは",	 0, 800 + height*2);
-		
 		
 		
 		// mImage.draw(300,300);
