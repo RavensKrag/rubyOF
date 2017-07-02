@@ -7,16 +7,25 @@
 NAME = 'rubyOF'
 
 
+# this constant controlls whether or not the oF project
+# will be built with debugging symbols or not.
+# (you need this for GDB support, etc.)
+OF_DEBUG = true
+	# #debug off
+	# -march=native -mtune=native -DNDEBUG
+
+	# #debug on
+	# g++ -c -g3 -DDEBUG
+
 
 # === Platform-dependent build configuration variables
 
 PLATFORM           = "linux64"
-TARGET             = "Release"
+TARGET             = OF_DEBUG ? "Debug" : "Release"
 NUMBER_OF_CORES    = 4
 
 	# TODO: accept platform, target, and number of cores as Rake arguments
 	# (maybe you actually want to figure out platform automatially)
-
 
 
 

@@ -20,7 +20,6 @@ include $(OF_ROOT)/libs/openFrameworksCompiled/project/makefileCommon/compile.pr
 # === custom make commands ===
 # ============================
 
-TARGET_NAME = Release
 # need to set TARGET_NAME before loading the config,
 # because the config assumes this var is defined already
 # (not sure why this variable ends up blank by this time, but w/e)

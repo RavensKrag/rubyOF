@@ -53,7 +53,7 @@ class OniApp : public ofApp{
 		ofParameter<int> gui_scale;
 		
 		ofTrueTypeFont mFont;
-		ofTrueTypeFont mUnicodeFont;
+		ofTrueTypeFont mFontU;
 		ofTrueTypeFont mFont1;
 		ofTrueTypeFont mFont2;
 		

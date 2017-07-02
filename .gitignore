@@ -78,6 +78,7 @@ ext/oF_deps/master/custom/tess2/repo/Build/*
 
 # Building the oF app
 ext/oF_apps/testApp/bin/testApp
+ext/oF_apps/testApp/bin/testApp_debug
 
 # Building the Ruby c-extension
 ext/rubyOF/Makefile

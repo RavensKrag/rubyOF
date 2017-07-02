@@ -461,10 +461,20 @@ end
 
 
 namespace :oF_project do
+	desc "Debug with gdb"
+	task :debug do
+		Dir.chdir OF_SKETCH_ROOT do
+			puts "Remember: type 'q' to exit GDB."
+			puts "=============================="
+			puts ""
+			Kernel.exec "gdb ./bin/#{OF_SKETCH_NAME}_debug"
+		end
+	end
+	
 	desc "Run just the C++ components for the oF sketch"
 	task :run do
 		Dir.chdir OF_SKETCH_ROOT do
-			run_i "make RunRelease"
+			run_i "make Run#{TARGET}"
 		end
 	end
 	
@@ -473,7 +483,11 @@ namespace :oF_project do
 	task :build do # implicity requires 'oF:build' task
 		puts "=== Building oF project..."
 		Dir.chdir OF_SKETCH_ROOT do
-			run_i "make -j#{NUMBER_OF_CORES}" do
+			# Make the debug build if the flag is set,
+			# othwise, make the release build.
+			debug = OF_DEBUG ? "Debug" : ""
+			
+			run_i "make #{debug} -j#{NUMBER_OF_CORES}" do
 				"ERROR: Could not build oF sketch."
 			end
 			
@@ -538,7 +552,7 @@ namespace :oF_project do
 			Dir.chdir OF_SKETCH_ROOT do
 				# run_i "make printvars"
 				
-				out = `make printvars`
+				out = `make printvars TARGET_NAME=#{TARGET}`
 				# p out
 				
 				out = out.each_line.to_a
@@ -612,7 +626,7 @@ namespace :oF_project do
 			puts "=== Making oF sketch into a static library..."
 			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
 				Dir.chdir OF_SKETCH_ROOT do
-					run_i "make static_lib" do
+					run_i "make static_lib TARGET_NAME=#{TARGET}" do
 						"ERROR: Could not make a static library out of the oF sketch project."
 					end
 				end
@@ -633,7 +647,7 @@ namespace :oF_project do
 		task :clean do
 			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
 				Dir.chdir OF_SKETCH_ROOT do
-					run_i "make clean_static_lib"
+					run_i "make clean_static_lib TARGET_NAME=#{TARGET}"
 				end
 			end
 		end
@@ -834,6 +848,23 @@ namespace :ruby do
 			Kernel.exec "ruby #{exe_path}"
 		end
 	end
+	
+	desc "testing"
+	task :debug do
+		project = "template"
+		Dir.chdir File.expand_path("bin/projects/#{project}/", GEM_ROOT) do
+			puts "ruby level execution"
+			
+			exe_path = "./lib/main.rb"
+			p exe_path
+			puts "Path to core file above."
+			puts "Type: run 'PATH_TO_CORE_FILE'"
+			puts "Remember: type 'q' to exit GDB."
+			puts "=============================="
+			puts ""
+			Kernel.exec "gdb ruby"
+		end
+	end
 end
 
 
@@ -914,6 +945,20 @@ task :run => 'ruby:run'
 task :build_and_run => [:build, :run] do
 	
 end
+
+
+# NOTE: Assumes build options are set to make 'Debug'
+desc "testing"
+task :debug_project => [
+	'oF:build',
+	'oF_project:build',                  # implicitly requires oF:build
+	'oF_project:debug'
+] do
+	
+end
+
+desc "testing"
+task :debug => 'ruby:debug'
 
 
 

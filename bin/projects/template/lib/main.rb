@@ -27,7 +27,7 @@ class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Test App", 1024,1024)
+		super("Test App", 1270,1024)
 		# ofSetEscapeQuitsApp false
 		
 		

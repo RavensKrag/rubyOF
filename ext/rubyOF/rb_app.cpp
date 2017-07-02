@@ -18,14 +18,34 @@ void OniApp::setup(){
 	
 	mSelf.call("setup");
 	
+	// NOTE: DejaVu Sans just happens to be the defaultu on my system, by whatever mechanism OpenFrameworks decides to use
+	// (it's some some sort of FreeDesktop foundation standard API)
+	// However, the first call here actually is not actually working right.
+	ofTtfSettings settings("DejaVu Sans", 30);
+	settings.antialiased = true;
+	mFont.load(settings);
 	
+	ofTtfSettings s1("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20);
+	s1.addRanges({
+		 ofUnicode::Space,
+	    ofUnicode::Latin,
+	    ofUnicode::Latin1Supplement,
+	    ofUnicode::LatinExtendedAdditional,
+	    ofUnicode::Hiragana,
+	    ofUnicode::Katakana,
+	    ofUnicode::KatakanaPhoneticExtensions,
+	});
+	s1.antialiased = true;
+	mFontU.load(s1);
 	
-	// // mFont.loadFont("DejaVu Sans", 20, true, true);
-	// // ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
-	// ofTtfSettings settings_mFont("DejaVu Sans", 20); // This works fine
-	// settings_mFont.antialiased = true;
-	// mFont.load(settings_mFont);
+	// NOTE: Liberation serif does not seem to have a "Regular" variant, at least not according to fc-list.
+	ofTtfSettings s2("/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf", 20);
+	s2.antialiased = true;
+	mFont1.load(s2);
 	
+	ofTtfSettings s3("Liberation Serif", 20);
+	s3.antialiased = true;
+	mFont2.load(s3);
 	
 	
 	// // ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
@@ -63,6 +83,8 @@ void OniApp::setup(){
 	// if(flag){
 	// 	cout << "font 2 loaded correctly\n";
 	// }
+	
+	
 	// The flag is beilg set correctly, but the system is lying.
 	// The font face is not, in fact, loading correctly, 
 	// as two faces that look quite different (sans serif v. roman)
@@ -88,7 +110,6 @@ void OniApp::setup(){
 	// mFont.loadFont("DejaVu Sans", 20, true, true);
 	
 	
-	// mImage.load("bin/data/box.jpg");
 	
 	// font = ofTrueTypeFont();
 	
@@ -110,6 +131,14 @@ void OniApp::setup(){
 	// };
 	
 	// font.load(settings);
+	
+	
+	
+	
+	
+	// mImage.load("bin/data/box.jpg");
+	
+	
 	
 	// =====
 	
@@ -156,8 +185,30 @@ void OniApp::draw(){
 	ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
 	ofSetColor(color);
 		
-		// int height = mFont.getLineHeight();
-		// ofDrawBitmapString("hello from C++!", 0, 800, 0);
+		
+		int height;
+		int x;
+		int y;
+		ofDrawBitmapString("Font Test", 0, 200, 0);
+		
+		x = 0;
+		y = 300;
+		height = mFont.getSize();
+		mFont.drawString("mFontU", x, y);
+		mFontU.drawString("Hand-woven pagent! こんにちは", x, y+height);
+		
+		x = 500;
+		y = 300;
+		height = mFont.getSize();
+		mFont.drawString("mFont1", x, y);
+		mFont1.drawString("Hand-woven pagent!", x, y+height);
+		
+		x = 500+300;
+		y = 300;
+		height = mFont.getSize();
+		mFont.drawString("mFont2", x, y);
+		mFont2.drawString("Hand-woven pagent!", x, y+height);
+		
 		
 		// mFont.drawString("hello world", 0, 800 + height*1);
 		// mUnicodeFont.drawString("こんにちは",	 0, 800 + height*2);

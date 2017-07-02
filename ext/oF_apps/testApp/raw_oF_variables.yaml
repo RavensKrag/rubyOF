@@ -216,16 +216,16 @@
 - 'VTE_VERSION = 4205
 
 '
-- "OF_PROJECT_ADDONS_OBJS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxPanel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxToggle.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxLabel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSlider.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSliderGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxInputField.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxButton.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxGuiGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxBaseGui.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxColorPicker.o
+- "OF_PROJECT_ADDONS_OBJS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxLabel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSlider.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSliderGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxInputField.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxGuiGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxColorPicker.o
   \n"
 - "TMP_PROJECT_ADDONS_CFLAGS =  \n"
 - '_ = /home/ravenskrag/.rvm/gems/ruby-2.4.0/bin/rake
@@ -302,7 +302,7 @@
 - 'PROJECT_ADDONS = ofxGui
 
 '
-- 'OPTIMIZATION_CFLAGS = -O3 -march=native -mtune=native -DNDEBUG
+- 'OPTIMIZATION_CFLAGS = -g3 -DDEBUG
 
 '
 - 'OF_CORE_LIB_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64
@@ -341,10 +341,10 @@
 - 'CHECKOUT,v = +co   printvars
 
 '
-- 'obj_prefix = obj/linux64/Release/
+- 'obj_prefix = obj/linux64/Debug/
 
 '
-- 'OF_PROJECT_OBJS = obj/linux64/Release/src/ofApp.o obj/linux64/Release/src/main.o
+- 'OF_PROJECT_OBJS = obj/linux64/Debug/src/ofApp.o obj/linux64/Debug/src/main.o
 
 '
 - 'USER = ravenskrag
@@ -432,7 +432,7 @@
 - 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
 
 '
-- 'WINDOWID = 92274925
+- 'WINDOWID = 79691782
 
 '
 - 'COMPILE.f = f77   -c
@@ -463,16 +463,16 @@
 - "uniq = \n"
 - "TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES = \n"
 - "YACC.y = yacc \n"
-- "PROJECT_ADDONS_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxPanel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxToggle.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxLabel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSlider.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSliderGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxInputField.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxButton.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxGuiGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxBaseGui.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxColorPicker.o
+- "PROJECT_ADDONS_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxLabel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSlider.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSliderGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxInputField.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxGuiGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxColorPicker.o
   \n"
 - "VPATH =  \n"
 - '_system_name = Ubuntu
@@ -555,13 +555,13 @@
 - 'ALL_OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/libs
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/data /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64 /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/src
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64 /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/src
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
 
 '
-- 'OBJS_WITHOUT_EXTERNAL = obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
-  obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
+- 'OBJS_WITHOUT_EXTERNAL = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
+  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
 
 '
 - 'PARSED_ADDONS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
@@ -642,39 +642,26 @@
 - 'LESSCLOSE = /usr/bin/lesspipe %s %s
 
 '
-- 'TMP_PROJECT_ADDONS_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxPanel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxToggle.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxLabel.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSlider.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSliderGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxInputField.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxButton.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxGuiGroup.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxBaseGui.o
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxColorPicker.o
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/ofApp.o
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/main.o
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/ofApp.o
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/main.o
+- 'TMP_PROJECT_ADDONS_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxLabel.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSlider.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSliderGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxInputField.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxGuiGroup.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxColorPicker.o
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/ofApp.o
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/main.o
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/ofApp.o
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/main.o
 
 '
 - 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_MPG123
 
 '
-- 'OF_PROJECT_ADDONS_DEPS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxPanel.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxToggle.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxLabel.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSlider.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSliderGroup.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxInputField.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxButton.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxGuiGroup.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxBaseGui.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxColorPicker.d
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/ofApp.d
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/main.d
-
-'
+- "-*-command-variables-*- = TARGET_NAME=Debug\n"
 - 'PAM_KWALLET_LOGIN = /tmp/kwallet_ravenskrag.socket
 
 '
@@ -689,7 +676,7 @@
 '
 - 'OF_ADDON_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
   -I/. -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64
-  -I./obj/linux64/Release -I./obj/linux64/Release/src -I/./lib -I./lib
+  -I./obj/linux64/Debug -I./obj/linux64/Debug/src -I/./lib -I./lib
 
 '
 - 'OF_SHARED_MAKEFILES_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon
@@ -823,13 +810,16 @@
 - 'AS = as
 
 '
-- 'TARGET_NAME = Release
+- 'TARGET_NAME = Debug
 
 '
-- 'OF_PROJECT_OBJ_OUTPUT_PATH = obj/linux64/Release/
+- 'OF_PROJECT_OBJ_OUTPUT_PATH = obj/linux64/Debug/
 
 '
 - "PREPROCESS.S = cc -E \n"
+- 'MAKEOVERRIDES = TARGET_NAME=Debug
+
+'
 - 'PARSED_ADDONS_SOURCE_FILES = ./src/ofApp.cpp ./src/main.cpp ./src/ofApp.cpp ./src/main.cpp
 
 '
@@ -863,7 +853,7 @@
 - 'PLATFORM_ARCH = x86_64
 
 '
-- 'OF_PROJECT_DEPS = obj/linux64/Release/src/ofApp.d obj/linux64/Release/src/main.d
+- 'OF_PROJECT_DEPS = obj/linux64/Debug/src/ofApp.d obj/linux64/Debug/src/main.d
 
 '
 - 'OF_ROOT = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks
@@ -875,8 +865,8 @@
 - "TMP_PROJECT_ADDONS_FRAMEWORKS =  \n"
 - "PARSED_ADDONS_LIBS_INCLUDES_PATHS = \n"
 - "PROJECT_ADDONS_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
-  /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release
-  ./obj/linux64/Release/src /./lib ./lib \n"
+  /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
+  ./obj/linux64/Debug/src /./lib ./lib \n"
 - 'rvm_version = 1.28.0 (latest)
 
 '
@@ -885,13 +875,13 @@
 - 'OF_EXAMPLES_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples
 
 '
-- 'SRC_OBJ_FILE = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/main.o
+- 'SRC_OBJ_FILE = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/main.o
 
 '
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "rwildcard = \t\t \t\t \t\t \t\t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
+- "rwildcard = \t\t \t\t\t \t\t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
 - 'WEAVE = weave
 
 '
@@ -946,25 +936,26 @@
   XDG_SEAT PREPROCESS.r SSH_AGENT_PID INVALID_GLOBAL_ADDONS OF_PROJECT_SOURCE_FILES
   parse_addon OF_CORE_LIBS_THAT_DONT_NEED_ORDER LINK.c TMP_PROJECT_ADDONS_SOURCE_FILES
   LINK.s HOME SHARED_LIB_EXTENSION PARSED_ADDONS_LIBS OF_PROJECT_OBJ_FILES PARSED_ADDONS_SOURCE_PATHS
-  LESSCLOSE TMP_PROJECT_ADDONS_OBJ_FILES OF_CORE_DEFINES_CFLAGS OF_PROJECT_ADDONS_DEPS
+  LESSCLOSE TMP_PROJECT_ADDONS_OBJ_FILES OF_CORE_DEFINES_CFLAGS -*-command-variables-*-
   PAM_KWALLET_LOGIN LOGNAME QT_LINUX_ACCESSIBILITY_ALWAYS_ON ABI_LIB_SUBPATH OF_ADDON_INCLUDES_CFLAGS
   OF_SHARED_MAKEFILES_PATH KDE_FULL_SESSION PLATFORM_VARIANT PROJECT_AFTER rvm_path
   ^D XDG_VTNR OF_CORE_SOURCE_FILES MAKELEVEL GEM_PATH OF_PLATFORM_MAKEFILES COMPILE.m
   GCC_MINOR_GTEQ_7 MAKE space MAKECMDGOALS VALID_PROJECT_ADDONS ABIS_TO_COMPILE IRBRC
   SHLVL PLATFORM_LIBRARIES PARSED_ADDONS_LIBS_SOURCE_PATHS OF_LIBS_OF_COMPILED_PROJECT_PATH
-  OF_PROJECT_LDFLAGS AS TARGET_NAME OF_PROJECT_OBJ_OUTPUT_PATH PREPROCESS.S PARSED_ADDONS_SOURCE_FILES
-  TMP_PROJECT_ADDONS_LDFLAGS HOST_OS ALL_LDFLAGS ADDONS_SOURCES_FILTER COMPILE.p XDG_SESSION_ID
-  PARSED_ADDONS_LIBS_PLATFORM_LIBS_SHARED KDE_MULTIHEAD ADDON_DEPENDENCIES FC .DEFAULT_GOAL
-  XDG_CURRENT_DESKTOP ADDON_SOURCES_FILTERED PLATFORM_ARCH OF_PROJECT_DEPS OF_ROOT
-  FAILED_PKG TMP_PROJECT_ADDONS_FRAMEWORKS PARSED_ADDONS_LIBS_INCLUDES_PATHS PROJECT_ADDONS_INCLUDES
-  rvm_version %D ADDON_FRAMEWORKS OF_EXAMPLES_PATH SRC_OBJ_FILE PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS
-  rwildcard WEAVE MAKE_COMMAND LINK.cpp F77 COMPILE.cc ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS
-  OF_PROJECT_INCLUDES_CFLAGS .VARIABLES addon_obj_path PC *F BUNDLER_ORIG_PATH XDG_SEAT_PATH
-  ADDON_INCLUDES_FILTERED PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def
-  LEX MAKEFLAGS PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER
-  LEX.l LEX.m ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS COMPILE.r OBJS_WITH_PREFIX
-  OF_PROJECT_SOURCE_PATHS rvm_user_install_flag ADDON_INCLUDES +F M2C parse_addons_sources
-  PLATFORM_HEADER_SEARCH_PATHS ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS
+  OF_PROJECT_LDFLAGS AS TARGET_NAME OF_PROJECT_OBJ_OUTPUT_PATH PREPROCESS.S MAKEOVERRIDES
+  PARSED_ADDONS_SOURCE_FILES TMP_PROJECT_ADDONS_LDFLAGS HOST_OS ALL_LDFLAGS ADDONS_SOURCES_FILTER
+  COMPILE.p XDG_SESSION_ID PARSED_ADDONS_LIBS_PLATFORM_LIBS_SHARED KDE_MULTIHEAD ADDON_DEPENDENCIES
+  FC .DEFAULT_GOAL XDG_CURRENT_DESKTOP ADDON_SOURCES_FILTERED PLATFORM_ARCH OF_PROJECT_DEPS
+  OF_ROOT FAILED_PKG TMP_PROJECT_ADDONS_FRAMEWORKS PARSED_ADDONS_LIBS_INCLUDES_PATHS
+  PROJECT_ADDONS_INCLUDES rvm_version %D ADDON_FRAMEWORKS OF_EXAMPLES_PATH SRC_OBJ_FILE
+  PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS rwildcard WEAVE MAKE_COMMAND LINK.cpp F77
+  COMPILE.cc ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
+  .VARIABLES addon_obj_path PC *F BUNDLER_ORIG_PATH XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
+  PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def LEX MAKEFLAGS PLATFORM_CORE_EXCLUSIONS
+  MFLAGS *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER LEX.l LEX.m OF_PROJECT_ADDONS_DEPS
+  ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS COMPILE.r OBJS_WITH_PREFIX OF_PROJECT_SOURCE_PATHS
+  rvm_user_install_flag ADDON_INCLUDES +F M2C parse_addons_sources PLATFORM_HEADER_SEARCH_PATHS
+  ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS CLEANTARGET
   QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS parse_addons_libraries DEFAULTS_PATH
   LDFLAGS BUNDLER_ORIG_GEM_PATH PLATFORM_PKG_CONFIG_LIBRARIES parse_addons_includes
   MAKEFILES OF_PROJECT_DEFINES_CFLAGS OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS TMP_PROJECT_ADDONS_INCLUDES
@@ -993,9 +984,9 @@
 
 '
 - 'ADDON_INCLUDES_FILTERED = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Release ./obj/linux64/Release/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src ./lib . ./src
-  ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src
+  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin
+  ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
   ./lib
 
 '
@@ -1007,7 +998,9 @@
 - 'LEX = lex
 
 '
-- "MAKEFLAGS = \n"
+- 'MAKEFLAGS =  -- TARGET_NAME=Debug
+
+'
 - 'PLATFORM_CORE_EXCLUSIONS =  %.mm %.m /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/video/ofQtUtils.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/video/ofQuickTimeGrabber.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/video/ofQuickTimePlayer.cpp
@@ -1024,7 +1017,7 @@
 '
 - "MFLAGS = \n"
 - "*D = \n"
-- 'PROJECT_ADDONS_OBJ_PATH = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons/
+- 'PROJECT_ADDONS_OBJ_PATH = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons/
 
 '
 - "OF_CORE_LIBS_THAT_NEED_ORDER = \n"
@@ -1032,6 +1025,20 @@
 
 '
 - 'LEX.m = lex  -t
+
+'
+- 'OF_PROJECT_ADDONS_DEPS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxLabel.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSlider.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSliderGroup.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxInputField.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxGuiGroup.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxColorPicker.d
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/ofApp.d
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/main.d
 
 '
 - 'ALL_OF_CORE_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types
@@ -1054,8 +1061,8 @@
 - 'COMPILE.r = f77    -c
 
 '
-- 'OBJS_WITH_PREFIX = obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
-  obj/linux64/Release//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
+- 'OBJS_WITH_PREFIX = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.o
+  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
 
 '
 - 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
@@ -1065,10 +1072,10 @@
 - 'rvm_user_install_flag = 1
 
 '
-- 'ADDON_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release
-  ./obj/linux64/Release/src ./lib . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Release ./obj/linux64/Release/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src ./lib
+- 'ADDON_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
+  ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
+  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
 
 '
 - "+F = \n"
@@ -1082,6 +1089,9 @@
 
 '
 - 'ALL_OF_CORE_THIRDPARTY_SHARED_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/libfmodex.so
+
+'
+- 'CLEANTARGET = CleanDebug
 
 '
 - 'QT_ACCESSIBILITY = 1
@@ -1109,28 +1119,28 @@
 - "parse_addons_includes = \t            \n"
 - "MAKEFILES = \n"
 - "OF_PROJECT_DEFINES_CFLAGS = \n"
-- 'OF_PROJECT_DEPENDENCY_FILES = obj/linux64/Release/src/ofApp.d obj/linux64/Release/src/main.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxPanel.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxToggle.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxLabel.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSlider.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxSliderGroup.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxInputField.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxButton.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxGuiGroup.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxBaseGui.d
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/ofxGui/src/ofxColorPicker.d
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/ofApp.d
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/addons//./src/main.d
+- 'OF_PROJECT_DEPENDENCY_FILES = obj/linux64/Debug/src/ofApp.d obj/linux64/Debug/src/main.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxLabel.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSlider.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxSliderGroup.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxInputField.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxGuiGroup.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxColorPicker.d
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/ofApp.d
+  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/addons//./src/main.d
 
 '
 - "ADDON_LDFLAGS = \n"
 - 'TMP_PROJECT_ADDONS_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
-  /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release
-  ./obj/linux64/Release/src /./lib ./lib /. . ./src /./bin ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src /./lib ./lib
-  /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release
-  ./obj/linux64/Release/src /./lib ./lib
+  /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
+  ./obj/linux64/Debug/src /./lib ./lib /. . ./src /./bin ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src /./lib ./lib /.
+  . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
+  ./obj/linux64/Debug/src /./lib ./lib
 
 '
 - '_system_type = Linux
@@ -1154,7 +1164,7 @@
 
 '
 - "<F = \n"
-- 'TARGET_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a
+- 'TARGET_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
 
 '
 - 'HAS_SYSTEM_GTK2 = 1
@@ -1226,7 +1236,7 @@
 
 '
 - 'PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS = . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src ./lib
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
 
 '
 - 'GS_LIB = /home/ravenskrag/.fonts
@@ -1266,14 +1276,14 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src -I/.
-  -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Release
-  -I./obj/linux64/Release/src -I/./lib -I./lib
+  -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Debug
+  -I./obj/linux64/Debug/src -I/./lib -I./lib
 
 '
 - 'PARSED_ADDONS_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Release ./obj/linux64/Release/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src ./lib . ./src
-  ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Release ./obj/linux64/Release/src
+  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin
+  ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
   ./lib
 
 '
@@ -1299,14 +1309,14 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/2
+- 'MAKE_TERMERR = /dev/pts/1
 
 '
 - 'OBJC = cc
 
 '
 - 'PARSED_ADDONS_LIBS_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Release ./obj/linux64/Release/src ./lib
+  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
 
 '
 - "LINK.f = f77  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
@@ -1372,8 +1382,8 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
   -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src -I/.
-  -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Release
-  -I./obj/linux64/Release/src -I/./lib -I./lib
+  -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Debug
+  -I./obj/linux64/Debug/src -I/./lib -I./lib
 
 '
 - 'MY_RUBY_HOME = /home/ravenskrag/.rvm/rubies/ruby-2.4.0
