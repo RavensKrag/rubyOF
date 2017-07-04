@@ -6,8 +6,6 @@
 
 Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF);
 
-void ofTrueTypeFont_load_from_struct(ofTrueTypeFont& font, Rice::Object rb_settings);
-
 void ofTtfSettings_setFontName(ofTtfSettings& settings, std::string name);
 std::string ofTtfSettings_getFontName(const ofTtfSettings& settings);
 

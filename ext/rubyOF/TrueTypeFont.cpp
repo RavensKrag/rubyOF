@@ -35,6 +35,8 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 		// .define_method("getKerning",       &ofTrueTypeFont::getKerning)
 			// compile error:
 			// "error: ‘int ofTrueTypeFont::getKerning(int, int) const’ is protected"
+		
+		.define_method("antialiased?",     &ofTrueTypeFont::isAntiAliased)
 	;
 	
 	
@@ -64,31 +66,6 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 	
 	return rb_cTrueTypeFont;
 }
-
-void ofTrueTypeFont_load_from_struct(
-	ofTrueTypeFont& font,
-	Rice::Object rb_settings
-){
-	
-	
-	
-	ofTtfSettings settings("TakaoPGothic", 20); // This works fine
-	settings.antialiased = true;
-	settings.addRanges({
-	    ofUnicode::Space,
-	    ofUnicode::Latin1Supplement,
-	    ofUnicode::LatinExtendedAdditional,
-	    ofUnicode::Hiragana,
-	    ofUnicode::Katakana,
-	    ofUnicode::KatakanaPhoneticExtensions,
-	    ofUnicode::CJKLettersAndMonths,
-	    ofUnicode::CJKUnified,
-	});
-	
-	
-	font.load(settings);
-}
-
 
 void ofTtfSettings_setFontName(ofTtfSettings& settings, std::string name)
 {

@@ -24,6 +24,37 @@ require File.expand_path('lib/rubyOF', gem_root)
 # TODO: wrap batching draw call API so you don't have to lean so hard to the immediate mode stuff
 
 
+
+
+# This extension to the base font class allows you
+# to read the name off the font object,
+# without having to keep the settings object alive.
+# All other properties of the font can be read
+# through the font object, but not the name.
+# It appears that the name is not even being set
+# as a member variable on the font object.
+
+# TODO: file bug report for ofTrueTypeFont, stating that name can not be retrieved from the font object, only the settings object.
+class Font < RubyOF::TrueTypeFont
+	def load(settings)
+		@name = settings.font_name
+		super(settings)
+	end
+	
+	# Return the font name as specified by the settings object
+	# (in some cases, this may actually be the full path to the font file)
+	# 
+	# (Currently, this is the indentifier of the font file, and not actually the 'name' of the font face.)
+	def name
+		raise "ERROR: Font not yet loaded." if @name.nil?
+		# ^ @name not set until #load() is called.
+		
+		return @name
+	end
+	# NOTE: no setter for this value, because you can't change the font face once the font object is loaded. (have to switch objects)
+end
+
+
 class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
@@ -46,7 +77,7 @@ class Window < RubyOF::Window
 		# puts "Font loaded?: #{load_status}"
 		
 		
-		@font = RubyOF::TrueTypeFont.new.tap do |font|
+		@font = Font.new.tap do |font|
 			# font_settings = Oni::TtfSettings.new("DejaVu Sans", 20)
 			# TakaoPGothic
 			font_settings = RubyOF::TtfSettings.new("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20)
