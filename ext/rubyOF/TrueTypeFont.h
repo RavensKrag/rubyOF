@@ -22,6 +22,8 @@ bool ofTtfSettings_isAntialiased(const ofTtfSettings& settings);
 void ofTtfSettings_addRanges(ofTtfSettings& settings, Rice::Object rb_range_list);
 void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index);
 
+void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_index);
+
 
 const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::Space,
@@ -70,4 +72,17 @@ const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::MiscSymbolsAndPictographs,
 	ofUnicode::Emoticons,
 	ofUnicode::TransportAndMap
+};
+
+
+const std::initializer_list<ofUnicode::range> ALL_UNICODE_ALPHABETS[] = {
+	ofAlphabet::Emoji,
+	ofAlphabet::Japanese,
+	ofAlphabet::Chinese,
+	ofAlphabet::Korean,
+	ofAlphabet::Arabic,
+	ofAlphabet::Devanagari,
+	ofAlphabet::Latin,
+	ofAlphabet::Greek,
+	ofAlphabet::Cyrillic
 };

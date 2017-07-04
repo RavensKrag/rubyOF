@@ -26,15 +26,8 @@ void OniApp::setup(){
 	mFont.load(settings);
 	
 	ofTtfSettings s1("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20);
-	s1.addRanges({
-		 ofUnicode::Space,
-	    ofUnicode::Latin,
-	    ofUnicode::Latin1Supplement,
-	    ofUnicode::LatinExtendedAdditional,
-	    ofUnicode::Hiragana,
-	    ofUnicode::Katakana,
-	    ofUnicode::KatakanaPhoneticExtensions,
-	});
+	s1.addRanges(ofAlphabet::Latin);
+	s1.addRanges(ofAlphabet::Japanese);
 	s1.antialiased = true;
 	mFontU.load(s1);
 	

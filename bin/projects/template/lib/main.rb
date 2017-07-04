@@ -23,6 +23,7 @@ require File.expand_path('lib/rubyOF', gem_root)
 # TODO: LATER use use of the batching sprite rendering extensions, wrapping that in Ruby, to draw images
 # TODO: wrap batching draw call API so you don't have to lean so hard to the immediate mode stuff
 
+
 class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
@@ -45,31 +46,23 @@ class Window < RubyOF::Window
 		# puts "Font loaded?: #{load_status}"
 		
 		
-		# @font = RubyOF::TrueTypeFont.new.tap do |font|
-		# 	# font_settings = Oni::TtfSettings.new("DejaVu Sans", 20)
-		# 	font_settings = RubyOF::TtfSettings.new("TakaoPGothic", 20)
-		# 		# puts "name: #{font_settings.font_name}" 
-		# 		# puts "size: #{font_settings.font_size}"
-		# 	[
-		# 		:Space,
-		# 		:Latin1Supplement,
-		# 		:LatinExtendedAdditional,
-		# 		:Hiragana,
-		# 		:Katakana,
-		# 		:KatakanaPhoneticExtensions,
-		# 		:CJKLettersAndMonths,
-		# 		:CJKUnified,
-		# 	].each do |range|
-		# 		font_settings.add_unicode_range range
-		# 	end
+		@font = RubyOF::TrueTypeFont.new.tap do |font|
+			# font_settings = Oni::TtfSettings.new("DejaVu Sans", 20)
+			# TakaoPGothic
+			font_settings = RubyOF::TtfSettings.new("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20)
+				# puts "name: #{font_settings.font_name}" 
+				# puts "size: #{font_settings.font_size}"
 			
-		# 	load_status = font.load(font_settings)
+			font_settings.add_alphabet :Latin
+			font_settings.add_alphabet :Japanese
 			
-		# 	raise "Could not load font" unless load_status
+			load_status = font.load(font_settings)
+			
+			raise "Could not load font" unless load_status
 			
 			
-		# 	font
-		# end
+			font
+		end
 		
 		# p @font.methods
 		
@@ -145,11 +138,13 @@ class Window < RubyOF::Window
 		end
 		
 		
+		
+		# === Draw Unicode string with Japanese glyphs
 		ofSetColor(0, 141, 240, 255) # rgba
-		x,y = @p
+		x,y = [200,430]
 			# not sure why, but need to get variables again?
 			# if you don't, the text trails behind the desired position by a couple seconds.
-		# @font.draw_string("TrueTypeFont Test! こんにちは", x, y)
+		@font.draw_string("From ruby: こんにちは", x, y)
 		# puts "こんにちは"
 		
 		

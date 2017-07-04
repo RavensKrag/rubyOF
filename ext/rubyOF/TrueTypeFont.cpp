@@ -55,6 +55,8 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 		
 		.define_method("add_ranges",      &ofTtfSettings_addRanges)
 		.define_method("add_range",       &ofTtfSettings_addRange)
+		
+		.define_method("add_alphabet",    &ofTtfSettings_addAlphabet)
 	;
 	
 	
@@ -129,6 +131,16 @@ void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index
 	ofUnicode::range rng = ALL_UNICODE_RANGES[i];
 	
 	settings.addRange(rng);
+}
+
+// NOTE: This is custom (not in the main OpenFrameworks API)
+void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_index){
+	
+	Rice::Object tmp_obj = rb_range_index;
+	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
+	
+	std::initializer_list<ofUnicode::range> rngs = ALL_UNICODE_ALPHABETS[i];
+	settings.addRanges(rngs);
 }
 
 
