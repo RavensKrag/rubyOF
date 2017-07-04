@@ -308,7 +308,7 @@
 - 'OF_CORE_LIB_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64
 
 '
-- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-8f7DraJ0qE,guid=c6472cfbd0e3c07081083d1d595729fd
+- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-77zVbBW5Lw,guid=50b81043c87009122b98c8e3595be114
 
 '
 - 'GCC_MAJOR_EQ_4 = 0
@@ -404,7 +404,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
 '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1934,unix/ravensnest:/tmp/.ICE-unix/1934
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1666,unix/ravensnest:/tmp/.ICE-unix/1666
 
 '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -432,7 +432,7 @@
 - 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
 
 '
-- 'WINDOWID = 79691782
+- 'WINDOWID = 83886737
 
 '
 - 'COMPILE.f = f77   -c
@@ -511,7 +511,7 @@
 
 '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-fLIUJI062W91/agent.1732
+- 'SSH_AUTH_SOCK = /tmp/ssh-gtwl3m8FNq7y/agent.1469
 
 '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -596,7 +596,7 @@
 - 'PREPROCESS.r = f77    -F
 
 '
-- 'SSH_AGENT_PID = 1843
+- 'SSH_AGENT_PID = 1580
 
 '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -604,7 +604,7 @@
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.cpp
 
 '
-- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                                           \n"
+- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                                                       \n"
 - 'OF_CORE_LIBS_THAT_DONT_NEED_ORDER = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2
 
@@ -881,7 +881,8 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "rwildcard = \t\t \t\t\t \t\t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
+- "rwildcard = \t\t \t\t\t \t\t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
+  \t \t\t\n"
 - 'WEAVE = weave
 
 '
@@ -1309,7 +1310,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/1
+- 'MAKE_TERMERR = /dev/pts/2
 
 '
 - 'OBJC = cc
@@ -1321,15 +1322,15 @@
 '
 - "LINK.f = f77  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
-- "ADDON_LIBS = ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so
-  \ \n"
+- "ADDON_LIBS = ./lib/libOFSketch.a ./lib/libOFSketch.a ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so
+  ./bin/libs/libfmodex.so  \n"
 - 'TEX = tex
 
 '
 - 'GST_VERSION = 1.0
 
 '
-- "PROJECT_ADDONS_LIBS = ./bin/libs/libfmodex.so \n"
+- "PROJECT_ADDONS_LIBS = ./lib/libOFSketch.a ./bin/libs/libfmodex.so \n"
 - 'LANG = en_US.UTF-8
 
 '
