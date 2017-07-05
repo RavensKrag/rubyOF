@@ -16,9 +16,8 @@ OniApp::~OniApp(){
 void OniApp::setup(){
 	ofApp::setup();
 	
-	mSelf.call("setup");
 	
-	// NOTE: DejaVu Sans just happens to be the defaultu on my system, by whatever mechanism OpenFrameworks decides to use
+	// NOTE: DejaVu Sans just happens to be the default on my system, by whatever mechanism OpenFrameworks decides to use
 	// (it's some some sort of FreeDesktop foundation standard API)
 	// However, the first call here actually is not actually working right.
 	ofTtfSettings settings("DejaVu Sans", 30);
@@ -41,8 +40,7 @@ void OniApp::setup(){
 	mFont2.load(s3);
 	
 	
-	// // ofTtfSettings settings("DejaVu Sans", 20); // tofu: No japanese glyphs
-	// ofTtfSettings settings_mUnicodeFont("TakaoPGothic", 20); // This works fine
+	// ofTtfSettings settings_mUnicodeFont("TakaoPGothic", 20);
 	// settings_mUnicodeFont.antialiased = true;
 	// settings_mUnicodeFont.addRanges({
 	//     ofUnicode::Space,
@@ -59,79 +57,10 @@ void OniApp::setup(){
 	
 	
 	
-	// NOTE: These two fonts should display differently
-	// If they don't, then it means the font face is not loading properly.
-	bool flag;
-	
-	// ofTtfSettings settings1("DejaVu Sans", 50);
-	// settings1.antialiased = true;
-	// flag = mFont1.load(settings1);
-	// if(flag){
-	// 	cout << "font 1 loaded correctly\n";
-	// }
-	
-	// ofTtfSettings settings2("Liberation Serif", 50);
-	// settings2.antialiased = true;
-	// flag = mFont2.load(settings2);
-	// if(flag){
-	// 	cout << "font 2 loaded correctly\n";
-	// }
-	
-	
-	// The flag is beilg set correctly, but the system is lying.
-	// The font face is not, in fact, loading correctly, 
-	// as two faces that look quite different (sans serif v. roman)
-	// appear exactly the same.
-	// 
-	// Need to figure out why the font is not being loaded properly.
-	// The older version of ofTrueTypeFont I was using did work as I expected,
-	// and the current version does not.
-	// 
-	// Have the assumptions around font load paths changed?
-	// Do fonts have to be in the data dir?
-	// That used to be the case, but then it changed (maybe it changed back?)
-	
-	// of particular note:
-	// ofTrueTypeFont::load(settings) => loadFontFace() => ofToDataPath()
-	// 
-	// the inclusion of ofToDataPath() is something that has changed from 
-	// the commit on the OpenFrameworks master branch I was previously using.
-	// see the diff: https://github.com/openframeworks/openFrameworks/compare/a27821f5287b2430c6368f5a249f...RavensKrag:master
-	
-	
-	// font.load("DejaVu Sans", 20);
-	// mFont.loadFont("DejaVu Sans", 20, true, true);
-	
-	
-	
-	// font = ofTrueTypeFont();
-	
-	// =====
-	// This is the new proposed ofTrueTypeFont interface,
-	// but it is not present in 0.9.8. It is part of a effort
-	// to use UTF-8 across the board for OpenFrameworks strings.
-	// https://github.com/openframeworks/openFrameworks/pull/3992
-	// https://github.com/openframeworks/openFrameworks/blob/3df68ddfeeee8ac1a25de85de9c6a6433f9d3c87/libs/openFrameworks/graphics/ofTrueTypeFont.h
-	// (Even though 0.9.8 dropped in December 2016, and this diff is from November, the 0.9.8 release DOES NOT contain this functionality.)
-	
-	// ofTtfSettings settings("Droid Sans Japanese",24);
-	// settings.antialiased = true;
-	// settings.ranges = {
-	//     ofUnicode::Latin1Supplement,
-	//     ofUnicode::Hiragana,
-	//     ofUnicode::Katakana,
-	//     ofUnicode::CJKUnified
-	// };
-	
-	// font.load(settings);
-	
-	
-	
-	
 	
 	// mImage.load("bin/data/box.jpg");
-	
-	
+	mImage.load("/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg");
+	// full path works, short path does not.
 	
 	// =====
 	
@@ -155,6 +84,10 @@ void OniApp::setup(){
 	// gui_sections.add(transforms);
 	
 	// gui.setup(gui_sections);
+	
+	
+	// TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
+	mSelf.call("setup");
 }
 
 void OniApp::update(){
@@ -172,70 +105,60 @@ void OniApp::draw(){
 	ofPushMatrix();
 	// ofLoadIdentityMatrix();
 	
-	
-	ofPushStyle();
-	
-	ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
-	ofSetColor(color);
+		ofPushStyle();
 		
+			ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
+			ofSetColor(color);
+			
+			
+			int height;
+			int x;
+			int y;
+			ofDrawBitmapString("Font Test", 0, 200, 0);
+			
+			x = 0;
+			y = 300;
+			height = mFont.getSize();
+			mFont.drawString("mFontU", x, y);
+			mFontU.drawString("Hand-woven pagent! こんにちは", x, y+height);
+			
+			x = 500;
+			y = 300;
+			height = mFont.getSize();
+			mFont.drawString("mFont1", x, y);
+			mFont1.drawString("Hand-woven pagent!", x, y+height);
+			
+			x = 500+300;
+			y = 300;
+			height = mFont.getSize();
+			mFont.drawString("mFont2", x, y);
+			mFont2.drawString("Hand-woven pagent!", x, y+height);
+			
+			
+			
+			// // // Draw some shapes
+			// ofDrawRectangle(50, 50, 100, 100); // Top left corner at (50, 50), 100 wide x 100 high
+			// ofDrawCircle(250, 100, 50); // Centered at (250, 100), radius of 50
+			// ofDrawEllipse(400, 100, 80, 100); // Centered at (400 100), 80 wide x 100 high
+			// ofDrawTriangle(500, 150, 550, 50, 600, 150); // Three corners: (500, 150), (550, 50), (600, 150)
+			// ofDrawLine(700, 50, 700, 150); // Line from (700, 50) to (700, 150)
+			
+			
+			
+			
+			// float height;
+			
+			// height = 11;
+			// 	// ^ src: https://forum.openframeworks.cc/t/how-to-get-size-of-ofdrawbitmapstring/22578
+			// ofDrawBitmapString("hello from C++!", 0, 0, 0);
+		ofPopStyle();
 		
-		int height;
-		int x;
-		int y;
-		ofDrawBitmapString("Font Test", 0, 200, 0);
+		ofPushStyle();
+			
+			mImage.draw(600,400);
 		
-		x = 0;
-		y = 300;
-		height = mFont.getSize();
-		mFont.drawString("mFontU", x, y);
-		mFontU.drawString("Hand-woven pagent! こんにちは", x, y+height);
+		ofPopStyle();
 		
-		x = 500;
-		y = 300;
-		height = mFont.getSize();
-		mFont.drawString("mFont1", x, y);
-		mFont1.drawString("Hand-woven pagent!", x, y+height);
-		
-		x = 500+300;
-		y = 300;
-		height = mFont.getSize();
-		mFont.drawString("mFont2", x, y);
-		mFont2.drawString("Hand-woven pagent!", x, y+height);
-		
-		
-		// mFont.drawString("hello world", 0, 800 + height*1);
-		// mUnicodeFont.drawString("こんにちは",	 0, 800 + height*2);
-		
-		
-		// height = mFont1.getLineHeight();
-		// mFont1.drawString("Hello World", 200, 200 + height);
-		
-		// height += mFont2.getLineHeight();
-		// mFont2.drawString("Hello World",	 200, 200 + height);
-		
-		// cout << "こんにちは\n";
-		
-		
-		
-		
-		// // // Draw some shapes
-		// ofDrawRectangle(50, 50, 100, 100); // Top left corner at (50, 50), 100 wide x 100 high
-		// ofDrawCircle(250, 100, 50); // Centered at (250, 100), radius of 50
-		// ofDrawEllipse(400, 100, 80, 100); // Centered at (400 100), 80 wide x 100 high
-		// ofDrawTriangle(500, 150, 550, 50, 600, 150); // Three corners: (500, 150), (550, 50), (600, 150)
-		// ofDrawLine(700, 50, 700, 150); // Line from (700, 50) to (700, 150)
-		
-		
-		
-		// float height;
-		
-		// height = 11;
-		// 	// ^ src: https://forum.openframeworks.cc/t/how-to-get-size-of-ofdrawbitmapstring/22578
-		// ofDrawBitmapString("hello from C++!", 0, 0, 0);
-		
-		
-		// mImage.draw(300,300);
-	ofPopStyle();
 	ofPopMatrix();
 	
 	

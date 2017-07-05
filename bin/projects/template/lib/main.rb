@@ -215,7 +215,10 @@ class Window < RubyOF::Window
 		@trail_dt = 1
 		
 		
-		
+	end
+	
+	def setup
+		super()
 		
 		
 		# --- things to test in the example / template ---
@@ -262,16 +265,16 @@ class Window < RubyOF::Window
 				x.add_alphabet :Japanese
 			end
 		
-		
+		@image = RubyOF::Image.new()
+			# p @image.methods
+			# p @image.private_methods
+		@image.load("/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg")
+		# NOTE: #load overwrites the default private method #load, which seems to be present on all Ruby objects (likely that is Kernel.load(), but unsure)
 		
 		
 		
 		# @texture = RubyOF::Texture.new
 		# ofLoadImage(@texture, "/home/ravenskrag/Pictures/Buddy Icons/100shinn1.png")
-	end
-	
-	def setup
-		super()
 	end
 	
 	def update
@@ -298,57 +301,82 @@ class Window < RubyOF::Window
 	end
 	
 	def draw
-		# super()
-		
+		super()
 		
 		# NOTE: background color should be set from C++ level, because C++ level code executes first. May consider flipping the order, or even defining TWO callbacks to Ruby.
 		# ofBackground(171, 160, 228,   255) # rgba
-		
 		z = 1
 		
-		ofSetColor(171, 160, 228, 255) # rgba
+		# === Render debug info
+		ofPushStyle()
 		
-		start = [12, 15]
-		row_spacing = 15
-		
-		draw_debug_info(start, row_spacing, z)
-		
-		
-		ofSetColor(255, 255, 255, 255) # rgba
-		
-		
-		# ofDrawBitmapString("hello again from ruby!", 300, 350, z);
-		# ofDrawBitmapString("clipboard: #{self.clipboard_string.inspect}", 100, 400, z);
-		# ^ NOTE: I think this gives you an error when the contains something that is not a string?
-		# [ error ] ofAppGLFWWindow: 65545: X11: Failed to convert selection to string
-		
-		# ofSetColor(255,0,0, 255) # rgba
-		# ofDrawCircle(*@p,z, 20)
-		
-		@p_history.reverse_each.each_with_index do |p, i|
-			next unless i % 3 == 0
 			
-			x,y = p
-			ofSetColor(255,0,0, 255-i*10) # rgba
+			ofSetColor(171, 160, 228, 255) # rgba
 			
-			r = 20-i/2
-			r = 0 if r < 0
-			ofDrawCircle(x,y,z, r)
-		end
+			start = [12, 15]
+			row_spacing = 15
+			
+			draw_debug_info(start, row_spacing, z)
+		
+		ofPopStyle()
+		
+		# ofSetColor(255, 255, 255, 255) # rgba
+		
+		# === Render mouse trail
+		ofPushStyle()
+			
+			@p_history.reverse_each.each_with_index do |p, i|
+				next unless i % 3 == 0
+				
+				x,y = p
+				ofSetColor(255,0,0, 255-i*10) # rgba
+				
+				r = 20-i/2
+				r = 0 if r < 0
+				ofDrawCircle(x,y,z, r)
+			end
+			
+		ofPopStyle()
 		
 		
 		
 		# === Draw Unicode string with Japanese glyphs
+		ofPushStyle()
 		ofSetColor(0, 141, 240, 255) # rgba
 		x,y = [200,430]
 			# not sure why, but need to get variables again?
 			# if you don't, the text trails behind the desired position by a couple seconds.
 		@font.draw_string("From ruby: こんにちは", x, y)
 		# puts "こんにちは"
+		ofPopStyle()
 		
 		
 		
-		# ofSetColor(255, 255, 255, 255)
+		# === Draw sample image
+		ofPushStyle()
+			ofSetColor(0, 141, 240, 255) # rgba
+			
+			x,y = [180, 600]
+			
+			text = [
+				"Two test images",
+				"(Small one: ruby.` Big one: c++)"
+			].join("\n")
+			@font.draw_string(text, x,y)
+		ofPopStyle()
+		
+		
+		ofPushStyle()
+		ofPushMatrix()
+			ofTranslate(200,700, 0)
+			
+			s = 0.5
+			ofScale(s,s,1)
+			
+			@image.draw(0,0, z)
+		ofPopMatrix()
+		ofPopStyle()
+		
 		# # x = y = 300
 		# width = height = 100
 		# @texture.draw_wh(
@@ -356,7 +384,24 @@ class Window < RubyOF::Window
 		# 	width, height
 		# )
 		
+		
+		# === Test exception handling
 		# raise "BOOM!"
+		
+		
+		# === Various
+		ofPushStyle()
+			
+			# ofDrawBitmapString("hello again from ruby!", 300, 350, z);
+			# ofDrawBitmapString("clipboard: #{self.clipboard_string.inspect}", 100, 400, z);
+			# ^ NOTE: I think this gives you an error when the contains something that is not a string?
+			# [ error ] ofAppGLFWWindow: 65545: X11: Failed to convert selection to string
+			
+			# ofSetColor(255,0,0, 255) # rgba
+			# ofDrawCircle(*@p,z, 20)
+			
+		ofPopStyle()
+		
 	end
 	
 	def on_exit

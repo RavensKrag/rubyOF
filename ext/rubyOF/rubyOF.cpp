@@ -280,16 +280,37 @@ void Init_rubyOF()
 	typedef bool (*load_image_from_file)(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings);
 	
 	
-	// rb_cWindow
-	// 	// textures
-	// 	.define_method("ofLoadImage", load_image_from_file(&ofLoadImage),
-	// 		(
-	// 			Arg("texture"),
-	// 			Arg("filesystem_path"),
-	// 			Arg("settings") = ofImageLoadSettings()
-	// 		)
-	// 	)
-	// ;
+	rb_cWindow
+		// textures
+		.define_method("ofLoadImage", load_image_from_file(&ofLoadImage),
+			(
+				Arg("texture"),
+				Arg("filesystem_path"),
+				Arg("settings") = ofImageLoadSettings()
+			)
+		)
+	;
+	
+	
+	
+	
+	// TODO: move image to it's own file
+	// TODO: also bind ofImage#save
+	Data_Type<ofImage> rb_cImage = 
+		define_class_under<ofImage>(rb_mRubyOF, "Image");
+	
+	typedef void (ofImage::*ofImage_draw)(float x, float y, float z) const;
+	
+	
+	
+	rb_cImage
+		.define_constructor(Constructor<ofImage>())
+		.define_method("load",   &ofImage_load)
+		.define_method("draw",   ofImage_draw(&ofImage::draw))
+	;
+	
+	
+	
 	
 	
 	
@@ -302,6 +323,20 @@ void Init_rubyOF()
 		.define_module_function("ofGetElapsedTimef",        &ofGetElapsedTimef)
 		.define_module_function("ofGetFrameNum",            &ofGetFrameNum)
 	;
+}
+
+bool ofImage_load(ofImage& image, const std::string& filename){
+	// bool load(const std::filesystem::path& fileName, const ofImageLoadSettings &settings = ofImageLoadSettings());
+		/// looks for image given by fileName, relative to the data folder.
+	
+	
+	// essentially, performing a typecast
+	// (technically a "copy constructor")
+	// src: https://stackoverflow.com/questions/43114174/convert-a-string-to-std-filesystem-path
+	const std::filesystem::path path = filename;
+	
+	// NOTE: load can take an optional second settings parameter
+	return image.load(path);
 }
 
 
