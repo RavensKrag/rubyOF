@@ -124,6 +124,45 @@ class Font < RubyOF::TrueTypeFont
 		return @name
 	end
 	# NOTE: no setter for this value, because you can't change the font face once the font object is loaded. (have to switch objects)
+	
+	
+	
+	# Create easy gemfile-style DSL for loading font parameters,
+	# including error checking.
+	class << self
+		def dsl_load # &block
+			config = DSL_Object.new
+			
+			yield config
+			
+			
+			font = self.new
+			font_settings = RubyOF::TtfSettings.new(config.path, config.size)
+			
+			config.alphabets.each do |x|
+				font_settings.add_alphabet x
+			end
+			
+			
+			load_status = font.load(font_settings)
+			raise "Could not load font" unless load_status
+			
+			return font
+		end
+		
+		class DSL_Object
+			attr_reader :alphabets
+			attr_accessor :path, :size, :antialiased
+			
+			def initialize
+				@alphabets = Array.new
+			end
+			
+			def add_alphabet(alphabet)
+				@alphabets << alphabet
+			end
+		end
+	end
 end
 
 class Window < RubyOF::Window
@@ -147,30 +186,28 @@ class Window < RubyOF::Window
 		# puts "Font loaded?: #{load_status}"
 		
 		
-		@font = Font.new.tap do |font|
-			# font_settings = Oni::TtfSettings.new("DejaVu Sans", 20)
-			# TakaoPGothic
-			font_settings = RubyOF::TtfSettings.new("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20)
-				# puts "name: #{font_settings.font_name}" 
-				# puts "size: #{font_settings.font_size}"
-			
-			font_settings.add_alphabet :Latin
-			font_settings.add_alphabet :Japanese
-			
-			load_status = font.load(font_settings)
-			
-			raise "Could not load font" unless load_status
-			
-			
-			font
-		end
-		
-		# p @font.methods
 		
 		# p @font.methods
 		@font_db = FontDB.new
 		# require 'irb'
 		# binding.irb
+		
+		
+		
+		# @font_db.find_by_name("DejaVu Sans Mono")
+		
+		
+		@font = 
+			Font.dsl_load do |x|
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
+		
+		
+		
+		
 		
 		
 		# @texture = RubyOF::Texture.new
