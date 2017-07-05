@@ -111,25 +111,6 @@ class Window
 	def got_message()
 		# NOTE: not currently bound
 	end
-	
-	
-	
-	
-	private
-	
-	def draw_debug_info(start_position, row_spacing, z=1)
-		[
-			"mouse: #{@p.inspect}",
-			"window size: #{window_size.to_s}",
-			"dt: #{ofGetLastFrameTime.round(5)}",
-			"fps: #{ofGetFrameRate.round(5)}"
-		].each_with_index do |string, i|
-			x,y = start_position
-			y += i*row_spacing
-			
-			ofDrawBitmapString(string, x,y,z)
-		end
-	end
 end
 
 

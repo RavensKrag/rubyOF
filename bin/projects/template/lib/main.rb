@@ -215,20 +215,42 @@ class Window < RubyOF::Window
 		@trail_dt = 1
 		
 		
-		# @font = RubyOF::TrueTypeFont.new
-		# load_status = @font.load("DejaVu Sans", 20)
-		# puts "Font loaded?: #{load_status}"
+		
+		
+		
+		# --- things to test in the example / template ---
+		# (already bound)
+		# font          x
+		# font bb       _
+		# time          x
+		# image         _
+		# fbo           _
+		# color         x
+		# position      _ 
+		# + basic shapes   
+		#    circle     x
+		#    rectangle  _
+		
+		# (not bound yet)
+		# line drawing  _
+		# bezier curve  _
+		# ----------
 		
 		
 		
 		# p @font.methods
 		@font_db = FontDB.new
-		# require 'irb'
-		# binding.irb
-		p @font_db.list(true)
+			# require 'irb'
+			# binding.irb
+		# p @font_db.list(true)
 		
 		
 		# @font_db.find_by_name("DejaVu Sans Mono")
+		
+		
+		# .find_by_name("DejaVu Sans Mono")
+		# 
+		# .path
 		
 		
 		@font = 
@@ -239,7 +261,6 @@ class Window < RubyOF::Window
 				x.add_alphabet :Latin
 				x.add_alphabet :Japanese
 			end
-		
 		
 		
 		
@@ -429,6 +450,23 @@ class Window < RubyOF::Window
 	
 	
 	
+	private
+	
+	def draw_debug_info(start_position, row_spacing, z=1)
+		[
+			"mouse: #{@p.inspect}",
+			"window size: #{window_size.to_s}",
+			"dt: #{ofGetLastFrameTime.round(5)}",
+			"fps: #{ofGetFrameRate.round(5)}",
+			"time (uSec): #{RubyOF::Utils.ofGetElapsedTimeMicros}",
+			"time (mSec): #{RubyOF::Utils.ofGetElapsedTimeMillis}"
+		].each_with_index do |string, i|
+			x,y = start_position
+			y += i*row_spacing
+			
+			ofDrawBitmapString(string, x,y,z)
+		end
+	end
 end
 
 

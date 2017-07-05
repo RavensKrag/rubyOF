@@ -3,6 +3,9 @@
 	[
 		{
 			"path": "."
+		},
+		{
+			"path": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1"
 		}
 	]
 }
