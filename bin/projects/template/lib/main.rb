@@ -159,7 +159,7 @@ class Font < RubyOF::TrueTypeFont
 			end
 			
 			def add_alphabet(alphabet)
-				alphabet_list = TtfSettings::UnicodeAlphabets
+				alphabet_list = RubyOF::TtfSettings::UnicodeAlphabets
 				unless alphabet_list.include? alphabet
 					message = [
 						"Alphabet '#{alphabet}' is not one of the supported values.",
