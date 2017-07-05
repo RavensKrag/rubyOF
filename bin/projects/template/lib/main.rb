@@ -62,7 +62,7 @@ class Window < RubyOF::Window
 		super("Test App", 1270,1024)
 		# ofSetEscapeQuitsApp false
 		
-		
+		exception_guard do
 		puts "ruby: Window#initialize"
 		
 		
@@ -100,14 +100,19 @@ class Window < RubyOF::Window
 		
 		# @texture = RubyOF::Texture.new
 		# ofLoadImage(@texture, "/home/ravenskrag/Pictures/Buddy Icons/100shinn1.png")
+		end
 	end
 	
 	def setup
 		super()
+		exception_guard do
+			
+		end
 	end
 	
 	def update
 		# super()
+		exception_guard do
 		
 		@tick ||= 0
 		@tick += 1
@@ -128,10 +133,14 @@ class Window < RubyOF::Window
 		end
 		
 		# p @p_history
+		end
 	end
 	
 	def draw
 		# super()
+		exception_guard do
+		
+		
 		
 		# NOTE: background color should be set from C++ level, because C++ level code executes first. May consider flipping the order, or even defining TWO callbacks to Ruby.
 		# ofBackground(171, 160, 228,   255) # rgba
@@ -187,6 +196,11 @@ class Window < RubyOF::Window
 		# 	x,y,	z,
 		# 	width, height
 		# )
+		
+		raise "BOOM!"
+		
+			
+		end
 	end
 	
 	def on_exit
@@ -277,7 +291,35 @@ class Window < RubyOF::Window
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
 	end
+	
+	
+	
+	
+	# =============================
+	
+	
+	attr_reader :exception
+	
+	private
+	
+	def exception_guard() # &block
+		begin
+			yield
+		rescue => e
+			@exception = e
+			puts "=> exception caught"
+			ofExit()
+		end
+	end
 end
+
+
+
 
 x = Window.new
 x.show
+
+# display any uncaught ruby-level exceptions after safely exiting C++ code
+unless x.exception.nil?
+	raise x.exception
+end

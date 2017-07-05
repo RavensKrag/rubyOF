@@ -432,7 +432,7 @@
 - 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
 
 '
-- 'WINDOWID = 83886737
+- 'WINDOWID = 83932443
 
 '
 - 'COMPILE.f = f77   -c
@@ -604,7 +604,7 @@
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.cpp
 
 '
-- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                                                       \n"
+- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                                           \n"
 - 'OF_CORE_LIBS_THAT_DONT_NEED_ORDER = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2
 
@@ -881,8 +881,7 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "rwildcard = \t\t \t\t\t \t\t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
-  \t \t\t\n"
+- "rwildcard = \t\t \t\t\t \t\t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
 - 'WEAVE = weave
 
 '
@@ -1310,7 +1309,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/2
+- 'MAKE_TERMERR = /dev/pts/3
 
 '
 - 'OBJC = cc
@@ -1322,15 +1321,15 @@
 '
 - "LINK.f = f77  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
-- "ADDON_LIBS = ./lib/libOFSketch.a ./lib/libOFSketch.a ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so
-  ./bin/libs/libfmodex.so  \n"
+- "ADDON_LIBS = ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so ./bin/libs/libfmodex.so
+  \ \n"
 - 'TEX = tex
 
 '
 - 'GST_VERSION = 1.0
 
 '
-- "PROJECT_ADDONS_LIBS = ./lib/libOFSketch.a ./bin/libs/libfmodex.so \n"
+- "PROJECT_ADDONS_LIBS = ./bin/libs/libfmodex.so \n"
 - 'LANG = en_US.UTF-8
 
 '
