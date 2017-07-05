@@ -93,8 +93,31 @@ class FontDB
 	alias :find_by_weight :find_by_style
 	
 	
+	
 	# TODO: need a way of viewing fonts by their "full name"
 	# ex) DejaVu Sans mono book (name="DejaVu Sans", style=mono and book)
+	def list(verbose=true)
+		if verbose
+			# full names
+			@available_fonts.collect{ |x|
+				styles = x[:style]
+				
+				foo = 
+					if styles.nil? or styles.empty?
+						x[:names]
+					else
+						x[:names].zip(styles)
+					end
+				
+				foo.collect{ |y| y.join(' ') }
+			}.flatten.uniq.sort!
+			# TODO: maybe you want to omit the "Regular" part?
+			# TODO: maybe the key should be "styles" (with an s (currently no s))
+		else
+			# short names
+			@available_fonts.collect{|x| x[:names]}.flatten.uniq
+		end
+	end
 end
 
 
@@ -202,7 +225,7 @@ class Window < RubyOF::Window
 		@font_db = FontDB.new
 		# require 'irb'
 		# binding.irb
-		
+		p @font_db.list(true)
 		
 		
 		# @font_db.find_by_name("DejaVu Sans Mono")
@@ -210,6 +233,7 @@ class Window < RubyOF::Window
 		
 		@font = 
 			Font.dsl_load do |x|
+				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 20
 				x.add_alphabet :Latin
