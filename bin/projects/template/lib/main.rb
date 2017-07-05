@@ -26,6 +26,78 @@ require File.expand_path('lib/rubyOF', gem_root)
 
 
 
+# Interface to linux shell command fc-list
+# Shows the available fonts on the system,
+# and provides an interface for searching through them.
+class FontDB
+	def initialize
+		# TODO: consider using another method of invoking shell, as this may be mangling some right-to-left language output (unsure what language)
+		fonts_data = `fc-list`
+		# p fonts_data.lines
+		
+		@available_fonts = 
+			fonts_data.lines                      # split into lines
+			          .collect{ |x| x.chomp }     # remove trailing newlines
+			          .collect{ |x|
+			             x.split(':')             # : separated list (3 sections?)
+			              .collect{ |y| y.strip } # remove extra whitespace
+			          }
+			          .collect{ |path, names, *other|
+			             # parts[0]     # path
+			             # parts[1]     # names       (list of strings)
+			             # parts[2..-1] # other keys  (KEY=v1,v2,v3)
+			             
+			             # out = {:path => "", :names => [], :style => [], etc }
+			             
+			             out = Hash.new
+			             
+			             # path
+			             out[:path] = path
+			             
+			             # name(s)
+			             out[:names] = names.split(',').collect{ |x| x.strip }
+			             
+			             # other keys
+			             other.each do |data|
+			             	parts = data.split("=")
+			             	k, v = parts
+			             	
+			             	k = k.to_sym
+			             	v = v.split(',')
+			             	
+			             	out[k] = v
+			             end
+			             
+			             
+			             
+			             # pseudo return
+			             out
+			          }
+		
+		# require 'yaml'
+		# puts @available_fonts.to_yaml
+	end
+	
+	
+	def find_by_name(name)
+		@available_fonts.select do |record|
+			record[:names].any?{ |x| x.include? name }
+		end
+	end
+	
+	
+	def find_by_style(style)
+		
+	end
+	
+	alias :find_by_weight :find_by_style
+	
+	
+	# TODO: need a way of viewing fonts by their "full name"
+	# ex) DejaVu Sans mono book (name="DejaVu Sans", style=mono and book)
+end
+
+
 # This extension to the base font class allows you
 # to read the name off the font object,
 # without having to keep the settings object alive.
@@ -94,6 +166,11 @@ class Window < RubyOF::Window
 		end
 		
 		# p @font.methods
+		
+		# p @font.methods
+		@font_db = FontDB.new
+		# require 'irb'
+		# binding.irb
 		
 		
 		# @texture = RubyOF::Texture.new
@@ -186,7 +263,7 @@ class Window < RubyOF::Window
 		# 	width, height
 		# )
 		
-		raise "BOOM!"
+		# raise "BOOM!"
 	end
 	
 	def on_exit
@@ -277,6 +354,9 @@ class Window < RubyOF::Window
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
 	end
+	
+	
+	
 end
 
 
