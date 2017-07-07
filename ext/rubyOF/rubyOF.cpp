@@ -10,6 +10,7 @@
 #include "Graphics.h"
 #include "Fbo.h"
 #include "TrueTypeFont.h"
+#include "image.h"
 
 // === Additional OpenFrameworks types
 // #include "ofApp.h"
@@ -25,9 +26,14 @@ void Init_rubyOF()
 	std::cout << "c++: set up module: RubyOF\n";
 	Module rb_mRubyOF = define_module("RubyOF");
 	
-	Init_rubyOF_graphics(rb_mRubyOF);
-	Init_rubyOF_fbo(rb_mRubyOF);
-	Init_rubyOF_trueTypeFont(rb_mRubyOF);
+	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);
+	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
+	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
+	
+	ITP_Tuple itp_tuple = Init_rubyOF_image_texture_pixels(rb_mRubyOF);
+	Rice::Class rb_cImage   = itp_tuple.image;
+	Rice::Class rb_cTexture = itp_tuple.texture;
+	Rice::Class rb_cPixels  = itp_tuple.pixels;
 	
 	// ofPoint is the same as ofVec3
 	Data_Type<ofPoint> rb_cPoint =
@@ -248,72 +254,6 @@ void Init_rubyOF()
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	// ofTexture
-	// ofImage
-	// ofPixels
-	
-	Data_Type<ofTexture> rb_cTexture = 
-		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
-	
-	
-	
-	typedef void (ofTexture::*ofTexture_draw_wh)(float x, float y, float z, float w, float h) const;
-	typedef void (ofTexture::*ofTexture_draw_pt)(const glm::vec3 & p1, const glm::vec3 & p2, const glm::vec3 & p3, const glm::vec3 & p4) const;
-	
-	rb_cTexture
-		.define_constructor(Constructor<ofTexture>())
-		.define_method("draw_wh",   ofTexture_draw_wh(&ofTexture::draw))
-		.define_method("draw_pt",   ofTexture_draw_pt(&ofTexture::draw))
-	;
-	
-	// void draw(float x, float y, float z, float w, float h) const;
-	// void draw(const ofPoint & p1, const ofPoint & p2, const ofPoint & p3, const ofPoint & p4) const;
-	// void drawSubsection // <-- many different interfaces. unsure which to bind
-	
-	
-	typedef bool (*load_image_from_file)(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings);
-	
-	
-	rb_cWindow
-		// textures
-		.define_method("ofLoadImage", load_image_from_file(&ofLoadImage),
-			(
-				Arg("texture"),
-				Arg("filesystem_path"),
-				Arg("settings") = ofImageLoadSettings()
-			)
-		)
-	;
-	
-	
-	
-	
-	// TODO: move image to it's own file
-	// TODO: also bind ofImage#save
-	Data_Type<ofImage> rb_cImage = 
-		define_class_under<ofImage>(rb_mRubyOF, "Image");
-	
-	typedef void (ofImage::*ofImage_draw)(float x, float y, float z) const;
-	
-	
-	
-	rb_cImage
-		.define_constructor(Constructor<ofImage>())
-		.define_method("load",   &ofImage_load)
-		.define_method("draw",   ofImage_draw(&ofImage::draw))
-	;
-	
-	
-	
-	
-	
-	
 	Rice::Module rb_cUtils = 
 		define_module_under(rb_mRubyOF, "Utils");
 	
@@ -324,21 +264,6 @@ void Init_rubyOF()
 		.define_module_function("ofGetFrameNum",            &ofGetFrameNum)
 	;
 }
-
-bool ofImage_load(ofImage& image, const std::string& filename){
-	// bool load(const std::filesystem::path& fileName, const ofImageLoadSettings &settings = ofImageLoadSettings());
-		/// looks for image given by fileName, relative to the data folder.
-	
-	
-	// essentially, performing a typecast
-	// (technically a "copy constructor")
-	// src: https://stackoverflow.com/questions/43114174/convert-a-string-to-std-filesystem-path
-	const std::filesystem::path path = filename;
-	
-	// NOTE: load can take an optional second settings parameter
-	return image.load(path);
-}
-
 
 float ofVec3f_get_component(ofPoint& p, int i){
 	return p[i];
