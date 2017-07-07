@@ -35,10 +35,10 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 	Data_Type<ofTexture> rb_cTexture = 
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
 	
-	
-	
 	typedef void (ofTexture::*ofTexture_draw_wh)(float x, float y, float z, float w, float h) const;
 	typedef void (ofTexture::*ofTexture_draw_pt)(const glm::vec3 & p1, const glm::vec3 & p2, const glm::vec3 & p3, const glm::vec3 & p4) const;
+	
+	
 	
 	rb_cTexture
 		.define_constructor(Constructor<ofTexture>())
