@@ -4,9 +4,33 @@ using namespace Rice;
 
 ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 {
-	// ofTexture
 	// ofImage
+	// ofTexture
 	// ofPixels
+	
+	
+	
+	
+	// TODO: also bind ofImage#save
+	Data_Type<ofImage> rb_cImage = 
+		define_class_under<ofImage>(rb_mRubyOF, "Image");
+	
+	typedef void (ofImage::*ofImage_draw)(float x, float y, float z) const;
+	
+	
+	
+	rb_cImage
+		.define_constructor(Constructor<ofImage>())
+		.define_method("load",   &ofImage_load)
+		.define_method("draw",   ofImage_draw(&ofImage::draw))
+	;
+	
+	
+	
+	
+	
+	
+	
 	
 	Data_Type<ofTexture> rb_cTexture = 
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
@@ -30,26 +54,17 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 	
 	
 	
-	// TODO: move image to it's own file
-	// TODO: also bind ofImage#save
-	Data_Type<ofImage> rb_cImage = 
-		define_class_under<ofImage>(rb_mRubyOF, "Image");
-	
-	typedef void (ofImage::*ofImage_draw)(float x, float y, float z) const;
-	
-	
-	
-	rb_cImage
-		.define_constructor(Constructor<ofImage>())
-		.define_method("load",   &ofImage_load)
-		.define_method("draw",   ofImage_draw(&ofImage::draw))
-	;
-	
 	
 	
 	
 	Data_Type<ofPixels> rb_cPixels = 
 		define_class_under<ofPixels>(rb_mRubyOF, "Pixels");
+	
+	
+	
+	
+	
+	
 	
 	
 	return ITP_Tuple{ rb_cTexture, rb_cImage, rb_cPixels };
