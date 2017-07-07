@@ -16,6 +16,14 @@ OniApp::~OniApp(){
 void OniApp::setup(){
 	ofApp::setup();
 	
+	// TODO: Figure out how to load this path from a file or something.
+	//     I need to be able to change this filepath slightly,
+	//     depending on what system the program is actually deployed on.
+	//     I will do that in a Ruby script, where that is easier,
+	//     but then I need to load up that data here.
+	//     Thus: Need to see what sorts of data formats that oF can easily load.
+	ofSetDataPathRoot("/home/ravenskrag/Desktop/gem_structure/bin/data");
+	
 	
 	// NOTE: DejaVu Sans just happens to be the default on my system, by whatever mechanism OpenFrameworks decides to use
 	// (it's some some sort of FreeDesktop foundation standard API)
@@ -59,7 +67,8 @@ void OniApp::setup(){
 	
 	
 	// mImage.load("bin/data/box.jpg");
-	mImage.load("/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg");
+	// mImage.load("/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg");
+	mImage.load("box.jpg");
 	// full path works, short path does not.
 	
 	// =====

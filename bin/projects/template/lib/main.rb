@@ -268,7 +268,7 @@ class Window < RubyOF::Window
 		@image = RubyOF::Image.new()
 			# p @image.methods
 			# p @image.private_methods
-		@image.load("/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg")
+		@image.load("box.jpg")
 		# NOTE: #load overwrites the default private method #load, which seems to be present on all Ruby objects (likely that is Kernel.load(), but unsure)
 		
 		
