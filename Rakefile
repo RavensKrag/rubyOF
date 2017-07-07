@@ -65,6 +65,7 @@ end
 # use 'rake clean' and 'rake clobber' to
 # easily delete generated files
 
+CLEAN.include('ext/rubyOF/constants/data_path.h')
 CLEAN.include('ext/rubyOF/extconf_variables.rb')
 CLEAN.include('ext/oF_apps/testApp/raw_oF_variables.yaml')
 CLEAN.include('ext/oF_apps/testApp/oF_build_variables.yaml')
@@ -711,6 +712,7 @@ namespace :c_extension do
 	# 
 	c_library_deps << "ext/#{NAME}/extconf.rb"
 	c_library_deps << __FILE__ # depends on this Rakefile
+	c_library_deps << RUBYOF_DATA_PATH_FILE # defines oF asset directory
 	
 	# c_library_deps << OF_BUILD_VARIABLE_FILE
 	# TODO: ^ re-enable this ASAP
@@ -721,10 +723,14 @@ namespace :c_extension do
 	# FIXME: can't seem to just run rake again to rebuild. keep having to clobber, and then do a full clean build again.
 	
 	
-	
-	
-	
-	
+	# patch c constant file with proper data path
+	file RUBYOF_DATA_PATH_FILE do
+		FileUtils.mkdir_p File.dirname RUBYOF_DATA_PATH_FILE
+		
+		File.open(RUBYOF_DATA_PATH_FILE, 'w') do |f|
+			f.puts "#define DATA_PATH \"#{RUBYOF_DATA_PATH}\""
+		end
+	end
 	
 	# Mimic RubyGems gem install procedure, for testing purposes.
 	# * run extconf

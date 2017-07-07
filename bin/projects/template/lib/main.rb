@@ -265,6 +265,8 @@ class Window < RubyOF::Window
 				x.add_alphabet :Japanese
 			end
 		
+		puts "=> Ruby working directory."
+		p Dir.pwd
 		@image = RubyOF::Image.new()
 			# p @image.methods
 			# p @image.private_methods

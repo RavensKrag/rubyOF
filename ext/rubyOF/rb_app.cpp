@@ -1,5 +1,7 @@
 #include "rb_app.h"
 
+#include "constants/data_path.h"
+
 OniApp::OniApp(Rice::Object self) : 
 	ofApp()
 {
@@ -22,7 +24,7 @@ void OniApp::setup(){
 	//     I will do that in a Ruby script, where that is easier,
 	//     but then I need to load up that data here.
 	//     Thus: Need to see what sorts of data formats that oF can easily load.
-	ofSetDataPathRoot("/home/ravenskrag/Desktop/gem_structure/bin/data");
+	ofSetDataPathRoot(DATA_PATH);
 	
 	
 	// NOTE: DejaVu Sans just happens to be the default on my system, by whatever mechanism OpenFrameworks decides to use
