@@ -111,6 +111,12 @@ c_flags =
 $CPPFLAGS += " " + c_flags
 
 
+# Set this so build system outputs formatted error messages,
+# even when running through the Rakefile
+# (open3 strips formatting, as gcc senses it's not connected to a terminal)
+$CFLAGS += " -fdiagnostics-color=always"
+
+
 
 
 
