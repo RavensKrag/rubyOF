@@ -1,10 +1,10 @@
 #pragma once
 
 // basic includes
-#include "ofApp.h"
+#include "ofMain.h"
+
+// openFrameworks addons
 #include "ofxGui.h"
-#include "ofTrueTypeFont.h"
-#include "ofColor.h"
 
 
 // rice data types
@@ -19,7 +19,7 @@
 
 
 
-class OniApp : public ofApp{
+class OniApp : public ofBaseApp{
 
 	public:
 		OniApp(Rice::Object);

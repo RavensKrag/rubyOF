@@ -984,9 +984,13 @@ task :examine, [:library_name] do |t, args|
 			when :oF_core
 				"ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
 			when :oF_project
-				"ext/oF_apps/testApp/bin/testApp"
+				if OF_DEBUG
+					"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}_debug"
+				else
+					"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}"
+				end
 			when :oF_project_lib
-				"ext/oF_apps/testApp/lib/libOFSketch.a"
+				"ext/oF_apps/#{OF_SKETCH_NAME}/lib/libOFSketch.a"
 			when :rubyOF
 				"ext/rubyOF/rubyOF.so"
 		end

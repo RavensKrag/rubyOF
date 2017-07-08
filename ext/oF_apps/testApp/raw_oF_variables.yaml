@@ -155,7 +155,7 @@
 - 'CWEAVE = cweave
 
 '
-- 'PROJECT_CFLAGS = -fPIC
+- 'PROJECT_CFLAGS = -fPIC -fdiagnostics-color=always
 
 '
 - "?D = \n"
@@ -189,7 +189,7 @@
 
 '
 - "OF_PROJECT_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC     \n"
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
 - "@D = .\n"
 - 'XAUTHORITY = /tmp/xauth-1000-_0
 
@@ -308,7 +308,7 @@
 - 'OF_CORE_LIB_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64
 
 '
-- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-ZxyC0dx3xX,guid=d8b3f86b7f8914fb3ab1567d595fd2d9
+- 'DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-HIsPIEhrM8,guid=2cf7e2b5ec47b95dc76f6da35960622b
 
 '
 - 'GCC_MAJOR_EQ_4 = 0
@@ -404,7 +404,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
 '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1727,unix/ravensnest:/tmp/.ICE-unix/1727
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1968,unix/ravensnest:/tmp/.ICE-unix/1968
 
 '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -420,7 +420,7 @@
 
 '
 - 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123
-  -fPIC
+  -fPIC -fdiagnostics-color=always
 
 '
 - 'ARFLAGS = rv
@@ -432,7 +432,7 @@
 - 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
 
 '
-- 'WINDOWID = 81788934
+- 'WINDOWID = 94371846
 
 '
 - 'COMPILE.f = f77   -c
@@ -511,7 +511,7 @@
 
 '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-9PBL1t8kmvSq/agent.1521
+- 'SSH_AUTH_SOCK = /tmp/ssh-duuULb1H07bu/agent.1778
 
 '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -596,7 +596,7 @@
 - 'PREPROCESS.r = f77    -F
 
 '
-- 'SSH_AGENT_PID = 1632
+- 'SSH_AGENT_PID = 1889
 
 '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -610,8 +610,8 @@
 
 '
 - "LINK.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections
-  -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
+  -Wl,--as-needed -Wl,--gc-sections -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - 'TMP_PROJECT_ADDONS_SOURCE_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxPanel.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxToggle.cpp
@@ -833,7 +833,7 @@
 - 'COMPILE.p = pc    -c
 
 '
-- 'XDG_SESSION_ID = 2
+- 'XDG_SESSION_ID = 3
 
 '
 - 'KDE_MULTIHEAD = false
@@ -1175,7 +1175,7 @@
 
 '
 - "ALL_CFLAGS =  -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC     \n"
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
 - "COFLAGS = \n"
 - "OF_CORE_LIBRARY_LDFLAGS = -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
@@ -1244,7 +1244,7 @@
 
 '
 - 'COMPILE.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC   -c
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
 
 '
 - 'ADDON_INCLUDE_CFLAGS = -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include

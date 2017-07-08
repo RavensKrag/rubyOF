@@ -3,7 +3,7 @@
 #include "constants/data_path.h"
 
 OniApp::OniApp(Rice::Object self) : 
-	ofApp()
+	ofBaseApp()
 {
 	cout << "c++: constructor - window\n";
 	
@@ -16,11 +16,10 @@ OniApp::~OniApp(){
 }
 
 void OniApp::setup(){
-	ofApp::setup();
-	
 	ofSetDataPathRoot(DATA_PATH);
 	
 	
+	// NOTE: Using full path to font on Ubuntu linux 16.04 works, but using just the name of the font does not work.
 	// NOTE: DejaVu Sans just happens to be the default on my system, by whatever mechanism OpenFrameworks decides to use
 	// (it's some some sort of FreeDesktop foundation standard API)
 	// However, the first call here actually is not actually working right.
@@ -101,17 +100,10 @@ void OniApp::setup(){
 }
 
 void OniApp::update(){
-	ofApp::update();
-	
 	mSelf.call("update");
 }
 
 void OniApp::draw(){
-	ofApp::draw();
-	
-	
-	
-	
 	ofPushMatrix();
 	// ofLoadIdentityMatrix();
 	
@@ -201,7 +193,7 @@ void OniApp::keyPressed(int key){
 	// like normal ofApp windows do
 	// (including the window you get when you execute just the C++ layer of this very project)
 	
-	ofApp::keyPressed(key);
+	ofBaseApp::keyPressed(key);
 	
 	
 	ofLog() << key;
@@ -211,55 +203,55 @@ void OniApp::keyPressed(int key){
 }
 
 void OniApp::keyReleased(int key){
-	ofApp::keyReleased(key);
+	ofBaseApp::keyReleased(key);
 	
 	mSelf.call("key_released", key);
 }
 
 void OniApp::mouseMoved(int x, int y ){
-	ofApp::mouseMoved(x,y);
+	ofBaseApp::mouseMoved(x,y);
 	
 	mSelf.call("mouse_moved", x,y);
 }
 
 void OniApp::mouseDragged(int x, int y, int button){
-	ofApp::mouseDragged(x,y,button);
+	ofBaseApp::mouseDragged(x,y,button);
 	
 	mSelf.call("mouse_dragged", x,y, button);
 }
 
 void OniApp::mousePressed(int x, int y, int button){
-	ofApp::mousePressed(x,y,button);
+	ofBaseApp::mousePressed(x,y,button);
 	
 	mSelf.call("mouse_pressed", x,y, button);
 }
 
 void OniApp::mouseReleased(int x, int y, int button){
-	ofApp::mouseReleased(x,y,button);
+	ofBaseApp::mouseReleased(x,y,button);
 	
 	mSelf.call("mouse_released", x,y, button);
 }
 
 void OniApp::mouseEntered(int x, int y){
-	ofApp::mouseEntered(x,y);
+	ofBaseApp::mouseEntered(x,y);
 	
 	mSelf.call("mouse_entered", x,y);
 }
 
 void OniApp::mouseExited(int x, int y){
-	ofApp::mouseExited(x,y);
+	ofBaseApp::mouseExited(x,y);
 	
 	mSelf.call("mouse_exited", x,y);
 }
 
 void OniApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
-	ofApp::mouseScrolled(x,y, scrollX, scrollY);
+	ofBaseApp::mouseScrolled(x,y, scrollX, scrollY);
 	
 	mSelf.call("mouse_scrolled", x,y, scrollX, scrollY);
 }
 
 void OniApp::windowResized(int w, int h){
-	ofApp::windowResized(w,h);
+	ofBaseApp::windowResized(w,h);
 	
 	mSelf.call("window_resized", w,h);
 }
@@ -270,7 +262,7 @@ void OniApp::dragEvent(ofDragInfo dragInfo){
 	// https://github.com/openframeworks/openFrameworks/issues/1862
 	// ^ this issue explains that Glut windows can not process file drag events on Linux
 	
-	ofApp::dragEvent(dragInfo);
+	ofBaseApp::dragEvent(dragInfo);
 	
 	
 	// NOTE: dragInfo.files is a std::vector, not an array. Apparently, Rice doesn't understand how to convert that into a Ruby array? so I guess that needs to be done manually...
@@ -287,7 +279,7 @@ void OniApp::dragEvent(ofDragInfo dragInfo){
 }
 
 void OniApp::gotMessage(ofMessage msg){
-	ofApp::gotMessage(msg);
+	ofBaseApp::gotMessage(msg);
 	
 	// mSelf.call("got_message", msg);
 }
