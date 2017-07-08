@@ -10,6 +10,10 @@ p gem_root
 
 require File.expand_path('lib/rubyOF', gem_root)
 
+# TODO: add this dependency to project gemfile or something
+require 'opengl'
+# gem 'opengl', "0.9.2"
+
 
 # TODO: rename things so this project doesn't have symbol collision with the other package I named "Oni", from which this project's template derives.
 	
@@ -279,7 +283,7 @@ class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Test App", 1270,1024)
+		super("Test App", 1746,1374)
 		# ofSetEscapeQuitsApp false
 		
 		puts "ruby: Window#initialize"
@@ -302,8 +306,10 @@ class Window < RubyOF::Window
 		# font          x
 		# font bb       _
 		# time          x
-		# image         _
-		# fbo           _
+		# fbo           x
+		# image         x
+		# texture       _
+		# pixels        _
 		# color         x
 		# position      _ 
 		# + basic shapes   
@@ -341,11 +347,7 @@ class Window < RubyOF::Window
 				x.add_alphabet :Japanese
 			end
 		
-		# puts "=> Ruby working directory."
-		# p Dir.pwd
-		# @image = RubyOF::Image.new()
-		# 	# p @image.methods
-		# 	# p @image.private_methods
+		
 		# @image.load("box.jpg")
 		# # NOTE: #load overwrites the default private method #load, which seems to be present on all Ruby objects (likely Kernel.load(), but unsure)
 		
@@ -361,6 +363,11 @@ class Window < RubyOF::Window
 		
 		# @texture = RubyOF::Texture.new
 		# ofLoadImage(@texture, "/home/ravenskrag/Pictures/Buddy Icons/100shinn1.png")
+		
+		
+		
+		# NOTE: fbo test is in the #draw callback
+		
 	end
 	
 	def update
@@ -394,17 +401,23 @@ class Window < RubyOF::Window
 		z = 1
 		
 		# === Render debug info
+		ofPushMatrix()
 		ofPushStyle()
-		
 			
 			ofSetColor(171, 160, 228, 255) # rgba
 			
 			start = [12, 15]
 			row_spacing = 15
 			
+			
+			# s = 5
+			# ofScale(s,s,1)
+			# NOTE: scaling does not effect size of ofDrawBitmapString
+			# (ofDrawBitmapString is used by draw_debug_info)
 			draw_debug_info(start, row_spacing, z)
 		
 		ofPopStyle()
+		ofPopMatrix()
 		
 		# ofSetColor(255, 255, 255, 255) # rgba
 		
@@ -473,6 +486,53 @@ class Window < RubyOF::Window
 		
 		# === Test exception handling
 		# raise "BOOM!"
+		
+		
+		# === FBO test
+		if @fbo.nil?
+			@fbo = RubyOF::Fbo.new
+			
+			settings = RubyOF::Fbo::Settings.new
+			settings.width     = self.width
+			settings.height    = self.height
+			settings.minFilter = GL::GL_NEAREST
+			settings.maxFilter = GL::GL_NEAREST
+			# ^ just set the width and height to match that of the window,
+			#   at least for now.
+			
+			@fbo.allocate(settings)
+			# TODO: create DSL for Fbo#allocate like with Font and Image
+			
+			
+			
+			@fbo.begin()
+				# need to clear the buffer, or you get whatever garbage is in there
+				ofClear(0,0,0,0)
+				
+				# render some things into the fbo here
+				# (rendering relative to the orign of the FBO, which moves)
+				ofPushStyle()
+				ofPushMatrix()
+					ofSetColor(0, 141, 240, 255) # rgba
+					ofDrawBitmapString("ruby: FBO test", 0, 10, z);
+					ofDrawBitmapString("hello again from ruby!", 0, 100, z);
+					ofDrawBitmapString("many things!", 20, 200, z);
+					ofDrawBitmapString("so many things", 144, 38, z);
+				ofPopMatrix()
+				ofPopStyle()
+			@fbo.end()
+			
+			# NOTE:
+				# Apparently #bind and #unbind are more low level,
+				# and are used for "vertex based drawing"
+				# where as when using openFramework's higher-level stuff,
+				# you want to use #begin / #end
+				# 
+				# src: http://openframeworks.cc/documentation/gl/ofFbo/#show_bind
+		end
+		
+		
+		@fbo.draw(500,1000)
 		
 		
 		# === Various

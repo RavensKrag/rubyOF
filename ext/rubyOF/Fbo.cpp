@@ -57,6 +57,7 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 	return rb_cFbo;
 }
 
+// TODO: Reimplement this helper / wrapper function. Move a lot of the handeling of defaults / other error checking to the Ruby level where possible.
 void ofFbo_allocate_from_struct(ofFbo& fbo, Rice::Object rb_settings){
 	// Create the basic C++ data, using the struct's constructor.
 	// This will get you sensible defaults.

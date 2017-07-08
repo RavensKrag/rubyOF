@@ -106,6 +106,8 @@ void Init_rubyOF()
 	
 	
 	
+	
+	
 	Data_Type<ofRectangle> rb_cRectangle = 
 		define_class_under<ofRectangle>(rb_mRubyOF, "Rectangle");
 	
@@ -159,21 +161,6 @@ void Init_rubyOF()
 		.define_method("intersects_pp",   ofRectangle_test_pp(&ofRectangle::intersects))
 	;
 	// NOTE: ofRectangle has a lot of logic for aligning rectangular shapes. Could be useful.
-	
-	
-	
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
