@@ -1914,6 +1914,8 @@ LINK.f:
 - "-L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/"
 - "-lfmodex"
 ADDON_LIBS:
+- "./lib/libOFSketch.a"
+- "./lib/libOFSketch.a"
 - "./bin/libs/libfmodex.so"
 - "./bin/libs/libfmodex.so"
 - "./bin/libs/libfmodex.so"
@@ -1922,6 +1924,7 @@ TEX:
 GST_VERSION:
 - '1.0'
 PROJECT_ADDONS_LIBS:
+- "./lib/libOFSketch.a"
 - "./bin/libs/libfmodex.so"
 LANG:
 - en_US.UTF-8

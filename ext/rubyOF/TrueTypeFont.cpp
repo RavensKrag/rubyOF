@@ -1,5 +1,125 @@
 #include "TrueTypeFont.h"
 
+
+const ofUnicode::range ALL_UNICODE_RANGES[] = {
+	ofUnicode::Space,
+	ofUnicode::Latin,
+	ofUnicode::Latin1Supplement,
+	ofUnicode::Greek,
+	ofUnicode::Cyrillic,
+	ofUnicode::Arabic,
+	ofUnicode::ArabicSupplement,
+	ofUnicode::ArabicExtendedA,
+	ofUnicode::Devanagari,
+	ofUnicode::HangulJamo,
+	ofUnicode::VedicExtensions,
+	ofUnicode::LatinExtendedAdditional,
+	ofUnicode::GreekExtended,
+	ofUnicode::GeneralPunctuation,
+	ofUnicode::SuperAndSubScripts,
+	ofUnicode::CurrencySymbols,
+	ofUnicode::LetterLikeSymbols,
+	ofUnicode::NumberForms,
+	ofUnicode::Arrows,
+	ofUnicode::MathOperators,
+	ofUnicode::MiscTechnical,
+	ofUnicode::BoxDrawing,
+	ofUnicode::BlockElement,
+	ofUnicode::GeometricShapes,
+	ofUnicode::MiscSymbols,
+	ofUnicode::Dingbats,
+	ofUnicode::Hiragana,
+	ofUnicode::Katakana,
+	ofUnicode::HangulCompatJamo,
+	ofUnicode::KatakanaPhoneticExtensions,
+	ofUnicode::CJKLettersAndMonths,
+	ofUnicode::CJKUnified,
+	ofUnicode::DevanagariExtended,
+	ofUnicode::HangulExtendedA,
+	ofUnicode::HangulSyllables,
+	ofUnicode::HangulExtendedB,
+	ofUnicode::AlphabeticPresentationForms,
+	ofUnicode::ArabicPresFormsA,
+	ofUnicode::ArabicPresFormsB,
+	ofUnicode::KatakanaHalfAndFullwidthForms,
+	ofUnicode::KanaSupplement,
+	ofUnicode::RumiNumericalSymbols,
+	ofUnicode::ArabicMath,
+	ofUnicode::MiscSymbolsAndPictographs,
+	ofUnicode::Emoticons,
+	ofUnicode::TransportAndMap
+};
+
+
+const std::initializer_list<ofUnicode::range> ALL_UNICODE_ALPHABETS[] = {
+	ofAlphabet::Emoji,
+	ofAlphabet::Japanese,
+	ofAlphabet::Chinese,
+	ofAlphabet::Korean,
+	ofAlphabet::Arabic,
+	ofAlphabet::Devanagari,
+	ofAlphabet::Latin,
+	ofAlphabet::Greek,
+	ofAlphabet::Cyrillic
+};
+
+
+
+
+void ofTtfSettings_setFontName(ofTtfSettings& settings, std::string name)
+{
+	settings.fontName = name;
+}
+
+std::string ofTtfSettings_getFontName(const ofTtfSettings& settings){
+	return settings.fontName.string();
+}
+
+void ofTtfSettings_setFontSize(ofTtfSettings& settings, int size)
+{
+	settings.fontSize = size;
+}
+
+int ofTtfSettings_getFontSize(const ofTtfSettings& settings){
+	return settings.fontSize;
+}
+
+void ofTtfSettings_setAntialiased(ofTtfSettings& settings, bool aa){
+	settings.antialiased = aa;
+}
+
+bool ofTtfSettings_isAntialiased(const ofTtfSettings& settings){
+	return settings.antialiased;
+}
+
+
+
+
+// TODO: Implement this.
+void ofTtfSettings_addRanges(ofTtfSettings& settings, Rice::Object rb_range_list){
+	// settings.addRanges();
+}
+
+void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index){
+	
+	Rice::Object tmp_obj = rb_range_index;
+	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
+	ofUnicode::range rng = ALL_UNICODE_RANGES[i];
+	
+	settings.addRange(rng);
+}
+
+// NOTE: This is custom (not in the main OpenFrameworks API)
+void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_index){
+	
+	Rice::Object tmp_obj = rb_range_index;
+	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
+	
+	std::initializer_list<ofUnicode::range> rngs = ALL_UNICODE_ALPHABETS[i];
+	settings.addRanges(rngs);
+}
+
+
 using namespace Rice;
 
 Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
@@ -67,58 +187,6 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 	return rb_cTrueTypeFont;
 }
 
-void ofTtfSettings_setFontName(ofTtfSettings& settings, std::string name)
-{
-	settings.fontName = name;
-}
-
-std::string ofTtfSettings_getFontName(const ofTtfSettings& settings){
-	return settings.fontName.string();
-}
-
-void ofTtfSettings_setFontSize(ofTtfSettings& settings, int size)
-{
-	settings.fontSize = size;
-}
-
-int ofTtfSettings_getFontSize(const ofTtfSettings& settings){
-	return settings.fontSize;
-}
-
-void ofTtfSettings_setAntialiased(ofTtfSettings& settings, bool aa){
-	settings.antialiased = aa;
-}
-
-bool ofTtfSettings_isAntialiased(const ofTtfSettings& settings){
-	return settings.antialiased;
-}
-
-
-
-
-// TODO: Implement this.
-void ofTtfSettings_addRanges(ofTtfSettings& settings, Rice::Object rb_range_list){
-	// settings.addRanges();
-}
-
-void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index){
-	
-	Rice::Object tmp_obj = rb_range_index;
-	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
-	ofUnicode::range rng = ALL_UNICODE_RANGES[i];
-	
-	settings.addRange(rng);
-}
-
-// NOTE: This is custom (not in the main OpenFrameworks API)
-void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_index){
-	
-	Rice::Object tmp_obj = rb_range_index;
-	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
-	
-	std::initializer_list<ofUnicode::range> rngs = ALL_UNICODE_ALPHABETS[i];
-	settings.addRanges(rngs);
-}
 
 
  //    std::filesystem::path fontName;
@@ -141,6 +209,4 @@ void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_in
 	// void addRange(const ofUnicode::range & range){
 	// 	ranges.push_back(range);
 	// }
-
-
 
