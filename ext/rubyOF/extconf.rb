@@ -221,6 +221,15 @@ $LDFLAGS += " " + more_linker_flags
 
 
 
+# manually set the entire $warnflags variable
+# removing the options that don't make sense for C++
+# (you get warnings on compile that the options are unrecognized)
+$warnflags = 
+   "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wno-maybe-uninitialized"
+
+
+
+
 
 
 
@@ -266,6 +275,7 @@ File.open("./extconf_variables.rb", "w") do |f|
 		['$rubylibdir', $rubylibdir],
 		['$archdir', $archdir],
 		['$defs', $defs],
+		['$warnflags', $warnflags]
 	].to_h
 
 	compiler_variables.each do |name, var|

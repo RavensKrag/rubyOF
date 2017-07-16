@@ -488,10 +488,13 @@ namespace :oF_project do
 			# othwise, make the release build.
 			debug = OF_DEBUG ? "Debug" : ""
 			
-			run_i "make #{debug} -j#{NUMBER_OF_CORES}" do
-				"ERROR: Could not build oF sketch."
-			end
 			
+			begin
+				run_i "make #{debug} -j#{NUMBER_OF_CORES}"
+			rescue StandardError => e
+				puts "ERROR: Could not build oF sketch."
+				exit
+			end
 			# FileUtils.touch 'oF_project_build_timestamp'
 		end
 	end
@@ -627,8 +630,11 @@ namespace :oF_project do
 			puts "=== Making oF sketch into a static library..."
 			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
 				Dir.chdir OF_SKETCH_ROOT do
-					run_i "make static_lib TARGET_NAME=#{TARGET}" do
-						"ERROR: Could not make a static library out of the oF sketch project."
+					begin
+						run_i "make static_lib TARGET_NAME=#{TARGET}"
+					rescue StandardError => e
+						puts "ERROR: Could not make a static library out of the oF sketch project."
+						exit
 					end
 				end
 			end
@@ -742,8 +748,11 @@ namespace :c_extension do
 			# as what RubyGems does
 			puts "=== starting extconf..."
 			
-			run_i "ruby extconf.rb" do
-				"ERROR: Could not configure c extension."
+			begin
+				run_i "ruby extconf.rb"
+			rescue StandardError => e
+				puts "ERROR: Could not configure c extension."
+				exit
 			end
 			
 			
@@ -768,8 +777,11 @@ namespace :c_extension do
 				run_i "make clean"
 				
 				# ok, now examine the build process and build the DB
-				run_i "bear make #{flags}" do
-					"ERROR: Could not build c extension and / or clang DB"
+				begin
+					run_i "bear make #{flags}"
+				rescue StandardError => e
+					puts "ERROR: Could not build c extension and / or clang DB"
+					exit
 				end
 				
 				# Clang DB file is generated here,
@@ -782,8 +794,11 @@ namespace :c_extension do
 			else
 				# run normally
 				puts "Building..."
-				run_i "make #{flags}" do
-					"ERROR: Could not build c extension."
+				begin
+					run_i "make #{flags}"
+				rescue StandardError => e
+					puts "ERROR: Could not build c extension."
+					exit
 				end
 			end
 			# ======================================

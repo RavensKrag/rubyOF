@@ -112,20 +112,28 @@ OF_BUILD_VARIABLE_FILE     = File.expand_path(
 def run_i(cmd_string, &block)
 	exit_status = nil
 	Open3.popen2e(cmd_string) do |stdin, stdout_and_stderr, wait_thr|
-		output = nil
 		begin
 			output = stdout_and_stderr.gets
+			
+			# ----------
+			
+			# Perform project-specific find-and-replace operations
+			# on the output stream.
+			unless output.nil?
+				output.gsub! GEM_ROOT, "[GEM_ROOT]"
+			end
+			
+			# ----------
+			
 			puts output
-		end while output
+		end until output.nil?
 		
 		
 		exit_status = wait_thr.value
 	end
 	
-	if block
-		# call the block if there is an error
-		raise block.call if exit_status != 0
-	end
+	# raise exception if shell command ends in an error
+	raise StandardError if exit_status != 0
 	
 	return exit_status
 end
