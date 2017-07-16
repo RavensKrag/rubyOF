@@ -25,7 +25,7 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	
 	Data_Type<ofVec4f> rb_cVec4f = 
 		define_class_under<ofVec4f>(rb_mRubyOF,  "Vec4f");
-
+	
 	
 	
 	// --- Ok, time to bind some useful stuff.
@@ -34,98 +34,202 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	// global oF functions
 	// ------------------
 	
-	// these typedefs select one version of a polymorphic interface
-	typedef void (*wrap_ofDrawBitmapString)(const std::string& textString, float x, float y, float z);
-	
-	
-	typedef void (*wrap_ofDrawRectangle)(float x,float y,float z,float w,float h);
-	typedef void (*wrap_ofDrawCircle)(float x, float y, float z, float radius);
-	typedef void (*wrap_ofDrawEllipse)(float x, float y, float z, float width, float height);
-	typedef void (*wrap_ofDrawTriangle)(float x1,float y1,float z1,float x2,float y2,float z2,float x3, float y3,float z3);
-	typedef void (*wrap_ofDrawLine)(float x1,float y1,float z1,float x2,float y2,float z2);
-	
-	typedef void (*wrap_ofDrawRectRounded)(float x, float y, float z, float w, float h, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
-	
-	typedef void (*wrap_ofClear)(float r, float g, float b, float a);
-	// NOTE: clear requires floats, while "ofBackground" takes int? Looks weird, maybe should report?
-	
-	typedef void (*wrap_ofBackground)(int r, int g, int b, int a);
-	typedef void (*wrap_ofBackgroundHex)(int hexColor, int alpha);
-	typedef void (*wrap_ofSetColor)(int r, int g, int b, int a);
-	typedef void (*wrap_ofSetHexColor)(int hexColor);
-	
-	typedef void (*wrap_ofTranslate)(float x, float y, float z);
-	typedef void (*wrap_ofScale)(float xAmnt, float yAmnt, float zAmnt);
-	typedef void (*wrap_ofRotateAroundAxis)
-		(float degrees, float vecX, float vecY, float vecZ);
 	typedef void (*wrap_matrix_op)(const glm::mat4 & m);
-	
 	
 	rb_mGraphics
 		// bitmap string
-		.define_method("ofDrawBitmapString", wrap_ofDrawBitmapString(&ofDrawBitmapString))
+		.define_method("ofDrawBitmapString",
+			static_cast< void (*)
+			(const std::string& textString, float x, float y, float z)
+			>(&ofDrawBitmapString)
+		)
 		
 		// draw primatives
-		.define_method("ofDrawRectangle",    wrap_ofDrawRectangle(&ofDrawRectangle))
-		.define_method("ofDrawCircle",       wrap_ofDrawCircle(&ofDrawCircle))
-		.define_method("ofDrawEllipse",      wrap_ofDrawEllipse(&ofDrawEllipse))
-		
+		.define_method("ofDrawRectangle",
+			static_cast< void (*)
+			(float x,float y,float z,float w,float h)
+			>(&ofDrawRectangle)
+		)
+		.define_method("ofDrawCircle",
+			static_cast< void (*)
+			(float x, float y, float z, float radius)
+			>(&ofDrawCircle)
+		)
+		.define_method("ofDrawEllipse",
+			static_cast< void (*)
+			(float x, float y, float z, float width, float height)
+			>(&ofDrawEllipse)
+		)
 		.define_method("ofDrawTriangle",
-			wrap_ofDrawTriangle(&ofDrawTriangle)
+			static_cast< void (*)
+			(
+				float x1,float y1,float z1,
+				float x2,float y2,float z2,
+				float x3, float y3,float z3
+			)
+			>(&ofDrawTriangle)
 		)
-		
 		.define_method("ofDrawLine",
-			wrap_ofDrawLine(&ofDrawLine)
+			static_cast< void (*)
+			(float x1,float y1,float z1,float x2,float y2,float z2)
+			>(&ofDrawLine)
 		)
-		
 		.define_method("ofDrawRectRounded",
-			wrap_ofDrawRectRounded(&ofDrawRectRounded)
+			static_cast< void (*)
+			(
+				float x, float y, float z,
+				float w, float h,
+				float topLeftRadius,
+				float topRightRadius,
+				float bottomRightRadius,
+				float bottomLeftRadius
+			)
+			>(&ofDrawRectRounded)
 		)
 		
 		// turn filling of primative shapes on / off
 		// (used to draw outlines)
-		.define_method("ofFill",             &ofFill)
-		.define_method("ofNoFill",           &ofNoFill)
+		.define_method(
+			"ofFill",
+			&ofFill
+		)
+		.define_method(
+			"ofNoFill",
+			&ofNoFill
+		)
 		
 		// alter line weight
-		.define_method("ofSetLineWidth",     &ofSetLineWidth)
+		.define_method("ofSetLineWidth",
+			&ofSetLineWidth // (float lineWidth)
+		)
 		
 		// clear
-		.define_method("ofClear",            wrap_ofClear(&ofClear))
+		.define_method("ofClear",
+			static_cast< void (*)
+			(float r, float g, float b, float a)
+			>(&ofClear)
+		)
+		// NOTE: clear requires floats, while "ofBackground" takes int? Looks weird, maybe should report?
 		
 		// colors
-		.define_method("ofBackground",       wrap_ofBackground(&ofBackground))
-		.define_method("ofBackgroundHex",    wrap_ofBackgroundHex(&ofBackgroundHex))
-		.define_method("ofSetColor",         wrap_ofSetColor(&ofSetColor))
-		.define_method("ofSetHexColor",      wrap_ofSetHexColor(&ofSetHexColor))
+		.define_method("ofBackground",
+			static_cast< void (*)
+			(int r, int g, int b, int a)
+			>(&ofBackground)
+		)
+		.define_method("ofBackgroundHex",
+			static_cast< void (*)
+			(int hexColor, int alpha)
+			>(&ofBackgroundHex)
+		)
+		.define_method("ofSetColor",
+			static_cast< void (*)
+			(int r, int g, int b, int a)
+			>(&ofSetColor)
+		)
+		.define_method("ofSetHexColor",
+			static_cast< void (*)
+			(int hexColor)
+			>(&ofSetHexColor)
+		)
 		
 		// matrix stack manipulation
-		.define_method("ofPushStyle",        &ofPushStyle)
-		.define_method("ofPopStyle",         &ofPopStyle)
-		.define_method("ofPushMatrix",       &ofPushMatrix)
-		.define_method("ofPopMatrix",        &ofPopMatrix)
+		.define_method(
+			"ofPushStyle",
+			&ofPushStyle
+		)
+		.define_method(
+			"ofPopStyle",
+			&ofPopStyle
+		)
+		.define_method(
+			"ofPushMatrix",
+			&ofPushMatrix
+		)
+		.define_method(
+			"ofPopMatrix",
+			&ofPopMatrix
+		)
+		
+		
 		
 		// transforms
-		.define_method("ofTranslate",      wrap_ofTranslate(&ofTranslate))
-		.define_method("ofScale",          wrap_ofScale(&ofScale))
+		.define_method(
+			"ofTranslate",
+			
+			static_cast< void (*)
+			(float x, float y, float z)
+			>(&ofTranslate)
+		)
+		.define_method(
+			"ofScale",
+			
+			static_cast< void (*)
+			(float xAmnt, float yAmnt, float zAmnt)
+			>(&ofScale)
+		)
 		
-		.define_method("ofRotateX",        &ofRotateX)
-		.define_method("ofRotateY",        &ofRotateY)
-		.define_method("ofRotateZ",        &ofRotateZ)
+		.define_method(
+			"ofRotateX",
+			&ofRotateX // (float degrees)
+		)
+		.define_method(
+			"ofRotateY",
+			&ofRotateY // (float degrees)
+		)
+		.define_method(
+			"ofRotateZ",
+			&ofRotateZ // (float degrees)
+		)
+		// DEPRECIATED: ofRotateX / ofRotateY / ofRotateZ
+		//              Must now specify degrees or radians
+		//              e.g. ofRotateYDeg or ofRotateYRad
 		
-		.define_method("ofRotate",        wrap_ofRotateAroundAxis(&ofRotate))
+		.define_method(
+			"ofRotate",
+			
+			// rotate around axis specified by vector
+			// (funciton is overloaded: other interfaces exist)
+			static_cast< void (*)
+			(float degrees, float vecX, float vecY, float vecZ)
+			>(&ofRotate)
+		)
+		// DEPRECIATED: ofRotate
+		//              Use ofRotateDeg or ofRotateRad
 		
 		
-		.define_method("ofLoadIdentityMatrix",    &ofLoadIdentityMatrix)
+		.define_method(
+			"ofLoadIdentityMatrix",
+			&ofLoadIdentityMatrix // ()
+		)
 		
-		.define_method("ofLoadMatrix",        wrap_matrix_op(&ofLoadMatrix))
-		.define_method("ofMultMatrix",        wrap_matrix_op(&ofMultMatrix))
+		.define_method(
+			"ofLoadMatrix",
+			wrap_matrix_op(&ofLoadMatrix)
+		)
+		.define_method(
+			"ofMultMatrix",
+			wrap_matrix_op(&ofMultMatrix)
+		)
+		// NOTE: other interface is not multiplication by scalar, it's a pointer to a 4x4 matrix (assuming the first element of a nested array or something? better to just use the provided types.)
 		
 		
-		.define_method("ofSetMatrixMode",         &ofSetMatrixMode)
-		.define_method("ofLoadViewMatrix",        &ofLoadViewMatrix)
-		.define_method("ofMultViewMatrix",        &ofMultViewMatrix)
-		.define_method("ofGetCurrentViewMatrix",  &ofGetCurrentViewMatrix)
+		.define_method(
+			"ofSetMatrixMode",
+			&ofSetMatrixMode // (ofMatrixMode matrixMode)
+		)
+		.define_method(
+			"ofLoadViewMatrix",
+			&ofLoadViewMatrix // (const glm::mat4 & m)
+		)
+		.define_method(
+			"ofMultViewMatrix",
+			&ofMultViewMatrix // (const glm::mat4 & m)
+		)
+		.define_method(
+			"ofGetCurrentViewMatrix",
+			&ofGetCurrentViewMatrix // ()
+		)
 	;
 	
 	// ------------------

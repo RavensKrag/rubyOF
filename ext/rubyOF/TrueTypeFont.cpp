@@ -132,9 +132,9 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 	rb_cTrueTypeFont
 		.define_constructor(Constructor<ofTrueTypeFont>())
 		.define_method("load",
-			static_cast<bool (ofTrueTypeFont::*)(const ofTtfSettings&)>(
-				&ofTrueTypeFont::load
-			)
+			static_cast<bool (ofTrueTypeFont::*)
+			(const ofTtfSettings&)
+			>(&ofTrueTypeFont::load)
 		)
 		.define_method("draw_string",      &ofTrueTypeFont::drawString)
 		

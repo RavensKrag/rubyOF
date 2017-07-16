@@ -13,10 +13,11 @@ ofImage_load_fromFile
 	
 	
 	// essentially, performing a typecast
-	// (technically a "copy constructor")
+	// std::string => std::filesystem::path
+	// 	(technically a "copy constructor")
 	// src: https://stackoverflow.com/questions/43114174/convert-a-string-to-std-filesystem-path
 	const std::filesystem::path path = filename;
-	
+	 
 	// NOTE: load can take an optional second settings parameter
 	return self.load(path, settings);
 }
@@ -97,13 +98,15 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 	Data_Type<ofImage> rb_cImage = 
 		define_class_under<ofImage>(rb_mRubyOF, "Image");
 	
-	typedef void (ofImage::*ofImage_draw)(float x, float y, float z) const;
-	
 	
 	rb_cImage
 		.define_constructor(Constructor<ofImage>())
 		.define_method("load",   &ofImage_load_fromFile)
-		.define_method("draw",   ofImage_draw(&ofImage::draw))
+		.define_method("draw",
+			static_cast< void (ofImage::*)
+			(float x, float y, float z) const
+			>(&ofImage::draw)
+		)
 	;
 	
 	
@@ -136,14 +139,24 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 	Data_Type<ofTexture> rb_cTexture = 
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
 	
-	typedef void (ofTexture::*ofTexture_draw_wh)(float x, float y, float z, float w, float h) const;
-	typedef void (ofTexture::*ofTexture_draw_pt)(const glm::vec3 & p1, const glm::vec3 & p2, const glm::vec3 & p3, const glm::vec3 & p4) const;
-	
 	
 	rb_cTexture
 		.define_constructor(Constructor<ofTexture>())
-		.define_method("draw_wh",   ofTexture_draw_wh(&ofTexture::draw))
-		.define_method("draw_pt",   ofTexture_draw_pt(&ofTexture::draw))
+		.define_method("draw_wh",
+			static_cast< void (ofTexture::*)
+			(float x, float y, float z, float w, float h) const
+			>(&ofTexture::draw)
+		)
+		.define_method("draw_pt",
+			static_cast< void (ofTexture::*)
+			(
+				const glm::vec3 & p1,
+				const glm::vec3 & p2,
+				const glm::vec3 & p3,
+				const glm::vec3 & p4
+			) const
+			>(&ofTexture::draw)
+		)
 	;
 	
 	// void draw(float x, float y, float z, float w, float h) const;

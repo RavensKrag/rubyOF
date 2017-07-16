@@ -13,10 +13,6 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 	
 	
 	// typedef void (ofFbo::*ofFbo_allocWRAP)(int,int,int,int) const;
-	
-	typedef void (ofFbo::*ofFbo_draw)(float x, float y) const;
-	typedef void (ofFbo::*ofFbo_draw_wh)(float x, float y, float width, float height) const;
-	
 	// typedef void (ofFbo::*ofFbo_begin)() const;
 	
 	rb_cFbo
@@ -42,12 +38,20 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 			)
 		)
 		
-		.define_method("end",      	&ofFbo::end)
+		.define_method("end",       &ofFbo::end)
 		.define_method("bind",      &ofFbo::bind)
 		.define_method("unbind",    &ofFbo::unbind)
 		
-		.define_method("draw_xy",      ofFbo_draw(&ofFbo::draw))
-		.define_method("draw_xywh",    ofFbo_draw_wh(&ofFbo::draw))
+		.define_method("draw_xy",
+			static_cast< void (ofFbo::*)
+			(float x, float y) const
+			>(&ofFbo::draw)
+		)
+		.define_method("draw_xywh",
+			static_cast< void (ofFbo::*)
+			(float x, float y, float width, float height) const
+			>(&ofFbo::draw)
+		)
 	;
 	
 	// NOTE: ofFbo.h has been patched to define "ofFbo::allocateRICE", so that I don't have to write an entirely separate wrapper class.
