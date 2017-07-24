@@ -12,7 +12,8 @@
 
 #include "ofPoint.h" // you can include this one. this is fine.
 
-#include "rb_app.h"
+#include "app.h" // follow a symlink to get to the project header
+// #include "rb_app.h" // included by app.h
 
 
 // // app.h sholud already be including the Rice stuff I think?
@@ -27,10 +28,10 @@ class Launcher
 {
 
 public:
-    Launcher(Rice::Object self, int width, int height);
-    ~Launcher(void);
+   Launcher(Rice::Object self, int width, int height);
+   ~Launcher(void);
     
-    void initialize();
+   void initialize();
 	void show();
 	
 	
@@ -62,7 +63,7 @@ public:
 	
 	
 protected:
-	OniApp* mApp = NULL;
+	rbApp* mApp = NULL;
 	ofAppGLFWWindow* mWindow = NULL;
 };
 

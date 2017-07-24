@@ -2,7 +2,6 @@
 // #include "ofGraphics.h"
 
 #include "launcher.h"
-#include "rb_app.h"
 
 #include <iostream>
 
@@ -20,7 +19,7 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
 	
-	mApp = new OniApp(self);
+	mApp = new rbApp(self);
 	
 	// window is the drawing context
 	// app is the thing that holds all the update and render logic
