@@ -2,12 +2,12 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	// NOTE: Using full path to font on Ubuntu linux 16.04 works, but using just the name of the font does not work.
-	ofTtfSettings settings("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20); // This works fine
-	settings.antialiased = true;
-	settings.addRanges(ofAlphabet::Latin);
-	settings.addRanges(ofAlphabet::Japanese);
-	mUnicodeFont.load(settings);
+	// // NOTE: Using full path to font on Ubuntu linux 16.04 works, but using just the name of the font does not work.
+	// ofTtfSettings settings("/usr/share/fonts/truetype/fonts-japanese-gothic.ttf", 20); // This works fine
+	// settings.antialiased = true;
+	// settings.addRanges(ofAlphabet::Latin);
+	// settings.addRanges(ofAlphabet::Japanese);
+	// mUnicodeFont.load(settings);
 }
 
 //--------------------------------------------------------------
@@ -17,14 +17,14 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofPushStyle();
+	// ofPushStyle();
 	
-	ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
-	ofSetColor(color);
+	// ofColor color = ofColor::fromHex(0xFF0000, 0xFF);
+	// ofSetColor(color);
 	
-	mUnicodeFont.drawString("app: Testing こんにちは", 200,200);
+	// mUnicodeFont.drawString("app: Testing こんにちは", 200,200);
 	
-	ofPopStyle();
+	// ofPopStyle();
 }
 
 //--------------------------------------------------------------
