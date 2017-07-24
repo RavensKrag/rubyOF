@@ -36,6 +36,18 @@ COMMON_CONFIG = File.absolute_path(__FILE__)
 
 GEM_ROOT = File.expand_path('./', path_to_file)
 DYNAMIC_LIB_PATH = File.join(GEM_ROOT, 'bin', 'lib')
+
+
+
+
+
+
+RUBYOF_PROJECT_NAME = "example" # [boilerplate, example, ...]
+
+RUBYOF_PROJECT_PATH = File.join(
+	GEM_ROOT, 'bin', 'projects',  RUBYOF_PROJECT_NAME
+)
+
 RUBYOF_DATA_PATH = File.join(GEM_ROOT, 'bin', 'data')
 
 # c header file where the DATA_PATH c constant is declared with #define
@@ -43,6 +55,11 @@ RUBYOF_DATA_PATH = File.join(GEM_ROOT, 'bin', 'data')
 RUBYOF_DATA_PATH_FILE = File.join(
 	GEM_ROOT, "ext", NAME, "constants", "data_path.h"
 )
+
+
+
+
+
 
 
 # === Clang database configuration

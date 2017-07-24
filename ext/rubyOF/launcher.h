@@ -28,10 +28,10 @@ class Launcher
 {
 
 public:
-   Launcher(Rice::Object self, int width, int height);
-   ~Launcher(void);
-    
-   void initialize();
+	Launcher(Rice::Object self, int width, int height);
+	~Launcher(void);
+	
+	void initialize();
 	void show();
 	
 	

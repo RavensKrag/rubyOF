@@ -84,3 +84,6 @@ ext/oF_apps/testApp/bin/testApp_debug
 ext/rubyOF/constants/data_path.h
 ext/rubyOF/Makefile
 compile_commands.json
+
+bin/projects/*/ext/extconf_variables.rb
+bin/projects/*/ext/Makefile

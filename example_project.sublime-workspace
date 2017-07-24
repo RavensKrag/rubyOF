@@ -1,0 +1,5731 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"foocl",
+				"foo_clean"
+			],
+			[
+				"fl",
+				"final_link"
+			],
+			[
+				"cm",
+				"cmd1"
+			],
+			[
+				"out",
+				"output"
+			],
+			[
+				"GEMR",
+				"GEM_ROOT"
+			],
+			[
+				"instan",
+				"instance_variable_set"
+			],
+			[
+				"flg",
+				"flag_name"
+			],
+			[
+				"attr",
+				"attr_accessor"
+			],
+			[
+				"consta",
+				"constants"
+			],
+			[
+				"file",
+				"filename"
+			],
+			[
+				"ofPop",
+				"ofPopStyle"
+			],
+			[
+				"list",
+				"alphabet_list"
+			],
+			[
+				"alph",
+				"alphabets"
+			],
+			[
+				"exc",
+				"exception"
+			],
+			[
+				"bat",
+				"bad_termination"
+			],
+			[
+				"pixels",
+				"setFromPixels\tvoid setFromPixels(const ofPixels_<unsigned char> &pixels)"
+			],
+			[
+				"load",
+				"load\tbool load(const std::filesystem::path &fileName, const ofImageLoadSettings &settings)"
+			],
+			[
+				"exp",
+				"export_build_variables"
+			],
+			[
+				"downlo",
+				"download_libs"
+			],
+			[
+				"ts",
+				"target_string"
+			],
+			[
+				"open",
+				"openFrameworks"
+			],
+			[
+				"pro",
+				"project"
+			],
+			[
+				"proj",
+				"project_name"
+			],
+			[
+				"nam",
+				"name"
+			],
+			[
+				"conf",
+				"config"
+			],
+			[
+				"OFB",
+				"OF_BUILD_VARIABLE_FILE"
+			],
+			[
+				"root",
+				"REPO_ROOT"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"exten",
+				"ofx_extension_name"
+			],
+			[
+				"repo",
+				"REPO_ROOT"
+			],
+			[
+				"expand",
+				"expand_path"
+			],
+			[
+				"onl",
+				"only_so"
+			],
+			[
+				"sketch",
+				"sketch_dump"
+			],
+			[
+				"dump",
+				"dump_so"
+			],
+			[
+				"cate",
+				"category_dir"
+			],
+			[
+				"trail",
+				"trail_dt"
+			],
+			[
+				"es",
+				"exit_status"
+			],
+			[
+				"have_",
+				"have_library"
+			],
+			[
+				"gstream",
+				"gstreamer"
+			],
+			[
+				"polib",
+				"poco_libs_dir"
+			],
+			[
+				"build_",
+				"build_tess2"
+			],
+			[
+				"depe",
+				"dependencies"
+			],
+			[
+				"ext",
+				"extconf"
+			],
+			[
+				"oF",
+				"oF_project"
+			],
+			[
+				"clb",
+				"c_library"
+			],
+			[
+				"work",
+				"work_dir"
+			],
+			[
+				"temp",
+				"temp_ext"
+			],
+			[
+				"mk",
+				"mySketch"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"bu",
+				"build"
+			],
+			[
+				"bur",
+				"build_library"
+			],
+			[
+				"clib",
+				"clean_library"
+			],
+			[
+				"ce",
+				"1.coerce"
+			],
+			[
+				"visua",
+				"visualizations"
+			],
+			[
+				"test_",
+				"test_package"
+			],
+			[
+				"prev",
+				"prev_tick"
+			],
+			[
+				"poss",
+				"possible_targets"
+			],
+			[
+				"const",
+				"constraint_target"
+			],
+			[
+				"data",
+				"data_dump"
+			],
+			[
+				"rec",
+				"resources"
+			],
+			[
+				"Hash",
+				"HashWrapper"
+			],
+			[
+				"remo",
+				"removal_flag"
+			],
+			[
+				"con",
+				"constraint"
+			],
+			[
+				"paramet",
+				"parameterization"
+			],
+			[
+				"visu",
+				"visualization"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"necessary",
+				"necessary_pairs"
+			],
+			[
+				"cont",
+				"constraint_type"
+			],
+			[
+				"nece",
+				"necessary_pairs"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"inti",
+				"initialize"
+			],
+			[
+				"ent",
+				"entities"
+			],
+			[
+				"segment",
+				"segment_query"
+			],
+			[
+				"compo",
+				"components"
+			],
+			[
+				"query",
+				"query_data"
+			],
+			[
+				"origi",
+				"original_color"
+			],
+			[
+				"active",
+				"active_cascade"
+			],
+			[
+				"var",
+				"var_name"
+			],
+			[
+				"projec",
+				"project_directory"
+			],
+			[
+				"other",
+				"other_stuff"
+			],
+			[
+				"unpa",
+				"unpack_with_class_name"
+			],
+			[
+				"compon",
+				"component"
+			],
+			[
+				"qu",
+				"query_components"
+			],
+			[
+				"styl",
+				"style_components"
+			],
+			[
+				"names",
+				"named_styles"
+			],
+			[
+				"comp",
+				"component"
+			],
+			[
+				"full",
+				"full_path"
+			],
+			[
+				"sc",
+				"style_component"
+			],
+			[
+				"primary",
+				"primary_style"
+			],
+			[
+				"casc",
+				"cascade_list"
+			],
+			[
+				"enti",
+				"entity_id"
+			],
+			[
+				"component",
+				"component_data"
+			],
+			[
+				"componen",
+				"component"
+			],
+			[
+				"collec",
+				"collection"
+			],
+			[
+				"activ",
+				"active_list"
+			],
+			[
+				"write",
+				"write_data"
+			],
+			[
+				"wri",
+				"write_data"
+			],
+			[
+				"par",
+				"packed_array"
+			],
+			[
+				"compd",
+				"component_data"
+			],
+			[
+				"each_",
+				"each_with_index"
+			],
+			[
+				"all",
+				"all_style_objects"
+			],
+			[
+				"style",
+				"style_component"
+			],
+			[
+				"righc",
+				"right_callbacks"
+			],
+			[
+				"lftc",
+				"left_callbacks"
+			],
+			[
+				"butt",
+				"mouse_button"
+			],
+			[
+				"actt",
+				"active_action"
+			],
+			[
+				"ti",
+				"text_input"
+			],
+			[
+				"acc",
+				"active_action"
+			],
+			[
+				"acti",
+				"active_action"
+			],
+			[
+				"mous",
+				"mouse_button"
+			],
+			[
+				"button",
+				"button_phase"
+			],
+			[
+				"hit",
+				"hitbox_color"
+			],
+			[
+				"clone",
+				"clone_factory"
+			],
+			[
+				"old",
+				"old_text"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"regist",
+				"register_prototype"
+			],
+			[
+				"inp",
+				"text_input"
+			],
+			[
+				"text",
+				"text_input"
+			],
+			[
+				"est",
+				"estimated_i"
+			],
+			[
+				"first",
+				"first_guess"
+			],
+			[
+				"esti",
+				"estimated_i"
+			],
+			[
+				"meas",
+				"measured_offset"
+			],
+			[
+				"disp",
+				"measured_displacement"
+			],
+			[
+				"caret",
+				"caret_pos"
+			],
+			[
+				"dir",
+				"dirty"
+			],
+			[
+				"no",
+				"normalized_anchor"
+			],
+			[
+				"nw",
+				"new_height"
+			],
+			[
+				"plac",
+				"place_to_look"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/ravenskrag/Projects/2_Personal/Current/ruby_of_cpp_combination/RubyCPP/Oni/ext/oni/extconf.rb",
+			"settings":
+			{
+				"buffer_size": 13853,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Projects/2_Personal/Current/ruby_of_cpp_combination/RubyCPP/Oni/Rakefile",
+			"settings":
+			{
+				"buffer_size": 18653,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			}
+		},
+		{
+			"file": ".gitignore",
+			"settings":
+			{
+				"buffer_size": 1548,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "common.rb",
+			"settings":
+			{
+				"buffer_size": 3714,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "require 'rake/testtask'\nrequire 'rake/clean'\n\nrequire 'fileutils'\nrequire 'open3'\nrequire 'yaml' # used for config files\nrequire 'json' # used to parse Clang DB\n\n\nrequire './common'\n# ^ this file declares GEM_ROOT constant, other constants, and a some functions\n\n# invoke a particular rake task by name (and then allow it to be run again later)\ndef run_task(task)\n\tRake::Task[task].reenable\n\tRake::Task[task].invoke\n\t# Rake::Task[task].reenable\n\t# src: http://stackoverflow.com/questions/577944/how-to-run-rake-tasks-from-within-rake-tasks\nend\n\n\n# temporarily swap out the makefile for an alternate version\n# \n# main_filepath, alt_filepath:  Paths to main and alt makefile, relative to common_root.\n# common_root:                  As above.\n# work_dir:                     Path under which to run the commands specified in the block.\ndef swap_makefile(common_root, main_filepath, alt_filepath, &block)\n\tswap_ext = \".temp\"\n\tswap_filepath = File.join(common_root, \"Makefile#{swap_ext}\")\n\t\n\t\n\tmain_filepath = File.expand_path(File.join(common_root, main_filepath))\n\talt_filepath  = File.expand_path(File.join(common_root, alt_filepath))\n\t\n\t\n\t\n\t\n\t# run tasks associated with the alternate file\n\tbegin\n\t\tFileUtils.mv main_filepath, swap_filepath # rename main makefile\n\t\tFileUtils.cp alt_filepath, main_filepath  # switch to .a-creating mkfile\n\t\t\n\t\tblock.call\n\tensure\n\t\tFileUtils.cp swap_filepath, main_filepath # restore temp\n\t\tFileUtils.rm swap_filepath                # delete temp\t\t\n\t\t# I think this ensure block should make it so the Makefile always restores,\n\t\t# even if there is an error in the block.\n\t\t# src: http://stackoverflow.com/questions/2191632/begin-rescue-and-ensure-in-ruby\n\tend\nend\n\n\n\n\n\n\n# generate depend file for gcc dependencies\n# sh \"gcc -MM *.c > depend\"\n\n\n\n\n\n# use 'rake clean' and 'rake clobber' to\n# easily delete generated files\n\nCLEAN.include('ext/rubyOF/constants/data_path.h')\nCLEAN.include('ext/rubyOF/extconf_variables.rb')\nCLEAN.include('ext/oF_apps/testApp/raw_oF_variables.yaml')\nCLEAN.include('ext/oF_apps/testApp/oF_build_variables.yaml')\n\n# NOTE: Clean / clobber tasks may accidentally clobber oF dependencies if you are not careful.\nCLEAN.include('ext/rubyOF/Makefile')\nCLEAN.include('ext/**/*{.o,.log,.so}')\nCLEAN.include('ext/**/*{.a}')\n\t# c1 = CLEAN.clone\n\t# p CLEAN\nCLEAN.exclude('ext/openFrameworks/**/*')\nCLEAN.exclude('ext/oF_deps/**/*')\n# ^ remove the openFrameworks core\n\t# c2 = CLEAN.clone\n\t# p CLEAN\n# CLEAN.exclude('ext/oF_apps/**/*')\n# # ^ remove the test apps as well\n\n\n\n# Clean up clang file index as well\n# (build from inspection of 'make' as it builds the c-library)\nCLEAN.include(CLANG_SYMBOL_FILE)\n\n\n\n\n\nCLOBBER.include('bin/lib/*.so')\nCLOBBER.include('lib/**/*.so')\nCLOBBER.exclude('ext/openFrameworks/**/*')\nCLOBBER.exclude('ext/oF_deps/**/*')\n\n\n\n\n\n\t# c3 = CLOBBER.clone\n\t# p CLOBBER\n# CLOBBER.include('lib/**/*.gem') # fix this up. I do want to clobber the gem tho\n\n\t# require 'irb'\n\t# binding.irb\n\n\t# exit\n\t# raise \"WHOOPS\"\n\n\n\n\n\n\nnamespace :oF do\n\tdesc \"Download openFrameworks libraries (build deps)\"\n\ttask :download_libs do\n\t\trun_i \"ext/openFrameworks/scripts/linux/download_libs.sh\"\n\t\t# ^ this script basically just triggers another script:\n\t\t#   ext/openFrameworks/scripts/dev/download_libs.sh\n\tend\n\t\n\t# NOTE: If there is a problem with the core, try downloading libs again.\n\t# NOTE: If there is a problem with building the oF project, download libs again, build the core again, and then rebuild the project.\n\tdesc \"Build openFrameworks core (ubuntu).\"\n\ttask :build do\n\t\tputs \"=== Building OpenFrameworks core...\"\n\t\tDir.chdir \"./ext/openFrameworks/scripts/linux/\" do\n\t\t\trun_i \"./compileOF.sh -j#{NUMBER_OF_CORES}\"\n\t\tend\n\tend\n\t\n\tdesc \"Clean openFrameworks core (ubuntu).\"\n\ttask :clean do\n\t\tpath = \"libs/openFrameworksCompiled/project\"\n\t\tpath = File.expand_path(path, OF_ROOT)\n\t\tDir.chdir path do\n\t\t\trun_i \"make clean\" # clean up the core\n\t\tend\n\tend\n\t\n\tdesc \"Clean and Rebuild oF core (ubuntu).\"\n\ttask :rebuild do\n\t\trun_task('base:clean')\n\t\trun_task('base:build')\n\tend\n\t\n\t\n\t\n\t\n\t\n\tdesc \"Build the project generator.\"\n\ttask :compilePG => :build do\n\t\tDir.chdir File.join(GEM_ROOT, \"ext/openFrameworks/scripts/linux/\") do\n\t\t\trun_i \"./compilePG.sh\"\n\t\tend\n\tend\n\t\n\t# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.\n\tdesc \"Create a new openFrameworks project in the correct directory.\"\n\ttask :project_generator, [:oF_project_name] do |t, args|\n\t\tproject = args[:oF_project_name]\n\t\t\n\t\tif project.nil?\n\t\t\traise \"ERROR: must specify oF_project_name\"\n\t\tend\n\t\t\n\t\t\n\t\t# NOTE: These paths need to be full paths, because they are being passed to another system, which is executing from a different directory.\n\t\tdir = \"ext/openFrameworks/apps/projectGenerator/commandLine/bin\"\n\t\tfull_dir = File.expand_path dir, GEM_ROOT\n\t\t\n\t\t\n\t\ta = File.join(GEM_ROOT, \"ext\", \"openFrameworks\")\n\t\tb = File.join(GEM_ROOT, \"ext\", \"oF_apps\", project)\n\t\t\n\t\tDir.chdir full_dir do\n\t\t\t# p Dir.pwd\n\t\t\t\n\t\t\trun_i \"./projectGenerator -o\\\"#{a}\\\" #{b}\" \n\t\tend\n\t\t\n\tend\n\t\nend\n\n\n# NOTE: Build deps under the oF_deps folder, and then copy over the results\nnamespace :oF_deps do\n\t# ===== Setup Custom OpenFrameworks Dependencies =====\n\t\n\t# declare configuration\n\toF_lib_path  = File.join GEM_ROOT, \"ext/openFrameworks/libs/\"\n\tdefault_libs = File.join GEM_ROOT, \"ext/oF_deps/master/original/\"\n\tcustom_libs  = File.join GEM_ROOT, \"ext/oF_deps/master/custom/\"\n\t\n\t# declare helper functions\n\tfoo = ->(dir){\n\t\tDir[dir + \"*\"]\n\t\t.collect{  |x| x.sub dir, \"\"  }\n\t\t.reject{   |x| x.downcase.include? \"readme\"  }\n\t}\n\t\n\tremove_libs = ->(output_dir, source_dir){\n\t\tDir.chdir output_dir do\n\t\t\tfoo[source_dir].each{  |name|  FileUtils.rm_rf name  }\n\t\tend\n\t}\n\t\n\treplace_libs = ->(output_dir, source_dir){\n\t\tDir.chdir output_dir do\n\t\t\tfoo[source_dir].each do |name|\n\t\t\t\tfull_path = File.join(source_dir, name)\n\t\t\t\t\n\t\t\t\tFileUtils.copy_entry full_path, \"./#{name}\", true\n\t\t\t\t# copy_entry(src, dest, preserve = false, dereference_root = false, remove_destination = false)\n\t\t\tend\n\t\tend\n\t}\n\t\n\tdesc \"Use custom libs compiled with -fPIC for Ruby compatability.\"\n\ttask :inject => [\n\t\t\"kiss:package\",\n\t\t\"tess2:package\"\n\t] do\n\t\tunless foo[default_libs] == foo[custom_libs]\n\t\t\traise \"ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'\"\n\t\tend\n\t\t\n\t\tputs \"Injecting custom libs...\"\n\t\t\n\t\t# remove default libs\n\t\tremove_libs[oF_lib_path, default_libs]\n\t\t\n\t\t# copy over new libs\n\t\treplace_libs[oF_lib_path, custom_libs]\n\t\t\n\t\t# remove the \"repo\" directory under the copy of the custom libs\n\t\t# (keep only the built packages, discard the source)\n\t\t# (the source will still be stored elsewhere anyway)\n\t\t[\"kiss\", \"tess2\"].each do |name|\n\t\t\tDir.chdir File.join(oF_lib_path, name) do\n\t\t\t\tFileUtils.rm_rf \"./repo\"\n\t\t\t\tFileUtils.rm_rf \"./custom_build\"\n\t\t\tend\n\t\tend\n\t\t\n\t\tputs \"Done!\"\n\tend\n\t\n\tdesc \"Undo inject_custom_libs (return to default libs)\"\n\ttask :revert do\n\t\tunless foo[default_libs] == foo[custom_libs]\n\t\t\traise \"ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'\"\n\t\tend\n\t\t\n\t\tputs \"Reverting OpenFrameworks core libs...\"\n\t\t\n\t\t# remove injected libs\n\t\tremove_libs[oF_lib_path, custom_libs]\n\t\t\n\t\t# restore default libs\n\t\treplace_libs[oF_lib_path, default_libs]\n\t\t\n\t\tputs \"Done!\"\n\tend\n\t\n\t\n\t\n\t# ====================================================\n\t\n\t\n\tdesc \"Clean all custom deps\"\n\ttask :clean => ['kiss:clean', 'tess2:clean']\n\t\n\tdesc \"Clobber all custom deps\"\n\ttask :clobber => ['kiss:clobber', 'tess2:clobber']\n\t\n\t\n\t# ====================================================\n\t\n\t\n\t\n\t\n\tnamespace :kiss do\n\t\t# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.\n\t\tbasedir = 'ext/oF_deps/master/custom/kiss/'\n\t\tsubdir  = 'custom_build/'\n\t\t\n\t\t\n\t\t# NOTE: This build process currently only guaranteed to work with 64-bit linux. Uses the openframeworks apothecary build process, ammended to add the -fPIC flag.\n\t\t# desc \"testing\"\n\t\ttask :build do\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\t\tp Dir.pwd\n\t\t\t\tFileUtils.mkdir_p \"./lib/\"\n\t\t\t\trun_i \"make\"\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"Move files to mimic what oF expects.\"\n\t\ttask :package => :build do\n\t\t\tputs \"Packaging kisstff...\"\n\t\t\t\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir) do\n\t\t\t\t# kiss_fft.h\n\t\t\t\t# kiss_fftr.h\n\t\t\t\t# # => include/\n\t\t\t\tFileUtils.mkdir_p \"./include\"\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/kiss_fft.h\",\n\t\t\t\t\t\"./include/kiss_fft.h\",\n\t\t\t\t)\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/tools/kiss_fftr.h\",\n\t\t\t\t\t\"./include/kiss_fftr.h\",\n\t\t\t\t)\n\t\t\t\t\n\t\t\t\t# COPYING\n\t\t\t\t# # => license/\n\t\t\t\tFileUtils.mkdir_p \"./license\"\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/COPYING\",\n\t\t\t\t\t\"./license/COPYING\",\n\t\t\t\t)\n\t\t\t\t\n\t\t\t\t# libkiss.a\n\t\t\t\t# => lib/linux64/\n\t\t\t\toutput_dir = \"./lib/#{PLATFORM}/\"\n\t\t\t\tFileUtils.mkdir_p output_dir\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./custom_build/lib/libkiss.a\",\n\t\t\t\t\tFile.join(output_dir, \"libkiss.a\")\n\t\t\t\t)\n\t\t\t\t\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"testing\"\n\t\ttask :clean do\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\t\trun_i \"make clean\"\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"testing\"\n\t\ttask :clobber => :clean do\n\t\t\tpath = File.join(GEM_ROOT, basedir, subdir, \"libkiss.a\")\n\t\t\tif File.exists? path\n\t\t\t\tFileUtils.rm path\n\t\t\tend\n\t\t\t\n\t\t\tFileUtils.rm_rf File.join(GEM_ROOT, basedir, subdir, \"lib\")\n\t\t\tFileUtils.rm_rf File.join(GEM_ROOT, basedir, \"lib\")\n\t\t\t\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\tend\n\t\tend\n\tend\n\t\n\tnamespace :tess2 do\n\t\t# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.\n\t\tbasedir = 'ext/oF_deps/master/custom/tess2/'\n\t\tsubdir  = 'repo/'\n\t\t\n\t\t# src: https://github.com/memononen/libtess2\n\t\t\n\t\t# NOTE: assumes that premake is installed\n\t\t\t# sudo apt-get install premake4\n\t\t# NOTE: changes to the patch procedure in this file will force a rebuild\n\t\t\t# (other non-related changes to Rakefile will also force a rebuild)\n\t\t# desc \"testing\"\n\t\ttask :build => [__FILE__] do\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\t\tp Dir.pwd\n\t\t\t\t\n\t\t\t\t# run premake (generate GNU makefile system)\n\t\t\t\trun_i \"premake4 gmake\"\n\t\t\t\t\n\t\t\t\t# patch files (add the -fPIC flag)\n\t\t\t\tfilepath = \"./Build/tess2.make\"\n\t\t\t\tlines = File.readlines(filepath)\n\t\t\t\t\n\t\t\t\t\tputs \"Patching tess2 makefile...\"\n\t\t\t\t\ttarget_string = \"CFLAGS    +=\"\n\t\t\t\t\tlines\n\t\t\t\t\t.select{  |line| line.include? target_string  }\n\t\t\t\t\t.each do  |line|\n\t\t\t\t\t\tline.sub! \"\\n\", \" -fPIC\\n\"\n\t\t\t\t\t\tputs line\n\t\t\t\t\tend\n\t\t\t\t\n\t\t\t\tFile.open(filepath, \"w\") do |f|\n\t\t\t\t\tf.write lines.join('')\n\t\t\t\tend\n\t\t\t\t\n\t\t\t\t# build\n\t\t\t\tDir.chdir \"Build\" do \n\t\t\t\t\trun_i \"make\"\n\t\t\t\tend\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"Move files to mimic what oF expects.\"\n\t\ttask :package => :build do\n\t\t\tputs \"Packaging tess2...\"\n\t\t\t\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir) do\n\t\t\t\t# Include/tesselator.h\n\t\t\t\t# # => include/\n\t\t\t\tFileUtils.mkdir_p \"./include\"\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/Include/tesselator.h\",\n\t\t\t\t\t\"./include/tesselator.h\",\n\t\t\t\t)\n\t\t\t\t\n\t\t\t\t# LICENSE.txt\n\t\t\t\t# # => license/\n\t\t\t\tFileUtils.mkdir_p \"./license\"\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/LICENSE.txt\",\n\t\t\t\t\t\"./license/LICENSE.txt\",\n\t\t\t\t)\n\t\t\t\t\n\t\t\t\t# Build/libtess2.a\n\t\t\t\t# # => lib/linux64/libtess2.a\n\t\t\t\toutput_dir = \"./lib/#{PLATFORM}/\"\n\t\t\t\tFileUtils.mkdir_p output_dir\n\t\t\t\tFileUtils.cp(\n\t\t\t\t\t\"./repo/Build/libtess2.a\",\n\t\t\t\t\tFile.join(output_dir, \"libtess2.a\")\n\t\t\t\t)\n\t\t\t\t\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"testing\"\n\t\ttask :clean do\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\t\tif Dir.exists? \"Build\"\n\t\t\t\t\tDir.chdir \"Build\" do \n\t\t\t\t\t\trun_i \"make clean\"\n\t\t\t\t\tend\n\t\t\t\tend\n\t\t\tend\n\t\tend\n\t\t\n\t\t# desc \"testing\"\n\t\ttask :clobber do\n\t\t\tDir.chdir File.join(GEM_ROOT, basedir, subdir) do\n\t\t\t\tFileUtils.rm_rf \"Build\"\n\t\t\tend\n\t\tend\n\tend\nend\n\n\nnamespace :oF_project do\n\tdesc \"Debug with gdb\"\n\ttask :debug do\n\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\tputs \"Remember: type 'q' to exit GDB.\"\n\t\t\tputs \"==============================\"\n\t\t\tputs \"\"\n\t\t\tKernel.exec \"gdb ./bin/#{OF_SKETCH_NAME}_debug\"\n\t\tend\n\tend\n\t\n\tdesc \"Run just the C++ components for the oF sketch\"\n\ttask :run do\n\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\trun_i \"make Run#{TARGET}\"\n\t\tend\n\tend\n\t\n\t# NOTE: building the project requires the core to be built correctly.\n\tdesc \"Build the oF project (C++ only) - generates .o files\"\n\ttask :build do # implicity requires 'oF:build' task\n\t\tputs \"=== Building oF project...\"\n\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\t# Make the debug build if the flag is set,\n\t\t\t# othwise, make the release build.\n\t\t\tdebug = OF_DEBUG ? \"Debug\" : \"\"\n\t\t\t\n\t\t\t\n\t\t\tbegin\n\t\t\t\trun_i \"make #{debug} -j#{NUMBER_OF_CORES}\"\n\t\t\trescue StandardError => e\n\t\t\t\tputs \"ERROR: Could not build oF sketch.\"\n\t\t\t\texit\n\t\t\tend\n\t\t\t# FileUtils.touch 'oF_project_build_timestamp'\n\t\tend\n\tend\n\t\n\t\n\t# desc \"Update the timestamp by rebuilding the project.\"\n\t# file File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp') => :build\n\t\n\t\n\tdesc \"Clean the oF project (C++ only) [also cleans addons]\"\n\ttask :clean do\n\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\trun_i \"make clean\"\n\t\tend\n\tend\n\t\n\t\n\t\n\t# rebuilding the project should rebuild the addons too\n\tdesc \"Rebuld the project.\"\n\ttask :rebuild do\n\t\trun_task('oF_sketch:clean')\n\t\trun_task('oF_sketch:build')\n\tend\n\t\n\t\n\t\n\t\n\t# show the .o files generated that are specific to this project\n\t# (these are the files used to generate the static lib)\n\tdesc \"DEBUG: show the .o files generated that are specific to this project\"\n\ttask :examine do\n\t\tDir.chdir OF_SKETCH_BUILT_DIR do\n\t\t\tputs \"local oF build directory:\"\n\t\t\tputs Dir.pwd\n\t\t\tp Dir['./*']\n\t\tend\n\tend\n\t\n\t\n\t\n\t\n\t\n\t# actually generates two files:\n\t# + oF_build_variables.yaml (aka OF_BUILD_VARIABLE_FILE)\n\t# + raw_oF_variables.yaml   (intermediate representation of raw data)\n\tfile OF_BUILD_VARIABLE_FILE => \n\t[\n\t\t# # NOTE: slight indirection here - depend on timestamp file instead of build task directly, so that \n\t\t# File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp'),\n\t\tFile.expand_path(\"./Makefile.static_lib\", OF_SKETCH_ROOT),\n\t\tFile.expand_path(\"./addons.make\",         OF_SKETCH_ROOT),\n\t\t__FILE__, # if the Rake task changes, then update the output file\n\t\tCOMMON_CONFIG # if config variables change, then build may be different\n\t] do\n\t\tputs \"=== Exporting oF project build variables...\"\n\t\t\n\t\tswap_makefile(OF_SKETCH_ROOT, \"Makefile\", \"Makefile.static_lib\") do\n\t\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\t\t# run_i \"make printvars\"\n\t\t\t\t\n\t\t\t\tout = `make printvars TARGET_NAME=#{TARGET}`\n\t\t\t\t# p out\n\t\t\t\t\n\t\t\t\tout = out.each_line.to_a\n\t\t\t\t\n\t\t\t\t\n\t\t\t\tFile.open(OF_RAW_BUILD_VARIABLE_FILE, \"w\") do |f|\n\t\t\t\t\tf.puts out.to_yaml\n\t\t\t\tend\n\t\t\t\t\n\t\t\t\t\n\t\t\t\tfinal = \n\t\t\t\t\tout.select{  |line|\n\t\t\t\t\t\tline.include? '='\n\t\t\t\t\t}.collect{   |line|\n\t\t\t\t\t\t# can't just split on '='\n\t\t\t\t\t\t# because there can be mulitple equal signs\n\t\t\t\t\t\t# \n\t\t\t\t\t\t# The thing before the FIRST equal sign is the key,\n\t\t\t\t\t\t# everything else on the line is the value associated with the key\n\t\t\t\t\t\ti = line.index(\"=\")\n\t\t\t\t\t\tkey   = line[0..(i-1)]\n\t\t\t\t\t\tvalue = line[((i+1)..-1)]\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tkey, value = [key, value].collect{ |x| x.strip }\n\t\t\t\t\t\t\n\t\t\t\t\t\tvalue = value.split()\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t[key, value]\n\t\t\t\t\t}.to_h\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\tfilepath = OF_BUILD_VARIABLE_FILE\n\t\t\t\tFile.open(filepath, \"w\") do |f|\n\t\t\t\t\tf.puts final.to_yaml\n\t\t\t\tend\n\t\t\t\t\n\t\t\t\tputs \"=> Variables written to '#{filepath}'\"\n\t\t\t\tputs \"\"\n\t\t\tend\n\t\tend\n\tend\n\t\n\tdesc \"Export build variables from oF build system (linux).\"\n\ttask :export_build_variables => OF_BUILD_VARIABLE_FILE\n\t\n\t\n\tdesc \"Drop to IRB to explore oF build system variables.\"\n\ttask :explore => :export_build_variables do\n\t\tof_build_variables = YAML.load_file(OF_BUILD_VARIABLE_FILE)\n\t\t\n\t\trequire 'irb'\n\t\tbinding.irb\n\tend\n\t\n\t\n\t\n\tnamespace :static_lib do\n\t\t# use a modified version of the oF build system\n\t\t# to generate a C++ static lib\n\t\t# (same make file used to generate OF_BUILD_VARIABLE_FILE)\n\t\t\n\t\t\n\t\t# outputs OF_SKETCH_LIB_FILE\n\t\t# but don't want to write this as a file task,\n\t\t# because I want the makefile to determine if things should be rebuilt or not\n\t\tdesc \"generate static lib from oF project\"\n\t\ttask :build do\n\t\t\tputs \"=== Making oF sketch into a static library...\"\n\t\t\tswap_makefile(OF_SKETCH_ROOT, \"Makefile\", \"Makefile.static_lib\") do\n\t\t\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\t\t\tbegin\n\t\t\t\t\t\trun_i \"make static_lib TARGET_NAME=#{TARGET}\"\n\t\t\t\t\trescue StandardError => e\n\t\t\t\t\t\tputs \"ERROR: Could not make a static library out of the oF sketch project.\"\n\t\t\t\t\t\texit\n\t\t\t\t\tend\n\t\t\t\tend\n\t\t\tend\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t# TODO: update this task so it actually works correctly.\n\t\t\t# Often, it fails to rebuild the archive correctly, which invaldates steps further down the chain\n\t\t\t# (or at least that's what this looks like)\n\t\t\t# (i'm not actually sure, but it's super confusing why old symbols are cropping up in my final Ruby executable.)\n\t\t\t\n\t\t\t# NOTE: could potentially use the exported build variables file (the one whose primary use is in extconf.rb) in order to get the build variables, if you really need them. Seems like that might actually end up being better than doing the weird makefile switcheroo?\n\t\t\t# If you contain more of the work in the Rakefile, maybe rake will have a better idea of the dependency chain, and not have to remake stuff so much?\n\t\tend\n\t\t\n\t\ttask :clean do\n\t\t\tswap_makefile(OF_SKETCH_ROOT, \"Makefile\", \"Makefile.static_lib\") do\n\t\t\t\tDir.chdir OF_SKETCH_ROOT do\n\t\t\t\t\trun_i \"make clean_static_lib TARGET_NAME=#{TARGET}\"\n\t\t\t\tend\n\t\t\tend\n\t\tend\n\tend\n\t\nend\n\n\n\n\n# === Build the C extension\nnamespace :c_extension do\n\t# make the :test task depend on the shared\n\t# object, so it will be built automatically\n\t# before running the tests\n\t\n\t# rule to build the extension: this says\n\t# that the extension should be rebuilt\n\t# after any change to the files in ext\n\t\n\tc_library = \"lib/#{NAME}/#{NAME}.so\"\n\t# NOTE: This only works for linux, because it explicitly uses the \".so\" extension\n\t\n\t\n\t\n\t# Why does the system detect changes to the oF sketch executable, but not the library?\n\t# \n\t\t# So it looks like the build system links against the raw .o files generated by the open frameworks build system.\n\t\t# nothing in extconf.rb references the libOFSketch.a *at all*\n\t\t# that file has not been touched in forever, it's not being linked into anything,\n\t\t# it's basically no use to anyone.\n\n\t\t# I think what happened is I thought I needed this .a as an intermediate step, but it confused me.\n\t\t# So I ended up dropping the whole thing, and just using Ruby's facilities to figure it out?\n\t\t# rather than having to write makefiles\n\t\t# the following is quoted from a comment in 'Makefile.static_lib'\n\t\t# ----\n\t\t\t# this doesn't seem to work. might have to do this in a rakefile, because that's something I actually understand, lol.\n\t\t\t# these variables are coming up empty, and I'm not sure why.\n\t\t# ----\n\t# HOWEVER: The vestigial libOFSketch.a generation code can not be discarded.\n\t\t# While the library is vestigial, that part of the build process\n\t\t# generates 'oF_build_variables.yaml', which is used by extconf.rb to\n\t\t# configure various flags that should be passed to the complier / linker.\n\t# TODO: Re-examine the history of creating the build system, and attempt to refactor such that this (largely) vestigital pathway can actually be removed safely.\n\t\n\t\n\t\n\t# TODO: update source file list\n\tc_library_deps = Array.new\n\t# c_library_deps += Dir.glob(\"ext/#{NAME}/*{.rb,.c}\")\n\t\n\t\n\t# Ruby / Rice CPP files\n\tc_library_deps += Dir.glob(\"ext/#{NAME}/cpp/lib/**/*{.cpp,.h}\")\n\t\n\t# \n\tc_library_deps << \"ext/#{NAME}/extconf.rb\"\n\tc_library_deps << __FILE__ # depends on this Rakefile\n\tc_library_deps << RUBYOF_DATA_PATH_FILE # defines oF asset directory\n\t\n\t# c_library_deps << OF_BUILD_VARIABLE_FILE\n\t# TODO: ^ re-enable this ASAP\n\t\n\t# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_library' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.\n\t\n\t\n\t# FIXME: can't seem to just run rake again to rebuild. keep having to clobber, and then do a full clean build again.\n\t\n\t\n\t# patch c constant file with proper data path\n\tfile RUBYOF_DATA_PATH_FILE do\n\t\tFileUtils.mkdir_p File.dirname RUBYOF_DATA_PATH_FILE\n\t\t\n\t\tFile.open(RUBYOF_DATA_PATH_FILE, 'w') do |f|\n\t\t\tf.puts \"#define DATA_PATH \\\"#{RUBYOF_DATA_PATH}\\\"\"\n\t\tend\n\tend\n\t\n\t# Mimic RubyGems gem install procedure, for testing purposes.\n\t# * run extconf\n\t# * execute the resultant makefile\n\t# * move the .so to it's correct location\n\tfile c_library => c_library_deps do\n\t\tDir.chdir(\"ext/#{NAME}\") do\n\t\t\t# this does essentially the same thing\n\t\t\t# as what RubyGems does\n\t\t\tputs \"=== starting extconf...\"\n\t\t\t\n\t\t\tbegin\n\t\t\t\trun_i \"ruby extconf.rb\"\n\t\t\trescue StandardError => e\n\t\t\t\tputs \"ERROR: Could not configure c extension.\"\n\t\t\t\texit\n\t\t\tend\n\t\t\t\n\t\t\t\n\t\t\tputs \"======= Top level Rakefile\"\n\t\t\tputs \"=== configuration complete. building C extension\"\n\t\t\t\n\t\t\t\n\t\t\t# Run make\n\t\t\t\n\t\t\tflags = \"\"\n\t\t\t# flags += \" -j#{NUMBER_OF_CORES}\" if Dir.exists? '/home/ravenskrag' # if running on my machine\n\t\t\t\n\t\t\t\n\t\t\t# ======================================\n\t\t\t# SPECIAL MOD\n\t\t\t# regenerate the clang DB if necessary\n\t\t\tif regenerate_clang_db? # see definition below\n\t\t\t\tputs \"Building and regenerating clang DB\"\n\t\t\t\t\n\t\t\t\t# need to recompile everything to get a proper DB\n\t\t\t\t# so go ahead and clean out everything\n\t\t\t\trun_i \"make clean\"\n\t\t\t\t\n\t\t\t\t# ok, now examine the build process and build the DB\n\t\t\t\tbegin\n\t\t\t\t\trun_i \"bear make #{flags}\"\n\t\t\t\trescue StandardError => e\n\t\t\t\t\tputs \"ERROR: Could not build c extension and / or clang DB\"\n\t\t\t\t\texit\n\t\t\t\tend\n\t\t\t\t\n\t\t\t\t# Clang DB file is generated here,\n\t\t\t\t# but needs to be moved to the gem root to function\n\t\t\t\tFileUtils.mv \"./compile_commands.json\", CLANG_SYMBOL_FILE\n\t\t\t\t# => CLANG_SYMBOL_FILE\n\t\t\t\t\n\t\t\t\t# TODO: consider analying the app build as well, and then merging the two JSON documents together into a single clang DB\n\t\t\t\t\n\t\t\telse\n\t\t\t\t# run normally\n\t\t\t\tputs \"Building...\"\n\t\t\t\tbegin\n\t\t\t\t\trun_i \"make #{flags}\"\n\t\t\t\trescue StandardError => e\n\t\t\t\t\tputs \"ERROR: Could not build c extension.\"\n\t\t\t\t\texit\n\t\t\t\tend\n\t\t\tend\n\t\t\t# ======================================\n\t\tend\n\t\t\n\t\tputs \"=== Moving dynamic library into correct location...\"\n\t\t\n\t\tFileUtils.cp \"ext/#{NAME}/#{NAME}.so\", \"lib/#{NAME}\"\n\t\t\n\t\t\n\t\tputs \"=== C extension build complete!\"\n\tend\n\t\n\t# HELPER METHOD for c extension generation (managed clang DB)\n\t# Number of known files on disk doesn't match up with the database.\n\t# Must regenerate the database.\n\tdef regenerate_clang_db?\n\t\tif File.exists? CLANG_SYMBOL_FILE\n\t\t\t# check the contents of the DB to find out\n\t\t\tdata     = File.read(CLANG_SYMBOL_FILE)\n\t\t\tclang_db = JSON.parse(data)\n\t\t\t\n\t\t\tdirectory        = File.join GEM_ROOT, \"ext/#{NAME}\"\n\t\t\tcpp_source_files = Dir[File.join(directory, '*{.cpp}')]\n\t\t\t\n\t\t\t\n\t\t\treturn clang_db.length != cpp_source_files.length\n\t\telse\n\t\t\t# don't bother: you need to generate the DB\n\t\t\treturn true\n\t\tend\n\tend\n\t\n\t\n\t\n\t\n\t# NOTE: This is a shortcut for the file task above.\n\tdesc \"Build the C extension (core Rice glue code)\"\n\ttask :build_cpp_wrapper => c_library\n\t\n\t\n\t# Not sure how often you want to regenerate this file, but not every time you build.\n\t# You need to run make and have something happen. If nothing gets build from the makefile, the clang database will end up empty.\n\t\n\t\n\t\n\t# TODO: make sure the clang symbols are generated as part of the standard build process\n\t# TODO: add clang symbols file to the .gitignore. Should be able to generate this, instead of saving it.\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t# name of the RubyOF project\n\t# project  = \"boilerplate\" # NOTE: Now specified in common.rb\n\t\n\t# path to most of the .o files generated by core extension build\n\tpath     = File.join(GEM_ROOT, 'ext', 'rubyOF')\n\t\n\t# path to the app.o (generated for this RubyOF project)\n\tapp_path = File.join(RUBYOF_PROJECT_PATH, 'ext')\n\t\n\t\n\t\n\t# NOTE: generates project-specific 'app.o' file\n\tdesc \"build RubyOF project-specific C++ code\"\n\ttask :build_project do\n\t\tputs \"Building project-specific C++ code...\"\n\t\tDir.chdir(app_path) do\n\t\t\trun_i \"ruby extconf.rb\"\n\t\t\trun_i \"make\"\n\t\t\t\n\t\t\t\n\t\t\tputs \"Removing intermediate .so\"\n\t\t\tFileUtils.rm \"./rubyOF.so\"\n\t\tend\n\tend\n\t\n\t\n\t\n\t# TODO: 'final link' should be a file task that generates the project-specific dynamic lib\n\t\n\t\n\t# NOTE: uses project-specific 'app.o' to generate final 'rubyOF.so'\n\tdesc \"link final dynamic library (linux)\"\n\ttask :final_link do\n\t\tputs \"Linking final dynamic library...\"\n\t\tDir.chdir(app_path) do\n\t\t\t# The build command below is taken from command\n\t\t\t# used by the main extconf.rb build system\n\t\t\t# to link the final dynamic library.\n\t\t\t# In order to get it, just run the makefile in 'dry run' mode.\n\t\t\t# The command you want is the last line of the dry run.\n\t\t\t\n\t\t\t\n\t\t\t# This is how you execute the dry run, and extract the command:\n\t\t\t# + run these commands\n\t\t\t\t\t# cd GEM_ROOT/ext/rubyOF\n\t\t\t\t\t# make clean\n\t\t\t\t\t# make -n\n\t\t\t# + take the last line off of that output\n\t\t\t# + make sure the required .o files from main project are built\n\t\t\t\t\t# cd GEM_ROOT/ext/rubyOF\n\t\t\t\t\t# make\n\t\t\t# + perform the final linking\n\t\t\t\n\t\t\t\n\t\t\t# TODO: the base build should have the version of app.cpp from the template, so that it becomes trivial to figure out what path to replace in the final linking.\n\t\t\t\n\t\t\t# TODO: need to allow linking of additional stuff as well\n\t\t\t\n\t\t\t# NOTE: different sections of flags seem to be separated by three spaces '   '\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t# link the final dynamic library (linux)\n\t\t\trun_i \"g++ -shared -o rubyOF.so #{path}/Fbo.o #{path}/Graphics.o #{path}/TrueTypeFont.o #{app_path}/app.o #{path}/image.o #{path}/launcher.o #{path}/rubyOF.o -L. -L/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -Wl,-R/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib -lrice /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/libOFSketch.a   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a   -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed -Wl,--gc-sections   -lz -lgstapp-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstreamer-1.0 -ludev -lfontconfig -lfreetype -lsndfile -lopenal -lssl -lcrypto -lcurl -lglfw -lpulse-simple -lpulse -lasound -lGLEW -lGLU -lGL -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lmpg123 -lglut -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -ldl -lpthread -lfreeimage -lboost_filesystem -lboost_system -lpugixml -luriparser -lXinerama -lrtaudio -Wl,--compress-debug-sections=zlib    -lstdc++ -Wl,-rpath,'/../lib' -Wl,-R'/../lib' -lruby -lpthread -lgmp -ldl -lcrypt -lm   -lc\"\n\t\tend\n\t\t\n\t\tputs \"Final link complete!\"\n\tend\n\t\n\t\n\tdesc \"make sure final link works as expected (linux)\"\n\ttask :test_final_link do\n\t\t# Check final dynamic libary for symbols that will only exist\n\t\t# when the final link is performed correctly.\n\t\t\n\t\tsym      = \"Launcher\"\n\t\ttest_cmd = \"nm -C rubyOF.so  | grep #{sym}\"\n\t\t\n\t\t# baseline\n\t\tcmd1 = nil\n\t\tDir.chdir(File.join(GEM_ROOT, \"ext/rubyOF\")) do\n\t\t\tcmd1 = `#{test_cmd}` # run test command in shell\n\t\tend\n\t\t\n\t\t# final link\n\t\tcmd2 = nil\n\t\tDir.chdir(app_path) do\n\t\t\tcmd2 = `#{test_cmd}` # run test command in shell\n\t\tend\n\t\t\n\t\t\n\t\t# p cmd1\n\t\t# p cmd2\n\t\tif cmd1 == ''\n\t\t\traise \"ERROR: symbol '#{sym}' not present in baseline lib.\"\n\t\telsif cmd2 == '' # at this point, no error for baseline lib\n\t\t\traise \"ERROR: final .so did not contain symbol '#{sym}' as expected\"\n\t\telse\n\t\t\tputs \"no problems with final link\"\n\t\tend\n\tend\n\t\n\t\n\tdesc \"move completed dynamic library to final location\"\n\ttask :install_final_lib do\n\t\tputs \"Moving completed dynamic library to final location\"\n\t\t# copy dynamic lib into final location\n\t\tsrc = File.join(app_path, 'rubyOF.so')\n\t\tdst = File.join(GEM_ROOT, \"lib/#{NAME}\")\n\t\tFileUtils.cp(src, dst)\n\tend\n\t\n\t\n\t\n\t# ===== pathways =====\n\ttask :foo => [\n\t\t'oF_project:build', # needed to build OpenFrameworks extensions\n\t\t\n\t\tRUBYOF_DATA_PATH_FILE,\n\t\t# TODO: Figure out how this file should be generated for the dummy app.o that exists in the main build directory.\n\t\t# TODO: update the data path / data path file constants in common.rb to reflect the new project structure around app.o building etc\n\t\t\n\t\t:build_cpp_wrapper,\n\t\t:build_project,\n\t\t:final_link,\n\t\t:test_final_link,\n\t\t:install_final_lib\n\t]\n\t\n\ttask :foo_clean do\n\t\tDir.chdir(app_path) do\n\t\t\tbegin \n\t\t\t\trun_i \"make clean\"\n\t\t\trescue StandardError => e\n\t\t\t\t# FIXME: Can't seem to catch, suppress, and continue\n\t\t\t\tputs \"nothing to clean\"\n\t\t\tend\n\t\tend\n\tend\n\t\n\ttask :foo_clobber => :foo_clean do\n\t\t[\n\t\t\tFile.join(GEM_ROOT, \"lib/#{NAME}/rubyOF.so\"),\n\t\t\tFile.join(app_path, \"extconf_variables.rb\"),\n\t\t\tFile.join(app_path, \"Makefile\")\n\t\t].each do |file_to_be_cleaned|\n\t\t\tFileUtils.rm file_to_be_cleaned if File.exist? file_to_be_cleaned\n\t\tend\n\tend\n\t# ====================\nend\n\n\n\n\n# === Manage ruby-level code\nnamespace :ruby do\n\tdesc \"testing\"\n\ttask :run do\n\t\tDir.chdir RUBYOF_PROJECT_PATH do\n\t\t\tputs \"ruby level execution\"\n\t\t\t\n\t\t\texe_path = \"./lib/main.rb\"\n\t\t\tKernel.exec \"ruby #{exe_path}\"\n\t\tend\n\tend\n\t\n\tdesc \"testing\"\n\ttask :debug do\n\t\tDir.chdir RUBYOF_PROJECT_PATH do\n\t\t\tputs \"ruby level execution\"\n\t\t\t\n\t\t\texe_path = \"./lib/main.rb\"\n\t\t\tp exe_path\n\t\t\tputs \"Path to core file above.\"\n\t\t\tputs \"Type: run 'PATH_TO_CORE_FILE'\"\n\t\t\tputs \"Remember: type 'q' to exit GDB.\"\n\t\t\tputs \"==============================\"\n\t\t\tputs \"\"\n\t\t\tKernel.exec \"gdb ruby\"\n\t\tend\n\tend\nend\n\n\n\n\n\n# add dependencies to default 'clean' / 'clobber' tasks\n# NOTE: Don't edit the actual body of the task\ntask :clean   => ['oF_project:clean']\ntask :clobber => ['oF_deps:clobber', 'oF:clean']\n\n\n\ndesc \"Set up environment on a new machine.\"\ntask :setup => [\n\t# 'oF:download_libs',\n\t'oF_deps:inject', # NOTE: injecting will always force a new build of oF core\n\t'oF:build',\n\t'oF_project:build'\n] do\n\tFileUtils.mkdir_p \"bin/data\"\n\tFileUtils.mkdir_p \"bin/lib\" # <-- DYNAMIC_LIB_PATH\n\tFileUtils.mkdir_p \"bin/projects\"\n\tFileUtils.mkdir_p \"bin/projects/testProjectRuby/bin\"\n\tFileUtils.mkdir_p \"bin/projects/testProjectRuby/ext\"\n\tFileUtils.mkdir_p \"bin/projects/testProjectRuby/lib\"\nend\n\n\n\ndesc \"Copy oF dynamic libs to correct location\"\ntask :install_oF_dynamic_libs do\n\tputs \"=== Copying OpenFrameworks dynamic libs...\"\n\t\n\t# -rpath flag specifies where to look for dynamic libraries\n\t# (the system also has some paths that it checks for, but these are the \"local dlls\", basically)\n\t\n\t# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath\n\t# (specified in extconf.rb)\n\t\n\tsrc = File.expand_path(\n\t\t        \"./libs/fmodex/lib/#{PLATFORM}/libfmodex.so\",\n\t           OF_ROOT\n\t      )\n\tdest = DYNAMIC_LIB_PATH\n\tFileUtils.copy(src, dest)\n\t\n\t# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)\n\t# (does not reference the constant)\n\t\n\t# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well\nend\n\n\n\ndesc \"Build just the pure C++ parts\"\ntask :build_cpp => ['oF:build', 'oF_project:build']\n\n\n# Build dependencies shifted from explict to implied, (assumes task has run)\n# so that you don't duplicate the work being done in :setup.\n# This way, the build process will go a little faster.\ndesc \"Build C++ glue code (Ruby and C++ combined)\"\ntask :build_cpp_wrapper => [\n\t'oF:build',\n\t'oF_project:build',                  # implicitly requires oF:build\n\t'oF_project:export_build_variables', # implicitly requires oF_project:build\n\t'oF_project:static_lib:build',\n\t\n\t'c_extension:build_cpp_wrapper', # implicitly requires oF_project:build\n\t# ^ multiple steps:\n\t#   +  extconf.rb -> makefile\n\t#   +  run the makefile -> build ruby dynamic lib (.so)\n\t#   +  move ruby dynamic lib (.so) into proper position\n\t#   +  ALSO rebuilds the clang symbol DB as necessary.\n] do\n\tputs \">>> BUILD COMPLETE <<<\"\nend\n\ndesc \"Build specific RubyOF project (Ruby and C++ combined)\"\ntask :build do\n\t\nend\n\n\n\n\n\n\n\n# task :run => 'oF_project:run'\ntask :run => 'ruby:run'\n\ntask :build_and_run => [:build, :run] do\n\t\nend\n\n\n# NOTE: Assumes build options are set to make 'Debug'\ndesc \"testing\"\ntask :debug_project => [\n\t'oF:build',\n\t'oF_project:build',                  # implicitly requires oF:build\n\t'oF_project:debug'\n] do\n\t\nend\n\ndesc \"testing\"\ntask :debug => 'ruby:debug'\n\n\n\n\n\n# TODO: move this into the oF_deps namespace, and then consolodate all path definitions.\n# NOTE: Assumes you're running on Linux\ndesc \"Examine compiled libraries (linux)\"\ntask :examine, [:library_name] do |t, args|\n\tname = args[:library_name].to_sym\n\tpath =\n\t\tcase name\n\t\t\twhen :kiss\n\t\t\t\t\"ext/oF_deps/master/custom/kiss/custom_build/lib/libkiss.a\"\n\t\t\twhen :tess2\n\t\t\t\t\"ext/oF_deps/master/custom/tess2/lib/#{PLATFORM}/libtess2.a\"\n\t\t\twhen :oF_core\n\t\t\t\t\"ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a\"\n\t\t\twhen :oF_project\n\t\t\t\tif OF_DEBUG\n\t\t\t\t\t\"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}_debug\"\n\t\t\t\telse\n\t\t\t\t\t\"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}\"\n\t\t\t\tend\n\t\t\twhen :oF_project_lib\n\t\t\t\t\"ext/oF_apps/#{OF_SKETCH_NAME}/lib/libOFSketch.a\"\n\t\t\twhen :rubyOF\n\t\t\t\t\"ext/rubyOF/rubyOF.so\"\n\t\tend\n\t\n\tcase File.extname path\n\t\twhen \".a\"\n\t\t\trun_i \"nm -C #{path}\"\n\t\twhen \".so\"\n\t\t\trun_i \"nm -C -D #{path}\"\n\t\telse # linux executable\n\t\t\trun_i \"nm -C #{path}\"\n\tend\n\t\n\t# # the -C flag is for de-mangling the C++ function names\n\t# run_i \"nm -C #{path_to_lib}\"\n\t\n\t# # this command will let you see inside an .so\n\t# # nm -C -D libfmodex.so\n\t# # src: http://stackoverflow.com/questions/4514745/how-do-i-view-the-list-of-functions-a-linux-shared-library-is-exporting\nend\n\n",
+			"file": "Rakefile",
+			"file_size": 33245,
+			"file_write_time": 131453931922533138,
+			"settings":
+			{
+				"buffer_size": 33428,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/extconf.rb",
+			"settings":
+			{
+				"buffer_size": 406,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/oF_apps/testApp/oF_build_variables.yaml",
+			"settings":
+			{
+				"buffer_size": 78241,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/extconf_variables.rb",
+			"settings":
+			{
+				"buffer_size": 6849,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/Makefile",
+			"settings":
+			{
+				"buffer_size": 12389,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			}
+		},
+		{
+			"file": "ext/oF_apps/testApp/src/ofApp.cpp",
+			"settings":
+			{
+				"buffer_size": 2071,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/oF_apps/testApp/src/ofApp.h",
+			"settings":
+			{
+				"buffer_size": 577,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/launcher.cpp",
+			"settings":
+			{
+				"buffer_size": 3149,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/launcher.h",
+			"settings":
+			{
+				"buffer_size": 1657,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h",
+			"settings":
+			{
+				"buffer_size": 4154,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/extconf_common.rb",
+			"settings":
+			{
+				"buffer_size": 8191,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--- Boilerplate",
+			"settings":
+			{
+				"buffer_size": 15,
+				"line_ending": "Unix",
+				"name": "--- Boilerplate"
+			}
+		},
+		{
+			"file": "bin/projects/boilerplate/ext/app.cpp",
+			"settings":
+			{
+				"buffer_size": 4652,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/boilerplate/ext/app.h",
+			"settings":
+			{
+				"buffer_size": 1127,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/boilerplate/lib/main.rb",
+			"settings":
+			{
+				"buffer_size": 3261,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--- Example",
+			"settings":
+			{
+				"buffer_size": 11,
+				"line_ending": "Unix",
+				"name": "--- Example"
+			}
+		},
+		{
+			"file": "bin/projects/example/ext/extconf.rb",
+			"settings":
+			{
+				"buffer_size": 1750,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/example/ext/Makefile",
+			"settings":
+			{
+				"buffer_size": 12120,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "\n\n# \n# want to make sure the symbols from the new .a are making it into the new .so\n# \n\n\nravenskrag@ravensnest:~/Desktop/gem_structure/ext/rubyOF$\n\tar cr lib/libwrapper.a Fbo.o Graphics.o image.o launcher.o rubyOF.o TrueTypeFont.o \n\n\nravenskrag@ravensnest:~/Desktop/gem_structure/bin/projects/example/ext$\n\tmake clean\n\truby extconf.rb && make\n\tnm -C rubyOF.so | grep Launcher\n\n\n\n(if grep finds \"Launcher\" , then everything is working)\n\n\n\n\n\nravenskrag@ravensnest:~/Desktop/gem_structure/ext/rubyOF$\n\tnm -C rubyOF.so | grep Launcher\n\n=> \n\t00000000005cf1c0 W void ruby_mark<Launcher>(Launcher*)\n\t0000000000aa6648 u guard variable for Rice::Data_Type<Launcher>::caster_\n\t0000000000aa6750 u guard variable for Rice::Data_Type<Launcher>::unbound_instances()::unbound_instances\n\n\t[... truncated for brevity ...]\n\n\n\n\n# \n# just to be sure, you can check to make sure the symbols are in the .a too\n# (they are certainly in there)\n# \nravenskrag@ravensnest:~/Desktop/gem_structure/ext/rubyOF$\n\tnm -C lib/libwrapper.a  | grep Launcher\n",
+			"settings":
+			{
+				"buffer_size": 1022,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/example/ext/constants/data_path.h",
+			"settings":
+			{
+				"buffer_size": 89,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/example/ext/app.cpp",
+			"settings":
+			{
+				"buffer_size": 8025,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/example/ext/app.h",
+			"settings":
+			{
+				"buffer_size": 1446,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/example/lib/main.rb",
+			"settings":
+			{
+				"buffer_size": 16323,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--- oF Examples",
+			"settings":
+			{
+				"buffer_size": 15,
+				"line_ending": "Unix",
+				"name": "--- oF Examples"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.cpp",
+			"settings":
+			{
+				"buffer_size": 4523,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/ofApp.cpp",
+			"settings":
+			{
+				"buffer_size": 3109,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/ofApp.h",
+			"settings":
+			{
+				"buffer_size": 664,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/main.cpp",
+			"settings":
+			{
+				"buffer_size": 344,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 665.0,
+		"last_filter": "commit",
+		"selected_items":
+		[
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"comm",
+				"Git: Commit"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"package",
+				"Package Control: Enable Package"
+			],
+			[
+				"commi",
+				"Git: Commit"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"git comm",
+				"Git: Commit"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"kra",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"kr",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"kraken",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"c++",
+				"Set Syntax: Objective-C++"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			],
+			[
+				"anno",
+				"Git: Toggle Annotations"
+			]
+		],
+		"width": 1032.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+	],
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/ext/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/raw_oF_variables.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rb_app.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rb_app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/template/ext/app.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/template/ext/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/ofMain.h",
+		"/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/examine2.txt",
+		"/home/ravenskrag/Desktop/gem_structure/examine.txt",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/lib/projects/Scope/bin/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/data/box.jpg",
+		"/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/rice/protect.ipp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppRunner.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/Makefile.static_lib.debug",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rice.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxEmscripten/src/ofxEmscriptenSoundPlayer.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils/ofLog.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils/ofLog.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/oF_build_variables.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/.gitignore",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/input_output/clipboardExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/input_output/clipboardExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/stdRegulaExpressionExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/sortingExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/stdRegulaExpressionExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/sortingExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/regularExpressionExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/regularExpressionExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/ofLogExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/ofLogExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/conversionExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/strings/conversionExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/events/advancedEventsExample/src/eventsObject.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/compile_commands.json",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h",
+		"/home/ravenskrag/Desktop/gem_structure/compile_commands.json",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/lib/projects/template/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils/ofFileUtils.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils/ofFileUtils.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/lib/projects/ThoughtTrace/bin/main.rb",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Graphics.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Graphics.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/TrueTypeFont.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/TrueTypeFont.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Fbo.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/lib/Fbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/glm.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/freezable.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/version.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/Makefile",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Release/src/main.d",
+		"/home/ravenskrag/Desktop/gem_structure/README.md",
+		"/home/ravenskrag/Desktop/gem_structure/ext/of_apps/README.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/README.txt",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/build_libs/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/app.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/src/ofApp.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/RubyCPP/Oni/ext/oni/cpp/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Fbo.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/dev/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/android/download_libs.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Desktop/gem_structure/build/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/build/Rakefile",
+		"/home/ravenskrag/Desktop/gem structure/.gitignore",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/.gitmodules",
+		"/home/ravenskrag/Desktop/gem_structure/.gitmodules",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/.git",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/apothecary/.git",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/.git",
+		"/home/ravenskrag/Desktop/gem_structure/.git/index",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/README.md",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/apps/projectGenerator/commandLine/readme.md",
+		"/home/ravenskrag/Desktop/gem structure/ext/rubyOF/extconf.rb",
+		"/home/ravenskrag/Desktop/gem structure/build/Rakefile",
+		"/home/ravenskrag/Desktop/gem structure/ext/of_apps/README.txt",
+		"/home/ravenskrag/Desktop/gem structure/README.md",
+		"/home/ravenskrag/Desktop/gem structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/version.rb",
+		"/home/ravenskrag/Desktop/gem structure/configurator.rb",
+		"/home/ravenskrag/Desktop/gem structure/config.yaml",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_linux64_release/apps/projectGenerator/commandLine/readme.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_linux64_release/apps/projectGenerator/commandLine/Makefile",
+		"/home/ravenskrag/Desktop/gem structure/bin/apps/README.txt",
+		"/home/ravenskrag/Desktop/gem structure/docs/notes.txt",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/freezable.rb",
+		"/home/ravenskrag/Desktop/gem structure/lib/ruby_of/meta.rb",
+		"/home/ravenskrag/Desktop/gem structure/ext/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/libs/openFrameworks/math/ofVec2f.h",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/addons/ofxiOS/src/app/ofAppiOSWindow.mm",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CODE_OF_CONDUCT.md",
+		"/home/ravenskrag/Applications/0_ local launchers/Cytoscape-0.desktop",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+	],
+	"find":
+	{
+		"height": 64.0
+	},
+	"find_in_files":
+	{
+		"height": 170.0,
+		"where_history":
+		[
+			"",
+			"<open files>",
+			"<open folders>",
+			"",
+			"<open files>",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"c_extension:",
+			"oF_project:build",
+			"project",
+			"PROJECT",
+			"project",
+			"FileUtils.rm",
+			"test_sym",
+			"   ",
+			"'example'",
+			"name",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			".o",
+			"c_extension",
+			"LDSHAREDXX",
+			"local",
+			"-lwrapper",
+			".a",
+			"DLL",
+			".so",
+			".a",
+			"analyze",
+			"examine",
+			".a",
+			"//",
+			".o",
+			"rubyOF",
+			".o",
+			"cpp_wrapper",
+			"ar ",
+			"glfw3",
+			"local_libs",
+			"extconf.rb",
+			"extconf",
+			"ar ",
+			"ar",
+			".a",
+			"ruby_so",
+			"libruby_so",
+			"librub",
+			"libruby_a",
+			"LIBRUBY_A",
+			"fm",
+			"fmode",
+			"fmodex",
+			".a",
+			"rbBaseApp",
+			"boilerplate, example",
+			"boilerplate",
+			"example",
+			"rbBaseApp",
+			"template",
+			"-",
+			"home/ravenskrag/Desktop/gem_structure",
+			" ",
+			"-I",
+			".a",
+			"srcdir",
+			"src",
+			"RbBaseApp",
+			"RbBaseApp::",
+			"RbApp",
+			"OniApp",
+			"ofBaseApp",
+			"void",
+			"ofxgui",
+			"RubyApp",
+			"OniApp",
+			"ofImage_load_fromFile",
+			",",
+			"define_method",
+			"(",
+			"graphics",
+			"ofgraphics",
+			"&",
+			",",
+			"define_method(",
+			"ofRectangle_test_p",
+			"run_i \"make ",
+			"run_i",
+			"-W",
+			"OF_ROOT",
+			"-I",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			",",
+			"-I",
+			"-I/home/ravenskrag/Desktop/gem_structure/ext/rubyOF -I/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/x86_64-linux -I/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/ruby/backward -I/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0 -I/home/ravenskrag/Desktop/gem_structure/ext/rubyOF -I/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/include -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include -I/usr/include/AL -I/usr/include/alsa -I/usr/include/libdrm -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0 -I/usr/include/mirclient -I/usr/include/mircore -I/usr/include/mircookie -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8 -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/events -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/communication -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/video -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/math -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src",
+			"n2\"",
+			"n2",
+			"n1\"",
+			".a",
+			"HDRS",
+			".h",
+			"headers",
+			"Finished",
+			"c_extension",
+			"ofapp::",
+			"ofapp",
+			"testApp",
+			"_debug",
+			"testapp",
+			"bin/testApp",
+			":examine",
+			"ofApp",
+			"settings",
+			"flags",
+			"call",
+			"path",
+			"settings=",
+			"settings",
+			"default",
+			"image_settings",
+			"{\n",
+			"void",
+			"this",
+			"&",
+			"Image",
+			"image",
+			"ofImageSetting",
+			"ofTtfSettings",
+			"()",
+			"&",
+			"_set",
+			"set",
+			"&",
+			"?",
+			"image",
+			"ofTtfSettings",
+			"image.cpp"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			" \n",
+			"module ThoughtTrace\n\n\n# Controls overall execution flow for all input systems.\n# Like a main method for the entire input system.\n# \n# As it is a \"main\", this class is more a portion of ThoughtTrace proper,\n# rather than something than can be externalized.\n# This is reflected in the module chosen to hold this class.\nclass InputManager\n\t# TODO: control mouseover effects from this class as well\n\t\n\tattr_reader :mouse, :buttons\n\t\n\tdef initialize(window, space, camera)\n\t\t@space = space\n\t\t@camera = camera\n\t\t\n\t\t\n\t\t# TODO: properly implement mouse.\n\t\t@mouse = InputSystem::Mouse.new window\n\t\t\n\t\t@selection = [] # TODO: create actual selection collection. Array is placeholder. May work, may not. Haven't actually thought about it at all.\n\t\t\n\t\t@text_input = ThoughtTrace::TextInput.new\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t# manages many input events\n\t\t# input events correspond to button presses\n\t\t# those buttons can be keyboard keys, mouse buttons, or gamepad buttons\n\t\t@buttons = InputSystem::ButtonParser.new\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t# hold actions flow controllers, so that input manager can direct action UI drawing\n\t\t# need to draw actions so that they can show polymorphic interface information\n\t\t# NOTE: storing actions this way means that the button parser doesn't have to know anything about the input system.\n\t\t@actions = Array.new\n\t\t\n\t\t# NOTE: Action names and Event names may not necessarily have the same requirements.\n\t\t\t# Action names\n\t\t\t\t# Control what sort of action will be fired\n\t\t\t\t# Like methods, specifics are resolved with polymorphism\n\t\t\t# Event names\n\t\t\t\t# unique ID for this specific Event\n\t\t\t\t# must be distinct among keyboard, mouse, joystick etc events\n\t\t\t\t# each Event is one combination of (name, binding, callback)\n\t\t\t\t# thus, it is possible for many events to trigger one Action\n\t\t\t\t# because you want multiple bindings on one Action\n\t\t\t\t# (thing mouse bindings vs keyboard, rather than multiple keyboard shortcuts)\n\t\t\n\t\t\n\t\t# action_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @stash)\n\t\t# # TODO: register action names in action flow controller\n\t\t# action_flow.bindings[categorization][phase] = action_name\n\t\t# # NOTE: There's no warning if you try to assign an action name to a phase that does not exist. This is really dangerous, and had me hunting bugs in a bunch of the wrong places.\n\t\t\n\t\t# \tevent_name = :click\n\t\t# \tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t# event = InputSystem::ButtonEvent.new event_name, callbacks\n\t\t# event.bind_to keys:[Gosu::MsLeft], modifiers:[]\n\t\t\n\t\t# @buttons.register event\n\t\t\n\t\t\n\t\t\n\t\t\n\t\taction_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @text_input)\n\t\tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t\n\t\t\tevent = InputSystem::ButtonEvent.new :click, callbacks\n\t\t\tevent.bind_to keys:[Gosu::MsLeft], modifiers:[]\n\t\t\t\n\t\t\taction_flow.bindings[:existing][:click] = :edit\n\t\t\taction_flow.bindings[:existing][:drag] = :move\n\t\t\t\n\t\t\taction_flow.bindings[:empty][:click] = :spawn_text \n\t\t\t# action_flow.bindings[:empty][:drag] = :move\n\t\t\n\t\t@actions << action_flow\n\t\t@buttons.register event\n\t\t\n\t\t\n\t\t\n\t\taction_flow = ThoughtTrace::ActionFlowController.new(@space, @selection, @text_input)\n\t\tcallbacks = InputSystem::MouseActionController.new @mouse, action_flow\n\t\t\n\t\t\tevent = InputSystem::ButtonEvent.new :right_click, callbacks\n\t\t\tevent.bind_to keys:[Gosu::MsRight], modifiers:[]\n\t\t\t\n\t\t\taction_flow.bindings[:existing][:drag] = :resize\n\t\t\n\t\t@actions << action_flow\n\t\t@buttons.register event\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\tcallbacks = ThoughtTrace::Events::PressEnter.new @space, @text_input\n\t\tevent = InputSystem::ButtonEvent.new :enter, callbacks\n\t\t\n\t\tevent.bind_to keys:[Gosu::KbReturn], modifiers:[]\n\t\t\n\t\t@buttons.register event\n\t\t\n\tend\n\t\n\tdef button_down(id)\n\t\t@buttons.button_down(id)\n\tend\n\t\n\tdef update\n\t\t@buttons.update\n\t\t@text_input.update\n\tend\n\t\n\t# draw things in world space\n\tdef draw\n\t\t@actions.each do |action|\n\t\t\taction.draw @mouse.position_in_space\n\t\tend\n\t\t\n\t\t@text_input.draw\n\tend\n\t\n\tdef button_up(id)\n\t\t@buttons.button_up(id)\n\tend\n\t\n\tdef shutdown\n\t\t\n\tend\nend\n\n\n\nend",
+			"ThoughtTrace",
+			"\n",
+			"clerical"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/ravenskrag/Projects/2_Personal/Current/ruby_of_cpp_combination/RubyCPP/Oni/ext/oni/extconf.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13853,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1842,
+								1842
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1023.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/ravenskrag/Projects/2_Personal/Current/ruby_of_cpp_combination/RubyCPP/Oni/Rakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18653,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12282,
+								12282
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										12279,
+										12282
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										11699,
+										11701
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7865.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": ".gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1548,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								744,
+								744
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1488.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "common.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3714,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1034,
+								1034
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1034,
+										1035
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1026,
+										1027
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4278.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Rakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33428,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								31439,
+								31439
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										31641,
+										31642
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										31151,
+										31152
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 35950.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "ext/rubyOF/extconf.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 406,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								204,
+								204
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "ext/oF_apps/testApp/oF_build_variables.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 78241,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21502,
+								21502
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										21502,
+										21503
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										21412,
+										21413
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 15305.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "ext/rubyOF/extconf_variables.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6849,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5336,
+								5336
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										5849,
+										5850
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4929,
+										4930
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2232.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "ext/rubyOF/Makefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12389,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12352,
+								12352
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										12351,
+										12352
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										12346,
+										12347
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 11811.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "ext/oF_apps/testApp/src/ofApp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2071,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								683,
+								683
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										843,
+										844
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										661,
+										662
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "ext/oF_apps/testApp/src/ofApp.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 577,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								560,
+								560
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										574,
+										575
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										65,
+										66
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "ext/rubyOF/launcher.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3149,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								630,
+								630
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1206,
+										1207
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										156,
+										157
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "ext/rubyOF/launcher.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1657,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								935,
+								935
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1653,
+										1654
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										818,
+										819
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 372.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "ext/extconf_common.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8191,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6828,
+								6828
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										8185,
+										8188
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										5787,
+										5789
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7307.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15,
+								15
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--- Boilerplate",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "bin/projects/boilerplate/ext/app.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4652,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2000,
+								2000
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2468,
+										2469
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1573,
+										1574
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2325.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "bin/projects/boilerplate/ext/app.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1127,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								336,
+								336
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "bin/projects/boilerplate/lib/main.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3261,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								699,
+								699
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 93.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11,
+								11
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--- Example",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "bin/projects/example/ext/extconf.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1750,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1284,
+								1284
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 744.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "bin/projects/example/ext/Makefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12120,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8926,
+								8926
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 7214.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1022,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								439,
+								439
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "bin/projects/example/ext/constants/data_path.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 89,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								87,
+								87
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										87,
+										88
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										18,
+										19
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "bin/projects/example/ext/app.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8025,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								312,
+								312
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2974,
+										2975
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										274,
+										275
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "bin/projects/example/ext/app.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1446,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								414,
+								414
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1443,
+										1444
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										365,
+										366
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "bin/projects/example/lib/main.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15,
+								15
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--- oF Examples",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 31,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "ext/openFrameworks/examples/gl/pointsAsTexturesExample/src/ofApp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4523,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								693,
+								693
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										695,
+										696
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										446,
+										447
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 33,
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/ofApp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3109,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								815,
+								815
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1882,
+										1883
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										704,
+										705
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 32,
+					"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/ofApp.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 664,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								664,
+								664
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 33,
+					"file": "ext/openFrameworks/examples/input_output/imageLoaderExample/src/main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 344,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								344,
+								344
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 32,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 39.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "example_project.sublime-project",
+	"replace":
+	{
+		"height": 74.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				".git",
+				"gem_structure/.gitignore"
+			],
+			[
+				"commo",
+				"gem_structure/common.rb"
+			],
+			[
+				".yaml",
+				"gem_structure/ext/oF_apps/testApp/raw_oF_variables.yaml"
+			],
+			[
+				"extconfvar",
+				"gem_structure/ext/rubyOF/extconf_variables.rb"
+			],
+			[
+				"ext",
+				"gem_structure/ext/rubyOF/extconf.rb"
+			],
+			[
+				"buildvar",
+				"gem_structure/ext/oF_apps/testApp/oF_build_variables.yaml"
+			],
+			[
+				"rakefile",
+				"gem_structure/Rakefile"
+			],
+			[
+				"ofappsapp.cpp",
+				"gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
+			],
+			[
+				"templapp.",
+				"gem_structure/bin/projects/template/ext/app.cpp"
+			],
+			[
+				"rbapp",
+				"gem_structure/ext/rubyOF/rb_app.cpp"
+			],
+			[
+				"ofbaseap",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h"
+			],
+			[
+				"launcher",
+				"gem_structure/ext/rubyOF/launcher.cpp"
+			],
+			[
+				"ofmain.h",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/ofMain.h"
+			],
+			[
+				"ofbaseapp",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h"
+			],
+			[
+				"rake",
+				"gem_structure/Rakefile"
+			],
+			[
+				"comm",
+				"gem_structure/common.rb"
+			],
+			[
+				"output.xm",
+				"gem_structure/ext/rubyOF/output.xml"
+			],
+			[
+				"trace.txt",
+				"gem_structure/ext/rubyOF/trace.txt"
+			],
+			[
+				"ex",
+				"gem_structure/examine2.txt"
+			],
+			[
+				"ofbasea",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h"
+			],
+			[
+				"ofima",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				".json",
+				"gem_structure/compile_commands.json"
+			],
+			[
+				"variables",
+				"gem_structure/ext/rubyOF/extconf_variables.rb"
+			],
+			[
+				"image",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"datapa",
+				"gem_structure/ext/rubyOF/constants/data_path.h"
+			],
+			[
+				"protectipp",
+				"rice-2.1.1/rice/protect.ipp"
+			],
+			[
+				"ofappglf",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp"
+			],
+			[
+				"rice.h",
+				"ext/rubyOF/rice.h"
+			],
+			[
+				"rice",
+				"ext/rubyOF/rice.h"
+			],
+			[
+				"oflog",
+				"ext/openFrameworks/libs/openFrameworks/utils/ofLog.cpp"
+			],
+			[
+				"staticlib",
+				"ext/oF_apps/testApp/Makefile.static_lib"
+			],
+			[
+				"static",
+				"ext/oF_apps/testApp/Makefile.static_lib"
+			],
+			[
+				"ofmain",
+				"ext/openFrameworks/libs/openFrameworks/ofMain.h"
+			],
+			[
+				"ofttf",
+				"ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+			],
+			[
+				"example",
+				"ext/openFrameworks/examples/events/advancedEventsExample/src/eventsObject.h"
+			],
+			[
+				"ofapp",
+				"ext/oF_apps/testApp/src/ofApp.cpp"
+			],
+			[
+				"compile",
+				"compile_commands.json"
+			],
+			[
+				".gi",
+				".gitignore"
+			],
+			[
+				"imageloaderexample",
+				"ext/openFrameworks/examples/input_output/imageLoaderExample/src/main.cpp"
+			],
+			[
+				"main",
+				"bin/projects/template/lib/main.rb"
+			],
+			[
+				"glm",
+				"ext/openFrameworks/libs/glm/include/glm/glm.hpp"
+			],
+			[
+				"offbo",
+				"ext/openFrameworks/libs/openFrameworks/gl/ofFbo.cpp"
+			],
+			[
+				"rubyof.rb",
+				"lib/rubyOF.rb"
+			],
+			[
+				"config",
+				"ext/oF_apps/testApp/config.make"
+			],
+			[
+				"giti",
+				".gitignore"
+			],
+			[
+				"make",
+				"ext/oF_apps/testApp/Makefile"
+			],
+			[
+				"makefilecommonconfigshared",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"openframeworkscompiledprojectmake",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"linuxof",
+				"ext/openFrameworks/scripts/linux/compileOF.sh"
+			],
+			[
+				"linuxdownlib",
+				"ext/openFrameworks/scripts/linux/download_libs.sh"
+			],
+			[
+				"downl",
+				"ext/openFrameworks/scripts/android/download_libs.sh"
+			],
+			[
+				"compilof",
+				"ext/openFrameworks/scripts/linux/compileOF.sh"
+			],
+			[
+				"rakefil",
+				"Rakefile"
+			],
+			[
+				"extc",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"gitmo",
+				".gitmodules"
+			],
+			[
+				"common.rb",
+				"build/common.rb"
+			],
+			[
+				"compilepg",
+				"ext/openFrameworks/scripts/linux/compilePG.sh"
+			],
+			[
+				"commandlinemakefile",
+				"ext/openFrameworks/apps/projectGenerator/commandLine/Makefile"
+			],
+			[
+				"linuxbuildpg",
+				"ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh"
+			],
+			[
+				"openframereadme",
+				"ext/openFrameworks/README.md"
+			],
+			[
+				"projgencommreadm",
+				"ext/openFrameworks/apps/projectGenerator/commandLine/readme.md"
+			],
+			[
+				"readm",
+				"README.md"
+			],
+			[
+				"rubof",
+				"lib/rubyOF.rb"
+			],
+			[
+				"ver",
+				"lib/rubyOF/version.rb"
+			],
+			[
+				"configu",
+				"configurator.rb"
+			],
+			[
+				"con",
+				"config.yaml"
+			],
+			[
+				"projecgenerscriptsbuil",
+				"ext/openFrameworks/apps/projectGenerator/scripts/linux/buildPG.sh"
+			],
+			[
+				"openframeworksreadme",
+				"ext/openFrameworks/README.md"
+			],
+			[
+				"read",
+				"README.md"
+			],
+			[
+				"rubyof",
+				"lib/ruby_of.rb"
+			],
+			[
+				"gitig",
+				".gitignore"
+			],
+			[
+				"ofxgui",
+				"addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				"pocorulescompile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile"
+			],
+			[
+				"custompocolinux",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux"
+			],
+			[
+				"custompocomakefile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile"
+			],
+			[
+				"compileprojectmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"configproject",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"configsharedmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"comple",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"configlinux6",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compiledmakefilecommcompile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"openframeworksmakefile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"install",
+				"of_v0.9.3_linux64_release/INSTALL.md"
+			],
+			[
+				"releasecompile",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags"
+			],
+			[
+				"compilerflags",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags"
+			],
+			[
+				"sketchstatic",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile.static_lib"
+			],
+			[
+				"sketchaddons",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/addons.make"
+			],
+			[
+				"ofbuildvaria",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/oF_build_variables.yaml"
+			],
+			[
+				"of_testadd",
+				"~/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make"
+			],
+			[
+				"addons",
+				"of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make"
+			],
+			[
+				"ofbuild",
+				"RubyCPP/Oni/oF_build_variables.yaml"
+			],
+			[
+				"extvar",
+				"RubyCPP/Oni/ext/oni/extconf_variables.rb"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"event.h",
+				"poco-1.7.4-all/Foundation/include/Poco/Event.h"
+			],
+			[
+				"event",
+				"poco-1.7.4-all/Foundation/src/Event.cpp"
+			],
+			[
+				"thread",
+				"poco-1.7.4-all/Foundation/src/Thread.cpp"
+			],
+			[
+				"test",
+				"Oni/lib/test.rb"
+			],
+			[
+				"xt",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"mysketchmake",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"gem",
+				"Oni/oni.gemspec"
+			],
+			[
+				"log",
+				"Oni/ext/oni/mkmf.log"
+			],
+			[
+				"extco",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				"compileco",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"config.m",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/config.make"
+			],
+			[
+				"link",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compileof",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"git",
+				"~/Experiments/RubyCPP/.gitignore"
+			],
+			[
+				"e",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"confp",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"rubycppofmake",
+				"RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"rubycpprake",
+				"RubyCPP/Oni/Rakefile"
+			],
+			[
+				"rubycppext",
+				"RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"makefile",
+				"Oni/ext/oni/Makefile"
+			],
+			[
+				"extconf",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"trutype",
+				"libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+			],
+			[
+				"color",
+				"libs/openFrameworks/types/ofColor.cpp"
+			],
+			[
+				"freeim",
+				"libs/FreeImage/include/FreeImage.h"
+			],
+			[
+				"ofimage",
+				"libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"mainh",
+				"libs/openFrameworks/ofMain.h"
+			],
+			[
+				"project",
+				"libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"rubymain",
+				"SublimeREPL/config/Ruby/Main.sublime-menu"
+			],
+			[
+				"pythonmain",
+				"SublimeREPL/config/Python/Main.sublime-menu"
+			],
+			[
+				"rep",
+				"*REPL* [octave]"
+			],
+			[
+				"plat",
+				"ex1/plotData.m"
+			],
+			[
+				"ex1m",
+				"ex1/ex1_multi.m"
+			],
+			[
+				"warm",
+				"warmUpExercise.m"
+			],
+			[
+				"locking",
+				"locking things in place"
+			],
+			[
+				"groupedi",
+				"TODO: group edit and resize"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 364.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
