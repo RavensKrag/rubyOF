@@ -2,8 +2,8 @@
 
 #include "constants/data_path.h"
 
-rbApp::rbApp(Rice::Object self) : 
-	ofBaseApp()
+rbApp::rbApp(Rice::Object self)\
+: ofBaseApp()
 {
 	cout << "c++: constructor - window\n";
 	

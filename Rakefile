@@ -861,7 +861,7 @@ end
 namespace :ruby do
 	desc "testing"
 	task :run do
-		project = "boilerplate"
+		project = "example" # [boilerplate, example]
 		Dir.chdir File.expand_path("bin/projects/#{project}/", GEM_ROOT) do
 			puts "ruby level execution"
 			
@@ -872,7 +872,7 @@ namespace :ruby do
 	
 	desc "testing"
 	task :debug do
-		project = "boilerplate"
+		project = "example" # [boilerplate, example]
 		Dir.chdir File.expand_path("bin/projects/#{project}/", GEM_ROOT) do
 			puts "ruby level execution"
 			
