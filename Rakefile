@@ -1243,10 +1243,21 @@ end
 
 
 
+
+
+
+
+
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
-task :clean   => ['oF_project:clean']
-task :clobber => ['oF_deps:clobber', 'oF:clean', 'c_extension:clobber']
+task :clean   => ['oF_project:clean', 'cpp_project:clean']
+task :clobber => ['oF_deps:clobber', 'oF:clean', 'cpp_glue_code:clobber']
+
+
+
+
+
+
 
 
 
