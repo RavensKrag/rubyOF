@@ -164,8 +164,8 @@ namespace :oF do
 	
 	# NOTE: Project generator can update existing projects, including specifying the addons used for a particular project.
 	desc "Create a new openFrameworks project in the correct directory."
-	task :project_generator, [:oF_project_name] do |t, args|
-		project = args[:oF_project_name]
+	task :project_generator, [:ofProjectName] do |t, args|
+		project = args[:ofProjectName]
 		
 		if project.nil?
 			raise "ERROR: must specify oF_project_name"
@@ -868,14 +868,14 @@ namespace :cpp_project do
 	task :build do
 		puts "Building project-specific C++ code..."
 		Dir.chdir(app_path) do
-			puts "-- Generating rakefile..."
+			puts "=== Generating makefile for project '#{RUBYOF_PROJECT_NAME}'"
 			run_i "ruby extconf.rb"
 			
-			puts "-- Running make..."
+			puts "=== Building project..."
 			run_i "make"
 			
 			
-			puts "-- Removing intermediate .so"
+			puts "=== Removing intermediate .so"
 			FileUtils.rm "./#{NAME}.so"
 		end
 	end
@@ -889,7 +889,7 @@ namespace :cpp_project do
 	# NOTE: Assumes main extconf.rb and project-specific extconf.rb have run, and have succesfully outputed their variable files.
 	desc "link final dynamic library (linux)"
 	task :link do
-		puts "--- Linking final dynamic library..."
+		puts "=== Linking final dynamic library..."
 		Dir.chdir(app_path) do
 			# The build command below is taken from command
 			# used by the main extconf.rb build system
@@ -1293,45 +1293,22 @@ end
 
 
 # For working on a normal OpenFrameworks project in pure C++
-desc "Build just the pure C++ parts"
+desc "Build a normal OpenFrameworks project in pure C++"
 task :build_cpp => ['oF:build', 'oF_project:build']
-
-
-# For iterating on C++ glue code (Rice) [without testing]
-# (can edit oF core, addons, oF project, or Rice bindings)
-# 
-# Assumes 'setup' has been run
-desc "Build C++ glue code (Ruby and C++ combined)"
-task :build_cpp_wrapper => [
-	'oF:build',
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	'cpp_glue_code:build', # implicitly requires oF_project:build
-	# ^ multiple steps:
-	#   +  extconf.rb -> makefile
-	#   +  run the makefile -> build ruby dynamic lib (.so)
-	#   +  move ruby dynamic lib (.so) into proper position
-	#   +  ALSO rebuilds the clang symbol DB as necessary.
-	
-	:install_oF_dynamic_libs
-] do
-	# Build dependencies shifted from explict to implied, (assumes task has run)
-	# so that you don't duplicate the work being done in :setup.
-	# This way, the build process will go a little faster.
-	puts ">>> BUILD COMPLETE <<<"
-end
 
 
 
 # For integrating Rice bindings with the current RubyOF project
-# (can edit addons, oF project, Rice bindings, or RubyOF project)
-# (Ignores changes to OpenFrameworks core)
+# (can edit addons, oF core, oF project, Rice bindings, or RubyOF project)
 # 
 # Assumes 'setup' has been run.
-desc "Build specific RubyOF project (Ruby and C++ combined)"
-task :build_project =>[
+# 
+# Build dependencies shifted from explict to implied, (assumes task has run)
+# so that you don't duplicate the work being done in :setup.
+# This way, the build process will go a little faster.
+desc "For updating Rice code, and testing with current RubyOF project"
+task :build_cpp_wrapper => [
+	'oF:build',
 	'oF_project:build',                  # implicitly requires oF:build
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
@@ -1350,6 +1327,33 @@ task :build_project =>[
 	# TODO: Figure out how this file should be generated for the dummy app.o that exists in the main build directory.
 	# TODO: update the data path / data path file constants in common.rb to reflect the new project structure around app.o building etc
 	
+	'cpp_project:build',
+	'cpp_project:link',
+	'cpp_project:test_final_link',
+	'cpp_project:test_app_factory_link',
+	'cpp_project:install'
+] do
+	
+	puts ">>> BUILD COMPLETE <<<"
+	
+end
+
+
+# For using stable bindings with a custom blend of C++ and Ruby
+# (can edit addons, or RubyOF project)
+# 
+# Assumes 'setup' has been run
+# Assumes 'build_cpp_wrapper' has been run
+desc "For using stable bindings with a custom blend of C++ and Ruby"
+task :build_project => [
+	'oF_project:build',                  # implicitly requires oF:build
+	'oF_project:export_build_variables', # implicitly requires oF_project:build
+	'oF_project:static_lib:build',
+	
+	:install_oF_dynamic_libs,
+	
+	RUBYOF_DATA_PATH_FILE,
+		
 	'cpp_project:build',
 	'cpp_project:link',
 	'cpp_project:test_final_link',

@@ -87,3 +87,7 @@ compile_commands.json
 
 bin/projects/*/ext/extconf_variables.rb
 bin/projects/*/ext/Makefile
+# ^ may have to un-ignore the makefile again,
+#   if you create a build system that doesn't use extconf at this level
+
+bin/projects/*/ext/constants/data_path.h
