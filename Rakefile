@@ -709,7 +709,7 @@ namespace :c_extension do
 	
 	
 	# Ruby / Rice CPP files
-	c_library_deps += Dir.glob("ext/#{NAME}/cpp/lib/**/*{.cpp,.h}")
+	c_library_deps += Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
 	
 	# 
 	c_library_deps << "ext/#{NAME}/extconf.rb"
@@ -866,11 +866,14 @@ namespace :c_extension do
 	task :build_project do
 		puts "Building project-specific C++ code..."
 		Dir.chdir(app_path) do
+			puts "-- Generating rakefile..."
 			run_i "ruby extconf.rb"
+			
+			puts "-- Running make..."
 			run_i "make"
 			
 			
-			puts "Removing intermediate .so"
+			puts "-- Removing intermediate .so"
 			FileUtils.rm "./rubyOF.so"
 		end
 	end
@@ -913,7 +916,7 @@ namespace :c_extension do
 			
 			
 			# link the final dynamic library (linux)
-			run_i "g++ -shared -o rubyOF.so #{path}/Fbo.o #{path}/Graphics.o #{path}/TrueTypeFont.o #{app_path}/app.o #{path}/image.o #{path}/launcher.o #{path}/rubyOF.o -L. -L/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -Wl,-R/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib -lrice /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/libOFSketch.a   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a   -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed -Wl,--gc-sections   -lz -lgstapp-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstreamer-1.0 -ludev -lfontconfig -lfreetype -lsndfile -lopenal -lssl -lcrypto -lcurl -lglfw -lpulse-simple -lpulse -lasound -lGLEW -lGLU -lGL -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lmpg123 -lglut -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -ldl -lpthread -lfreeimage -lboost_filesystem -lboost_system -lpugixml -luriparser -lXinerama -lrtaudio -Wl,--compress-debug-sections=zlib    -lstdc++ -Wl,-rpath,'/../lib' -Wl,-R'/../lib' -lruby -lpthread -lgmp -ldl -lcrypt -lm   -lc"
+			run_i "g++ -shared -o rubyOF.so #{path}/Fbo.o #{path}/Graphics.o #{path}/TrueTypeFont.o #{app_path}/app.o #{app_path}/app_factory.o #{path}/image.o #{path}/launcher.o #{path}/rubyOF.o -L. -L/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -Wl,-R/home/ravenskrag/.rvm/rubies/ruby-2.4.0/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib -lrice /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/libOFSketch.a   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a   -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed -Wl,--gc-sections   -lz -lgstapp-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstreamer-1.0 -ludev -lfontconfig -lfreetype -lsndfile -lopenal -lssl -lcrypto -lcurl -lglfw -lpulse-simple -lpulse -lasound -lGLEW -lGLU -lGL -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lmpg123 -lglut -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -ldl -lpthread -lfreeimage -lboost_filesystem -lboost_system -lpugixml -luriparser -lXinerama -lrtaudio -Wl,--compress-debug-sections=zlib    -lstdc++ -Wl,-rpath,'/../lib' -Wl,-R'/../lib' -lruby -lpthread -lgmp -ldl -lcrypt -lm   -lc"
 		end
 		
 		puts "Final link complete!"
@@ -943,7 +946,9 @@ namespace :c_extension do
 		
 		# p cmd1
 		# p cmd2
-		if cmd1 == ''
+		if cmd1.nil? or cmd2.nil?
+			raise "ERROR: unexpected problem while inspecting final product."
+		elsif cmd1 == ''
 			raise "ERROR: symbol '#{sym}' not present in baseline lib."
 		elsif cmd2 == '' # at this point, no error for baseline lib
 			raise "ERROR: final .so did not contain symbol '#{sym}' as expected"
@@ -951,6 +956,39 @@ namespace :c_extension do
 			puts "no problems with final link"
 		end
 	end
+	
+	
+	# NOTE: check if symbol is undefined, rather than merely if it is present.
+	desc "Make sure app factory has been linked into final product."
+	task :test_app_factory_link do
+		sym      = "appFactory_create"
+		test_cmd = "nm -C rubyOF.so  | grep #{sym}"
+		
+		
+		out = nil
+		
+		Dir.chdir(app_path) do
+			out = `#{test_cmd}`
+		end
+		
+		
+		
+		
+		if out.nil?
+			raise "ERROR: unexpected problem while inspecting final product."
+		elsif out == ''
+			raise "ERROR: symbol '#{sym}' not found in final dynamic library"
+		elsif out.include? 'U'
+			# ex)  U appFactory_create(Rice::Object)
+			raise "ERROR: symbol '#{sym}' found, but was undefined"
+		else
+			# No problems!
+			puts "no problems - appFactory linked correctly"
+		end
+	end
+	
+	
+	
 	
 	
 	desc "move completed dynamic library to final location"
@@ -961,6 +999,7 @@ namespace :c_extension do
 		dst = File.join(GEM_ROOT, "lib/#{NAME}")
 		FileUtils.cp(src, dst)
 	end
+	
 	
 	
 	
@@ -976,6 +1015,7 @@ namespace :c_extension do
 		:build_project,
 		:final_link,
 		:test_final_link,
+		:test_app_factory_link,
 		:install_final_lib
 	]
 	
@@ -992,6 +1032,7 @@ namespace :c_extension do
 	
 	task :foo_clobber => :foo_clean do
 		[
+			File.join(app_path, "rubyOF.so"),
 			File.join(GEM_ROOT, "lib/#{NAME}/rubyOF.so"),
 			File.join(app_path, "extconf_variables.rb"),
 			File.join(app_path, "Makefile")
@@ -1061,27 +1102,9 @@ task :setup => [
 end
 
 
-desc "Build just the pure C++ parts"
-task :build_cpp => ['oF:build', 'oF_project:build']
 
-
-# Build dependencies shifted from explict to implied, (assumes task has run)
-# so that you don't duplicate the work being done in :setup.
-# This way, the build process will go a little faster.
-desc "Build the whole project (Ruby and C++ combined)"
-task :build => [
-	'oF:build',
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	'c_extension:build_cpp_wrapper', # implicitly requires oF_project:build
-	# ^ multiple steps:
-	#   +  extconf.rb -> makefile
-	#   +  run the makefile -> build ruby dynamic lib (.so)
-	#   +  move ruby dynamic lib (.so) into proper position
-	#   +  ALSO rebuilds the clang symbol DB as necessary.
-] do
+desc "Copy oF dynamic libs to correct location"
+task :install_oF_dynamic_libs do
 	puts "=== Copying OpenFrameworks dynamic libs..."
 	
 	# -rpath flag specifies where to look for dynamic libraries
@@ -1101,10 +1124,85 @@ task :build => [
 	# (does not reference the constant)
 	
 	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
+end
+
+
+
+desc "Build just the pure C++ parts"
+task :build_cpp => ['oF:build', 'oF_project:build']
+
+
+# Build dependencies shifted from explict to implied, (assumes task has run)
+# so that you don't duplicate the work being done in :setup.
+# This way, the build process will go a little faster.
+desc "Build C++ glue code (Ruby and C++ combined)"
+task :build_cpp_wrapper => [
+	'oF:build',
+	'oF_project:build',                  # implicitly requires oF:build
+	'oF_project:export_build_variables', # implicitly requires oF_project:build
+	'oF_project:static_lib:build',
 	
+	'c_extension:build_cpp_wrapper', # implicitly requires oF_project:build
+	# ^ multiple steps:
+	#   +  extconf.rb -> makefile
+	#   +  run the makefile -> build ruby dynamic lib (.so)
+	#   +  move ruby dynamic lib (.so) into proper position
+	#   +  ALSO rebuilds the clang symbol DB as necessary.
+	
+	:install_oF_dynamic_libs
+] do
 	puts ">>> BUILD COMPLETE <<<"
 end
 
+
+# Assumes you're not edting the core, or the oF project, or the Rice glue code
+# Assumes :build_cpp_wrapper task has completed successfully
+desc "Build specific RubyOF project (Ruby and C++ combined)"
+task :build_project =>[
+	'oF_project:build',                  # implicitly requires oF:build
+	'oF_project:export_build_variables', # implicitly requires oF_project:build
+	'oF_project:static_lib:build',
+	
+	'c_extension:build_cpp_wrapper', # implicitly requires oF_project:build
+	# ^ multiple steps:
+	#   +  extconf.rb -> makefile
+	#   +  run the makefile -> build ruby dynamic lib (.so)
+	#   +  move ruby dynamic lib (.so) into proper position
+	#   +  ALSO rebuilds the clang symbol DB as necessary.
+	
+	:install_oF_dynamic_libs,
+	
+	
+	RUBYOF_DATA_PATH_FILE,
+	# TODO: Figure out how this file should be generated for the dummy app.o that exists in the main build directory.
+	# TODO: update the data path / data path file constants in common.rb to reflect the new project structure around app.o building etc
+	
+	'c_extension:build_project',
+	'c_extension:final_link',
+	'c_extension:test_final_link',
+	'c_extension:test_app_factory_link',
+	'c_extension:install_final_lib',
+] do
+	puts ">>> BUILD COMPLETE <<<"
+end
+
+
+
+# --- pathway ---
+desc "Build up from a newly cloned repo"
+task :full_build => [
+	:setup,
+	:build_cpp_wrapper,
+	:build_project
+]
+
+
+
+
+
+
+desc "Default build task (:build_project)"
+task :build => :build_project
 
 # task :run => 'oF_project:run'
 task :run => 'ruby:run'
@@ -1112,6 +1210,9 @@ task :run => 'ruby:run'
 task :build_and_run => [:build, :run] do
 	
 end
+
+
+
 
 
 # NOTE: Assumes build options are set to make 'Debug'

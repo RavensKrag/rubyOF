@@ -56,6 +56,10 @@ require File.join(GEM_ROOT, 'ext', 'extconf_common.rb')
 
 # $LOCAL_LIBS << "-lwrapper"
 
+path = File.join(GEM_ROOT, 'ext', NAME)
+$CPPFLAGS += " -I#{path}"
+
+
 
 # ========================================
 # ========================================

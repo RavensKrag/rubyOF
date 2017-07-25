@@ -1,26 +1,13 @@
 #pragma once
 
-// This header will be included in the C++ Rice level.
-// It should NOT pull in ANY oF headers.
-// Those symbols will be in the static library, so it be fine once it gets to the linker.
-// But we must trick the compiler.
-// (similar to resolution of cylic dependencies)
-// src: http://stackoverflow.com/questions/2133250/does-not-name-a-type-error
-// class OniApp;
-// class ofAppGlutWindow;
-// class ofAppGLFWWindow;
+// basic includes
+#include "ofMain.h"
 
-#include "ofPoint.h" // you can include this one. this is fine.
-
-#include "app.h" // follow a symlink to get to the project header
-// #include "rb_app.h" // included by app.h
-
-
-// // app.h sholud already be including the Rice stuff I think?
-// #include "rice/Data_Type.hpp"
-// #include "rice/Constructor.hpp"
-// #include "rice/Class.hpp"
-// #include "rice/Module.hpp"
+// rice data types
+#include "rice/Data_Type.hpp"
+#include "rice/Constructor.hpp"
+#include "rice/Class.hpp"
+#include "rice/Module.hpp"
 
 
 
@@ -29,7 +16,7 @@ class Launcher
 
 public:
 	Launcher(Rice::Object self, int width, int height);
-	~Launcher(void);
+	virtual ~Launcher(void);
 	
 	void initialize();
 	void show();
@@ -63,7 +50,7 @@ public:
 	
 	
 protected:
-	rbApp* mApp = NULL;
+	ofBaseApp*       mApp    = NULL;
 	ofAppGLFWWindow* mWindow = NULL;
 };
 

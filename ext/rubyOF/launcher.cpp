@@ -2,6 +2,7 @@
 // #include "ofGraphics.h"
 
 #include "launcher.h"
+#include "app_factory.h"
 
 #include <iostream>
 
@@ -19,7 +20,7 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
 	
-	mApp = new rbApp(self);
+	mApp = appFactory_create(self);
 	
 	// window is the drawing context
 	// app is the thing that holds all the update and render logic
@@ -41,7 +42,29 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 }
 
 Launcher::~Launcher(){
+	delete mWindow;
+	
+	// It seems like OpenFrameworks automatically deletes the App.
+	// It already needs to intercept the exit callback
+	// to make sure that the opengl context is closed appriately,
+	// so it also handles freeing the memory for the App.
+	// 
+	// source: https://github.com/openframeworks/openFrameworks/issues/2603
+	// 
+	// 
+	// As such, attempting to delete it again here results in a segfault.
+	// Also, because the destructor for ofBaseApp is virtual,
+	// the object will be destroyed as expected.
+	// (this is just how C++ polymorphism works)
+	// 
+	// You can't use a smart pointer to hold mApp for the same reason:
+	// when the smart pointer falls out of scope,
+	// you trigger a second delete.
+	
+	
 	// delete mApp;
+	// appFactory_delete(mApp);
+	// mApp = NULL;
 }
 
 
