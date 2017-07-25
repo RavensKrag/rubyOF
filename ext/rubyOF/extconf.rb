@@ -14,6 +14,11 @@ require File.expand_path('./common', gem_root)
 
 
 
-require File.join(GEM_ROOT, 'ext', 'extconf_common.rb')
+require File.join(GEM_ROOT, 'ext', NAME, 'extconf_common.rb')
 
 create_makefile('rubyOF/rubyOF')
+
+
+
+require File.join(GEM_ROOT, 'ext', NAME, 'extconf_printer.rb')
+write_extconf_variables_to_file(RUBYOF_EXTCONF_VARIABLE_FILE)

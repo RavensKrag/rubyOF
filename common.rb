@@ -56,8 +56,9 @@ RUBYOF_DATA_PATH_FILE = File.join(
 	GEM_ROOT, "ext", NAME, "constants", "data_path.h"
 )
 
-
-
+RUBYOF_EXTCONF_VARIABLE_FILE = File.join(
+	GEM_ROOT, 'ext', NAME, 'extconf_variables.yaml'
+)
 
 
 

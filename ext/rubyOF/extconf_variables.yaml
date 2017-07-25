@@ -1,0 +1,215 @@
+---
+- '[:$stdin, :$stdout, :$stderr, :$>, :$NONINSTALLFILES, :$<, :$., :$FILENAME, :$-i,
+  :$*, :$defs, :$fileutils_rb_have_lchmod, :$fileutils_rb_have_lchown, :$SAFE, :$-p,
+  :$-l, :$-a, :$CXX, :$LIBS, :$LIBRUBYARG, :$LIBRUBYARG_STATIC, :$&, :$`, :$'', :$+,
+  :$=, :$KCODE, :$-K, :$RICE_LDFLAGS, :$RICE_PREFIX, :$RICE_USING_MINGW32, :$RICE_CPPFLAGS,
+  :$LDFLAGS, :$CPPFLAGS, :$LDSHARED_CXX, :$CXXFLAGS, :$OBJEXT, :$DLDFLAGS, :$extconf_h,
+  :$DEFLIBPATH, :$typeof, :$arg_config, :$VERBOSE, :$-v, :$-w, :$-W, :$DEBUG, :$-d,
+  :$0, :$PROGRAM_NAME, :$PKGCONFIG, :$LIBPATH, :$VPATH, :$headers, :$LIBRUBYARG_SHARED,
+  :$warnflags, :$ruby, :$preload, :$static, :$config_h, :$default_static, :$configure_args,
+  :$distcleanfiles, :$libdir, :$rubylibdir, :$archdir, :$sitedir, :$sitelibdir, :$sitearchdir,
+  :$vendordir, :$vendorlibdir, :$vendorarchdir, :$mswin, :$bccwin, :$mingw, :$cygwin,
+  :$netbsd, :$haiku, :$solaris, :$universal, :$dest_prefix_pattern, :$nmake, :$target,
+  :$LIBEXT, :$cleanfiles, :$INSTALLFILES, :$extout, :$extmk, :$extout_prefix, :$objs,
+  :$srcs, :$hdrdir, :$topdir, :$top_srcdir, :$arch_hdrdir, :$ASMEXT, :$ignore_error,
+  :$installed_list, :$distcleandirs, :$makefile_created, :$enable_shared, :$make,
+  :$curdir, :$?, :$$, :$;, :$-F, :$have_devel, :$,, :$/, :$_, :$~, :$\, :$-0, :$CFLAGS,
+  :$ARCH_FLAG, :$INCFLAGS, :$:, :$-I, :$LOAD_PATH, :$", :$LOADED_FEATURES, :$LOCAL_LIBS,
+  :$libs, :$srcdir, :$EXEEXT, :$@, :$!]'
+- "$NONINSTALLFILES":
+  - !ruby/regexp /~\z/
+  - !ruby/regexp /\A#.*#\z/
+  - !ruby/regexp /\A\.#/
+  - !ruby/regexp /\.bak\z/i
+  - !ruby/regexp /\.orig\z/
+  - !ruby/regexp /\.rej\z/
+  - !ruby/regexp /\.l[ao]\z/
+  - !ruby/regexp /\.o\z/
+  "$defs": []
+  "$fileutils_rb_have_lchmod": 
+  "$fileutils_rb_have_lchown": 
+  "$-p": false
+  "$-l": false
+  "$-a": false
+  "$CXX": g++
+  "$LIBS": "-lpthread -lgmp -ldl -lcrypt -lm   -lc"
+  "$LIBRUBYARG": "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R'${ORIGIN}/../lib' -lruby"
+  "$LIBRUBYARG_STATIC": "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R'${ORIGIN}/../lib' -lruby-static"
+  "$RICE_LDFLAGS": ''
+  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib"
+  "$RICE_USING_MINGW32": false
+  "$RICE_CPPFLAGS": ''
+  "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib
+    -lrice /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/libOFSketch.a
+    \  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
+    \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed
+    -Wl,--gc-sections   -lz -lgstapp-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstreamer-1.0
+    -ludev -lfontconfig -lfreetype -lsndfile -lopenal -lssl -lcrypto -lcurl -lglfw
+    -lpulse-simple -lpulse -lasound -lGLEW -lGLU -lGL -lgtk-3 -lgdk-3 -lpangocairo-1.0
+    -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0
+    -lglib-2.0 -lmpg123 -lglut -lX11 -lXrandr -lXxf86vm -lXi -lXcursor -ldl -lpthread
+    -lfreeimage -lboost_filesystem -lboost_system -lpugixml -luriparser -lXinerama
+    -lrtaudio"
+  "$CPPFLAGS": " $(DEFS) $(cppflags)  -I/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/include
+    -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include
+    -I/usr/include/AL -I/usr/include/alsa -I/usr/include/libdrm -I/usr/include/gtk-3.0
+    -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0
+    -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/
+    -I/usr/include/mirclient -I/usr/include/mircore -I/usr/include/mircookie -I/usr/include/cairo
+    -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0
+    -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12
+    -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0
+    -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/events
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/communication
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/video
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/math
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
+    -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
+  "$LDSHARED_CXX": g++ -shared
+  "$CXXFLAGS": " -Wall -g -O3 -march=native -mtune=native -Werror=return-type -std=c++14
+    -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"
+  "$OBJEXT": o
+  "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
+  "$extconf_h": 
+  "$DEFLIBPATH":
+  - "."
+  - "$(libdir)"
+  "$typeof": 
+  "$arg_config":
+  - - "--with-opt-dir"
+    - 
+  - - "--without-opt-dir"
+    - 
+  - - "--with-opt-include"
+    - 
+  - - "--without-opt-include"
+    - "${opt-dir}/include"
+  - - "--with-opt-lib"
+    - 
+  - - "--without-opt-lib"
+    - "${opt-dir}/lib"
+  - - "--with-make-prog"
+    - 
+  - - "--without-make-prog"
+    - 
+  - - "--srcdir"
+    - "."
+  - - "--curdir"
+    - 
+  - - "--ruby"
+    - "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin/$(RUBY_BASE_NAME)"
+  - - "--with-libpath"
+    - 
+  - - "--without-libpath"
+    - 
+  - - "--with-stdc++lib"
+    - 
+  - - "--without-stdc++lib"
+    - 
+  "$PKGCONFIG": 
+  "$LIBPATH": []
+  "$VPATH":
+  - "$(srcdir)"
+  - "$(arch_hdrdir)/ruby"
+  - "$(hdrdir)/ruby"
+  "$headers": []
+  "$LIBRUBYARG_SHARED": "-Wl,-rpath,'$${ORIGIN}/../lib' -Wl,-R'$${ORIGIN}/../lib'
+    -l$(RUBY_SO_NAME)"
+  "$warnflags": "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long
+    -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings
+    -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn
+    -Wsuggest-attribute=format -Wno-maybe-uninitialized"
+  "$ruby": "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin/$(RUBY_BASE_NAME)"
+  "$preload": 
+  "$static": 
+  "$config_h": "$(arch_hdrdir)/ruby/config.h"
+  "$default_static": 
+  "$configure_args":
+    "--prefix": "/usr/share/rvm/rubies/ruby-2.4.0"
+    "--enable-load-relative": true
+    "--sysconfdir": "/etc"
+    "--disable-install-doc": true
+    "--enable-shared": true
+    "--topsrcdir": "."
+    "--topdir": "."
+  "$distcleanfiles": []
+  "$libdir": "$(exec_prefix)/lib"
+  "$rubylibdir": "$(rubylibprefix)/$(ruby_version)"
+  "$archdir": "$(rubyarchdir)"
+  "$sitedir": "$(rubylibprefix)/site_ruby"
+  "$sitelibdir": "$(sitedir)/$(ruby_version)"
+  "$sitearchdir": "$(sitelibdir)/$(sitearch)"
+  "$vendordir": "$(rubylibprefix)/vendor_ruby"
+  "$vendorlibdir": "$(vendordir)/$(ruby_version)"
+  "$vendorarchdir": "$(vendorlibdir)/$(sitearch)"
+  "$mswin": 
+  "$bccwin": 
+  "$mingw": 
+  "$cygwin": 
+  "$netbsd": 
+  "$haiku": 
+  "$solaris": 
+  "$universal": 
+  "$dest_prefix_pattern": !ruby/regexp /\A/
+  "$nmake": 
+  "$target": rubyOF/rubyOF
+  "$LIBEXT": a
+  "$cleanfiles":
+  - mkmf.log
+  "$INSTALLFILES": []
+  "$extout": 
+  "$extmk": false
+  "$extout_prefix": 
+  "$objs":
+  - Fbo.o
+  - Graphics.o
+  - TrueTypeFont.o
+  - image.o
+  - launcher.o
+  - rubyOF.o
+  "$srcs":
+  - "./Fbo.cpp"
+  - "./Graphics.cpp"
+  - "./TrueTypeFont.cpp"
+  - "./image.cpp"
+  - "./launcher.cpp"
+  - "./rubyOF.cpp"
+  "$hdrdir": "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0"
+  "$topdir": "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0"
+  "$top_srcdir": "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0"
+  "$arch_hdrdir": "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/x86_64-linux"
+  "$ASMEXT": S
+  "$ignore_error": " 2> /dev/null || true"
+  "$installed_list": 
+  "$distcleandirs": []
+  "$makefile_created": true
+  "$enable_shared": true
+  "$make": make
+  "$curdir": "."
+  "$have_devel": true
+  "$CFLAGS": "$(cflags)  -fPIC -fdiagnostics-color=always"
+  "$ARCH_FLAG": ''
+  "$INCFLAGS": "-I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)"
+  "$LOCAL_LIBS": ''
+  "$libs": "-lstdc++ "
+  "$srcdir": "."
+  "$EXEEXT": ''
