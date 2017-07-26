@@ -1261,8 +1261,8 @@ task :full_build => [
 
 
 
-desc "Default build task (:build_project)"
-task :build => :build_project
+desc "Default build task (:build_cpp_wrapper)"
+task :build => :build_cpp_wrapper
 
 # task :run => 'oF_project:run'
 task :run => 'ruby:run'
