@@ -1109,6 +1109,67 @@ namespace :ruby do
 			Kernel.exec "gdb ruby"
 		end
 	end
+	
+	
+	# manage ruby-level dependencies
+	namespace :deps do
+		def bundle_install(path)
+			Dir.chdir path do
+				# run_i "unbuffer bundle install"
+				# # NOTE: unbuffer does work here, but it assumes that you have that utility installed, and it is not installed by default
+				# 	# sudo apt install expect
+				
+				
+				run_pty "bundle install"
+			end
+		end
+		
+		def bundle_uninstall(path)
+			Dir.chdir path do
+				FileUtils.rm_rf "./.bundle"      # settings directory
+				FileUtils.rm    "./Gemfile.lock" # lockfile
+			end
+		end
+		
+		
+		
+		namespace :core do
+			task :install do
+				# begin
+					puts "Bundler: Installing core dependencies"
+					bundle_install(GEM_ROOT)
+				# rescue StandardError => e
+				# 	puts "Bundler had an error."
+				# 	puts e
+				# 	puts e.backtrace
+				# 	exit
+				# end
+			end
+			
+			task :uninstall do
+				bundle_uninstall(GEM_ROOT)
+			end
+		end
+		
+		
+		namespace :project do
+			task :install do
+				begin
+					puts "Bundler: Installing dependencies for project '#{RUBYOF_PROJECT_NAME}'"
+					bundle_install(GEM_ROOT)
+				rescue StandardError => e
+					puts "Bundler had an error."
+					exit
+				end
+			end
+			
+			task :uninstall do
+				bundle_uninstall(RUBYOF_PROJECT_PATH)
+			end
+		end
+	end
+	
+	
 end
 
 

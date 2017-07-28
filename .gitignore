@@ -93,3 +93,9 @@ bin/projects/*/ext/Makefile
 #   if you create a build system that doesn't use extconf at this level
 
 bin/projects/*/ext/constants/data_path.h
+
+
+
+=== Don't track Gemfile.lock
+Gemfile.lock
+bin/projects/*/Gemfile.lock

@@ -10,16 +10,6 @@ p gem_root
 
 require File.expand_path('lib/rubyOF', gem_root)
 
-# TODO: add this dependency to project gemfile or something
-require 'opengl'
-# gem 'opengl', "0.9.2"
-# ^ this should be an explict dependency of the RubyOF gem or w/e
-#   not sure if there's a good mechanism for doing that or not
-#   considering that this is more of a framework than a normal gem?
-#   May have to delay exact handling of this issue until I figure out
-#   if RubyOF can be packaged as some sort of gem
-#   (basically, some executable thing that you point at a project, to build)
-
 
 # TODO: rename things so this project doesn't have symbol collision with the other package I named "Oni", from which this project's template derives.
 	

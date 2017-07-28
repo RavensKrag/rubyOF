@@ -160,5 +160,39 @@ end
 
 
 
+# source for SafePty:
+# https://stackoverflow.com/questions/10238298/ruby-on-linux-pty-goes-away-without-eof-raises-errnoeio
+require 'pty'
+module SafePty
+  def self.spawn command, &block
+
+    PTY.spawn(command) do |r,w,p|
+      begin
+        yield r,w,p
+      rescue Errno::EIO
+      ensure
+        Process.wait p
+      end
+    end
+
+    $?.exitstatus
+  end
+end
+
+
+# Interactive command-line execution
+# that tricks the subprocess into thinking it is running in a termal
+# (pty is short for Psedo-Terminal)
+# This means you can get pretty print / colored printing
+# even in applications that sense connection to tty
+def run_pty(cmd_string)
+	SafePty.spawn(cmd_string) do |r,w,pid|
+		until r.eof? do
+			puts r.readline
+		end
+	end
+end
+
+
 
 
