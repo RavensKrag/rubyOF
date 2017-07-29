@@ -21,4 +21,6 @@ create_makefile('rubyOF/rubyOF')
 
 
 require File.join(GEM_ROOT, 'ext', NAME, 'extconf_printer.rb')
-write_extconf_variables_to_file(RUBYOF_EXTCONF_VARIABLE_FILE)
+
+filepath = File.join(path_to_file, 'extconf_variables.yaml')
+write_extconf_variables_to_file(filepath)
