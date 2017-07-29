@@ -296,7 +296,7 @@ OPTIMIZATION_CFLAGS:
 OF_CORE_LIB_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64"
 DBUS_SESSION_BUS_ADDRESS:
-- unix:abstract=/tmp/dbus-c76UrO9Za2,guid=3d451fd37b39dabf84341675597559ca
+- unix:abstract=/tmp/dbus-HmfgTnfBtX,guid=8995776928069095d44e8614597b44b3
 GCC_MAJOR_EQ_4:
 - '0'
 CC:
@@ -318,7 +318,6 @@ addon:
 GCC_MINOR_GTEQ_9:
 - '0'
 PROJECT_ADDONS_LDFLAGS: []
-ADDON_SOURCES_EXCLUDE: []
 PLATFORM_REQUIRED_ADDONS: []
 CHECKOUT,v:
 - "+co"
@@ -418,11 +417,11 @@ OF_CORE_THIRDPARTY_SHARED_LIBS:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1621,unix/ravensnest:/tmp/.ICE-unix/1621
+- local/ravensnest:@/tmp/.ICE-unix/1806,unix/ravensnest:/tmp/.ICE-unix/1806
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
-COMPILE.mod:
-- m2c
+rvm_stored_umask:
+- '0002'
 XDG_RUNTIME_DIR:
 - "/run/user/1000"
 FIND:
@@ -449,7 +448,7 @@ PARSED_ADDONS_LIBS_SOURCES: []
 PARSED_ADDONS_FILTERED_INCLUDE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
 WINDOWID:
-- '79692556'
+- '92274694'
 COMPILE.f:
 - f77
 - "-c"
@@ -529,7 +528,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-NN6RSFHuXKtB/agent.1432"
+- "/tmp/ssh-EdNwqOJouf4r/agent.1595"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -614,7 +613,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1543'
+- '1710'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -936,8 +935,9 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-OLDPWD:
-- "/home/ravenskrag/Desktop/gem_structure/ext"
+COMPILE.cc:
+- g++
+- "-c"
 ADDON_LIBS_EXCLUDE: []
 REQUESTED_PROJECT_ADDONS:
 - ofxGui
@@ -1016,7 +1016,6 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - addon
 - GCC_MINOR_GTEQ_9
 - PROJECT_ADDONS_LDFLAGS
-- ADDON_SOURCES_EXCLUDE
 - PLATFORM_REQUIRED_ADDONS
 - CHECKOUT,v
 - obj_prefix
@@ -1041,7 +1040,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - XCURSOR_THEME
 - SESSION_MANAGER
 - OF_LIBS_OF_COMPILED_PATH
-- COMPILE.mod
+- rvm_stored_umask
 - XDG_RUNTIME_DIR
 - FIND
 - CFLAGS
@@ -1185,7 +1184,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- OLDPWD
+- COMPILE.cc
 - ADDON_LIBS_EXCLUDE
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
@@ -1193,7 +1192,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - addon_obj_path
 - PC
 - "*F"
-- BUNDLER_ORIG_PATH
+- ADDON_SOURCES_EXCLUDE
 - XDG_SEAT_PATH
 - ADDON_INCLUDES_FILTERED
 - PLATFORM_DEFINES
@@ -1215,6 +1214,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - COMPILE.r
 - OBJS_WITH_PREFIX
 - OF_PROJECT_SOURCE_PATHS
+- rvm_user_install_flag
 - ADDON_INCLUDES
 - "+F"
 - M2C
@@ -1229,17 +1229,16 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - parse_addons_libraries
 - DEFAULTS_PATH
 - LDFLAGS
-- BUNDLER_ORIG_GEM_PATH
 - PLATFORM_PKG_CONFIG_LIBRARIES
 - parse_addons_includes
 - MAKEFILES
+- OF_PROJECT_DEFINES_CFLAGS
 - OF_PROJECT_DEPENDENCY_FILES
 - ADDON_LDFLAGS
 - TMP_PROJECT_ADDONS_INCLUDES
 - _system_type
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -1252,6 +1251,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_CORE_INCLUDES_CFLAGS
 - ADDON_CPPFLAGS
 - COMPILE.C
+- COMPILE.mod
 - OF_LIBS_OPENFRAMEWORKS_PATH
 - "^F"
 - COMPILE.S
@@ -1270,7 +1270,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - PROJECT_ADDONS_CFLAGS
 - ".INCLUDE_DIRS"
 - PARSED_ADDONS_OFX_SOURCES
-- OF_PROJECT_DEFINES_CFLAGS
+- rvm_loaded_flag
 - ADDON_DATA
 - CORE_PKG_CONFIG_LIBRARIES
 - ".RECIPEPREFIX"
@@ -1302,8 +1302,7 @@ addon_obj_path:
 PC:
 - pc
 "*F": []
-BUNDLER_ORIG_PATH:
-- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
+ADDON_SOURCES_EXCLUDE: []
 XDG_SEAT_PATH:
 - "/org/freedesktop/DisplayManager/Seat0"
 ADDON_INCLUDES_FILTERED:
@@ -1419,6 +1418,8 @@ OBJS_WITH_PREFIX:
 OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
+rvm_user_install_flag:
+- '1'
 ADDON_INCLUDES:
 - "."
 - "./src"
@@ -1476,8 +1477,6 @@ LDFLAGS:
 - "-Wl,--gc-sections"
 - "-L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/"
 - "-lfmodex"
-BUNDLER_ORIG_GEM_PATH:
-- "/home/ravenskrag/.rvm/gems/ruby-2.4.0:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global"
 PLATFORM_PKG_CONFIG_LIBRARIES:
 - cairo
 - zlib
@@ -1502,6 +1501,7 @@ PLATFORM_PKG_CONFIG_LIBRARIES:
 - libmpg123
 parse_addons_includes: []
 MAKEFILES: []
+OF_PROJECT_DEFINES_CFLAGS: []
 OF_PROJECT_DEPENDENCY_FILES:
 - obj/linux64/Debug/src/ofApp.d
 - obj/linux64/Debug/src/main.d
@@ -1576,9 +1576,6 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
-COMPILE.cc:
-- g++
-- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
@@ -1667,6 +1664,8 @@ ADDON_CPPFLAGS: []
 COMPILE.C:
 - g++
 - "-c"
+COMPILE.mod:
+- m2c
 OF_LIBS_OPENFRAMEWORKS_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks"
 "^F": []
@@ -1857,7 +1856,8 @@ PROJECT_ADDONS_CFLAGS: []
 PARSED_ADDONS_OFX_SOURCES:
 - "./src/ofApp.cpp"
 - "./src/main.cpp"
-OF_PROJECT_DEFINES_CFLAGS: []
+rvm_loaded_flag:
+- '1'
 ADDON_DATA: []
 CORE_PKG_CONFIG_LIBRARIES:
 - cairo
@@ -1886,7 +1886,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/2"
+- "/dev/pts/1"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
@@ -1908,6 +1908,8 @@ LINK.f:
 - "-L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/"
 - "-lfmodex"
 ADDON_LIBS:
+- "./lib/libOFSketch.a"
+- "./lib/libOFSketch.a"
 - "./bin/libs/libfmodex.so"
 - "./bin/libs/libfmodex.so"
 - "./bin/libs/libfmodex.so"
@@ -1916,6 +1918,7 @@ TEX:
 GST_VERSION:
 - '1.0'
 PROJECT_ADDONS_LIBS:
+- "./lib/libOFSketch.a"
 - "./bin/libs/libfmodex.so"
 LANG:
 - en_US.UTF-8

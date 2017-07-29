@@ -803,12 +803,16 @@ namespace :cpp_glue_code do
 	# NOTE: This is a shortcut for the file task above.
 	desc "Build the C extension (core Rice glue code)"
 	task :build => c_library do
-		FileUtils.rm c_library
+		# FileUtils.rm c_library
 		# Just want the intermediates from the build process
 		# the actual final dynamic library should be discarded.
 		# This is because this is not the true final output.
 		# The final output can only be made when these intermediates
 		# are combined with the intermediates of the project-specific C++ build.
+		
+		# NO.
+		# Need to check against this library to make sure final link works.
+		# As such, you can't delete this .so
 	end
 	
 	
@@ -819,6 +823,18 @@ namespace :cpp_glue_code do
 	
 	# TODO: make sure the clang symbols are generated as part of the standard build process
 	# TODO: add clang symbols file to the .gitignore. Should be able to generate this, instead of saving it.
+	
+	
+	
+	# Anything cleaned up here should already be
+	# caught by the main clean task rules.
+	# Only call this task if you need to clean
+	# just the few things from this build phase.
+	task :clean do
+		Dir.chdir("ext/#{NAME}") do
+			run_i "make clean"
+		end
+	end
 end
 
 
@@ -861,6 +877,11 @@ class Configuration
 	# TODO: allow either project name or full path to project as argument
 	# (if full path detected, need to set @project_name and @project_path)
 	def initialize(project_name)
+		raise "ERROR: no project name specified" if project_name.nil?
+		# ^ Need to do this, because of how Rake tasks work
+		#   It is always possible to call a rake task that requires arguments
+		#   with no arguments at all.
+		
 		# name of the project
 		# (should be the same as the directory name)
 		@project_name = project_name
@@ -917,6 +938,24 @@ class Configuration
 			@project_path, 'ext', 'constants', 'data_path.h'
 		)
 		
+		
+		
+		
+		
+		@so_paths = {
+			# :wrapper = core Rice wrapper code
+			# :project = intermediate .so for project-specific code
+			# :final   = output .so that combines both :wrapper and :project
+			:wrapper => File.join(GEM_ROOT, 'ext', NAME, "#{NAME}.so"),
+			:project => File.join(@app_path, "#{NAME}.so"),
+			:final   => File.join(@project_path, 'ext', 'final', "#{NAME}.so"),
+			
+			
+			# The final output goes here,
+			# to be loaded by the Ruby interpreter
+			:install => File.join(GEM_ROOT, 'lib', NAME, "#{NAME}.so")
+		}
+		
 	end
 	
 	# ------------------------
@@ -945,6 +984,13 @@ class Configuration
 	def build
 		puts "=== build"
 		
+		# check if the 
+		# is newer than
+		# the intermidate .so from the main build
+			# "ext/#{NAME}/#{NAME}.so"
+		
+		
+		
 		puts "Building project-specific C++ code..."
 		Dir.chdir(@app_path) do
 			puts "=== Generating makefile for project '#{@project_name}'"
@@ -953,48 +999,90 @@ class Configuration
 			
 			puts "=== Building project..."
 			run_i "make"
+			# ^ creates .so @ this location => @so_paths[:project]
 			
-			
-			puts "=== Removing intermediate .so"
-			FileUtils.rm "./#{NAME}.so"
+			# NOPE
+			# No more clobering.
+			# Gonna just let the :project intermediate just say right here
+				# puts "=== Moving intermediate .so"
+				# FileUtils.mkdir_p  File.dirname @so_paths[:project]
+				# FileUtils.mv @so_paths[:build], @so_paths[:project]
+				# NOTE: ^ the new intermediate .so will clobber
+				#       the result of the final link,
+				#       if the final link has already happened
+				#       (the build will clobber it, and then the new one is removed)
 		end
 	end
 	
 	# desc "link final dynamic library (linux)"
-	# uses project-specific 'app.o' to generate final 'rubyOF.so'
+	#   Combines obj files from Rice wrapper build
+	#   and obj files from project-specific build
+	#   into one cohesive whole
 	# 
 	# ASSUME: main extconf.rb and project-specific extconf.rb have run, and have succesfully outputed their variable files.
+	# NOTE: Only need to run this if 'build' has changed some files
 	def link
-		# # TODO: 'final link' should be a file task that generates the project-specific dynamic lib
-		
-		
 		puts "=== Linking final dynamic library..."
+		
+		# === Create a place for the final .so to go
+		# Need to have a copy somewhere other than the install location
+		# because other projects may need to move into that space.
+		FileUtils.mkdir_p  File.dirname @so_paths[:final]
+		
+		
+		# === Load in environment variables
+		puts "loading main extconf variables..."
+		main_vars = load_extconf_data(@main_build_var_file)
+		
+		puts "loading #{NAME} project extconf variables..."
+		project_vars = load_extconf_data(@project_build_var_file)
+		
+		
+		# === Expand obj paths to full paths
+		main_objs = 
+			main_vars['$objs'].collect{ |x|
+				File.join(@core_path, x)
+			}
+		
+		
+		# === Mix in obj paths from the project
+		app_objs = 
+			project_vars['$objs'].collect{ |x|
+				File.join(@app_path, x)
+			}
+		
+		
+		# NOTE: The extconf.rb build files constantly relink the .so files, so their timestamps are not a reliable indicator of when the last build occurred. You must observe the time on the .o files instead.
+		timestamps = 
+			(main_objs + app_objs).collect{ |x|
+				Pathname.new(x)
+			}.collect{ |path|
+				path.mtime # get last modification time for file
+			}.sort # chronological order (oldest first)
+		puts "Printing dependency timestamps..."
+		p timestamps
+		# NOTE: older < newer
+		
+		
+		
+		
+		# only perform the link when the component obj files have been updated
+		# (one or more .o files are newer than the .so file)
+		# [aka, skip linking when .so is newer than the newest .o file]
+		so_location = Pathname.new(@so_paths[:final])
+		p so_location.mtime if so_location.exist?
+		
+		if so_location.exist? and timestamps.last < so_location.mtime
+			puts "skipping link phase"
+			return
+			# use 'return' instead of 'raise' to continue the build
+		end
+		
+		
 		Dir.chdir(@app_path) do
 			# TODO: need to allow linking of additional stuff as well (any additional flags that might be set by the RubyOF project specific build)
 			# TOOD: Figure out if the flags used by the app are always a superset of the flags used by main (may not be a proper superset)
 			
-			
-			
-			# === Load in environment variables
-			puts "loading main extconf variables..."
-			main_vars = load_extconf_data(@main_build_var_file)
-			
-			puts "loading #{NAME} project extconf variables..."
-			project_vars = load_extconf_data(@project_build_var_file)
-			
-			
-			# === Expand obj paths to full paths
-			main_objs = 
-				main_vars['$objs'].collect{ |x|
-					File.join(@core_path, x)
-				}
-			
-			
-			# === Mix in obj paths from the project
-			app_objs = 
-				project_vars['$objs'].collect{ |x|
-					File.join(@app_path, x)
-				}
 			
 			
 			# === Assemble the base link command
@@ -1012,7 +1100,7 @@ class Configuration
 				[
 					main_vars['$LDSHARED_CXX'],
 					'-o', # have to supply this manually
-					"#{NAME}.so",
+					"./final/#{NAME}.so",
 					app_objs,
 					main_objs,
 					"-L. -L#{lib_dir} -Wl,-R#{lib_dir}",
@@ -1042,6 +1130,8 @@ class Configuration
 			# === Execute the final link
 			run_i final_link_command
 		end
+		
+		
 		
 		puts "Final link complete!"
 	end
@@ -1091,31 +1181,46 @@ class Configuration
 		end
 	end
 	
+		# Check final dynamic libary for symbols that will only exist
+		# when the final link is performed correctly.
+		# desc "make sure final link works as expected (linux)"
 		def test_final_link
-			# puts "=== testing: make sure final link has happened"
-			
-			# desc "make sure final link works as expected (linux)"
-			# task :test_final_link do
-				# Check final dynamic libary for symbols that will only exist
-				# when the final link is performed correctly.
+			puts "--- testing: make sure final link has happened"
 			
 			# The test symbol sholud be something that only exists
 			# in the base build, and not the project build.
 			# Thus, the presense of this symbol in the final linked product
 			# confirms that the link has succeded.
 			
+			
+			# --- first, make sure the baseline lib actually exists
+			#     (can't compare with something that's not there)
+			path = Pathname.new(@so_paths[:wrapper])
+			unless path.exist?
+				raise "ERROR: Baseline lib not found @ #{path}"
+			end
+			
+			
+			# --- check the output location too
+			path = Pathname.new(@so_paths[:final])
+			unless path.exist?
+				raise "ERROR: Dynamic lib from final link not found @ #{path}"
+			end
+			
+			
+			# --- perform the main checks
 			sym      = "Launcher"
 			test_cmd = "nm -C #{NAME}.so  | grep #{sym}"
 			
 			# baseline
 			cmd1 = nil
-			Dir.chdir(@core_path) do
+			Dir.chdir(File.dirname(@so_paths[:wrapper])) do
 				cmd1 = `#{test_cmd}` # run test command in shell
 			end
 			
 			# final link
 			cmd2 = nil
-			Dir.chdir(@app_path) do
+			Dir.chdir(File.dirname(@so_paths[:final])) do
 				cmd2 = `#{test_cmd}` # run test command in shell
 			end
 			
@@ -1136,7 +1241,7 @@ class Configuration
 		end
 		
 		def test_app_factory_link
-			# puts "=== testing: looking for 'app factory' symbol"
+			puts "--- testing: looking for 'app factory' symbol"
 			
 			
 			
@@ -1149,7 +1254,7 @@ class Configuration
 			
 			out = nil
 			
-			Dir.chdir(@app_path) do
+			Dir.chdir(File.dirname(@so_paths[:final])) do
 				out = `#{test_cmd}`
 			end
 			
@@ -1181,9 +1286,7 @@ class Configuration
 		
 		puts "Moving completed dynamic library to final location"
 		# copy dynamic lib into final location
-		src = File.join(@app_path, "#{NAME}.so")
-		dst = File.join(GEM_ROOT, "lib/#{NAME}")
-		FileUtils.cp(src, dst)
+		FileUtils.cp(@so_paths[:final], @so_paths[:install])
 	end
 	
 	
@@ -1192,15 +1295,6 @@ class Configuration
 	# ------------------------
 	
 	def main
-		# RUBYOF_DATA_PATH_FILE,
-			
-		# 'cpp_project:build',
-		# 'cpp_project:link',
-		# 'cpp_project:test_final_link',
-		# 'cpp_project:test_app_factory_link',
-		# 'cpp_project:install'
-		
-		
 		Monad.maybe_e self, [
 			[:create_data_path_file],
 			[:build],
@@ -1220,15 +1314,9 @@ class Configuration
 			end
 		end
 		
-		
-		# FileUtils.rm @data_path_file
-		# CLEAN.include(RUBYOF_EXTCONF_VARIABLE_FILE)
-		
-		
 		[
 			@data_path_file,
-			@main_build_var_file,
-			@project_build_var_file,
+			# @so_paths[:project], # should already be cleaned by 'make clean'
 		].each do |filepath|
 			FileUtils.rm filepath if File.exists? filepath
 		end
@@ -1238,7 +1326,8 @@ class Configuration
 		self.clean
 		
 		[
-			File.join(@app_path, "#{NAME}.so"), # project intermediate?
+			@so_paths[:final],
+			@so_paths[:install],
 			@project_build_var_file,
 			File.join(@app_path, "Makefile")
 		].each do |file_to_be_cleaned|
@@ -1254,18 +1343,10 @@ end
 
 namespace :cpp_project do
 	
-	task :build, [:name] do |t, args|
-		obj = RubyOF::Foo::Configuration.new(args[:name])
+	task :build, [:rubyOF_project_name] do |t, args|
+		obj = RubyOF::Foo::Configuration.new(args[:rubyOF_project_name])
 		obj.main
 	end
-	
-	# TODO: shouldn't have to specify project name in common.rb. Make it so that is supplied through a rake task argument instead (other variables depend on RUBYOF_PROJECT_NAME being set. how do will you manage that cascade in the future?)
-	
-	# TODO: pass projcet variables to tasks as arguments, rather than loading in constants from common.rb
-	
-		# task :project_generator, [:ofProjectName] do |t, args|
-		# project = args[:ofProjectName]
-	
 	
 	# TODO: need to add cleanup of files created by othis process to the CLEAN task somehow
 		# either by adding additional dependenices to clean task,
@@ -1284,13 +1365,13 @@ namespace :cpp_project do
 	
 	
 	
-	task :clean, [:name] do |t, args|
-		obj = RubyOF::Foo::Configuration.new(args[:name])
+	task :clean, [:rubyOF_project_name] do |t, args|
+		obj = RubyOF::Foo::Configuration.new(args[:rubyOF_project_name])
 		obj.clean
 	end
 	
-	task :clobber, [:name] do |t, args|
-		obj = RubyOF::Foo::Configuration.new(args[:name])
+	task :clobber, [:rubyOF_project_name] do |t, args|
+		obj = RubyOF::Foo::Configuration.new(args[:rubyOF_project_name])
 		obj.clobber
 	end
 	
@@ -1403,14 +1484,21 @@ end
 
 
 
+# clean just a few things
+desc "For reversing :build_cpp_wrapper"
+task :clean_cpp_wrapper, [:rubyOF_project_name] => [
+	'cpp_glue_code:clean', 'cpp_project:clean'
+]
+
+desc "For reversing :build_project"
+task :clean_project, [:rubyOF_project_name] => [
+	'cpp_project:clean'
+]
 
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
-task :clean   => ['oF_project:clean', 'cpp_project:clean']
+task :clean   => ['oF_project:clean']
 task :clobber => ['oF_deps:clobber', 'oF:clean', 'cpp_glue_code:clobber']
-
-
-
 
 
 
@@ -1474,8 +1562,9 @@ task :build_cpp => ['oF:build', 'oF_project:build']
 # so that you don't duplicate the work being done in :setup.
 # This way, the build process will go a little faster.
 desc "For updating Rice code, and testing with current RubyOF project"
-task :build_cpp_wrapper => [
+task :build_cpp_wrapper, [:rubyOF_project_name] => [
 	'oF:build',
+	
 	'oF_project:build',                  # implicitly requires oF:build
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
@@ -1504,7 +1593,7 @@ end
 # Assumes 'setup' has been run
 # Assumes 'build_cpp_wrapper' has been run
 desc "For using stable bindings with a custom blend of C++ and Ruby"
-task :build_project => [
+task :build_project, [:rubyOF_project_name] => [
 	'oF_project:build',                  # implicitly requires oF:build
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
@@ -1512,10 +1601,16 @@ task :build_project => [
 	:install_oF_dynamic_libs,
 	
 	'cpp_project:build'
-] do
+] do |t, args|
 	puts ">>> BUILD COMPLETE <<<"
 end
 
+# NOTE: parameters to rake task are passed to all dependencies as well
+# source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
+
+
+# NOTE: const RUBYOF_PROJECT_NAME still in use by the :ruby namespace
+# (used automate installation of bundler dependencies)
 
 
 # --- pathway ---
@@ -1531,8 +1626,11 @@ task :full_build => [
 
 
 
-desc "Default build task (:build_cpp_wrapper)"
-task :build => :build_cpp_wrapper
+# desc "Default build task (:build_cpp_wrapper)"
+# task :build => :build_cpp_wrapper
+# (as of now, some build tasks require arguments, and others do not)
+# (as such, the default build task has to be disabled)
+
 
 # task :run => 'oF_project:run'
 task :run => 'ruby:run'
