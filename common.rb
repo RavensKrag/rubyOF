@@ -139,24 +139,7 @@ end
 
 
 
-# source for SafePty:
-# https://stackoverflow.com/questions/10238298/ruby-on-linux-pty-goes-away-without-eof-raises-errnoeio
-require 'pty'
-module SafePty
-  def self.spawn command, &block
 
-    PTY.spawn(command) do |r,w,p|
-      begin
-        yield r,w,p
-      rescue Errno::EIO
-      ensure
-        Process.wait p
-      end
-    end
-
-    $?.exitstatus
-  end
-end
 
 
 # Interactive command-line execution
@@ -164,11 +147,55 @@ end
 # (pty is short for Psedo-Terminal)
 # This means you can get pretty print / colored printing
 # even in applications that sense connection to tty
-def run_pty(cmd_string)
-	SafePty.spawn(cmd_string) do |r,w,pid|
-		until r.eof? do
-			puts r.readline
+def run_pty(*command)
+	exit_status =
+		SafePty.spawn(*command) do |stdout, stdin, pid|
+			until stdout.eof? do
+				puts stdout.readline
+			end
 		end
+
+	if exit_status == 0
+		puts "Done!"
+	else
+		raise "ERROR: Process in PTY failed with exit code #{status}!"
+	end
+end
+
+
+# SafePty implementation fuses 4 different approaches.
+# See 'docs/shell commands in ruby.odt' for details.
+
+require 'pty'
+
+module SafePty
+	def self.spawn *command # &block
+		begin
+			PTY.spawn(*command) do |stdout, stdin, pid|
+				begin
+					yield stdout, stdin, pid
+				ensure
+					# This might cause problems if the block uses
+					# something like #gets which won't recieve all
+					# of the data in one pass...
+					Process.wait pid
+				end
+			end
+		rescue Errno::EIO
+			# nothing			
+			puts "Errno:EIO error detected for the following command:"
+			p    command
+			puts "  (most likely normal)"
+			puts "  Most likely, child process has finished giving output"
+			puts "  and closed it's output pipe."
+		rescue PTY::ChildExited => e
+			puts "The child process exited!"
+			puts "(most likely normal)"
+			puts "[child status] => #{e.status}"
+		end
+		
+		status = $?.exitstatus
+		return status
 	end
 end
 

@@ -68,7 +68,7 @@ Launcher::~Launcher(){
 }
 
 
-// NOTE: If you explictly define a method called #initiailze, then the C++ constructor wrapper used by Rice will not work correctly. Initializaiton must happen in the constructor.
+// NOTE: If you explicitly define a method called #initialize, then the C++ constructor wrapper used by Rice will not work correctly. Initialization must happen in the constructor.
 
 
 void Launcher::show(){
