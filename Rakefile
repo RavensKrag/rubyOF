@@ -665,7 +665,7 @@ end
 
 
 # === Build the C extension
-namespace :cpp_glue_code do
+namespace :cpp_wrapper_code do
 	# make the :test task depend on the shared
 	# object, so it will be built automatically
 	# before running the tests
@@ -1271,18 +1271,13 @@ class ExtensionBuilder
 			else
 				puts "no problems with final link"
 			end
-			
-			
 		end
 		
+		# Check if symbol is undefined, rather than merely if it is present.
+		# desc "Make sure app factory has been linked into final product (linux)"
 		def test_app_factory_link
 			puts "--- testing: looking for 'app factory' symbol"
-			
-			
-			
 	
-			# NOTE: check if symbol is undefined, rather than merely if it is present.
-			# desc "Make sure app factory has been linked into final product (linux)"
 			sym      = "appFactory_create"
 			test_cmd = "nm -C #{NAME}.so  | grep #{sym}"
 			
@@ -1307,8 +1302,6 @@ class ExtensionBuilder
 				# No problems!
 				puts "no problems - appFactory linked correctly"
 			end
-			
-			
 		end
 	
 	
@@ -1538,7 +1531,7 @@ end
 # clean just a few things
 desc "For reversing :build_cpp_wrapper"
 task :clean_cpp_wrapper, [:rubyOF_project] => [
-	'cpp_glue_code:clean', 'cpp_project:clean'
+	'cpp_wrapper_code:clean', 'cpp_project:clean'
 ]
 
 desc "For reversing :build_project"
@@ -1549,7 +1542,7 @@ task :clean_project, [:rubyOF_project] => [
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task
 task :clean   => ['oF_project:clean']
-task :clobber => ['oF_deps:clobber', 'oF:clean', 'cpp_glue_code:clobber']
+task :clobber => ['oF_deps:clobber', 'oF:clean', 'cpp_wrapper_code:clobber']
 
 
 
@@ -1573,7 +1566,7 @@ end
 
 
 
-desc "Copy oF dynamic libs to correct location"
+# desc "Copy oF dynamic libs to correct location"
 task :install_oF_dynamic_libs do
 	puts "=== Copying OpenFrameworks dynamic libs..."
 	
@@ -1620,7 +1613,7 @@ task :build_cpp_wrapper, [:rubyOF_project] => [
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
 	
-	'cpp_glue_code:build', # implicitly requires oF_project:build
+	'cpp_wrapper_code:build', # implicitly requires oF_project:build
 	# ^ multiple steps:
 	#   +  extconf.rb -> makefile
 	#   +  run the makefile -> build ruby dynamic lib (.so)
@@ -1663,7 +1656,7 @@ end
 
 # --- pathway ---
 desc "Build up from a newly cloned repo"
-task :full_build => [
+task :full_build, [:rubyOF_project] => [
 	:setup,
 	:build_cpp_wrapper,
 	:build_project
