@@ -448,7 +448,7 @@ PARSED_ADDONS_LIBS_SOURCES: []
 PARSED_ADDONS_FILTERED_INCLUDE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
 WINDOWID:
-- '94404104'
+- '94371846'
 COMPILE.f:
 - f77
 - "-c"
@@ -1886,7 +1886,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/3"
+- "/dev/pts/1"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
