@@ -24,6 +24,21 @@ void rbApp::setup(){
 	
 	
 	
+	// c++ --> ruby callback --> c++
+	ofPoint input(0,0,0);
+	std::cout << "c++ data: " << input << std::endl;
+	
+	Rice::Object out = mSelf.call("callback_to_cpp", to_ruby(input));
+	ofPoint ruby_ouput = from_ruby<ofPoint>(out);
+	std::cout << "c++ -> roundtrip from Ruby: " << ruby_ouput << std::endl;
+	
+	
+	
+	// ruby --> c++ callback --> ruby
+	// (when the ruby-level call to #setup fires, this pathway will start)
+	// The actual c++ callbacks are defined in
+	// ext/callbacks/callbacks.cpp
+	
 	
 	
 	// ========================================

@@ -1,3 +1,7 @@
+require 'fileutils'
+require 'open3'
+
+require 'yaml'
 
 
 have_library("stdc++")

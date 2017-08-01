@@ -105,7 +105,7 @@ OF_BUILD_VARIABLE_FILE     = File.expand_path(
 
 
 
-
+require 'open3'
 
 # interactive command-line program execution
 def run_i(cmd_string, &block)
