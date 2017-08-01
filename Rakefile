@@ -1595,14 +1595,14 @@ namespace :ruby do
 end
 
 
-desc "Generate RubyOF project by copying the 'example' project"
+desc "Generate RubyOF project by copying the 'boilerplate' project"
 task :project_generator, [:rubyOF_project] do |t, args|
 	
 	# == Figure where to place the new project
 	path_or_name = args[:rubyOF_project]
 	RubyOF::Build.create_project(path_or_name) do |path|
 		# == Copy the template project into the target location
-		template_project_name = 'example'
+		template_project_name = 'boilerplate'
 		
 		# Need to clean the example first, so you don't copy built files
 		run_task('clean_project', template_project_name)
