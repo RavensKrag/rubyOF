@@ -13,6 +13,25 @@ puts "gem_root     = #{gem_root}"
 require File.expand_path('lib/rubyOF', gem_root)
 
 
+puts "load project-specific C++ code..."
+
+# Stolen from Gosu's code to load the dynamic library
+# TODO: check this code, both here and in the main build, when you actually try building for Windows. Is it neccessary? Does it actually work? It's rather unclear. (I don't think I'm defining RUBY_PLATFORM anywhere, so may have to at least fix that.)
+if defined? RUBY_PLATFORM and
+%w(-win32 win32- mswin mingw32).any? { |s| RUBY_PLATFORM.include? s } then
+	ENV['PATH'] = "#{File.dirname(__FILE__)};#{ENV['PATH']}"
+end
+
+# separate C extension for project-specific bindings
+# (things that are not part of OpenFrameworks core)
+[
+	'ext/callbacks/rubyOF_project',
+].each do |path|
+	require File.expand_path(path, project_root)
+end
+
+
+# Load up the project-specific Ruby code for the window
 require File.expand_path('lib/window', project_root)
 
 

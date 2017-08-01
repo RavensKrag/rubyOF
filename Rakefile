@@ -1416,21 +1416,31 @@ class ExtensionBuilder
 			end
 		end
 		
+		# clean files
 		[
+			@project_build_var_file,
 			@data_path_file,
+			@so_paths[:final],
 			# @so_paths[:project], # should already be cleaned by 'make clean'
 		].each do |filepath|
 			FileUtils.rm filepath if File.exists? filepath
+		end
+		
+		# clean directories
+		[
+			File.dirname(@data_path_file),
+			File.dirname(@so_paths[:final])
+		].each do |filepath|
+			FileUtils.rm_rf filepath if Dir.exists? filepath
 		end
 	end
 	
 	def clobber
 		self.clean
 		
+		# clobber files
 		[
-			@so_paths[:final],
 			@so_paths[:install],
-			@project_build_var_file,
 			File.join(@app_path, "Makefile")
 		].each do |file_to_be_cleaned|
 			FileUtils.rm file_to_be_cleaned if File.exist? file_to_be_cleaned

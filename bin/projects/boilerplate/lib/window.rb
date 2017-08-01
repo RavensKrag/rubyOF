@@ -10,10 +10,6 @@ class Window < RubyOF::Window
 		
 		@p = [0,0]
 		
-		@p_history = Array.new
-		@trail_dt = 1
-		
-		
 	end
 	
 	def setup
@@ -31,6 +27,14 @@ class Window < RubyOF::Window
 		super()
 		
 		
+		# The size of the characters in the oF bitmap font is
+		# height 11 px
+		# width : 8 px
+		
+		start_position = [40, 30]
+		row_spacing    = 11 + 4
+		z              = 1
+		draw_debug_info(start_position, row_spacing, z)
 	end
 	
 	def on_exit
@@ -68,7 +72,7 @@ class Window < RubyOF::Window
 	
 	
 	def mouse_moved(x,y)
-		
+		@p = [x,y]
 	end
 	
 	def mouse_pressed(x,y, button)
