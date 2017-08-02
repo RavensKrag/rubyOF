@@ -874,10 +874,8 @@ class << self
 		# TODO: what happens when a project name is specified, but no such project exists?
 		# -----
 		# ensure project actually exists
-		if Dir.exists? path
-			
-		else
-			raise "ERROR: RubyOF Project '#{name}'' not found. Check your spelling, or use full paths for projects not under the main directory."
+		unless Dir.exists? path
+			raise "ERROR: RubyOF Project '#{name}' not found. Check your spelling, or use full paths for projects not under the main project directory."
 		end
 		
 		# -----
@@ -941,27 +939,49 @@ class << self
 	#     project_name = "example"                        (just the dir name)
 	#     project_path =  [GEM_ROOT]/bin/projects/example (full path to dir)
 	def parse_project_path(path_or_name)
-		# name of the project
-		# (should be the same as the directory name)
-		project_name = path_or_name
+		# NOTE: It is possible that this method of figuring out if a path is relative or absolute may depend on "unix like pathnames" and as such, might not work on Windows.
 		
-		# root of the project
-		project_path   = File.join(
-			GEM_ROOT, 'bin', 'projects', project_name
-		)
+		# src: https://stackoverflow.com/questions/1906823/given-a-path-how-to-determine-if-its-absolute-relative-in-ruby
 		
 		
-		
-		# TODO: distinguish between creating a new project, and accessing an existing one.
-			# When accessing and existing project,
-			# you need to check to make sure that
-			# project actually exists. But if you
-			# check for existance when making a
-			# new project, you will *always* fail.
+		# TODO: accept actual relative paths, not just project names
+		# they should be detected correctly, but they're not currently handled correctly. (still need to extract basename)
 		
 		
 		
-		return project_name, project_path
+		pathname = Pathname.new(path_or_name)
+		if pathname.relative?
+			# relative path: assume relative to project directory
+			
+			# name of the project
+			# (should be the same as the directory name)
+			project_name = pathname               # retain some namespacing
+			# project_name = pathname.basename.to_s # or not
+			
+
+			# root of the project
+			project_path   = 
+				(Pathname.new(GEM_ROOT) + 'bin' + 'projects' + pathname).to_s
+			
+			# TODO: Just use the Pathname type everywhere; would really be better
+			
+			
+			return project_name, project_path
+		else
+			# absolute path: assume this is the exact location that should be used
+			
+			
+			# absolute path is given. so set that part first
+			project_path = path_or_name
+			
+			# the last token in the path is the name of the directory
+			# aka, the name of the project
+			project_name = pathname.basename.to_s
+			
+			
+			
+			return project_name, project_path
+		end
 	end
 	
 end
@@ -1541,7 +1561,7 @@ module RubyOF
 
 class RubyBundlerAutomation
 	def initialize
-		@project_name
+		
 	end
 	
 	def install_core
@@ -1680,6 +1700,7 @@ task :project_generator, [:rubyOF_project] do |t, args|
 			RubyOF::Build.load_project(template_project_name)
 		
 		# Copy the full directory to destination
+		FileUtils.mkdir_p File.dirname(path) # make sure containg dir exists
 		FileUtils.cp_r template_path, path
 	end
 	
