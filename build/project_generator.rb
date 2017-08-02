@@ -7,6 +7,7 @@ GEM_ROOT = gem_root.to_s
 require (gem_root/'build'/'build.rb')
 # require (gem_root/'common.rb')
 
+# TODO: Improve the #update method to understand the versions of RubyOF, so that it will 'upgrade' from older project formats to newer ones.
 
 module RubyOF
 	module Build
