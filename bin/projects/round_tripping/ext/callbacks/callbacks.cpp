@@ -6,7 +6,7 @@ using namespace Rice;
 
 
 // define your callbacks here
-int cpp_callback(int x) {
+int simple_callback(int x) {
 	std::cout << "c++ callback args: " << x << std::endl;
 	
 	// TODO: implement a better example
@@ -14,7 +14,19 @@ int cpp_callback(int x) {
 	// (maybe finding prime factorization?)
 	// (That would be cool, as being able to return an array into Ruby is a cool part of Rice)
 	
-	return x * 5;
+	return x << 2;
+}
+
+void array_callback(Rice::Array list) {
+	// NOTE: The foreach is a C++11 feature. Fortunately, OpenFrameworks uses C++14, so that is what RubyOF is standardized on as well.
+	// NOTE: The Rice::Array type is very similar to the std::vector type
+	
+		std::cout << "c++ array callback" << std::endl;
+	for(Rice::Object obj : list){
+		std::cout << obj << std::endl;
+	}
+		std::cout << "-----" << std::endl;
+	
 }
 
 
@@ -26,7 +38,8 @@ void Init_rubyOF_project()
 	Module rb_mCallbacks = define_module_under(rb_mRubyOF, "CPP_Callbacks");
 	
 	rb_mCallbacks
-		.define_module_function("test_callback", &cpp_callback)
+		.define_module_function("simple_callback", &simple_callback)
+		.define_module_function("array_callback",  &array_callback)
 	;
 	
 	

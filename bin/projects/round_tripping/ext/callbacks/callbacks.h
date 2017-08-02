@@ -17,4 +17,5 @@
 #include "rice/Class.hpp"
 #include "rice/Module.hpp"
 
+#include "rice/Array.hpp"
 

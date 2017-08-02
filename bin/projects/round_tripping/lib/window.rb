@@ -22,7 +22,18 @@ class Window < RubyOF::Window
 		x = 30
 		puts "Ruby data: #{x}"
 		
-		out = RubyOF::CPP_Callbacks.test_callback x
+		out = RubyOF::CPP_Callbacks.simple_callback x
+		puts "Ruby -> roundtrip from C++"
+		puts out
+		
+		
+		
+		puts "-----"
+		puts "ruby roundtrip: array test"
+		x = [1,2,3,4]
+		puts "Ruby data: #{x}"
+		
+		out = RubyOF::CPP_Callbacks.array_callback x
 		puts "Ruby -> roundtrip from C++"
 		puts out
 	end
