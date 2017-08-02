@@ -2,6 +2,9 @@
 # that end up being used in both Oni/ext/oni/extconf.rb and Oni/Rakefile
 # can be placed in this file.
 
+unless defined? GEM_ROOT
+	GEM_ROOT = File.absolute_path(File.dirname(__FILE__))
+end
 
 
 NAME = 'rubyOF'
@@ -29,12 +32,10 @@ NUMBER_OF_CORES    = 4
 
 
 
-# === these fils should be under the root directory of this Ruby gem
-path_to_file = File.absolute_path(File.dirname(__FILE__))
-
+# === All the files below should be under the root directory of this Ruby gem
 COMMON_CONFIG = File.absolute_path(__FILE__)
 
-GEM_ROOT = File.expand_path('./', path_to_file)
+
 DYNAMIC_LIB_PATH = File.join(GEM_ROOT, 'bin', 'lib')
 
 
