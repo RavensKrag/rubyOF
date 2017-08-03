@@ -1613,7 +1613,12 @@ desc "For reversing :build_project"
 task :clobber_project, [:rubyOF_project] => [
 	'cpp_project:clobber',
 	'cpp_callbacks:clobber'
-]
+] do |t, args|
+	name, path = RubyOF::Build.load_project(args[:rubyOF_project])
+	
+	filepath = (Pathname.new(path) + 'Gemfile.lock')
+	FileUtils.rm filepath if filepath.exist?
+end
 
 
 
