@@ -11,5 +11,11 @@ def load_c_extension_lib(absolute_path)
 	
 	raise "ERROR: Must load c-extension using absolute path. Path given was: '#{absolute_path}'" unless Pathname.new(absolute_path).absolute?
 	
-	require absolute_path
+	
+	begin
+		require absolute_path
+	rescue LoadError => e
+		raise LoadError, "ERROR: c-extension dynamic library not found @ '#{absolute_path}'" 
+		# NOTE: Can't detect presense of dynamic lib using File.exist? because the file extension is ommitted (deliberately) for cross-platform compatability (extension changes depending on platform)
+	end
 end

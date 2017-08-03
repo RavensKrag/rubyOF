@@ -1,82 +1,37 @@
 # encoding: UTF-8
-this_dir     = File.absolute_path(File.dirname(__FILE__))
-project_root = File.expand_path('../',          this_dir)
-gem_root     = File.expand_path('../../../../', this_dir)
 
+require 'pathname'
 
-
-puts "this_dir     = #{this_dir}"
+project_root = Pathname.new(__FILE__).expand_path.dirname.parent
 puts "project_root = #{project_root}"
-puts "gem_root     = #{gem_root}"
+
+require (project_root/'config'/'build_variables')
+# ^ defines the GEM_ROOT constant
+
+require (Pathname.new(GEM_ROOT)/'build'/'extension_loader')
+# ^ defines the function 'load_c_extension_lib'
 
 
-require File.expand_path('lib/rubyOF', gem_root)
+
+puts "Load project-specific C++ code..."
+load_c_extension_lib (project_root/'ext'/'callbacks'/'rubyOF_project')
+
+puts "Load final dynamic library (Rice wrapper and project code)..."
+load_c_extension_lib (project_root/'bin'/'lib'/'rubyOF')
+
+puts "Load Ruby code that defines RubyOF..."
+require (Pathname.new(GEM_ROOT) / 'lib' / 'rubyOF')
+
+puts "Load up the project-specific Ruby code for the window..."
+require (project_root/'lib'/'window')
 
 
-puts "load project-specific C++ code..."
-
-# Stolen from Gosu's code to load the dynamic library
-# TODO: check this code, both here and in the main build, when you actually try building for Windows. Is it neccessary? Does it actually work? It's rather unclear. (I don't think I'm defining RUBY_PLATFORM anywhere, so may have to at least fix that.)
-if defined? RUBY_PLATFORM and
-%w(-win32 win32- mswin mingw32).any? { |s| RUBY_PLATFORM.include? s } then
-	ENV['PATH'] = "#{File.dirname(__FILE__)};#{ENV['PATH']}"
-end
-
-# separate C extension for project-specific bindings
-# (things that are not part of OpenFrameworks core)
-[
-	'ext/callbacks/rubyOF_project',
-].each do |path|
-	require File.expand_path(path, project_root)
-end
+# Load WindowGuard class definition (extends custom Window class)
+require (Pathname.new(GEM_ROOT) / 'build' / 'window_guard')
 
 
-# Load up the project-specific Ruby code for the window
-require File.expand_path('lib/window', project_root)
 
-
-# Wrap the window class in some exception handling code
-# to make up for things that I don't know how to handle with Rice.
-class WindowGuard < Window
-	attr_reader :exception
-	
-	private
-	
-	def exception_guard() # &block
-		begin
-			yield
-		rescue => e
-			@exception = e
-			puts "=> exception caught"
-			ofExit()
-		end
-	end
-	
-	public
-	
-	# wrap each and every callback method in an exception guard
-	# (also wrap initialize too, because why not)
-	[
-		:initialize,
-		:setup,
-		:update,
-		:draw,
-		:on_exit,
-		:key_pressed,
-		:key_released,
-		:mouse_moved,
-		:mouse_pressed,
-		:mouse_released,
-		:mouse_dragged
-	].each do |method|
-		define_method method do |*args|
-			exception_guard do
-				super(*args)
-			end
-		end
-	end
-end
-
+# === Main
 x = WindowGuard.new # initialize
 x.show              # start up the c++ controled infinite render loop
 

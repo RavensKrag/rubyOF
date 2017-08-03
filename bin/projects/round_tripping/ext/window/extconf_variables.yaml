@@ -1,21 +1,21 @@
 ---
-- '[:$stdin, :$stdout, :$stderr, :$>, :$NONINSTALLFILES, :$<, :$., :$FILENAME, :$-i,
+- '[:$stdin, :$stdout, :$stderr, :$>, :$<, :$NONINSTALLFILES, :$., :$FILENAME, :$-i,
   :$*, :$defs, :$fileutils_rb_have_lchmod, :$fileutils_rb_have_lchown, :$SAFE, :$CPPFLAGS,
-  :$-p, :$-l, :$-a, :$CXX, :$LIBS, :$LIBRUBYARG, :$&, :$`, :$'', :$+, :$=, :$KCODE,
-  :$-K, :$RICE_CPPFLAGS, :$RICE_LDFLAGS, :$RICE_PREFIX, :$LIBRUBYARG_STATIC, :$DEFLIBPATH,
-  :$CXXFLAGS, :$LDFLAGS, :$LDSHARED_CXX, :$OBJEXT, :$DLDFLAGS, :$extconf_h, :$RICE_USING_MINGW32,
-  :$typeof, :$arg_config, :$VERBOSE, :$-v, :$-w, :$-W, :$DEBUG, :$-d, :$0, :$PROGRAM_NAME,
-  :$PKGCONFIG, :$LIBPATH, :$VPATH, :$headers, :$LIBRUBYARG_SHARED, :$warnflags, :$ruby,
-  :$preload, :$static, :$config_h, :$default_static, :$configure_args, :$distcleanfiles,
-  :$libdir, :$rubylibdir, :$archdir, :$sitedir, :$sitelibdir, :$sitearchdir, :$vendordir,
-  :$vendorlibdir, :$vendorarchdir, :$mswin, :$bccwin, :$mingw, :$cygwin, :$netbsd,
-  :$haiku, :$solaris, :$universal, :$dest_prefix_pattern, :$nmake, :$target, :$LIBEXT,
-  :$cleanfiles, :$INSTALLFILES, :$extout, :$extmk, :$extout_prefix, :$objs, :$srcs,
-  :$hdrdir, :$topdir, :$top_srcdir, :$arch_hdrdir, :$ASMEXT, :$ignore_error, :$installed_list,
-  :$distcleandirs, :$makefile_created, :$enable_shared, :$make, :$curdir, :$?, :$$,
-  :$;, :$-F, :$have_devel, :$,, :$/, :$_, :$~, :$\, :$-0, :$CFLAGS, :$ARCH_FLAG, :$INCFLAGS,
-  :$:, :$-I, :$LOAD_PATH, :$", :$LOADED_FEATURES, :$LOCAL_LIBS, :$libs, :$srcdir,
-  :$EXEEXT, :$@, :$!]'
+  :$-p, :$-l, :$-a, :$CXX, :$&, :$`, :$'', :$+, :$=, :$KCODE, :$-K, :$LIBRUBYARG,
+  :$LIBRUBYARG_STATIC, :$RICE_CPPFLAGS, :$LIBS, :$RICE_PREFIX, :$RICE_USING_MINGW32,
+  :$DEFLIBPATH, :$CXXFLAGS, :$LDFLAGS, :$LDSHARED_CXX, :$OBJEXT, :$RICE_LDFLAGS, :$DLDFLAGS,
+  :$arg_config, :$extconf_h, :$typeof, :$VERBOSE, :$-v, :$-w, :$-W, :$DEBUG, :$-d,
+  :$0, :$PROGRAM_NAME, :$PKGCONFIG, :$LIBPATH, :$VPATH, :$headers, :$LIBRUBYARG_SHARED,
+  :$warnflags, :$ruby, :$preload, :$static, :$config_h, :$default_static, :$configure_args,
+  :$distcleanfiles, :$libdir, :$rubylibdir, :$archdir, :$sitedir, :$sitelibdir, :$sitearchdir,
+  :$vendordir, :$vendorlibdir, :$vendorarchdir, :$mswin, :$bccwin, :$mingw, :$cygwin,
+  :$netbsd, :$haiku, :$solaris, :$universal, :$dest_prefix_pattern, :$nmake, :$target,
+  :$LIBEXT, :$cleanfiles, :$INSTALLFILES, :$extout, :$extmk, :$extout_prefix, :$objs,
+  :$srcs, :$hdrdir, :$topdir, :$top_srcdir, :$arch_hdrdir, :$ASMEXT, :$ignore_error,
+  :$installed_list, :$distcleandirs, :$makefile_created, :$enable_shared, :$make,
+  :$curdir, :$?, :$$, :$;, :$-F, :$have_devel, :$,, :$/, :$_, :$~, :$\, :$-0, :$CFLAGS,
+  :$INCFLAGS, :$LOCAL_LIBS, :$:, :$-I, :$LOAD_PATH, :$", :$LOADED_FEATURES, :$libs,
+  :$ARCH_FLAG, :$srcdir, :$EXEEXT, :$@, :$!]'
 - "$NONINSTALLFILES":
   - !ruby/regexp /~\z/
   - !ruby/regexp /\A#.*#\z/
@@ -67,12 +67,12 @@
   "$-l": false
   "$-a": false
   "$CXX": g++
-  "$LIBS": "-lpthread -lgmp -ldl -lcrypt -lm   -lc"
   "$LIBRUBYARG": "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R'${ORIGIN}/../lib' -lruby"
-  "$RICE_CPPFLAGS": ''
-  "$RICE_LDFLAGS": ''
-  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib"
   "$LIBRUBYARG_STATIC": "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R'${ORIGIN}/../lib' -lruby-static"
+  "$RICE_CPPFLAGS": ''
+  "$LIBS": "-lpthread -lgmp -ldl -lcrypt -lm   -lc"
+  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib"
+  "$RICE_USING_MINGW32": false
   "$DEFLIBPATH":
   - "."
   - "$(libdir)"
@@ -91,10 +91,8 @@
     -lrtaudio"
   "$LDSHARED_CXX": g++ -shared
   "$OBJEXT": o
+  "$RICE_LDFLAGS": ''
   "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
-  "$extconf_h": 
-  "$RICE_USING_MINGW32": false
-  "$typeof": 
   "$arg_config":
   - - "--with-opt-dir"
     - 
@@ -126,6 +124,8 @@
     - 
   - - "--without-stdc++lib"
     - 
+  "$extconf_h": 
+  "$typeof": 
   "$PKGCONFIG": 
   "$LIBPATH": []
   "$VPATH":
@@ -200,9 +200,9 @@
   "$curdir": "."
   "$have_devel": true
   "$CFLAGS": "$(cflags)  -fPIC -fdiagnostics-color=always"
-  "$ARCH_FLAG": ''
   "$INCFLAGS": "-I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)"
   "$LOCAL_LIBS": ''
   "$libs": "-lstdc++ "
+  "$ARCH_FLAG": ''
   "$srcdir": "."
   "$EXEEXT": ''
