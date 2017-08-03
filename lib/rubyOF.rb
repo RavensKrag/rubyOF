@@ -1,13 +1,7 @@
-puts "load C code..."
-
-# Stolen from Gosu's code to load the dynamic library
-if defined? RUBY_PLATFORM and
-%w(-win32 win32- mswin mingw32).any? { |s| RUBY_PLATFORM.include? s } then
-	ENV['PATH'] = "#{File.dirname(__FILE__)};#{ENV['PATH']}"
-end
+puts "RubyOF: loading ruby code"
 
 [
-	'rubyOF/rubyOF',
+	# 'rubyOF/rubyOF',
 	'rubyOF/version',
 	'rubyOF/meta',
 	'rubyOF/freezable'
@@ -20,7 +14,6 @@ require 'bundler/setup'
 Bundler.require
 
 
-puts "loading ruby code"
 
 class Numeric
 	def degrees

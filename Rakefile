@@ -956,7 +956,7 @@ class ExtensionBuilder
 			
 			# The final output goes here,
 			# to be loaded by the Ruby interpreter
-			:install => File.join(GEM_ROOT, 'lib', NAME, "#{NAME}.so")
+			:install => File.join(@project_path, 'bin', 'lib', "#{NAME}.so")
 		}
 	# NOTE: The wrapper build, project build, and final link can all live in harmory. No build phase will clobber any parts needed by other phase.
 		
@@ -1271,10 +1271,12 @@ class ExtensionBuilder
 	def install
 		puts "=== install"
 		
+		src = @so_paths[:final]
+		dst = @so_paths[:install]
 		
-		puts "Moving completed dynamic library to final location"
+		puts "Moving completed dynamic library to '#{dst}'".gsub(GEM_ROOT, "[GEM_ROOT]")
 		# copy dynamic lib into final location
-		FileUtils.cp(@so_paths[:final], @so_paths[:install])
+		FileUtils.cp(src, dst)
 	end
 	
 	
@@ -1606,6 +1608,16 @@ task :clean_project, [:rubyOF_project] => [
 	'cpp_project:clean',
 	'cpp_callbacks:clean'
 ]
+
+desc "For reversing :build_project"
+task :clobber_project, [:rubyOF_project] => [
+	'cpp_project:clobber',
+	'cpp_callbacks:clobber'
+]
+
+
+
+
 
 # add dependencies to default 'clean' / 'clobber' tasks
 # NOTE: Don't edit the actual body of the task

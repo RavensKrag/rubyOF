@@ -1,10 +1,12 @@
 require 'mkmf-rice'
 require 'pathname'
 
-GEM_ROOT = '../../../../..'
+project_root = Pathname.new(__FILE__).expand_path.dirname.parent.parent
+require (project_root/'config'/'build_variables')
+# ^ definition of GEM_ROOT variable
 
 require File.expand_path('./common', GEM_ROOT)
-# ^ this file declares GEM_ROOT constant, other constants, and a some functions
+# ^ declares many constansts used by build system and some functions
 
 # ^--- changed that part (needed to update the 'gem_root' path)
 

@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'pathname'
 
 gem_root = Pathname.new(__FILE__).expand_path.dirname.parent
@@ -30,7 +31,8 @@ class ProjectGenerator
 			template_project_name = 'boilerplate'
 			
 			# Need to clean the example first, so you don't copy built files
-			run_task('clean_project', template_project_name)
+			# run_task('clean_project', template_project_name)
+			# ^ NOTE: This has been separated from the Rakefile, so it is no longer possible to clean out the example. But that's not actually so bad.
 			
 			# Find full path to template
 			# NOTE: template_name == template_project_name
@@ -50,6 +52,12 @@ class ProjectGenerator
 		# 	raise "ERROR: RubyOF::Build.create_project() parsed incorrectly." +
 		# 	      " Given '#{template_project_name}' "
 		# end;
+		
+		
+		
+		# Make sure that the GEM_ROOT path is set correctly,
+		# regaurdless of where the new project has been created.
+		self.update(rubyOF_project)
 	end
 	
 	# Take an existing RubyOF project, and update the GEM_ROOT path
@@ -60,10 +68,12 @@ class ProjectGenerator
 		project_root = Pathname.new(path).expand_path
 		gem_root     = Pathname.new(GEM_ROOT)
 		
-		# === Update both extconf.rb files in this project.
+		puts "gem_root     = #{gem_root}"
+		puts "project_root = #{project_root}"
+		
+		# === Update files where GEM_ROOT is declared.
 		[
-			(project_root/'ext'/'callbacks'),
-			(project_root/'ext'/'window')
+			(project_root/'config'/'foo.rb')
 		].each do |path|
 			# Declare the new GEM_ROOT path
 			# (use relative paths for projects inside the gem)
@@ -71,33 +81,34 @@ class ProjectGenerator
 				if path.to_s.start_with? gem_root.to_s
 					# Relative path
 					# (project is inside the default directory)
-					gem_root.relative_path_from(path)
+					gem_root.relative_path_from(path.dirname)
 				else
 					# Absolute path
 					# (project is outside of the default directory)
 					gem_root
 				end
 			
-			# Load the extconf.rb file
-			path_to_file = Pathname(path) + 'extconf.rb'
-			unless path_to_file.exist?
-				raise "ERROR: Could not find extconf.rb @ path #{path_to_file}"
+			puts path_to_root
+			
+			# Load the file
+			unless path.exist?
+				raise "ERROR: Could not find extconf.rb @ path #{path}"
 			end
-			file_lines = File.readlines(path_to_file)
+			file_lines = File.readlines(path)
 			# p file_lines
 			
 			# Find the line that sets GEM_ROOT
 			# and replace it with the new declaration
 			file_lines.collect! do |line|
 				if line.start_with? 'GEM_ROOT = '
-					"GEM_ROOT = '#{path_to_root}'\n"
+					"GEM_ROOT = Pathname.new('#{path_to_root}').expand_path\n"
 				else
 					line
 				end
 			end
 			
 			# Write the modified contents back into the file
-			File.open(path_to_file, "w") do |f|
+			File.open(path, "w") do |f|
 				f.write file_lines.join
 			end
 		end
