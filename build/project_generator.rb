@@ -72,8 +72,11 @@ class ProjectGenerator
 		puts "project_root = #{project_root}"
 		
 		# === Update files where GEM_ROOT is declared.
+		target_file = 'build_variables.rb'
+		
 		[
-			(project_root/'config'/'foo.rb')
+			(project_root/'config'/'build_variables.rb'),
+			(project_root/'Gemfile')
 		].each do |path|
 			# Declare the new GEM_ROOT path
 			# (use relative paths for projects inside the gem)
@@ -92,7 +95,7 @@ class ProjectGenerator
 			
 			# Load the file
 			unless path.exist?
-				raise "ERROR: Could not find extconf.rb @ path #{path}"
+				raise "ERROR: Could not find '#{path.basename}' @ path #{path}"
 			end
 			file_lines = File.readlines(path)
 			# p file_lines

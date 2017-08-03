@@ -9,9 +9,6 @@ puts "RubyOF: loading ruby code"
 	require File.expand_path(path, File.absolute_path(File.dirname(__FILE__)))
 end
 
-puts "loading dependencies using Bundler..."
-require 'bundler/setup'
-Bundler.require
 
 
 
