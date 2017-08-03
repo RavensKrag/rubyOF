@@ -19,6 +19,11 @@ load_c_extension_lib (project_root/'ext'/'callbacks'/'rubyOF_project')
 puts "Load final dynamic library (Rice wrapper and project code)..."
 load_c_extension_lib (project_root/'bin'/'lib'/'rubyOF')
 
+puts "loading Ruby dependencies using Bundler..."
+# NOTE: The baseline Ruby code for RubyOF declares some dependencies through bundler. Those will be loaded in this step, as well as the dependencies for this particular project.
+require 'bundler/setup'
+Bundler.require
+
 puts "Load Ruby code that defines RubyOF..."
 require (Pathname.new(GEM_ROOT) / 'lib' / 'rubyOF')
 
