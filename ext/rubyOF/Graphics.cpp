@@ -124,7 +124,7 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		)
 		.define_method("ofSetColor",
 			static_cast< void (*)
-			(int r, int g, int b, int a)
+			(const ofColor & color)
 			>(&ofSetColor)
 		)
 		.define_method("ofSetHexColor",

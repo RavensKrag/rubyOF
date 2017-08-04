@@ -294,7 +294,8 @@ class Window < RubyOF::Window
 		# image         x
 		# texture       _
 		# pixels        _
-		# color         x
+		# Color         x
+		# ofSetColor    x
 		# position      _ 
 		# + basic shapes   
 		#    circle     x
@@ -388,7 +389,10 @@ class Window < RubyOF::Window
 		ofPushMatrix()
 		ofPushStyle()
 			
-			ofSetColor(171, 160, 228, 255) # rgba
+			# This style of specifying color means that you can specify the color channels in whatever order you please. The system will still use a standard internal representation.
+			c = RubyOF::Color.new
+			c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			ofSetColor(c)
 			
 			start = [12, 15]
 			row_spacing = 15
@@ -403,7 +407,9 @@ class Window < RubyOF::Window
 		ofPopStyle()
 		ofPopMatrix()
 		
-		# ofSetColor(255, 255, 255, 255) # rgba
+		# c = RubyOF::Color.new
+		# c.r, c.g, c.b, c.a = [255, 255, 255, 255]
+		# ofSetColor(c)
 		
 		# === Render mouse trail
 		ofPushStyle()
@@ -412,7 +418,15 @@ class Window < RubyOF::Window
 				next unless i % 3 == 0
 				
 				x,y = p
-				ofSetColor(255,0,0, 255-i*10) # rgba
+				
+				# Allocate one color object, and just change the alpha
+				if @mouse_trail_color.nil?
+					@mouse_trail_color = RubyOF::Color.new.tap do |c|
+						c.r, c.g, c.b, c.a = [255,0,0, 255]
+					end
+				end
+				@mouse_trail_color.a = 255-i*10
+				ofSetColor(@mouse_trail_color)
 				
 				r = 20-i/2
 				r = 0 if r < 0
@@ -425,7 +439,10 @@ class Window < RubyOF::Window
 		
 		# === Draw Unicode string with Japanese glyphs
 		ofPushStyle()
-		ofSetColor(0, 141, 240, 255) # rgba
+		c = RubyOF::Color.new
+		c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+		ofSetColor(c)
+		
 		x,y = [200,430]
 			# not sure why, but need to get variables again?
 			# if you don't, the text trails behind the desired position by a couple seconds.
@@ -437,7 +454,10 @@ class Window < RubyOF::Window
 		
 		# === Draw sample image
 		ofPushStyle()
-			ofSetColor(0, 141, 240, 255) # rgba
+			c = RubyOF::Color.new
+			c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+			# puts c
+			ofSetColor(c)
 			
 			x,y = [180, 600]
 			
@@ -451,6 +471,8 @@ class Window < RubyOF::Window
 		
 		ofPushStyle()
 		ofPushMatrix()
+			# need to make sure color is set to white (default)
+			# before drawing images, otherwise image will be tinted.
 			ofTranslate(200,700, 0)
 			
 			s = 0.5
@@ -497,7 +519,10 @@ class Window < RubyOF::Window
 				# (rendering relative to the orign of the FBO, which moves)
 				ofPushStyle()
 				ofPushMatrix()
-					ofSetColor(0, 141, 240, 255) # rgba
+					c = RubyOF::Color.new
+					c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+					ofSetColor(c)
+					
 					ofDrawBitmapString("ruby: FBO test", 0, 10, z);
 					ofDrawBitmapString("hello again from ruby!", 0, 100, z);
 					ofDrawBitmapString("many things!", 20, 200, z);
@@ -527,7 +552,9 @@ class Window < RubyOF::Window
 			# ^ NOTE: I think this gives you an error when the contains something that is not a string?
 			# [ error ] ofAppGLFWWindow: 65545: X11: Failed to convert selection to string
 			
-			# ofSetColor(255,0,0, 255) # rgba
+			c = RubyOF::Color.new
+			c.r, c.g, c.b, c.a = [255,0,0, 255]
+			ofSetColor(c)
 			# ofDrawCircle(*@p,z, 20)
 			
 		ofPopStyle()
