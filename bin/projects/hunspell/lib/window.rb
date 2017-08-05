@@ -48,7 +48,19 @@ class Window < RubyOF::Window
 			# "Therefore, only if you can parse the text in such way, might Hunspell be suitable. You can also have a look at LanguageTool, it has already support for Chinese and Japanese."
 				# PanderMusubi commented on Jun 19, 2017
 		# source: https://github.com/hunspell/hunspell/issues/502
+		
+		
+		
+		# Unicode character encoding
 
+		# Both Ispell and Myspell use 8-bit ASCII character encoding
+		# [...]
+		# There is implemented a memory and time efficient Unicode handling in Hunspell. In non-UTF-8 character encodings Hunspell works with the original 8-bit strings. In UTF-8 encoding, affixes and words are stored in UTF-8, during the analysis are handled in mostly UTF-8, under condition checking and suggestion are converted to UTF-16. 
+		# source: https://www.systutorials.com/docs/linux/man/4-hunspell/#lbAT
+		
+
+		# Further reading on Hunspell, it's strengths and weaknesses:
+		# https://www.systutorials.com/docs/linux/man/4-hunspell/#lbAT
 		
 		
 		# The code below uses the custom Hunspell wrapper I wrote
