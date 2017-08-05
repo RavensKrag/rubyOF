@@ -9,5 +9,6 @@ end
 
 eval_gemfile File.join GEM_ROOT, 'Gemfile'
 # gem 'require_all'
+gem 'hunspell', '0.1.6'
 
 puts '--------------------'
