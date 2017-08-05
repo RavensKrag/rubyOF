@@ -14,7 +14,19 @@ int cpp_callback(int x) {
 // NOTE: DO NOT USE HUNSPELL THIS WAY. USE THE 'hunspell' RUBY GEM INSTEAD
 
 // This project is kept here for exploratory reasons.
-// Hopefully it will give some degree of insight into how to use Hunspell with C++. However, if you want to do spell checking in Ruby, it is better to use the 'hunspell' gem (Do not use the 'ffi-hunspell' gem - that gem seems to have problems loading dictionaries. Doesn't give any errors, but I can't figure out how it works.)
+// Hopefully it will give some degree of insight
+// into how to use Hunspell with C++.
+// However, if you want to do spell checking in Ruby,
+// it is better to use the 'hunspell' gem
+// 
+// (Do not use the 'ffi-hunspell' gem - that gem seems to
+// have problems loading dictionaries. Doesn't give any errors,
+// but I can't figure out how it works.)
+// 
+// While ffi-hunspell changes the API a bit in an attempt to be more Ruby-like
+// (provides a convenient block for access)
+// the 'hunspell' gem stays close to the original API (something I prefer)
+// 
 
 #include "SpellChecker.h"
 
