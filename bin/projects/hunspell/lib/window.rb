@@ -30,8 +30,16 @@ class Window < RubyOF::Window
 		@word = "testing"  # correct - renders light purple
 		@word = "testonth" # wrong - renders bright angry red
 		
+		
+		
+		
+		@hs = RubyOF::CPP_Callbacks::Hunspell.new("/usr/share/hunspell/en_US.aff", "/usr/share/hunspell/en_US.dic")
+		
+		@check = @hs.spell_check @word
+		p @check
+		
 		@color = RubyOF::Color.new
-			if RubyOF::CPP_Callbacks.spell_check @word
+			if @check.nil?
 				# correct spelling
 				@color.tap do |c|
 					c.r, c.g, c.b = [171, 160, 228] 
@@ -42,6 +50,9 @@ class Window < RubyOF::Window
 					c.r, c.g, c.b = [255,   0,   0] 
 				end
 			end
+		
+		
+		@hs = RubyOF::CPP_Callbacks::Hunspell.new("/usr/share/hunspell/en_US.aff", "/usr/share/hunspell/en_US.dic")
 	end
 	
 	def update
@@ -69,6 +80,14 @@ class Window < RubyOF::Window
 			p = [500,120,0]
 			ofDrawBitmapString(string, *p)
 			
+			unless @check.nil?
+				@check.each_with_index do |suggestion, i|
+					string = suggestion
+					p = [500,120+30+(20*(i+1)),0]
+					ofDrawBitmapString(string, *p)
+				end
+				
+			end
 			
 		
 		ofPopStyle()
