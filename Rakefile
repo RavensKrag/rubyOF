@@ -1276,6 +1276,7 @@ class ExtensionBuilder
 		
 		puts "Moving completed dynamic library to '#{dst}'".gsub(GEM_ROOT, "[GEM_ROOT]")
 		# copy dynamic lib into final location
+		FileUtils.mkdir_p(Pathname.new(dst).dirname)
 		FileUtils.cp(src, dst)
 	end
 	
