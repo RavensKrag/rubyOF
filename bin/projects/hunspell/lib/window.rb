@@ -27,6 +27,32 @@ class Window < RubyOF::Window
 		}
 		
 		
+		# This is a basic test of the hunspell gem
+		# (requires hunspell-dev package to be installed)
+		require 'hunspell'
+		# testing using version 0.1.6 of the gem
+		# (ubuntu 16.04.3, hunspell-dev 1.3.3)
+		hs = Hunspell.new "/usr/share/hunspell/en_US.aff", "/usr/share/hunspell/en_US.dic"
+		hs.spellcheck "testing"
+		#  => true 
+		hs.suggest "testing"
+		# => ["setting", "testing", "resting", "testings", "tasting", "tenting", "nesting", "besting", "vesting", "westing", "zesting", "testiness", "dusting"] 
+		hs.encoding
+		# => ISO8859-1
+		
+		# NOTE: Hunspell gem supports older versions of hunspell (c-style strings) and newer versions (std::string) but I'm not exactly sure how (I know it checks the version number.) Hasn't been updated in some time (Dec 23, 2016) but supports hunspell 1.6 (ubuntu 17.10 plans on using hunspell 1.6.1. So it seems like new updates to the main library are slow anyway.)
+		# source: https://github.com/segabor/Hunspell/
+		
+		
+		# NOTE: Hunspell has korean support, but not Japanese or Chinese support. This is partially because Japanese / Chinese don't use spaces to split out words, which makes Hunspell's "word by word" approach complicated.
+			# "Therefore, only if you can parse the text in such way, might Hunspell be suitable. You can also have a look at LanguageTool, it has already support for Chinese and Japanese."
+				# PanderMusubi commented on Jun 19, 2017
+		# source: https://github.com/hunspell/hunspell/issues/502
+
+		
+		
+		# The code below uses the custom Hunspell wrapper I wrote
+		# (which no one should ever use, because the existing gem is better)
 		@word = "testing"  # correct - renders light purple
 		@word = "testonth" # wrong - renders bright angry red
 		
