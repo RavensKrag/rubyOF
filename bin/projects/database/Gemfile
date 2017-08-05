@@ -9,5 +9,6 @@ end
 
 eval_gemfile File.join GEM_ROOT, 'Gemfile'
 # gem 'require_all'
+gem 'sequel', '4.49.0'
 
 puts '--------------------'
