@@ -2,19 +2,46 @@ class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Boilerplate App", 1746,1374)
+		super("Hunspell test", 1746,1374)
 		# ofSetEscapeQuitsApp false
 		
 		puts "ruby: Window#initialize"
-		
-		
-		@p = [0,0]
-		
 	end
 	
 	def setup
 		super()
 		
+		@p = [0,0]
+		
+		@start_position = [40, 30]
+		
+		
+		
+		# The size of the characters in the oF bitmap font is
+		# height 11 px
+		# width : 8 px
+		@debug = {
+			:position    => [40, 30],
+			:z           => 1,
+			:row_spacing => (11 + 4)
+		}
+		
+		
+		@word = "testing"  # correct - renders light purple
+		@word = "testonth" # wrong - renders bright angry red
+		
+		@color = RubyOF::Color.new
+			if RubyOF::CPP_Callbacks.spell_check @word
+				# correct spelling
+				@color.tap do |c|
+					c.r, c.g, c.b = [171, 160, 228] 
+				end
+			else
+				# spelling error
+				@color.tap do |c|
+					c.r, c.g, c.b = [255,   0,   0] 
+				end
+			end
 	end
 	
 	def update
@@ -27,14 +54,26 @@ class Window < RubyOF::Window
 		super()
 		
 		
-		# The size of the characters in the oF bitmap font is
-		# height 11 px
-		# width : 8 px
+		draw_debug_info(@debug[:position], @debug[:row_spacing], @debug[:z])
 		
-		start_position = [40, 30]
-		row_spacing    = 11 + 4
-		z              = 1
-		draw_debug_info(start_position, row_spacing, z)
+		
+		# TODO: improve symbols that are passed to clang / files where autocomplete triggers (it's not triggering on .rb, which is good, but because of how I have projects set up, I think it might be possible to not get completion on certain projects? maybe only the cpp_wrapper code has completion? need to check it out, and fix whatever is broken)
+		
+		
+		
+		ofPushMatrix()
+		ofPushStyle()
+			ofSetColor(@color) # rgba
+			
+			string = @word
+			p = [500,120,0]
+			ofDrawBitmapString(string, *p)
+			
+			
+		
+		ofPopStyle()
+		ofPopMatrix()
+		
 	end
 	
 	def on_exit

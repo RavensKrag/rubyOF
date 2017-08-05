@@ -18,7 +18,7 @@ require File.join(GEM_ROOT, 'ext', NAME, 'extconf_common.rb')
 # ========== add new stuff here ==========
 
 
-# have_library("stdc++")
+have_library("hunspell")
 
 
 

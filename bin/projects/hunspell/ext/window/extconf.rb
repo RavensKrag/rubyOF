@@ -21,7 +21,7 @@ $CPPFLAGS += " -I#{path}"
 # ========================================
 # ========== add new stuff here ==========
 
-have_library("hunspell")
+
 
 
 
