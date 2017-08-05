@@ -1,8 +1,10 @@
+require 'pathname'
+
 class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Boilerplate App", 1746,1374)
+		super("Database Connection Test", 1746,1374)
 		# ofSetEscapeQuitsApp false
 		
 		puts "ruby: Window#initialize"
@@ -10,21 +12,91 @@ class Window < RubyOF::Window
 		
 		@p = [0,0]
 		
+		@project_root = Pathname.new(__FILE__).expand_path.dirname.parent
 	end
 	
 	def setup
 		super()
 		
+		# ***OBJECTIVES OF THIS PROJECT***
+		
+		# Need to set up 'sequel' gem
+		# + with SQLite backend
+		# + and SpatiaLite extension (GIS spatial query support)
+		
+		# ================================
+		
+		
+		# sequel example code is from the main webpage for 'sequel' gem
+		# => http://sequel.jeremyevans.net
+		
+		# gem dependencies are being loaded via Bundler
+		# (see Gemfile in project root to see what gems are being loaded)
+		
+		@testing = false
+		
+		@db =
+			if @testing
+				# connect to test DB in memory
+				@db = Sequel.sqlite
+			else
+				# connect to real DB on the disk
+				path = @project_root/'bin'/'data'/'spatial_data.db'
+				puts path
+				@db = Sequel.connect("sqlite://#{path}")
+			end
+		
+		# (from the docs: http://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html)
+		# 
+		# You can also pass an additional option hash with the connection string:
+		# 
+		# 	DB = Sequel.connect('postgres://localhost/blog', :user=>'user', :password=>'password')
+		# [...]
+		# [for sqlite specifically]
+		# The following additional options are supported:
+			# :readonly	
+			# open database in read-only mode
+			# 
+			# :timeout	
+			# the busy timeout to use in milliseconds (default: 5000).
+		# 
+		
+		
+		# NOTE: SQLite database file will not be created until you create a table
+		@db.create_table :items do
+			primary_key :id
+			String :name
+			Float :price
+		end
+		
+		@db[:items].tap do |items|
+			# populate the table
+			items.insert(:name => 'abc', :price => rand * 100)
+			items.insert(:name => 'def', :price => rand * 100)
+			items.insert(:name => 'ghi', :price => rand * 100)
+
+			# print out the number of records
+			puts "Item count: #{items.count}"
+
+			# print out the average price
+			puts "The average price is: #{items.avg(:price)}"
+		end
+		
+		
+		
+		
+		# load spatialite
+		@db.run "SELECT load_extension('mod_spatialite');"
 	end
 	
 	def update
-		super()
+		# super()
 		
 		
 	end
 	
 	def draw
-		super()
+		# super()
 		
 		
 		# The size of the characters in the oF bitmap font is
