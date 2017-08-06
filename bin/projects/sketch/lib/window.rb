@@ -194,6 +194,12 @@ class Window < RubyOF::Window
 			# convert @frame_count from [0] into a string, and display that
 			@text.string = @frame_count.to_s
 		}
+		
+		
+		
+		# store clicks from mouse as point data, and process that
+		@live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
+
 	end
 	
 	def update
@@ -267,6 +273,21 @@ class Window < RubyOF::Window
 	
 	def mouse_pressed(x,y, button)
 		super(x,y, button)
+		
+		
+		@click_log ||= Array.new
+		case button
+			when 0 # left
+				@click_log << CP::Vec2.new(x,y)
+			when 1 # middle
+				
+			when 2 # right
+				
+			when 3 # prev (extra mouse button)
+					
+			when 4 # next (extra mouse button)
+				
+		end
 		
 		ofExit() if button == 8
 		# different window systems return different numbers
