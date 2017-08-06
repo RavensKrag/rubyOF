@@ -1,9 +1,6 @@
 
 # TODO: rename things so this project doesn't have symbol collision with the other package I named "Oni", from which this project's template derives.
 	
-# TODO: wrap functions to get window dimensions
-# TODO: consider marking all drawing methods as private from Ruby-land
-
 # TODO: when Ruby code throws an exception, supress the exception, trigger proper C++ shutdown, and then throw the exception again. Otherwise, you get segfaults, leaking, etc.
 
 
