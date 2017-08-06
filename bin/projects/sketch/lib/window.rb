@@ -1,24 +1,12 @@
-require 'irb'
+require 'pathname'
 
-REPL = Object.new
-def REPL.connect(binding, blocking:false)
-	Thread.kill(@irb_thread) unless @irb_thread.nil?
-	
-	@irb_thread = Thread.new do
-		binding.irb
-		
-		# Can I redirect the STDIN and STDOUT streams of this thread somewhere else?
-		# I'd ideally like to be able to access this from a different terminal session.
-		
-		# (Alternatively, pipe the main thread's output somewhere else? Like a file, and then stream that file to another terminal.)
-	end
-	
-	@irb_thread.join if blocking
-end
+lib_dir = Pathname.new(__FILE__).expand_path.dirname
 
-def REPL.disconnect
-	Thread.kill(@irb_thread) unless @irb_thread.nil?
-end
+
+require lib_dir/'repl'
+# defines REPL to manage connection to repl, and two methods:
+#    REPL.connect(binding, blocking:false)
+#    REPL.disconnect
 
 
 class TextEntity
@@ -61,7 +49,7 @@ class Window < RubyOF::Window
 		puts "ruby: Window#initialize"
 		
 		
-		@p = [0,0]
+		@mouse_pos = CP::Vec2.new(0,0)
 		
 	end
 	
@@ -146,7 +134,8 @@ class Window < RubyOF::Window
 	
 	
 	def mouse_moved(x,y)
-		@p = [x,y]
+		@mouse_pos.x = x
+		@mouse_pos.y = y
 	end
 	
 	def mouse_pressed(x,y, button)
