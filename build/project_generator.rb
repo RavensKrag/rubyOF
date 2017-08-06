@@ -20,11 +20,19 @@ class ProjectGenerator
 	
 	# list only the methods I defined, and exclude the default stuff
 	def help
+		puts "Avaiable commands for generator:"
 		self.methods - Object.new.methods
 	end
 	
 	# Generate RubyOF project by copying the 'boilerplate' project
-	def create(rubyOF_project)
+	def create(rubyOF_project=nil)
+		# If you invoke with no arguments, provide useful help,
+		# rather than the standard error message.
+		if rubyOF_project.nil?
+			raise ArgumentError, "<1 argument>: Need to specify project name, or relative path (relative to [GEM_ROOT]/bin/projects), or absolute path to project (project folder will be created automatically)."
+		end
+			
+		
 		# == Figure where to place the new project
 		RubyOF::Build.create_project(rubyOF_project) do |path|
 			# == Copy the template project into the target location
@@ -61,7 +69,14 @@ class ProjectGenerator
 	end
 	
 	# Take an existing RubyOF project, and update the GEM_ROOT path
-	def update(rubyOF_project)
+	def update(rubyOF_project=nil)
+		# If you invoke with no arguments, provide useful help,
+		# rather than the standard error message.
+		if rubyOF_project.nil?
+			raise ArgumentError, "<1 argument>: Need to specify project name, or relative path (relative to [GEM_ROOT]/bin/projects), or absolute path to project. Project must already exist in order to update it."
+		end
+		
+		
 		name, path = RubyOF::Build.load_project rubyOF_project
 		
 		# TODO: remove this once everything is updated to use Pathname
@@ -127,6 +142,7 @@ end
 
 generator = RubyOF::Build::ProjectGenerator.new
 puts "Use the variable 'generator' to manage projects"
+puts "ex) generator.help"
 
 require 'irb'
 binding.irb
