@@ -37,6 +37,57 @@ class TextEntity
 	end
 end
 
+class Entity
+	def initialize
+		
+	end
+end
+
+class Point < Entity
+	attr_reader :p
+	attr_accessor :z
+	attr_accessor :r
+	
+	def initialize(window)
+		@window = window
+		
+		@color =
+			RubyOF::Color.new.tap do |c|
+				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+			end
+		@p = CP::Vec2.new(0,0)
+		@z = 0
+		@r = 5
+	end
+	
+	def draw
+		@font.draw_string("From ruby: こんにちは", @p.x, @p.y)
+		
+		@window.tap do |w|
+			w.ofPushStyle()
+			w.ofSetColor(@color)
+			
+			w.ofDrawCircle(@p.x, @p.y, @z, @r)
+			
+			w.ofPopStyle()
+		end
+	end
+end
+
+class Timer
+	def initialize
+		
+	end
+	
+	def ms
+		RubyOF::Utils.ofGetElapsedTimeMillis
+	end
+	
+	def us
+		RubyOF::Utils.ofGetElapsedTimeMicros
+	end
+end
+
 
 
 class Window < RubyOF::Window
@@ -62,6 +113,12 @@ class Window < RubyOF::Window
 		REPL.connect(binding)
 		
 		
+		@live_code = {
+			:update => Array.new,
+			:draw   => Array.new
+		}
+		
+		@time = Timer.new
 		
 		@font = 
 			RubyOF::TrueTypeFont.new.dsl_load do |x|
@@ -78,7 +135,9 @@ class Window < RubyOF::Window
 	def update
 		# super()
 		
-		
+		@live_code[:update].each do |block|
+			block.call
+		end
 	end
 	
 	def draw
@@ -97,6 +156,10 @@ class Window < RubyOF::Window
 		
 		
 		@text.draw
+		
+		@live_code[:draw].each do |block|
+			block.call
+		end
 	end
 	
 	def on_exit
