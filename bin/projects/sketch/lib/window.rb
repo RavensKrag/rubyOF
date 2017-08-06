@@ -8,6 +8,7 @@ require lib_dir/'repl'
 #    REPL.connect(binding, blocking:false)
 #    REPL.disconnect
 
+require lib_dir/'live_coding'/'code_loader'
 
 
 class Entity
@@ -116,6 +117,10 @@ class Window < RubyOF::Window
 		#       from the Window in the main thread from the REPL thread
 		REPL.connect(binding)
 		
+		@live_coding = LiveCoding::CodeLoader.new(self)
+		
+		
+		
 		
 		@live_code = {
 			:update => Array.new,
@@ -198,7 +203,7 @@ class Window < RubyOF::Window
 		
 		
 		# store clicks from mouse as point data, and process that
-		@live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
+		# @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
 
 	end
 	
@@ -208,6 +213,10 @@ class Window < RubyOF::Window
 		@live_code[:update].each do |block|
 			block.call
 		end
+		
+		
+		
+		@live_coding.update
 	end
 	
 	def draw
@@ -230,6 +239,10 @@ class Window < RubyOF::Window
 		@live_code[:draw].each do |block|
 			block.call
 		end
+		
+		
+		
+		@live_coding.run
 	end
 	
 	def on_exit
