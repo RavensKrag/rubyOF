@@ -270,6 +270,15 @@ class Window < RubyOF::Window
 		super("Test App", 1746,1374)
 		# ofSetEscapeQuitsApp false
 		
+		# ofSetVerticalSync(true)
+			# NOTE: my current linux app forces vsync on all apps, including OpenFrameworks, regaurdless of whether this is set or not.
+			# 
+			# kubuntu xenial 16.04.3 LTS (64 bit)
+			# KDE plasma 5.8.7
+			# kernel 4.4.0-89-generic
+			# X.Org X Server 1.18.4
+
+		
 		puts "ruby: Window#initialize"
 		
 		
