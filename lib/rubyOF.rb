@@ -49,7 +49,8 @@ base_path = lib_dir/'rubyOF'
 	'graphics',
 	'point',
 	'rectangle',
-	'true_type_font'
+	'true_type_font',
+	'image'
 ].each do |path|
 	require base_path/path
 end

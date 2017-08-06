@@ -109,160 +109,6 @@ class FontDB
 end
 
 
-# This extension to the base font class allows you
-# to read the name off the font object,
-# without having to keep the settings object alive.
-# All other properties of the font can be read
-# through the font object, but not the name.
-# It appears that the name is not even being set
-# as a member variable on the font object.
-
-# TODO: file bug report for ofTrueTypeFont, stating that name can not be retrieved from the font object, only the settings object.
-class Font < RubyOF::TrueTypeFont
-	def load(settings)
-		@name = settings.font_name
-		super(settings)
-	end
-	
-	# Return the font name as specified by the settings object
-	# (in some cases, this may actually be the full path to the font file)
-	# 
-	# (Currently, this is the indentifier of the font file, and not actually the 'name' of the font face.)
-	def name
-		raise "ERROR: Font not yet loaded." if @name.nil?
-		# ^ @name not set until #load() is called.
-		
-		return @name
-	end
-	# NOTE: no setter for this value, because you can't change the font face once the font object is loaded. (have to switch objects)
-	
-	
-	
-	# Create easy gemfile-style DSL for loading font parameters,
-	# including error checking.
-	def dsl_load # &block
-		config = DSL_Object.new
-		
-		yield config
-		
-		
-		font = self.class.new
-		font_settings = RubyOF::TtfSettings.new(config.path, config.size)
-		
-		config.alphabets.each do |x|
-			font_settings.add_alphabet x
-		end
-		
-		
-		load_status = font.load(font_settings)
-		raise "Could not load font" unless load_status
-		
-		return font
-	end
-	
-	class DSL_Object
-		attr_reader :alphabets
-		attr_accessor :path, :size, :antialiased
-		
-		def initialize
-			@alphabets = Array.new
-		end
-		
-		def add_alphabet(alphabet)
-			alphabet_list = RubyOF::TtfSettings::UnicodeAlphabets
-			unless alphabet_list.include? alphabet
-				message = [
-					"Alphabet '#{alphabet}' is not one of the supported values.",
-					"Use a value from TtfSettings::UnicodeAlphabets",
-					"Try one of these: #{alphabet_list.inspect}"
-				].join("\n")
-				
-				raise message
-			end
-			
-			@alphabets << alphabet
-		end
-	end
-end
-
-class Image < RubyOF::Image
-	def dsl_load # &block
-		# pass config DSL object to block
-		config = DSL_Object.new
-		
-		yield config
-		
-		# establish real objects
-		image    = self.class.new
-		settings = RubyOF::ImageLoadSettings.new
-		
-		# convert config -> settings
-		# NOTE: initialized values of ImageLoadSettings are the defaults
-		path = config.path
-		
-		settings.accurate     = config.accurate?
-		settings.exifRotate   = config.exifRotate?
-		settings.grayscale    = config.grayscale?
-		settings.separateCMYK = config.separateCMYK?
-		
-		
-		# load using settings
-		load_status = image.load(path, settings)
-		raise "Could not load image" unless load_status
-		
-		return image
-	end
-	
-	class DSL_Object
-		attr_accessor :path
-		
-		def initialize
-			
-		end
-		
-		
-		# create methods like:
-			# enable_accurate
-			# disable_accurate
-		# rather than letting the user set arbirary values to these flags
-		# (they should only ever be booleans)
-		flags = [
-			:accurate,
-			:exifRotate,
-			:grayscale,
-			:separateCMYK
-		]
-		
-		
-		# TODO: abstract the following into a metaprogramming method 'boolean_attr_accessors' or similar
-		
-		
-		# establish new mutation interface
-		# ex) enable_accurate / disable_accurate (for variable @accurate)
-		[:enable, :disable].zip(flags)
-		.each do |en_or_dis_able, flag_name|
-			if en_or_dis_able == :enable
-				define_method "#{en_or_dis_able}_#{flag_name}" do
-					self.instance_variable_set "@#{flag_name}", true
-				end			
-			else # assuming ':disable'
-				define_method "#{en_or_dis_able}_#{flag_name}" do
-					self.instance_variable_set "@#{flag_name}", false
-				end
-			end
-		end
-		
-		# establish new accessor interface
-		# ex) accurate? (for variable @accurate)
-		flags.each do |flag_name|
-			define_method "#{flag_name}?" do
-				self.instance_variable_get "@#{flag_name}"
-			end
-		end
-		
-	end
-end
-
 class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
@@ -333,7 +179,7 @@ class Window < RubyOF::Window
 		
 		
 		@font = 
-			Font.new.dsl_load do |x|
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 20
@@ -346,7 +192,7 @@ class Window < RubyOF::Window
 		# # NOTE: #load overwrites the default private method #load, which seems to be present on all Ruby objects (likely Kernel.load(), but unsure)
 		
 		@image =
-			Image.new.dsl_load do |x|
+			RubyOF::Image.new.dsl_load do |x|
 				x.path = "box.jpg"
 				# x.enable_accurate
 				# x.enable_exifRotate
