@@ -9,33 +9,6 @@ require lib_dir/'repl'
 #    REPL.disconnect
 
 
-class TextEntity
-	attr_reader :p
-	# ^ can edit properties of the vector, but can't set a new object
-	
-	def initialize(window, font)
-		@window = window
-		@font = font
-		
-		
-		@p = CP::Vec2.new(200,430)
-		
-		@color =
-			RubyOF::Color.new.tap do |c|
-				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
-			end
-		
-	end
-	
-	def draw
-		@window.ofPushStyle()
-		@window.ofSetColor(@color)
-		
-		@font.draw_string("From ruby: こんにちは", @p.x, @p.y)
-		
-		@window.ofPopStyle()
-	end
-end
 
 class Entity
 	def initialize
@@ -61,8 +34,6 @@ class Point < Entity
 	end
 	
 	def draw
-		@font.draw_string("From ruby: こんにちは", @p.x, @p.y)
-		
 		@window.tap do |w|
 			w.ofPushStyle()
 			w.ofSetColor(@color)
@@ -73,6 +44,39 @@ class Point < Entity
 		end
 	end
 end
+
+
+class TextEntity
+	attr_reader :p
+	# ^ can edit properties of the vector, but can't set a new object
+	
+	attr_accessor :string
+	
+	def initialize(window, font)
+		@window = window
+		@font = font
+		
+		
+		@p = CP::Vec2.new(200,430)
+		
+		@color =
+			RubyOF::Color.new.tap do |c|
+				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+			end
+		
+		@string = "From ruby: こんにちは"
+	end
+	
+	def draw
+		@window.ofPushStyle()
+		@window.ofSetColor(@color)
+		
+		@font.draw_string(@string, @p.x, @p.y)
+		
+		@window.ofPopStyle()
+	end
+end
+
 
 class Timer
 	def initialize
@@ -130,6 +134,66 @@ class Window < RubyOF::Window
 			end
 		
 		@text = TextEntity.new(self, @font)
+		
+		
+		
+		
+		
+		# --- move text across the screen
+		@live_code[:update][0] = ->(){ @text.p.x = 800 * ((@time.ms % 100) / 100.to_f)}
+		
+		
+		# --- chunk time
+		# example pattern:
+		# 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4
+		# (easy to dump into REPL)
+		@live_code[:update][1] = ->(){ @text.string = (@time.ms / (1.5*1000).to_i % 10 ).to_s }
+		
+		# (formatted and documented)
+		@live_code[:update][1] = ->(){ 
+			#                  seconds per frame       number of frames in loop
+			@text.string = (@time.ms / (1.5*1000).to_i % 10 ).to_s
+			#                                ^ sec to ms
+		}
+		
+		
+		
+		
+		# COMBINE THE FIRST TWO IDEAS
+		# move a changing number across the screen
+		
+		
+		# (dump to REPL)
+		@live_code[:update][0] = ->(){ @frame_count = (@time.ms / (0.8*1000).to_i % 10 ) }
+		
+		@live_code[:update][1] = ->(){ @text.p.x = 100 + 800 * @frame_count / 10.to_f }
+		
+		@live_code[:update][2] = ->(){ @text.string = @frame_count.to_s }
+		
+		
+		
+		# (formatted and documented)
+		
+		@live_code[:update][0] = ->(){
+			#                  seconds per frame       number of frames in loop
+			@frame_count = (@time.ms / (0.8*1000).to_i % 10 )
+			#                                ^ sec to ms
+		}
+		
+		@live_code[:update][1] = ->(){
+			#       indent     total range to travel
+			#           |       |
+			#         |---|  |----|
+			@text.p.x = 100 + 800 * @frame_count / 10.to_f
+			#                       |_____________________|
+			#                         10 frames in loop, what percent has passed?
+			#                          (3 / 10 frames) -> 30% total distance
+		}
+		
+		@live_code[:update][2] = ->(){ 
+			# convert @frame_count from [0] into a string, and display that
+			@text.string = @frame_count.to_s
+		}
 	end
 	
 	def update
