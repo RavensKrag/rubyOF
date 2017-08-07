@@ -21,12 +21,26 @@ class DynamicObject
 	# NOTE: Always use Pathname to handle file paths
 	
 	# TODO: consider type checking the arguments and providing useful error messages
-	def initialize(window, save_directory, filepath, method_contract)
+	def initialize(
+	    window,
+	    save_directory:,
+	    dynamic_code_file:,
+	    method_contract:[]
+	)
+		if save_directory.nil?
+			raise "ERROR: Must specify path to a directory where DynamicObject can serialize data using the 'save_directory' keyword argument."
+		end
+		
+		if dynamic_code_file.nil?
+			raise "ERROR: Must specify path to the file to be watched using the 'filepath' keyword argument."
+		end
+		
+		
 		@window = window
-		@save_directory = save_directory
+		@save_directory = Pathname.new(save_directory).expand_path
 		
 		# File in which @wrapped_object is declared
-		@file = Pathname.new(filepath).expand_path
+		@file = Pathname.new(dynamic_code_file).expand_path
 		
 		# Last time the file was loaded
 		# (nil means file was never loaded)
@@ -43,12 +57,87 @@ class DynamicObject
 		setup_delegators(@wrapped_object, @contract)
 	end
 	
+	# first load of the wrapped object, and first initialization
+	def setup(*args)
+		load_wrapped_object() # => @wrapped_object
+		# ^ calls klass.new --> runs #initialize on the new object 
+	end
+	
 	# update the state of this object, and then delegate to the #update
 	# on the wrapped object if that is a necessary part of the contract.
 	# 
 	# NOTE: Most of the time, you want to read the state transition callbacks
 	#       and ignore the complexity of this method.
 	def update(*args) # args only necessary for delegation
+		load_wrapped_object() # => @wrapped_object
+		
+		# delegate to wrapped object if :update is part of the contract
+		if !@wrapped_object.nil? and @contract.include? :update
+			# TODO: maybe memoize the invariant? could get bad if @contact is long
+			@wrapped_object.update *args
+		end
+	end
+	
+	
+	
+	private
+	
+	
+	# Delegate methods from the 'contract' to the wrapped object
+	# (handle the #update method separately)
+	# 
+	# + Never delegate to an unbound @wrapped_object.
+	# + Handle runtime errors in a special way,
+	#   as the default handling crash the whole system.
+	# + Error when the contract contains a method with the same name
+	#   as a method in this wrapper. That requires manual handling.
+	def setup_delegators(target_object, method_contract)
+		# TODO: automate creation of wrappers for methods with names that exist in this wrapper (create all mehtods on module, and then mix it in?)
+		
+		# --- blacklist some methods from being wrapped,
+		#     because they have been handled manually.
+		excluded_methods = [:update]
+		method_symbols = (method_contract - excluded_methods)
+		
+		
+		# --- check for symbol collision
+		if method_symbols.include? :setup
+			raise WrapperContractError, "Callback object should not declare #setup. Place setup code in the normal #initialize method found in all Ruby objects instead. Fix the method contract and try again."
+		end
+		
+		collisions = self.public_methods + self.private_methods
+		if collisions.any?{|sym| method_symbols.include? sym }
+			raise WrapperNameCollison.new(
+				sym, file, method_contract, method_symbols
+			)
+		end
+		
+		# --- create the acutal delegators
+		method_symbols.each do |sym|
+			meta_def sym do |*args|
+				begin
+					unless target_object.nil?
+						if target_object.respond_to? sym
+							target_object.send sym, *args 
+						else
+							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
+						end
+					end
+				rescue StandardError => e
+					# keep execption from halting program,
+					# but still output the exception's information.
+					process_snippet_error(e)
+					unload() # stop further execution of the bound @wrapped_object
+				end
+			end
+		end
+	end
+	
+	
+	# This method is the only part in the codebase
+	# where @wrapped_object should be set
+	# (plus #initialize, which only set it to nil)
+	def load_wrapped_object
 		# load file if it has been changed
 		if file_changed?(@file, @last_load_time)
 			puts "loading snippets..."
@@ -72,12 +161,14 @@ class DynamicObject
 					# It is possible that an existing type was invalidated,
 					# or that no vaild type was ever declared in this file.
 					
+					
 					if @wrapped_object.nil?
 						# invalid -> invalid
-						invalid_to_invalid(klass)
+						# NO-OP
+						@wrapped_object = nil
 					else
 						# valid -> invalid
-						valid_to_invalid(klass)
+						@wrapped_object = unload klass
 					end
 				elsif klass.is_a? Class
 					# class declared.
@@ -94,13 +185,13 @@ class DynamicObject
 						# none -> valid
 						
 						# if new type
-						invalid_to_valid(klass)
+						@wrapped_object = load klass
 					else
 						# class loaded, already have an instance
 						# valid ---reload--> valid
 						
 						# if a type from this file already exists
-						valid_to_valid(klass)
+						@wrapped_object = reload klass
 					end
 				else
 					# Something else happened.
@@ -141,49 +232,10 @@ class DynamicObject
 				# the system will try, and fail, to load the file.
 				# This will generate a lot of useless noise in the log.
 		end
-		
-		
-		# delegate to wrapped object if :update is part of the contract
-		if !@wrapped_object.nil? and @contract.include? :update
-			# TODO: maybe memoize the invariant? could get bad if @contact is long
-			@wrapped_object.update *args
-		end
-		
 	end
 	
 	
-	
-	private
-	
-	
-	# --- state transition callbacks ---
-	
-	
-	# invalid -> invalid
-	def invalid_to_invalid(snippet_class)
-		# NO-OP
-	end
-	
-	# valid -> invalid
-	def valid_to_invalid(snippet_class)
-		unload
-	end
-	
-	# none -> valid
-	def invalid_to_valid(snippet_class)
-		load snippet_class
-	end
-	
-	# valid ---reload--> valid
-	def valid_to_valid(snippet_class)
-		reload snippet_class
-	end
-	
-	
-	# --- aoeu ---
-	
-	
-	# --- forwards chaining approach
+	# --- forwards chaining approach ---
 	# replacement cases: (when to allocate a new thing)
 		# constraint inactive
 		# constraint active, and file has changed
@@ -199,20 +251,23 @@ class DynamicObject
 			# active code -> replace with new code -> crash -> deactivate
 	
 	
+	# --- state transition callbacks
+	
 	# Activate an instance of a bound Snippet
 	def load(klass)
 		begin
-			snippet = klass.new(@window)
-			snippet.bind(@save_directory)
-			@wrapped_object = snippet
-			
+			snippet = klass.new(@window, @save_directory)
 			puts "Loaded: #{@file}"
+			
+			return snippet
 		rescue StandardError => e
 			process_snippet_error(e)
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
 			unbind()
+			
+			return nil
 		ensure
 			# always do this stuff
 		end
@@ -222,7 +277,7 @@ class DynamicObject
 	def unload
 		puts "Unloading: #{@file}"
 		
-		@wrapped_object = nil
+		return nil
 	end
 	
 	# Replace running Snippet classes with updated versions
@@ -251,15 +306,21 @@ class DynamicObject
 		
 		begin
 			# create new instance, rebinding to same data from the old instance
-			obj = klass.new(@window)
-			obj.bind(@save_directory)
+			obj = klass.new(@window, @save_directory)
 			
 			# save the new instance
-			@wrapped_object = obj
+			return obj
 			
 			# TODO: When #bind is implemented, need to rebind to old targets
 			
 			# NOTE: Now that @file and @save_directory are being saved on the DynamicObject wrapper class, instead of on the callback instance, you likely don't have to copy the value of @save_directory from the old instance. This means that #reload and #load are exactly the same.
+			
+			# NOTE: reload is NOT the same, as it must dump the state of the old object, and load that state into the new object
+				# call dump / load
+				# call #setup
+				# (normally setup would be called once for the )
+			
+			# TODO: document that methods like #bind, which are not part of the method contract passed to the wrapper object, are nontheless still a part of the required interface for the wrapped object.
 			
 		rescue StandardError => e
 			process_snippet_error(e)
@@ -267,6 +328,8 @@ class DynamicObject
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
 			@bound = nil
+			
+			return nil
 		ensure
 			# always do this stuff
 		end
@@ -279,56 +342,6 @@ class DynamicObject
 	
 	
 	# --- private helpers ---
-	
-	
-	# Delegate methods from the 'contract' to the wrapped object
-	# (handle the #update method separately)
-	# 
-	# + Never delegate to an unbound @wrapped_object.
-	# + Handle runtime errors in a special way,
-	#   as the default handling crash the whole system.
-	# + Error when the contract contains a method with the same name
-	#   as a method in this wrapper. That requires manual handling.
-	def setup_delegators(target_object, method_contract)
-		# TODO: automate creation of wrappers for methods with names that exist in this wrapper (create all mehtods on module, and then mix it in?)
-		
-		# --- blacklist some methods from being wrapped,
-		#     because they have been handled manually.
-		excluded_methods = [:update]
-		method_symbols = (method_contract - excluded_methods)
-		
-		
-		# --- check for symbol collision
-		collisions = self.public_methods + self.private_methods
-		if collisions.any?{|sym| method_symbols.include? sym }
-			raise "wrapper / wrapped object method name collision " + 
-			      "for method '#{sym}' in the contract for callback " +
-			      "object defined in #{@file}.\n" +
-			      "  Full method contract: #{method_contract.inspect}\n" +
-			      "  Attempting to bind these symbols: #{method_symbols.inspect}"
-		end
-		
-		# --- create the acutal delegators
-		method_symbols.each do |sym|
-			meta_def sym do |*args|
-				begin
-					unless target_object.nil?
-						if target_object.respond_to? sym
-							target_object.send sym, *args 
-						else
-							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
-						end
-					end
-				rescue StandardError => e
-					# keep execption from halting program,
-					# but still output the exception's information.
-					process_snippet_error(e)
-					unload() # stop further execution of the bound @wrapped_object
-				end
-			end
-		end
-	end
-	
 	
 	def file_changed?(file, last_time)
 		# Rake uses File.mtime(path_to_file) to figure out if files are out of date or not. 
@@ -386,6 +399,23 @@ class DynamicObject
 	end
 	
 	
+	
+	class WrapperNameCollison < StandardError
+		def initialize(sym, file, method_contract, method_symbols)
+			msg = 
+				"wrapper / wrapped object method name collision for method '#{sym}' in the contract for callback object from #{file}.\n" +
+				"  Full method contract: #{method_contract.inspect}\n" +
+				"  Attempting to bind these symbols: #{method_symbols.inspect}\n" +
+				"  (To examine where the contract was defined, look further up the stack, to where DynamicObject.new was called."
+			super(msg)
+		end
+	end
+	
+	class WrapperContractError < StandardError
+		def initialize(msg)
+			super(msg)
+		end
+	end
 end
 
 

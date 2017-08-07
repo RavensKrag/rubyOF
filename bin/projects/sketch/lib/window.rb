@@ -209,15 +209,14 @@ class Window < RubyOF::Window
 		
 		project_root = Pathname.new(__FILE__).expand_path.dirname.parent
 		
-		save_directory    = project_root/'bin'/'data'
-		dynamic_code_file = project_root/'lib'/'live_coding'/'code'/'test.rb'
 		@live_wrapper = LiveCoding::DynamicObject.new(
-			self, save_directory,
-			dynamic_code_file, [:setup, :update, :draw]
+			self,
+			save_directory:   (project_root/'bin'/'data'),
+			dynamic_code_file:(project_root/'lib'/'live_coding'/'code'/'test.rb'),
+			method_contract:  [:serialize, :cleanup, :update, :draw]
 		)
 		
-		@live_wrapper.update # need to call this once before anything else
-		@live_wrapper.setup
+		@live_wrapper.setup # loads anonymous class, and initializes it
 	end
 	
 	def update

@@ -1,36 +1,70 @@
 Class.new do
 	include LiveCoding::InspectionMixin
 	
-	def initialize(window)
+	def initialize(window, save_directory)
 		@window = window
+		
+		# TODO: do something with the save directory
+		# (load state)
+		
+		# NOTE: do NOT save the save_directory in any variables.
+		# (have to migrate to using a database as some point, don't want to use a style that means I end up hanging on to closed DB handles)
+		
+		
+		puts "setting up callback object"
+		
+		@font = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
+		
+		@text = TextEntity.new(@window, @font)
 	end
 	
-	# setup additional variables
-	# (will be useful later for constraints)
-	def bind(save_directory)
+	# save the state of the object (dump state)
+	# 
+	# Should return a Plain-Old Ruby Object
+	# (likely Array or Hash as the outer container)
+	# (basically, something that could be trivially saved as YAML)
+	def serialize(save_directory)
 		
 	end
 	
-	def setup
-		puts "setup"
+	# reverse all the stateful changes made to @window
+	# (basically, undo everything you did across all ticks of #update and #draw)
+	# Usually, this is just about deleting the
+	# entities you created and put in the space.
+	def cleanup
+		
 	end
+	
+	# TODO: figure out if there needs to be a "redo" operation as well
+	# (easy enough - just save the data in this object instead of full on deleting it. That way, if this object is cleared, the state will be fully gone, but as long as you have this object, you can roll backwards and forwards at will.)
+	
+	
+	
+	# # setup additional variables
+	# # (will be useful later for constraints)
+	# # DEPRECIATED: use initialize instead
+	# def bind(save_directory)
+		
+	# end
+	
+	# # DEPRECIATED: use initialize instead
+	# def setup
+		
+	# end
+	
+	
 	
 	def update
 		# puts "update"
 		
 		@time = Timer.new
-		
-		# @font = 
-		# 	RubyOF::TrueTypeFont.new.dsl_load do |x|
-		# 		# TakaoPGothic
-		# 		x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-		# 		x.size = 20
-		# 		x.add_alphabet :Latin
-		# 		x.add_alphabet :Japanese
-		# 	end
-		
-		# @text = TextEntity.new(self, @font)
-		
 		
 		
 		
