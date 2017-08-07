@@ -1,5 +1,447 @@
 module LiveCoding
 
+
+# Watch one file, which defines an object,
+# and load that dynamic definition whenever
+# the file is changed. Instances of DynamicObject
+# should delegate a set of methods to the
+# wrapped object. Those methods are specified by a
+# parameter passed during initialization. (array of symbols)
+# 
+# (provides a live-coding environment)
+# 
+# WARNING: Loads file using 'eval'. Make sure to control who has
+#          the ability to write the file being watched.
+class DynamicObject
+	# NOTE: Always use Pathname to handle file paths
+	
+	# TODO: consider type checking the arguments and providing useful error messages
+	def initialize(window, save_directory, filepath, method_contract)
+		@window = window
+		@save_directory = save_directory
+		
+		# File in which @wrapped_object is declared
+		@file = Pathname.new(filepath).expand_path
+		
+		# methods (messages) to be delegated to @wrapped_object
+		@contract = method_contract
+		
+		# meta_eval do
+		# handle the #update method separately
+			(method_contract - [:update]).each do |sym|
+				meta_def sym do |*args, **kwargs|
+					@wrapped_object.send sym, *args, **kwargs if @wrapped_object.respond_to? sym
+				end
+			end
+		# end
+		
+		
+		@last_load_time = nil
+		
+		@wrapped_object = nil
+		
+		@bound  = nil # an anonymous class
+		@active = nil # an instance of the @bound class
+	end
+	
+	def inspect
+		# "<class=#{self.class} @visible=#{@visible}, file=#{self.class.const_get('ORIGIN_FILE')}>"
+		
+		# get ID for object
+		get_id_string = ->(obj){
+			return '%x' % (obj.object_id << 1)
+		}
+		
+		id = get_id_string.(self)
+		
+		# automatically inspect all things that are not @window
+		instance_var_inspection = 
+			(instance_variables - [:@window]).collect{ |x|
+				value = instance_variable_get(x).inspect
+				
+				"#{x}=#{value}"
+				
+			}.join(' ')
+		
+		window_inspection = 
+			"@window=<#{@window.class}:#{get_id_string.(@window)}>"
+		
+		# custom inspection of @window (ID only)
+		return "#<#{self.class}:0x#{id} #{window_inspection}, #{instance_var_inspection}  >"
+	end
+	
+	# update the state of this object, and then delegate to the #update
+	# on the wrapped object if that is a necessary part of the contract.
+	def update(*args, **kwargs) # args only necessary for delegation
+		# load file if it has been changed
+		if file_changed?(@file, @last_load_time)
+			puts "loading snippets..."
+			
+			# TODO: Figure out what happens if a file is simply deleted. Need to make sure that if a file is deleted, the Snippets in memory are deleted as well.
+			
+			begin
+				# src: http://stackoverflow.com/questions/6864319/ruby-how-to-return-from-inside-eval
+				klass =
+					lambda{
+						 binding.eval File.read(@file.to_s), @file.to_s
+					}.call()
+				# wrap eval in a lambda that is immediately called.
+				# This way, a "return" from inside any Snippet definition
+				# will kick out of that subsystem, and skip the binding of that Snippet.
+				# (in that case, klass = nil)
+				
+				if klass.nil?
+					# no class declared in file.
+					
+					# It is possible that an existing type was invalidated,
+					# or that no vaild type was ever declared in this file.
+					
+					if @wrapped_object.nil?
+						# invalid -> invalid
+						invalid_to_invalid(klass)
+					else
+						# valid -> invalid
+						valid_to_invalid(klass)
+					end
+				elsif klass.is_a? Class
+					# class declared.
+					# this type was loaded correctly.
+					
+					puts "Read Snippet Class definiton from #{@file}"
+					
+					# By this point, you know you're dealing with a singular class.
+					# As long as things get added in here,
+					# you can't ever add more than one Snippet class per file.
+					
+					if @wrapped_object.nil?
+						# class loaded, no instance yet
+						# none -> valid
+						
+						# if new type
+						invalid_to_valid(klass)
+					else
+						# class loaded, already have an instance
+						# valid ---reload--> valid
+						
+						# if a type from this file already exists
+						valid_to_valid(klass)
+					end
+				else
+					# Something else happened.
+					# This is bad.
+					raise "#{klass} is not a Class definition. Problem in #{@file}"
+				end
+				
+				# TODO: In the future, all classes should be bound, and then only certain classes should actually be instantiated. Not sure how that would happen, though. Where would the commands to instantiate be declared? How would they be edited? What's the point of binding things you're not using?
+				
+				
+				# load successful. will instatiate later.
+			rescue ScriptError, NameError => e
+				# NameError is a specific subclass of StandardError
+				# other forms of StandardError should not happen on load.
+				# 
+				# If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
+				
+				# load failed.
+				# corresponding snippets have already been deactivated.
+				# only need to display the errors
+				
+				puts "FAILURE TO LOAD: #{@file}"
+				
+				process_snippet_error(e)
+			end
+			
+			
+			# NOW actually update the timestamp.
+			@last_load_time = Time.now
+			# NOTE: Timestamps updated even when load fails
+				# This is actually what you want.
+				# If you don't do it this way, then every tick of the main loop,
+				# the system will try, and fail, to load the file.
+				# This will generate a lot of useless noise in the log.
+		end
+		
+		
+		# update timestamp
+		@last_load_time = Time.now
+		
+		
+		# delegate to wrapped object if :update is part of the contract
+		if !@wrapped_object.nil? and @contract.include? :update
+			# TODO: maybe memoize the invariant? could get bad if @contact is long
+			@wrapped_object.update *args, **kwargs
+		end
+		
+	end
+	
+	
+	
+	private
+	
+	
+	# --- state transition callbacks ---
+	
+	
+	# invalid -> invalid
+	def invalid_to_invalid(snippet_class)
+		# NO-OP
+	end
+	
+	# valid -> invalid
+	def valid_to_invalid(snippet_class)
+		# unbind snippet_class
+		unload snippet_class
+		
+	end
+	
+	# none -> valid
+	def invalid_to_valid(snippet_class)
+		# TODO: Eventually replace this with a smarter scheme for turning things on.
+		# Oh, if you have a smarter mechanism here, that might close the "security problem"?
+		# Actually no, the code can still run silently on load.
+		# It doesn't have to be GUI.
+		
+		# The new system makes it more obvious that dangerous things are happening.
+		# Part of this is using "eval" rather than "load"
+		# The new way is also genuinely less bad.
+		# 
+		# Now CodeLoader controlls all loading,
+		# as opposed to old global method style,
+		# where loading could happen at any time, from any part of the code base.
+		
+		
+		# bind snippet_class # NOTE: #bind will unbind the old definition
+		load snippet_class
+	end
+	
+	# valid ---reload--> valid
+	def valid_to_valid(snippet_class)
+		# bind   snippet_class # NOTE: #bind will unbind the old definition
+		reload snippet_class
+	end
+	
+	
+	
+	
+	# --- aoeu ---
+	
+	# assign constant to collection
+	# (this function must be called at the end of each Snippet file)
+	def bind(klass)
+		puts "Binding: #{@file}"
+		
+		unbind(klass) # don't want to double-bind
+		@bound = klass
+	end
+	
+	# Remove the Snippet class definition from the list of avialable types.
+	def unbind(klass)
+		puts "Unbinding: #{@file}"
+		
+		# Snippet classes are anonymous, so they can't be invalidated by name.
+		@bound = nil
+	end
+	
+	
+	# --- forwards chaining approach
+	# replacement cases: (when to allocate a new thing)
+		# constraint inactive
+		# constraint active, and file has changed
+		# load failed
+		
+	# --- backwards chaining approach
+	# how can it fail?
+		# fail to load
+			# inactive code replaced by active code
+			# active code replaced by inactive code
+		# crash while running
+			# active code crashes -> deactivate the code
+			# active code -> replace with new code -> crash -> deactivate
+	
+	
+	# Activate an instance of a bound Snippet
+	def load(klass)
+		begin
+			snippet = klass.new(@window)
+			snippet.bind(@save_directory)
+			@active = snippet
+			
+			puts "Loaded: #{@file}"
+		rescue StandardError => e
+			process_snippet_error(e)
+			
+			# If there's a problem, you need to get rid of the class that's causing it,
+			# or errors will just stream into STDOUT, which is very bad.
+			unbind klass
+		ensure
+			# always do this stuff
+		end
+	end
+	
+	# Deactivate an active instance of a Snippet
+	def unload(klass)
+		puts "Unloading: #{@file}"
+		
+		@active = nil
+	end
+	
+	# Replace running Snippet classes with updated versions
+	# (binds should always happen before loads)
+	# NOTE: Reload should NOT be implemented with a combination of load / unload.
+	#       (1) you need different debug information.
+	#       (2) reloading involves transplanting data from the old instance, to the new one.
+	def reload(klass)
+		# (each time a Snippet is reloaded, the class ID will change)
+		
+		# NOTE: Sometimes this replaces working code with broken code.
+		#       That's fine. Always want what's current, even if it's broken.
+		
+		# ASSUME: Only one class definition per file.
+		# ^ This check is enforced above, after loading new files.
+		
+		
+		puts "Reloading Snippet defined in: #{@file}"
+		
+		
+		
+		# Find active Snippets for replacement by their ORIGIN_FILE constant.
+		# Can't use the class name, because classes are anonymous.
+		# Classes need to be anonymous, because otherwise the global class variables get weird.
+		# (For more information, see documentation on the Snippet class, below.)
+		
+		begin
+			# create new instance, rebinding to same data from the old instance
+			obj = klass.new(@window)
+			obj.bind(@active.save_directory)
+			
+			# save the new instance
+			@active = obj
+			
+			# TODO: When #bind is implemented, need to rebind to old targets
+			
+			# NOTE: Now that @file and @save_directory are being saved on the DynamicObject wrapper class, instead of on the callback instance, you likely don't have to copy the value of @save_directory from the old instance. This means that #reload and #load are exactly the same.
+			
+		rescue StandardError => e
+			process_snippet_error(e)
+			
+			# If there's a problem, you need to get rid of the class that's causing it,
+			# or errors will just stream into STDOUT, which is very bad.
+			@bound = nil
+		ensure
+			# always do this stuff
+		end
+	end
+	
+	
+	
+	
+	
+	
+	
+	# --- private helpers ---
+	
+	
+	def file_changed?(file, last_time)
+		# Rake uses File.mtime(path_to_file) to figure out if files are out of date or not. 
+			# It also has a constant called Rake::LATE, but I can't figure out how that works.
+			# 
+			# sources:
+				# https://github.com/ruby/rake/blob/master/MIT-LICENSE
+				# https://github.com/ruby/rake/blob/master/lib/rake/file_task.rb
+		
+		
+		# Can't figure out how Rake::LATE works, but this works fine.
+		
+		last_time.nil? or file.mtime > last_time
+	end
+	
+	
+	# error handling helper
+	def process_snippet_error(e)
+		# process_runtime_error(package, e)
+		puts "KABOOM!"
+		
+		# everything below this point deals only with the execption object 'e'
+		
+		
+		# FACT: Proc with instance_eval makes the resoultion of e.message very slow (20 s)
+		# FACT: Using class-based snippets makes resolution of e.message quite fast (10 ms)
+		# ASSUME: Proc takes longer to resolve because it has to look in the symbol table of another object (the Window)
+		# --------------
+		# CONCLUSION: Much better for performance to use class-based snippets.
+		
+		Thread.new do
+			# NOTE: Can only call a fiber within the same thread.
+			
+			t1 = RubyOF::Utils.ofGetElapsedTimeMillis
+			
+			out = [
+				# e.class, # using this instead of "message"
+				# e.name, # for NameError
+				# e.local_variables.inspect,
+				# e.receiver, # this might actually be the slow bit?
+				e.message, # message is the "rate limiting step"
+				e.backtrace
+			]
+			
+			# p out
+			puts out.join("\n")
+			
+			
+			t3 = RubyOF::Utils.ofGetElapsedTimeMillis
+			dt = t3 - t1
+			puts "Final dt: #{dt} ms"
+		end
+		
+	end
+	
+	
+end
+
+
+# NOTE: Neither archaeopteryx nor Banjo check to see if they need to reload the files: they just always reload.
+		
+# archaeopteryx dev references ChucK, and now uses Clojure (with overtone)
+# From the Readme:
+	# Archaeopteryx differs from projects like ChucK, Supercollider, PD, Max/MSP and OSC in a fundamental way. Archaeopteryx favors simplicity over power, and ubiquitous protocols over any other kind.
+
+# https://github.com/gilesbowkett/archaeopteryx
+# https://github.com/gilesbowkett/archaeopteryx/blob/master/eval_style.rb
+	# @loop = Arkx.new(:clock => $clock, # rename Arkx to Loop
+	#                  :measures => $measures,
+	#                  :logging => false,
+	#                  :evil_timer_offset_wtf => 0.2,
+	#                  :generator => Rhythm.new(:drumfile => "db_drum_definition.rb",
+	#                                           :mutation => $mutation))
+	# @loop.go
+# https://github.com/gilesbowkett/archaeopteryx/blob/master/lib/arkx.rb
+# https://github.com/gilesbowkett/archaeopteryx/blob/master/live/db_drum_definition.rb
+# https://github.com/gilesbowkett/archaeopteryx/blob/master/lib/rhythm.rb
+
+# https://github.com/dabit/banjo/blob/master/lib/banjo.rb
+	# Banjo::Channel.channels.each do |klass|
+	# 	channel = klass.new
+	# 	channel.perform
+	# end
+# https://github.com/dabit/banjo/blob/master/lib/banjo/channel.rb
+
+
+
+
+
+# NOTE: Under the current paradigmn, anyone who has write access to the Snippets folder can run arbitrary code on my machine. That's potentially pretty bad. I suppose require_all has a similar vulnerability? I don't actually know what the "foreign code" sensibility is for interpreted languages.
+# Could potentially sandbox the loading? Not sure that this is necessary.
+# Should really learn more about security so I don't have this sort of question.
+	# It seems even the ImageMagick attack was generally only a problem for servers that provide online image conversion:
+	# https://nakedsecurity.sophos.com/2016/05/04/is-your-website-or-blog-at-risk-from-this-imagemagick-security-hole/
+
+
+
+
+
+
+
+
 require 'set' # needed for fast removal
 
 class CodeLoader

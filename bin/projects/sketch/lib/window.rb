@@ -117,7 +117,7 @@ class Window < RubyOF::Window
 		#       from the Window in the main thread from the REPL thread
 		REPL.connect(binding)
 		
-		@live_coding = LiveCoding::CodeLoader.new(self)
+		
 		
 		
 		
@@ -204,7 +204,20 @@ class Window < RubyOF::Window
 		
 		# store clicks from mouse as point data, and process that
 		# @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
-
+		
+		
+		
+		project_root = Pathname.new(__FILE__).expand_path.dirname.parent
+		
+		save_directory    = project_root/'bin'/'data'
+		dynamic_code_file = project_root/'lib'/'live_coding'/'code'/'test.rb'
+		@live_wrapper = LiveCoding::DynamicObject.new(
+			self, save_directory,
+			dynamic_code_file, [:setup, :update, :draw]
+		)
+		
+		@live_wrapper.update # need to call this once before anything else
+		@live_wrapper.setup
 	end
 	
 	def update
@@ -215,8 +228,7 @@ class Window < RubyOF::Window
 		end
 		
 		
-		
-		@live_coding.update
+		@live_wrapper.update
 	end
 	
 	def draw
@@ -241,8 +253,7 @@ class Window < RubyOF::Window
 		end
 		
 		
-		
-		@live_coding.run
+		@live_wrapper.draw
 	end
 	
 	def on_exit
