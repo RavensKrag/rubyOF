@@ -45,6 +45,9 @@ class DynamicObject
 	
 	# update the state of this object, and then delegate to the #update
 	# on the wrapped object if that is a necessary part of the contract.
+	# 
+	# NOTE: Most of the time, you want to read the state transition callbacks
+	#       and ignore the complexity of this method.
 	def update(*args) # args only necessary for delegation
 		# load file if it has been changed
 		if file_changed?(@file, @last_load_time)
@@ -138,10 +141,6 @@ class DynamicObject
 				# the system will try, and fail, to load the file.
 				# This will generate a lot of useless noise in the log.
 		end
-		
-		
-		# update timestamp
-		@last_load_time = Time.now
 		
 		
 		# delegate to wrapped object if :update is part of the contract
