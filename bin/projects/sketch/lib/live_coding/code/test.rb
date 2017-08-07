@@ -101,6 +101,6 @@ Class.new do
 	def draw
 		@test = 'foo'
 		# aoeu
-		# puts "testing"
+		# puts "draw"
 	end
 end

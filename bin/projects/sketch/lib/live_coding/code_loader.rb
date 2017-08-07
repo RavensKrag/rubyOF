@@ -28,43 +28,19 @@ class DynamicObject
 		# File in which @wrapped_object is declared
 		@file = Pathname.new(filepath).expand_path
 		
+		# Last time the file was loaded
+		# (nil means file was never loaded)
+		@last_load_time = nil
+		
 		# methods (messages) to be delegated to @wrapped_object
 		@contract = method_contract
 		
-		# Delegate methods from the 'contract' to the wrapped object
-		# (handle the #update method separately)
-		# 
-		# Never delegate to an unbound @wrapped_object,
-		# and handle runtime errors in a special way,
-		# as the default handling crash the whole system.
-		(method_contract - [:update]).each do |sym|
-			meta_def sym do |*args|
-				begin
-					unless @wrapped_object.nil?
-						if @wrapped_object.respond_to? sym
-							@wrapped_object.send sym, *args 
-						else
-							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
-						end
-					end
-				rescue StandardError => e
-					# keep execption from halting program,
-					# but still output the exception's information.
-					process_snippet_error(e)
-					unload() # stop execution of the bound @wrapped_object
-				end
-			end
-		end
-		
-		
-		@last_load_time = nil
-		
-		
-		
-		
-		@bound  = nil # an anonymous class
-		@active = nil # an instance of the @bound class
+		# these are the things being wrapped
 		@wrapped_object = nil
+		# ^ instance of an anonymous class. provides callbacks
+		
+		
+		setup_delegators(@wrapped_object, @contract)
 	end
 	
 	# update the state of this object, and then delegate to the #update
@@ -196,20 +172,6 @@ class DynamicObject
 	
 	# none -> valid
 	def invalid_to_valid(snippet_class)
-		# TODO: Eventually replace this with a smarter scheme for turning things on.
-		# Oh, if you have a smarter mechanism here, that might close the "security problem"?
-		# Actually no, the code can still run silently on load.
-		# It doesn't have to be GUI.
-		
-		# The new system makes it more obvious that dangerous things are happening.
-		# Part of this is using "eval" rather than "load"
-		# The new way is also genuinely less bad.
-		# 
-		# Now CodeLoader controlls all loading,
-		# as opposed to old global method style,
-		# where loading could happen at any time, from any part of the code base.
-		
-		
 		load snippet_class
 	end
 	
@@ -217,8 +179,6 @@ class DynamicObject
 	def valid_to_valid(snippet_class)
 		reload snippet_class
 	end
-	
-	
 	
 	
 	# --- aoeu ---
@@ -322,6 +282,55 @@ class DynamicObject
 	# --- private helpers ---
 	
 	
+	# Delegate methods from the 'contract' to the wrapped object
+	# (handle the #update method separately)
+	# 
+	# + Never delegate to an unbound @wrapped_object.
+	# + Handle runtime errors in a special way,
+	#   as the default handling crash the whole system.
+	# + Error when the contract contains a method with the same name
+	#   as a method in this wrapper. That requires manual handling.
+	def setup_delegators(target_object, method_contract)
+		# TODO: automate creation of wrappers for methods with names that exist in this wrapper (create all mehtods on module, and then mix it in?)
+		
+		# --- blacklist some methods from being wrapped,
+		#     because they have been handled manually.
+		excluded_methods = [:update]
+		method_symbols = (method_contract - excluded_methods)
+		
+		
+		# --- check for symbol collision
+		collisions = self.public_methods + self.private_methods
+		if collisions.any?{|sym| method_symbols.include? sym }
+			raise "wrapper / wrapped object method name collision " + 
+			      "for method '#{sym}' in the contract for callback " +
+			      "object defined in #{@file}.\n" +
+			      "  Full method contract: #{method_contract.inspect}\n" +
+			      "  Attempting to bind these symbols: #{method_symbols.inspect}"
+		end
+		
+		# --- create the acutal delegators
+		method_symbols.each do |sym|
+			meta_def sym do |*args|
+				begin
+					unless target_object.nil?
+						if target_object.respond_to? sym
+							target_object.send sym, *args 
+						else
+							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
+						end
+					end
+				rescue StandardError => e
+					# keep execption from halting program,
+					# but still output the exception's information.
+					process_snippet_error(e)
+					unload() # stop further execution of the bound @wrapped_object
+				end
+			end
+		end
+	end
+	
+	
 	def file_changed?(file, last_time)
 		# Rake uses File.mtime(path_to_file) to figure out if files are out of date or not. 
 			# It also has a constant called Rake::LATE, but I can't figure out how that works.
@@ -416,6 +425,23 @@ end
 # Should really learn more about security so I don't have this sort of question.
 	# It seems even the ImageMagick attack was generally only a problem for servers that provide online image conversion:
 	# https://nakedsecurity.sophos.com/2016/05/04/is-your-website-or-blog-at-risk-from-this-imagemagick-security-hole/
+
+
+
+
+# TODO: Eventually replace this with a smarter scheme for turning things on.
+# Oh, if you have a smarter mechanism here, that might close the "security problem"?
+# Actually no, the code can still run silently on load.
+# It doesn't have to be GUI.
+
+# The new system makes it more obvious that dangerous things are happening.
+# Part of this is using "eval" rather than "load"
+# The new way is also genuinely less bad.
+# 
+# Now CodeLoader controlls all loading,
+# as opposed to old global method style,
+# where loading could happen at any time, from any part of the code base.
+
 
 
 
