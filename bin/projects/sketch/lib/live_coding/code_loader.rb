@@ -1,5 +1,8 @@
-module LiveCoding
+require 'pathname'
+require Pathname.new(__FILE__).dirname + ('inspection_mixin')
 
+
+module LiveCoding
 
 # Watch one file, which defines an object,
 # and load that dynamic definition whenever
@@ -13,6 +16,8 @@ module LiveCoding
 # WARNING: Loads file using 'eval'. Make sure to control who has
 #          the ability to write the file being watched.
 class DynamicObject
+	include LiveCoding::InspectionMixin
+	
 	# NOTE: Always use Pathname to handle file paths
 	
 	# TODO: consider type checking the arguments and providing useful error messages
@@ -26,53 +31,45 @@ class DynamicObject
 		# methods (messages) to be delegated to @wrapped_object
 		@contract = method_contract
 		
-		# meta_eval do
-		# handle the #update method separately
-			(method_contract - [:update]).each do |sym|
-				meta_def sym do |*args, **kwargs|
-					@wrapped_object.send sym, *args, **kwargs if @wrapped_object.respond_to? sym
+		# Delegate methods from the 'contract' to the wrapped object
+		# (handle the #update method separately)
+		# 
+		# Never delegate to an unbound @wrapped_object,
+		# and handle runtime errors in a special way,
+		# as the default handling crash the whole system.
+		(method_contract - [:update]).each do |sym|
+			meta_def sym do |*args|
+				begin
+					unless @wrapped_object.nil?
+						if @wrapped_object.respond_to? sym
+							@wrapped_object.send sym, *args 
+						else
+							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
+						end
+					end
+				rescue StandardError => e
+					# keep execption from halting program,
+					# but still output the exception's information.
+					process_snippet_error(e)
+					unload() # stop execution of the bound @wrapped_object
 				end
 			end
-		# end
+		end
 		
 		
 		@last_load_time = nil
 		
-		@wrapped_object = nil
+		
+		
 		
 		@bound  = nil # an anonymous class
 		@active = nil # an instance of the @bound class
-	end
-	
-	def inspect
-		# "<class=#{self.class} @visible=#{@visible}, file=#{self.class.const_get('ORIGIN_FILE')}>"
-		
-		# get ID for object
-		get_id_string = ->(obj){
-			return '%x' % (obj.object_id << 1)
-		}
-		
-		id = get_id_string.(self)
-		
-		# automatically inspect all things that are not @window
-		instance_var_inspection = 
-			(instance_variables - [:@window]).collect{ |x|
-				value = instance_variable_get(x).inspect
-				
-				"#{x}=#{value}"
-				
-			}.join(' ')
-		
-		window_inspection = 
-			"@window=<#{@window.class}:#{get_id_string.(@window)}>"
-		
-		# custom inspection of @window (ID only)
-		return "#<#{self.class}:0x#{id} #{window_inspection}, #{instance_var_inspection}  >"
+		@wrapped_object = nil
 	end
 	
 	# update the state of this object, and then delegate to the #update
 	# on the wrapped object if that is a necessary part of the contract.
-	def update(*args, **kwargs) # args only necessary for delegation
+	def update(*args) # args only necessary for delegation
 		# load file if it has been changed
 		if file_changed?(@file, @last_load_time)
 			puts "loading snippets..."
@@ -132,11 +129,16 @@ class DynamicObject
 					raise "#{klass} is not a Class definition. Problem in #{@file}"
 				end
 				
-				# TODO: In the future, all classes should be bound, and then only certain classes should actually be instantiated. Not sure how that would happen, though. Where would the commands to instantiate be declared? How would they be edited? What's the point of binding things you're not using?
-				
-				
-				# load successful. will instatiate later.
+				# At this point, class was loaded successfully.
+				# Will instatiate later.
+			# -------------
 			rescue ScriptError, NameError => e
+				# This block triggers if there is some sort of
+				# syntax error or similar - something that is
+				# caught on load, rather than on run.
+				
+				# ----
+				
 				# NameError is a specific subclass of StandardError
 				# other forms of StandardError should not happen on load.
 				# 
@@ -169,7 +171,7 @@ class DynamicObject
 		# delegate to wrapped object if :update is part of the contract
 		if !@wrapped_object.nil? and @contract.include? :update
 			# TODO: maybe memoize the invariant? could get bad if @contact is long
-			@wrapped_object.update *args, **kwargs
+			@wrapped_object.update *args
 		end
 		
 	end
@@ -189,9 +191,7 @@ class DynamicObject
 	
 	# valid -> invalid
 	def valid_to_invalid(snippet_class)
-		# unbind snippet_class
-		unload snippet_class
-		
+		unload
 	end
 	
 	# none -> valid
@@ -210,13 +210,11 @@ class DynamicObject
 		# where loading could happen at any time, from any part of the code base.
 		
 		
-		# bind snippet_class # NOTE: #bind will unbind the old definition
 		load snippet_class
 	end
 	
 	# valid ---reload--> valid
 	def valid_to_valid(snippet_class)
-		# bind   snippet_class # NOTE: #bind will unbind the old definition
 		reload snippet_class
 	end
 	
@@ -224,23 +222,6 @@ class DynamicObject
 	
 	
 	# --- aoeu ---
-	
-	# assign constant to collection
-	# (this function must be called at the end of each Snippet file)
-	def bind(klass)
-		puts "Binding: #{@file}"
-		
-		unbind(klass) # don't want to double-bind
-		@bound = klass
-	end
-	
-	# Remove the Snippet class definition from the list of avialable types.
-	def unbind(klass)
-		puts "Unbinding: #{@file}"
-		
-		# Snippet classes are anonymous, so they can't be invalidated by name.
-		@bound = nil
-	end
 	
 	
 	# --- forwards chaining approach
@@ -264,7 +245,7 @@ class DynamicObject
 		begin
 			snippet = klass.new(@window)
 			snippet.bind(@save_directory)
-			@active = snippet
+			@wrapped_object = snippet
 			
 			puts "Loaded: #{@file}"
 		rescue StandardError => e
@@ -272,17 +253,17 @@ class DynamicObject
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			unbind klass
+			unbind()
 		ensure
 			# always do this stuff
 		end
 	end
 	
 	# Deactivate an active instance of a Snippet
-	def unload(klass)
+	def unload
 		puts "Unloading: #{@file}"
 		
-		@active = nil
+		@wrapped_object = nil
 	end
 	
 	# Replace running Snippet classes with updated versions
@@ -312,10 +293,10 @@ class DynamicObject
 		begin
 			# create new instance, rebinding to same data from the old instance
 			obj = klass.new(@window)
-			obj.bind(@active.save_directory)
+			obj.bind(@save_directory)
 			
 			# save the new instance
-			@active = obj
+			@wrapped_object = obj
 			
 			# TODO: When #bind is implemented, need to rebind to old targets
 			
@@ -391,6 +372,7 @@ class DynamicObject
 			t3 = RubyOF::Utils.ofGetElapsedTimeMillis
 			dt = t3 - t1
 			puts "Final dt: #{dt} ms"
+			puts ""
 		end
 		
 	end
@@ -434,8 +416,6 @@ end
 # Should really learn more about security so I don't have this sort of question.
 	# It seems even the ImageMagick attack was generally only a problem for servers that provide online image conversion:
 	# https://nakedsecurity.sophos.com/2016/05/04/is-your-website-or-blog-at-risk-from-this-imagemagick-security-hole/
-
-
 
 
 
