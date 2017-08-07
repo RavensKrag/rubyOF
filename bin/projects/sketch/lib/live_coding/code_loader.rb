@@ -225,100 +225,100 @@ class CodeLoader
 		
 		return [invalid_types, new_types, updated_types]
 	end
-	
-	def file_changed?(file)
-		# Can't figure out how Rake::LATE works, but this works fine.
 		
-		last_time = @last_livecode_load_time
-		
-		last_time.nil? or File.mtime(file) > last_time
-	end
-	
-	def categorize(filepath, invalid_types, new_types, updated_types)
-		begin
-			# src: http://stackoverflow.com/questions/6864319/ruby-how-to-return-from-inside-eval
-			klass =
-				lambda{
-					 binding.eval File.read(filepath.to_s), filepath.to_s
-				}.call()
-			# wrap eval in a lambda that is immediately called.
-			# This way, a "return" from inside any Snippet definition
-			# will kick out of that subsystem, and skip the binding of that Snippet.
-			# (in that case, klass = nil)
+		# helper for #parse()
+		def file_changed?(file)
+			# Can't figure out how Rake::LATE works, but this works fine.
 			
-			if klass.nil?
-				# no class declared in file.
-				
-				
-				# invalid_types <---------
-				
-				# It is possible that an existing type was invalidated,
-				# or that no vaild type was ever declared in this file.
-				# 
-				# Take care that no nil values enter the 'invalid_types' array.
-				
-				snippet_type = find_bound_type(filepath)
-				invalid_types << snippet_type unless snippet_type.nil?
-				
-				#   ^ should only be one such file / Snippet class pair.
-				# 
-				#     Under new eval system, should not be possible
-				#     to define more than one Snippet class per file.
-				#     However, should still have a check, just in case.
-				
-			elsif klass.is_a? Class
-				# class declared.
-				# this type was loaded correctly.
-				
-				puts "Read Snippet Class definiton from #{filepath}"
-				
-				
-				# new_types, updated_types <---------
-				
-				# By this point, you know you're dealing with a singular class.
-				# As long as things get added in here,
-				# you can't ever add more than one Snippet class per file.
-				
-				if find_bound_type(filepath)
-					# if a type from this file already exists
-					updated_types << klass
-				else
-					# else if new type
-					new_types << klass
-				end
-				
-			else
-				# Something else happened.
-				# This is bad.
-				raise "#{klass} is not a Class definition. Problem in #{filepath}"
-			end
-			# TODO: In the future, all classes should be bound, and then only certain classes should actually be instantiated. Not sure how that would happen, though. Where would the commands to instantiate be declared? How would they be edited? What's the point of binding things you're not using?
+			last_time = @last_livecode_load_time
 			
-			
-			# load successful. will instatiate later.
-		rescue ScriptError, NameError => e
-			# NameError is a specific subclass of StandardError
-			# other forms of StandardError should not happen on load.
-			# 
-			# If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
-			
-			# load failed.
-			# corresponding snippets have already been deactivated.
-			# only need to display the errors
-			
-			puts "FAILURE TO LOAD: #{filepath}"
-			
-			process_snippet_error(e)
+			last_time.nil? or File.mtime(file) > last_time
 		end
-	end
-	
-	
-	# Find a bound Snippet class by the file in which it is defined.
-	def find_bound_type(filepath)
-		@bound.find{ |old_klass| old_klass::ORIGIN_FILE == filepath }
-	end
-	
-	
+		
+		# helper for #parse()
+		def categorize(filepath, invalid_types, new_types, updated_types)
+			begin
+				# src: http://stackoverflow.com/questions/6864319/ruby-how-to-return-from-inside-eval
+				klass =
+					lambda{
+						 binding.eval File.read(filepath.to_s), filepath.to_s
+					}.call()
+				# wrap eval in a lambda that is immediately called.
+				# This way, a "return" from inside any Snippet definition
+				# will kick out of that subsystem, and skip the binding of that Snippet.
+				# (in that case, klass = nil)
+				
+				if klass.nil?
+					# no class declared in file.
+					
+					
+					# invalid_types <---------
+					
+					# It is possible that an existing type was invalidated,
+					# or that no vaild type was ever declared in this file.
+					# 
+					# Take care that no nil values enter the 'invalid_types' array.
+					
+					snippet_type = find_bound_type(filepath)
+					invalid_types << snippet_type unless snippet_type.nil?
+					
+					#   ^ should only be one such file / Snippet class pair.
+					# 
+					#     Under new eval system, should not be possible
+					#     to define more than one Snippet class per file.
+					#     However, should still have a check, just in case.
+					
+				elsif klass.is_a? Class
+					# class declared.
+					# this type was loaded correctly.
+					
+					puts "Read Snippet Class definiton from #{filepath}"
+					
+					
+					# new_types, updated_types <---------
+					
+					# By this point, you know you're dealing with a singular class.
+					# As long as things get added in here,
+					# you can't ever add more than one Snippet class per file.
+					
+					if find_bound_type(filepath)
+						# if a type from this file already exists
+						updated_types << klass
+					else
+						# else if new type
+						new_types << klass
+					end
+					
+				else
+					# Something else happened.
+					# This is bad.
+					raise "#{klass} is not a Class definition. Problem in #{filepath}"
+				end
+				# TODO: In the future, all classes should be bound, and then only certain classes should actually be instantiated. Not sure how that would happen, though. Where would the commands to instantiate be declared? How would they be edited? What's the point of binding things you're not using?
+				
+				
+				# load successful. will instatiate later.
+			rescue ScriptError, NameError => e
+				# NameError is a specific subclass of StandardError
+				# other forms of StandardError should not happen on load.
+				# 
+				# If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
+				
+				# load failed.
+				# corresponding snippets have already been deactivated.
+				# only need to display the errors
+				
+				puts "FAILURE TO LOAD: #{filepath}"
+				
+				process_snippet_error(e)
+			end
+		end
+		
+			# Find a bound Snippet class by the file in which it is defined.
+			# (helper for #categorize(4))
+			def find_bound_type(filepath)
+				@bound.find{ |old_klass| old_klass::ORIGIN_FILE == filepath }
+			end
 	
 	
 	
@@ -445,8 +445,9 @@ class CodeLoader
 	
 	
 	
-	# error handling helper
 	
+	
+	# error handling helper
 	def process_snippet_error(e)
 		# process_runtime_error(package, e)
 		puts "KABOOM!"
