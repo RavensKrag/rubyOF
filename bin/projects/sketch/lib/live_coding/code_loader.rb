@@ -74,7 +74,10 @@ class DynamicObject
 		# delegate to wrapped object if :update is part of the contract
 		if !@wrapped_object.nil? and @contract.include? :update
 			# TODO: maybe memoize the invariant? could get bad if @contact is long
-			@wrapped_object.update *args
+			
+			protect_runtime_errors do
+				@wrapped_object.update *args
+			end
 		end
 	end
 	
@@ -82,6 +85,20 @@ class DynamicObject
 	
 	private
 	
+	# If you encounter a runtime error with live coded code,
+	# the greater program will continue to run.
+	# (centralizing error code from #update and #setup_delegators)
+	def protect_runtime_errors # &block
+		begin
+			yield
+		rescue StandardError => e
+			# keep execption from halting program,
+			# but still output the exception's information.
+			process_snippet_error(e)
+			@wrapped_object = unload()
+			# ^ stop further execution of the bound @wrapped_object
+		end
+	end
 	
 	# Delegate methods from the 'contract' to the wrapped object
 	# (handle the #update method separately)
@@ -118,7 +135,7 @@ class DynamicObject
 		# --- create the acutal delegators
 		method_symbols.each do |sym|
 			meta_def sym do |*args|
-				begin
+				protect_runtime_errors do
 					unless @wrapped_object.nil?
 						if @wrapped_object.respond_to? sym
 							@wrapped_object.send sym, *args 
@@ -126,11 +143,6 @@ class DynamicObject
 							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
 						end
 					end
-				rescue StandardError => e
-					# keep execption from halting program,
-					# but still output the exception's information.
-					process_snippet_error(e)
-					unload() # stop further execution of the bound @wrapped_object
 				end
 			end
 		end
@@ -268,9 +280,7 @@ class DynamicObject
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			unload()
-			
-			return nil
+			return unload()
 		ensure
 			# always do this stuff
 		end
