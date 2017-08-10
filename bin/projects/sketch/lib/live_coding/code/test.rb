@@ -63,7 +63,6 @@ Class.new do
 		# puts "update"
 		
 		
-		
 		# # --- move text across the screen
 		# @text.p.x = 800 * ((@time.ms % 100) / 100.to_f)
 		
@@ -83,13 +82,22 @@ Class.new do
 		frame_count = (@time.ms / (0.8*1000).to_i % 10 )
 		#                                ^ sec to ms
 		
-		#       indent     total range to travel
-		#           |       |
-		#         |---|  |----|
-		@text.p.x = 100 + 800 * frame_count / 10.to_f
-		#                       |_____________________|
-		#                         10 frames in loop, what percent has passed?
-		#                          (3 / 10 frames) -> 30% total distance
+		#              sec to ms    convert to int so modulo works correctly
+		ms_per_frame = (0.8*1000).to_i
+		total_frames_in_loop = 10
+		frame_count = (@time.ms / ms_per_frame % total_frames_in_loop )
+		#                                      ^ here's the modulo
+		
+		t = frame_count / total_frames_in_loop.to_f
+		#   |____________________________________|
+		#     what percent of the frames have passed?
+		#      (3 / 10 frames) -> 30% total distance
+		
+		indent      = 100
+		total_range = 800
+		
+		
+		@text.p.x = indent + total_range * t
 		
 		# convert frame_count into a string, and display that
 		@display.string = frame_count.to_s
