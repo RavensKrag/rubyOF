@@ -11,7 +11,7 @@ Class.new do
 		# (have to migrate to using a database as some point, don't want to use a style that means I end up hanging on to closed DB handles)
 		
 		
-		puts "setting up callback object"
+		puts "setting up callback object #{self.class.inspect}"
 		
 		@font = 
 			RubyOF::TrueTypeFont.new.dsl_load do |x|
@@ -26,7 +26,16 @@ Class.new do
 				# maybe provide discoverable access through #alphabets on the DSL object?
 			end
 		
-		@text = TextEntity.new(@window, @font)
+		
+		@display   = TextEntity.new(@window, @font)
+		@display.p = CP::Vec2.new 200, 400
+		
+		@text      = TextEntity.new(@window, @font)
+		@text.p    = CP::Vec2.new 500, 500
+		
+		
+		
+		@time = Timer.new
 	end
 	
 	# save the state of the object (dump state)
@@ -50,99 +59,61 @@ Class.new do
 	# (easy enough - just save the data in this object instead of full on deleting it. That way, if this object is cleared, the state will be fully gone, but as long as you have this object, you can roll backwards and forwards at will.)
 	
 	
-	
-	# # setup additional variables
-	# # (will be useful later for constraints)
-	# # DEPRECIATED: use initialize instead
-	# def bind(save_directory)
+	def update
+		# puts "update"
 		
-	# end
-	
-	# # DEPRECIATED: use initialize instead
-	# def setup
 		
-	# end
+		
+		# # --- move text across the screen
+		# @text.p.x = 800 * ((@time.ms % 100) / 100.to_f)
+		
+		# # --- chunk time
+		# # example pattern:
+		# # 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4
+		
+		# #                  seconds per frame       number of frames in loop
+		# @display.string = (@time.ms / (1.5*1000).to_i % 10 ).to_s
+		# #                                ^ sec to ms
+		
+		
+		# COMBINE THE FIRST TWO IDEAS
+		# move a changing number across the screen
+		
+		#                  seconds per frame       number of frames in loop
+		frame_count = (@time.ms / (0.8*1000).to_i % 10 )
+		#                                ^ sec to ms
+		
+		#       indent     total range to travel
+		#           |       |
+		#         |---|  |----|
+		@text.p.x = 100 + 800 * frame_count / 10.to_f
+		#                       |_____________________|
+		#                         10 frames in loop, what percent has passed?
+		#                          (3 / 10 frames) -> 30% total distance
+		
+		# convert frame_count into a string, and display that
+		@display.string = frame_count.to_s
+		
+		
+		
+		
+	end
+	
+	def draw
+		# aoeu
+		# puts "draw"
+		
+		@display.draw
+		@text.draw
+		# # store clicks from mouse as point data, and process that
+		# # @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
+	end
+	
+	
 	
 	
 	# TODO: consider adding additional callbacks for input / output connections to other computational units (this is for when you have a full graph setup to throw data around in this newfangled system)
 	
 	# TODO: at that point, you need to be able to write code for those nodes in C++ as well, so the anonymous classes created in this file, etc, must be subclasses of some kind of C++ type (maybe even some sort of weak ref / smart pointer that allows for C++ memory allocation? (pooled memory?))
 	
-	
-	def update
-		# puts "update"
-		
-		@time = Timer.new
-		
-		
-		
-		
-		# # --- move text across the screen
-		# @live_code[:update][0] = ->(){ @text.p.x = 800 * ((@time.ms % 100) / 100.to_f)}
-		
-		
-		# # --- chunk time
-		# # example pattern:
-		# # 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4
-		# # (easy to dump into REPL)
-		# @live_code[:update][1] = ->(){ @text.string = (@time.ms / (1.5*1000).to_i % 10 ).to_s }
-		
-		# # (formatted and documented)
-		# @live_code[:update][1] = ->(){ 
-		# 	#                  seconds per frame       number of frames in loop
-		# 	@text.string = (@time.ms / (1.5*1000).to_i % 10 ).to_s
-		# 	#                                ^ sec to ms
-		# }
-		
-		
-		
-		
-		# # COMBINE THE FIRST TWO IDEAS
-		# # move a changing number across the screen
-		
-		
-		# # (dump to REPL)
-		# @live_code[:update][0] = ->(){ @frame_count = (@time.ms / (0.8*1000).to_i % 10 ) }
-		
-		# @live_code[:update][1] = ->(){ @text.p.x = 100 + 800 * @frame_count / 10.to_f }
-		
-		# @live_code[:update][2] = ->(){ @text.string = @frame_count.to_s }
-		
-		
-		
-		# # (formatted and documented)
-		
-		# @live_code[:update][0] = ->(){
-		# 	#                  seconds per frame       number of frames in loop
-		# 	@frame_count = (@time.ms / (0.8*1000).to_i % 10 )
-		# 	#                                ^ sec to ms
-		# }
-		
-		# @live_code[:update][1] = ->(){
-		# 	#       indent     total range to travel
-		# 	#           |       |
-		# 	#         |---|  |----|
-		# 	@text.p.x = 100 + 800 * @frame_count / 10.to_f
-		# 	#                       |_____________________|
-		# 	#                         10 frames in loop, what percent has passed?
-		# 	#                          (3 / 10 frames) -> 30% total distance
-		# }
-		
-		# @live_code[:update][2] = ->(){ 
-		# 	# convert @frame_count from [0] into a string, and display that
-		# 	@text.string = @frame_count.to_s
-		# }
-		
-		
-		
-		# # store clicks from mouse as point data, and process that
-		# # @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
-		
-	end
-	
-	def draw
-		@test = 'foo'
-		# aoeu
-		# puts "draw"
-	end
 end

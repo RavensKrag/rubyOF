@@ -53,14 +53,14 @@ class DynamicObject
 		@wrapped_object = nil
 		# ^ instance of an anonymous class. provides callbacks
 		
-		
-		setup_delegators(@wrapped_object, @contract)
+		setup_delegators(@contract) # wraps @wrapped_object
+		# NOTE: As #setup_delegators uses the @wrapped_object variable to get the wrapped object, #setup_delegators can be run even before @wrapped_object has bound to an actual object.
 	end
 	
 	# first load of the wrapped object, and first initialization
 	def setup(*args)
 		load_wrapped_object() # => @wrapped_object
-		# ^ calls klass.new --> runs #initialize on the new object 
+		# ^ calls klass.new --> runs #initialize on the new object
 	end
 	
 	# update the state of this object, and then delegate to the #update
@@ -91,7 +91,9 @@ class DynamicObject
 	#   as the default handling crash the whole system.
 	# + Error when the contract contains a method with the same name
 	#   as a method in this wrapper. That requires manual handling.
-	def setup_delegators(target_object, method_contract)
+	def setup_delegators(method_contract)
+		# NOTE: Must use the @wrapped_object instance variable instead of passing as parameter. Otherwise, #setup_delegators needs to be re-run every time a new object is loaded.
+		
 		# TODO: automate creation of wrappers for methods with names that exist in this wrapper (create all mehtods on module, and then mix it in?)
 		
 		# --- blacklist some methods from being wrapped,
@@ -117,9 +119,9 @@ class DynamicObject
 		method_symbols.each do |sym|
 			meta_def sym do |*args|
 				begin
-					unless target_object.nil?
-						if target_object.respond_to? sym
-							target_object.send sym, *args 
+					unless @wrapped_object.nil?
+						if @wrapped_object.respond_to? sym
+							@wrapped_object.send sym, *args 
 						else
 							warn "WARNING: class declared in #{@file} does not respond to '#{sym}'"
 						end
@@ -169,7 +171,7 @@ class DynamicObject
 						@wrapped_object = nil
 					else
 						# valid -> invalid
-						@wrapped_object = unload klass
+						@wrapped_object = unload
 					end
 				elsif klass.is_a? Class
 					# class declared.
