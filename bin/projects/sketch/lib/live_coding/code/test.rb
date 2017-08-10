@@ -20,6 +20,10 @@ Class.new do
 				x.size = 20
 				x.add_alphabet :Latin
 				x.add_alphabet :Japanese
+				
+				# TODO: how do you discover what the alphabets are?
+				# stored in RubyOF::TtfSettings::UnicodeRanges
+				# maybe provide discoverable access through #alphabets on the DSL object?
 			end
 		
 		@text = TextEntity.new(@window, @font)
@@ -59,6 +63,10 @@ Class.new do
 		
 	# end
 	
+	
+	# TODO: consider adding additional callbacks for input / output connections to other computational units (this is for when you have a full graph setup to throw data around in this newfangled system)
+	
+	# TODO: at that point, you need to be able to write code for those nodes in C++ as well, so the anonymous classes created in this file, etc, must be subclasses of some kind of C++ type (maybe even some sort of weak ref / smart pointer that allows for C++ memory allocation? (pooled memory?))
 	
 	
 	def update

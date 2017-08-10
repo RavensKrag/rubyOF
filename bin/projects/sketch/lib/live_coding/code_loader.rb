@@ -100,11 +100,12 @@ class DynamicObject
 		method_symbols = (method_contract - excluded_methods)
 		
 		
-		# --- check for symbol collision
+		# --- make sure :setup isn't part of the method contract
 		if method_symbols.include? :setup
 			raise WrapperContractError, "Callback object should not declare #setup. Place setup code in the normal #initialize method found in all Ruby objects instead. Fix the method contract and try again."
 		end
 		
+		# --- check for symbol collision
 		collisions = self.public_methods + self.private_methods
 		if collisions.any?{|sym| method_symbols.include? sym }
 			raise WrapperNameCollison.new(
@@ -265,7 +266,7 @@ class DynamicObject
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			unbind()
+			unload()
 			
 			return nil
 		ensure
@@ -336,7 +337,7 @@ class DynamicObject
 	end
 	
 	
-	
+	# TODO: define set equality - two items are equal if they load from the same file
 	
 	
 	
