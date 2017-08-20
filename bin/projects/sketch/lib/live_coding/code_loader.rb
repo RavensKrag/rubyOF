@@ -362,7 +362,9 @@ class DynamicObject
 		
 		
 		puts "Reloading Snippet defined in: #{@file}"
+		print "  "
 		unload(kill:false)
+		print "  "
 		load(obj)
 		
 		# Snippets need to be anonymous, because that allows all contained
