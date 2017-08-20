@@ -151,4 +151,18 @@ Class.new do
 	
 	# TODO: at that point, you need to be able to write code for those nodes in C++ as well, so the anonymous classes created in this file, etc, must be subclasses of some kind of C++ type (maybe even some sort of weak ref / smart pointer that allows for C++ memory allocation? (pooled memory?))
 	
+	
+	
+	# # send data to another live coding module in memory
+	# # (for planned visual coding graph)
+	# # NOTE: Try not to leak state (send immutable data, functional style)
+	# def send
+	# 	return nil
+	# end
+	
+	# # recive data from another live-coding module in memory
+	# # (for planned visual coding graph)
+	# def recieve(data)
+		
+	# end
 end

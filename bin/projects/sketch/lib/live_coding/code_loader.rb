@@ -81,6 +81,12 @@ class DynamicObject
 		end
 	end
 	
+	def on_exit
+		unless @wrapped_object.nil?
+			@wrapped_object.serialize(@save_directory)
+		end
+	end
+	
 	
 	
 	private
@@ -95,7 +101,8 @@ class DynamicObject
 			# keep execption from halting program,
 			# but still output the exception's information.
 			process_snippet_error(e)
-			@wrapped_object = unload()
+			
+			unload()
 			# ^ stop further execution of the bound @wrapped_object
 		end
 	end
@@ -183,7 +190,7 @@ class DynamicObject
 						@wrapped_object = nil
 					else
 						# valid -> invalid
-						@wrapped_object = unload
+						unload()
 					end
 				elsif klass.is_a? Class
 					# class declared.
@@ -200,13 +207,13 @@ class DynamicObject
 						# none -> valid
 						
 						# if new type
-						@wrapped_object = load klass
+						load(klass)
 					else
 						# class loaded, already have an instance
 						# valid ---reload--> valid
 						
 						# if a type from this file already exists
-						@wrapped_object = reload klass
+						reload(klass)
 					end
 				else
 					# Something else happened.
@@ -274,13 +281,13 @@ class DynamicObject
 			snippet = klass.new(@window, @save_directory)
 			puts "Loaded: #{@file}"
 			
-			return snippet
+			@wrapped_object =  snippet
 		rescue StandardError => e
 			process_snippet_error(e)
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			return unload()
+			unload()
 		ensure
 			# always do this stuff
 		end
@@ -290,7 +297,11 @@ class DynamicObject
 	def unload
 		puts "Unloading: #{@file}"
 		
-		return nil
+		unless @wrapped_object.nil?
+			@wrapped_object.serialize(@save_directory)
+			
+			@wrapped_object =  nil
+		end
 	end
 	
 	# Replace running Snippet classes with updated versions
@@ -318,13 +329,15 @@ class DynamicObject
 		# (For more information, see documentation on the Snippet class, below.)
 		
 		begin
+			# serialize the old instance
+			@wrapped_object.serialize(@save_directory)
+			
 			# create new instance, rebinding to same data from the old instance
 			obj = klass.new(@window, @save_directory)
 			
 			# save the new instance
-			return obj
+			@wrapped_object =  obj
 			
-			# TODO: When #bind is implemented, need to rebind to old targets
 			
 			# NOTE: Now that @file and @save_directory are being saved on the DynamicObject wrapper class, instead of on the callback instance, you likely don't have to copy the value of @save_directory from the old instance. This means that #reload and #load are exactly the same.
 			
@@ -340,9 +353,7 @@ class DynamicObject
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			@bound = nil
-			
-			return nil
+			@wrapped_object =  nil
 		ensure
 			# always do this stuff
 		end

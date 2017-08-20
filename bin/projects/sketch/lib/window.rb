@@ -11,6 +11,10 @@ require lib_dir/'repl'
 require lib_dir/'live_coding'/'code_loader'
 
 
+
+
+
+
 class Entity
 	def initialize
 		
@@ -103,6 +107,7 @@ class Timer
 end
 
 
+require 'yaml'
 
 class Window < RubyOF::Window
 	include RubyOF::Graphics
@@ -128,23 +133,44 @@ class Window < RubyOF::Window
 		
 		
 		
-		
-		project_root = Pathname.new(__FILE__).expand_path.dirname.parent
+		# (project root)
+		root = Pathname.new(__FILE__).expand_path.dirname.parent
 		
 		@live_wrapper = LiveCoding::DynamicObject.new(
 			self,
-			save_directory:   (project_root/'bin'/'data'),
-			dynamic_code_file:(project_root/'lib'/'live_coding'/'code'/'test.rb'),
+			save_directory:   (root/'bin'/'data'),
+			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'test.rb'),
 			method_contract:  [:serialize, :cleanup, :update, :draw]
 		)
 		
 		@live_wrapper.setup # loads anonymous class, and initializes it
+		
+		
+		@live_code_input = LiveCoding::DynamicObject.new(
+			self,
+			save_directory:   (root/'bin'/'data'),
+			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'input.rb'),
+			method_contract:  [
+				:serialize, :cleanup, :update, :draw,
+				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+			]
+		)
+		
+		# :mouse_moved(x,y)
+		# :mouse_pressed(x,y, button)
+		# :mouse_released(x,y, button)
+		# :mouse_dragged(x,y, button)
+		
+		
+		
+		@live_code_input.setup # loads anonymous class, and initializes it
 	end
 	
 	def update
 		# super()
 		
 		@live_wrapper.update
+		@live_code_input.update
 	end
 	
 	def draw
@@ -163,10 +189,14 @@ class Window < RubyOF::Window
 		
 		
 		@live_wrapper.draw
+		@live_code_input.draw
 	end
 	
 	def on_exit
 		super()
+		
+		@live_wrapper.on_exit
+		@live_code_input.on_exit
 	end
 	
 	
@@ -202,6 +232,8 @@ class Window < RubyOF::Window
 	def mouse_moved(x,y)
 		@mouse_pos.x = x
 		@mouse_pos.y = y
+		
+		@live_code_input.mouse_moved(x,y)
 	end
 	
 	def mouse_pressed(x,y, button)
@@ -229,14 +261,17 @@ class Window < RubyOF::Window
 			# Glut: 8
 		# TODO: set button codes as constants?
 		
+		@live_code_input.mouse_pressed(x,y, button)
 	end
 	
 	def mouse_released(x,y, button)
 		super(x,y, button)
+		@live_code_input.mouse_released(x,y, button)
 	end
 	
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
+		@live_code_input.mouse_dragged(x,y, button)
 	end
 	
 	
