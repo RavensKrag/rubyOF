@@ -13,44 +13,6 @@ require lib_dir/'live_coding'/'code_loader'
 
 
 
-
-
-class Entity
-	def initialize
-		
-	end
-end
-
-class Point < Entity
-	attr_reader :p
-	attr_accessor :z
-	attr_accessor :r
-	
-	def initialize(window)
-		@window = window
-		
-		@color =
-			RubyOF::Color.new.tap do |c|
-				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
-			end
-		@p = CP::Vec2.new(0,0)
-		@z = 0
-		@r = 5
-	end
-	
-	def draw
-		@window.tap do |w|
-			w.ofPushStyle()
-			w.ofSetColor(@color)
-			
-			w.ofDrawCircle(@p.x, @p.y, @z, @r)
-			
-			w.ofPopStyle()
-		end
-	end
-end
-
-
 class TextEntity
 	attr_reader :p
 	# ^ can edit properties of the vector, but can't set a new object
@@ -107,20 +69,20 @@ class Timer
 end
 
 
-require 'yaml'
+
+
 
 class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("App to sketch out ideas", 1746,1194)
+		super("App to sketch out ideas", 1845,1122)
 		# ofSetEscapeQuitsApp false
 		
 		puts "ruby: Window#initialize"
 		
 		
 		@mouse_pos = CP::Vec2.new(0,0)
-		
 	end
 	
 	def setup
@@ -136,20 +98,12 @@ class Window < RubyOF::Window
 		# (project root)
 		root = Pathname.new(__FILE__).expand_path.dirname.parent
 		
-		@live_wrapper = LiveCoding::DynamicObject.new(
+		
+		
+		@main = LiveCoding::DynamicObject.new(
 			self,
 			save_directory:   (root/'bin'/'data'),
-			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'test.rb'),
-			method_contract:  [:serialize, :cleanup, :update, :draw]
-		)
-		
-		@live_wrapper.setup # loads anonymous class, and initializes it
-		
-		
-		@live_code_input = LiveCoding::DynamicObject.new(
-			self,
-			save_directory:   (root/'bin'/'data'),
-			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'input.rb'),
+			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'main.rb'),
 			method_contract:  [
 				:serialize, :cleanup, :update, :draw,
 				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
@@ -163,14 +117,13 @@ class Window < RubyOF::Window
 		
 		
 		
-		@live_code_input.setup # loads anonymous class, and initializes it
+		@main.setup # loads anonymous class, and initializes it
 	end
 	
 	def update
 		# super()
 		
-		@live_wrapper.update
-		@live_code_input.update
+		@main.update
 	end
 	
 	def draw
@@ -186,17 +139,13 @@ class Window < RubyOF::Window
 		z              = 1
 		draw_debug_info(start_position, row_spacing, z)
 		
-		
-		
-		@live_wrapper.draw
-		@live_code_input.draw
+		@main.draw
 	end
 	
 	def on_exit
 		super()
 		
-		@live_wrapper.on_exit
-		@live_code_input.on_exit
+		@main.on_exit
 	end
 	
 	
@@ -233,7 +182,7 @@ class Window < RubyOF::Window
 		@mouse_pos.x = x
 		@mouse_pos.y = y
 		
-		@live_code_input.mouse_moved(x,y)
+		@main.mouse_moved(x,y)
 	end
 	
 	def mouse_pressed(x,y, button)
@@ -261,17 +210,17 @@ class Window < RubyOF::Window
 			# Glut: 8
 		# TODO: set button codes as constants?
 		
-		@live_code_input.mouse_pressed(x,y, button)
+		@main.mouse_pressed(x,y, button)
 	end
 	
 	def mouse_released(x,y, button)
 		super(x,y, button)
-		@live_code_input.mouse_released(x,y, button)
+		@main.mouse_released(x,y, button)
 	end
 	
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
-		@live_code_input.mouse_dragged(x,y, button)
+		@main.mouse_dragged(x,y, button)
 	end
 	
 	

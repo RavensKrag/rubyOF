@@ -1,12 +1,73 @@
 # (create instance of Object class, and define things on it's singleton class)
 ->(){ obj = Object.new; class << obj
-	include LiveCoding::InspectionMixin
+
+
+
+class Entity
+	def initialize
+		
+	end
+end
+
+class Point < Entity
+	attr_reader :p
+	attr_accessor :z
+	attr_accessor :r
 	
+	def initialize(window)
+		@window = window
+		
+		@color =
+			RubyOF::Color.new.tap do |c|
+				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+			end
+		@p = CP::Vec2.new(0,0)
+		@z = 0
+		@r = 5
+	end
+	
+	def draw
+		@window.tap do |w|
+			w.ofPushStyle()
+			w.ofSetColor(@color)
+			
+			w.ofDrawCircle(@p.x, @p.y, @z, @r)
+			
+			w.ofPopStyle()
+		end
+	end
+end
+	
+	
+	include LiveCoding::InspectionMixin
 	include RubyOF::Graphics
+	
 	
 	def setup(window, save_directory)
 		# basic initialization
 		@window = window
+		
+		
+		@font = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+				
+				# TODO: how do you discover what the alphabets are?
+				# stored in RubyOF::TtfSettings::UnicodeRanges
+				# maybe provide discoverable access through #alphabets on the DSL object?
+			end
+		
+		
+		@display   = TextEntity.new(@window, @font)
+		@display.p = CP::Vec2.new 200, 273
+		
+		@p = [nil, nil]
+		
+		
 		
 		@click_log = Array.new
 		
@@ -22,15 +83,89 @@
 				data = YAML.load(f)
 				data.each do |type, *args|
 					case type
-						
-					when 'point'
-						@click_log << CP::Vec2.new(*args)
-					else
-						raise "ERROR: Unexpected type in serialization"
+						when 'point'
+							@click_log << CP::Vec2.new(*args)
+						else
+							raise "ERROR: Unexpected type in serialization"
 					end
 				end
 			end
 		end
+		
+		
+		@space = CP::Space.new
+		
+		
+		
+		@testing = false
+		
+		@db =
+			if @testing
+				# connect to test DB in memory
+				Sequel.sqlite
+			else
+				# connect to real DB on the disk
+				# path = save_directory/'spatial_data.db'
+				
+				path = save_directory/'test-2.3.sqlite' # data for tutorial
+				
+				puts path
+				
+				Sequel.connect("sqlite://#{path}")
+			end
+		
+		# load spatialite
+		@db.run "SELECT load_extension('mod_spatialite');"
+		
+		
+		
+		
+		@db.fetch "SELECT * FROM towns LIMIT 5;"
+		
+		@db.fetch "SELECT name, peoples, AsText(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		# REPL.connect(binding)
+		
+		
+		
+		# "the SpatiaLite X() function returns the X coordinate for a POINT.
+		# the Y() function returns the Y coordinate for a POINT.""
+		# ^ source: https://www.gaia-gis.it/gaia-sins/spatialite-tutorial-2.3.1.html
+		
+		x = @db.fetch "SELECT name, peoples, X(Geometry), Y(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		puts x.all # need to use #all to execute the DataSet and get a Hash
+		
+		x.all[0].tap do |point|
+			x = point["X(Geometry)".to_sym]
+			y = point["Y(Geometry)".to_sym]
+			
+			p [x,y]
+			
+			puts CP::Vec2.new(x,y)
+		end
+		
+		
+		# "the BEGIN and COMMIT SQL statements defines a transaction; a single transaction is intended to define an atomic operation.""
+		
+		
+		
+		
+		p @click_log[-1].methods
+		
+		puts "click radius for points: "
+		p @click_log[-2].dist @click_log[-1]
+		
+		
+		
+		
+		
+		# @live_wrapper = LiveCoding::DynamicObject.new(
+		# 	@window,
+		# 	save_directory:   (root/'bin'/'data'),
+		# 	dynamic_code_file:(root/'lib'/'live_coding'/'code'/'test.rb'),
+		# 	method_contract:  [:serialize, :cleanup, :update, :draw]
+		# )
+		
+		# @live_wrapper.setup # loads anonymous class, and initializes it
 	end
 	
 	# save the state of the object (dump state)
@@ -61,7 +196,7 @@
 	
 	
 	def update
-		
+		@display.string = "mouse pos: #{@p.inspect}" # display mouse position
 	end
 	
 	def draw
@@ -94,6 +229,8 @@
 				x2, y2, z
 			)
 		end
+		
+		@display.draw
 	end
 	
 	
@@ -121,7 +258,7 @@
 	
 	
 	def mouse_moved(x,y)
-		p [x,y]
+		@p = [x,y]
 	end
 	
 	def mouse_pressed(x,y, button)
