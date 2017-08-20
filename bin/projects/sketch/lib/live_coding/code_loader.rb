@@ -180,10 +180,13 @@ class DynamicObject
 					if @wrapped_object.nil?
 						# invalid -> invalid
 						# NO-OP
-						@wrapped_object = nil
+						
+						puts "Error in #{@file}: Could not perform initial load."
 					else
 						# valid -> invalid
 						unload(kill:false)
+						
+						puts "Error in #{@file}: Tried to replace valid code with invalid code."
 					end
 				elsif data.is_a? Proc
 					# Want to detect a lambda that returns an Object
