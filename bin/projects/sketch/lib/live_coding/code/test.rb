@@ -25,10 +25,21 @@ Class.new do
 				# stored in RubyOF::TtfSettings::UnicodeRanges
 				# maybe provide discoverable access through #alphabets on the DSL object?
 			end
+			
+		@font2 = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+			end
 		
 		
-		@display   = TextEntity.new(@window, @font)
+		@display   = TextEntity.new(@window, @font2)
 		@display.p = CP::Vec2.new 200, 400
+		
+		@out   = TextEntity.new(@window, @font2)
+		@out.p = CP::Vec2.new 200, 420
 		
 		@text      = TextEntity.new(@window, @font)
 		@text.p    = CP::Vec2.new 500, 500
@@ -78,33 +89,46 @@ Class.new do
 		# COMBINE THE FIRST TWO IDEAS
 		# move a changing number across the screen
 		
-		#                  seconds per frame       number of frames in loop
-		frame_count = (@time.ms / (0.8*1000).to_i % 10 )
-		#                                ^ sec to ms
+		
+		frames_per_loop = 10 # start on frame 0, plus 10 solid frames
 		
 		#              sec to ms    convert to int so modulo works correctly
-		ms_per_frame = (0.8*1000).to_i
-		total_frames_in_loop = 10
-		frame_count = (@time.ms / ms_per_frame % total_frames_in_loop )
+		ms_per_frame = (0.2*1000).to_i
+		frame_count = (@time.ms / ms_per_frame % (frames_per_loop+1) )
 		#                                      ^ here's the modulo
 		
-		t = frame_count / total_frames_in_loop.to_f
+		t = frame_count / (frames_per_loop).to_f
 		#   |____________________________________|
 		#     what percent of the frames have passed?
 		#      (3 / 10 frames) -> 30% total distance
 		
-		indent      = 100
-		total_range = 800
+		
+		# Need the numbers in the decretized representation of time
+		# to go up to the divisor in the t calculation.
+		# That way, t can be (0..1) (float)
+		# (otherwise, you can't ever get to 100%)
 		
 		
-		@text.p.x = indent + total_range * t
+		
+		# indent      = 100
+		# total_range = 800
+		
+		# @text.p.x = indent + total_range * t
+		
+		
+		
+		points = {
+			:start => CP::Vec2.new( 131, 455),
+			:end   => CP::Vec2.new(1204, 455)
+		}
+		@text.p = points[:start].lerp points[:end], t
+		# p @text.p.x
+		
+		
 		
 		# convert frame_count into a string, and display that
-		@display.string = frame_count.to_s
-		
-		
-		
-		
+		@display.string = "frame_count: " + frame_count.to_s
+		@out.string     = "t:           " + t.to_s
 	end
 	
 	def draw
@@ -112,7 +136,10 @@ Class.new do
 		# puts "draw"
 		
 		@display.draw
+		@out.draw
 		@text.draw
+		
+		
 		# # store clicks from mouse as point data, and process that
 		# # @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
 	end
