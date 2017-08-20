@@ -60,7 +60,7 @@ class DynamicObject
 	# first load of the wrapped object, and first initialization
 	def setup(*args)
 		load_wrapped_object() # => @wrapped_object
-		# ^ calls klass.new --> runs #initialize on the new object
+		# ^ runs #setup on the new object
 	end
 	
 	# update the state of this object, and then delegate to the #update
@@ -82,9 +82,7 @@ class DynamicObject
 	end
 	
 	def on_exit
-		unless @wrapped_object.nil?
-			@wrapped_object.serialize(@save_directory)
-		end
+		unload(kill:false)
 	end
 	
 	
@@ -102,7 +100,7 @@ class DynamicObject
 			# but still output the exception's information.
 			process_snippet_error(e)
 			
-			unload()
+			unload(kill:true)
 			# ^ stop further execution of the bound @wrapped_object
 		end
 	end
@@ -166,23 +164,18 @@ class DynamicObject
 			
 			# TODO: Figure out what happens if a file is simply deleted. Need to make sure that if a file is deleted, the Snippets in memory are deleted as well.
 			
+			# TODO: Figure out how to guard against files that have extra code in them: things that lie outside the assumed proc->Object structure (arbitrary code vuln)
+			
 			begin
-				# src: http://stackoverflow.com/questions/6864319/ruby-how-to-return-from-inside-eval
-				klass =
-					lambda{
-						 binding.eval File.read(@file.to_s), @file.to_s
-					}.call()
-				# wrap eval in a lambda that is immediately called.
-				# This way, a "return" from inside any Snippet definition
-				# will kick out of that subsystem, and skip the binding of that Snippet.
-				# (in that case, klass = nil)
+				# try to load lambda from file into one variable
+				data = binding.eval File.read(@file.to_s), @file.to_s
 				
-				if klass.nil?
-					# no class declared in file.
+				if data.nil?
+					# no snippet declared in file.
+					# (surrounding lambda was not declared / declared improperly)
 					
 					# It is possible that an existing type was invalidated,
 					# or that no vaild type was ever declared in this file.
-					
 					
 					if @wrapped_object.nil?
 						# invalid -> invalid
@@ -190,35 +183,38 @@ class DynamicObject
 						@wrapped_object = nil
 					else
 						# valid -> invalid
-						unload()
+						unload(kill:false)
 					end
-				elsif klass.is_a? Class
-					# class declared.
-					# this type was loaded correctly.
+				elsif data.is_a? Proc
+					# Want to detect a lambda that returns an Object
+					# We know at this stage that the container is as expected,
+					# but whether or not the Object is proper will be checked
+					# in #load / #reload and not here.
 					
-					puts "Read Snippet Class definiton from #{@file}"
+					# this type was loaded correctly.
+					puts "Read dynamic code from #{@file}"
 					
 					# By this point, you know you're dealing with a singular class.
-					# As long as things get added in here,
-					# you can't ever add more than one Snippet class per file.
+					# As long as only this code path sets @wrapped_object,
+					# only one snippet will be loaded per file.
 					
 					if @wrapped_object.nil?
 						# class loaded, no instance yet
 						# none -> valid
 						
 						# if new type
-						load(klass)
+						load(data)
 					else
 						# class loaded, already have an instance
 						# valid ---reload--> valid
 						
 						# if a type from this file already exists
-						reload(klass)
+						reload(data)
 					end
 				else
-					# Something else happened.
+					# Something unexpected happened.
 					# This is bad.
-					raise "#{klass} is not a Class definition. Problem in #{@file}"
+					raise "Problem in #{@file}. Expected the file to define a lambda that returns a Object instance. Instead, recieved the following: #{data.inspect}"
 				end
 				
 				# At this point, class was loaded successfully.
@@ -276,29 +272,72 @@ class DynamicObject
 	# --- state transition callbacks
 	
 	# Activate an instance of a bound Snippet
-	def load(klass)
+	def load(proc)
 		begin
-			snippet = klass.new(@window, @save_directory)
+			# run the lambda to get the bound Object
+			obj = proc.call()
+			
+			
+			# TODO: move this code into #load, so that it is properly guarded against any sort of exception that may arise.
+			
+			# --- make sure the object you want to bind behaves as expected
+			if obj.nil?
+				raise "Problem in #{@file}. Expected the file to define a lambda that returns a Object instance. The lambda was properly defined, but it's return was nil."
+			end
+			
+			unless @contract.all?{|sym| obj.respond_to? sym }
+				a = @contract.inspect
+				b = obj.methods.inspect
+				
+				msg = 
+				[
+				"Failed to bind the following object from #{@file}: #{obj}",
+				"  Object returned from lambda does not respond to all methods specified in the method contract.",
+				"  contract: #{a}",
+				"  methods:  #{b}",
+				"  missing methods: #{a - b}",
+				].join("\n")
+				
+				raise msg
+			end
+			# ------
+			
+			
+			
+			obj.setup(@window, @save_directory)
 			puts "Loaded: #{@file}"
 			
-			@wrapped_object =  snippet
+			
+			
+			@wrapped_object = obj
 		rescue StandardError => e
 			process_snippet_error(e)
 			
 			# If there's a problem, you need to get rid of the class that's causing it,
 			# or errors will just stream into STDOUT, which is very bad.
-			unload()
+			unload(kill:true)
+			# (need to kill because #setup may have corrupted the state)
+			
+			# distinguish between 'safe shutdown' unloading, and 'kill this now' unloading. Safe shutdown needs to save state. Kill now should never save state (state is lkely to be corrupted.)
 		ensure
 			# always do this stuff
 		end
 	end
 	
 	# Deactivate an active instance of a Snippet
-	def unload
+	# (only save data when you have a reasonable guarantee it will be safe)
+	# (better to roll back a little, than to save bad data)
+	def unload(kill:false)
 		puts "Unloading: #{@file}"
 		
 		unless @wrapped_object.nil?
-			@wrapped_object.serialize(@save_directory)
+			if kill
+				# (kill now: dont save data, as it may be corrupted)
+				
+			else
+				# (safe shutdown: save data before unloading)
+				@wrapped_object.serialize(@save_directory)
+			end
 			
 			@wrapped_object =  nil
 		end
@@ -309,7 +348,7 @@ class DynamicObject
 	# NOTE: Reload should NOT be implemented with a combination of load / unload.
 	#       (1) you need different debug information.
 	#       (2) reloading involves transplanting data from the old instance, to the new one.
-	def reload(klass)
+	def reload(obj)
 		# (each time a Snippet is reloaded, the class ID will change)
 		
 		# NOTE: Sometimes this replaces working code with broken code.
@@ -320,43 +359,23 @@ class DynamicObject
 		
 		
 		puts "Reloading Snippet defined in: #{@file}"
+		unload(kill:false)
+		load(obj)
+		
+		# Snippets need to be anonymous, because that allows all contained
+		# constants to easily be thrown away (GCed) when new versions are loaded.
+		# The Object.new -> metaclass style allows both contained constants,
+		# and contaned Class declarations to be completely swept away on reload.
+		
+		# (TODO: source the sinatra live reload article, and my personal experiments with constant binding)
 		
 		
+		# NOTE: Now that @file and @save_directory are being saved on the DynamicObject wrapper class, instead of on the callback instance, you likely don't have to copy the value of @save_directory from the old instance. This means that #reload and #load are exactly the same.
 		
-		# Find active Snippets for replacement by their ORIGIN_FILE constant.
-		# Can't use the class name, because classes are anonymous.
-		# Classes need to be anonymous, because otherwise the global class variables get weird.
-		# (For more information, see documentation on the Snippet class, below.)
 		
-		begin
-			# serialize the old instance
-			@wrapped_object.serialize(@save_directory)
-			
-			# create new instance, rebinding to same data from the old instance
-			obj = klass.new(@window, @save_directory)
-			
-			# save the new instance
-			@wrapped_object =  obj
-			
-			
-			# NOTE: Now that @file and @save_directory are being saved on the DynamicObject wrapper class, instead of on the callback instance, you likely don't have to copy the value of @save_directory from the old instance. This means that #reload and #load are exactly the same.
-			
-			# NOTE: reload is NOT the same, as it must dump the state of the old object, and load that state into the new object
-				# call dump / load
-				# call #setup
-				# (normally setup would be called once for the )
-			
-			# TODO: document that methods like #bind, which are not part of the method contract passed to the wrapper object, are nontheless still a part of the required interface for the wrapped object.
-			
-		rescue StandardError => e
-			process_snippet_error(e)
-			
-			# If there's a problem, you need to get rid of the class that's causing it,
-			# or errors will just stream into STDOUT, which is very bad.
-			@wrapped_object =  nil
-		ensure
-			# always do this stuff
-		end
+		# TODO: document that methods like #bind, which are not part of the method contract passed to the wrapper object, are nontheless still a part of the required interface for the wrapped object.
+		# (the method #bind in particular may not longer be relevant, but this general idea still applies)
+		
 	end
 	
 	

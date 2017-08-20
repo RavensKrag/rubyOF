@@ -1,7 +1,8 @@
-Class.new do
+# (create instance of Object class, and define things on it's singleton class)
+->(){ obj = Object.new; class << obj
 	include LiveCoding::InspectionMixin
 	
-	def initialize(window, save_directory)
+	def setup(window, save_directory)
 		@window = window
 		
 		# TODO: do something with the save directory
@@ -165,4 +166,5 @@ Class.new do
 	# def recieve(data)
 		
 	# end
-end
+end; return obj }
+

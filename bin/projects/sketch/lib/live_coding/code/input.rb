@@ -1,9 +1,10 @@
-Class.new do
+# (create instance of Object class, and define things on it's singleton class)
+->(){ obj = Object.new; class << obj
 	include LiveCoding::InspectionMixin
 	
 	include RubyOF::Graphics
 	
-	def initialize(window, save_directory)
+	def setup(window, save_directory)
 		# basic initialization
 		@window = window
 		
@@ -147,4 +148,5 @@ Class.new do
 		
 	end
 	
-end
+end; return obj }
+
