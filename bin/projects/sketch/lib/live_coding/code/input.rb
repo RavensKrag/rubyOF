@@ -153,7 +153,13 @@ class PointData
 		@points << vec
 		
 		
-		r = 4 # backend radius (representing points in space as small circles)
+		# backend radius
+		r = 1/2.0 - 0.001
+		#   representing points in space as small circles
+		#   Each circle has diameter 1 (because each is 1 px)
+		#   but just in case, the diameter is made slightly smaller than that
+		# (the mouse query uses a larger radius, so it's easy to click on things)
+		
 		body  = CP::Body.new(1,1)
 		shape = CP::Shape::Circle.new(body, r)
 		
@@ -181,16 +187,30 @@ class PointData
 	end
 	
 	# get a list of all points near the target (within the given radius)
-	def query(target, raidus)
-		layers = CP::ALL_LAYERS
-		group  = CP::NO_GROUP
+	def query(target, radius)
+		# --- implementation using point query
+		# layers = CP::ALL_LAYERS
+		# group  = CP::NO_GROUP
+		# 
+		# 
+		# selection = []
+		# @space.point_query(target, layers, group) do |shape|
+		# 	selection << shape.object
+		# end
+		# selection.uniq!
+		# 
+		# p selection
 		
 		
+		# --- implementation using shape query
+		query_body   = CP::Body.new(1,1)
+		query_shape  = CP::Shape::Circle.new(query_body, radius)
 		
+		query_body.p = target
 		
 		selection = []
-		@space.point_query(target, layers, group) do |shape|
-			selection << shape.object
+		@space.shape_query(query_shape) do |colliding_shape|
+			selection << colliding_shape.object
 		end
 		selection.uniq!
 		
@@ -454,7 +474,7 @@ end
 			when 1 # middle
 				
 			when 2 # right
-				@point_data.query mouse_pos, 20
+				@point_data.query mouse_pos, 5
 			when 3 # prev (extra mouse button)
 					
 			when 4 # next (extra mouse button)
