@@ -80,7 +80,7 @@ require 'yaml'
 	
 	def draw
 		[
-			@live_wrapper,
+			# @live_wrapper,
 			@input_test,
 		].each do |dynamic_obj|
 			dynamic_obj.draw

@@ -1,46 +1,7 @@
 # (create instance of Object class, and define things on it's singleton class)
 ->(){ obj = Object.new; class << obj
 
-
-
-class Entity
-	def initialize
-		
-	end
-end
-
-class Point < Entity
-	attr_reader :p
-	attr_accessor :z
-	
-	class << self
-		def r
-			4
-		end
-	end
-	
-	def initialize(window)
-		@window = window
-		
-		@color =
-			RubyOF::Color.new.tap do |c|
-				c.r, c.g, c.b, c.a = [0, 141, 240, 255]
-			end
-		@p = CP::Vec2.new(0,0)
-		@z = 0
-	end
-	
-	def draw
-		@window.tap do |w|
-			w.ofPushStyle()
-			w.ofSetColor(@color)
-			
-			w.ofDrawCircle(@p.x, @p.y, @z, self.class.r)
-			
-			w.ofPopStyle()
-		end
-	end
-end
+require Pathname.new(__FILE__).expand_path.dirname/'entities.rb'
 
 class SpatialDB
 	def initialize(save_directory)
@@ -101,6 +62,175 @@ class SpatialDB
 		x.all # need to use #all to execute the DataSet and get a Hash
 	end
 end
+
+class PointData
+	def initialize
+		@space = CP::Space.new # for spatially organizing data
+		@dt = 1/60.0
+		
+		@points = Array.new # raw data, CP::Vec2 instances
+		
+		
+		# color to draw the points in 
+		@color = RubyOF::Color.new.tap do |c|
+			c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+		end
+	end
+	
+	def serialize(save_directory)
+		filepath = save_directory/'mouse_data.yaml'
+		File.open(filepath, 'w') do |f|
+			
+			
+			data = @points.collect{|point|  ['point'] + point.to_a}
+			f.print YAML.dump(data)
+		end
+	end
+	
+	def update
+		@space.step @dt
+	end
+	
+	def draw(window, font)
+		
+		
+		
+		window.ofPushStyle()
+		window.ofSetColor(@color)
+		
+		z = 0
+		r = 4   # render radius of the circle that represents the point
+		
+		# @points.each_with_index do |vec, i|
+		
+		@bodies
+		.collect{ |b| b.p }
+		.each_with_index do |vec, i|
+			# -- render the actual point data
+			window.ofDrawCircle(vec.x, vec.y, z, r)
+			
+			
+			
+			# -- render the index of each point, above where the point is
+			char_to_px = 18 # string width to horiz displacement 
+			
+			label = i.to_s
+			width  = font.string_width(label)
+			
+			# NOTE: strings appear to draw from the bottom left corner
+			font.draw_string(
+				i.to_s,
+				
+				vec.x - (width) / 2,
+				vec.y - r*2 # neg y is up the screen
+			)
+			
+		end
+		
+		window.ofPopStyle()
+		
+		
+		
+		# if you have enough points to try and construct a rectangle,
+		# go ahead and draw a rectangle
+		if @points.length >= 4
+			a = @points[0]
+			b = @points[1]
+			
+			x1, y1 = a.to_a
+			x2, y2 = b.to_a
+			
+			z = 0
+			window.ofDrawLine(
+				x1, y1, z, 
+				x2, y2, z
+			)
+		end
+	end
+	
+	
+	def add(vec)
+		@points << vec
+		
+		
+		r = 4 # backend radius (representing points in space as small circles)
+		body  = CP::Body.new(1,1)
+		shape = CP::Shape::Circle.new(body, r)
+		
+		
+		# Need to set body position, or else you get the default
+		# (not sure what that is.. likely the origin?)
+		body.p = vec
+		
+		# bind raw data to the graphical representation
+		# (this way, you can get the raw data back on Space callbacks)
+		shape.object = vec
+		
+		# add both body and shape to the simulation space
+		@space.add_body  body
+		@space.add_shape shape
+		
+		
+		
+		# store the Body / Shape objects, to iterate over them later
+		@shapes ||= Array.new
+		@shapes << shape
+		
+		@bodies ||= Array.new
+		@bodies << body
+	end
+	
+	# get a list of all points near the target (within the given radius)
+	def query(target, raidus)
+		layers = CP::ALL_LAYERS
+		group  = CP::NO_GROUP
+		
+		
+		
+		
+		selection = []
+		@space.point_query(target, layers, group) do |shape|
+			selection << shape.object
+		end
+		selection.uniq!
+		
+		p selection
+	end
+	
+	
+	# Query the space, finding all shapes at the point specified.
+	# Returns a list of the objects attached to the discovered shapes.
+	# Each object will only appear once within the list.
+	# Query does not make any guarantees about the order in which objects are returned.
+	# TODO: adjust API so accepting block is not necessary (method chaining is more flexible)?
+	def point_query(point, layers=CP::ALL_LAYERS, group=CP::NO_GROUP, limit_to:nil, exclude:nil, &block)
+		# block params: |object_in_space|
+		
+		selection = []
+		@space.point_query(point, layers, group) do |shape|
+			selection << shape.obj
+		end
+		# NOTE: will pull basic Entity data, as well as Groups, because both live in the Space
+		
+		selection.uniq!
+		
+		# NOTE: potentially want to filer Groups by 'abstraction layer'
+			# raw entities have abstraction layer = 0
+			# a group with a raw entity inside it is layer = 1
+			# in general: groups have layer = highest member layer value + 1
+		# would need to somehow visualize abstraction layer,
+		# as well as the current depth of selection
+		# if that is going to be a thing.
+		
+		selection.select!{ |x| limit_to.include? x  }  if limit_to
+		selection.reject!{ |x| exclude.include?  x  }  if exclude
+		
+		
+		selection.each &block if block
+		
+		return selection
+	end
+end
 	
 	
 	include LiveCoding::InspectionMixin
@@ -142,11 +272,17 @@ end
 		
 		
 		
-		@click_log = Array.new
+		REPL.connect binding
 		
-		@color = RubyOF::Color.new.tap do |c|
-			c.r, c.g, c.b, c.a = [0, 141, 240, 255]
-		end
+		
+		
+		# @color = RubyOF::Color.new.tap do |c|
+		# 	c.r, c.g, c.b, c.a = [0, 141, 240, 255]
+		# end
+		
+		
+		
+		@point_data = PointData.new
 		
 		
 		# load data from disk
@@ -157,7 +293,8 @@ end
 				data.each do |type, *args|
 					case type
 						when 'point'
-							@click_log << CP::Vec2.new(*args)
+							vec = CP::Vec2.new(*args)
+							@point_data.add vec
 						else
 							raise "ERROR: Unexpected type in serialization"
 					end
@@ -166,7 +303,6 @@ end
 		end
 		
 		
-		@space = CP::Space.new
 		
 		
 		@spatial_db = SpatialDB.new(save_directory)
@@ -249,13 +385,7 @@ end
 	# (likely Array or Hash as the outer container)
 	# (basically, something that could be trivially saved as YAML)
 	def serialize(save_directory)
-		filepath = save_directory/'mouse_data.yaml'
-		File.open(filepath, 'w') do |f|
-			
-			
-			data = @click_log.collect{|point|  ['point'] + point.to_a}
-			f.print YAML.dump(data)
-		end
+		@point_data.serialize(save_directory)
 	end
 	
 	# reverse all the stateful changes made to @window
@@ -272,58 +402,16 @@ end
 	
 	def update
 		@display.string = "mouse pos: #{@p.inspect}" # display mouse position
+		@point_data.update
 	end
 	
 	def draw
-		@click_log.each_with_index do |point, i|
-			ofPushStyle()
-			ofSetColor(@color)
-			
-			
-			# -- render the actual point data
-			x,y = point.to_a
-			z = 0
-			r = 5
-			ofDrawCircle(x,y,z, r)
-			
-			
-			# -- render the index of each point, above where the point is
-			
-			char_to_px = 18 # string width to horiz displacement 
-			
-			label = i.to_s
-			@fonts[:monospace].tap do |font|
-				width  = font.string_width(label)
-				
-				# NOTE: strings appear to draw from the bottom left corner
-				font.draw_string(
-					i.to_s,
-					
-					x - (width) / 2,
-					y - r*2 # neg y is up the screen
-				)
-			end
-			
-			
-			
-			ofPopStyle()
-		end
+		# TODO: only need to recompute clustering when new points are added
+		# TODO: only need to re-generate Entities::Point objects from raw point data when point data is changed
 		
-		# if you have enough points to try and construct a rectangle,
-		# go ahead and draw a rectangle
-		if @click_log.length >= 4
-			a = @click_log[0]
-			b = @click_log[1]
-			
-			x1, y1 = a.to_a
-			x2, y2 = b.to_a
-			
-			z = 0
-			ofDrawLine(
-				x1, y1, z, 
-				x2, y2, z
-			)
-		end
+		@point_data.draw(@window, @fonts[:monospace])
+		
+		
 		
 		@display.draw
 		@db_display.draw
@@ -358,13 +446,15 @@ end
 	end
 	
 	def mouse_pressed(x,y, button)
+		mouse_pos = CP::Vec2.new(x,y)
+		
 		case button
 			when 0 # left
-				@click_log << CP::Vec2.new(x,y)
+				@point_data.add mouse_pos
 			when 1 # middle
 				
 			when 2 # right
-				
+				@point_data.query mouse_pos, 20
 			when 3 # prev (extra mouse button)
 					
 			when 4 # next (extra mouse button)
