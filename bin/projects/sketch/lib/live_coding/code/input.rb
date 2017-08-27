@@ -210,11 +210,13 @@ class PointData
 		
 		selection = []
 		@space.shape_query(query_shape) do |colliding_shape|
-			selection << colliding_shape.object
+			selection << colliding_shape.body
 		end
 		selection.uniq!
 		
 		p selection
+		
+		return selection
 	end
 	
 	
@@ -251,6 +253,74 @@ class PointData
 		return selection
 	end
 end
+
+
+class MouseHandler
+	def initialize(button_id)
+		@button_id = button_id
+	end
+	
+	# define case equality: see if the desired button is pressed
+	def ===(button_id)
+		return @button_id == button_id
+	end
+	
+	def click(vec)
+		
+	end
+	
+	def drag(vec)
+		
+	end
+	
+	def release(vec)
+		
+	end
+end
+
+class LeftClickHandler < MouseHandler
+	def click(vec)
+		
+	end
+	
+	def drag(vec)
+		
+	end
+	
+	def release(vec)
+		
+	end
+end
+
+class RightClickHandler < MouseHandler
+	def initialize(id, point_data)
+		super(id)
+		
+		@point_data = point_data
+	end
+	
+	def click(vec)
+		@start_point = vec
+		
+		@point_bodies = @point_data.query vec, 5
+		@original_positions = @point_bodies.collect{ |b| b.p.clone }
+	end
+	
+	def drag(vec)
+		delta = vec - @start_point
+		
+		@point_bodies.zip(@original_positions).each do |body, original_pos|
+			body.p = original_pos + delta
+		end
+	end
+	
+	def release(vec)
+		drag(vec)
+		
+		@point_bodies = nil
+		@original_positions = nil
+	end
+end
 	
 	
 	include LiveCoding::InspectionMixin
@@ -260,6 +330,8 @@ end
 	def setup(window, save_directory)
 		# basic initialization
 		@window = window
+		
+		
 		
 		
 		@fonts = {
@@ -397,6 +469,13 @@ end
 		# )
 		
 		# @live_wrapper.setup # loads anonymous class, and initializes it
+		
+		
+		
+		@click_handlers = {
+			:left  =>  LeftClickHandler.new(0),
+			:right => RightClickHandler.new(2, @point_data)
+		}
 	end
 	
 	# save the state of the object (dump state)
@@ -474,7 +553,7 @@ end
 			when 1 # middle
 				
 			when 2 # right
-				@point_data.query mouse_pos, 5
+				@click_handlers[:right].click(mouse_pos)
 			when 3 # prev (extra mouse button)
 					
 			when 4 # next (extra mouse button)
@@ -484,12 +563,42 @@ end
 	end
 	
 	def mouse_released(x,y, button)
+		mouse_pos = CP::Vec2.new(x,y)
+		
+		case button
+			when 0 # left
+				
+			when 1 # middle
+				
+			when 2 # right
+				@click_handlers[:right].release(mouse_pos)
+			when 3 # prev (extra mouse button)
+					
+			when 4 # next (extra mouse button)
+				
+		end
 		
 	end
 	
 	def mouse_dragged(x,y, button)
+		mouse_pos = CP::Vec2.new(x,y)
+		
+		case button
+			when 0 # left
+				
+			when 1 # middle
+				
+			when 2 # right
+				@click_handlers[:right].drag(mouse_pos)
+			when 3 # prev (extra mouse button)
+					
+			when 4 # next (extra mouse button)
+				
+		end
 		
 	end
+
+
 	
 end; return obj }
 

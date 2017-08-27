@@ -1,8 +1,10 @@
 # (create instance of Object class, and define things on it's singleton class)
 ->(){ obj = Object.new; class << obj
 
+gem_root = Pathname.new(__FILE__).expand_path.dirname.parent.parent.parent.parent.parent.parent
 
 require 'yaml'
+require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 
 	
 	# ===================================
@@ -17,8 +19,8 @@ require 'yaml'
 	def setup(window, save_directory)
 		@window = window
 		
-		
 		root = Pathname.new(__FILE__).expand_path.dirname.parent.parent.parent
+		
 		@live_wrapper = LiveCoding::DynamicObject.new(
 			@window,
 			save_directory:   (root/'bin'/'data'),
