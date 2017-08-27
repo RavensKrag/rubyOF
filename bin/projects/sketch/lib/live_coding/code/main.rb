@@ -34,7 +34,10 @@ require 'yaml'
 			@window,
 			save_directory:   (root/'bin'/'data'),
 			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'input.rb'),
-			method_contract:  [:serialize, :cleanup, :update, :draw]
+			method_contract:  [
+				:serialize, :cleanup, :update, :draw,
+				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+			]
 		)
 		
 		@input_test.setup # loads anonymous class, and initializes it
@@ -113,7 +116,7 @@ require 'yaml'
 			# @live_wrapper,
 			@input_test,
 		].each do |dynamic_obj|
-			dynamic_obj.serialize save_directory
+			dynamic_obj.mouse_moved x,y
 		end
 	end
 	

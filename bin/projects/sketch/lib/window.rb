@@ -91,7 +91,7 @@ class Window < RubyOF::Window
 		
 		# NOTE: You can still read and print instance variables
 		#       from the Window in the main thread from the REPL thread
-		REPL.connect(binding)
+		# REPL.connect(binding)
 		
 		
 		

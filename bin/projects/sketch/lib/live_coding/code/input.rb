@@ -12,7 +12,12 @@ end
 class Point < Entity
 	attr_reader :p
 	attr_accessor :z
-	attr_accessor :r
+	
+	class << self
+		def r
+			4
+		end
+	end
 	
 	def initialize(window)
 		@window = window
@@ -23,7 +28,6 @@ class Point < Entity
 			end
 		@p = CP::Vec2.new(0,0)
 		@z = 0
-		@r = 5
 	end
 	
 	def draw
@@ -31,10 +35,70 @@ class Point < Entity
 			w.ofPushStyle()
 			w.ofSetColor(@color)
 			
-			w.ofDrawCircle(@p.x, @p.y, @z, @r)
+			w.ofDrawCircle(@p.x, @p.y, @z, self.class.r)
 			
 			w.ofPopStyle()
 		end
+	end
+end
+
+class SpatialDB
+	def initialize(save_directory)
+		@testing = false
+		
+		@db =
+			if @testing
+				# connect to test DB in memory
+				Sequel.sqlite
+			else
+				# connect to real DB on the disk
+				# path = save_directory/'spatial_data.db'
+				
+				path = save_directory/'test-2.3.sqlite' # data for tutorial
+				
+				puts path
+				
+				Sequel.connect("sqlite://#{path}")
+			end
+		
+		# load spatialite
+		@db.run "SELECT load_extension('mod_spatialite');"
+		
+		
+		
+		
+		# @db.fetch "SELECT * FROM towns LIMIT 5;"
+		
+		# @db.fetch "SELECT name, peoples, AsText(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		# # REPL.connect(binding)
+		
+		
+		
+		# "the SpatiaLite X() function returns the X coordinate for a POINT.
+		# the Y() function returns the Y coordinate for a POINT.""
+		# ^ source: https://www.gaia-gis.it/gaia-sins/spatialite-tutorial-2.3.1.html
+		
+		x = @db.fetch "SELECT name, peoples, X(Geometry), Y(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		puts x.all # need to use #all to execute the DataSet and get a Hash
+		
+		x.all[0].tap do |point|
+			x = point["X(Geometry)".to_sym]
+			y = point["Y(Geometry)".to_sym]
+			
+			p [x,y]
+			
+			puts CP::Vec2.new(x,y)
+		end
+		
+		
+		# "the BEGIN and COMMIT SQL statements defines a transaction; a single transaction is intended to define an atomic operation.""
+		
+	end
+	
+	
+	def test_query
+		x = @db.fetch "SELECT name, peoples, X(Geometry), Y(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		x.all # need to use #all to execute the DataSet and get a Hash
 	end
 end
 	
@@ -48,8 +112,8 @@ end
 		@window = window
 		
 		
-		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+		@fonts = {
+			:standard  => RubyOF::TrueTypeFont.new.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 20
@@ -59,10 +123,19 @@ end
 				# TODO: how do you discover what the alphabets are?
 				# stored in RubyOF::TtfSettings::UnicodeRanges
 				# maybe provide discoverable access through #alphabets on the DSL object?
+			end,
+			
+			:monospace => RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+				x.size = 18
+				x.add_alphabet :Latin
 			end
+		}
 		
 		
-		@display   = TextEntity.new(@window, @font)
+		
+		@display   = TextEntity.new(@window, @fonts[:standard])
 		@display.p = CP::Vec2.new 200, 273
 		
 		@p = [nil, nil]
@@ -96,65 +169,67 @@ end
 		@space = CP::Space.new
 		
 		
-		
-		@testing = false
-		
-		@db =
-			if @testing
-				# connect to test DB in memory
-				Sequel.sqlite
-			else
-				# connect to real DB on the disk
-				# path = save_directory/'spatial_data.db'
-				
-				path = save_directory/'test-2.3.sqlite' # data for tutorial
-				
-				puts path
-				
-				Sequel.connect("sqlite://#{path}")
-			end
-		
-		# load spatialite
-		@db.run "SELECT load_extension('mod_spatialite');"
+		@spatial_db = SpatialDB.new(save_directory)
 		
 		
 		
 		
-		@db.fetch "SELECT * FROM towns LIMIT 5;"
+		# # == aoeuaoeu ==
+		# points = 
+		# [
+		# 	CP::Vec2.new( 837.0, 439.0),
+		# 	CP::Vec2.new(1131.0, 322.0),
+		# 	CP::Vec2.new(1019.0, 659.0),
+		# 	CP::Vec2.new(1337.0, 476.0),
+		# 	CP::Vec2.new(1286.0, 614.0),
+		# 	CP::Vec2.new(1436.0, 628.0),
+		# 	CP::Vec2.new(1316.0, 668.0),
+		# 	CP::Vec2.new(1701.0, 755.0),
+		# 	CP::Vec2.new(1031.0, 904.0),
+		# 	CP::Vec2.new(1043.0, 904.0),
+		# 	CP::Vec2.new( 708.0, 183.0),
+		# 	CP::Vec2.new(1361.0, 844.0)
+		# ]
 		
-		@db.fetch "SELECT name, peoples, AsText(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
+		# # ==========
+		
+		query_results = @spatial_db.test_query
+		
+		@db_display   = TextEntity.new(@window, @fonts[:monospace])
+		@db_display.p = CP::Vec2.new 780, 40
+		
+		
+		
+		
+		keys = query_results.first.keys
+		
+		header    = keys.to_a.collect{ |column_name|
+		            	column_name.to_s
+		            }.join("    ")
+		main_rows = query_results
+		            .collect{ |hash|
+		            	keys.collect{ |key| hash[key] }
+		            }.collect{ |row|
+		            	row.join("   ")
+		            }.join("\n")
+		
+		# TODO: Consider just pulling out the values from each row, instead of mapping the keys array. Can probably safely assume that each row in the results set has the exactly same keys, just with different values.
+		
+		@db_display.string = 
+			[
+				header,
+				main_rows
+			].flatten(1).join("\n")
+			
+		
+		
+		
 		# REPL.connect(binding)
 		
+		# p @click_log[-1].methods
 		
-		
-		# "the SpatiaLite X() function returns the X coordinate for a POINT.
-		# the Y() function returns the Y coordinate for a POINT.""
-		# ^ source: https://www.gaia-gis.it/gaia-sins/spatialite-tutorial-2.3.1.html
-		
-		x = @db.fetch "SELECT name, peoples, X(Geometry), Y(Geometry) from Towns where peoples > 350000 order by peoples DESC;"
-		puts x.all # need to use #all to execute the DataSet and get a Hash
-		
-		x.all[0].tap do |point|
-			x = point["X(Geometry)".to_sym]
-			y = point["Y(Geometry)".to_sym]
-			
-			p [x,y]
-			
-			puts CP::Vec2.new(x,y)
-		end
-		
-		
-		# "the BEGIN and COMMIT SQL statements defines a transaction; a single transaction is intended to define an atomic operation.""
-		
-		
-		
-		
-		p @click_log[-1].methods
-		
-		puts "click radius for points: "
-		p @click_log[-2].dist @click_log[-1]
-		
-		
+		# puts "click radius for points: "
+		# p @click_log[-2].dist @click_log[-1]
 		
 		
 		
@@ -200,15 +275,35 @@ end
 	end
 	
 	def draw
-		@click_log.each do |point|
+		@click_log.each_with_index do |point, i|
 			ofPushStyle()
 			ofSetColor(@color)
 			
 			
+			# -- render the actual point data
 			x,y = point.to_a
 			z = 0
 			r = 5
 			ofDrawCircle(x,y,z, r)
+			
+			
+			# -- render the index of each point, above where the point is
+			
+			char_to_px = 18 # string width to horiz displacement 
+			
+			label = i.to_s
+			@fonts[:monospace].tap do |font|
+				width  = font.string_width(label)
+				
+				# NOTE: strings appear to draw from the bottom left corner
+				font.draw_string(
+					i.to_s,
+					
+					x - (width) / 2,
+					y - r*2 # neg y is up the screen
+				)
+			end
+			
 			
 			
 			ofPopStyle()
@@ -231,6 +326,7 @@ end
 		end
 		
 		@display.draw
+		@db_display.draw
 	end
 	
 	
