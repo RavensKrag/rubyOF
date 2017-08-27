@@ -293,19 +293,17 @@ class LeftClickHandler < MouseHandler
 end
 
 class RightClickHandler < MouseHandler
-	def initialize(id, point_data)
-		super(id)
-		
-		@point_data = point_data
-	end
-	
-	def click(vec)
+	def click(vec, point_data)
 		@start_point = vec
 		
-		@point_bodies = @point_data.query vec, 5
+		@point_bodies = point_data.query vec, 5
 		@original_positions = @point_bodies.collect{ |b| b.p.clone }
 	end
 	
+	# Don't just add deltas every frame.
+	# That will accumulate error over time (floating point vectors).
+	# Instead, calculate a delta from the original mouse click position,
+	# and apply to each and every body in the selection every frame.
 	def drag(vec)
 		delta = vec - @start_point
 		
@@ -330,6 +328,13 @@ end
 	def setup(window, save_directory)
 		# basic initialization
 		@window = window
+		
+		
+		
+		@click_handlers = {
+			:left  =>  LeftClickHandler.new(0),
+			:right => RightClickHandler.new(2)
+		}
 		
 		
 		
@@ -471,11 +476,6 @@ end
 		# @live_wrapper.setup # loads anonymous class, and initializes it
 		
 		
-		
-		@click_handlers = {
-			:left  =>  LeftClickHandler.new(0),
-			:right => RightClickHandler.new(2, @point_data)
-		}
 	end
 	
 	# save the state of the object (dump state)
@@ -553,7 +553,7 @@ end
 			when 1 # middle
 				
 			when 2 # right
-				@click_handlers[:right].click(mouse_pos)
+				@click_handlers[:right].click(mouse_pos, @point_data)
 			when 3 # prev (extra mouse button)
 					
 			when 4 # next (extra mouse button)
