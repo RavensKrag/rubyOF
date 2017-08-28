@@ -14,8 +14,8 @@
 		
 		puts "setting up callback object #{self.class.inspect}"
 		
-		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+		@fonts = {
+			'Takao P Gothic' => RubyOF::TrueTypeFont.new.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 20
@@ -25,29 +25,30 @@
 				# TODO: how do you discover what the alphabets are?
 				# stored in RubyOF::TtfSettings::UnicodeRanges
 				# maybe provide discoverable access through #alphabets on the DSL object?
-			end
+			end,
 			
-		@font2 = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+			'DejaVu Sans Mono' => RubyOF::TrueTypeFont.new.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 				x.size = 20
 				x.add_alphabet :Latin
 			end
+		}
 		
+		# TODO: store fonts in a centralized asset manager, but use WeakRef such that the items in the asset manager will only be present as long as there is at least one other reference elsewhere (Ruby-style memory managament. Maybe could be swapped out for C++ level memory management in a transparent way?)
 		
-		@display   = TextEntity.new(@window, @font2)
+		@display   = TextEntity.new(@window, @fonts['DejaVu Sans Mono'])
 		@display.p = CP::Vec2.new 200, 400
 		
-		@out   = TextEntity.new(@window, @font2)
+		@out   = TextEntity.new(@window, @fonts['DejaVu Sans Mono'])
 		@out.p = CP::Vec2.new 200, 420
 		
-		@text      = TextEntity.new(@window, @font)
+		@text      = TextEntity.new(@window, @fonts['Takao P Gothic'])
 		@text.p    = CP::Vec2.new 500, 500
 		
 		
 		# display any data recieved through the #recieve_data callabrck
-		@recive_display  = TextEntity.new(@window, @font2)
+		@recive_display  = TextEntity.new(@window, @fonts['DejaVu Sans Mono'])
 		@recive_display.p = CP::Vec2.new 200, 400
 		
 		

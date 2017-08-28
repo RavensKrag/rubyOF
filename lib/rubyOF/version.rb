@@ -1,3 +1,3 @@
 module RubyOF
-	VERSION = "0.01.1"
+	VERSION = "0.02.2"
 end

@@ -1,7 +1,11 @@
 # (create instance of Object class, and define things on it's singleton class)
 ->(){ obj = Object.new; class << obj
 
-require Pathname.new(__FILE__).expand_path.dirname/'entities.rb'
+this_dir = Pathname.new(__FILE__).expand_path.dirname
+
+# use 'load' instead of 'require' so that the files are reloaded every time
+load this_dir/'entities.rb'
+load this_dir/'input_system'/'header.rb'
 
 class SpatialDB
 	def initialize(save_directory)
@@ -63,7 +67,7 @@ class SpatialDB
 	end
 end
 
-class PointData
+class Space
 	attr_accessor :color
 	
 	def initialize(z, render_radius)
@@ -85,9 +89,33 @@ class PointData
 		@color = RubyOF::Color.new.tap do |c|
 			c.r, c.g, c.b, c.a = [0, 141, 240, 255]
 		end
+		
+		
+		# store body / shape objects, so you can iterate over them
+		@shapes = Array.new
+		@bodies = Array.new
 	end
 	
-	def serialize(save_directory)
+	def load_data(save_directory)
+		# load data from disk
+		filepath = save_directory/'mouse_data.yaml'
+		if filepath.exist?
+			File.open(filepath, 'r') do |f| 
+				data = YAML.load(f)
+				data.each do |type, *args|
+					case type
+						when 'point'
+							vec = CP::Vec2.new(*args)
+							self.add_point vec
+						else
+							raise "ERROR: Unexpected type in serialization"
+					end
+				end
+			end
+		end
+	end
+	
+	def dump_data(save_directory)
 		filepath = save_directory/'mouse_data.yaml'
 		File.open(filepath, 'w') do |f|
 			# TODO: data from mouse manipulations needs to make it back to the disk eventually. Currently only serializing the backend data over and over again.
@@ -95,6 +123,18 @@ class PointData
 			data = self.to_a.collect{|point|  ['point'] + point.to_a}
 			f.print YAML.dump(data)
 		end
+	end
+	
+	def to_a
+		# p @bodies
+		# p @bodies.collect{ |b| b.p }
+		
+			# The @bodies are unchanging, but the position vectors are constantly being reallocated. It seems like every time you ask for the position of a body, you get a new vector. This is good, because it means the vector you get straight off a body won't cause mutation by accident, but this can be rather inefficient. Be on the look out for performance problems.
+		
+		# NOTE: DO NOT use clone here. Want to pass the same exact data.
+		# (currently passing the same information, but new objects every time)
+		# (see big comment above for details)
+		@bodies.collect{ |b| b.p }
 	end
 	
 	def update
@@ -186,12 +226,24 @@ class PointData
 		
 		
 		# store the Body / Shape objects, to iterate over them later
-		@shapes ||= Array.new
 		@shapes << shape
-		
-		@bodies ||= Array.new
 		@bodies << body
 	end
+	
+	# remove any kind of entity
+	def remove_entity(entity)
+		body  = entity.body
+		shape = entity.shape
+		
+		# remove from the Chipmunk space
+		@space.remove_body  body
+		@space.remove_shape shape
+		
+		# remove from iteration collections
+		@bodies.delete body
+		@shapes.delete shape
+	end
+	
 	
 	
 	# Query the space, finding all shapes at the point specified.
@@ -237,18 +289,6 @@ class PointData
 		end
 		
 		
-	end
-	
-	def to_a
-		# p @bodies
-		# p @bodies.collect{ |b| b.p }
-		
-			# The @bodies are unchanging, but the position vectors are constantly being reallocated. It seems like every time you ask for the position of a body, you get a new vector. This is good, because it means the vector you get straight off a body won't cause mutation by accident, but this can be rather inefficient. Be on the look out for performance problems.
-		
-		# NOTE: DO NOT use clone here. Want to pass the same exact data.
-		# (currently passing the same information, but new objects every time)
-		# (see big comment above for details)
-		@bodies.collect{ |b| b.p }
 	end
 end
 
@@ -377,25 +417,10 @@ end
 		
 		
 		
-		@point_data = PointData.new(z=0, r=4)
+		@point_data = Space.new(z=0, r=4)
+		@point_data.load_data(save_directory)
 		
 		
-		# load data from disk
-		filepath = save_directory/'mouse_data.yaml'
-		if filepath.exist?
-			File.open(filepath, 'r') do |f| 
-				data = YAML.load(f)
-				data.each do |type, *args|
-					case type
-						when 'point'
-							vec = CP::Vec2.new(*args)
-							@point_data.add_point vec
-						else
-							raise "ERROR: Unexpected type in serialization"
-					end
-				end
-			end
-		end
 		
 		
 		
@@ -482,7 +507,7 @@ end
 	# (likely Array or Hash as the outer container)
 	# (basically, something that could be trivially saved as YAML)
 	def serialize(save_directory)
-		@point_data.serialize(save_directory)
+		@point_data.dump_data(save_directory)
 	end
 	
 	# reverse all the stateful changes made to @window
@@ -535,7 +560,10 @@ end
 	def recieve_data(input_data)
 		
 	end
-	
+
+
+
+
 	
 	
 	def mouse_moved(x,y)
