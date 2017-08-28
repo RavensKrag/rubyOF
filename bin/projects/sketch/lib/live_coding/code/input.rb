@@ -156,7 +156,7 @@ class PointData
 	end
 	
 	
-	def add(vec)
+	def add_point(vec)
 		@points << vec
 		
 		
@@ -193,37 +193,50 @@ class PointData
 		@bodies << body
 	end
 	
-	# get a list of all points near the target (within the given radius)
-	def query(target, radius)
-		# --- implementation using point query
-		# layers = CP::ALL_LAYERS
-		# group  = CP::NO_GROUP
-		# 
-		# 
-		# selection = []
-		# @space.point_query(target, layers, group) do |shape|
-		# 	selection << shape.object
-		# end
-		# selection.uniq!
-		# 
-		# p selection
-		
-		
-		# --- implementation using shape query
-		query_body   = CP::Body.new(1,1)
-		query_shape  = CP::Shape::Circle.new(query_body, radius)
-		
-		query_body.p = target
-		
-		selection = []
-		@space.shape_query(query_shape) do |colliding_shape|
-			selection << colliding_shape.body
+	
+	# Query the space, finding all shapes at the point specified.
+	# (Optionally, search within a given radius, not just at one exact point.)
+	# 
+	# Returns a list of the objects attached to the discovered shapes.
+	# Each object will only appear once within the list.
+	# Query does not make any guarantees about the order in which objects are returned.
+	def point_query(target, radius=nil)
+		if radius.nil?
+			# --- implementation using point query
+			# layers = CP::ALL_LAYERS
+			# group  = CP::NO_GROUP
+			# 
+			# 
+			# selection = []
+			# @space.point_query(target, layers, group) do |shape|
+			# 	selection << shape.object
+			# end
+			# selection.uniq!
+			# 
+			# p selection
+		else
+			raise ArgumentError, "Radius must be a Numeric, but instead recieved '#{radius.inspect}'" unless radius.is_a? Numeric
+			# typecheck radius, make sure it's a numerical type
+			
+			
+			# --- implementation using shape query
+			query_body   = CP::Body.new(1,1)
+			query_shape  = CP::Shape::Circle.new(query_body, radius)
+			
+			query_body.p = target
+			
+			selection = []
+			@space.shape_query(query_shape) do |colliding_shape|
+				selection << colliding_shape.body
+			end
+			selection.uniq!
+			
+			p selection
+			
+			return selection
 		end
-		selection.uniq!
 		
-		p selection
 		
-		return selection
 	end
 	
 	def to_a
@@ -236,41 +249,6 @@ class PointData
 		# (currently passing the same information, but new objects every time)
 		# (see big comment above for details)
 		@bodies.collect{ |b| b.p }
-	end
-	
-	private
-	
-	# Query the space, finding all shapes at the point specified.
-	# Returns a list of the objects attached to the discovered shapes.
-	# Each object will only appear once within the list.
-	# Query does not make any guarantees about the order in which objects are returned.
-	# TODO: adjust API so accepting block is not necessary (method chaining is more flexible)?
-	def point_query(point, layers=CP::ALL_LAYERS, group=CP::NO_GROUP, limit_to:nil, exclude:nil, &block)
-		# block params: |object_in_space|
-		
-		selection = []
-		@space.point_query(point, layers, group) do |shape|
-			selection << shape.obj
-		end
-		# NOTE: will pull basic Entity data, as well as Groups, because both live in the Space
-		
-		selection.uniq!
-		
-		# NOTE: potentially want to filer Groups by 'abstraction layer'
-			# raw entities have abstraction layer = 0
-			# a group with a raw entity inside it is layer = 1
-			# in general: groups have layer = highest member layer value + 1
-		# would need to somehow visualize abstraction layer,
-		# as well as the current depth of selection
-		# if that is going to be a thing.
-		
-		selection.select!{ |x| limit_to.include? x  }  if limit_to
-		selection.reject!{ |x| exclude.include?  x  }  if exclude
-		
-		
-		selection.each &block if block
-		
-		return selection
 	end
 end
 
@@ -316,7 +294,7 @@ class RightClickHandler < MouseHandler
 	def click(vec, point_data)
 		@start_point = vec
 		
-		@point_bodies = point_data.query vec, 5
+		@point_bodies = point_data.point_query vec, 5
 		@original_positions = @point_bodies.collect{ |b| b.p.clone }
 	end
 	
@@ -411,7 +389,7 @@ end
 					case type
 						when 'point'
 							vec = CP::Vec2.new(*args)
-							@point_data.add vec
+							@point_data.add_point vec
 						else
 							raise "ERROR: Unexpected type in serialization"
 					end
@@ -569,7 +547,7 @@ end
 		
 		case button
 			when 0 # left
-				@point_data.add mouse_pos
+				@point_data.add_point mouse_pos
 			when 1 # middle
 				
 			when 2 # right
