@@ -64,7 +64,17 @@ class SpatialDB
 end
 
 class PointData
-	def initialize
+	attr_accessor :color
+	
+	def initialize(z, render_radius)
+		@z = z
+		# z index for rendering the vert visualization
+		
+		@render_radius = render_radius
+		# render radius of the circle that represents the point
+		
+		# ---
+		
 		@space = CP::Space.new # for spatially organizing data
 		@dt = 1/60.0
 		
@@ -80,9 +90,9 @@ class PointData
 	def serialize(save_directory)
 		filepath = save_directory/'mouse_data.yaml'
 		File.open(filepath, 'w') do |f|
+			# TODO: data from mouse manipulations needs to make it back to the disk eventually. Currently only serializing the backend data over and over again.
 			
-			
-			data = @points.collect{|point|  ['point'] + point.to_a}
+			data = self.to_a.collect{|point|  ['point'] + point.to_a}
 			f.print YAML.dump(data)
 		end
 	end
@@ -92,22 +102,19 @@ class PointData
 	end
 	
 	def draw(window, font)
-		
-		
-		
 		window.ofPushStyle()
 		window.ofSetColor(@color)
 		
-		z = 0
-		r = 4   # render radius of the circle that represents the point
+		r = @render_radius
 		
 		# @points.each_with_index do |vec, i|
 		
-		@bodies
-		.collect{ |b| b.p }
+		points  = self.to_a
+		
+		points
 		.each_with_index do |vec, i|
 			# -- render the actual point data
-			window.ofDrawCircle(vec.x, vec.y, z, r)
+			window.ofDrawCircle(vec.x, vec.y, @z, r)
 			
 			
 			
@@ -133,14 +140,14 @@ class PointData
 		
 		# if you have enough points to try and construct a rectangle,
 		# go ahead and draw a rectangle
-		if @points.length >= 4
-			a = @points[0]
-			b = @points[1]
+		if points.length >= 4
+			a = points[0]
+			b = points[1]
 			
 			x1, y1 = a.to_a
 			x2, y2 = b.to_a
 			
-			z = 0
+			z = @z
 			window.ofDrawLine(
 				x1, y1, z, 
 				x2, y2, z
@@ -219,6 +226,19 @@ class PointData
 		return selection
 	end
 	
+	def to_a
+		# p @bodies
+		# p @bodies.collect{ |b| b.p }
+		
+			# The @bodies are unchanging, but the position vectors are constantly being reallocated. It seems like every time you ask for the position of a body, you get a new vector. This is good, because it means the vector you get straight off a body won't cause mutation by accident, but this can be rather inefficient. Be on the look out for performance problems.
+		
+		# NOTE: DO NOT use clone here. Want to pass the same exact data.
+		# (currently passing the same information, but new objects every time)
+		# (see big comment above for details)
+		@bodies.collect{ |b| b.p }
+	end
+	
+	private
 	
 	# Query the space, finding all shapes at the point specified.
 	# Returns a list of the objects attached to the discovered shapes.
@@ -379,7 +399,7 @@ end
 		
 		
 		
-		@point_data = PointData.new
+		@point_data = PointData.new(z=0, r=4)
 		
 		
 		# load data from disk
@@ -505,9 +525,7 @@ end
 	end
 	
 	def draw
-		# TODO: only need to recompute clustering when new points are added
-		# TODO: only need to re-generate Entities::Point objects from raw point data when point data is changed
-		
+		# TODO: only need to re-generate Entities::Point objects from raw point data when point data is changed		
 		@point_data.draw(@window, @fonts[:monospace])
 		
 		
@@ -524,20 +542,22 @@ end
 	# TODO: at that point, you need to be able to write code for those nodes in C++ as well, so the anonymous classes created in this file, etc, must be subclasses of some kind of C++ type (maybe even some sort of weak ref / smart pointer that allows for C++ memory allocation? (pooled memory?))
 	
 	
-	# NOTE: Can't use the name 'send' because the #send method is what allows you to call arbitrary methods using Ruby's message passing interface.
-	# 
-	# # send data to another live coding module in memory
-	# # (for planned visual coding graph)
-	# # NOTE: Try not to leak state (send immutable data, functional style)
-	# def send
-	# 	return nil
-	# end
 	
-	# # recive data from another live-coding module in memory
-	# # (for planned visual coding graph)
-	# def recieve(data)
+	# NOTE: Can't use the name 'send' because the #send method is what allows you to call arbitrary methods using Ruby's message passing interface.
+	
+	# send data to another live coding module in memory
+	# (for planned visual coding graph)
+	# NOTE: Try not to leak state (send immutable data, functional style)
+	def send_data
+		return @point_data.to_a
+	end
+	
+	# recive data from another live-coding module in memory
+	# (for planned visual coding graph)
+	def recieve_data(input_data)
 		
-	# end
+	end
+	
 	
 	
 	def mouse_moved(x,y)

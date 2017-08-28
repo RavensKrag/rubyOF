@@ -25,7 +25,10 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 			@window,
 			save_directory:   (root/'bin'/'data'),
 			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'test.rb'),
-			method_contract:  [:serialize, :cleanup, :update, :draw]
+			method_contract:  [
+				:serialize, :cleanup, :update, :draw,
+				:send_data, :recieve_data
+			]
 		)
 		
 		@live_wrapper.setup # loads anonymous class, and initializes it
@@ -38,7 +41,8 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 			dynamic_code_file:(root/'lib'/'live_coding'/'code'/'input.rb'),
 			method_contract:  [
 				:serialize, :cleanup, :update, :draw,
-				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged,
+				:send_data, :recieve_data
 			]
 		)
 		
@@ -78,11 +82,14 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 		].each do |dynamic_obj|
 			dynamic_obj.update
 		end
+		
+		data = @input_test.send_data
+		@live_wrapper.recieve_data data
 	end
 	
 	def draw
 		[
-			# @live_wrapper,
+			@live_wrapper,
 			@input_test,
 		].each do |dynamic_obj|
 			dynamic_obj.draw

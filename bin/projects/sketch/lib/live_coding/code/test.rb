@@ -46,8 +46,26 @@
 		@text.p    = CP::Vec2.new 500, 500
 		
 		
+		# display any data recieved through the #recieve_data callabrck
+		@recive_display  = TextEntity.new(@window, @font2)
+		@recive_display.p = CP::Vec2.new 200, 400
+		
+		
 		
 		@time = Timer.new
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		@points = {
+			:start => CP::Vec2.new( 131, 455),
+			:end   => CP::Vec2.new(1204, 455)
+		}
 	end
 	
 	# save the state of the object (dump state)
@@ -118,11 +136,8 @@
 		
 		
 		
-		points = {
-			:start => CP::Vec2.new( 131, 455),
-			:end   => CP::Vec2.new(1204, 455)
-		}
-		@text.p = points[:start].lerp points[:end], t
+		
+		@text.p = @points[:start].lerp @points[:end], t
 		# p @text.p.x
 		
 		
@@ -139,7 +154,7 @@
 		@display.draw
 		@out.draw
 		@text.draw
-		
+		@recive_display.draw
 		
 		# # store clicks from mouse as point data, and process that
 		# # @live_code[:draw][0] = ->(){@click_log.each{|o| ofDrawCircle(o.x, o.y, 0, 5) }}
@@ -153,18 +168,37 @@
 	# TODO: at that point, you need to be able to write code for those nodes in C++ as well, so the anonymous classes created in this file, etc, must be subclasses of some kind of C++ type (maybe even some sort of weak ref / smart pointer that allows for C++ memory allocation? (pooled memory?))
 	
 	
-	
-	# # send data to another live coding module in memory
-	# # (for planned visual coding graph)
-	# # NOTE: Try not to leak state (send immutable data, functional style)
-	# def send
-	# 	return nil
-	# end
-	
-	# # recive data from another live-coding module in memory
-	# # (for planned visual coding graph)
-	# def recieve(data)
+	# send data to another live coding module in memory
+	# (for planned visual coding graph)
+	# NOTE: Try not to leak state (send immutable data, functional style)
+	def send_data
 		
-	# end
+	end
+	
+	# recive data from another live-coding module in memory
+	# (for planned visual coding graph)
+	def recieve_data(points)
+		# only run the method if all arguments are satisfied
+		# otherwise, bail out silently
+		return if points.nil?
+		
+		# p points
+		
+		
+		# use one point as the basis for rendering some text
+		@recive_display.p = points[13].clone
+		@recive_display.p.y -= 20
+		
+		@recive_display.string = "hello world"
+		
+		
+		# ---
+		
+		# use two points as the basis for the position tweening in this file
+		@points[:start] = points[0].clone
+		@points[:end]   = points[1].clone
+	end
+	
+	
 end; return obj }
 
