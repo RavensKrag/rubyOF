@@ -4,8 +4,8 @@
 this_dir = Pathname.new(__FILE__).expand_path.dirname
 
 # use 'load' instead of 'require' so that the files are reloaded every time
-load this_dir/'entities.rb'
-load this_dir/'input_system'/'header.rb'
+# load this_dir/'entities.rb'
+# load this_dir/'input_system'/'header.rb'
 
 class SpatialDB
 	def initialize(save_directory)
