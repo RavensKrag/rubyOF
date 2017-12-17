@@ -96,6 +96,14 @@ bin/projects/*/ext/*/constants/data_path.h
 
 
 
+# Ignore some temporary data files from the youtube subscriptions project
+bin/projects/youtube/lib/icons/*
+bin/projects/youtube/lib/icons_old/*
+bin/projects/youtube/lib/raw/YouTube - subscriptions_files
+
+
+
+
 === Don't track Gemfile.lock
 Gemfile.lock
 bin/projects/*/Gemfile.lock
