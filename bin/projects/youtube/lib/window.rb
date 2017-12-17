@@ -30,7 +30,7 @@ class Window < RubyOF::Window
 	end
 	
 	def update
-		super()
+		# super()
 		
 		
 		# NOTE: The fiber must be created in #update to be used in #update
@@ -53,7 +53,7 @@ class Window < RubyOF::Window
 	end
 	
 	def draw
-		super()
+		# super()
 		
 		ofPushMatrix()
 		ofPushStyle()
@@ -178,70 +178,70 @@ class FiberTask
 		Fiber.yield # <----------------
 		
 		
-		# -- parse HTML file and get youtube subscriptions
+		# note on variable names
+		# ---
+		# p1   pathway      Performs a sequence of operations / transformations
+		# c1   checkpoint   A good place to pause. Saves data on disk for later.
+		
 		in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
 		out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
-		# subscriptions = foo(in_path, out_path) # create debug file to test loading
-		subscriptions = foo(in_path) # no debug file
+		c1_path  = Pathname.new('./data.yml').expand_path
+		c2_path  = Pathname.new('./local_data.yml').expand_path
 		
-		# -- save youtube subscription data to YAML file
-		yaml_path = Pathname.new('./data.yml').expand_path
-		dump_yaml(subscriptions => yaml_path)
+		inputs  = [in_path]
+		outputs = [out_path, c1_path, c2_path]
 		
+		input_time = inputs.collect{ |path| path.mtime }.max # most recent time
 		
-		# -- use subscription data to find icons for Youtube channels,
-		#    and download all of the icons into a folder on the disk
+		flags = 
+			outputs.collect do |path|
+				# redo the calculation if any file is out of date
+				
+				if path.exist?
+					if path.mtime < input_time
+						# input file is newer
+						true
+					else
+						false
+					end
+				else
+					true # file does not exist - must generate
+				end
+			end
+		p flags
 		
-		# data = subscriptions.first
+		flag = flags.any? # if any one flag is set, then do the computation
 		
-		icon_filepaths = 
-		  subscriptions.collect do |data|
-		    channel_url = data['link']
-		    icon_url    = data['json-icon-url']
-		    name        = data['channel-name']
-		    
-		    # -- download the icons for all YT channels in subscription list
-		    puts "downloading icon for #{name}  ..."
-		    
-		    icon_dir  = Pathname.new("./icons/").expand_path
-		    FileUtils.mkdir_p icon_dir
-		    
-		    
-		    # Channel names may include characters that are illegal in paths,
-		    # but the channel URLs should be OK for filesystem paths too
-		    basename = (File.basename(channel_url) + File.extname(icon_url))
-		    output_path = icon_dir + basename
-		    download(icon_url => output_path)
-		    
-		    Fiber.yield # <----------------
-		    
-		    # RETURN
-		    output_path
-		  end
-		# What do I need to save? The output directory name? The paths to all files?
-		# They're all going to be under the same directory.
-		# How will the system remember that the file names are channel identifiers?
-		# Is that a job for the system, or for the programmer?
-		
-		
-		
-		
-		# -- reformat: [channel_name, link, icon_filepath]
-		#    (going forward, icons will be accessed via filepaths, not URLs)
-		local_subscriptions = 
-		  subscriptions.zip(icon_filepaths).collect do |data, icon_filepath|
-		    {
-		      'channel-name'  => data['channel-name'],
-		      'link'          => data['link'],
-		      'icon-filepath' => icon_filepath,
-		      'entry-count'   => data['entry-count']
-		    }
-		  end
-		  
-		# save data to file
-		yaml_path = Pathname.new('./local_data.yml').expand_path
-		dump_yaml(local_subscriptions => yaml_path)
-		
+		if flag
+			# -- parse HTML file and get youtube subscriptions
+			# subscriptions = p1(in_path, out_path) # create debug file to test loading
+			subscriptions = p1(in_path) # no debug file
+			
+			
+			# save data to file
+			dump_yaml(subscriptions => c1_path)
+			
+			
+			Fiber.yield # <----------------
+			
+			
+			# -- use subscription data to find icons for Youtube channels,
+			#    and download all of the icons into a folder on the disk,
+			icon_filepaths = p2(subscriptions) # yields after every download
+			
+			
+			# -- Associate paths to icons on disk with Youtube channels
+			#    reformat: [channel_name, link, icon_filepath]
+			#    (going forward, icons will be accessed via filepaths, not URLs)
+			local_subscriptions = p3(subscriptions, icon_filepaths)
+			
+			
+			Fiber.yield # <----------------
+			
+			
+			# save data to file
+			dump_yaml(local_subscriptions => c2_path)
+		end
 		
 		# TODO: separate raw data files from intermediates
 		#   Makes it a lot easier to clean up later
@@ -293,6 +293,7 @@ class FiberTask
 		rescue FiberError => e
 			# Error is thrown when Fiber is dead (no more work)
 			# use that as a signal of when to stop
+			puts "No more work to be done in this Fiber."
 			p e
 			@fiber = :finished # if you reset to 'nil', the process loops
 		end
@@ -314,7 +315,7 @@ class FiberTask
 	
 	# input_path          path to the input HTML file
 	# test_output_path    path that Nokogiri can write to, to ensure parsing works
-	def foo(input_path, test_output_path=nil)
+	def p1(input_path, test_output_path=nil)
 	  # + open youtube in firefox
 	  # + open sidebar
 	  # + scroll down to the bottom of all the subscriptions (to load all of them)
@@ -325,121 +326,121 @@ class FiberTask
 	  # => saved that data to file, and load it up here in Nokogiri
 	  doc = open_html_file(input_path)
 	  
-	  
-	  
-	  # clean input
-	  # + strip whitespace from 'span.guide-entry-count' (the numbers in sidebar)
-	  
-	  
 	  # If a debug output location has been specified,
-	  # rewrite this this data back out to file,
-	  # so I can see how Nokogiri cleans the data
+	  # rewrite this data back out to file, to see how
+	  # Nokogiri cleans the data
 	  unless test_output_path.nil?
 	  File.open(test_output_path, 'w') do |f|
 	     f.print doc.to_xhtml(indent:3, indent_text:' ')
 	  end
 	  end
 	  
-	  
-	  
-	  
-	  # --- start poking around in the document, trying to get the data we want
-	  
-	  
 	  # Basic document structure
 	  # ---
 	  # 'ytd-guide-section-renderer'
 	    # 'ytd-guide-entry-renderer'
 	      # 'a'
-	        #  ["text", "yt-icon", "yt-img-shadow", "span", "text", "span", "text"] 
+	        # ["text", "yt-icon", "yt-img-shadow", "span", "text", "span", "text"] 
 	  
 	  
-	  
-	  # -- this is all the subscriptions, enumerated
-	  # main  = doc.css('ytd-guide-section-renderer')
-	  # items = doc.css('ytd-guide-section-renderer > div#items')
 	  subscription_links = doc.css('ytd-guide-section-renderer > div#items a')
 	  
-	  # # find out the number of subscriptions
-	  # subscription_links.size
-	  
-	  # subscription_links[0].children.collect{ |x| x.name }
-	  #  # => ["text", "yt-icon", "yt-img-shadow", "span", "text", "span", "text"] 
-	  
-	  
-	  
-	  
-	  # -- get a particular subscription by index
-	  # i = 0
-	  # sub_data = subscription_links[i].children.reject{ |x| x.name == 'text' }
-	  
-	  # data = parse_youtube_subscription(sub_data)
-	  
-	  
 	  # -- parse all subscriptions
-	  # subscription_links.each_with_index do |sub_link, i|
-	  #   sub_data = sub_link.children.reject{ |x| x.name == 'text' }
-	  #   puts i
-	  #   p parse_youtube_subscription(sub_data)
-	  # end
 	  
-	  subscriptions = 
-	    subscription_links.collect do |link|
-	      parse_youtube_subscription(link)
-	    end
-	    
-	  return subscriptions
-	end
-	
-	
-	
-	
-	# sub_data[0].attributes['disable-upgrade'] # JSON payload, gives URL to icon
-	# # => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
-	# sub_data[1] # HTML element with the actual icon
-	# sub_data[2] # SPAN -> channel name
-	# sub_data[3] # SPAN -> 'entry-count'
+		# sub_data[0].attributes['disable-upgrade'] # JSON payload, gives URL to icon
+		# # => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
+		# sub_data[1] # HTML element with the actual icon
+		# sub_data[2] # SPAN -> channel name
+		# sub_data[3] # SPAN -> 'entry-count'
 		
-	# figure out the fields inside one subscription
-	def parse_youtube_subscription(anchor_tag)
-	  link = anchor_tag.attributes['href'].value
-	  
-	  # ----
-	  
-	  sub_data = anchor_tag.children.reject{ |x| x.name == 'text' }
-	  
-	  
-	  # JSON payload, gives URL to icon
-	  json_text = sub_data[0].attributes['disable-upgrade']
-	  # => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
+    subscription_links.collect do |anchor_tag|
+      link = anchor_tag.attributes['href'].value
+		  
+		  # ----
+		  
+		  sub_data = anchor_tag.children.reject{ |x| x.name == 'text' }
+		  
+		  
+		  # JSON payload, gives URL to icon
+		  json_text = sub_data[0].attributes['disable-upgrade']
+		  # => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
 
-	  json_data = JSON.parse(json_text)
-	  json_icon_url = json_data['thumbnails'][0]['url']
-	  
-	  
-	  img = sub_data[1].css('img')[0]             # yt-img-shadow > img -> icon
-	  html_icon_url = img.attributes['src'].value 
-	  
-	  channel_name  = sub_data[2].text             # SPAN -> channel name
-	  entry_count   = sub_data[3].text.strip.to_i  # SPAN -> 'entry-count' 
-	  
-	  
-	  # RETURN
-	  data = {
-	    'link'          => URI.join("https://www.youtube.com/", link).to_s,
-	    # without casting, the type after URI.join() => URI::HTTPS
-	    
-	    'json-icon-url' => json_icon_url,
-	    'html-icon-url' => html_icon_url,
-	    'channel-name'  => channel_name,
-	    'entry-count'   => entry_count,
-	  }
-	  
-	  
-	  return data
+		  json_data = JSON.parse(json_text)
+		  json_icon_url = json_data['thumbnails'][0]['url']
+		  
+		  
+		  img = sub_data[1].css('img')[0]             # yt-img-shadow > img -> icon
+		  html_icon_url = img.attributes['src'].value 
+		  
+		  channel_name  = sub_data[2].text             # SPAN -> channel name
+		  entry_count   = sub_data[3].text.strip.to_i  # SPAN -> 'entry-count' 
+		  
+		  
+		  # RETURN
+		  data = {
+		    'link'          => URI.join("https://www.youtube.com/", link).to_s,
+		    # without casting, the type after URI.join() => URI::HTTPS
+		    
+		    'json-icon-url' => json_icon_url,
+		    'html-icon-url' => html_icon_url,
+		    'channel-name'  => channel_name,
+		    'entry-count'   => entry_count,
+		  }
+    end
 	end
-
-
+	
+	
+	# -- use subscription data to find icons for Youtube channels,
+	#    and download all of the icons into a folder on the disk
+	def p2(subscriptions)
+		# data = subscriptions.first
+		
+		icon_filepaths = 
+		  subscriptions.collect do |data|
+		    channel_url = data['link']
+		    icon_url    = data['json-icon-url']
+		    name        = data['channel-name']
+		    
+		    # -- download the icons for all YT channels in subscription list
+		    puts "downloading icon for #{name}  ..."
+		    
+		    icon_dir  = Pathname.new("./icons/").expand_path
+		    FileUtils.mkdir_p icon_dir
+		    
+		    
+		    # Channel names may include characters that are illegal in paths,
+		    # but the channel URLs should be OK for filesystem paths too
+		    basename = (File.basename(channel_url) + File.extname(icon_url))
+		    output_path = icon_dir + basename
+		    download(icon_url => output_path)
+		    
+		    Fiber.yield # <----------------
+		    
+		    # RETURN
+		    output_path
+		  end
+		# What do I need to save? The output directory name? The paths to all files?
+		# They're all going to be under the same directory.
+		# How will the system remember that the file names are channel identifiers?
+		# Is that a job for the system, or for the programmer?
+		
+		return icon_filepaths
+	end
+	
+	def p3(subscriptions, icon_filepaths)
+		local_subscriptions = 
+		  subscriptions.zip(icon_filepaths).collect do |data, icon_filepath|
+		    {
+		      'channel-name'  => data['channel-name'],
+		      'link'          => data['link'],
+		      'icon-filepath' => icon_filepath,
+		      'entry-count'   => data['entry-count']
+		    }
+		  end
+	end
+	
+	
+	
 	def open_html_file(filepath) # => Nokogiri::HTML::Document
 	  File.open(filepath) do |f|
 	    url      = nil
