@@ -44,9 +44,16 @@ class Window < RubyOF::Window
 		# NOTE: Current render speed is ~12 fps while Fiber is active
 		#       Not sure if this is a result of Fiber overhead, or download()
 		
-		@fiber ||= FiberTask.new
-		@fiber.resume
+		@task1 ||= Task1.new
+		data_path = @task1.resume
 		
+		# save the data path to a variable that can be shared between #update and #draw when the fiber sets this data path
+		unless data_path.nil?
+			@data_path = data_path
+			
+			puts "printing data path: "
+			p @data_path
+		end
 		
 		
 		# TODO: use Fiber to create loading bar / spinner to show progress in UI
@@ -75,6 +82,13 @@ class Window < RubyOF::Window
 		
 		ofPopStyle()
 		ofPopMatrix()
+		
+		
+		@task2 ||= Task2.new
+		
+		unless @data_path.nil?
+			@task2.resume @data_path
+		end
 	end
 	
 	def on_exit
@@ -158,23 +172,130 @@ end
 
 
 
-
-
-
 class FiberTask
 	# extend Forwardable
 	# def_delegator :@fiber, 
 	
 	def initialize
-	@fiber = Fiber.new do
+		@fiber = Fiber.new do
+			
+			# === MAIN ===
+			current_file = Pathname.new(__FILE__).expand_path
+			current_dir  = current_file.parent
+			
+			Dir.chdir current_dir do
+				input = Fiber.yield
+				self.call(*input)
+			end # close Dir.chdir
+		end
+	end
 	
-	# === MAIN ===
-	current_file = Pathname.new(__FILE__).expand_path
-	current_dir  = current_file.parent
+	def resume(*args)
+		# @fiber    possible values: nil, Fiber, :finished
+		begin
+			if @fiber.nil?
+				@fiber = create_fiber()
+				
+				return nil
+			elsif @fiber != :finished
+				# p @fiber
+				# p @fiber.methods
+				out = @fiber.resume(*args)
+				# @fiber.resume
+				
+				return out
+			end
+		rescue FiberError => e
+			# Error is thrown when Fiber is dead (no more work)
+			# use that as a signal of when to stop
+			puts "#{self.class}: No more work to be done in this Fiber."
+			p e
+			@fiber = :finished # if you reset to 'nil', the process loops
+			return nil
+		end
+	end
 	
-	Dir.chdir current_dir do
-		
-		
+	
+	
+	
+	
+	
+
+	private
+	
+
+
+
+	
+	def open_html_file(filepath) # => Nokogiri::HTML::Document
+	  File.open(filepath) do |f|
+	    url      = nil
+	    encoding = 'utf-8'
+	    Nokogiri::HTML(f, url, encoding) do |config|
+	      config.noblanks
+	    end
+	    # ^ remember to use HTML mode, not XML mode
+	  end
+	end
+	
+	
+	
+	# usage: download(url => output_path)
+	def download(args = {})
+	  # 
+	  # parse arguments
+	  # 
+	  if args.keys.size == 1 and args.values.size == 1
+	    url         = args.keys.first
+	    output_path = args.values.first
+	  else
+	    raise "download() currently only accepts one {URL => location} pair"
+	  end
+	  
+	  # 
+	  # perform the download
+	  # 
+	  
+	  # https://stackoverflow.com/questions/2263540/how-do-i-download-a-binary-file-over-http
+	  # instead of http.get
+	  require 'open-uri'
+	  
+	  File.open(output_path, "wb") do |saved_file|
+	    # the following "open" is provided by open-uri
+	    open(url, "rb") do |read_file|
+	      saved_file.write(read_file.read)
+	    end
+	  end
+	end
+
+	# usage: dump_yaml(data => output_path)
+	def dump_yaml(args = {})
+	  # 
+	  # parse arguments
+	  # 
+	  if args.keys.size == 1 and args.values.size == 1
+	    data        = args.keys.first
+	    output_path = args.values.first
+	  else
+	    raise "dump_yaml() currently only accepts one {URL => location} pair"
+	  end
+	  
+	  # 
+	  # serialize the file
+	  # 
+	  File.open(output_path, 'w') {|f| f.write data.to_yaml }
+	end
+
+
+
+end # close FiberTask class definition
+
+
+
+
+
+class Task1 < FiberTask
+	def call(*args)
 		Fiber.yield # <----------------
 		
 		
@@ -193,14 +314,11 @@ class FiberTask
 		
 		input_time = inputs.collect{ |path| path.mtime }.max # most recent time
 		
-		flags = 
+		flag = 
 			outputs.any? do |path|
 				# redo the calculation if a file is missing, or any file is out of date
 				!path.exist? or path.mtime < input_time
 			end
-		p flags
-		
-		flag = flags.any? # if any one flag is set, then do the computation
 		
 		if flag
 			# -- parse HTML file and get youtube subscriptions
@@ -233,6 +351,8 @@ class FiberTask
 			dump_yaml(local_subscriptions => c2_path)
 		end
 		
+		Fiber.yield c2_path
+		
 		# TODO: separate raw data files from intermediates
 		#   Makes it a lot easier to clean up later
 		#   if the intermediates are restricted to one directory
@@ -245,63 +365,9 @@ class FiberTask
 		# means we are free from thinking about YouTube in any way.
 		# ---------------                          ---------------
 		
-		
-		# -- use OpenFrameworks to 'visualize' this data
-		
-		
-		
-		# -- allow direct manipulation of the data
-		#    (control layout of elements with mouse and keyboard, not code)
-		
-		
-		
-		# -- add more YouTube subscriptions without losing existng organization
-		
-		
-		
-		
-		# -- click on links and go to YouTube pages
-		
-		
-		# require 'irb'
-		# binding.irb
-	end # close Dir.chdir
-	end; end # close Fiber, close #initialize
-	
-	
-	def resume
-		# @fiber    possible values: nil, Fiber, :finished
-		begin
-			if @fiber.nil?
-				@fiber = create_fiber()
-			elsif @fiber != :finished
-				# p @fiber
-				# p @fiber.methods
-				@fiber.resume
-				# @fiber.resume
-			end
-		rescue FiberError => e
-			# Error is thrown when Fiber is dead (no more work)
-			# use that as a signal of when to stop
-			puts "No more work to be done in this Fiber."
-			p e
-			@fiber = :finished # if you reset to 'nil', the process loops
-		end
 	end
 	
-	
-	
-	
-	
-	
-
 	private
-	
-	
-	
-	
-	
-	
 	
 	# input_path          path to the input HTML file
 	# test_output_path    path that Nokogiri can write to, to ensure parsing works
@@ -430,67 +496,70 @@ class FiberTask
 	end
 	
 	
-	
-	def open_html_file(filepath) # => Nokogiri::HTML::Document
-	  File.open(filepath) do |f|
-	    url      = nil
-	    encoding = 'utf-8'
-	    Nokogiri::HTML(f, url, encoding) do |config|
-	      config.noblanks
-	    end
-	    # ^ remember to use HTML mode, not XML mode
-	  end
+end
+
+
+class Task2 < FiberTask
+	def call(path)
+		# -- use OpenFrameworks to 'visualize' this data
+		local_subscriptions = YAML.load_file(path.to_s)
+		puts "Task2: data loaded!"
+		
+		
+		@font = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
+		
+		Fiber.yield # <----------------
+		
+		
+		loop do
+			data = local_subscriptions.first
+			
+			# -- load channel icon
+			@image =
+				RubyOF::Image.new.dsl_load do |x|
+					x.path = data['icon-filepath'].to_s
+					# x.enable_accurate
+					# x.enable_exifRotate
+					# x.enable_grayscale
+					# x.enable_separateCMYK
+				end
+			
+			# -- render icon
+			x,y = [500,500]
+			z = 10 # arbitrary value
+			@image.draw(x,y, z)
+			
+			
+			# -- render channel name
+			x,y = [500,500]
+			# @font.draw_string("From ruby: こんにちは", x, y)
+			@font.draw_string(data['channel-name'], x, y)
+			
+			Fiber.yield # <----------------
+		end
+		
+		# -- allow direct manipulation of the data
+		#    (control layout of elements with mouse and keyboard, not code)
+		
+		
+		
+		# -- add more YouTube subscriptions without losing existng organization
+		
+		
+		
+		
+		# -- click on links and go to YouTube pages
+		
+		
+		# require 'irb'
+		# binding.irb
 	end
-	
-	
-	
-	# usage: download(url => output_path)
-	def download(args = {})
-	  # 
-	  # parse arguments
-	  # 
-	  if args.keys.size == 1 and args.values.size == 1
-	    url         = args.keys.first
-	    output_path = args.values.first
-	  else
-	    raise "download() currently only accepts one {URL => location} pair"
-	  end
-	  
-	  # 
-	  # perform the download
-	  # 
-	  
-	  # https://stackoverflow.com/questions/2263540/how-do-i-download-a-binary-file-over-http
-	  # instead of http.get
-	  require 'open-uri'
-	  
-	  File.open(output_path, "wb") do |saved_file|
-	    # the following "open" is provided by open-uri
-	    open(url, "rb") do |read_file|
-	      saved_file.write(read_file.read)
-	    end
-	  end
-	end
-
-	# usage: dump_yaml(data => output_path)
-	def dump_yaml(args = {})
-	  # 
-	  # parse arguments
-	  # 
-	  if args.keys.size == 1 and args.values.size == 1
-	    data        = args.keys.first
-	    output_path = args.values.first
-	  else
-	    raise "dump_yaml() currently only accepts one {URL => location} pair"
-	  end
-	  
-	  # 
-	  # serialize the file
-	  # 
-	  File.open(output_path, 'w') {|f| f.write data.to_yaml }
-	end
-
-
-
-end # close FiberTask class definition
+end
 
