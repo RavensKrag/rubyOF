@@ -194,19 +194,9 @@ class FiberTask
 		input_time = inputs.collect{ |path| path.mtime }.max # most recent time
 		
 		flags = 
-			outputs.collect do |path|
-				# redo the calculation if any file is out of date
-				
-				if path.exist?
-					if path.mtime < input_time
-						# input file is newer
-						true
-					else
-						false
-					end
-				else
-					true # file does not exist - must generate
-				end
+			outputs.any? do |path|
+				# redo the calculation if a file is missing, or any file is out of date
+				!path.exist? or path.mtime < input_time
 			end
 		p flags
 		
