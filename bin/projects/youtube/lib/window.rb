@@ -519,30 +519,34 @@ class Task2 < FiberTask
 		
 		
 		loop do
-			data = local_subscriptions.first
-			
-			# -- load channel icon
-			@image =
-				RubyOF::Image.new.dsl_load do |x|
-					x.path = data['icon-filepath'].to_s
-					# x.enable_accurate
-					# x.enable_exifRotate
-					# x.enable_grayscale
-					# x.enable_separateCMYK
+			local_subscriptions.each do |data|
+				# -- load channel icon
+				@image =
+					RubyOF::Image.new.dsl_load do |x|
+						x.path = data['icon-filepath'].to_s
+						# x.enable_accurate
+						# x.enable_exifRotate
+						# x.enable_grayscale
+						# x.enable_separateCMYK
+					end
+				
+				# render this particular data to screen for a number of frames
+				frames = 50
+				frames.times do
+					# -- render icon
+					x,y = [500,500]
+					z = 10 # arbitrary value
+					@image.draw(x,y, z)
+					
+					
+					# -- render channel name
+					x,y = [500,500]
+					# @font.draw_string("From ruby: こんにちは", x, y)
+					@font.draw_string(data['channel-name'], x, y)
+					
+					Fiber.yield # <----------------
 				end
-			
-			# -- render icon
-			x,y = [500,500]
-			z = 10 # arbitrary value
-			@image.draw(x,y, z)
-			
-			
-			# -- render channel name
-			x,y = [500,500]
-			# @font.draw_string("From ruby: こんにちは", x, y)
-			@font.draw_string(data['channel-name'], x, y)
-			
-			Fiber.yield # <----------------
+			end
 		end
 		
 		# -- allow direct manipulation of the data
