@@ -14,7 +14,9 @@ class Window < RubyOF::Window
 	include RubyOF::Graphics
 	
 	def initialize
-		super("Youtube Subscription Browser", 1853, 1250)
+		# super("Youtube Subscription Browser", 1853, 1250)
+		super("Youtube Subscription Browser", 1853, 1986)
+		
 		# ofSetEscapeQuitsApp false
 		
 		puts "ruby: Window#initialize"
@@ -66,12 +68,11 @@ class Window < RubyOF::Window
 			p @data_path
 		end
 		
+		# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
 		
-		# TODO: use Fiber to create loading bar / spinner to show progress in UI
+		
 		
 		# -- use OpenFrameworks to 'visualize' this data
-		
-		
 		
 		unless @data_path.nil?
 			if @local_subscriptions.nil?
@@ -90,7 +91,6 @@ class Window < RubyOF::Window
 		
 		
 		
-		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
 		
 		
 		# first yield is just a signal that the file was loaded
@@ -140,6 +140,17 @@ class Window < RubyOF::Window
 		
 		
 		
+		
+		# -- implement basic "live coding" environment
+		#    (update doesn't necessarily need to be instant)
+		#    (but should be reasonably fast)
+		
+		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
+		
+		
+		
+		
+		
 		# -- implement basic camera control (zoom, pan)
 		
 		
@@ -150,12 +161,18 @@ class Window < RubyOF::Window
 		
 		
 		
+		# -- implement color picker
+		#    (maybe use oF c++ color picker that already exists?)
+		
+		
+		
 		# -- add more YouTube subscriptions without losing existng organization
 		
 		
 		
 		
 		# -- click on links and go to YouTube pages
+		
 		
 		
 		# require 'irb'
@@ -202,12 +219,12 @@ class Window < RubyOF::Window
 					image, data = zip_pair
 					# -----
 					
-					p = CP::Vec2.new(100,300)
+					p = CP::Vec2.new(100,150)
 					dx = 400 # space between columns
 					dy = 100 # space between rows
 					offset = CP::Vec2.new(100, 50) # offset between icon and text
 					
-					slices = 7
+					slices = 18
 					ix = i / slices
 					iy = i % slices
 					
