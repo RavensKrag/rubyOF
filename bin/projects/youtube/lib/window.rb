@@ -7,6 +7,8 @@ require 'uri' # needed to safely / easily join URLs
 require 'pathname'
 require 'fileutils'
 
+require 'chipmunk'
+
 
 class Window < RubyOF::Window
 	include RubyOF::Graphics
@@ -526,40 +528,69 @@ class Task2 < FiberTask
 		
 		Fiber.yield # <----------------
 		
+		@images = Array.new
 		
+		
+		@image_i = 0 # index for the next image to load
 		loop do
-			local_subscriptions.each do |data|
-				# -- load channel icon
-				@image =
+			# -- load channel icon
+			unless @image_i == local_subscriptions.size
+				new_image = 
 					RubyOF::Image.new.dsl_load do |x|
-						x.path = data['icon-filepath'].to_s
+						x.path = local_subscriptions[@image_i]['icon-filepath'].to_s
 						# x.enable_accurate
 						# x.enable_exifRotate
 						# x.enable_grayscale
 						# x.enable_separateCMYK
 					end
 				
-				# render this particular data to screen for a number of frames
-				frames = 50
-				frames.times do
-					# -- render icon
-					x,y = [500,500]
-					z = 10 # arbitrary value
-					@image.draw(x,y, z)
-					
-					
-					# -- render channel name
-					x,y = [500,500]
-					# @font.draw_string("From ruby: こんにちは", x, y)
-					@font.draw_string(data['channel-name'], x, y)
-					
-					# NOTE: to move string on z axis just use the normal ofTransform()
-					# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-					
-					Fiber.yield # <----------------
-				end
+				@image_i += 1
+				
+				@images << new_image
 			end
+			
+			
+			# basically just sleep for a few frames
+			@images.zip(local_subscriptions).each_with_index do |zip_pair, i|
+				image, data = zip_pair
+				# -----
+				
+				p = CP::Vec2.new(100,300)
+				dx = 400 # space between columns
+				dy = 100 # space between rows
+				offset = CP::Vec2.new(100, 50) # offset between icon and text
+				
+				slices = 7
+				ix = i / slices
+				iy = i % slices
+				
+				# -- render icon
+				x = p.x + dx*ix
+				y = p.y + dy*iy
+				z = 10 # arbitrary value
+				image.draw(x,y, z)
+				
+				
+				# -- render channel name
+				x = p.x + dx*ix + offset.x
+				y = p.y + dy*iy + offset.y
+				# @font.draw_string("From ruby: こんにちは", x, y)
+				@font.draw_string(data['channel-name'], x, y)
+				
+				# NOTE: to move string on z axis just use the normal ofTransform()
+				# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
+			end
+			
+			
+			Fiber.yield # <----------------
 		end
+		
+		
+		
+		# -- implement basic camera control (zoom, pan)
+		
+		
+		
 		
 		# -- allow direct manipulation of the data
 		#    (control layout of elements with mouse and keyboard, not code)
