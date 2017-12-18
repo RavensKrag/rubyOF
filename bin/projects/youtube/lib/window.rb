@@ -90,11 +90,17 @@ class Window < RubyOF::Window
 		
 		
 		
+		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
 		
 		
 		# first yield is just a signal that the file was loaded
 		# subsequent yields update the 'images' array
 		@p4_image_load ||= Fiber.new do
+			# -- wait for needed variable to be set
+			while @local_subscriptions.nil?
+				Fiber.yield
+			end
+			
 			# -- load channel icon
 			images = Array.new
 			
@@ -117,13 +123,14 @@ class Window < RubyOF::Window
 		end
 		
 		# continue the fiber, and deal with it's output
-		if @p4_image_load != :stop and !@local_subscriptions.nil?
+		if @p4_image_load != :stop
 			out = @p4_image_load.resume
 			
 			if out.nil?
 				# NO-OP
 			elsif out == :stop
 				@p4_image_load = :stop
+				puts "p4: No more work to be done in this Fiber"
 			elsif out.is_a? Array
 				@images = out
 			else
@@ -184,10 +191,12 @@ class Window < RubyOF::Window
 		
 		
 		@p5_image_render ||= Fiber.new do
+			# -- wait for data to be available
 			while @images.nil?
 				Fiber.yield
 			end
 			
+			# -- render data
 			loop do
 				@images.zip(@local_subscriptions).each_with_index do |zip_pair, i|
 					image, data = zip_pair
@@ -434,9 +443,6 @@ end # close FiberTask class definition
 
 class Task1 < FiberTask
 	def call(*args)
-		Fiber.yield # <----------------
-		
-		
 		# note on variable names
 		# ---
 		# p1   pathway      Performs a sequence of operations / transformations
