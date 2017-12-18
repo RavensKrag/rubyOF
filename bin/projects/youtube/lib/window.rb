@@ -29,6 +29,15 @@ class Window < RubyOF::Window
 	def setup
 		super()
 		
+		
+		@font = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
 	end
 	
 	def update
@@ -59,6 +68,93 @@ class Window < RubyOF::Window
 		
 		
 		# TODO: use Fiber to create loading bar / spinner to show progress in UI
+		
+		# -- use OpenFrameworks to 'visualize' this data
+		
+		
+		
+		unless @data_path.nil?
+			if @local_subscriptions.nil?
+				@local_subscriptions = YAML.load_file(@data_path)
+				puts "update: data loaded!"
+			end
+		end
+		# NOTE: If you use Pathname with YAML loading, the type will protect you.
+		# YAML.load() is for strings
+		# YAML.load_file() is for files, but the argument can still be a string
+		# but, Pathname is a vaild type *only* for load_file()
+			# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
+			# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
+			# 
+			# Also, this still doesn't help you remember the correct name...
+		
+		
+		
+		
+		
+		# first yield is just a signal that the file was loaded
+		# subsequent yields update the 'images' array
+		@p4_image_load ||= Fiber.new do
+			# -- load channel icon
+			images = Array.new
+			
+			@local_subscriptions.each do |data|
+				new_image = 
+					RubyOF::Image.new.dsl_load do |x|
+						x.path = data['icon-filepath'].to_s
+						# x.enable_accurate
+						# x.enable_exifRotate
+						# x.enable_grayscale
+						# x.enable_separateCMYK
+					end
+				images << new_image
+				
+				
+				Fiber.yield images # <----------------
+			end
+			
+			Fiber.yield :stop
+		end
+		
+		# continue the fiber, and deal with it's output
+		if @p4_image_load != :stop and !@local_subscriptions.nil?
+			out = @p4_image_load.resume
+			
+			if out.nil?
+				# NO-OP
+			elsif out == :stop
+				@p4_image_load = :stop
+			elsif out.is_a? Array
+				@images = out
+			else
+				raise "p4 -- ERROR: unexpected valued yielded from fiber"
+			end
+		end
+		
+		
+		
+		# -- implement basic camera control (zoom, pan)
+		
+		
+		
+		
+		# -- allow direct manipulation of the data
+		#    (control layout of elements with mouse and keyboard, not code)
+		
+		
+		
+		# -- add more YouTube subscriptions without losing existng organization
+		
+		
+		
+		
+		# -- click on links and go to YouTube pages
+		
+		
+		# require 'irb'
+		# binding.irb
+		
+		
 	end
 	
 	def draw
@@ -86,11 +182,51 @@ class Window < RubyOF::Window
 		ofPopMatrix()
 		
 		
-		@task2 ||= Task2.new
 		
-		unless @data_path.nil?
-			@task2.resume @data_path
+		@p5_image_render ||= Fiber.new do
+			while @images.nil?
+				Fiber.yield
+			end
+			
+			loop do
+				@images.zip(@local_subscriptions).each_with_index do |zip_pair, i|
+					image, data = zip_pair
+					# -----
+					
+					p = CP::Vec2.new(100,300)
+					dx = 400 # space between columns
+					dy = 100 # space between rows
+					offset = CP::Vec2.new(100, 50) # offset between icon and text
+					
+					slices = 7
+					ix = i / slices
+					iy = i % slices
+					
+					# -- render icon
+					x = p.x + dx*ix
+					y = p.y + dy*iy
+					z = 10 # arbitrary value
+					image.draw(x,y, z)
+					
+					
+					# -- render channel name
+					x = p.x + dx*ix + offset.x
+					y = p.y + dy*iy + offset.y
+					# @font.draw_string("From ruby: こんにちは", x, y)
+					@font.draw_string(data['channel-name'], x, y)
+					
+					# NOTE: to move string on z axis just use the normal ofTransform()
+					# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
+				end
+				
+				
+				Fiber.yield # <----------------
+			end
 		end
+		
+		
+		@p5_image_render.resume
+		
 	end
 	
 	def on_exit
@@ -503,110 +639,7 @@ end
 
 class Task2 < FiberTask
 	def call(path)
-		# -- use OpenFrameworks to 'visualize' this data
-		local_subscriptions = YAML.load_file(path)
-		puts "Task2: data loaded!"
 		
-		# NOTE: If you use Pathname with YAML loading, the type will protect you.
-		# YAML.load() is for strings
-		# YAML.load_file() is for files, but the argument can still be a string
-		# but, Pathname is a vaild type *only* for load_file()
-			# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
-			# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
-			# 
-			# Also, this still doesn't help you remember the correct name...
-		
-		
-		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
-				# TakaoPGothic
-				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 20
-				x.add_alphabet :Latin
-				x.add_alphabet :Japanese
-			end
-		
-		Fiber.yield # <----------------
-		
-		@images = Array.new
-		
-		
-		@image_i = 0 # index for the next image to load
-		loop do
-			# -- load channel icon
-			unless @image_i == local_subscriptions.size
-				new_image = 
-					RubyOF::Image.new.dsl_load do |x|
-						x.path = local_subscriptions[@image_i]['icon-filepath'].to_s
-						# x.enable_accurate
-						# x.enable_exifRotate
-						# x.enable_grayscale
-						# x.enable_separateCMYK
-					end
-				
-				@image_i += 1
-				
-				@images << new_image
-			end
-			
-			
-			# basically just sleep for a few frames
-			@images.zip(local_subscriptions).each_with_index do |zip_pair, i|
-				image, data = zip_pair
-				# -----
-				
-				p = CP::Vec2.new(100,300)
-				dx = 400 # space between columns
-				dy = 100 # space between rows
-				offset = CP::Vec2.new(100, 50) # offset between icon and text
-				
-				slices = 7
-				ix = i / slices
-				iy = i % slices
-				
-				# -- render icon
-				x = p.x + dx*ix
-				y = p.y + dy*iy
-				z = 10 # arbitrary value
-				image.draw(x,y, z)
-				
-				
-				# -- render channel name
-				x = p.x + dx*ix + offset.x
-				y = p.y + dy*iy + offset.y
-				# @font.draw_string("From ruby: こんにちは", x, y)
-				@font.draw_string(data['channel-name'], x, y)
-				
-				# NOTE: to move string on z axis just use the normal ofTransform()
-				# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-			end
-			
-			
-			Fiber.yield # <----------------
-		end
-		
-		
-		
-		# -- implement basic camera control (zoom, pan)
-		
-		
-		
-		
-		# -- allow direct manipulation of the data
-		#    (control layout of elements with mouse and keyboard, not code)
-		
-		
-		
-		# -- add more YouTube subscriptions without losing existng organization
-		
-		
-		
-		
-		# -- click on links and go to YouTube pages
-		
-		
-		# require 'irb'
-		# binding.irb
 	end
 end
 
