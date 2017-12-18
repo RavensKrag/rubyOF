@@ -502,8 +502,17 @@ end
 class Task2 < FiberTask
 	def call(path)
 		# -- use OpenFrameworks to 'visualize' this data
-		local_subscriptions = YAML.load_file(path.to_s)
+		local_subscriptions = YAML.load_file(path)
 		puts "Task2: data loaded!"
+		
+		# NOTE: If you use Pathname with YAML loading, the type will protect you.
+		# YAML.load() is for strings
+		# YAML.load_file() is for files, but the argument can still be a string
+		# but, Pathname is a vaild type *only* for load_file()
+			# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
+			# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
+			# 
+			# Also, this still doesn't help you remember the correct name...
 		
 		
 		@font = 
@@ -543,6 +552,9 @@ class Task2 < FiberTask
 					x,y = [500,500]
 					# @font.draw_string("From ruby: こんにちは", x, y)
 					@font.draw_string(data['channel-name'], x, y)
+					
+					# NOTE: to move string on z axis just use the normal ofTransform()
+					# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
 					
 					Fiber.yield # <----------------
 				end
