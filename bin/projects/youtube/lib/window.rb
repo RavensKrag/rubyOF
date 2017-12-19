@@ -17,6 +17,7 @@ current_dir  = current_file.parent
 
 Dir.chdir current_dir do
 	require Pathname.new('./helpers.rb').expand_path
+  require Pathname.new('./fibers.rb').expand_path
 end
 
 
