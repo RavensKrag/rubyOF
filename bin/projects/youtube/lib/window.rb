@@ -166,17 +166,27 @@ class Window < RubyOF::Window
 			@p4_image_load.resume(@local_subscriptions)
 			Fiber.yield # <----------------
 			
-			20.times do
-				# but if you have more loading to do, resume the Fiber
-				out = @p4_image_load.resume
-				Fiber.yield # <----------------
-				if out.nil?
-					# NO-OP
-				elsif out.is_a? Array
-					@images = out
+			loop do
+				4.times do
+					# but if you have more loading to do, resume the Fiber
+					out = @p4_image_load.resume
+					# Fiber.yield # <----------------
+					if out.nil?
+						# NO-OP
+					elsif out.is_a? Array
+						@images = out
+					end
 				end
+				
+				Fiber.yield # <----------------
+				break if @p4_image_load.state == :finished
 			end
-			# NOTE: It seems that currently only the first batch is making it over to the render Fiber. Need to fix that.
+			# FIXME: Set @images once, and then append a new chunk of images to that array as necessary. As Array is a reference type, this will allow you to continuiously send data to the #draw Fiber, even though you only pass the reference once. I think?
+			
+			# FIXME: alias / delegate to Fiber.alive? instead of using this @p4_image_load.state call. I though it was weird that I had to manage that state manually... May actually want to consider getting rid of 	FiberQueue entirely now that the way I'm using Fibers is totally different.
+			
+			# FIXME: Change how p1() and similar functions are declared
+			# FIXME: Consider changing how helper functions are declared / used
 			
 			
 			# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
@@ -346,18 +356,16 @@ class Window < RubyOF::Window
 			
 			# Start the actual work now
 			
-			# Pass data to p5
-			@p5_image_render.resume(@images, @local_subscriptions)
-			Fiber.yield # <----------------
 			
-			# Render according to the logic in p5
+			# Render a bunch of different tasks
 			loop do
-				@p5_image_render.resume
+				@p5_image_render.resume(@images, @local_subscriptions)
 				Fiber.yield # <----------------
 			end
 		end
 		
 		
+		# accept input on every #resume
 		@p5_image_render ||= Fiber.new do |images, local_subscriptions|
 			# -- render data
 			loop do
@@ -392,7 +400,7 @@ class Window < RubyOF::Window
 				end
 				
 				
-				Fiber.yield # <----------------
+				images, local_subscriptions = Fiber.yield # <----------------
 			end
 		end
 		
