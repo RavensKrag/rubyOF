@@ -17,7 +17,7 @@ current_dir  = current_file.parent
 
 Dir.chdir current_dir do
 	require Pathname.new('./helpers.rb').expand_path
-  require Pathname.new('./fibers.rb').expand_path
+	require Pathname.new('./fibers.rb').expand_path
 end
 
 
@@ -68,54 +68,222 @@ class Window < RubyOF::Window
 		# NOTE: Current render speed is ~12 fps while Fiber is active
 		#       Not sure if this is a result of Fiber overhead, or download()
 		
-		@task1 ||= Task1.new
-		data_path = @task1.resume
 		
 		
-		# save the data path to a variable that can be shared between #update and #draw when the fiber sets this data path
-		unless data_path.nil?
-			@data_path = data_path
+		@main_update_fiber ||= Fiber.new do
+		# === MAIN ===
+		current_file = Pathname.new(__FILE__).expand_path
+		current_dir  = current_file.parent
+		
+		Dir.chdir current_dir do
+			# note on variable names
+			# ---
+			# p1  pathway     Performs a sequence of operations / transformations
+			# c1  checkpoint  A good place to pause. Saves data on disk for later.
 			
-			puts "printing data path: "
-			p @data_path
-		end
-		
-		# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
-		
-		
-		
-		# -- use OpenFrameworks to 'visualize' this data
-		
-		unless @data_path.nil?
-			if @local_subscriptions.nil?
-				@local_subscriptions = YAML.load_file(@data_path)
+			in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
+			out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
+			c1_path  = Pathname.new('./data.yml').expand_path
+			c2_path  = Pathname.new('./local_data.yml').expand_path
+			
+			inputs  = [in_path]
+			outputs = [out_path, c1_path, c2_path]
+			
+			input_time = inputs.collect{ |path| path.mtime }.max # most recent time
+			
+			flag = 
+				outputs.any? do |path|
+					# redo the calculation if a file is missing, or any file is out of date
+					!path.exist? or path.mtime < input_time
+				end
+			
+			if flag
+				# -- parse HTML file and get youtube subscriptions
+				# subscriptions = p1(in_path, out_path) # create debug file to test loading
+				subscriptions = p1(in_path) # no debug file
+				
+				
+				# save data to file
+				dump_yaml(subscriptions => c1_path)
+				Fiber.yield # <----------------
+				
+				
+				# -- use subscription data to find icons for Youtube channels,
+				#    and download all of the icons into a folder on the disk,
+				@p2.resume(subscriptions)
+				p2_out = nil
+				while p2_out.nil?
+					# @p2 yields nil after every download (like a 'sleep')
+					p2_out = @p2.resume
+				end
+					# The final yield gives back the filepaths we need
+				icon_filepaths = p2_out
+				
+				
+				
+				# -- Associate paths to icons on disk with Youtube channels
+				#    reformat: [channel_name, link, icon_filepath]
+				#    (going forward, icons will be accessed via filepaths, not URLs)
+				@local_subscriptions = p3(subscriptions, icon_filepaths)
+				
+				
+				Fiber.yield # <----------------
+				
+				
+				# save data to file
+				puts "update: saving data to disk"
+				dump_yaml(local_subscriptions => c2_path)
+				Fiber.yield # <----------------
+			else
 				puts "update: data loaded!"
+				@local_subscriptions = YAML.load_file(c2_path)
+				
+				# NOTE: If you use Pathname with YAML loading, the type will protect you.
+				# YAML.load() is for strings
+				# YAML.load_file() is for files, but the argument can still be a string
+				# but, Pathname is a vaild type *only* for load_file()
+					# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
+					# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
+					# 
+					# Also, this still doesn't help you remember the correct name...
 			end
-		end
-		# NOTE: If you use Pathname with YAML loading, the type will protect you.
-		# YAML.load() is for strings
-		# YAML.load_file() is for files, but the argument can still be a string
-		# but, Pathname is a vaild type *only* for load_file()
-			# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
-			# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
-			# 
-			# Also, this still doesn't help you remember the correct name...
+			
+			# TODO: separate raw data files from intermediates
+			#   Makes it a lot easier to clean up later
+			#   if the intermediates are restricted to one directory
+			
+			
+			
+			# ---------------                          ---------------
+			# At this point, youtube URLs and icon links are absolute,
+			# rather than being relative to the youtube domain. This 
+			# means we are free from thinking about YouTube in any way.
+			# ---------------                          ---------------
+			puts "TOTAL SUBSCIPTIONS: #{@local_subscriptions.size}"
+			
+			# -- use OpenFrameworks to 'visualize' this data
+			# load a number of images per frame
+			@p4_image_load.resume(@local_subscriptions)
+			Fiber.yield # <----------------
+			
+			20.times do
+				# but if you have more loading to do, resume the Fiber
+				out = @p4_image_load.resume
+				Fiber.yield # <----------------
+				if out.nil?
+					# NO-OP
+				elsif out.is_a? Array
+					@images = out
+				end
+			end
+			# NOTE: It seems that currently only the first batch is making it over to the render Fiber. Need to fix that.
+			
+			
+			# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
+			
+			
+			# -- implement basic "live coding" environment
+			#    (update doesn't necessarily need to be instant)
+			#    (but should be reasonably fast)
+			
+			# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
+			
+			
+			
+			
+			# -- implement basic camera control (zoom, pan)
+			
+			
+			
+			
+			# -- allow direct manipulation of the data
+			#    (control layout of elements with mouse and keyboard, not code)
+			
+			
+			
+			# -- implement color picker
+			#    (maybe use oF c++ color picker that already exists?)
+			
+			
+			
+			# -- add more YouTube subscriptions without losing existng organization
+			
+			
+			
+			
+			# -- click on links and go to YouTube pages
+			
+			
+			
+			# require 'irb'
+			# binding.irb
+			
+			
+			
+			
+			
+			# Do a sort of busy loop at the end for now,
+			# just to keep the main Fiber alive.
+			loop do
+				Fiber.yield
+			end
+		end # close Dir.chdir
+		end # close Fiber
 		
 		
 		
+		# ===== Helper fibers =====
 		
 		# first yield is just a signal that the file was loaded
 		# subsequent yields update the 'images' array
-		@p4_image_load ||= FiberQueue.new do
-			# -- wait for needed variable to be set
-			while @local_subscriptions.nil?
-				Fiber.yield
-			end
+		@p2 ||= Fiber.new do |subscriptions|			
+			# -- load channel icon
+			# data = subscriptions.first
+			
+			icon_filepaths = 
+			  subscriptions.collect do |data|
+			    channel_url = data['link']
+			    icon_url    = data['json-icon-url']
+			    name        = data['channel-name']
+			    
+			    # -- download the icons for all YT channels in subscription list
+			    puts "downloading icon for #{name}  ..."
+			    
+			    icon_dir  = Pathname.new("./icons/").expand_path
+			    FileUtils.mkdir_p icon_dir
+			    
+			    
+			    # Channel names may include characters that are illegal in paths,
+			    # but the channel URLs should be OK for filesystem paths too
+			    basename = (File.basename(channel_url) + File.extname(icon_url))
+			    output_path = icon_dir + basename
+			    download(icon_url => output_path)
+			    
+			    Fiber.yield # <----------------
+			    
+			    # RETURN
+			    output_path
+			  end
+			# What do I need to save? The output directory name? The paths to all files?
+			# They're all going to be under the same directory.
+			# How will the system remember that the file names are channel identifiers?
+			# Is that a job for the system, or for the programmer?
+			
+			Fiber.yield icon_filepaths # <----------------
+		end
+		
+		# first yield is just a signal that the file was loaded
+		# subsequent yields update the 'images' array
+		@p4_image_load ||= FiberQueue.new do |local_subscriptions|
+			# After accepting initial argument, just sleep for one frame
+			# just to make things easier to schedule
+			Fiber.yield # <---------------- 
+			
 			
 			# -- load channel icon
 			images = Array.new
 			
-			@local_subscriptions.each do |data|
+			local_subscriptions.each do |data|
 				new_image = 
 					RubyOF::Image.new.dsl_load do |x|
 						x.path = data['icon-filepath'].to_s
@@ -131,54 +299,15 @@ class Window < RubyOF::Window
 			end
 		end
 		
-		
-		# load a number of images per frame
-		20.times do
-			out = @p4_image_load.resume
-			if out.nil?
-				# NO-OP
-			elsif out.is_a? Array
-				@images = out
-			end
-		end
-		
-		
-		# -- implement basic "live coding" environment
-		#    (update doesn't necessarily need to be instant)
-		#    (but should be reasonably fast)
-		
-		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
+		# =====                   =====
 		
 		
 		
 		
+		@main_update_fiber.resume
 		
-		# -- implement basic camera control (zoom, pan)
-		
-		
-		
-		
-		# -- allow direct manipulation of the data
-		#    (control layout of elements with mouse and keyboard, not code)
-		
-		
-		
-		# -- implement color picker
-		#    (maybe use oF c++ color picker that already exists?)
-		
-		
-		
-		# -- add more YouTube subscriptions without losing existng organization
-		
-		
-		
-		
-		# -- click on links and go to YouTube pages
-		
-		
-		
-		# require 'irb'
-		# binding.irb
+		# NOTE: To pass data between #update and #draw, use an instance variable
+		#       (can't resume a Fiber declared in one callback from the other)
 		
 		
 	end
@@ -208,16 +337,31 @@ class Window < RubyOF::Window
 		ofPopMatrix()
 		
 		
-		
-		@p5_image_render ||= Fiber.new do
-			# -- wait for data to be available
-			while @images.nil?
+		@main_draw_fiber ||= Fiber.new do
+			# wait for the data twe need to be generated by the #update Fiber
+			while @images.nil? or @local_subscriptions.nil?
 				Fiber.yield
 			end
 			
+			
+			# Start the actual work now
+			
+			# Pass data to p5
+			@p5_image_render.resume(@images, @local_subscriptions)
+			Fiber.yield # <----------------
+			
+			# Render according to the logic in p5
+			loop do
+				@p5_image_render.resume
+				Fiber.yield # <----------------
+			end
+		end
+		
+		
+		@p5_image_render ||= Fiber.new do |images, local_subscriptions|
 			# -- render data
 			loop do
-				@images.zip(@local_subscriptions).each_with_index do |zip_pair, i|
+				images.zip(local_subscriptions).each_with_index do |zip_pair, i|
 					image, data = zip_pair
 					# -----
 					
@@ -253,7 +397,7 @@ class Window < RubyOF::Window
 		end
 		
 		
-		@p5_image_render.resume
+		@main_draw_fiber.resume
 		
 	end
 	

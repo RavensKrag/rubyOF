@@ -4,9 +4,9 @@ class FiberQueue
 	def initialize(&block)
 		@state = :idle # :idle, :active, :finished
 		
-		@fiber = Fiber.new do
-			block.call()
-			 
+		@fiber = Fiber.new do |*inital_args|
+			block.call(*inital_args)
+			
 			Fiber.yield(:finished)
 		end
 	end
@@ -32,90 +32,34 @@ class FiberQueue
 			end
 		end
 	end
+	
+	def transfer(*args)
+		unless @fiber.nil?
+			@state = :active
+			# p @fiber
+			# p @fiber.methods
+			out = @fiber.transfer(*args)
+			# @fiber.transfer
+			
+			if out == :finished
+				@state = :finished
+				# this output is not a generated value
+				# but a signal that we can't generate anything else
+				puts "#{self.class}: No more work to be done in this Fiber."
+				@fiber = nil
+				return nil
+			else
+				# process the generated value
+				return out
+			end
+		end
+	end
 end
 
 
 
-
-class Task1 < FiberQueue
+class Window < RubyOF::Window
 	include HelperFunctions
-	
-	def initialize
-		super do
-		# === MAIN ===
-		current_file = Pathname.new(__FILE__).expand_path
-		current_dir  = current_file.parent
-		
-		Dir.chdir current_dir do
-			# note on variable names
-			# ---
-			# p1   pathway      Performs a sequence of operations / transformations
-			# c1   checkpoint   A good place to pause. Saves data on disk for later.
-			
-			in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
-			out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
-			c1_path  = Pathname.new('./data.yml').expand_path
-			c2_path  = Pathname.new('./local_data.yml').expand_path
-			
-			inputs  = [in_path]
-			outputs = [out_path, c1_path, c2_path]
-			
-			input_time = inputs.collect{ |path| path.mtime }.max # most recent time
-			
-			flag = 
-				outputs.any? do |path|
-					# redo the calculation if a file is missing, or any file is out of date
-					!path.exist? or path.mtime < input_time
-				end
-			
-			if flag
-				# -- parse HTML file and get youtube subscriptions
-				# subscriptions = p1(in_path, out_path) # create debug file to test loading
-				subscriptions = p1(in_path) # no debug file
-				
-				
-				# save data to file
-				dump_yaml(subscriptions => c1_path)
-				
-				
-				Fiber.yield # <----------------
-				
-				
-				# -- use subscription data to find icons for Youtube channels,
-				#    and download all of the icons into a folder on the disk,
-				icon_filepaths = p2(subscriptions) # yields after every download
-				
-				
-				# -- Associate paths to icons on disk with Youtube channels
-				#    reformat: [channel_name, link, icon_filepath]
-				#    (going forward, icons will be accessed via filepaths, not URLs)
-				local_subscriptions = p3(subscriptions, icon_filepaths)
-				
-				
-				Fiber.yield # <----------------
-				
-				
-				# save data to file
-				dump_yaml(local_subscriptions => c2_path)
-			end
-			
-			Fiber.yield c2_path
-			
-			# TODO: separate raw data files from intermediates
-			#   Makes it a lot easier to clean up later
-			#   if the intermediates are restricted to one directory
-			
-			
-			
-			# ---------------                          ---------------
-			# At this point, youtube URLs and icon links are absolute,
-			# rather than being relative to the youtube domain. This 
-			# means we are free from thinking about YouTube in any way.
-			# ---------------                          ---------------
-		end # close Dir.chdir
-		end
-	end
-	
 	
 	private
 	
@@ -196,43 +140,6 @@ class Task1 < FiberQueue
 	end
 	
 	
-	# -- use subscription data to find icons for Youtube channels,
-	#    and download all of the icons into a folder on the disk
-	def p2(subscriptions)
-		# data = subscriptions.first
-		
-		icon_filepaths = 
-		  subscriptions.collect do |data|
-		    channel_url = data['link']
-		    icon_url    = data['json-icon-url']
-		    name        = data['channel-name']
-		    
-		    # -- download the icons for all YT channels in subscription list
-		    puts "downloading icon for #{name}  ..."
-		    
-		    icon_dir  = Pathname.new("./icons/").expand_path
-		    FileUtils.mkdir_p icon_dir
-		    
-		    
-		    # Channel names may include characters that are illegal in paths,
-		    # but the channel URLs should be OK for filesystem paths too
-		    basename = (File.basename(channel_url) + File.extname(icon_url))
-		    output_path = icon_dir + basename
-		    download(icon_url => output_path)
-		    
-		    Fiber.yield # <----------------
-		    
-		    # RETURN
-		    output_path
-		  end
-		# What do I need to save? The output directory name? The paths to all files?
-		# They're all going to be under the same directory.
-		# How will the system remember that the file names are channel identifiers?
-		# Is that a job for the system, or for the programmer?
-		
-		return icon_filepaths
-	end
-	
 	def p3(subscriptions, icon_filepaths)
 		local_subscriptions = 
 		  subscriptions.zip(icon_filepaths).collect do |data, icon_filepath|
@@ -244,8 +151,4 @@ class Task1 < FiberQueue
 		    }
 		  end
 	end
-	
-	
 end
-
-
