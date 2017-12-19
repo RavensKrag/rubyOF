@@ -325,26 +325,7 @@ class Window < RubyOF::Window
 	def draw
 		# super()
 		
-		ofPushMatrix()
-		ofPushStyle()
 		
-			c = RubyOF::Color.new
-			c.r, c.g, c.b, c.a = [171, 160, 228, 255]
-			ofSetColor(c)
-			
-			
-			
-			# The size of the characters in the oF bitmap font is
-			# height 11 px
-			# width : 8 px
-			
-			start_position = [40, 30]
-			row_spacing    = 11 + 4
-			z              = 1
-			draw_debug_info(start_position, row_spacing, z)
-		
-		ofPopStyle()
-		ofPopMatrix()
 		
 		
 		@main_draw_fiber ||= Fiber.new do
@@ -359,11 +340,37 @@ class Window < RubyOF::Window
 			
 			# Render a bunch of different tasks
 			loop do
+				@p6_debug_ui_render.resume
 				@p5_image_render.resume(@images, @local_subscriptions)
 				Fiber.yield # <----------------
 			end
 		end
 		
+		
+		@p6_debug_ui_render ||= Fiber.new do
+			c = RubyOF::Color.new
+			c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			
+			loop do
+				ofPushMatrix()
+				ofPushStyle()
+					ofSetColor(c)
+					
+					# The size of the characters in the oF bitmap font is
+					# height 11 px
+					# width : 8 px
+					start_position = [40, 30]
+					row_spacing    = 11 + 4
+					z              = 1
+					
+					draw_debug_info(start_position, row_spacing, z)
+				
+				ofPopStyle()
+				ofPopMatrix()
+				
+				Fiber.yield # <----------------
+			end
+		end
 		
 		# accept input on every #resume
 		@p5_image_render ||= Fiber.new do |images, local_subscriptions|
