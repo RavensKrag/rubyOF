@@ -1,3 +1,5 @@
+require 'fiber'
+
 require 'nokogiri'
 require 'json'
 require 'yaml'
@@ -60,6 +62,7 @@ class Window < RubyOF::Window
 		@task1 ||= Task1.new
 		data_path = @task1.resume
 		
+		
 		# save the data path to a variable that can be shared between #update and #draw when the fiber sets this data path
 		unless data_path.nil?
 			@data_path = data_path
@@ -92,10 +95,9 @@ class Window < RubyOF::Window
 		
 		
 		
-		
 		# first yield is just a signal that the file was loaded
 		# subsequent yields update the 'images' array
-		@p4_image_load ||= Fiber.new do
+		@p4_image_load ||= FiberQueue.new do
 			# -- wait for needed variable to be set
 			while @local_subscriptions.nil?
 				Fiber.yield
@@ -118,27 +120,18 @@ class Window < RubyOF::Window
 				
 				Fiber.yield images # <----------------
 			end
-			
-			Fiber.yield :stop
 		end
 		
-		# continue the fiber, and deal with it's output
-		if @p4_image_load != :stop
+		
+		# load a number of images per frame
+		20.times do
 			out = @p4_image_load.resume
-			
 			if out.nil?
 				# NO-OP
-			elsif out == :stop
-				@p4_image_load = :stop
-				puts "p4: No more work to be done in this Fiber"
 			elsif out.is_a? Array
 				@images = out
-			else
-				raise "p4 -- ERROR: unexpected valued yielded from fiber"
 			end
 		end
-		
-		
 		
 		
 		# -- implement basic "live coding" environment
@@ -336,60 +329,12 @@ end
 
 
 
-class FiberTask
-	# extend Forwardable
-	# def_delegator :@fiber, 
-	
-	def initialize
-		@fiber = Fiber.new do
-			
-			# === MAIN ===
-			current_file = Pathname.new(__FILE__).expand_path
-			current_dir  = current_file.parent
-			
-			Dir.chdir current_dir do
-				input = Fiber.yield
-				self.call(*input)
-			end # close Dir.chdir
-		end
-	end
-	
-	def resume(*args)
-		# @fiber    possible values: nil, Fiber, :finished
-		begin
-			if @fiber.nil?
-				@fiber = create_fiber()
-				
-				return nil
-			elsif @fiber != :finished
-				# p @fiber
-				# p @fiber.methods
-				out = @fiber.resume(*args)
-				# @fiber.resume
-				
-				return out
-			end
-		rescue FiberError => e
-			# Error is thrown when Fiber is dead (no more work)
-			# use that as a signal of when to stop
-			puts "#{self.class}: No more work to be done in this Fiber."
-			p e
-			@fiber = :finished # if you reset to 'nil', the process loops
-			return nil
-		end
-	end
-	
-	
-	
-	
-	
-	
 
+
+
+
+module HelperFunctions
 	private
-	
-
-
-
 	
 	def open_html_file(filepath) # => Nokogiri::HTML::Document
 	  File.open(filepath) do |f|
@@ -449,84 +394,128 @@ class FiberTask
 	  # 
 	  File.open(output_path, 'w') {|f| f.write data.to_yaml }
 	end
+end
 
 
 
-end # close FiberTask class definition
-
-
-
-
-
-class Task1 < FiberTask
-	def call(*args)
-		# note on variable names
-		# ---
-		# p1   pathway      Performs a sequence of operations / transformations
-		# c1   checkpoint   A good place to pause. Saves data on disk for later.
+class FiberQueue
+	attr_reader :state
+	
+	def initialize(&block)
+		@state = :idle # :idle, :active, :finished
 		
-		in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
-		out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
-		c1_path  = Pathname.new('./data.yml').expand_path
-		c2_path  = Pathname.new('./local_data.yml').expand_path
-		
-		inputs  = [in_path]
-		outputs = [out_path, c1_path, c2_path]
-		
-		input_time = inputs.collect{ |path| path.mtime }.max # most recent time
-		
-		flag = 
-			outputs.any? do |path|
-				# redo the calculation if a file is missing, or any file is out of date
-				!path.exist? or path.mtime < input_time
-			end
-		
-		if flag
-			# -- parse HTML file and get youtube subscriptions
-			# subscriptions = p1(in_path, out_path) # create debug file to test loading
-			subscriptions = p1(in_path) # no debug file
-			
-			
-			# save data to file
-			dump_yaml(subscriptions => c1_path)
-			
-			
-			Fiber.yield # <----------------
-			
-			
-			# -- use subscription data to find icons for Youtube channels,
-			#    and download all of the icons into a folder on the disk,
-			icon_filepaths = p2(subscriptions) # yields after every download
-			
-			
-			# -- Associate paths to icons on disk with Youtube channels
-			#    reformat: [channel_name, link, icon_filepath]
-			#    (going forward, icons will be accessed via filepaths, not URLs)
-			local_subscriptions = p3(subscriptions, icon_filepaths)
-			
-			
-			Fiber.yield # <----------------
-			
-			
-			# save data to file
-			dump_yaml(local_subscriptions => c2_path)
+		@fiber = Fiber.new do
+			block.call()
+			 
+			Fiber.yield(:finished)
 		end
-		
-		Fiber.yield c2_path
-		
-		# TODO: separate raw data files from intermediates
-		#   Makes it a lot easier to clean up later
-		#   if the intermediates are restricted to one directory
-		
-		
-		
-		# ---------------                          ---------------
-		# At this point, youtube URLs and icon links are absolute,
-		# rather than being relative to the youtube domain. This 
-		# means we are free from thinking about YouTube in any way.
-		# ---------------                          ---------------
-		
 	end
+	
+	def resume(*args)
+		unless @fiber.nil?
+			@state = :active
+			# p @fiber
+			# p @fiber.methods
+			out = @fiber.resume(*args)
+			# @fiber.resume
+			
+			if out == :finished
+				@state = :finished
+				# this output is not a generated value
+				# but a signal that we can't generate anything else
+				puts "#{self.class}: No more work to be done in this Fiber."
+				@fiber = nil
+				return nil
+			else
+				# process the generated value
+				return out
+			end
+		end
+	end
+end
+
+
+
+
+class Task1 < FiberQueue
+	include HelperFunctions
+	
+	def initialize
+		super do
+		# === MAIN ===
+		current_file = Pathname.new(__FILE__).expand_path
+		current_dir  = current_file.parent
+		
+		Dir.chdir current_dir do
+			# note on variable names
+			# ---
+			# p1   pathway      Performs a sequence of operations / transformations
+			# c1   checkpoint   A good place to pause. Saves data on disk for later.
+			
+			in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
+			out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
+			c1_path  = Pathname.new('./data.yml').expand_path
+			c2_path  = Pathname.new('./local_data.yml').expand_path
+			
+			inputs  = [in_path]
+			outputs = [out_path, c1_path, c2_path]
+			
+			input_time = inputs.collect{ |path| path.mtime }.max # most recent time
+			
+			flag = 
+				outputs.any? do |path|
+					# redo the calculation if a file is missing, or any file is out of date
+					!path.exist? or path.mtime < input_time
+				end
+			
+			if true
+				# -- parse HTML file and get youtube subscriptions
+				# subscriptions = p1(in_path, out_path) # create debug file to test loading
+				subscriptions = p1(in_path) # no debug file
+				
+				
+				# save data to file
+				dump_yaml(subscriptions => c1_path)
+				
+				
+				Fiber.yield # <----------------
+				
+				
+				# -- use subscription data to find icons for Youtube channels,
+				#    and download all of the icons into a folder on the disk,
+				icon_filepaths = p2(subscriptions) # yields after every download
+				
+				
+				# -- Associate paths to icons on disk with Youtube channels
+				#    reformat: [channel_name, link, icon_filepath]
+				#    (going forward, icons will be accessed via filepaths, not URLs)
+				local_subscriptions = p3(subscriptions, icon_filepaths)
+				
+				
+				Fiber.yield # <----------------
+				
+				
+				# save data to file
+				dump_yaml(local_subscriptions => c2_path)
+			end
+			
+			Fiber.yield c2_path
+			
+			# TODO: separate raw data files from intermediates
+			#   Makes it a lot easier to clean up later
+			#   if the intermediates are restricted to one directory
+			
+			
+			
+			# ---------------                          ---------------
+			# At this point, youtube URLs and icon links are absolute,
+			# rather than being relative to the youtube domain. This 
+			# means we are free from thinking about YouTube in any way.
+			# ---------------                          ---------------
+		end # close Dir.chdir
+		end
+	end
+	
 	
 	private
 	
@@ -659,10 +648,4 @@ class Task1 < FiberTask
 	
 end
 
-
-class Task2 < FiberTask
-	def call(path)
-		
-	end
-end
 
