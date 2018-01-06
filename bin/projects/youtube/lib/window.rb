@@ -19,6 +19,7 @@ Dir.chdir current_dir do
 	require Pathname.new('./helpers.rb').expand_path
 	require Pathname.new('./fibers.rb').expand_path
 	require Pathname.new('./checkpoint.rb').expand_path
+	require Pathname.new('./camera.rb').expand_path
 end
 
 
@@ -44,6 +45,8 @@ class Window < RubyOF::Window
 	def setup
 		super()
 		
+		@camera = Camera.new
+		
 		
 		current_file = Pathname.new(__FILE__).expand_path
 		current_dir  = current_file.parent
@@ -61,7 +64,7 @@ class Window < RubyOF::Window
 					x.add_alphabet :Latin
 					x.add_alphabet :Japanese
 				end
-		
+			
 			
 			# NOTE: Checkpoint currently only enforces file dependencies. However, there are variable-level dependencies between the gated blocks that are not being accounted for.
 			@c1 = Checkpoint.new.tap do |g|
@@ -344,6 +347,7 @@ class Window < RubyOF::Window
 			loop do
 				# TODO: only render the task if it is still alive (allow for non-looping tasks)
 				@p6_debug_ui_render.resume
+				@p7_color_picker_draw.resume
 				@p5_image_render.resume(@images, @local_subscriptions)
 				Fiber.yield # <----------------
 			end
@@ -415,9 +419,19 @@ class Window < RubyOF::Window
 			end
 		end
 		
+		# accept input on every #resume
+		@p7_color_picker_draw ||= Fiber.new do 
+			# -- render data
+			loop do
+				
+				
+				Fiber.yield # <----------------
+			end
+		end
 		
-		@main_draw_fiber.resume
-		
+		@camera.draw self.width, self.height do
+			@main_draw_fiber.resume
+		end
 	end
 	
 	def on_exit
