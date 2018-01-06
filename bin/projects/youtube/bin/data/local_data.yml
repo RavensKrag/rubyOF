@@ -2,945 +2,945 @@
 - channel-name: This is Polaris
   link: https://www.youtube.com/channel/UCSvQyDawUyfXzrSq4dTVraQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCSvQyDawUyfXzrSq4dTVraQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCSvQyDawUyfXzrSq4dTVraQ.jpg"
   entry-count: 5
 - channel-name: 22cans
   link: https://www.youtube.com/channel/UCRmOiqzRTRKH64GamY7UZqA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCRmOiqzRTRKH64GamY7UZqA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCRmOiqzRTRKH64GamY7UZqA.jpg"
   entry-count: 0
 - channel-name: againstthecurrentNY
   link: https://www.youtube.com/channel/UCxMsgwldMZiuFTD6jjv32yQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCxMsgwldMZiuFTD6jjv32yQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCxMsgwldMZiuFTD6jjv32yQ.jpg"
   entry-count: 0
 - channel-name: agnescecile
   link: https://www.youtube.com/channel/UChQxI-SzBQpZXJdSrE7F24w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UChQxI-SzBQpZXJdSrE7F24w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UChQxI-SzBQpZXJdSrE7F24w.jpg"
   entry-count: 0
 - channel-name: AhnarisEverything
   link: https://www.youtube.com/channel/UC5f64sEKJsQ3hVd6M_T_o6A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC5f64sEKJsQ3hVd6M_T_o6A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC5f64sEKJsQ3hVd6M_T_o6A.jpg"
   entry-count: 0
 - channel-name: AhnarisStarcraft
   link: https://www.youtube.com/channel/UCQmeUAixMf501fO1XVEYnAw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQmeUAixMf501fO1XVEYnAw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQmeUAixMf501fO1XVEYnAw.jpg"
   entry-count: 0
 - channel-name: Aivi Tran
   link: https://www.youtube.com/channel/UCeI36oi8XyXPD1Lq_vuL73Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCeI36oi8XyXPD1Lq_vuL73Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCeI36oi8XyXPD1Lq_vuL73Q.jpg"
   entry-count: 0
 - channel-name: Android Authority
   link: https://www.youtube.com/channel/UCgyqtNWZmIxTx3b6OxTSALw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCgyqtNWZmIxTx3b6OxTSALw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCgyqtNWZmIxTx3b6OxTSALw.jpg"
   entry-count: 4
 - channel-name: Ash Hardell
   link: https://www.youtube.com/channel/UCXwXB7a3cq9AERiWF4-dK9g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCXwXB7a3cq9AERiWF4-dK9g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCXwXB7a3cq9AERiWF4-dK9g.jpg"
   entry-count: 2
 - channel-name: Assassin's Creed
   link: https://www.youtube.com/channel/UCWIstp5bH4vsGQmz4mRzcZg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCWIstp5bH4vsGQmz4mRzcZg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCWIstp5bH4vsGQmz4mRzcZg.jpg"
   entry-count: 0
 - channel-name: atlustube
   link: https://www.youtube.com/channel/UCDKOsemhPLrK4JnsZqkxHLA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDKOsemhPLrK4JnsZqkxHLA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDKOsemhPLrK4JnsZqkxHLA.jpg"
   entry-count: 2
 - channel-name: AtlusUSA
   link: https://www.youtube.com/channel/UC7hgDFSPvJVIUx_b8i1cILA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC7hgDFSPvJVIUx_b8i1cILA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC7hgDFSPvJVIUx_b8i1cILA.jpg"
   entry-count: 3
 - channel-name: aurahack
   link: https://www.youtube.com/channel/UCbXDnG4KNYYMQc6akgvP8ng
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCbXDnG4KNYYMQc6akgvP8ng.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCbXDnG4KNYYMQc6akgvP8ng.jpg"
   entry-count: 0
 - channel-name: AWE me
   link: https://www.youtube.com/channel/UCNKcMBYP_-18FLgk4BYGtfw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCNKcMBYP_-18FLgk4BYGtfw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCNKcMBYP_-18FLgk4BYGtfw.jpg"
   entry-count: 0
 - channel-name: azuMAN
   link: https://www.youtube.com/channel/UCFlb1Hh2cCtQ4vyPMJxS3Nw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCFlb1Hh2cCtQ4vyPMJxS3Nw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCFlb1Hh2cCtQ4vyPMJxS3Nw.jpg"
   entry-count: 1
 - channel-name: Bandesnaci
   link: https://www.youtube.com/channel/UCbX_9L4kmBZcNg8OmjPFcOw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCbX_9L4kmBZcNg8OmjPFcOw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCbX_9L4kmBZcNg8OmjPFcOw.jpg"
   entry-count: 0
 - channel-name: Binging with Babish
   link: https://www.youtube.com/channel/UCJHA_jMfCvEnv-3kRjTCQXw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCJHA_jMfCvEnv-3kRjTCQXw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCJHA_jMfCvEnv-3kRjTCQXw.jpg"
   entry-count: 1
 - channel-name: Bithell Games
   link: https://www.youtube.com/channel/UCkDkgK59ygwHHMDSiW0M3-g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCkDkgK59ygwHHMDSiW0M3-g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCkDkgK59ygwHHMDSiW0M3-g.jpg"
   entry-count: 2
 - channel-name: Bob Berkebile
   link: https://www.youtube.com/channel/UCE_21dTRVMiY3if0SAyABlA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCE_21dTRVMiY3if0SAyABlA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCE_21dTRVMiY3if0SAyABlA.jpg"
   entry-count: 1
 - channel-name: BornReadyVideos
   link: https://www.youtube.com/channel/UCQG_sex01DuG4AF5EUvWbpQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQG_sex01DuG4AF5EUvWbpQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQG_sex01DuG4AF5EUvWbpQ.jpg"
   entry-count: 0
 - channel-name: Brace Yourself Games
   link: https://www.youtube.com/channel/UCkxEKOWU2cUAZGPM24mv8AA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCkxEKOWU2cUAZGPM24mv8AA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCkxEKOWU2cUAZGPM24mv8AA.jpg"
   entry-count: 1
 - channel-name: Button Poetry
   link: https://www.youtube.com/channel/UC5DH3eN81b0RGJ7Xj3fsjVg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC5DH3eN81b0RGJ7Xj3fsjVg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC5DH3eN81b0RGJ7Xj3fsjVg.jpg"
   entry-count: 5
 - channel-name: Caleb Pond
   link: https://www.youtube.com/channel/UCO8DMyvvt90efYW6DKZdAOg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCO8DMyvvt90efYW6DKZdAOg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCO8DMyvvt90efYW6DKZdAOg.jpg"
   entry-count: 0
 - channel-name: CartoonHangover
   link: https://www.youtube.com/channel/UCIA9jUDnKVMYc4SmqTxcwqg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCIA9jUDnKVMYc4SmqTxcwqg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCIA9jUDnKVMYc4SmqTxcwqg.jpg"
   entry-count: 3
 - channel-name: CG Cookie Blender
   link: https://www.youtube.com/channel/UC9VayT7q3pQ7tdF-TG4Q0yQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9VayT7q3pQ7tdF-TG4Q0yQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9VayT7q3pQ7tdF-TG4Q0yQ.jpg"
   entry-count: 6
 - channel-name: CGP Grey
   link: https://www.youtube.com/channel/UC2C_jShtL725hvbm1arSV9w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC2C_jShtL725hvbm1arSV9w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC2C_jShtL725hvbm1arSV9w.jpg"
   entry-count: 0
 - channel-name: communitychannel
   link: https://www.youtube.com/channel/UCKHi7M_11VJmLZSq4WNHSkg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCKHi7M_11VJmLZSq4WNHSkg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCKHi7M_11VJmLZSq4WNHSkg.jpg"
   entry-count: 0
 - channel-name: Computerphile
   link: https://www.youtube.com/channel/UC9-y-6csu5WGm29I7JiwpnA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9-y-6csu5WGm29I7JiwpnA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9-y-6csu5WGm29I7JiwpnA.jpg"
   entry-count: 1
 - channel-name: Cool Ghosts
   link: https://www.youtube.com/channel/UCsYwjeII1w6oWd4eHP29SuQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCsYwjeII1w6oWd4eHP29SuQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCsYwjeII1w6oWd4eHP29SuQ.jpg"
   entry-count: 1
 - channel-name: Core-A Gaming
   link: https://www.youtube.com/channel/UCT7njg__VOy3n-SvXemDHvg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCT7njg__VOy3n-SvXemDHvg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCT7njg__VOy3n-SvXemDHvg.jpg"
   entry-count: 1
 - channel-name: CrashCourse
   link: https://www.youtube.com/channel/UCX6b17PVsYBQ0ip5gyeme-Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCX6b17PVsYBQ0ip5gyeme-Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCX6b17PVsYBQ0ip5gyeme-Q.jpg"
   entry-count: 4
 - channel-name: Day9TV
   link: https://www.youtube.com/channel/UCaxar6TBM-94_ezoS00fLkA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCaxar6TBM-94_ezoS00fLkA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCaxar6TBM-94_ezoS00fLkA.jpg"
   entry-count: 8
 - channel-name: design3channel
   link: https://www.youtube.com/channel/UCp34c3Cfjb8Pl5dgsQ_NWJg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCp34c3Cfjb8Pl5dgsQ_NWJg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCp34c3Cfjb8Pl5dgsQ_NWJg.jpg"
   entry-count: 0
 - channel-name: Dexbonus
   link: https://www.youtube.com/channel/UCwwByLVM8DlwWQjA0zqeLYA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCwwByLVM8DlwWQjA0zqeLYA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCwwByLVM8DlwWQjA0zqeLYA.jpg"
   entry-count: 1
 - channel-name: DidYouKnowGaming?
   link: https://www.youtube.com/channel/UCyS4xQE6DK4_p3qXQwJQAyA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCyS4xQE6DK4_p3qXQwJQAyA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCyS4xQE6DK4_p3qXQwJQAyA.jpg"
   entry-count: 3
 - channel-name: Dischan Media
   link: https://www.youtube.com/channel/UCaGe7q59EVpeEVZbEbFDSqQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCaGe7q59EVpeEVZbEbFDSqQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCaGe7q59EVpeEVZbEbFDSqQ.jpg"
   entry-count: 1
 - channel-name: DJ TechTools
   link: https://www.youtube.com/channel/UCkZQQVgNUToyz5bocyA-cog
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCkZQQVgNUToyz5bocyA-cog.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCkZQQVgNUToyz5bocyA-cog.jpg"
   entry-count: 1
 - channel-name: DoubleFineProd
   link: https://www.youtube.com/channel/UCQMxCuhm25CUS9MZKjZ2ihQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQMxCuhm25CUS9MZKjZ2ihQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQMxCuhm25CUS9MZKjZ2ihQ.jpg"
   entry-count: 2
 - channel-name: doubleplus
   link: https://www.youtube.com/channel/UC1kYEPLh7TtoPdM0YSi0VlA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1kYEPLh7TtoPdM0YSi0VlA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1kYEPLh7TtoPdM0YSi0VlA.jpg"
   entry-count: 0
 - channel-name: Drawing Tutorials Online
   link: https://www.youtube.com/channel/UC1LMGOBet0j5zwCLNyLOFZw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1LMGOBet0j5zwCLNyLOFZw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1LMGOBet0j5zwCLNyLOFZw.jpg"
   entry-count: 2
 - channel-name: Egoraptor
   link: https://www.youtube.com/channel/UC0gEw6pgNkLkkzMwzX4UtHA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC0gEw6pgNkLkkzMwzX4UtHA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC0gEw6pgNkLkkzMwzX4UtHA.jpg"
   entry-count: 0
 - channel-name: Elysian Shadows
   link: https://www.youtube.com/channel/UCRDU71BLWwww_NgT5VBGZYQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCRDU71BLWwww_NgT5VBGZYQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCRDU71BLWwww_NgT5VBGZYQ.jpg"
   entry-count: 1
 - channel-name: emmablackery
   link: https://www.youtube.com/channel/UCebpq6lNn_oV_Y2XiRzR3Vg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCebpq6lNn_oV_Y2XiRzR3Vg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCebpq6lNn_oV_Y2XiRzR3Vg.jpg"
   entry-count: 1
 - channel-name: Errant Signal
   link: https://www.youtube.com/channel/UCm4JnxTxtvItQecKUc4zRhQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCm4JnxTxtvItQecKUc4zRhQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCm4JnxTxtvItQecKUc4zRhQ.jpg"
   entry-count: 1
 - channel-name: Eurogamer
   link: https://www.youtube.com/channel/UCciKycgzURdymx-GRSY2_dA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCciKycgzURdymx-GRSY2_dA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCciKycgzURdymx-GRSY2_dA.jpg"
   entry-count: 12
 - channel-name: Extra Credits
   link: https://www.youtube.com/channel/UCCODtTcd5M1JavPCOr_Uydg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCCODtTcd5M1JavPCOr_Uydg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCCODtTcd5M1JavPCOr_Uydg.jpg"
   entry-count: 3
 - channel-name: Extra Play
   link: https://www.youtube.com/channel/UC-7oMv6E4Uz2tF51w5Sj49w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC-7oMv6E4Uz2tF51w5Sj49w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC-7oMv6E4Uz2tF51w5Sj49w.jpg"
   entry-count: 6
 - channel-name: EZEKXY
   link: https://www.youtube.com/channel/UCy-5WLSWk0NBiKXT2CcZlgw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCy-5WLSWk0NBiKXT2CcZlgw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCy-5WLSWk0NBiKXT2CcZlgw.jpg"
   entry-count: 0
 - channel-name: FlyingCafeGames
   link: https://www.youtube.com/channel/UC1W_mbR5iafrs_0DtQ66g5Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1W_mbR5iafrs_0DtQ66g5Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1W_mbR5iafrs_0DtQ66g5Q.jpg"
   entry-count: 0
 - channel-name: foxdropLoL - Be a Better League Player
   link: https://www.youtube.com/channel/UC9U_UPJLasfZYZ0icNI0vBg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9U_UPJLasfZYZ0icNI0vBg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9U_UPJLasfZYZ0icNI0vBg.jpg"
   entry-count: 4
 - channel-name: FullIndie
   link: https://www.youtube.com/channel/UCTHrk36x6aQW2P9yAHifDdQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCTHrk36x6aQW2P9yAHifDdQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCTHrk36x6aQW2P9yAHifDdQ.jpg"
   entry-count: 0
 - channel-name: Gaby Dunn
   link: https://www.youtube.com/channel/UCAxlE0gqN9-dz1NB8xEoJjw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCAxlE0gqN9-dz1NB8xEoJjw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCAxlE0gqN9-dz1NB8xEoJjw.jpg"
   entry-count: 1
 - channel-name: GameGrumps
   link: https://www.youtube.com/channel/UC9CuvdOVfMPvKCiwdGKL3cQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9CuvdOVfMPvKCiwdGKL3cQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9CuvdOVfMPvKCiwdGKL3cQ.jpg"
   entry-count: 16
 - channel-name: gamesbycolaboratory
   link: https://www.youtube.com/channel/UCDngv13PAelpvcBN3-WPVtQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDngv13PAelpvcBN3-WPVtQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDngv13PAelpvcBN3-WPVtQ.jpg"
   entry-count: 0
 - channel-name: Gamesbymo Inc.
   link: https://www.youtube.com/channel/UCDzCe9-Gacx103YZlOhBQKw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDzCe9-Gacx103YZlOhBQKw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDzCe9-Gacx103YZlOhBQKw.jpg"
   entry-count: 0
 - channel-name: Garfunkel And Oates
   link: https://www.youtube.com/channel/UC1R9fG_iKqvt9FIhEQH9nTA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1R9fG_iKqvt9FIhEQH9nTA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1R9fG_iKqvt9FIhEQH9nTA.jpg"
   entry-count: 1
 - channel-name: GARNiDELiA / hpt**
   link: https://www.youtube.com/channel/UCAYfguaShVaNDU561_jJoOQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCAYfguaShVaNDU561_jJoOQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCAYfguaShVaNDU561_jJoOQ.jpg"
   entry-count: 1
 - channel-name: Geek & Sundry
   link: https://www.youtube.com/channel/UCaBf1a-dpIsw8OxqH4ki2Kg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCaBf1a-dpIsw8OxqH4ki2Kg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCaBf1a-dpIsw8OxqH4ki2Kg.jpg"
   entry-count: 5
 - channel-name: Glove and Boots
   link: https://www.youtube.com/channel/UC1qC39KQoTG6LqgL_YnjSSQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1qC39KQoTG6LqgL_YnjSSQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1qC39KQoTG6LqgL_YnjSSQ.jpg"
   entry-count: 1
 - channel-name: Goose house
   link: https://www.youtube.com/channel/UCFDL0NuxUBAvvu1PnIwW2ww
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCFDL0NuxUBAvvu1PnIwW2ww.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCFDL0NuxUBAvvu1PnIwW2ww.jpg"
   entry-count: 1
 - channel-name: grapefrukt
   link: https://www.youtube.com/channel/UCDXajZI-pUqVfPpjdXp9zCA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDXajZI-pUqVfPpjdXp9zCA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDXajZI-pUqVfPpjdXp9zCA.jpg"
   entry-count: 1
 - channel-name: GreenSageThe5th
   link: https://www.youtube.com/channel/UC3HqBkVcJasHzqRx2O4bnLA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC3HqBkVcJasHzqRx2O4bnLA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC3HqBkVcJasHzqRx2O4bnLA.jpg"
   entry-count: 0
 - channel-name: Guild Wars 2
   link: https://www.youtube.com/channel/UCP_FgMqOxp_VsM0UfrL-DxA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCP_FgMqOxp_VsM0UfrL-DxA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCP_FgMqOxp_VsM0UfrL-DxA.jpg"
   entry-count: 6
 - channel-name: H+ The Digital Series
   link: https://www.youtube.com/channel/UCl3Vf8heuOumLuC_toRYGXg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCl3Vf8heuOumLuC_toRYGXg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCl3Vf8heuOumLuC_toRYGXg.jpg"
   entry-count: 0
 - channel-name: HardwareHeaven
   link: https://www.youtube.com/channel/UCfkWXKMOzuHezpQEWTJfOiw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCfkWXKMOzuHezpQEWTJfOiw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCfkWXKMOzuHezpQEWTJfOiw.jpg"
   entry-count: 0
 - channel-name: HAWPOfficial
   link: https://www.youtube.com/channel/UCrQieQckb9Fw9-SD7BdkpjQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCrQieQckb9Fw9-SD7BdkpjQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCrQieQckb9Fw9-SD7BdkpjQ.jpg"
   entry-count: 0
 - channel-name: hbomberguy
   link: https://www.youtube.com/channel/UClt01z1wHHT7c5lKcU8pxRQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UClt01z1wHHT7c5lKcU8pxRQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UClt01z1wHHT7c5lKcU8pxRQ.jpg"
   entry-count: 1
 - channel-name: HDstarcraft
   link: https://www.youtube.com/channel/UCv3nmgyia2M2FU2TAIRXSLw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCv3nmgyia2M2FU2TAIRXSLw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCv3nmgyia2M2FU2TAIRXSLw.jpg"
   entry-count: 0
 - channel-name: Husky Plays
   link: https://www.youtube.com/channel/UCU5n2CB2w4-D5AIaT0UOz4w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCU5n2CB2w4-D5AIaT0UOz4w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCU5n2CB2w4-D5AIaT0UOz4w.jpg"
   entry-count: 0
 - channel-name: HuskyStarcraft
   link: https://www.youtube.com/channel/UCZ8D7Qvm0YHm0vZKFl-AFdA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCZ8D7Qvm0YHm0vZKFl-AFdA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCZ8D7Qvm0YHm0vZKFl-AFdA.jpg"
   entry-count: 0
 - channel-name: ikinamo
   link: https://www.youtube.com/channel/UCOHoBDJhP2cpYAI8YKroFbA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCOHoBDJhP2cpYAI8YKroFbA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCOHoBDJhP2cpYAI8YKroFbA.jpg"
   entry-count: 1
 - channel-name: iLL WiLL PrEss
   link: https://www.youtube.com/channel/UC19RiHSy28vMxg_dC1AI_fA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC19RiHSy28vMxg_dC1AI_fA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC19RiHSy28vMxg_dC1AI_fA.jpg"
   entry-count: 3
 - channel-name: IllustStudio
   link: https://www.youtube.com/channel/UCz33MoIDmQz1Czte5_cg29w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCz33MoIDmQz1Czte5_cg29w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCz33MoIDmQz1Czte5_cg29w.jpg"
   entry-count: 0
 - channel-name: Innuendo Studios
   link: https://www.youtube.com/channel/UC5fdssPqmmGhkhsJi4VcckA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC5fdssPqmmGhkhsJi4VcckA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC5fdssPqmmGhkhsJi4VcckA.jpg"
   entry-count: 0
 - channel-name: Instig8iveJournalism
   link: https://www.youtube.com/channel/UCyjLGp8hQObJMm4lSQccjFw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCyjLGp8hQObJMm4lSQccjFw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCyjLGp8hQObJMm4lSQccjFw.jpg"
   entry-count: 0
 - channel-name: It's Okay To Be Smart
   link: https://www.youtube.com/channel/UCH4BNI0-FOK2dMXoFtViWHw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCH4BNI0-FOK2dMXoFtViWHw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCH4BNI0-FOK2dMXoFtViWHw.jpg"
   entry-count: 1
 - channel-name: JakeBruene
   link: https://www.youtube.com/channel/UCbxfPSfdIDIzjU52N519Wgg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCbxfPSfdIDIzjU52N519Wgg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCbxfPSfdIDIzjU52N519Wgg.jpg"
   entry-count: 0
 - channel-name: JasonYangViolin
   link: https://www.youtube.com/channel/UCPRyP1h49RTaIEET32x18pQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCPRyP1h49RTaIEET32x18pQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCPRyP1h49RTaIEET32x18pQ.jpg"
   entry-count: 1
 - channel-name: Jesse Cox
   link: https://www.youtube.com/channel/UCCbfB3cQtkEAiKfdRQnfQvw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCCbfB3cQtkEAiKfdRQnfQvw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCCbfB3cQtkEAiKfdRQnfQvw.jpg"
   entry-count: 8
 - channel-name: Jim Sterling
   link: https://www.youtube.com/channel/UCWCw2Sd7RlYJ2yuNVHDWNOA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCWCw2Sd7RlYJ2yuNVHDWNOA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCWCw2Sd7RlYJ2yuNVHDWNOA.jpg"
   entry-count: 7
 - channel-name: Jordan Keyes
   link: https://www.youtube.com/channel/UC9-EE_9NTDDW0lHad0YOlzQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9-EE_9NTDDW0lHad0YOlzQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9-EE_9NTDDW0lHad0YOlzQ.jpg"
   entry-count: 5
 - channel-name: Jupiter Broadcasting
   link: https://www.youtube.com/channel/UCHugE6eRhqB9_AZQh4DDbIw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCHugE6eRhqB9_AZQh4DDbIw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCHugE6eRhqB9_AZQh4DDbIw.jpg"
   entry-count: 7
 - channel-name: Just Between Us
   link: https://www.youtube.com/channel/UCfVC_0-T1gkati_kcb4gXPg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCfVC_0-T1gkati_kcb4gXPg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCfVC_0-T1gkati_kcb4gXPg.jpg"
   entry-count: 2
 - channel-name: Kate Jablonski
   link: https://www.youtube.com/channel/UCcPnJTn1Uy8Q23vuoShxupQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCcPnJTn1Uy8Q23vuoShxupQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCcPnJTn1Uy8Q23vuoShxupQ.jpg"
   entry-count: 1
 - channel-name: kurt
   link: https://www.youtube.com/channel/UC9trcENZCwj4ZKIH1lm-WuQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9trcENZCwj4ZKIH1lm-WuQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9trcENZCwj4ZKIH1lm-WuQ.jpg"
   entry-count: 1
 - channel-name: Kurt Hugo Schneider
   link: https://www.youtube.com/channel/UCplkk3J5wrEl0TNrthHjq4Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCplkk3J5wrEl0TNrthHjq4Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCplkk3J5wrEl0TNrthHjq4Q.jpg"
   entry-count: 1
 - channel-name: Kurzgesagt – In a Nutshell
   link: https://www.youtube.com/channel/UCsXVk37bltHxD1rDPwtNM8Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCsXVk37bltHxD1rDPwtNM8Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCsXVk37bltHxD1rDPwtNM8Q.jpg"
   entry-count: 0
 - channel-name: kylelandry
   link: https://www.youtube.com/channel/UCk0UErv9b4Hn5ucNNjqD1UQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCk0UErv9b4Hn5ucNNjqD1UQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCk0UErv9b4Hn5ucNNjqD1UQ.jpg"
   entry-count: 1
 - channel-name: LastWeekTonight
   link: https://www.youtube.com/channel/UC3XTzVzaHQEd30rQbuvCtTQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC3XTzVzaHQEd30rQbuvCtTQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC3XTzVzaHQEd30rQbuvCtTQ.jpg"
   entry-count: 0
 - channel-name: Lindsay Ellis
   link: https://www.youtube.com/channel/UCG1h-Wqjtwz7uUANw6gazRw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCG1h-Wqjtwz7uUANw6gazRw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCG1h-Wqjtwz7uUANw6gazRw.jpg"
   entry-count: 1
 - channel-name: LinuxNativeGaming
   link: https://www.youtube.com/channel/UCpdaFWJ4IKnVAbJNM2TzdTQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCpdaFWJ4IKnVAbJNM2TzdTQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCpdaFWJ4IKnVAbJNM2TzdTQ.jpg"
   entry-count: 0
 - channel-name: makmakmakochan
   link: https://www.youtube.com/channel/UCAUdZftjmFXRaE6K7ppQhwA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCAUdZftjmFXRaE6K7ppQhwA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCAUdZftjmFXRaE6K7ppQhwA.jpg"
   entry-count: 0
 - channel-name: markcrilley
   link: https://www.youtube.com/channel/UCno-YPZ8BiLrN0Wbl8qICFA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCno-YPZ8BiLrN0Wbl8qICFA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCno-YPZ8BiLrN0Wbl8qICFA.jpg"
   entry-count: 2
 - channel-name: Mart0zz
   link: https://www.youtube.com/channel/UCg6x8OL9OF-v6XyyUk0ZCIA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCg6x8OL9OF-v6XyyUk0ZCIA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCg6x8OL9OF-v6XyyUk0ZCIA.jpg"
   entry-count: 1
 - channel-name: Marvin Liu
   link: https://www.youtube.com/channel/UCHnGhrbNZC2v2jl_aKrBbsw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCHnGhrbNZC2v2jl_aKrBbsw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCHnGhrbNZC2v2jl_aKrBbsw.jpg"
   entry-count: 0
 - channel-name: Mattias Häggström Gerdt
   link: https://www.youtube.com/channel/UCRwctpRijBfMupInLkMTwXg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCRwctpRijBfMupInLkMTwXg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCRwctpRijBfMupInLkMTwXg.jpg"
   entry-count: 0
 - channel-name: Mattie
   link: https://www.youtube.com/channel/UCvp5C3-BzgRfmWzSvbHO1ww
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCvp5C3-BzgRfmWzSvbHO1ww.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCvp5C3-BzgRfmWzSvbHO1ww.jpg"
   entry-count: 0
 - channel-name: MekuCube
   link: https://www.youtube.com/channel/UCcPNoT970ffEMxWIz7RgYbw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCcPNoT970ffEMxWIz7RgYbw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCcPNoT970ffEMxWIz7RgYbw.jpg"
   entry-count: 0
 - channel-name: Mike Inel
   link: https://www.youtube.com/channel/UCQqXoLLNReC3yFAIkX4vDJA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQqXoLLNReC3yFAIkX4vDJA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQqXoLLNReC3yFAIkX4vDJA.jpg"
   entry-count: 2
 - channel-name: Moldover Musical-AntiHero
   link: https://www.youtube.com/channel/UCwGN8FVpAueufVzm11ikD-w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCwGN8FVpAueufVzm11ikD-w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCwGN8FVpAueufVzm11ikD-w.jpg"
   entry-count: 1
 - channel-name: MusicProductionsClub
   link: https://www.youtube.com/channel/UC5ekCzWSomf8ya8VzYqa25Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC5ekCzWSomf8ya8VzYqa25Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC5ekCzWSomf8ya8VzYqa25Q.jpg"
   entry-count: 0
 - channel-name: Nick Preston
   link: https://www.youtube.com/channel/UC9d2aDm-wHysQUsHvJiaxnw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9d2aDm-wHysQUsHvJiaxnw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9d2aDm-wHysQUsHvJiaxnw.jpg"
   entry-count: 0
 - channel-name: Nick Robinson
   link: https://www.youtube.com/channel/UCOuddH5GyBXp-_tv_ASdp_A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCOuddH5GyBXp-_tv_ASdp_A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCOuddH5GyBXp-_tv_ASdp_A.jpg"
   entry-count: 1
 - channel-name: nShaken
   link: https://www.youtube.com/channel/UCE_yfJHKdJASIzKC0MsGq9w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCE_yfJHKdJASIzKC0MsGq9w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCE_yfJHKdJASIzKC0MsGq9w.jpg"
   entry-count: 0
 - channel-name: Numberphile
   link: https://www.youtube.com/channel/UCoxcjq-8xIDTYp3uz647V5A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCoxcjq-8xIDTYp3uz647V5A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCoxcjq-8xIDTYp3uz647V5A.jpg"
   entry-count: 1
 - channel-name: Oculus
   link: https://www.youtube.com/channel/UC766vkQw0Mz3VtXX5XvXxGQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC766vkQw0Mz3VtXX5XvXxGQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC766vkQw0Mz3VtXX5XvXxGQ.jpg"
   entry-count: 4
 - channel-name: OfficialCoilworks
   link: https://www.youtube.com/channel/UC1d5Sae1CMF6kzTgbDOnhKw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1d5Sae1CMF6kzTgbDOnhKw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1d5Sae1CMF6kzTgbDOnhKw.jpg"
   entry-count: 1
 - channel-name: ogatamon
   link: https://www.youtube.com/channel/UCqjQzuqq_yBB3BIcfaFBPrA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCqjQzuqq_yBB3BIcfaFBPrA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCqjQzuqq_yBB3BIcfaFBPrA.jpg"
   entry-count: 0
 - channel-name: Operation Rainfall
   link: https://www.youtube.com/channel/UCQMtqYaoflEsPtR5YKqw3ew
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQMtqYaoflEsPtR5YKqw3ew.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQMtqYaoflEsPtR5YKqw3ew.jpg"
   entry-count: 5
 - channel-name: oztabletpc
   link: https://www.youtube.com/channel/UCnzB2nXMJ6hkq5UXkW0e5WQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCnzB2nXMJ6hkq5UXkW0e5WQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCnzB2nXMJ6hkq5UXkW0e5WQ.jpg"
   entry-count: 2
 - channel-name: PBS Digital Studios
   link: https://www.youtube.com/channel/UCq6OAftTQOuUBRdtUDq5SUA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCq6OAftTQOuUBRdtUDq5SUA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCq6OAftTQOuUBRdtUDq5SUA.jpg"
   entry-count: 7
 - channel-name: PBS Game/Show
   link: https://www.youtube.com/channel/UCr_2H8pPitVJ85bmpLwFUyQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCr_2H8pPitVJ85bmpLwFUyQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCr_2H8pPitVJ85bmpLwFUyQ.jpg"
   entry-count: 0
 - channel-name: PBS Idea Channel
   link: https://www.youtube.com/channel/UC3LqW4ijMoENQ2Wv17ZrFJA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC3LqW4ijMoENQ2Wv17ZrFJA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC3LqW4ijMoENQ2Wv17ZrFJA.jpg"
   entry-count: 1
 - channel-name: PBSoffbook
   link: https://www.youtube.com/channel/UCpH3Eia7Qsncq-qmhltZ6uQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCpH3Eia7Qsncq-qmhltZ6uQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCpH3Eia7Qsncq-qmhltZ6uQ.jpg"
   entry-count: 0
 - channel-name: pcrownplays
   link: https://www.youtube.com/channel/UCOuI2EMtIdxPTuGDukWjAhQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCOuI2EMtIdxPTuGDukWjAhQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCOuI2EMtIdxPTuGDukWjAhQ.jpg"
   entry-count: 0
 - channel-name: Peter Sjöstrand
   link: https://www.youtube.com/channel/UCjMeooX4ma4O7hAwofC_H7w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCjMeooX4ma4O7hAwofC_H7w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCjMeooX4ma4O7hAwofC_H7w.jpg"
   entry-count: 1
 - channel-name: Phylol
   link: https://www.youtube.com/channel/UCARZJejxRnmQ0m_tU7MgRiA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCARZJejxRnmQ0m_tU7MgRiA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCARZJejxRnmQ0m_tU7MgRiA.jpg"
   entry-count: 5
 - channel-name: Physics Girl
   link: https://www.youtube.com/channel/UC7DdEm33SyaTDtWYGO2CwdA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC7DdEm33SyaTDtWYGO2CwdA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC7DdEm33SyaTDtWYGO2CwdA.jpg"
   entry-count: 2
 - channel-name: Platform32
   link: https://www.youtube.com/channel/UChenGU9G_CFZhIxAWvnbuKw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UChenGU9G_CFZhIxAWvnbuKw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UChenGU9G_CFZhIxAWvnbuKw.jpg"
   entry-count: 15
 - channel-name: Play-Asia
   link: https://www.youtube.com/channel/UCZOazC-lDO8BrnPlHOvKFtw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCZOazC-lDO8BrnPlHOvKFtw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCZOazC-lDO8BrnPlHOvKFtw.jpg"
   entry-count: 1
 - channel-name: Polygon
   link: https://www.youtube.com/channel/UCuVxaQDraOja6xKidcmoufA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCuVxaQDraOja6xKidcmoufA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCuVxaQDraOja6xKidcmoufA.jpg"
   entry-count: 0
 - channel-name: PressHeartToContinue
   link: https://www.youtube.com/channel/UC_ufxdQbKBrrMOiZ4LzrUyA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC_ufxdQbKBrrMOiZ4LzrUyA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC_ufxdQbKBrrMOiZ4LzrUyA.jpg"
   entry-count: 6
 - channel-name: PsyStarcraft
   link: https://www.youtube.com/channel/UCdbL-i29FDPYok8X8yIynNQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCdbL-i29FDPYok8X8yIynNQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCdbL-i29FDPYok8X8yIynNQ.jpg"
   entry-count: 0
 - channel-name: PTXofficial
   link: https://www.youtube.com/channel/UCmv1CLT6ZcFdTJMHxaR9XeA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCmv1CLT6ZcFdTJMHxaR9XeA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCmv1CLT6ZcFdTJMHxaR9XeA.jpg"
   entry-count: 0
 - channel-name: rantasmo
   link: https://www.youtube.com/channel/UC8MYk8ZpcIZeO7Z2ljBAj3g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC8MYk8ZpcIZeO7Z2ljBAj3g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC8MYk8ZpcIZeO7Z2ljBAj3g.jpg"
   entry-count: 1
 - channel-name: Renevatia
   link: https://www.youtube.com/channel/UCfIrHCIoNt2Xe5iSG3jBHkQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCfIrHCIoNt2Xe5iSG3jBHkQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCfIrHCIoNt2Xe5iSG3jBHkQ.jpg"
   entry-count: 0
 - channel-name: REOL Official
   link: https://www.youtube.com/channel/UCB6pJFaFByws3dQj4AdLdyA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCB6pJFaFByws3dQj4AdLdyA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCB6pJFaFByws3dQj4AdLdyA.jpg"
   entry-count: 0
 - channel-name: Rev3Games
   link: https://www.youtube.com/channel/UCQXR8pItAoKDAJSbphFxbrg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCQXR8pItAoKDAJSbphFxbrg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCQXR8pItAoKDAJSbphFxbrg.jpg"
   entry-count: 0
 - channel-name: ririri rururu
   link: https://www.youtube.com/channel/UChhn3SKUYAcajcG9mn7dGqA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UChhn3SKUYAcajcG9mn7dGqA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UChhn3SKUYAcajcG9mn7dGqA.jpg"
   entry-count: 2
 - channel-name: Rob Petkau
   link: https://www.youtube.com/channel/UCGToxjzpaR-gX4q_MXo8Igw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCGToxjzpaR-gX4q_MXo8Igw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCGToxjzpaR-gX4q_MXo8Igw.jpg"
   entry-count: 1
 - channel-name: RocketJump
   link: https://www.youtube.com/channel/UCDsO-0Yo5zpJk575nKXgMVA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDsO-0Yo5zpJk575nKXgMVA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDsO-0Yo5zpJk575nKXgMVA.jpg"
   entry-count: 0
 - channel-name: RockLeeSmile
   link: https://www.youtube.com/channel/UCgy-XzXwcdJKNKIUyzQmw7Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCgy-XzXwcdJKNKIUyzQmw7Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCgy-XzXwcdJKNKIUyzQmw7Q.jpg"
   entry-count: 7
 - channel-name: RPG Makers
   link: https://www.youtube.com/channel/UCwRhw9VTrrQmQvT9Hig3HHw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCwRhw9VTrrQmQvT9Hig3HHw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCwRhw9VTrrQmQvT9Hig3HHw.jpg"
   entry-count: 0
 - channel-name: SciShow
   link: https://www.youtube.com/channel/UCZYTClx2T1of7BRZ86-8fow
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCZYTClx2T1of7BRZ86-8fow.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCZYTClx2T1of7BRZ86-8fow.jpg"
   entry-count: 7
 - channel-name: scotthoying
   link: https://www.youtube.com/channel/UC9uy7qLhWgiSbsDUGHe1z2w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9uy7qLhWgiSbsDUGHe1z2w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9uy7qLhWgiSbsDUGHe1z2w.jpg"
   entry-count: 1
 - channel-name: Seage Speaks
   link: https://www.youtube.com/channel/UCnZALP64a8bf3HIvdCe7e2A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCnZALP64a8bf3HIvdCe7e2A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCnZALP64a8bf3HIvdCe7e2A.jpg"
   entry-count: 1
 - channel-name: SethBling
   link: https://www.youtube.com/channel/UC8aG3LDTDwNR1UQhSn9uVrw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC8aG3LDTDwNR1UQhSn9uVrw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC8aG3LDTDwNR1UQhSn9uVrw.jpg"
   entry-count: 0
 - channel-name: Shayne Butts
   link: https://www.youtube.com/channel/UCjND2TuJhwM7NpXAwY2O-1g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCjND2TuJhwM7NpXAwY2O-1g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCjND2TuJhwM7NpXAwY2O-1g.jpg"
   entry-count: 0
 - channel-name: Simone Giertz
   link: https://www.youtube.com/channel/UC3KEoMzNz8eYnwBC34RaKCQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC3KEoMzNz8eYnwBC34RaKCQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC3KEoMzNz8eYnwBC34RaKCQ.jpg"
   entry-count: 11
 - channel-name: Sinix Design
   link: https://www.youtube.com/channel/UCUQTqWAaSzhAKRanOpes1nA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCUQTqWAaSzhAKRanOpes1nA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCUQTqWAaSzhAKRanOpes1nA.jpg"
   entry-count: 1
 - channel-name: SmarterEveryDay
   link: https://www.youtube.com/channel/UC6107grRI4m0o2-emgoDnAA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC6107grRI4m0o2-emgoDnAA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC6107grRI4m0o2-emgoDnAA.jpg"
   entry-count: 2
 - channel-name: Smooth McGroove
   link: https://www.youtube.com/channel/UCJvBEEqTaLaKclbCPgIjBSQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCJvBEEqTaLaKclbCPgIjBSQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCJvBEEqTaLaKclbCPgIjBSQ.jpg"
   entry-count: 0
 - channel-name: solidboko
   link: https://www.youtube.com/channel/UC1gGK-jOC2k3RqN1QNhrXEA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC1gGK-jOC2k3RqN1QNhrXEA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC1gGK-jOC2k3RqN1QNhrXEA.jpg"
   entry-count: 0
 - channel-name: Sophie Houlden
   link: https://www.youtube.com/channel/UCmjaELK8ZBwg9dSkowC0UPw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCmjaELK8ZBwg9dSkowC0UPw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCmjaELK8ZBwg9dSkowC0UPw.jpg"
   entry-count: 5
 - channel-name: Sp0ntanius
   link: https://www.youtube.com/channel/UCKi0KQc6DUMYCrWIvJjfunw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCKi0KQc6DUMYCrWIvJjfunw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCKi0KQc6DUMYCrWIvJjfunw.jpg"
   entry-count: 0
 - channel-name: StarcraftScientist
   link: https://www.youtube.com/channel/UCl-ejGyjWXvp5jiiRnxd4bA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCl-ejGyjWXvp5jiiRnxd4bA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCl-ejGyjWXvp5jiiRnxd4bA.jpg"
   entry-count: 0
 - channel-name: stretta
   link: https://www.youtube.com/channel/UC4YjqFNB5NYnv7KEWHoMw3A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC4YjqFNB5NYnv7KEWHoMw3A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC4YjqFNB5NYnv7KEWHoMw3A.jpg"
   entry-count: 1
 - channel-name: Super Bunnyhop
   link: https://www.youtube.com/channel/UCWqr2tH3dPshNhPjV5h1xRw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCWqr2tH3dPshNhPjV5h1xRw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCWqr2tH3dPshNhPjV5h1xRw.jpg"
   entry-count: 2
 - channel-name: Supergiant Games
   link: https://www.youtube.com/channel/UCBq8CLRcJN8rgqHOkyL1ozg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCBq8CLRcJN8rgqHOkyL1ozg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCBq8CLRcJN8rgqHOkyL1ozg.jpg"
   entry-count: 1
 - channel-name: Sycra
   link: https://www.youtube.com/channel/UC5dyu9y0EV0cSvGtbBtHw_w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC5dyu9y0EV0cSvGtbBtHw_w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC5dyu9y0EV0cSvGtbBtHw_w.jpg"
   entry-count: 1
 - channel-name: Team Spooky After Hours (by Sabin)
   link: https://www.youtube.com/channel/UCLiUf7WFmwd1cayECiCQRNg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCLiUf7WFmwd1cayECiCQRNg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCLiUf7WFmwd1cayECiCQRNg.jpg"
   entry-count: 0
 - channel-name: Technicality
   link: https://www.youtube.com/channel/UCnoIjdOZF4tTA7M7C4Nt4-w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCnoIjdOZF4tTA7M7C4Nt4-w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCnoIjdOZF4tTA7M7C4Nt4-w.jpg"
   entry-count: 1
 - channel-name: TerminalMontage [Jeremey]
   link: https://www.youtube.com/channel/UCLFXk9J3O-hhOk0msOjKYdQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCLFXk9J3O-hhOk0msOjKYdQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCLFXk9J3O-hhOk0msOjKYdQ.jpg"
   entry-count: 1
 - channel-name: Tested
   link: https://www.youtube.com/channel/UCiDJtJKMICpb9B1qf7qjEOA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCiDJtJKMICpb9B1qf7qjEOA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCiDJtJKMICpb9B1qf7qjEOA.jpg"
   entry-count: 7
 - channel-name: thatgamecompany
   link: https://www.youtube.com/channel/UCMg7SUyZguPQfhygxj2Cj4A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCMg7SUyZguPQfhygxj2Cj4A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCMg7SUyZguPQfhygxj2Cj4A.jpg"
   entry-count: 1
 - channel-name: The Game Station
   link: https://www.youtube.com/channel/UCCBuCjSIg4gFFUSoqlLQViQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCCBuCjSIg4gFFUSoqlLQViQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCCBuCjSIg4gFFUSoqlLQViQ.jpg"
   entry-count: 0
 - channel-name: The Guild
   link: https://www.youtube.com/channel/UCt9S9nd8hATsfRjRlrcyklw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCt9S9nd8hATsfRjRlrcyklw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCt9S9nd8hATsfRjRlrcyklw.jpg"
   entry-count: 0
 - channel-name: thethrashlab
   link: https://www.youtube.com/channel/UCG2m0VpHfAi9YLWqWKOF1MQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCG2m0VpHfAi9YLWqWKOF1MQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCG2m0VpHfAi9YLWqWKOF1MQ.jpg"
   entry-count: 0
 - channel-name: THNKR
   link: https://www.youtube.com/channel/UCYNlsJPY-IrNhZqCOeApbEw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCYNlsJPY-IrNhZqCOeApbEw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCYNlsJPY-IrNhZqCOeApbEw.jpg"
   entry-count: 0
 - channel-name: Tokyo Fashion
   link: https://www.youtube.com/channel/UCSvZTE-ZDWdgkmz9kwiYDRQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCSvZTE-ZDWdgkmz9kwiYDRQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCSvZTE-ZDWdgkmz9kwiYDRQ.jpg"
   entry-count: 2
 - channel-name: Tom Cosm
   link: https://www.youtube.com/channel/UCyiC_SKm-R5WLVMYmxuMXxA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCyiC_SKm-R5WLVMYmxuMXxA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCyiC_SKm-R5WLVMYmxuMXxA.jpg"
   entry-count: 1
 - channel-name: VaatiVidya
   link: https://www.youtube.com/channel/UCe0DNp0mKMqrYVaTundyr9w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCe0DNp0mKMqrYVaTundyr9w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCe0DNp0mKMqrYVaTundyr9w.jpg"
   entry-count: 0
 - channel-name: ValkyrieAurora
   link: https://www.youtube.com/channel/UCDjB4FTYBq2KCh67pGx1D1Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCDjB4FTYBq2KCh67pGx1D1Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCDjB4FTYBq2KCh67pGx1D1Q.jpg"
   entry-count: 0
 - channel-name: Veritasium
   link: https://www.youtube.com/channel/UCHnyfMqiRRG1u-2MsSQLbXA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCHnyfMqiRRG1u-2MsSQLbXA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCHnyfMqiRRG1u-2MsSQLbXA.jpg"
   entry-count: 1
 - channel-name: VGBootCamp VoDs
   link: https://www.youtube.com/channel/UCj1J3QuIftjOq9iv_rr7Egw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCj1J3QuIftjOq9iv_rr7Egw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCj1J3QuIftjOq9iv_rr7Egw.jpg"
   entry-count: 14
 - channel-name: VGMusicOfTheDay
   link: https://www.youtube.com/channel/UCWehxsncwa231PprnRS7_cg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCWehxsncwa231PprnRS7_cg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCWehxsncwa231PprnRS7_cg.jpg"
   entry-count: 0
 - channel-name: Vihart
   link: https://www.youtube.com/channel/UCOGeU-1Fig3rrDjhm9Zs_wg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCOGeU-1Fig3rrDjhm9Zs_wg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCOGeU-1Fig3rrDjhm9Zs_wg.jpg"
   entry-count: 0
 - channel-name: VindictusOnline
   link: https://www.youtube.com/channel/UC3nQfKGdowc7sZiU4IRbGzQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC3nQfKGdowc7sZiU4IRbGzQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC3nQfKGdowc7sZiU4IRbGzQ.jpg"
   entry-count: 1
 - channel-name: Viva La Dirt League
   link: https://www.youtube.com/channel/UCchBatdUMZoMfJ3rIzgV84g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCchBatdUMZoMfJ3rIzgV84g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCchBatdUMZoMfJ3rIzgV84g.jpg"
   entry-count: 3
 - channel-name: Vsauce
   link: https://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC6nSFpj9HTCZ5t-N3Rm3-HA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC6nSFpj9HTCZ5t-N3Rm3-HA.jpg"
   entry-count: 3
 - channel-name: Vsauce2
   link: https://www.youtube.com/channel/UCqmugCqELzhIMNYnsjScXXw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCqmugCqELzhIMNYnsjScXXw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCqmugCqELzhIMNYnsjScXXw.jpg"
   entry-count: 2
 - channel-name: Walk off the Earth
   link: https://www.youtube.com/channel/UC9PEibgWOqZ-1I1JdxRmr6g
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC9PEibgWOqZ-1I1JdxRmr6g.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC9PEibgWOqZ-1I1JdxRmr6g.jpg"
   entry-count: 2
 - channel-name: WATSKY!
   link: https://www.youtube.com/channel/UCLJcVCVvcD802r80B9oaM3A
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCLJcVCVvcD802r80B9oaM3A.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCLJcVCVvcD802r80B9oaM3A.jpg"
   entry-count: 1
 - channel-name: WeeklyVocaloidRanks
   link: https://www.youtube.com/channel/UCG7L8eZDBJ0e0rL4RIXeAQQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCG7L8eZDBJ0e0rL4RIXeAQQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCG7L8eZDBJ0e0rL4RIXeAQQ.jpg"
   entry-count: 0
 - channel-name: Wii
   link: https://www.youtube.com/channel/UC6JpsK_fhBbL4jJw9hVnVww
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC6JpsK_fhBbL4jJw9hVnVww.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC6JpsK_fhBbL4jJw9hVnVww.jpg"
   entry-count: 0
 - channel-name: WildStarOnline
   link: https://www.youtube.com/channel/UChg9HfiT-DbivZnnMtjPUGw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UChg9HfiT-DbivZnnMtjPUGw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UChg9HfiT-DbivZnnMtjPUGw.jpg"
   entry-count: 2
 - channel-name: Wintergatan
   link: https://www.youtube.com/channel/UCcXhhVwCT6_WqjkEniejRJQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCcXhhVwCT6_WqjkEniejRJQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCcXhhVwCT6_WqjkEniejRJQ.jpg"
   entry-count: 10
 - channel-name: WolfireGames
   link: https://www.youtube.com/channel/UCGFhIp3VXy90--3PfAqtSaA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCGFhIp3VXy90--3PfAqtSaA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCGFhIp3VXy90--3PfAqtSaA.jpg"
   entry-count: 0
 - channel-name: Wong Fu Productions
   link: https://www.youtube.com/channel/UCutXfzLC5wrV3SInT_tdY0w
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCutXfzLC5wrV3SInT_tdY0w.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCutXfzLC5wrV3SInT_tdY0w.jpg"
   entry-count: 0
 - channel-name: WoodenPotatoes
   link: https://www.youtube.com/channel/UCYUY9_i44IDNOs_Ja815mlA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCYUY9_i44IDNOs_Ja815mlA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCYUY9_i44IDNOs_Ja815mlA.jpg"
   entry-count: 2
 - channel-name: Wtf is this shit?
   link: https://www.youtube.com/channel/UCNDLn9KJJWrr4l80x88DQUg
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCNDLn9KJJWrr4l80x88DQUg.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCNDLn9KJJWrr4l80x88DQUg.jpg"
   entry-count: 0
 - channel-name: Zachariah Scott
   link: https://www.youtube.com/channel/UCaIxNErFe_OS9HbyzfJjKAA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCaIxNErFe_OS9HbyzfJjKAA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCaIxNErFe_OS9HbyzfJjKAA.jpg"
   entry-count: 1
 - channel-name: zeldaxlove64 Christina Grimmie
   link: https://www.youtube.com/channel/UCUudDyi0JiVmSxarvU98YYQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCUudDyi0JiVmSxarvU98YYQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCUudDyi0JiVmSxarvU98YYQ.jpg"
   entry-count: 0
 - channel-name: ちい chiy
   link: https://www.youtube.com/channel/UCKYEwR_JtTHnPq_XafkyZUw
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCKYEwR_JtTHnPq_XafkyZUw.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCKYEwR_JtTHnPq_XafkyZUw.jpg"
   entry-count: 1
 - channel-name: へたくそ料理 runnyrunny999
   link: https://www.youtube.com/channel/UCgFM_SE3g27lgIhds16a_oA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCgFM_SE3g27lgIhds16a_oA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCgFM_SE3g27lgIhds16a_oA.jpg"
   entry-count: 2
 - channel-name: スクウェア・エニックス
   link: https://www.youtube.com/channel/UC6SmH9mR82nj28_NNg_rZvA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC6SmH9mR82nj28_NNg_rZvA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC6SmH9mR82nj28_NNg_rZvA.jpg"
   entry-count: 64
 - channel-name: ナタリー
   link: https://www.youtube.com/channel/UC2Wss-yUn0b5xTTZ45tQWfA
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UC2Wss-yUn0b5xTTZ45tQWfA.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UC2Wss-yUn0b5xTTZ45tQWfA.jpg"
   entry-count: 11
 - channel-name: 仮面ライアー 217
   link: https://www.youtube.com/channel/UCxmgDpyo22S9d-nktYNIkAQ
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCxmgDpyo22S9d-nktYNIkAQ.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCxmgDpyo22S9d-nktYNIkAQ.jpg"
   entry-count: 1
 - channel-name: 黃小鈺
   link: https://www.youtube.com/channel/UCogNfzgSGpv8E6PDe6rkF3Q
   icon-filepath: !ruby/object:Pathname
-    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/icons/UCogNfzgSGpv8E6PDe6rkF3Q.jpg"
+    path: "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/icons/UCogNfzgSGpv8E6PDe6rkF3Q.jpg"
   entry-count: 0
