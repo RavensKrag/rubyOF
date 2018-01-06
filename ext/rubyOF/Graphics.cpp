@@ -150,6 +150,35 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			"ofPopMatrix",
 			&ofPopMatrix
 		)
+		.define_method(
+			"ofPushView",
+			&ofPushView
+		)
+		.define_method(
+			"ofPopView",
+			&ofPopView
+		)
+		
+		.define_method(
+			"ofViewport",
+			static_cast< void (*)
+			(float x, float y, float width, float height, bool invertY)
+			>(&ofViewport)
+		)
+		.define_method(
+			"ofSetupScreenOrtho",
+			static_cast< void (*)
+			(float width, float height, float nearDist, float farDist)
+			>(&ofSetupScreenOrtho),
+			(
+				
+				Arg("width")    = -1,
+				Arg("height")   = -1,
+				Arg("nearDist") = -1,
+				Arg("farDist")  = 1
+			)
+		)
+		
 		
 		
 		
