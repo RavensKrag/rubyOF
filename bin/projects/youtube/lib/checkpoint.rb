@@ -1,4 +1,6 @@
 class Checkpoint
+	include HelperFunctions
+	
 	attr_accessor :save_filepath, :inputs, :outputs
 	
 	def initialize
@@ -37,17 +39,7 @@ class Checkpoint
 		
 		# c3) data was already generated, load it from the disk
 		# c4) data was generated, but is out of date
-		if flag
-			# If callback needs to be run, then run it...
-			data = block.call(@inputs, @outputs)
-			
-			# ... and save data to file
-			puts "update: saving data to disk"
-			dump_yaml(data => @save_filepath)
-			
-			return data
-		else
-			# otherwise, load the data from the disk
+		if !flag and @save_filepath.exist?
 			puts "update: data loaded!"
 			return YAML.load_file(@save_filepath)
 			
@@ -59,6 +51,15 @@ class Checkpoint
 				# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
 				# 
 				# Also, this still doesn't help you remember the correct name...
+		else
+			# If callback needs to be run, then run it...
+			data = block.call(@inputs, @outputs)
+			
+			# ... and save data to file
+			puts "update: saving data to disk"
+			dump_yaml(data => @save_filepath)
+			
+			return data
 		end
 		
 		
