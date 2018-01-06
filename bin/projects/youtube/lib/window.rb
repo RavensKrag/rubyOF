@@ -27,7 +27,8 @@ class Window < RubyOF::Window
 	
 	def initialize
 		# super("Youtube Subscription Browser", 1853, 1250)
-		super("Youtube Subscription Browser", 1853, 1986)
+		# super("Youtube Subscription Browser", 1853, 1986) # half screen
+		super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
 		
 		# ofSetEscapeQuitsApp false
 		
@@ -329,7 +330,8 @@ class Window < RubyOF::Window
 		
 		@p6_debug_ui_render ||= Fiber.new do
 			c = RubyOF::Color.new
-			c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			c.r, c.g, c.b, c.a = [0, 0, 0, 255]
 			
 			loop do
 				ofPushMatrix()
