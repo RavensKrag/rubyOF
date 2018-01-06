@@ -18,6 +18,7 @@ current_dir  = current_file.parent
 Dir.chdir current_dir do
 	require Pathname.new('./helpers.rb').expand_path
 	require Pathname.new('./fibers.rb').expand_path
+	require Pathname.new('./checkpoint.rb').expand_path
 end
 
 
@@ -43,14 +44,28 @@ class Window < RubyOF::Window
 		super()
 		
 		
-		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
-				# TakaoPGothic
-				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 20
-				x.add_alphabet :Latin
-				x.add_alphabet :Japanese
-			end
+		current_file = Pathname.new(__FILE__).expand_path
+		@current_dir  = current_file.parent
+		
+		Dir.chdir @current_dir do
+			@font = 
+				RubyOF::TrueTypeFont.new.dsl_load do |x|
+					# TakaoPGothic
+					x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+					x.size = 20
+					x.add_alphabet :Latin
+					x.add_alphabet :Japanese
+				end
+		
+		
+			@c1 = 
+				Checkpoint.new.tap do |g|
+					g.save_filepath = path('./local_data.yml')
+					g.inputs  = { in_path:  path("./youtube_subscriptions.html") }
+					g.outputs = { out_path: path('./nokogiri_cleaned_data.html'), 
+					               c1_path: path('./data.yml') }
+				end
+		end
 	end
 	
 	def update
@@ -72,39 +87,19 @@ class Window < RubyOF::Window
 		
 		@main_update_fiber ||= Fiber.new do
 		# === MAIN ===
-		current_file = Pathname.new(__FILE__).expand_path
-		current_dir  = current_file.parent
-		
-		Dir.chdir current_dir do
+		Dir.chdir @current_dir do
 			# note on variable names
 			# ---
 			# p1  pathway     Performs a sequence of operations / transformations
 			# c1  checkpoint  A good place to pause. Saves data on disk for later.
 			
-			in_path  = Pathname.new("./youtube_subscriptions.html").expand_path
-			out_path = Pathname.new('./nokogiri_cleaned_data.html').expand_path
-			c1_path  = Pathname.new('./data.yml').expand_path
-			c2_path  = Pathname.new('./local_data.yml').expand_path
-			
-			inputs  = [in_path]
-			outputs = [out_path, c1_path, c2_path]
-			
-			input_time = inputs.collect{ |path| path.mtime }.max # most recent time
-			
-			flag = 
-				outputs.any? do |path|
-					# redo the calculation if a file is missing, or any file is out of date
-					!path.exist? or path.mtime < input_time
-				end
-			
-			if flag
+			@local_subscriptions = @c1.gate do |inputs, outputs|
 				# -- parse HTML file and get youtube subscriptions
-				# subscriptions = p1(in_path, out_path) # create debug file to test loading
-				subscriptions = p1(in_path) # no debug file
+				# subscriptions = p1(inputs[:in_path], outputs[:out_path]) # create debug file to test loading
+				subscriptions = p1(inputs[:in_path]) # no debug file
 				
-				
-				# save data to file
-				dump_yaml(subscriptions => c1_path)
+				# save intermediary data to file
+				dump_yaml(subscriptions => outputs[:c1_path])
 				Fiber.yield # <----------------
 				
 				
@@ -115,6 +110,7 @@ class Window < RubyOF::Window
 				while p2_out.nil?
 					# @p2 yields nil after every download (like a 'sleep')
 					p2_out = @p2.resume
+					Fiber.yield # <----------------
 				end
 					# The final yield gives back the filepaths we need
 				icon_filepaths = p2_out
@@ -124,28 +120,11 @@ class Window < RubyOF::Window
 				# -- Associate paths to icons on disk with Youtube channels
 				#    reformat: [channel_name, link, icon_filepath]
 				#    (going forward, icons will be accessed via filepaths, not URLs)
-				@local_subscriptions = p3(subscriptions, icon_filepaths)
-				
+				local_subscriptions = p3(subscriptions, icon_filepaths)
 				
 				Fiber.yield # <----------------
 				
-				
-				# save data to file
-				puts "update: saving data to disk"
-				dump_yaml(local_subscriptions => c2_path)
-				Fiber.yield # <----------------
-			else
-				puts "update: data loaded!"
-				@local_subscriptions = YAML.load_file(c2_path)
-				
-				# NOTE: If you use Pathname with YAML loading, the type will protect you.
-				# YAML.load() is for strings
-				# YAML.load_file() is for files, but the argument can still be a string
-				# but, Pathname is a vaild type *only* for load_file()
-					# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
-					# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
-					# 
-					# Also, this still doesn't help you remember the correct name...
+				local_subscriptions # RETURN
 			end
 			
 			# TODO: separate raw data files from intermediates
@@ -340,6 +319,7 @@ class Window < RubyOF::Window
 			
 			# Render a bunch of different tasks
 			loop do
+				# TODO: only render the task if it is still alive (allow for non-looping tasks)
 				@p6_debug_ui_render.resume
 				@p5_image_render.resume(@images, @local_subscriptions)
 				Fiber.yield # <----------------
@@ -494,4 +474,3 @@ class Window < RubyOF::Window
 		end
 	end
 end
-

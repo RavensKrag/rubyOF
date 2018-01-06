@@ -59,4 +59,9 @@ module HelperFunctions
 	  # 
 	  File.open(output_path, 'w') {|f| f.write data.to_yaml }
 	end
+	
+	# Turn a strcing into a Pathname, and expand to the full path
+	def path(input_filepath)
+		Pathname.new(input_filepath).expand_path
+	end
 end
