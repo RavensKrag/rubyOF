@@ -366,31 +366,6 @@ class Window < RubyOF::Window
 		end
 		
 		
-		@p6_debug_ui_render ||= Fiber.new do
-			c = RubyOF::Color.new
-			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
-			c.r, c.g, c.b, c.a = [0, 0, 0, 255]
-			
-			loop do
-				ofPushMatrix()
-				ofPushStyle()
-					ofSetColor(c)
-					
-					# The size of the characters in the oF bitmap font is
-					# height 11 px
-					# width : 8 px
-					start_position = [40, 30]
-					row_spacing    = 11 + 4
-					z              = 1
-					
-					draw_debug_info(start_position, row_spacing, z)
-				
-				ofPopStyle()
-				ofPopMatrix()
-				
-				Fiber.yield # <----------------
-			end
-		end
 		
 		# accept input on every #resume
 		@p5_image_render ||= Fiber.new do |images, local_subscriptions|
@@ -428,6 +403,32 @@ class Window < RubyOF::Window
 				
 				
 				images, local_subscriptions = Fiber.yield # <----------------
+			end
+		end
+		
+		@p6_debug_ui_render ||= Fiber.new do
+			c = RubyOF::Color.new
+			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			c.r, c.g, c.b, c.a = [0, 0, 0, 255]
+			
+			loop do
+				ofPushMatrix()
+				ofPushStyle()
+					ofSetColor(c)
+					
+					# The size of the characters in the oF bitmap font is
+					# height 11 px
+					# width : 8 px
+					start_position = [40, 30]
+					row_spacing    = 11 + 4
+					z              = 1
+					
+					draw_debug_info(start_position, row_spacing, z)
+				
+				ofPopStyle()
+				ofPopMatrix()
+				
+				Fiber.yield # <----------------
 			end
 		end
 		
@@ -520,9 +521,24 @@ class Window < RubyOF::Window
 		case button
 			when 1 # middle click
 				pt = CP::Vec2.new(x,y)
-				d = pt - @drag_origin
+				d = (pt - @drag_origin)/@camera.zoom
 				@camera.pos = d + @camera_origin
 		end
+	end
+	
+	def mouse_scrolled(x,y, scrollX, scrollY)
+		super(x,y, scrollX, scrollY) # debug print
+		
+		zoom_factor = 1.05
+		if scrollY > 0
+			@camera.zoom *= zoom_factor
+		elsif scrollY < 0
+			@camera.zoom /= zoom_factor
+		else
+			
+		end
+		
+		puts "camera zoom: #{@camera.zoom}"
 	end
 	
 	

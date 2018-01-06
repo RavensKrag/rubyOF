@@ -1,10 +1,11 @@
 class Camera
 	include RubyOF::Graphics
 	
-	attr_accessor :pos
+	attr_accessor :pos, :zoom
 	
 	def initialize
 		@pos = CP::Vec2.new(0,0)
+		@zoom = 1.0
 	end
 	
 	def draw(w,h, &block)
@@ -27,6 +28,7 @@ class Camera
 			
 			
 			ofTranslate(@pos.x, @pos.y, 0);
+			ofScale(@zoom,@zoom,1);
 			# ofTranslate(translation*orientationMatrix);
 			# ofScale(scale,scale * (bFlipY?-1:1),scale);
 			
