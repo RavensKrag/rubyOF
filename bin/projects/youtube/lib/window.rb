@@ -11,6 +11,8 @@ require 'fileutils'
 
 require 'chipmunk'
 
+require 'require_all'
+
 
 current_file = Pathname.new(__FILE__).expand_path
 current_dir  = current_file.parent
@@ -20,6 +22,8 @@ Dir.chdir current_dir do
 	require Pathname.new('./fibers.rb').expand_path
 	require Pathname.new('./checkpoint.rb').expand_path
 	require Pathname.new('./camera.rb').expand_path
+	
+	require_all Pathname.new('./monkey_patches/Chipmunk').expand_path
 end
 
 
@@ -482,14 +486,31 @@ class Window < RubyOF::Window
 			# Glut: 8
 		# TODO: set button codes as constants?
 		
+		case button
+			when 1 # middle click
+				@drag_origin = CP::Vec2.new(x,y)
+				@camera_origin = @camera.pos.clone
+		end
 	end
 	
 	def mouse_released(x,y, button)
 		super(x,y, button)
+		
+		case button
+			when 1 # middle click
+				
+		end
 	end
 	
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
+		
+		case button
+			when 1 # middle click
+				pt = CP::Vec2.new(x,y)
+				d = pt - @drag_origin
+				@camera.pos = d + @camera_origin
+		end
 	end
 	
 	

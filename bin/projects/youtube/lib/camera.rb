@@ -1,6 +1,8 @@
 class Camera
 	include RubyOF::Graphics
 	
+	attr_accessor :pos
+	
 	def initialize
 		@pos = CP::Vec2.new(0,0)
 	end
