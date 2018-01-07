@@ -150,9 +150,6 @@ ld_flags = ->(){
 	ld_flags = 
 		of_build_variables['ALL_LDFLAGS']
 		.reject{ |flag|
-			flag.include? "fmodex" # already specified in extconf.rb
-		}
-		.reject{ |flag|
 			flag.include? '-rpath'
 		}
 	ld_flags.unshift "-Wl,-rpath=.:.bin/lib:#{DYNAMIC_LIB_PATH}" # add to front
@@ -168,10 +165,6 @@ ld_flags = ->(){
 # more linker flags
 of_core_libs_dynamic_flags = 
 	of_build_variables['OF_CORE_LIBS']
-	.reject{ |flag|
-		# remove the core dependencies, because extconf.rb specifies special versions.
-		flag.include? File.join(OF_ROOT, 'libs')
-	}
 	.join(' ')
 
 
