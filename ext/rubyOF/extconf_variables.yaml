@@ -182,6 +182,7 @@
   "$objs":
   - Fbo.o
   - Graphics.o
+  - Mesh.o
   - TrueTypeFont.o
   - image.o
   - launcher.o
@@ -189,6 +190,7 @@
   "$srcs":
   - "./Fbo.cpp"
   - "./Graphics.cpp"
+  - "./Mesh.cpp"
   - "./TrueTypeFont.cpp"
   - "./image.cpp"
   - "./launcher.cpp"

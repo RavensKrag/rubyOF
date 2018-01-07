@@ -9,6 +9,7 @@
 // #include "Window.h" 
 #include "Graphics.h"
 #include "Fbo.h"
+#include "Mesh.h"
 #include "TrueTypeFont.h"
 #include "image.h"
 
@@ -28,6 +29,7 @@ void Init_rubyOF()
 	
 	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
+	Rice::Class  rb_cMesh         = Init_rubyOF_mesh(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	
 	ITP_Tuple itp_tuple = Init_rubyOF_image_texture_pixels(rb_mRubyOF);

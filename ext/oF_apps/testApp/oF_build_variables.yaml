@@ -285,7 +285,7 @@ CXXFLAGS: []
 MANDATORY_PATH:
 - "/usr/share/gconf//usr/share/xsessions/plasma.mandatory.path"
 XDG_DATA_DIRS:
-- "/usr/share//usr/share/xsessions/plasma:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop"
+- "/usr/share//usr/share/xsessions/plasma:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/var/lib/snapd/desktop"
 CROSS_COMPILING:
 - '0'
 PROJECT_ADDONS:
@@ -296,7 +296,7 @@ OPTIMIZATION_CFLAGS:
 OF_CORE_LIB_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64"
 DBUS_SESSION_BUS_ADDRESS:
-- unix:abstract=/tmp/dbus-bj4Dy16BbD,guid=8c7b60583737b304c081957c59855e56
+- unix:abstract=/tmp/dbus-GwqglKXoeY,guid=83359a11c5f52426ba31bba05a31d3e8
 GCC_MAJOR_EQ_4:
 - '0'
 CC:
@@ -351,7 +351,7 @@ PARSED_ALL_PLATFORM_LIBS: []
 MAKE_HOST:
 - x86_64-pc-linux-gnu
 PATH:
-- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
+- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
 OF_CORE_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/lib/linux64/libtess2.a"
@@ -417,7 +417,7 @@ OF_CORE_THIRDPARTY_SHARED_LIBS:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/2648,unix/ravensnest:/tmp/.ICE-unix/2648
+- local/ravensnest:@/tmp/.ICE-unix/1875,unix/ravensnest:/tmp/.ICE-unix/1875
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 rvm_stored_umask:
@@ -448,7 +448,7 @@ PARSED_ADDONS_LIBS_SOURCES: []
 PARSED_ADDONS_FILTERED_INCLUDE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
 WINDOWID:
-- '92274694'
+- '77631365'
 COMPILE.f:
 - f77
 - "-c"
@@ -528,7 +528,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-NCRPeEmK0HQa/agent.2454"
+- "/tmp/ssh-HCrIYmZgGWhK/agent.1685"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -613,7 +613,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '2569'
+- '1796'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -1886,7 +1886,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/1"
+- "/dev/pts/2"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
