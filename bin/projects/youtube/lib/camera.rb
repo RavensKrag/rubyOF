@@ -3,8 +3,8 @@ class Camera
 	
 	attr_accessor :pos, :zoom
 	
-	def initialize
-		@pos = CP::Vec2.new(0,0)
+	def initialize(w,h)
+		@pos = CP::Vec2.new(-w,-h)
 		@zoom = 1.0
 	end
 	
@@ -26,9 +26,10 @@ class Camera
 			# ofRotateX(orientation.x);
 			# ofRotateY(orientation.y);
 			
-			
-			ofTranslate(@pos.x, @pos.y, 0);
+			# TODO: @pos should be the point at the center of the camera's view, so that the zooming happens about that point, and not about the corner (which feels arbitrary)
+			ofTranslate(w/2, h/2, 0);
 			ofScale(@zoom,@zoom,1);
+			ofTranslate(@pos.x, @pos.y, 0);
 			# ofTranslate(translation*orientationMatrix);
 			# ofScale(scale,scale * (bFlipY?-1:1),scale);
 			

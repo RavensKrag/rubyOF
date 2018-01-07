@@ -49,7 +49,7 @@ class Window < RubyOF::Window
 	def setup
 		super()
 		
-		@camera = Camera.new
+		@camera = Camera.new(self.width/2, self.height/2)
 		
 		
 		current_file = Pathname.new(__FILE__).expand_path
