@@ -25,7 +25,8 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	// then there's a problem. This initialization will be performed for real
 	// when a new ofAppGLFWWindow is created. We replicate this here only to
 	// get an error code, as openFrameworks only prints a human-readable error
-	// message.
+	// message. Do this *before* the openFrameworks initialization
+	// to make absolutely sure no state will be clobbered.
 	bool glfw_error = false;
 	if(!glfwInit( )){
 		cout << "-- GLFW ERROR DETECTED!!!!\n";

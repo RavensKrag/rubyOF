@@ -1,5 +1,11 @@
 # Helper function for starting up any of Ruby-level project
+# 
+# Assumes GEM_ROOT has already been defined
+# GEM_ROOT is defined in (project_root/'config'/'build_variables')
 def main(project_root)
+	require (GEM_ROOT/'build'/'extension_loader')
+	# ^ defines the function 'load_c_extension_lib'
+	
 	puts "Load project-specific C++ code..."
 	load_c_extension_lib (project_root/'ext'/'callbacks'/'rubyOF_project')
 	
