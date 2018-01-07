@@ -506,15 +506,6 @@ class Window < RubyOF::Window
 		end
 	end
 	
-	def mouse_released(x,y, button)
-		super(x,y, button)
-		
-		case button
-			when 1 # middle click
-				
-		end
-	end
-	
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
 		
@@ -523,6 +514,15 @@ class Window < RubyOF::Window
 				pt = CP::Vec2.new(x,y)
 				d = (pt - @drag_origin)/@camera.zoom
 				@camera.pos = d + @camera_origin
+		end
+	end
+	
+	def mouse_released(x,y, button)
+		super(x,y, button)
+		
+		case button
+			when 1 # middle click
+				
 		end
 	end
 	
@@ -539,6 +539,18 @@ class Window < RubyOF::Window
 		end
 		
 		puts "camera zoom: #{@camera.zoom}"
+	end
+	
+	
+	
+	# this is for drag-and-drop, not for mouse dragging
+	def drag_event(files, position)
+		p [files, position]
+		
+		# 	./lib/main.rb:41:in `show': Unable to convert glm::tvec2<float, (glm::precision)0>* (ArgumentError)
+		# from ./lib/main.rb:41:in `<main>'
+		
+		# the 'position' variable is of an unknown type, leading to a crash
 	end
 	
 	
