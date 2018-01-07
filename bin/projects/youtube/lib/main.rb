@@ -38,7 +38,10 @@ require (Pathname.new(GEM_ROOT) / 'build' / 'window_guard')
 
 # === Main
 x = WindowGuard.new # initialize
-x.show              # start up the c++ controled infinite render loop
+
+# start up the c++ controled infinite render loop
+# unless there was an execption thrown during initialization
+x.show unless x.exception
 
 # display any uncaught ruby-level exceptions after safely exiting C++ code
 unless x.exception.nil?
