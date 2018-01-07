@@ -40,7 +40,7 @@ class Checkpoint
 		# c3) data was already generated, load it from the disk
 		# c4) data was generated, but is out of date
 		if !flag and @save_filepath.exist?
-			puts "update: data loaded!"
+			puts "Checkpoint: data loaded!"
 			return YAML.load_file(@save_filepath)
 			
 			# NOTE: If you use Pathname with YAML loading, the type will protect you.
@@ -56,7 +56,7 @@ class Checkpoint
 			data = block.call(@inputs, @outputs)
 			
 			# ... and save data to file
-			puts "update: saving data to disk"
+			puts "Checkpoint: saving data to disk"
 			dump_yaml(data => @save_filepath)
 			
 			return data
