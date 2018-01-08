@@ -22,8 +22,14 @@ void rbApp::setup(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-
-
+	// float width  = 500;
+	// float height = 500;
+	
+	gui.setup();
+	// gui.add(mColorPickerWidget.setup(mPickedColor, width, height));
+	gui.add(mColorPickerWidget.setup(mPickedColor));
+	
+	
 	
 	
 	// ========================================
@@ -57,11 +63,13 @@ void rbApp::draw(){
 	
 	
 	
-	
 	// ========================================
 	// ========================================
 	
 	mSelf.call("draw");
+	
+	
+	gui.draw();
 }
 
 void rbApp::exit(){

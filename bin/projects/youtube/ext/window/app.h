@@ -4,7 +4,8 @@
 #include "ofMain.h"
 
 // openFrameworks addons
-// #include "ofxGui.h"
+#include "ofxGui.h"
+// #include "ofxColorPicker.h"
 
 // rice data types
 #include "rice/Data_Type.hpp"
@@ -43,4 +44,8 @@ class rbApp : public ofBaseApp{
 	
 	protected:
 		Rice::Object mSelf;
+		
+		ofxPanel gui;
+		ofxColorPicker_<unsigned char> mColorPickerWidget;
+		ofParameter<ofColor_<unsigned char>> mPickedColor;
 };
