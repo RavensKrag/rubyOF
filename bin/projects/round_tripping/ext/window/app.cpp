@@ -29,8 +29,35 @@ void rbApp::setup(){
 	std::cout << "c++ data: " << input << std::endl;
 	
 	Rice::Object out = mSelf.call("callback_to_cpp", to_ruby(input));
-	ofPoint ruby_ouput = from_ruby<ofPoint>(out);
-	std::cout << "c++ -> roundtrip from Ruby: " << ruby_ouput << std::endl;
+	ofPoint ruby_output = from_ruby<ofPoint>(out);
+	std::cout << "c++ -> roundtrip from Ruby: " << ruby_output << std::endl;
+	
+	
+	
+	// c++ --> ruby callback --> c++
+	// (pointer test)
+	std::cout << "c++ : again! pointer test!" << std::endl;
+	ofPoint input2(0,0,0);
+	std::cout << "c++ data: " << input2 << std::endl;
+	
+	Rice::Object out2 = mSelf.call("pointer_callback1", to_ruby(input2));
+	ofPoint ruby_output2 = from_ruby<ofPoint>(out2);
+	std::cout << "c++ -> roundtrip from Ruby: " << ruby_output2 << std::endl;
+	
+	Rice::Object out3 = mSelf.call("pointer_callback2");
+	
+	std::cout << "c++ -> original Point again: " << input2 << std::endl;
+	std::cout << "point fram callback1: " << ruby_output2 << std::endl;
+	
+	
+	// Let's examine the value of input2:
+	// if the same data memory location is being shared across C++ and Ruby
+	// => (0,0,0)
+	// otherwise
+	// => (12,15,0)
+	// 
+	// RESULTS: failure - not using the same memory
+	
 	
 	
 	
