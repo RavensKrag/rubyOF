@@ -32,8 +32,8 @@ class Window < RubyOF::Window
 	
 	def initialize
 		# super("Youtube Subscription Browser", 1853, 1250)
-		# super("Youtube Subscription Browser", 1853, 1986) # half screen
-		super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
+		super("Youtube Subscription Browser", 1853, 1986) # half screen
+		# super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
 		
 		# ofSetEscapeQuitsApp false
 		
@@ -68,7 +68,9 @@ class Window < RubyOF::Window
 					x.add_alphabet :Latin
 					x.add_alphabet :Japanese
 				end
-			
+			@font_color = RubyOF::Color.new.tap do |c|
+				c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			end
 			
 			# NOTE: Checkpoint currently only enforces file dependencies. However, there are variable-level dependencies between the gated blocks that are not being accounted for.
 			@c1 = Checkpoint.new.tap do |g|
@@ -392,10 +394,13 @@ class Window < RubyOF::Window
 					
 					
 					# -- render channel name
+					ofPushStyle()
+					ofSetColor(@font_color)
 					x = p.x + dx*ix + offset.x
 					y = p.y + dy*iy + offset.y
 					# @font.draw_string("From ruby: こんにちは", x, y)
 					@font.draw_string(data['channel-name'], x, y)
+					ofPopStyle()
 					
 					# NOTE: to move string on z axis just use the normal ofTransform()
 					# src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
@@ -551,6 +556,21 @@ class Window < RubyOF::Window
 		# from ./lib/main.rb:41:in `<main>'
 		
 		# the 'position' variable is of an unknown type, leading to a crash
+	end
+	
+	
+	
+	# NOTE: regaurdless of if you copy the values over, or copy the color object, the copying slows things down considerably if it is done repetedly. Need to either pass one pointer from c++ side to Ruby side, or need to wrap ofParameter and use ofParameter#makeReferenceTo to ensure that the same data is being used in both places.
+	# OR
+	# you could use ofParameter#addListener to fire an event only when the value is changed (that could work)
+		# May still want to bind ofParameter on the Ruby side, especially if I can find a way to allow for setting event listeners in Ruby.
+	def font_color=(color)
+		p color
+		# puts color
+		# 'r g b a'.split.each do |channel|
+		# 	@font_color.send("#{channel}=", color.send(channel))
+		# end
+		@font_color = color
 	end
 	
 	

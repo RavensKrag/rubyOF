@@ -46,6 +46,7 @@ class rbApp : public ofBaseApp{
 		Rice::Object mSelf;
 		
 		ofxPanel gui;
-		ofxColorPicker_<unsigned char> mColorPickerWidget;
-		ofParameter<ofColor_<unsigned char>> mPickedColor;
+		ofxColorPicker_<unsigned char> mColorPicker_Widget;
+		ofParameter<ofColor_<unsigned char>> mColorPicker_Parameter;
+		ofColor mColorPicker_Color;
 };

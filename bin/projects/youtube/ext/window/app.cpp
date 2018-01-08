@@ -26,10 +26,8 @@ void rbApp::setup(){
 	// float height = 500;
 	
 	gui.setup();
-	// gui.add(mColorPickerWidget.setup(mPickedColor, width, height));
-	gui.add(mColorPickerWidget.setup(mPickedColor));
-	
-	
+	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
+	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
 	
 	
 	// ========================================
@@ -40,6 +38,20 @@ void rbApp::setup(){
 	
 	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
 	mSelf.call("setup");
+	
+	
+	// std::shared_ptr<ofColor> color_ptr = std::make_shared<ofColor>();
+	// color_ptr = std::make_shared<ofColor>();
+	
+	
+	// This is how you can pass a pointer to a C++ type to Ruby-land.
+	// 'Rice::Data_Object' functions basically like a C++ smart pointer,
+	// but allows for data to be sent to Ruby.
+	ofColor* ptr;
+	ptr = &mColorPicker_Color;
+	Rice::Data_Object<ofColor> color_ptr(ptr);
+	
+	mSelf.call("font_color=", to_ruby(color_ptr));
 }
 
 void rbApp::update(){
@@ -47,7 +59,11 @@ void rbApp::update(){
 	// ========== add new stuff here ==========
 	
 	
-	
+	ofColor picked = mColorPicker_Parameter.get();
+	mColorPicker_Color.r = picked.r;
+	mColorPicker_Color.g = picked.g;
+	mColorPicker_Color.b = picked.b;
+	mColorPicker_Color.a = picked.a;
 	
 	
 	// ========================================
