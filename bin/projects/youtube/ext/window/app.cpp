@@ -47,11 +47,14 @@ void rbApp::setup(){
 	// This is how you can pass a pointer to a C++ type to Ruby-land.
 	// 'Rice::Data_Object' functions basically like a C++ smart pointer,
 	// but allows for data to be sent to Ruby.
-	ofColor* ptr;
-	ptr = &mColorPicker_Color;
-	Rice::Data_Object<ofColor> color_ptr(ptr);
+	// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
+	color_ptr = new ofColor;
+	Rice::Data_Object<ofColor> rb_color_ptr(color_ptr);
 	
-	mSelf.call("font_color=", to_ruby(color_ptr));
+	// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
+	mSelf.call("font_color=", to_ruby(rb_color_ptr));
+	
+	// TODO: Need to figure out a way to manage the memory, so Ruby can let go of the pointer, without deleting C++ memory. Can I pass a shared_ptr instead of a raw pointer into Rice::Data_Object?
 }
 
 void rbApp::update(){
@@ -59,11 +62,12 @@ void rbApp::update(){
 	// ========== add new stuff here ==========
 	
 	
+	// (do seem to be taking a performance hit to access the heap-allocated memory, as expected)
 	ofColor picked = mColorPicker_Parameter.get();
-	mColorPicker_Color.r = picked.r;
-	mColorPicker_Color.g = picked.g;
-	mColorPicker_Color.b = picked.b;
-	mColorPicker_Color.a = picked.a;
+	color_ptr->r = picked.r;
+	color_ptr->g = picked.g;
+	color_ptr->b = picked.b;
+	color_ptr->a = picked.a;
 	
 	
 	// ========================================
