@@ -48,5 +48,5 @@ class rbApp : public ofBaseApp{
 		ofxPanel gui;
 		ofxColorPicker_<unsigned char> mColorPicker_Widget;
 		ofParameter<ofColor_<unsigned char>> mColorPicker_Parameter;
-		ofColor* color_ptr;
+		ofColor mColorPicker_Color;
 };
