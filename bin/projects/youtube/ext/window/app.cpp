@@ -73,8 +73,6 @@ void rbApp::setup(){
 	
 	// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
 	mSelf.call("font_color=", to_ruby(rb_color_ptr));
-	
-	// TODO: Need to figure out a way to manage the memory, so Ruby can let go of the pointer, without deleting C++ memory. Can I pass a shared_ptr instead of a raw pointer into Rice::Data_Object?
 }
 
 void rbApp::update(){
@@ -82,12 +80,18 @@ void rbApp::update(){
 	// ========== add new stuff here ==========
 	
 	
-	// (do seem to be taking a performance hit to access the heap-allocated memory, as expected)
-	ofColor picked = mColorPicker_Parameter.get();
-	mColorPicker_Color.r = picked.r;
-	mColorPicker_Color.g = picked.g;
-	mColorPicker_Color.b = picked.b;
-	mColorPicker_Color.a = picked.a;
+	// ofColor picked = mColorPicker_Parameter.get();
+	// mColorPicker_Color.r = picked.r;
+	// mColorPicker_Color.g = picked.g;
+	// mColorPicker_Color.b = picked.b;
+	// mColorPicker_Color.a = picked.a;
+	
+	
+	// (This one-line style is cleaner, but I'm not sure if it's faster or not. Seems to be a lot of fluxuation in the framerate this way?)
+	mColorPicker_Color = mColorPicker_Parameter.get();
+	
+	
+	// TODO: need to track ms / frame over time to see which is more performant. Looking at a single number for fps as not a good metric - need a graph.
 	
 	
 	// ========================================

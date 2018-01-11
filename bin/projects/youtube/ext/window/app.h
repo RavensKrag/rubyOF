@@ -48,5 +48,10 @@ class rbApp : public ofBaseApp{
 		ofxPanel gui;
 		ofxColorPicker_<unsigned char> mColorPicker_Widget;
 		ofParameter<ofColor_<unsigned char>> mColorPicker_Parameter;
-		ofColor mColorPicker_Color;
+		ofColor_<unsigned char> mColorPicker_Color;
+		// ofColor == ofColor_<unsigned char>
+		// need to specify size of color channels for ofxColorPicker
+		// and thus for 'consistency' all sizes were specified.
+		// However, I don't think non-standard sizes can be used
+		// because Rice binds ofColor and not the arbitrary size type.
 };
