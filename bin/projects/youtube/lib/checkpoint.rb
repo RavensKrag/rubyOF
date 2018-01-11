@@ -16,7 +16,7 @@ class Checkpoint
 		
 		# c1) waiting for precondition to be satisfied
 			# Failure to specify inputs that can potentially be fulfilled is an error. Ideally, the system should disallow this sort of configuration. If you had a full graph of how the checkpoints connect, you could verify statically that the contracts were fulfilled. This chunk of code to detect the error dynamically should thus eventually be depreciated. Visually displaying / visual manipulation of this graph is a must. Failure to do that gives the sort of ridgid and opaque system seen in Haskell
-		puts "Checkpoint: Waiting for inputs to be satisfied"
+		puts "Checkpoint #{self.object_id}: Waiting for inputs to be satisfied"
 		until @inputs.values.all? { |path| path.exist? }
 			Fiber.yield # <----------------
 			
@@ -24,7 +24,7 @@ class Checkpoint
 			binding.irb
 		end
 		
-		puts "Checkpoint: Inputs ready."
+		puts "Checkpoint #{self.object_id}: Inputs ready."
 		
 		# c2) have the precondition we need, now create the data
 		input_time = @inputs.values.collect{ |path| path.mtime }.max 
@@ -40,7 +40,7 @@ class Checkpoint
 		# c3) data was already generated, load it from the disk
 		# c4) data was generated, but is out of date
 		if !flag and @save_filepath.exist?
-			puts "Checkpoint: data loaded!"
+			puts "Checkpoint #{self.object_id}: data loaded!"
 			return YAML.load_file(@save_filepath)
 			
 			# NOTE: If you use Pathname with YAML loading, the type will protect you.
@@ -56,7 +56,7 @@ class Checkpoint
 			data = block.call(@inputs, @outputs)
 			
 			# ... and save data to file
-			puts "Checkpoint: saving data to disk"
+			puts "Checkpoint #{self.object_id}: saving data to disk"
 			dump_yaml(data => @save_filepath)
 			
 			return data
