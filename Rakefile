@@ -1499,7 +1499,13 @@ namespace :ruby do
 			puts "ruby level execution"
 			
 			exe_path = "./lib/main.rb"
-			Kernel.exec "ruby #{exe_path}"
+			
+			cmd = [
+				'GALLIUM_HUD=fps,VRAM-usage',
+				"ruby #{exe_path}"
+			].join(' ')
+			
+			Kernel.exec(cmd)
 		end
 	end
 	
