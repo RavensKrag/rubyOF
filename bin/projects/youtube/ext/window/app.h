@@ -57,4 +57,10 @@ class rbApp : public ofBaseApp{
 		// because Rice binds ofColor and not the arbitrary size type.
 		
 		ofxDatGui* mDatGui;
+		
+		ofxDatGuiValuePlotter* mPlotter;
+		ofxDatGuiLabel*         mLabel1;
+		ofxDatGuiLabel*         mLabel2;
+		
+		uint64_t timestamp_us; // timestamp in microseconds (u looks like a greek character)
 };

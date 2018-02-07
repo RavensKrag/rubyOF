@@ -30,7 +30,29 @@ void rbApp::setup(){
 	
 	// ========================================
 	// ========== add new stuff here ==========
-	mDatGui = new ofxDatGui(100, 100);
+	mDatGui = new ofxDatGui(0, 50);
+	
+	
+	
+	
+	mLabel1   = mDatGui->addLabel("microsecond timer: ");
+	mLabel2   = mDatGui->addLabel("microsecond delta: ");
+	
+	float min = 0;
+	float max = 100000;
+	mPlotter = mDatGui->addValuePlotter("micros / frame", min, max);
+	
+	float framerate_monitor_refresh = 1.0f;
+	mDatGui->addFRM(framerate_monitor_refresh);
+	
+	
+	// ofxDatGuiValuePlotter* myPlotter = new ofxDatGuiValuePlotter("plot label", min, max);
+	
+	
+	timestamp_us = ofGetElapsedTimeMicros();
+	
+	
+	
 	
 	
 	
@@ -123,6 +145,25 @@ void rbApp::update(){
 	
 	
 	// TODO: need to track ms / frame over time to see which is more performant. Looking at a single number for fps as not a good metric - need a graph.
+	
+	
+	
+	// get the current time in microseconds
+	// (time the app has been running)
+	uint64_t now = ofGetElapsedTimeMicros();
+	
+	
+	// update the time display based on the current time
+	uint64_t microseconds = now - timestamp_us;
+	
+	mLabel1->setLabel("microsecond timer: " + std::to_string(now));
+	mLabel2->setLabel("microsecond delta: " + std::to_string(microseconds));
+	mPlotter->setValue(microseconds);
+	
+	
+	// save the new time
+	timestamp_us = now;
+	
 	
 	
 	// ========================================
