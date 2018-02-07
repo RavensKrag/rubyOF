@@ -1,0 +1,58 @@
+# Attempt to load a config.make file.
+# If none is found, project defaults in config.project.make will be used.
+ifneq ($(wildcard config.make),)
+	include config.make
+endif
+
+# make sure the the OF_ROOT location is defined
+ifndef OF_ROOT
+	OF_ROOT=$(realpath ../../openFrameworks)
+endif
+
+# call the project makefile!
+include $(OF_ROOT)/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk
+
+
+
+
+# ============================
+# === custom make commands ===
+# ============================
+# TARGET_NAME = Debug
+
+# This file defines TARGET_NAME
+include $(OF_ROOT)/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk
+
+
+# need to set TARGET_NAME before loading the config,
+# because the config assumes this var is defined already
+# (not sure why this variable ends up blank by this time, but w/e)
+include $(OF_ROOT)/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk
+include $(OF_ROOT)/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk
+
+
+
+# create static library
+static_lib: lib/libOF_ProjectAddons.a
+	
+lib/libOF_ProjectAddons.a:
+	@mkdir -p lib
+	ar rcs $@ $(OF_PROJECT_ADDONS_OBJS)
+
+clean_static_lib:
+	@rm -f lib/libOF_ProjectAddons.a
+
+
+
+# run this task to make sure the variables work
+variable_test:
+	@echo "=================="
+	@echo "-- project objs"
+	@echo $(OF_PROJECT_OBJS)
+	@echo "-- ad-on objs"
+	@echo $(OF_PROJECT_ADDONS_OBJS)
+	@echo "-- core libs"
+	@echo $(OF_CORE_LIBS)
+	@echo "-- target name"
+	@echo $(TARGET_NAME)
+	@echo "=================="

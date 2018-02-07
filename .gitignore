@@ -15,7 +15,7 @@ Oni/lib/projects/Scope/bin/data
 *.o
 *.log
 *.def
-.d
+*.d
 
 # Compiled extension binaries
 *.so
@@ -93,6 +93,8 @@ bin/projects/*/ext/*/Makefile
 #   if you create a build system that doesn't use extconf at this level
 
 bin/projects/*/ext/*/constants/data_path.h
+
+bin/projects/*/ext/addons_app/testApp/bin
 
 
 

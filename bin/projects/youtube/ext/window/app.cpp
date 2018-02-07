@@ -30,6 +30,9 @@ void rbApp::setup(){
 	
 	// ========================================
 	// ========== add new stuff here ==========
+	mDatGui = new ofxDatGui(100, 100);
+	
+	
 	
 	// float width  = 500;
 	// float height = 500;
@@ -57,12 +60,40 @@ void rbApp::setup(){
 	// but allows for data to be sent to Ruby.
 	// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
 	
+	
+	// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();
+	// // ^ NOTE: This function is of type 'const void*'
+	// //         so you must not write to this data location
+	
+	// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));
+	// // strip away the const qualifier
+	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
+	
+	// Rice::Data_Object<ofColor> rb_color_ptr(
+	// 	color_ptr,
+	// 	Rice::Data_Type< ofColor >::klass(),
+	// 	Rice::Default_Mark_Function< ofColor >::mark,
+	// 	Null_Free_Function< ofColor >::free
+	// );
+	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
+	
+	// rb_color_ptr.call("freeze");
+	// Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
+	
+	// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
+	
+	
+	
 	Rice::Data_Object<ofColor> rb_color_ptr(
-		&mColorPicker_Color,
+		&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),
 		Rice::Data_Type< ofColor >::klass(),
 		Rice::Default_Mark_Function< ofColor >::mark,
 		Null_Free_Function< ofColor >::free
 	);
+	// ^ This works, but render performance is still bad.
+	// Is it possible that the ofSetColor function as bound in Ruby is not taking a reference, and is instead allocating new data every frame?
+	// Is it immediate mode being slow? May need to convert string to mesh, and then set the color on the mesh? But would need to bind ofMesh before that can be tested.
+	
 	
 	// Null_Free_Function< T > is declared at the top of this file.
 	// By creating this stubbed callback, the Ruby interpreter has
@@ -80,15 +111,15 @@ void rbApp::update(){
 	// ========== add new stuff here ==========
 	
 	
-	// ofColor picked = mColorPicker_Parameter.get();
-	// mColorPicker_Color.r = picked.r;
-	// mColorPicker_Color.g = picked.g;
-	// mColorPicker_Color.b = picked.b;
-	// mColorPicker_Color.a = picked.a;
+	// // ofColor picked = mColorPicker_Parameter.get();
+	// // mColorPicker_Color.r = picked.r;
+	// // mColorPicker_Color.g = picked.g;
+	// // mColorPicker_Color.b = picked.b;
+	// // mColorPicker_Color.a = picked.a;
 	
 	
-	// (This one-line style is cleaner, but I'm not sure if it's faster or not. Seems to be a lot of fluxuation in the framerate this way?)
-	mColorPicker_Color = mColorPicker_Parameter.get();
+	// // (This one-line style is cleaner, but I'm not sure if it's faster or not. Seems to be a lot of fluxuation in the framerate this way?)
+	// mColorPicker_Color = mColorPicker_Parameter.get();
 	
 	
 	// TODO: need to track ms / frame over time to see which is more performant. Looking at a single number for fps as not a good metric - need a graph.
@@ -124,8 +155,7 @@ void rbApp::exit(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	
-	
+	delete mDatGui;
 	
 	
 	// ========================================

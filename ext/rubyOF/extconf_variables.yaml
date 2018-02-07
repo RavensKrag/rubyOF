@@ -43,7 +43,7 @@
     -lrice /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/libOFSketch.a
     \  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
     \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed
-    -Wl,--gc-sections -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
+    -Wl,--gc-sections -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
     -lfmodex   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a
     /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/lib/linux64/libtess2.a
     -lz -lgstapp-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstreamer-1.0 -ludev -lfontconfig
@@ -85,7 +85,13 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
     -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs/ofxSmartFont
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/themes
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core"
   "$LDSHARED_CXX": g++ -shared
   "$CXXFLAGS": " -Wall -g -O3 -march=native -mtune=native -Werror=return-type -std=c++14
     -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"

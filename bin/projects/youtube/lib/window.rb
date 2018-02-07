@@ -68,9 +68,9 @@ class Window < RubyOF::Window
 					x.add_alphabet :Latin
 					x.add_alphabet :Japanese
 				end
-			@font_color = RubyOF::Color.new.tap do |c|
-				c.r, c.g, c.b, c.a = [171, 160, 228, 255]
-			end
+			# @font_color = RubyOF::Color.new.tap do |c|
+			# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+			# end
 			
 			# NOTE: Checkpoint currently only enforces file dependencies. However, there are variable-level dependencies between the gated blocks that are not being accounted for.
 			@c1 = Checkpoint.new.tap do |g|
@@ -396,6 +396,8 @@ class Window < RubyOF::Window
 					# -- render channel name
 					ofPushStyle()
 					ofSetColor(@font_color)
+					# p @font_color
+					# puts @font_color
 					x = p.x + dx*ix + offset.x
 					y = p.y + dy*iy + offset.y
 					# @font.draw_string("From ruby: こんにちは", x, y)
@@ -571,6 +573,7 @@ class Window < RubyOF::Window
 		# 	@font_color.send("#{channel}=", color.send(channel))
 		# end
 		@font_color = color
+		@font_color.freeze
 	end
 	
 	

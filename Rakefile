@@ -43,6 +43,7 @@ load './rake/extension_builder.rb'
 namespace :cpp_project do
 	
 	task :build, [:rubyOF_project] do |t, args|
+		puts "=== Buliding cpp project ==="
 		obj = RubyOF::Build::ExtensionBuilder.new(args[:rubyOF_project])
 		obj.main
 	end	
@@ -55,6 +56,35 @@ namespace :cpp_project do
 	task :clobber, [:rubyOF_project] => :clean do |t, args|
 		obj = RubyOF::Build::ExtensionBuilder.new(args[:rubyOF_project])
 		obj.clobber
+	end
+	
+	
+	task :build_addons_lib do |t, args|
+		puts "--- building addons"
+		
+		# You can run a different Makefile than the default
+		# 
+		# src: https://stackoverflow.com/questions/12057852/multiple-makefiles-in-one-directory
+		
+		name_or_path = args[:rubyOF_project]
+		name, path = RubyOF::Build.load_project(name_or_path)
+		
+		project_root = Pathname.new(path)
+		work_dir     = project_root/'ext'/'addons_app'/'testApp'
+		Dir.chdir work_dir do
+			puts "> in working dir"
+			
+			puts "> building dummy project (and also the addons)"
+			run_i "make -f Makefile -j#{NUMBER_OF_CORES}"
+			
+			puts "> collect addon libs into single archive (.a file)"
+			run_i "make -f Makefile.static_lib -j#{NUMBER_OF_CORES} static_lib"
+			
+			puts "> make sure the symbols are actually in there"
+			run_i "nm -C ./lib/libOF_ProjectAddons.a"
+			
+			puts "SUCCESS!!! addons lib built"
+		end
 	end
 	
 end
@@ -408,8 +438,6 @@ task :build_cpp => ['oF:build', 'oF_project:build']
 # This way, the build process will go a little faster.
 desc "For updating Rice code, and testing with current RubyOF project"
 task :build_cpp_wrapper, [:rubyOF_project] => [
-	'oF:build',
-	
 	'oF_project:build',                  # implicitly requires oF:build
 	'oF_project:export_build_variables', # implicitly requires oF_project:build
 	'oF_project:static_lib:build',
@@ -422,10 +450,6 @@ task :build_cpp_wrapper, [:rubyOF_project] => [
 	#   +  ALSO rebuilds the clang symbol DB as necessary.
 	
 	:install_oF_dynamic_libs,
-	
-	
-	'cpp_project:build',
-	'cpp_callbacks:build'
 ] do
 	
 	puts ">>> BUILD COMPLETE <<<"
@@ -440,11 +464,7 @@ end
 # Assumes 'build_cpp_wrapper' has been run
 desc "For using stable bindings with a custom blend of C++ and Ruby"
 task :build_project, [:rubyOF_project] => [
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	:install_oF_dynamic_libs,
+	'cpp_project:build_addons_lib',
 	
 	'cpp_project:build',
 	'cpp_callbacks:build'
@@ -473,8 +493,11 @@ task :full_build, [:rubyOF_project] => [
 # (tasks that do not need the 'project' argument will ignore it)
 # desc "Run default build task (:build_cpp_wrapper)"
 # task :build, [:rubyOF_project] => :build_cpp_wrapper
-desc "Run default build task (:build_project)"
-task :build, [:rubyOF_project] => :build_project
+desc "Run main build tasks (:build_cpp_wrapper and :build_project)"
+task :build, [:rubyOF_project] => [
+	:build_cpp_wrapper,
+	:build_project
+]
 
 
 

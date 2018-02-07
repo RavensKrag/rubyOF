@@ -5,6 +5,7 @@
 
 // openFrameworks addons
 #include "ofxGui.h"
+#include "ofxDatGui.h"
 // #include "ofxColorPicker.h"
 
 // rice data types
@@ -54,4 +55,6 @@ class rbApp : public ofBaseApp{
 		// and thus for 'consistency' all sizes were specified.
 		// However, I don't think non-standard sizes can be used
 		// because Rice binds ofColor and not the arbitrary size type.
+		
+		ofxDatGui* mDatGui;
 };
