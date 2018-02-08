@@ -32,36 +32,43 @@ void rbApp::setup(){
 	// ========== add new stuff here ==========
 	mDatGui = new ofxDatGui(0, 50);
 	
+	// --- Track seconds / frame over time to see performance.
+	//     Need a graph, not a single data point, and seconds rather than Hz
 	
+	// initialize timestamp for time plot
+	timestamp_us = 0;
 	
-	
-	mLabel1   = mDatGui->addLabel("microsecond timer: ");
-	mLabel2   = mDatGui->addLabel("microsecond delta: ");
-	
+	// initialize the time plot itself
 	float min = 0;
 	float max = 100000;
 	mPlotter = mDatGui->addValuePlotter("micros / frame", min, max);
 	
+	
+	// -- add actcual FPS widget
 	float framerate_monitor_refresh = 1.0f;
 	mDatGui->addFRM(framerate_monitor_refresh);
 	
 	
-	// ofxDatGuiValuePlotter* myPlotter = new ofxDatGuiValuePlotter("plot label", min, max);
-	
-	
-	timestamp_us = ofGetElapsedTimeMicros();
 	
 	
 	
 	
 	
 	
-	// float width  = 500;
-	// float height = 500;
-	
-	gui.setup();
+	gui.setup("", ofxPanelDefaultFilename, 1500, 0);
 	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
 	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
+	
+	// mDatGui->addSlider("ofGui w", 0, 800);
+	// mDatGui->addSlider("ofGui h", 0, 800);
+	float w = 280;
+	float h = 500;
+	gui.setSize(w, h);
+	gui.setWidthElements(w);
+	// gui.setDefaultWidth(float w);
+	// gui.setDefaultHeight(float h);
+	// https://forum.openframeworks.cc/t/how-to-make-ofxgui-objects-width-smaller/14047
+	
 	
 	
 	// ========================================
@@ -144,27 +151,26 @@ void rbApp::update(){
 	// mColorPicker_Color = mColorPicker_Parameter.get();
 	
 	
-	// TODO: need to track ms / frame over time to see which is more performant. Looking at a single number for fps as not a good metric - need a graph.
-	
-	
+	// --- Track seconds / frame over time to see performance.
+	//     Need a graph, not a single data point, and seconds rather than Hz
 	
 	// get the current time in microseconds
 	// (time the app has been running)
 	uint64_t now = ofGetElapsedTimeMicros();
 	
-	
 	// update the time display based on the current time
 	uint64_t microseconds = now - timestamp_us;
-	
-	mLabel1->setLabel("microsecond timer: " + std::to_string(now));
-	mLabel2->setLabel("microsecond delta: " + std::to_string(microseconds));
 	mPlotter->setValue(microseconds);
-	
 	
 	// save the new time
 	timestamp_us = now;
 	
 	
+	
+	// float w = mDatGui->getSlider("ofGui w")->getValue();
+	// float h = mDatGui->getSlider("ofGui h")->getValue();
+	// gui.setSize(w, h);
+	// gui.setWidthElements(w);
 	
 	// ========================================
 	// ========================================
