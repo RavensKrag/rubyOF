@@ -73,6 +73,29 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    //  tessellation = path.getTessellation();  // => ofVboMesh
    
    
+   Data_Type<ofTexture> rb_cTexture = 
+		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
+   
+   rb_cTexture
+      .define_method("bind",
+         static_cast< void (ofTexture::*)
+         (int) const
+         >(&ofTexture::bind),
+         (
+				Arg("textureLocation") = 0
+			)
+      )
+      .define_method("unbind",
+         static_cast< void (ofTexture::*)
+         (int) const
+         >(&ofTexture::bind),
+         (
+				Arg("textureLocation") = 0
+			)
+      )
+   ;
+   
+   
    // ofMesh
    Data_Type<ofMesh> rb_cMesh = 
 		define_class_under<ofMesh>(rb_mRubyOF, "Mesh");

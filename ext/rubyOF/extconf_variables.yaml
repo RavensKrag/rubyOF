@@ -84,14 +84,7 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
-    -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs/ofxSmartFont
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/themes
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
-    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core"
+    -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
   "$LDSHARED_CXX": g++ -shared
   "$CXXFLAGS": " -Wall -g -O3 -march=native -mtune=native -Werror=return-type -std=c++14
     -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"
@@ -190,6 +183,7 @@
   "$objs":
   - Fbo.o
   - Graphics.o
+  - GraphicsAdvanced.o
   - Mesh.o
   - TrueTypeFont.o
   - image.o
@@ -198,6 +192,7 @@
   "$srcs":
   - "./Fbo.cpp"
   - "./Graphics.cpp"
+  - "./GraphicsAdvanced.cpp"
   - "./Mesh.cpp"
   - "./TrueTypeFont.cpp"
   - "./image.cpp"
