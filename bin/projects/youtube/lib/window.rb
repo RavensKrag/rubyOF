@@ -75,6 +75,9 @@ class Window < RubyOF::Window
 			# end
 			
 			# NOTE: Checkpoint currently only enforces file dependencies. However, there are variable-level dependencies between the gated blocks that are not being accounted for.
+			# ^ This comment was written for @c1, @c2, @c3
+			#   Can't remember what variables it refers to,
+			#   because everything seems to work...
 			@c1 = Checkpoint.new.tap do |g|
 				g.save_filepath = path('./data.yml')
 				g.variables     = ->(){ [] }

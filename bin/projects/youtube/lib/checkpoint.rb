@@ -49,7 +49,7 @@ class Checkpoint
 			end
 		
 		
-		# NOTE: No need to pass variables to block
+		# NOTE: When waiting on certain variables to be set, there is no need to pass those variables into the block. We assume the variables must be instance variables, so they can be accessed in the block by normal scope rules.
 		if @save_filepath.nil?
 			# 
 			# there is no filepath. always run the block, and don't save state
