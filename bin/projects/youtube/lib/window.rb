@@ -30,11 +30,18 @@ end
 
 
 class Window < RubyOF::Window
+	include HelperFunctions
 	include RubyOF::Graphics
 	
+	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
+		@window_dimension_save_file = PROJECT_DIR/'bin'/'data'/'window_size.yaml'
+		
+		window_size = YAML.load_file(@window_dimension_save_file)
+		w,h = *window_size
+		
 		# super("Youtube Subscription Browser", 1853, 1250)
-		super("Youtube Subscription Browser", 1853, 1986) # half screen
+		super("Youtube Subscription Browser", w,h) # half screen
 		# super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
 		
 		# ofSetEscapeQuitsApp false
@@ -501,6 +508,9 @@ class Window < RubyOF::Window
 	
 	def on_exit
 		super()
+		
+		
+		dump_yaml [self.width, self.height] => @window_dimension_save_file
 	end
 	
 	
