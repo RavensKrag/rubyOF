@@ -50,6 +50,9 @@ class Checkpoint
 		
 		
 		# NOTE: When waiting on certain variables to be set, there is no need to pass those variables into the block. We assume the variables must be instance variables, so they can be accessed in the block by normal scope rules.
+		
+		# NOTE: Can wait for variables to be set, but if you gate on variables and files, the block will only be re-run when the *files* are updated. Changes to the variables are not considered one way or the other.
+		# TODO: want to only run the block if the data from @variables has been changed. otherwise, we could load some cached data instead
 		if @save_filepath.nil?
 			# 
 			# there is no filepath. always run the block, and don't save state

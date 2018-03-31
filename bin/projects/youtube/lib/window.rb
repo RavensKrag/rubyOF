@@ -65,54 +65,21 @@ class Window < RubyOF::Window
 		current_dir  = current_file.parent
 		project_dir  = current_dir.parent
 		@data_dir = project_dir / 'bin' / 'data'
+		# NOTE: All files should be located in @data_dir (Pathname object)
 		
+		@font = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
+		# @font_color = RubyOF::Color.new.tap do |c|
+		# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
+		# end
 		
-		
-		Dir.chdir @data_dir do
-			@font = 
-				RubyOF::TrueTypeFont.new.dsl_load do |x|
-					# TakaoPGothic
-					x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-					x.size = 20
-					x.add_alphabet :Latin
-					x.add_alphabet :Japanese
-				end
-			# @font_color = RubyOF::Color.new.tap do |c|
-			# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
-			# end
-			
-			# NOTE: Checkpoint currently only enforces file dependencies. However, there are variable-level dependencies between the gated blocks that are not being accounted for.
-			# ^ This comment was written for @c1, @c2, @c3
-			#   Can't remember what variables it refers to,
-			#   because everything seems to work...
-			@c1 = Checkpoint.new.tap do |g|
-				g.save_filepath = path('./data.yml')
-				g.variables     = ->(){ [] }
-				g.input_paths   = { in_path:  path("./youtube_subscriptions.html") }
-				g.output_paths  = { out_path: path('./nokogiri_cleaned_data.html') }
-			end
-			
-			@c2 = Checkpoint.new.tap do |g|
-				g.save_filepath = path('./foo2.yml')
-				g.variables     = ->(){ [] }
-				g.input_paths   = { }
-				g.output_paths  = { }
-			end
-			
-			@c3 = Checkpoint.new.tap do |g|
-				g.save_filepath = path('./local_data.yml')
-				g.variables     = ->(){ [] }
-				g.input_paths   = { }
-				g.output_paths  = { }
-			end
-			
-			@c4 = Checkpoint.new.tap do |g|
-				g.save_filepath = nil
-				g.variables     = ->(){ [@subscription_data] }
-				g.input_paths   = { }
-				g.output_paths  = { }
-			end
-		end
+		@collection = Array.new
 	end
 	
 	def update
@@ -130,89 +97,134 @@ class Window < RubyOF::Window
 		# NOTE: Current render speed is ~12 fps while Fiber is active
 		#       Not sure if this is a result of Fiber overhead, or download()
 		
-		
-		
-		@main_update_fiber ||= Fiber.new do
-		# === MAIN ===
+		@update_fiber ||= Fiber.new do	
 		Dir.chdir @data_dir do
-			# note on variable names
-			# ---
-			# p1  pathway     Performs a sequence of operations / transformations
-			# c1  checkpoint  A good place to pause. Saves data on disk for later.
-			
-			
-			# -- parse HTML file and get youtube subscriptions
-			subscriptions = 
-				@c1.gate do |inputs, outputs|
-					# p1(inputs[:in_path], outputs[:out_path]) # create debug file to test loading
-					p1(inputs[:in_path]) # no debug file
-				end
-			
-			Fiber.yield # <----------------
-			
-			
-			# -- use subscription data to find icons for Youtube channels,
-			#    and download all of the icons into a folder on the disk,
-			icon_filepaths = 
-				@c2.gate do |inputs, outputs|
-					@p2.resume(subscriptions)
-					p2_out = nil
-					while p2_out.nil?
-						# @p2 yields nil after every download (like a 'sleep')
-						p2_out = @p2.resume
-						Fiber.yield # <----------------
-					end
-					
-					# The final yield gives back the filepaths we need
-					p2_out # RETURN
-				end
-			
-			Fiber.yield # <----------------
-			
-			
-			# -- Associate paths to icons on disk with Youtube channels
-			#    reformat: [channel_name, link, icon_filepath]
-			#    (going forward, icons will be accessed via filepaths, not URLs)
-			@local_subscriptions =
-				@c3.gate do |inputs, outputs|
-					p3(subscriptions, icon_filepaths)
-				end
-			
-			Fiber.yield # <----------------
-			
-			# TODO: separate raw data files from intermediates
-			#   Makes it a lot easier to clean up later
-			#   if the intermediates are restricted to one directory
-			
-			
-			
-			# ---------------                          ---------------
-			# At this point, youtube URLs and icon links are absolute,
-			# rather than being relative to the youtube domain. This 
-			# means we are free from thinking about YouTube in any way.
-			# ---------------                          ---------------
-			puts "TOTAL SUBSCIPTIONS: #{@local_subscriptions.size}"
-			
-			# -- use OpenFrameworks to 'visualize' this data
-			# load a number of images per frame
-			@p4_image_load.resume(@local_subscriptions)
-			Fiber.yield # <----------------
-			
-			loop do
-				4.times do
-					# but if you have more loading to do, resume the Fiber
-					out = @p4_image_load.resume
-					# Fiber.yield # <----------------
-					if out.nil?
-						# NO-OP
-					elsif out.is_a? Array
-						@images = out
-					end
-				end
+			filepath = Pathname.new('./channel_info.yml').expand_path
+			local_channel_info = cache filepath do 
+				# ==========
+				# ====================
+				html_file = path("./youtube_subscriptions.html")
+				channel_info_list = parse_youtube_subscriptions(html_file)
 				
-				Fiber.yield # <----------------
-				break if @p4_image_load.state == :finished
+				enum = 
+					channel_info_list
+					.lazy
+					.collect{ |data| # channel info -> icon paths on disk
+						channel_url = data['link']
+						icon_url    = data['json-icon-url']
+						name        = data['channel-name']
+						
+						# -- download the icons for all YT channels in subscription list
+						puts "downloading icon for #{name}  ..."
+						
+						icon_dir  = Pathname.new("./icons/").expand_path
+						FileUtils.mkdir_p icon_dir
+						
+						
+						# Channel names may include characters that are illegal in paths,
+						# but the channel URLs should be OK for filesystem paths too
+						basename = (File.basename(channel_url) + File.extname(icon_url))
+						output_path = icon_dir + basename
+						
+						download(icon_url => output_path)
+						
+						output_path # RETURN
+					}
+					.zip(channel_info_list)
+					.collect{ |icon_filepath, channel_info| # reformat data
+						puts "reformating data..."
+						{
+							'channel-name'  => channel_info['channel-name'],
+							'link'          => channel_info['link'],
+							'icon-filepath' => icon_filepath,
+							'entry-count'   => channel_info['entry-count']
+						}
+					}
+					.each
+				# ====================
+				# ==========
+				# save channel info
+				# ---
+				# in the saved collection, channel icons should be referred to by file paths, not by URLs.
+				out = Array.new
+					enum.each do |x|
+						out << x
+						Fiber.yield
+					end
+				# RETURN
+				out
 			end
+			
+			
+			
+			# load data into memory
+			# ---
+			enum = 
+				local_channel_info
+				.lazy
+				.collect{ |data| # load icons
+					RubyOF::Image.new.dsl_load do |x|
+						x.path = data['icon-filepath'].to_s
+						# x.enable_accurate
+						# x.enable_exifRotate
+						# x.enable_grayscale
+						# x.enable_separateCMYK
+					end
+				}
+				.zip(local_channel_info).each_with_index.collect{ |zip_pair, i|
+					image, data = zip_pair
+					# -----
+					pos = CP::Vec2.new(100,150)
+					dx = 400 # space between columns
+					dy = 100 # space between rows
+					offset = CP::Vec2.new(100, 50) # offset between icon and text
+					
+					slices = 18
+					
+					YoutubeChannel.new(image, data['channel-name'], @font).tap do |yt|
+						ix = i / slices
+						iy = i % slices
+						
+						# Icon
+						yt.icon_pos.x = pos.x + dx*ix
+						yt.icon_pos.y = pos.y + dy*iy
+						
+						# Text
+						yt.text_pos.x = pos.x + dx*ix + offset.x
+						yt.text_pos.y = pos.y + dy*iy + offset.y
+						yt.text_color = @font_color
+					end
+				}.each
+			
+			
+			enum.each do |x|
+				@collection << x
+				Fiber.yield
+			end
+			
+			
+			
+			# Critical Question:
+			# Do you want to save to disk after each piece of data is processed?
+			# Or do you not want to save until you process the entire stream?
+			# (remember that it is possible the stream has infinite length)
+			
+			
+			# Do a sort of busy loop at the end for now,
+			# just to keep the main Fiber alive.
+			loop do
+				Fiber.yield
+			end
+		end # end Dir.chdir
+		end # end Fiber
+		
+		@update_fiber.resume
+		
+		
+			
+			
+			
+			
 			# FIXME: Set @images once, and then append a new chunk of images to that array as necessary. As Array is a reference type, this will allow you to continuiously send data to the #draw Fiber, even though you only pass the reference once. I think?
 			
 			# FIXME: alias / delegate to Fiber.alive? instead of using this @p4_image_load.state call. I though it was weird that I had to manage that state manually... May actually want to consider getting rid of 	FiberQueue entirely now that the way I'm using Fibers is totally different.
@@ -223,38 +235,6 @@ class Window < RubyOF::Window
 			
 			# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
 			
-			
-			@subscription_data = Array.new
-			@local_subscriptions.size.times do |i|
-				
-				@images.zip(@local_subscriptions).each_with_index do |zip_pair, i|
-					image, data = zip_pair
-					# -----
-					pos = CP::Vec2.new(100,150)
-					dx = 400 # space between columns
-					dy = 100 # space between rows
-					offset = CP::Vec2.new(100, 50) # offset between icon and text
-					
-					slices = 18
-					@subscription_data[i] = 
-						YoutubeChannel.new(image, data['channel-name'], @font).tap do |yt|
-							ix = i / slices
-							iy = i % slices
-							
-							# Icon
-							yt.icon_pos.x = pos.x + dx*ix
-							yt.icon_pos.y = pos.y + dy*iy
-							
-							# Text
-							yt.text_pos.x = pos.x + dx*ix + offset.x
-							yt.text_pos.y = pos.y + dy*iy + offset.y
-							yt.text_color = @font_color
-						end
-					
-					
-					Fiber.yield # <----------------
-				end
-			end
 			
 			
 			
@@ -295,94 +275,8 @@ class Window < RubyOF::Window
 			
 			# require 'irb'
 			# binding.irb
-			
-			
-			
-			
-			
-			# Do a sort of busy loop at the end for now,
-			# just to keep the main Fiber alive.
-			loop do
-				Fiber.yield
-			end
-		end # close Dir.chdir
-		end # close Fiber
-		
-		
-		
-		# ===== Helper fibers =====
-		
-		# first yield is just a signal that the file was loaded
-		# subsequent yields update the 'images' array
-		@p2 ||= Fiber.new do |subscriptions|			
-			# -- load channel icon
-			# data = subscriptions.first
-			
-			icon_filepaths = 
-			  subscriptions.collect do |data|
-			    channel_url = data['link']
-			    icon_url    = data['json-icon-url']
-			    name        = data['channel-name']
-			    
-			    # -- download the icons for all YT channels in subscription list
-			    puts "downloading icon for #{name}  ..."
-			    
-			    icon_dir  = Pathname.new("./icons/").expand_path
-			    FileUtils.mkdir_p icon_dir
-			    
-			    
-			    # Channel names may include characters that are illegal in paths,
-			    # but the channel URLs should be OK for filesystem paths too
-			    basename = (File.basename(channel_url) + File.extname(icon_url))
-			    output_path = icon_dir + basename
-			    download(icon_url => output_path)
-			    
-			    Fiber.yield # <----------------
-			    
-			    # RETURN
-			    output_path
-			  end
-			# What do I need to save? The output directory name? The paths to all files?
-			# They're all going to be under the same directory.
-			# How will the system remember that the file names are channel identifiers?
-			# Is that a job for the system, or for the programmer?
-			
-			Fiber.yield icon_filepaths # <----------------
-		end
-		
-		# first yield is just a signal that the file was loaded
-		# subsequent yields update the 'images' array
-		@p4_image_load ||= FiberQueue.new do |local_subscriptions|
-			# After accepting initial argument, just sleep for one frame
-			# just to make things easier to schedule
-			Fiber.yield # <---------------- 
-			
-			
-			# -- load channel icon
-			images = Array.new
-			
-			local_subscriptions.each do |data|
-				new_image = 
-					RubyOF::Image.new.dsl_load do |x|
-						x.path = data['icon-filepath'].to_s
-						# x.enable_accurate
-						# x.enable_exifRotate
-						# x.enable_grayscale
-						# x.enable_separateCMYK
-					end
-				images << new_image
-				
-				
-				Fiber.yield images # <----------------
-			end
-		end
 		
 		# =====                   =====
-		
-		
-		
-		
-		@main_update_fiber.resume
 		
 		# NOTE: To pass data between #update and #draw, use an instance variable
 		#       (can't resume a Fiber declared in one callback from the other)
@@ -407,28 +301,12 @@ class Window < RubyOF::Window
 		
 		
 		@draw_world_relative ||= Fiber.new do 
-			# wait for the data we need to be generated by the #update Fiber
-			@c4.gate do
-				# Render a bunch of different tasks
-				loop do
-					# TODO: only render the task if it is still alive (allow for non-looping tasks)
-					@p5_render_yt_channel_state.resume()
-					Fiber.yield # <----------------
-				end
-			end
-		end
-		
-		
-		
-		# accept input on every #resume
-		@p5_render_yt_channel_state ||= Fiber.new do
-			# -- render data
 			loop do
 				# ASSUME: @font has not changed since data was created
 				@font.font_texture.bind
 				# ^ if you don't bind the texture, just get white squares
 				
-				@subscription_data.each do |yt|
+				@collection.each do |yt|
 					# -- render icon
 					x = yt.icon_pos.x
 					y = yt.icon_pos.y
@@ -445,7 +323,7 @@ class Window < RubyOF::Window
 						ofSetColor(yt.text_color)
 						yt.text_mesh.draw()
 					ofPopStyle()
-					ofPopMatrix()					
+					ofPopMatrix()
 				end
 					# # @font.draw_string("From ruby: こんにちは", x, y)
 					# @font.draw_string(data['channel-name'], x, y)
@@ -456,10 +334,10 @@ class Window < RubyOF::Window
 				
 				@font.font_texture.unbind
 				
-				
 				Fiber.yield # <----------------
 			end
 		end
+		
 		
 		@p6_debug_ui_render ||= Fiber.new do
 			c = RubyOF::Color.new
@@ -644,6 +522,83 @@ class Window < RubyOF::Window
 			y += i*row_spacing
 			
 			ofDrawBitmapString(string, x,y,z)
+		end
+	end
+	
+	
+	# input_path          path to the input HTML file
+	# test_output_path    path that Nokogiri can write to, to ensure parsing works
+	def parse_youtube_subscriptions(html_filepath, test_output_path=nil)
+		# + open youtube in firefox
+		# + open sidebar
+		# + scroll down to the bottom of all the subscriptions (to load all of them)
+		# + use "inspect" tool
+		# + visually select the "SUBSCRIPTIONS" header
+		# + find the HTML element that contains all subscription links / buttons
+		# + in inspector: right click -> Copy -> Outer HTML
+		# => saved that data to file, and load it up here in Nokogiri
+		doc = open_html_file(html_filepath)
+
+		# If a debug output location has been specified,
+		# rewrite this data back out to file, to see how
+		# Nokogiri cleans the data
+		unless test_output_path.nil?
+			File.open(test_output_path, 'w') do |f|
+				f.print doc.to_xhtml(indent:3, indent_text:' ')
+			end
+		end
+		
+		# Basic document structure
+		# ---
+		# 'ytd-guide-section-renderer'
+		 # 'ytd-guide-entry-renderer'
+		   # 'a'
+		     # ["text", "yt-icon", "yt-img-shadow", "span", "text", "span", "text"] 
+		
+		
+		subscription_links = doc.css('ytd-guide-section-renderer > div#items a')
+		
+		# -- parse all subscriptions
+		
+		# sub_data[0].attributes['disable-upgrade'] # JSON payload, gives URL to icon
+		# # => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
+		# sub_data[1] # HTML element with the actual icon
+		# sub_data[2] # SPAN -> channel name
+		# sub_data[3] # SPAN -> 'entry-count'
+
+		subscription_links.collect do |anchor_tag|
+			link = anchor_tag.attributes['href'].value
+
+			# ----
+
+			sub_data = anchor_tag.children.reject{ |x| x.name == 'text' }
+
+
+			# JSON payload, gives URL to icon
+			json_text = sub_data[0].attributes['disable-upgrade']
+			# => #<Nokogiri::XML::Attr:0x1257c58 name="disable-upgrade" value="{\"thumbnails\":[{\"url\":\"https://yt3.ggpht.com/-DqhnQ70YsRo/AAAAAAAAAAI/AAAAAAAAAAA/TTVyaxv3Xag/s88-c-k-no-mo-rj-c0xffffff/photo.jpg\"}],\"webThumbnailDetailsExtensionData\":{\"isPreloaded\":true,\"excludeFromVpl\":true}}"> 
+
+			json_data = JSON.parse(json_text)
+			json_icon_url = json_data['thumbnails'][0]['url']
+
+
+			img = sub_data[1].css('img')[0]             # yt-img-shadow > img -> icon
+			html_icon_url = img.attributes['src'].value 
+
+			channel_name  = sub_data[2].text             # SPAN -> channel name
+			entry_count   = sub_data[3].text.strip.to_i  # SPAN -> 'entry-count' 
+
+
+			# RETURN
+			data = {
+				'link'          => URI.join("https://www.youtube.com/", link).to_s,
+				# without casting, the type after URI.join() => URI::HTTPS
+
+				'json-icon-url' => json_icon_url,
+				'html-icon-url' => html_icon_url,
+				'channel-name'  => channel_name,
+				'entry-count'   => entry_count,
+			}
 		end
 	end
 end

@@ -14,6 +14,36 @@ module HelperFunctions
 	
 	
 	
+	# Run the block, and save the results to a file
+	# If the block has to be run again, just load data from file instead.
+	# (If file exists, use cached data.)
+	# (Otherwise, run block and then save to disk)
+	def cache(filepath, &block)
+		# c3) data was already generated, load it from the disk
+		# c4) data was generated, but is out of date
+		if filepath.exist?
+			puts "Checkpoint #{self.object_id}: data loaded!"
+			return YAML.load_file(filepath)
+			
+			# NOTE: If you use Pathname with YAML loading, the type will protect you.
+			# YAML.load() is for strings
+			# YAML.load_file() is for files, but the argument can still be a string
+			# but, Pathname is a vaild type *only* for load_file()
+				# thus, even if you forget what the name of the method is, at least you don't get something weird and unexpected?
+				# (would be even better to have a YAML method that did the expected thing based on the type of the argument, imo)
+				# 
+				# Also, this still doesn't help you remember the correct name...
+		else
+			# If callback needs to be run, then run it...
+			data = block.call()
+			# ... save data to file for next time,
+			dump_yaml(data => filepath)
+			# ... and return the data from memory
+			return data
+		end
+	end
+	
+	
 	# usage: download(url => output_path)
 	def download(args = {})
 	  # 
