@@ -109,7 +109,8 @@ class Window < RubyOF::Window
 				enum = 
 					channel_info_list
 					.lazy
-					.collect{ |data| # channel info -> icon paths on disk
+					.collect{ |data|
+						# channel info -> icon paths on disk
 						channel_url = data['link']
 						icon_url    = data['json-icon-url']
 						name        = data['channel-name']
@@ -126,13 +127,15 @@ class Window < RubyOF::Window
 						basename = (File.basename(channel_url) + File.extname(icon_url))
 						output_path = icon_dir + basename
 						
+						# returns path to file when download is complete
 						download(icon_url => output_path)
-						
-						output_path # RETURN
 					}
 					.zip(channel_info_list)
-					.collect{ |icon_filepath, channel_info| # reformat data
-						puts "reformating data..."
+					.collect{ |icon_filepath, channel_info|
+						# reformat data so channel icons are referenced
+						# by file paths, not by URLs.
+						
+						# puts "reformating data..."
 						{
 							'channel-name'  => channel_info['channel-name'],
 							'link'          => channel_info['link'],
@@ -143,16 +146,14 @@ class Window < RubyOF::Window
 					.each
 				# ====================
 				# ==========
-				# save channel info
-				# ---
-				# in the saved collection, channel icons should be referred to by file paths, not by URLs.
-				out = Array.new
+				
+				# download all icons, pausing after each icon
+				Array.new.tap |out|
 					enum.each do |x|
 						out << x
 						Fiber.yield
 					end
-				# RETURN
-				out
+				end
 			end
 			
 			
@@ -162,7 +163,8 @@ class Window < RubyOF::Window
 			enum = 
 				local_channel_info
 				.lazy
-				.collect{ |data| # load icons
+				.collect{ |data|
+					# load icons
 					RubyOF::Image.new.dsl_load do |x|
 						x.path = data['icon-filepath'].to_s
 						# x.enable_accurate
@@ -172,6 +174,7 @@ class Window < RubyOF::Window
 					end
 				}
 				.zip(local_channel_info).each_with_index.collect{ |zip_pair, i|
+					# yt channel data + icon -> object in memory
 					image, data = zip_pair
 					# -----
 					pos = CP::Vec2.new(100,150)
@@ -195,7 +198,6 @@ class Window < RubyOF::Window
 						yt.text_color = @font_color
 					end
 				}.each
-			
 			
 			enum.each do |x|
 				@collection << x

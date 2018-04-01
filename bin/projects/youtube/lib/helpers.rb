@@ -70,6 +70,8 @@ module HelperFunctions
 	      saved_file.write(read_file.read)
 	    end
 	  end
+	  
+	  return output_path
 	end
 
 	# usage: dump_yaml(data => output_path)
