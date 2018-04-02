@@ -78,6 +78,7 @@ class Window < RubyOF::Window
 		# @font_color = RubyOF::Color.new.tap do |c|
 		# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
 		# end
+		# ^ font color is currently being set through the color picker
 		
 		@collection = Array.new
 	end
@@ -94,13 +95,8 @@ class Window < RubyOF::Window
 		# the downloding process in the middle by just
 		# closing the Window
 		
-		# NOTE: Current render speed is ~12 fps while Fiber is active
-		#       Not sure if this is a result of Fiber overhead, or download()
-		
 		@update_fiber ||= Fiber.new do	
-		Dir.chdir @data_dir do
-			filepath = Pathname.new('./channel_info.yml').expand_path
-			local_channel_info = cache filepath do 
+			local_channel_info = cache @data_dir/'channel_info.yml' do 
 				# ==========
 				# ====================
 				html_file = path("./youtube_subscriptions.html")
@@ -148,7 +144,7 @@ class Window < RubyOF::Window
 				# ==========
 				
 				# download all icons, pausing after each icon
-				Array.new.tap |out|
+				Array.new.tap do |out|
 					enum.each do |x|
 						out << x
 						Fiber.yield
@@ -198,7 +194,7 @@ class Window < RubyOF::Window
 						yt.text_color = @font_color
 					end
 				}.each
-			
+			# load one piece of yt channel data at a time, pausing after each piece
 			enum.each do |x|
 				@collection << x
 				Fiber.yield
@@ -217,66 +213,56 @@ class Window < RubyOF::Window
 			loop do
 				Fiber.yield
 			end
-		end # end Dir.chdir
-		end # end Fiber
+		end
 		
 		@update_fiber.resume
 		
 		
-			
-			
-			
-			
-			# FIXME: Set @images once, and then append a new chunk of images to that array as necessary. As Array is a reference type, this will allow you to continuiously send data to the #draw Fiber, even though you only pass the reference once. I think?
-			
-			# FIXME: alias / delegate to Fiber.alive? instead of using this @p4_image_load.state call. I though it was weird that I had to manage that state manually... May actually want to consider getting rid of 	FiberQueue entirely now that the way I'm using Fibers is totally different.
-			
-			# FIXME: Change how p1() and similar functions are declared
-			# FIXME: Consider changing how helper functions are declared / used
-			
-			
-			# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
-			
-			
-			
-			
-			
-			
-			# -- implement basic "live coding" environment
-			#    (update doesn't necessarily need to be instant)
-			#    (but should be reasonably fast)
-			
-			# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
-			
-			
-			
-			
-			# -- implement basic camera control (zoom, pan)
-			
-			
-			
-			
-			# -- allow direct manipulation of the data
-			#    (control layout of elements with mouse and keyboard, not code)
-			
-			
-			
-			# -- implement color picker
-			#    (maybe use oF c++ color picker that already exists?)
-			
-			
-			
-			# -- add more YouTube subscriptions without losing existng organization
-			
-			
-			
-			
-			# -- click on links and go to YouTube pages
-			
-			
-			
-			# require 'irb'
-			# binding.irb
+		# FIXME: Consider changing how helper functions are declared / used
+		
+		
+		# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
+		
+		
+		
+		
+		
+		
+		# -- implement basic "live coding" environment
+		#    (update doesn't necessarily need to be instant)
+		#    (but should be reasonably fast)
+		
+		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
+		
+		
+		
+		
+		# -- implement basic camera control (zoom, pan)
+		
+		
+		
+		
+		# -- allow direct manipulation of the data
+		#    (control layout of elements with mouse and keyboard, not code)
+		
+		
+		
+		# -- implement color picker
+		#    (maybe use oF c++ color picker that already exists?)
+		
+		
+		
+		# -- add more YouTube subscriptions without losing existng organization
+		
+		
+		
+		
+		# -- click on links and go to YouTube pages
+		
+		
+		
+		# require 'irb'
+		# binding.irb
 		
 		# =====                   =====
 		
@@ -295,8 +281,8 @@ class Window < RubyOF::Window
 			# Render a bunch of different tasks
 			loop do
 				# TODO: only render the task if it is still alive (allow for non-looping tasks)
-				@p6_debug_ui_render.resume
-				@p7_color_picker_draw.resume
+				@draw_debug_ui.resume
+				@draw_color_picker.resume
 				Fiber.yield # <----------------
 			end
 		end
@@ -341,7 +327,7 @@ class Window < RubyOF::Window
 		end
 		
 		
-		@p6_debug_ui_render ||= Fiber.new do
+		@draw_debug_ui ||= Fiber.new do
 			c = RubyOF::Color.new
 			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
 			c.r, c.g, c.b, c.a = [0, 0, 0, 255]
@@ -368,7 +354,7 @@ class Window < RubyOF::Window
 		end
 		
 		# accept input on every #resume
-		@p7_color_picker_draw ||= Fiber.new do 
+		@draw_color_picker ||= Fiber.new do 
 			# -- render data
 			loop do
 				
