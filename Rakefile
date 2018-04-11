@@ -28,12 +28,565 @@ load './rake/clean_and_clobber.rb'
 
 load './rake/oF_core.rake'
 load './rake/oF_deps.rake'
-load './rake/oF_project.rake'
-load './rake/extension.rake'
+# load './rake/oF_project.rake'
+# load './rake/extension.rake'
 
 
 # defines RubyOF::Build.create_project and RubyOF::Build.load_project
 require File.join(GEM_ROOT, 'build', 'build.rb')
+
+
+
+def build_c_extension(c_extension_dir)
+	Dir.chdir(c_extension_dir) do
+		# this does essentially the same thing
+		# as what RubyGems does
+		puts "=> starting extconf..."
+		
+		begin
+			run_i "ruby extconf.rb"
+		rescue StandardError => e
+			puts "ERROR: Could not configure c extension."
+			exit
+		end
+		
+		puts "=> configuration complete. building C extension"
+		
+		
+		flags = ""
+		# flags += " -j#{NUMBER_OF_CORES}" if Dir.exists? '/home/ravenskrag' # if running on my machine
+		
+		puts "Building..."
+		begin
+			run_i "make #{flags}"
+		rescue StandardError => e
+			puts "ERROR: Could not build c extension."
+			exit
+		end
+	end
+	
+	# # NOTE: This is part of a normal extconf build, but I don't want it.
+	# #       In the context of this build, this .so is only an intermediate.
+	# # puts "=== Moving dynamic library into correct location..."
+	# FileUtils.cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
+	
+	
+	puts "=> C extension build complete!"
+end
+
+def parse_build_variable_data(data)
+	data.select{  |line|
+		line.include? '='
+	}.collect{   |line|
+		# can't just split on '='
+		# because there can be mulitple equal signs
+		# 
+		# The thing before the FIRST equal sign is the key,
+		# everything else on the line is the value associated with the key
+		i = line.index("=")
+		key   = line[0..(i-1)]
+		value = line[((i+1)..-1)]
+		
+		
+		key, value = [key, value].collect{ |x| x.strip }
+		
+		value = value.split()
+		
+		
+		[key, value]
+	}.to_h
+end
+
+
+# 1) build testApp using oF build system
+# 2) export build vars from testApp
+# 3) reverse engineer build vars for use in ruby's extconf.rb system
+# 4) use extconf.rb and Rice to build dynamic library of wrapper for *core oF* functionality
+# 5) move dynamic library into easy-to-load location
+namespace :core_wrapper do
+	c_extension_dir = Pathname.new(GEM_ROOT)/"ext"/NAME
+	c_extension_file = c_extension_dir/"#{NAME}.so"
+	
+	install_location = "lib/#{NAME}/#{NAME}.so"
+	
+	
+	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	
+	# TODO: update source file list
+	extension_dependencies = Array.new.tap do |deps|
+		# Ruby / Rice CPP files
+		deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
+		
+		# 
+		deps << "ext/#{NAME}/extconf.rb"
+		deps << "ext/#{NAME}/extconf_common.rb"
+		deps << "ext/#{NAME}/extconf_printer.rb"
+		
+		deps << __FILE__ # depends on this Rakefile
+		
+		# deps << OF_BUILD_VARIABLE_FILE
+		# TODO: ^ re-enable this ASAP
+		
+		# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_extension_file' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
+		
+		# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
+	end
+	
+	# TODO: figure out where to clean up c_extension_file
+	#       is that in clean? clobber? something else? not sure
+	#       should there be install/uninstall tasks too?
+	
+	task :clean do
+		Dir.chdir OF_SKETCH_ROOT do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning #{OF_SKETCH_NAME}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+		
+		Dir.chdir c_extension_dir do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+				exit
+			end
+		end
+	end
+	
+	task :clobber => :clean do
+		FileUtils.rm install_location
+	end
+	
+	task :build => [
+		:build_app,		         # build testApp using oF build system
+		OF_BUILD_VARIABLE_FILE, # export build vars -> reformat
+		c_extension_file,       # build wrapper
+		:move_dynamic_lib       # move dynamic library into easy-to-load location
+	]
+	
+	
+	# 1) build testApp using oF build system
+	task :build_app do
+		puts "=== Building #{OF_SKETCH_NAME}..."
+		Dir.chdir OF_SKETCH_ROOT do
+			# Make the debug build if the flag is set,
+			# othwise, make the release build.
+			debug = OF_DEBUG ? "Debug" : ""
+			
+			
+			begin
+				run_i "make #{debug} -j#{NUMBER_OF_CORES}"
+			rescue StandardError => e
+				puts "ERROR: Could not build #{OF_SKETCH_NAME}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+	end
+	
+	# 2) export build vars from testApp
+	file OF_RAW_BUILD_VARIABLE_FILE => [
+		Pathname.new(OF_SKETCH_ROOT)/'Makefile.static_lib',
+		__FILE__,     # if the Rake task changes, then update the output file
+		COMMON_CONFIG # if config variables change, then build may be different
+	] do
+		puts "=== Exporting oF project build variables..."
+		
+		Dir.chdir OF_SKETCH_ROOT do
+			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
+				# run_i "make printvars"
+				
+				out = `make printvars TARGET_NAME=#{TARGET}`
+				# p out
+				
+				out = out.each_line.to_a
+				
+				
+				File.open(OF_RAW_BUILD_VARIABLE_FILE, "w") do |f|
+					f.puts out.to_yaml
+				end
+			end
+		end
+	end
+	
+	# 3) reverse engineer build vars for use in ruby's extconf.rb system
+	file OF_BUILD_VARIABLE_FILE => OF_RAW_BUILD_VARIABLE_FILE do
+		puts "=== reformatting..."
+		Dir.chdir OF_SKETCH_ROOT do
+			data = YAML.load_file(OF_RAW_BUILD_VARIABLE_FILE)
+			
+			final = parse_build_variable_data(data)
+			
+			filepath = OF_BUILD_VARIABLE_FILE
+			File.open(filepath, "w") do |f|
+				f.puts final.to_yaml
+			end
+			
+			puts "=> Variables written to '#{filepath}'"
+			puts ""
+		end
+	end
+	
+	
+	# 4) use extconf.rb and Rice to build dynamic library of wrapper for core oF functionality
+	
+	# Mimic RubyGems gem install procedure, for testing purposes.
+	# * run extconf
+	# * execute the resultant makefile
+	# * move the .so to it's correct location
+	file c_extension_file => extension_dependencies do
+		puts "=== building core wrapper..."
+		build_c_extension(c_extension_dir)
+	end
+	
+	
+	# 5) move dynamic library into easy-to-load location]
+	task :move_dynamic_lib do
+		puts "=== moving dynamic lib to easy-to-load location"
+		FileUtils.cp c_extension_file, install_location
+		puts "=> DONE!"
+	end
+end
+
+
+
+# arguments:   [project_name]
+
+# Projects use some combination of Ruby and C++ to build on the framework,
+# and accomplish a specific goal.
+
+# 1) take in exported and reformatted vars from the core wrapper
+# 2.1) build a whole dummy app, just to to build addons
+# 2.2) export build vars from dummy app
+# 2.3) reverse engineer build vars for use in ruby's extconf.rb system
+# 2.4) extract just the addons info from the build var data
+# 3) take core variables, and mix in information needed for addons
+# 4) load new mixed build variables into extconf.rb and create makefile
+# 5) run makefile, and create dynamic library for project-level code
+# 6) move dynamic library into easy-to-load location
+
+namespace :project_wrapper do
+	root = Pathname.new(GEM_ROOT)
+	
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
+	
+	
+	addons_app_dir = project_dir/'ext'/'new'/'addons_app'/'testApp'
+	raw_build_variable_file = addons_app_dir/'raw_oF_variables.yaml'
+	build_variable_file     = addons_app_dir/'oF_build_variables.yaml'
+	addons_data             = addons_app_dir/'addons.yaml'
+	
+	mixed_build_variable_file = addons_app_dir/'mixed_build_variables.yaml'
+	
+	
+	c_extension_dir = root/"ext"/NAME
+	c_extension_file = c_extension_dir/"#{NAME}.so"
+	
+	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	
+	# TODO: update source file list
+	extension_dependencies = Array.new.tap do |deps|
+		# Ruby / Rice CPP files
+		deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
+		
+		# 
+		deps << mixed_build_variable_file
+		
+		deps << "ext/#{NAME}/extconf.rb"
+		deps << "ext/#{NAME}/extconf_common.rb"
+		deps << "ext/#{NAME}/extconf_printer.rb"
+		
+		deps << __FILE__ # depends on this Rakefile
+		
+		# deps << OF_BUILD_VARIABLE_FILE
+		# TODO: ^ re-enable this ASAP
+		
+		# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_extension_file' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
+		
+		# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
+	end
+	
+	task :clean do
+		Dir.chdir addons_app_dir do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning app for project #{project_name}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+		
+		# Dir.chdir c_extension_dir do
+		# 	begin
+		# 		run_i "make clean"
+		# 	rescue StandardError => e
+		# 		puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+		# 		exit
+		# 	end
+		# end
+	end
+	
+	task :clobber => :clean do
+		
+	end
+	
+	task :build => [
+		:build_addons_app,
+		
+		# raw_build_variable_file -> build_variable_file -> addons_data
+		addons_data
+	]
+	
+	
+	
+	# 2.1) build a whole dummy app, just to to build addons
+	task :build_addons_app do 
+		puts "=== Building project '#{project_name}'..."
+		Dir.chdir addons_app_dir do
+			# Make the debug build if the flag is set,
+			# othwise, make the release build.
+			debug = OF_DEBUG ? "Debug" : ""
+			
+			
+			begin
+				run_i "make #{debug} -j#{NUMBER_OF_CORES}"
+			rescue StandardError => e
+				puts "ERROR: Could not build project '#{project_name}'"
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+	end
+	
+	# 2.2) export build vars from dummy app
+	file raw_build_variable_file => [
+		addons_app_dir/'Makefile.static_lib',
+		__FILE__,     # if the Rake task changes, then update the output file
+		COMMON_CONFIG # if config variables change, then build may be different
+	] do
+		puts "=== Exporting oF project build variables..."
+		
+		Dir.chdir addons_app_dir do
+			swap_makefile(addons_app_dir, "Makefile", "Makefile.static_lib") do
+				# run_i "make printvars"
+				
+				out = `make printvars TARGET_NAME=#{TARGET}`
+				# p out
+				
+				out = out.each_line.to_a
+				
+				
+				File.open(raw_build_variable_file, "w") do |f|
+					f.puts out.to_yaml
+				end
+			end
+		end
+	end
+	
+	# 2.3) reverse engineer build vars for use in ruby's extconf.rb system
+	file build_variable_file => raw_build_variable_file do
+		puts "=== reformatting..."
+		Dir.chdir addons_app_dir do
+			data = YAML.load_file(raw_build_variable_file)
+			
+			final = parse_build_variable_data(data)
+			
+			filepath = build_variable_file
+			File.open(filepath, "w") do |f|
+				f.puts final.to_yaml
+			end
+			
+			puts "=> Variables written to '#{filepath}'"
+			puts ""
+		end
+	end
+	
+	
+	# 2.4) extract just the addons info from the build var data
+	file addons_data => build_variable_file do
+		puts "== extracting addon data..."
+		
+		Dir.chdir addons_app_dir do
+			data = YAML.load_file(build_variable_file)
+			data['OF_PROJECT_ADDONS_OBJS']
+			
+			
+			keys = %w[
+				ALL_INSTALLED_ADDONS
+				VALID_PROJECT_ADDONS
+				PROJECT_ADDONS
+				OF_PROJECT_ADDONS_OBJS
+				PROJECT_ADDONS_CFLAGS
+				PROJECT_ADDONS_DATA
+				PROJECT_ADDONS_FRAMEWORKS
+				PROJECT_ADDONS_INCLUDES
+				PROJECT_ADDONS_LDFLAGS
+				PROJECT_ADDONS_LIBS
+			]
+			final = 
+				data.select {  |k,v|
+					keys.include? k
+				}
+			
+			
+			filepath = addons_data
+			File.open(filepath, "w") do |f|
+				f.puts final.to_yaml
+			end
+			
+			puts "=> Variables written to '#{filepath}'"
+			puts ""
+		end
+			# OF_PROJECT_ADDONS_OBJS
+			# PROJECT_ADDONS
+			# PROJECT_ADDONS_SOURCE_FILES
+			# PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS
+			# addon
+			# PROJECT_ADDONS_LDFLAGS
+			# PLATFORM_REQUIRED_ADDONS
+			# PARSED_ADDONS_LIBS_SOURCE_INCLUDES
+			# B_PROCESS_ADDONS: 'yes'
+			# PARSED_ADDONS_LIBS_SOURCES
+			# PARSED_ADDONS_FILTERED_INCLUDE_PATHS
+			# ADDONS_INCLUDES_FILTER
+			# TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
+			# PROJECT_ADDONS_OBJ_FILES
+			# PROJECT_ADDONS_FRAMEWORKS
+			# PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS
+			# PARSED_ADDONS_SOURCE_INCLUDES
+			# INVALID_PROJECT_ADDONS
+			# INVALID_GLOBAL_ADDONS
+			# TMP_PROJECT_ADDONS_SOURCE_FILES
+			# PARSED_ADDONS_SOURCE_PATHS
+			# TMP_PROJECT_ADDONS_OBJ_FILES
+			# VALID_PROJECT_ADDONS
+			# PARSED_ADDONS_LIBS_SOURCE_PATHS
+			# PARSED_ADDONS_SOURCE_FILES
+			# TMP_PROJECT_ADDONS_LDFLAGS
+			# ADDONS_SOURCES_FILTER
+			# TMP_PROJECT_ADDONS_FRAMEWORKS
+			# PARSED_ADDONS_LIBS_INCLUDES_PATHS
+			# PROJECT_ADDONS_INCLUDES
+			# PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS
+			# REQUESTED_PROJECT_ADDONS
+			# PROJECT_ADDONS_OBJ_PATH
+			# OF_PROJECT_ADDONS_DEPS
+			# parse_addons_sources
+			# parse_addons_libraries
+			# parse_addons_includes
+			# TMP_PROJECT_ADDONS_INCLUDES
+			# PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS
+			# ADDON_INCLUDE_CFLAGS
+			# PARSED_ADDONS_INCLUDES
+			# PROJECT_ADDONS_CFLAGS
+			# PARSED_ADDONS_OFX_SOURCES
+			# PROJECT_ADDONS_DATA
+			# PARSED_ADDONS_LIBS_INCLUDES
+			# ADDON_LIBS
+			# PROJECT_ADDONS_LIBS
+			# ALL_INSTALLED_ADDONS
+			
+			# -------------------------
+			# raw data above, organized data below
+			
+			
+			
+			# B_PROCESS_ADDONS: 'yes'
+			
+			# ALL_INSTALLED_ADDONS
+			# INVALID_GLOBAL_ADDONS
+			# INVALID_PROJECT_ADDONS
+			# VALID_PROJECT_ADDONS
+			# PLATFORM_REQUIRED_ADDONS
+			
+			# addon
+			# ADDON_INCLUDE_CFLAGS
+			# ADDON_LIBS
+			# ADDONS_INCLUDES_FILTER
+			# ADDONS_SOURCES_FILTER
+			# OF_PROJECT_ADDONS_DEPS
+			# OF_PROJECT_ADDONS_OBJS
+			
+			# PROJECT_ADDONS
+			# PROJECT_ADDONS_CFLAGS
+			# PROJECT_ADDONS_DATA
+			# PROJECT_ADDONS_FRAMEWORKS
+			# PROJECT_ADDONS_INCLUDES
+			# PROJECT_ADDONS_LDFLAGS
+			# PROJECT_ADDONS_LIBS
+			# PROJECT_ADDONS_OBJ_FILES
+			# PROJECT_ADDONS_OBJ_PATH
+			# REQUESTED_PROJECT_ADDONS
+			# PROJECT_ADDONS_SOURCE_FILES
+			
+			
+			# PARSED_ADDONS_FILTERED_INCLUDE_PATHS
+			# PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS
+			# PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS
+			# PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS
+			# PARSED_ADDONS_INCLUDES
+			# PARSED_ADDONS_LIBS_INCLUDES
+			# PARSED_ADDONS_LIBS_INCLUDES_PATHS
+			# PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS
+			# PARSED_ADDONS_LIBS_SOURCE_INCLUDES
+			# PARSED_ADDONS_LIBS_SOURCE_PATHS
+			# PARSED_ADDONS_LIBS_SOURCES
+			# PARSED_ADDONS_OFX_SOURCES
+			# PARSED_ADDONS_SOURCE_FILES
+			# PARSED_ADDONS_SOURCE_INCLUDES
+			# PARSED_ADDONS_SOURCE_PATHS
+			
+			
+			# TMP_PROJECT_ADDONS_FRAMEWORKS
+			# TMP_PROJECT_ADDONS_INCLUDES
+			# TMP_PROJECT_ADDONS_LDFLAGS
+			# TMP_PROJECT_ADDONS_OBJ_FILES
+			# TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
+			# TMP_PROJECT_ADDONS_SOURCE_FILES
+	end
+	
+	# 3) take core variables, and mix in information needed for addons
+	file mixed_build_variable_file => addons_data do
+		
+	end
+	
+	
+	
+	# TODO: update extension file path
+	# TODO: update extension dependencies
+	# TODO: move conserved code in this extension bulid and the one above in to a single function that is called in both places
+	
+	# 4) load new mixed build variables into extconf.rb and create makefile
+	# Mimic RubyGems gem install procedure, for testing purposes.
+	# * run extconf
+	# * execute the resultant makefile
+	# * move the .so to it's correct location
+	file c_extension_file => extension_dependencies do
+		puts "=== building core wrapper..."
+		build_c_extension(c_extension_dir)
+	end
+end
+
+# Put everything together
+# + load dynamic library for core wrapper
+# + load dynamic library for a particular project
+# + require Ruby code for that same project
+# + open and run the Window associated with that project
+namespace :execution do
+	
+end
+
+
+
+
+
+
 
 
 
