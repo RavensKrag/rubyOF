@@ -588,6 +588,7 @@ ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/src"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 OBJS_WITHOUT_EXTERNAL:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.o
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o
@@ -744,6 +745,8 @@ OF_ADDON_INCLUDES_CFLAGS:
 - "-I./obj/linux64"
 - "-I./obj/linux64/Debug"
 - "-I./obj/linux64/Debug/src"
+- "-I/./lib"
+- "-I./lib"
 OF_SHARED_MAKEFILES_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon"
 KDE_FULL_SESSION:
@@ -947,6 +950,8 @@ PROJECT_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "/./lib"
+- "./lib"
 rvm_version:
 - 1.28.0
 - "(latest)"
@@ -983,6 +988,7 @@ REQUESTED_PROJECT_ADDONS:
 - ofxDatGui
 OF_PROJECT_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 ".VARIABLES":
 - PLATFORM_PKG_CONFIG
 - "<D"
@@ -1355,6 +1361,7 @@ ADDON_INCLUDES_FILTERED:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1364,6 +1371,7 @@ ADDON_INCLUDES_FILTERED:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1373,6 +1381,7 @@ ADDON_INCLUDES_FILTERED:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 PLATFORM_DEFINES:
 - OF_USING_GTK
 - OF_USING_MPG123
@@ -1457,6 +1466,7 @@ OBJS_WITH_PREFIX:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o
 OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 rvm_user_install_flag:
 - '1'
 ADDON_INCLUDES:
@@ -1469,6 +1479,7 @@ ADDON_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1478,6 +1489,7 @@ ADDON_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1487,6 +1499,7 @@ ADDON_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 "+F": []
 M2C:
 - m2c
@@ -1577,6 +1590,8 @@ TMP_PROJECT_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "/./lib"
+- "./lib"
 - "/."
 - "."
 - "./src"
@@ -1588,6 +1603,8 @@ TMP_PROJECT_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "/./lib"
+- "./lib"
 - "/."
 - "."
 - "./src"
@@ -1599,6 +1616,8 @@ TMP_PROJECT_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "/./lib"
+- "./lib"
 _system_type:
 - Linux
 YACC:
@@ -1771,6 +1790,7 @@ PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 GS_LIB:
 - "/home/ravenskrag/.fonts"
 COMPILE.c:
@@ -1857,6 +1877,8 @@ ADDON_INCLUDE_CFLAGS:
 - "-I./obj/linux64"
 - "-I./obj/linux64/Debug"
 - "-I./obj/linux64/Debug/src"
+- "-I/./lib"
+- "-I./lib"
 PARSED_ADDONS_INCLUDES:
 - "."
 - "./src"
@@ -1867,6 +1889,7 @@ PARSED_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1876,6 +1899,7 @@ PARSED_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 - "."
 - "./src"
 - "./bin"
@@ -1885,6 +1909,7 @@ PARSED_ADDONS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 _system_arch:
 - x86_64
 ADDON_CFLAGS: []
@@ -1941,6 +1966,7 @@ PARSED_ADDONS_LIBS_INCLUDES:
 - "./obj/linux64"
 - "./obj/linux64/Debug"
 - "./obj/linux64/Debug/src"
+- "./lib"
 LINK.f:
 - f77
 - "-Wl,-rpath=./libs:./bin/libs"
@@ -2059,6 +2085,7 @@ PROJECT_INCLUDE_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl"
 - "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs"
@@ -2077,6 +2104,8 @@ PROJECT_INCLUDE_CFLAGS:
 - "-I./obj/linux64"
 - "-I./obj/linux64/Debug"
 - "-I./obj/linux64/Debug/src"
+- "-I/./lib"
+- "-I./lib"
 MY_RUBY_HOME:
 - "/home/ravenskrag/.rvm/rubies/ruby-2.4.0"
 OF_CORE_BASE_CFLAGS:

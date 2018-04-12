@@ -4,7 +4,6 @@ require 'rake/clean'
 require 'fileutils'
 require 'open3'
 require 'yaml' # used for config files
-require 'json' # used to parse Clang DB
 
 
 require './common'
@@ -28,8 +27,6 @@ load './rake/clean_and_clobber.rb'
 
 load './rake/oF_core.rake'
 load './rake/oF_deps.rake'
-# load './rake/oF_project.rake'
-# load './rake/extension.rake'
 
 
 # defines RubyOF::Build.create_project and RubyOF::Build.load_project
@@ -465,6 +462,7 @@ namespace :project_wrapper do
 	#       should there be install/uninstall tasks too?
 	
 	task :clean do
+		# NOTE: cleaning oF sketch also cleans addons
 		Dir.chdir addons_sketch_root do
 			begin
 				run_i "make clean"
@@ -651,10 +649,14 @@ end
 namespace :execution do
 	# NOTE: Currently will only execute the 'youtube' project. Need to reconfigure build system so that any arbitrary project can be run.
 	# TODO: turn project_name into an argument (will be given to all tasks)
-	task :build_and_run => [
+	task :build_and_run => [:build, :run] 
+	
+	task :build => [
 		'core_wrapper:build',
 		'project_wrapper:build'
-	] do
+	]
+	
+	task :run do
 		root = Pathname.new(GEM_ROOT)
 		
 		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
@@ -676,6 +678,18 @@ namespace :execution do
 			Kernel.exec(cmd)
 		end
 	end
+	
+	
+	
+	task :clean => [
+		'core_wrapper:clean',
+		'project_wrapper:clean'
+	]
+	
+	task :clobber => [
+		'core_wrapper:clobber',
+		'project_wrapper:clobber'
+	]
 end
 
 
