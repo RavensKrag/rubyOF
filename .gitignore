@@ -104,9 +104,15 @@ bin/projects/youtube/bin/data/icons_old/*
 bin/projects/youtube/bin/data/raw/YouTube - subscriptions_files
 
 
+
+
+
 bin/projects/youtube/ext/new/addons_app/testApp/obj/*
 bin/projects/youtube/ext/new/addons_app/testApp/bin/*
 bin/projects/youtube/ext/new/addons_app/testApp/lib/*
+
+bin/projects/youtube/ext/new/c_extension/Makefile
+
 
 
 
