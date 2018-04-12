@@ -220,6 +220,7 @@ namespace :core_wrapper do
 	# * move the .so to it's correct location
 	c_extension_dir = Pathname.new(GEM_ROOT)/"ext"/NAME
 	c_extension_file = c_extension_dir/"#{NAME}.so"
+		# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	task :build_c_extension => c_extension_file
 	
 		extension_dependencies = Array.new.tap do |deps|
@@ -232,10 +233,6 @@ namespace :core_wrapper do
 			deps << "ext/#{NAME}/extconf_printer.rb"
 			deps << __FILE__ # depends on this Rakefile
 			deps << OF_BUILD_VARIABLE_FILE
-			
-			# TODO: ^ re-enable this ASAP
-			
-			# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_extension_file' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
 		end
 		
 		file c_extension_file => extension_dependencies do
@@ -305,142 +302,154 @@ end
 # 6) move dynamic library into easy-to-load location
 
 namespace :project_wrapper do
-	# root = Pathname.new(GEM_ROOT)
+	root = Pathname.new(GEM_ROOT)
 	
-	# project_name = 'youtube'
-	# project_dir  = root/'bin'/'projects'/project_name
-	
-	
-	# addons_app_dir = project_dir/'ext'/'new'/'addons_app'/'testApp'
-	# raw_build_variable_file = addons_app_dir/'raw_oF_variables.yaml'
-	# build_variable_file     = addons_app_dir/'oF_build_variables.yaml'
-	# addons_data             = addons_app_dir/'addons.yaml'
-	
-	# mixed_build_variable_file = addons_app_dir/'mixed_build_variables.yaml'
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
 	
 	
-	# c_extension_dir = root/"ext"/NAME
-	# c_extension_file = c_extension_dir/"#{NAME}.so"
-	
-	# # NOTE: This only works for linux, because it explicitly uses the ".so" extension
-	
-	# # TODO: update source file list
-	# extension_dependencies = Array.new.tap do |deps|
-	# 	# Ruby / Rice CPP files
-	# 	deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
-		
-	# 	# 
-	# 	deps << mixed_build_variable_file
-		
-	# 	deps << "ext/#{NAME}/extconf.rb"
-	# 	deps << "ext/#{NAME}/extconf_common.rb"
-	# 	deps << "ext/#{NAME}/extconf_printer.rb"
-		
-	# 	deps << __FILE__ # depends on this Rakefile
-		
-	# 	# deps << OF_BUILD_VARIABLE_FILE
-	# 	# TODO: ^ re-enable this ASAP
-		
-	# 	# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_extension_file' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
-		
-	# 	# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
-	# end
-	
-	# task :clean do
-	# 	Dir.chdir addons_app_dir do
-	# 		begin
-	# 			run_i "make clean"
-	# 		rescue StandardError => e
-	# 			puts "ERROR: Unknown problem while cleaning app for project #{project_name}."
-	# 			exit
-	# 		end
-	# 		# FileUtils.touch 'oF_project_build_timestamp'
-	# 	end
-		
-	# 	# Dir.chdir c_extension_dir do
-	# 	# 	begin
-	# 	# 		run_i "make clean"
-	# 	# 	rescue StandardError => e
-	# 	# 		puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
-	# 	# 		exit
-	# 	# 	end
-	# 	# end
-	# end
-	
-	# task :clobber => :clean do
-		
-	# end
-	
-	# task :build => [
-	# 	:build_addons_app,
-		
-	# 	# raw_build_variable_file -> build_variable_file -> addons_data
-	# 	addons_data
-	# ]
+	sketch_name = 'testApp'
+	addons_app_root     = project_dir/'ext'/'new'/'addons_app'
+	addons_sketch_root    = addons_app_root/sketch_name
+	raw_build_variable_file = addons_sketch_root/'raw_oF_variables.yaml'
+	build_variable_file     = addons_sketch_root/'oF_build_variables.yaml'
 	
 	
+	install_location = "lib/#{NAME}/#{NAME}.so"
+	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	
-	# # 2.1) build a whole dummy app, just to to build addons
-	# task :build_addons_app do 
-	# 	puts "=== Building project '#{project_name}'..."
-	# 	Dir.chdir addons_app_dir do
-	# 		# Make the debug build if the flag is set,
-	# 		# othwise, make the release build.
-	# 		debug = OF_DEBUG ? "Debug" : ""
+	oF_app_executable = 
+		Array.new.tap{ |x|
+			x << sketch_name
 			
-			
-	# 		begin
-	# 			run_i "make #{debug} -j#{NUMBER_OF_CORES}"
-	# 		rescue StandardError => e
-	# 			puts "ERROR: Could not build project '#{project_name}'"
-	# 			exit
-	# 		end
-	# 		# FileUtils.touch 'oF_project_build_timestamp'
-	# 	end
-	# end
+			suffix = OF_DEBUG ? "debug" : ""
+			x << suffix unless suffix.nil?
+		}.join('_')
 	
-	# # 2.2) export build vars from dummy app
-	# file raw_build_variable_file => [
-	# 	addons_app_dir/'Makefile.static_lib',
-	# 	__FILE__,     # if the Rake task changes, then update the output file
-	# 	COMMON_CONFIG # if config variables change, then build may be different
-	# ] do
-	# 	puts "=== Exporting oF project build variables..."
+	path_to_exe = Pathname.new(addons_sketch_root)/'bin'/oF_app_executable
+	
+	
+	
+	# This build system makes it so that build variables are only exported again as necessary. This way, you can use a change in the build variables to trigger other events.
+	task :build => [
+		:build_app,		         # build testApp using oF build system
+		:build_c_extension,     # export build vars -> reformat -> build wrapper
+		:move_dynamic_lib       # move dynamic library into easy-to-load location
+	]
+	
+	
+	# 1) build testApp using oF build system
+	task :build_app do
+		build_oF_app(sketch_name, addons_sketch_root)
+	end
+	
+	# 2) export build vars from testApp
+	file raw_build_variable_file => [
+		Pathname.new(addons_sketch_root)/'Makefile.static_lib',
+		__FILE__,      # if the Rake task changes, then update the output file
+		COMMON_CONFIG, # if config variables change, then build may be different
+		path_to_exe    # if :build_app produces new binary, then re-export vars
+	] do
+		export_oF_build_vars(addons_sketch_root, raw_build_variable_file)
+	end
+	
+	# 3) reverse engineer build vars for use in ruby's extconf.rb system
+	file build_variable_file => raw_build_variable_file do
+		reformat_build_vars(raw_build_variable_file, build_variable_file)
+	end
+	
+	# 4) use extconf.rb and Rice to build dynamic library of wrapper for core oF functionality
+	
+	# Mimic RubyGems gem install procedure, for testing purposes.
+	# * run extconf
+	# * execute the resultant makefile
+	# * move the .so to it's correct location
+	c_extension_dir = Pathname.new(GEM_ROOT)/"ext"/NAME
+	c_extension_file = c_extension_dir/"#{NAME}.so"
+		# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	task :build_c_extension => c_extension_file
+	
+		extension_dependencies = Array.new.tap do |deps|
+			# Ruby / Rice CPP files
+			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
+			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
+			
+			deps << "ext/#{NAME}/extconf.rb"
+			deps << "ext/#{NAME}/extconf_common.rb"
+			deps << "ext/#{NAME}/extconf_printer.rb"
+			deps << __FILE__ # depends on this Rakefile
+			deps << build_variable_file
+		end
 		
-	# 	Dir.chdir addons_app_dir do
-	# 		swap_makefile(addons_app_dir, "Makefile", "Makefile.static_lib") do
-	# 			# run_i "make printvars"
-				
-	# 			out = `make printvars TARGET_NAME=#{TARGET}`
-	# 			# p out
-				
-	# 			out = out.each_line.to_a
-				
-				
-	# 			File.open(raw_build_variable_file, "w") do |f|
-	# 				f.puts out.to_yaml
-	# 			end
-	# 		end
-	# 	end
-	# end
+		file c_extension_file => extension_dependencies do
+			puts "=== building core wrapper..."
+			build_c_extension(c_extension_dir)
+		end
 	
-	# # 2.3) reverse engineer build vars for use in ruby's extconf.rb system
-	# file build_variable_file => raw_build_variable_file do
-	# 	puts "=== reformatting..."
-	# 	Dir.chdir addons_app_dir do
-	# 		data = YAML.load_file(raw_build_variable_file)
-			
-	# 		final = parse_build_variable_data(data)
-			
-	# 		filepath = build_variable_file
-	# 		File.open(filepath, "w") do |f|
-	# 			f.puts final.to_yaml
-	# 		end
-			
-	# 		puts "=> Variables written to '#{filepath}'"
-	# 		puts ""
-	# 	end
-	# end
+	
+	# 5) move dynamic library into easy-to-load location]
+	task :move_dynamic_lib do
+		puts "=== moving dynamic lib to easy-to-load location"
+		FileUtils.cp c_extension_file, install_location
+		puts "=> DONE!"
+	end
+	
+	
+	
+	
+	
+	# TODO: Figure out what the actual trigger is to run this setup task.
+	
+	# This helper task will be called by core_wrapper:build_app as necessary. Only when the core app is changed will the addons app be updated.
+	task :create_addons_app do
+		# + remove old oF project directory, if one exists
+		# + copy testApp from core wrapper
+		# + move addons.make for this project into app folder
+		# + move custom Makefile into app folder
+		
+		project_dir = addons_app_root/sketch_name
+		FileUtils.rm_rf project_dir if project_dir.exist?
+		
+		FileUtils.cp_r OF_SKETCH_ROOT, addons_app_root/sketch_name
+		
+		FileUtils.cp addons_app_root/'addons.make', addons_app_root/sketch_name
+		FileUtils.cp addons_app_root/'Makefile',    addons_app_root/sketch_name
+	end
+	
+	
+	
+	
+	
+	# TODO: figure out where to clean up c_extension_file
+	#       is that in clean? clobber? something else? not sure
+	#       should there be install/uninstall tasks too?
+	
+	task :clean do
+		Dir.chdir addons_sketch_root do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning #{sketch_name}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+		
+		Dir.chdir c_extension_dir do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+				exit
+			end
+		end
+	end
+	
+	task :clobber => :clean do
+		FileUtils.rm install_location
+	end
+	
+	
 	
 	
 	# # 2.4) extract just the addons info from the build var data
@@ -586,26 +595,10 @@ namespace :project_wrapper do
 	# 		# TMP_PROJECT_ADDONS_SOURCE_FILES
 	# end
 	
-	# # 3) take core variables, and mix in information needed for addons
-	# file mixed_build_variable_file => addons_data do
+	
 		
-	# end
-	
-	
-	
-	# # TODO: update extension file path
-	# # TODO: update extension dependencies
-	# # TODO: move conserved code in this extension bulid and the one above in to a single function that is called in both places
-	
-	# # 4) load new mixed build variables into extconf.rb and create makefile
-	# # Mimic RubyGems gem install procedure, for testing purposes.
-	# # * run extconf
-	# # * execute the resultant makefile
-	# # * move the .so to it's correct location
-	# file c_extension_file => extension_dependencies do
-	# 	puts "=== building core wrapper..."
-	# 	build_c_extension(c_extension_dir)
-	# end
+	# TODO: update extension file path
+	# TODO: update extension dependencies
 end
 
 # Put everything together
