@@ -367,7 +367,8 @@ namespace :project_wrapper do
 	# 1) build testApp using oF build system
 	task :build_app => [
 		active_addons_file,
-		active_oF_project_makefile
+		active_oF_project_makefile,
+		active_oF_static_lib_makefile
 	] do
 		build_oF_app("addons app", addons_sketch_root)
 	end
