@@ -184,7 +184,7 @@ XAUTHORITY:
 MAKE_VERSION:
 - '4.1'
 CURDIR:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp"
 OF_LIBS_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs"
 SHELL:
@@ -542,16 +542,16 @@ remove-dupes-func: []
 SSH_AUTH_SOCK:
 - "/tmp/ssh-x5I1T4t0guS6/agent.2874"
 OF_PROJECT_EXCLUSIONS:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/bin"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/.git"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/bin/%"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/%"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/.git/%"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/%.xcodeproj"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/%.xcodeproj/%"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/build"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/build/%"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/.git"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin/%"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/%"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/.git/%"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/%.xcodeproj"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/%.xcodeproj/%"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/build"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/build/%"
 GET:
 - get
 "%F": []
@@ -580,18 +580,18 @@ rvm_bin_path:
 PWD:
 - "/home/ravenskrag/Desktop/gem_structure"
 ALL_OF_PROJECT_SOURCE_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/bin"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/bin/libs"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/bin/data"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/src"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/lib"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin/libs"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin/data"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/src"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 OBJS_WITHOUT_EXTERNAL:
-- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/ofApp.o
-- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/main.o
+- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.o
+- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o
 PARSED_ADDONS_SOURCE_INCLUDES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs"
@@ -634,8 +634,8 @@ SSH_AGENT_PID:
 - '2985'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/ofApp.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/main.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.cpp"
 parse_addon: []
 OF_CORE_LIBS_THAT_DONT_NEED_ORDER:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex"
@@ -688,8 +688,8 @@ HOME:
 SHARED_LIB_EXTENSION:
 - so
 OF_PROJECT_OBJ_FILES:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/ofApp.o"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/main.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o"
 PARSED_ADDONS_SOURCE_PATHS: []
 LESSCLOSE:
 - "/usr/bin/lesspipe"
@@ -709,10 +709,10 @@ TMP_PROJECT_ADDONS_OBJ_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/ofxDatGui.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/core/ofxDatGuiComponent.o"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
 OF_CORE_DEFINES_CFLAGS:
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
@@ -960,7 +960,7 @@ ADDON_FRAMEWORKS: []
 OF_EXAMPLES_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples"
 SRC_OBJ_FILE:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
 PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS:
 - "./src/ofApp.cpp"
 - "./src/main.cpp"
@@ -987,8 +987,8 @@ REQUESTED_PROJECT_ADDONS:
 - ofxGui
 - ofxDatGui
 OF_PROJECT_INCLUDES_CFLAGS:
-- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src"
-- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/lib"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 ".VARIABLES":
 - PLATFORM_PKG_CONFIG
 - "<D"
@@ -1344,7 +1344,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_CORE_BASE_CFLAGS
 - KDE_SESSION_UID
 addon_obj_path:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp"
 PC:
 - pc
 "*F": []
@@ -1417,7 +1417,7 @@ PLATFORM_CORE_EXCLUSIONS:
 MFLAGS: []
 "*D": []
 PROJECT_ADDONS_OBJ_PATH:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons/"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons/"
 OF_CORE_LIBS_THAT_NEED_ORDER: []
 LEX.l:
 - lex
@@ -1439,8 +1439,8 @@ OF_PROJECT_ADDONS_DEPS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/ofxDatGui.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/core/ofxDatGuiComponent.d"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
 ALL_OF_CORE_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app"
@@ -1462,11 +1462,11 @@ COMPILE.r:
 - f77
 - "-c"
 OBJS_WITH_PREFIX:
-- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/ofApp.o
-- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src/main.o
+- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.o
+- obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o
 OF_PROJECT_SOURCE_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/lib"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 rvm_user_install_flag:
 - '1'
 ADDON_INCLUDES:
@@ -1568,8 +1568,8 @@ OF_PROJECT_DEPENDENCY_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/ofxDatGui.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxDatGui/src/core/ofxDatGuiComponent.d"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
 ADDON_LDFLAGS: []
 TMP_PROJECT_ADDONS_INCLUDES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
@@ -1743,7 +1743,7 @@ LINK.F:
 rvm_prefix:
 - "/home/ravenskrag"
 PROJECT_ROOT:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2084,8 +2084,8 @@ PROJECT_INCLUDE_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl"
-- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/src"
-- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/lib"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+- "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs"

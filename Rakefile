@@ -312,13 +312,13 @@ namespace :project_wrapper do
 	project_dir  = root/'bin'/'projects'/project_name
 	
 	
-	addons_app_root     = project_dir/'ext'/'new'/'addons_app'
+	addons_app_root     = project_dir/'ext'/'addons_app'
 	addons_sketch_root    = addons_app_root/OF_SKETCH_NAME
 	raw_build_variable_file = addons_sketch_root/'raw_oF_variables.yaml'
 	build_variable_file     = addons_sketch_root/'oF_build_variables.yaml'
 	
 	
-	c_extension_dir     = project_dir/'ext'/'new'/'c_extension'
+	c_extension_dir     = project_dir/'ext'/'c_extension'
 	c_extension_file      = c_extension_dir/"#{NAME}.so"
 	install_location    = project_dir/'bin'/'lib'/"#{NAME}_project.so"
 	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
