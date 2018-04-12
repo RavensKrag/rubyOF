@@ -204,6 +204,11 @@ namespace :core_wrapper do
 		COMMON_CONFIG, # if config variables change, then build may be different
 		path_to_exe    # if :build_app produces new binary, then re-export vars
 	] do
+		run_task 'project_wrapper:create_addons_app'
+		# ^ Copy over core app to the particular project.
+		#   only copy over app when the output of :build_app changes,
+		#   which is when this task will execute
+		
 		export_oF_build_vars(OF_SKETCH_ROOT, OF_RAW_BUILD_VARIABLE_FILE)
 	end
 	
@@ -222,7 +227,7 @@ namespace :core_wrapper do
 	c_extension_file = c_extension_dir/"#{NAME}.so"
 		# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	task :build_c_extension => c_extension_file
-	
+		
 		extension_dependencies = Array.new.tap do |deps|
 			# Ruby / Rice CPP files
 			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
@@ -239,7 +244,7 @@ namespace :core_wrapper do
 			puts "=== building core wrapper..."
 			build_c_extension(c_extension_dir)
 		end
-	
+		
 	
 	# 5) move dynamic library into easy-to-load location]
 	task :move_dynamic_lib do
@@ -318,6 +323,20 @@ namespace :project_wrapper do
 	install_location = "lib/#{NAME}/#{NAME}.so"
 	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	
+	
+	
+	
+	source_addons_file = addons_app_root/'addons.make'
+	active_addons_file = addons_app_root/sketch_name/'addons.make'
+	
+	source_oF_project_makefile = addons_app_root/'Makefile'
+	active_oF_project_makefile = addons_app_root/sketch_name/'Makefile'
+	
+	
+	
+	
+	
+	
 	oF_app_executable = 
 		Array.new.tap{ |x|
 			x << sketch_name
@@ -339,7 +358,10 @@ namespace :project_wrapper do
 	
 	
 	# 1) build testApp using oF build system
-	task :build_app do
+	task :build_app => [
+		active_addons_file,
+		active_oF_project_makefile
+	] do
 		build_oF_app(sketch_name, addons_sketch_root)
 	end
 	
@@ -380,12 +402,12 @@ namespace :project_wrapper do
 			deps << __FILE__ # depends on this Rakefile
 			deps << build_variable_file
 		end
-		
+	
 		file c_extension_file => extension_dependencies do
 			puts "=== building core wrapper..."
 			build_c_extension(c_extension_dir)
 		end
-	
+		
 	
 	# 5) move dynamic library into easy-to-load location]
 	task :move_dynamic_lib do
@@ -401,7 +423,9 @@ namespace :project_wrapper do
 	# TODO: Figure out what the actual trigger is to run this setup task.
 	
 	# This helper task will be called by core_wrapper:build_app as necessary. Only when the core app is changed will the addons app be updated.
+	
 	task :create_addons_app do
+		puts "=== Initializing project-specific addons app"
 		# + remove old oF project directory, if one exists
 		# + copy testApp from core wrapper
 		# + move addons.make for this project into app folder
@@ -412,9 +436,25 @@ namespace :project_wrapper do
 		
 		FileUtils.cp_r OF_SKETCH_ROOT, addons_app_root/sketch_name
 		
-		FileUtils.cp addons_app_root/'addons.make', addons_app_root/sketch_name
-		FileUtils.cp addons_app_root/'Makefile',    addons_app_root/sketch_name
+		FileUtils.cp source_addons_file, active_addons_file
+		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
 	end
+	
+	
+	
+	# These helper tasks move the files I will use to declare addons, and the makefile for the addons oF project, into the proper location for the oF build system to make use of them.
+	# 
+	# Set as prereqs by the first task in the :project_wrapper namespace, so that this entire set of things will rebuild if these files have been modified.
+	# 
+	file active_addons_file => source_addons_file do
+		FileUtils.cp source_addons_file, active_addons_file
+	end
+	
+	file active_oF_project_makefile => source_oF_project_makefile do
+		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
+	end
+	
+	
 	
 	
 	
