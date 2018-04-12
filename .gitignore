@@ -81,7 +81,6 @@ ext/oF_apps/testApp/bin/testApp
 ext/oF_apps/testApp/bin/testApp_debug
 
 # Building the Ruby c-extension
-ext/rubyOF/constants/data_path.h
 ext/rubyOF/Makefile
 compile_commands.json
 
@@ -92,7 +91,7 @@ bin/projects/*/ext/*/Makefile
 # ^ may have to un-ignore the makefile again,
 #   if you create a build system that doesn't use extconf at this level
 
-bin/projects/*/ext/*/constants/data_path.h
+# bin/projects/*/ext/*/constants/data_path.h
 
 bin/projects/*/ext/addons_app/testApp/bin
 
