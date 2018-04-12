@@ -251,7 +251,7 @@ namespace :core_wrapper do
 	
 	# 5) move dynamic library into easy-to-load location]
 	task :move_dynamic_lib do
-		puts "=== moving dynamic lib to easy-to-load location"
+		puts "=== moving core dynamic lib to easy-to-load location"
 		FileUtils.cp c_extension_file, install_location
 		puts "=> DONE!"
 	end
@@ -410,7 +410,7 @@ namespace :project_wrapper do
 	
 	# 5) move dynamic library into easy-to-load location]
 	task :move_dynamic_lib do
-		puts "=== moving dynamic lib to easy-to-load location"
+		puts "=== moving project dynamic lib to easy-to-load location"
 		FileUtils.cp c_extension_file, install_location
 		puts "=> DONE!"
 	end
@@ -641,13 +641,41 @@ namespace :project_wrapper do
 	# TODO: update extension dependencies
 end
 
+
+
 # Put everything together
 # + load dynamic library for core wrapper
 # + load dynamic library for a particular project
 # + require Ruby code for that same project
 # + open and run the Window associated with that project
 namespace :execution do
-	
+	# NOTE: Currently will only execute the 'youtube' project. Need to reconfigure build system so that any arbitrary project can be run.
+	# TODO: turn project_name into an argument (will be given to all tasks)
+	task :build_and_run => [
+		'core_wrapper:build',
+		'project_wrapper:build'
+	] do
+		root = Pathname.new(GEM_ROOT)
+		
+		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+		
+		project_name = 'youtube'
+		project_dir  = root/'bin'/'projects'/project_name
+		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+		
+		Dir.chdir project_dir do
+			puts "ruby level execution"
+			
+			exe_path = "./lib/main.rb"
+			
+			cmd = [
+				'GALLIUM_HUD=fps,VRAM-usage',
+				"ruby #{exe_path}"
+			].join(' ')
+			
+			Kernel.exec(cmd)
+		end
+	end
 end
 
 
