@@ -15,7 +15,7 @@ endif
 # Need different path to openFrameworks directory
 # than what is used to build the core project
 # 
-OF_ROOT = $(realpath ../../../../../../ext/openFrameworks)
+OF_ROOT = $(realpath ../../../../../../../ext/openFrameworks)
 
 
 
