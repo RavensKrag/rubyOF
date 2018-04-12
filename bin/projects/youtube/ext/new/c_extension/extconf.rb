@@ -198,8 +198,8 @@ of_core_libs_dynamic_flags =
 
 
 list_of_linker_flags = [
-	# of_project_objs,
-	# of_project_addon_objs,
+	of_project_objs,
+	of_project_addon_objs,
 	# ^ these two will now be part of a static library (.a file)
 	# OF_SKETCH_LIB_FILE, # <-- here is that library
 	
