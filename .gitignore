@@ -119,6 +119,6 @@ bin/projects/youtube/ext/new/c_extension/Makefile
 
 
 
-=== Don't track Gemfile.lock
+# === Don't track Gemfile.lock
 Gemfile.lock
 bin/projects/*/Gemfile.lock
