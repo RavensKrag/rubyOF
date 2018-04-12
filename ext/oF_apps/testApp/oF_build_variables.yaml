@@ -193,7 +193,7 @@ CO:
 VTE_VERSION:
 - '4205'
 _:
-- "/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin/rake"
+- "/usr/bin/env"
 QT_AUTO_SCREEN_SCALE_FACTOR:
 - '0'
 PREPROCESS.F:
@@ -286,6 +286,8 @@ OF_PROJECT_OBJS:
 - obj/linux64/Debug/src/main.o
 USER:
 - ravenskrag
+RUBYOF_PROJECT:
+- youtube
 OF_PROJECT_DEFINES: []
 CPP:
 - cc
@@ -855,6 +857,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - CHECKOUT,v
 - OF_PROJECT_OBJS
 - USER
+- RUBYOF_PROJECT
 - OF_PROJECT_DEFINES
 - CPP
 - OF_APPS_PATH

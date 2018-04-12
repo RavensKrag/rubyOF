@@ -16,7 +16,7 @@ def main(project_root)
 	
 	core_install_location    = root/'lib'/name/"#{name}.so"
 	
-	project_name = 'youtube'
+	project_name = ENV['RUBYOF_PROJECT']
 	project_dir  = root/'bin'/'projects'/project_name
 	project_install_location = project_dir/'bin'/'lib'/"#{name}_project.so"
 	

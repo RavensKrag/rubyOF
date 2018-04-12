@@ -304,8 +304,12 @@ namespace :project_wrapper do
 	root = Pathname.new(GEM_ROOT)
 	
 	# TODO: turn project_name into an argument (will be given to all tasks)
+	# NOTE: currently, project name needs to be set at this level. all other build variables declared in this top section require that project_name is set.
+	# GOT IT! => use environment variable instead of rake argument to set project name. This way, the project name will be visible everywhere.
+	# to run from command line:
+	# $ env RUBYOF_PROJECT="youtube" rake execution:build_and_run
 	
-	project_name = 'youtube'
+	project_name = ENV['RUBYOF_PROJECT']
 	project_dir  = root/'bin'/'projects'/project_name
 	
 	
