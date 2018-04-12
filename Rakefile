@@ -69,15 +69,15 @@ end
 
 # TARGET
 # NUMBER_OF_CORES
-def build_oF_app(sketch_name, sketch_root)
-	puts "=== Building #{sketch_name}..."
+def build_oF_app(name, sketch_root)
+	puts "=== Building #{name}..."
 	Dir.chdir sketch_root do
 		# TARGET specifies whether to build "Debug" or "Release" build
 		
 		begin
 			run_i "make #{TARGET} -j#{NUMBER_OF_CORES}"
 		rescue StandardError => e
-			puts "ERROR: Could not build #{sketch_name}."
+			puts "ERROR: Could not build #{name}."
 			exit
 		end
 		# FileUtils.touch 'oF_project_build_timestamp'
@@ -169,8 +169,14 @@ end
 # 4) use extconf.rb and Rice to build dynamic library of wrapper for *core oF* functionality
 # 5) move dynamic library into easy-to-load location
 namespace :core_wrapper do
+	root = Pathname.new(GEM_ROOT)
+	
+	c_extension_dir = root/"ext"/NAME
+	c_extension_file = c_extension_dir/"#{NAME}.so"
 	install_location = "lib/#{NAME}/#{NAME}.so"
 	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	
+	
 	
 	oF_app_executable = 
 		Array.new.tap{ |x|
@@ -194,7 +200,7 @@ namespace :core_wrapper do
 	
 	# 1) build testApp using oF build system
 	task :build_app do
-		build_oF_app(OF_SKETCH_NAME, OF_SKETCH_ROOT)
+		build_oF_app("core oF sketch", OF_SKETCH_ROOT)
 	end
 	
 	# 2) export build vars from testApp
@@ -223,9 +229,6 @@ namespace :core_wrapper do
 	# * run extconf
 	# * execute the resultant makefile
 	# * move the .so to it's correct location
-	c_extension_dir = Pathname.new(GEM_ROOT)/"ext"/NAME
-	c_extension_file = c_extension_dir/"#{NAME}.so"
-		# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	task :build_c_extension => c_extension_file
 		
 		extension_dependencies = Array.new.tap do |deps|
@@ -309,29 +312,33 @@ end
 namespace :project_wrapper do
 	root = Pathname.new(GEM_ROOT)
 	
+	# TODO: turn project_name into an argument (will be given to all tasks)
+	
 	project_name = 'youtube'
 	project_dir  = root/'bin'/'projects'/project_name
 	
 	
-	sketch_name = 'testApp'
 	addons_app_root     = project_dir/'ext'/'new'/'addons_app'
-	addons_sketch_root    = addons_app_root/sketch_name
+	addons_sketch_root    = addons_app_root/OF_SKETCH_NAME
 	raw_build_variable_file = addons_sketch_root/'raw_oF_variables.yaml'
 	build_variable_file     = addons_sketch_root/'oF_build_variables.yaml'
 	
 	
-	install_location = "lib/#{NAME}/#{NAME}.so"
+	c_extension_dir     = project_dir/'ext'/'new'/'c_extension'
+	c_extension_file      = c_extension_dir/"#{NAME}.so"
+	install_location    = project_dir/'bin'/'lib'/"#{NAME}_project.so"
 	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	
 	
-	
-	
-	source_addons_file = addons_app_root/'addons.make'
-	active_addons_file = addons_app_root/sketch_name/'addons.make'
-	
-	source_oF_project_makefile = addons_app_root/'Makefile'
-	active_oF_project_makefile = addons_app_root/sketch_name/'Makefile'
-	
+	x = addons_app_root
+		source_addons_file = x/'addons.make'
+		active_addons_file = x/OF_SKETCH_NAME/'addons.make'
+		
+		source_oF_project_makefile = x/'Makefile'
+		active_oF_project_makefile = x/OF_SKETCH_NAME/'Makefile'
+		
+		source_oF_static_lib_makefile = x/'Makefile.static_lib'
+		active_oF_static_lib_makefile = x/OF_SKETCH_NAME/'Makefile.static_lib'
 	
 	
 	
@@ -339,7 +346,7 @@ namespace :project_wrapper do
 	
 	oF_app_executable = 
 		Array.new.tap{ |x|
-			x << sketch_name
+			x << OF_SKETCH_NAME
 			
 			suffix = OF_DEBUG ? "debug" : ""
 			x << suffix unless suffix.nil?
@@ -362,7 +369,7 @@ namespace :project_wrapper do
 		active_addons_file,
 		active_oF_project_makefile
 	] do
-		build_oF_app(sketch_name, addons_sketch_root)
+		build_oF_app("addons app", addons_sketch_root)
 	end
 	
 	# 2) export build vars from testApp
@@ -386,9 +393,6 @@ namespace :project_wrapper do
 	# * run extconf
 	# * execute the resultant makefile
 	# * move the .so to it's correct location
-	c_extension_dir = Pathname.new(GEM_ROOT)/"ext"/NAME
-	c_extension_file = c_extension_dir/"#{NAME}.so"
-		# NOTE: This only works for linux, because it explicitly uses the ".so" extension
 	task :build_c_extension => c_extension_file
 	
 		extension_dependencies = Array.new.tap do |deps|
@@ -404,7 +408,7 @@ namespace :project_wrapper do
 		end
 	
 		file c_extension_file => extension_dependencies do
-			puts "=== building core wrapper..."
+			puts "=== building project C++ code..."
 			build_c_extension(c_extension_dir)
 		end
 		
@@ -431,13 +435,14 @@ namespace :project_wrapper do
 		# + move addons.make for this project into app folder
 		# + move custom Makefile into app folder
 		
-		project_dir = addons_app_root/sketch_name
+		project_dir = addons_app_root/OF_SKETCH_NAME
 		FileUtils.rm_rf project_dir if project_dir.exist?
 		
-		FileUtils.cp_r OF_SKETCH_ROOT, addons_app_root/sketch_name
+		FileUtils.cp_r OF_SKETCH_ROOT, addons_app_root/OF_SKETCH_NAME
 		
 		FileUtils.cp source_addons_file, active_addons_file
 		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
+		FileUtils.cp source_oF_static_lib_makefile, active_oF_static_lib_makefile
 	end
 	
 	
@@ -452,6 +457,10 @@ namespace :project_wrapper do
 	
 	file active_oF_project_makefile => source_oF_project_makefile do
 		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
+	end
+	
+	file active_oF_static_lib_makefile => source_oF_static_lib_makefile do
+		FileUtils.cp source_oF_static_lib_makefile, active_oF_static_lib_makefile
 	end
 	
 	
@@ -469,7 +478,7 @@ namespace :project_wrapper do
 			begin
 				run_i "make clean"
 			rescue StandardError => e
-				puts "ERROR: Unknown problem while cleaning #{sketch_name}."
+				puts "ERROR: Unknown problem while cleaning #{OF_SKETCH_NAME}."
 				exit
 			end
 			# FileUtils.touch 'oF_project_build_timestamp'
