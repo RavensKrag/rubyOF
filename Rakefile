@@ -299,16 +299,10 @@ end
 # Projects use some combination of Ruby and C++ to build on the framework,
 # and accomplish a specific goal.
 
-# 1) take in exported and reformatted vars from the core wrapper
-# 2.1) build a whole dummy app, just to to build addons
-# 2.2) export build vars from dummy app
-# 2.3) reverse engineer build vars for use in ruby's extconf.rb system
-# 2.4) extract just the addons info from the build var data
-# 3) take core variables, and mix in information needed for addons
-# 4) load new mixed build variables into extconf.rb and create makefile
-# 5) run makefile, and create dynamic library for project-level code
-# 6) move dynamic library into easy-to-load location
-
+# same basic 5 step process as before, but with some additions
+# + need to perform some patching of the oF project used previously,
+#   as position of the OpenFrameworks folder relative to the project
+#   is different than position relative to the core wrapper code directory.
 namespace :project_wrapper do
 	root = Pathname.new(GEM_ROOT)
 	
@@ -424,11 +418,7 @@ namespace :project_wrapper do
 	
 	
 	
-	
-	# TODO: Figure out what the actual trigger is to run this setup task.
-	
 	# This helper task will be called by core_wrapper:build_app as necessary. Only when the core app is changed will the addons app be updated.
-	
 	task :create_addons_app do
 		puts "=== Initializing project-specific addons app"
 		# + remove old oF project directory, if one exists
@@ -448,7 +438,7 @@ namespace :project_wrapper do
 	
 	
 	
-	# These helper tasks move the files I will use to declare addons, and the makefile for the addons oF project, into the proper location for the oF build system to make use of them.
+	# These helper tasks move configuration files into the actual oF project that will use them. The oF project is merely a driver for these elements. Often, a new copy of that driver will have to be copied in. Thus, I place these elements outside that folder, so the system can automatically patch at will.
 	# 
 	# Set as prereqs by the first task in the :project_wrapper namespace, so that this entire set of things will rebuild if these files have been modified.
 	# 

@@ -1,5 +1,6 @@
 require 'mkmf-rice'
 require 'fileutils'
+require 'pathname'
 require 'open3'
 
 require 'yaml'
@@ -15,28 +16,21 @@ require File.expand_path('./common', gem_root)
 
 
 
-
-
-
-require 'fileutils'
-require 'open3'
-
-require 'yaml'
+root = Pathname.new(GEM_ROOT)
 
 
 have_library("stdc++")
 
-
+find_header('app_factory.h', root/'ext'/NAME)
+# ^ doesn't work, but I was able to manually add the path later
+#   (set on line where $CPPFLAGS is defined)
 
 
 
 
 # === Set extra flags based on data from oF build system
-require 'pathname'
 
-puts "==================="
-puts "HELLO WORLD!"
-puts "==================="
+
 
 
 current_folder = Pathname.new(path_to_file)
@@ -44,6 +38,7 @@ current_folder = Pathname.new(path_to_file)
 addons_app_root     = current_folder.parent/'addons_app'
 addons_sketch_root    = addons_app_root/OF_SKETCH_NAME
 build_variable_file     = addons_sketch_root/'oF_build_variables.yaml'
+# NOTE: addons_sketch_root is used by other variables in extconf.rb further down. In the main extconf.rb, the variable is OF_SKETCH_ROOT. Consider that when trying to merge these two documents.
 
 
 of_build_variables = YAML.load_file(build_variable_file)
@@ -124,7 +119,7 @@ c_flags =
 # p c_flags
 
 
-$CPPFLAGS += " " + c_flags
+$CPPFLAGS += " " + c_flags + " -I#{root/'ext'/NAME}"
 
 
 # Set this so build system outputs formatted error messages,
@@ -167,7 +162,7 @@ of_build_variables['OBJS_WITH_PREFIX']
 of_project_objs = 
 	of_build_variables['OF_PROJECT_OBJS']
 	.collect{ |line|
-		File.expand_path("./#{line}", OF_SKETCH_ROOT)
+		File.expand_path("./#{line}", addons_sketch_root)
 	}.join(' ')
 
 
