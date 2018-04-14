@@ -482,7 +482,6 @@
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/data /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64 /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug
   /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/src
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
 
 '
 - 'KDE_SESSION_VERSION = 5
@@ -761,7 +760,6 @@
 '
 - "REQUESTED_PROJECT_ADDONS =  \n"
 - 'OF_PROJECT_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
-  -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
 
 '
 - ".VARIABLES = PLATFORM_PKG_CONFIG <D RUBY_VERSION CORE_EXCLUSIONS DESKTOP_SESSION
@@ -880,7 +878,6 @@
 
 '
 - 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
-  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
 
 '
 - 'rvm_user_install_flag = 1
@@ -1138,7 +1135,7 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
-  -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib
+  -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
 
 '
 - 'MY_RUBY_HOME = /home/ravenskrag/.rvm/rubies/ruby-2.4.0

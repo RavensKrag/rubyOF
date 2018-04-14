@@ -576,7 +576,6 @@
   /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64
   /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug
   /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj/linux64/Debug/src
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib
 
 '
 - 'OBJS_WITHOUT_EXTERNAL = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.o
@@ -629,7 +628,7 @@
   /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.cpp
 
 '
-- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                                           \n"
+- "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                                                                   \n"
 - 'OF_CORE_LIBS_THAT_DONT_NEED_ORDER = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2
 
@@ -714,7 +713,7 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
   -I/. -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64
-  -I./obj/linux64/Debug -I./obj/linux64/Debug/src -I/./lib -I./lib
+  -I./obj/linux64/Debug -I./obj/linux64/Debug/src
 
 '
 - 'OF_SHARED_MAKEFILES_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon
@@ -913,7 +912,7 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
   /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
-  ./obj/linux64/Debug/src /./lib ./lib \n"
+  ./obj/linux64/Debug/src \n"
 - 'rvm_version = 1.28.0 (latest)
 
 '
@@ -929,7 +928,7 @@
 
 '
 - "rwildcard = \t\t \t\t\t \t\t \t \t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t
-  \t \t \t \t\t\n"
+  \t \t \t\n"
 - 'WEAVE = weave
 
 '
@@ -950,7 +949,6 @@
 
 '
 - 'OF_PROJECT_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src
-  -I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib
 
 '
 - ".VARIABLES = PLATFORM_PKG_CONFIG <D RUBY_VERSION CORE_EXCLUSIONS DESKTOP_SESSION
@@ -1030,10 +1028,9 @@
 
 '
 - 'ADDON_INCLUDES_FILTERED = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin
-  ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
-  ./lib
+  ./obj/linux64/Debug ./obj/linux64/Debug/src . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src . ./src ./bin ./bin/libs
+  ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - 'PLATFORM_DEFINES =  OF_USING_GTK OF_USING_MPG123
@@ -1115,16 +1112,15 @@
 
 '
 - 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib
 
 '
 - 'rvm_user_install_flag = 1
 
 '
 - 'ADDON_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
-  ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
+  ./obj/linux64/Debug/src . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
+  ./obj/linux64/Debug ./obj/linux64/Debug/src . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - "+F = \n"
@@ -1192,10 +1188,9 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
   /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
-  ./obj/linux64/Debug/src /./lib ./lib /. . ./src /./bin ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src /./lib ./lib /.
-  . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
-  ./obj/linux64/Debug/src /./lib ./lib
+  ./obj/linux64/Debug/src /. . ./src /./bin ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
+  ./obj/linux64/Debug ./obj/linux64/Debug/src /. . ./src /./bin ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - '_system_type = Linux
@@ -1293,7 +1288,7 @@
 
 '
 - 'PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS = . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - 'GS_LIB = /home/ravenskrag/.fonts
@@ -1339,14 +1334,13 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
   -I/. -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64
-  -I./obj/linux64/Debug -I./obj/linux64/Debug/src -I/./lib -I./lib
+  -I./obj/linux64/Debug -I./obj/linux64/Debug/src
 
 '
 - 'PARSED_ADDONS_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin ./bin/libs ./bin/data
-  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib . ./src ./bin
-  ./bin/libs ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
-  ./lib
+  ./obj/linux64/Debug ./obj/linux64/Debug/src . ./src ./bin ./bin/libs ./bin/data
+  ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src . ./src ./bin ./bin/libs
+  ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - '_system_arch = x86_64
@@ -1378,7 +1372,7 @@
 
 '
 - 'PARSED_ADDONS_LIBS_INCLUDES = . ./src ./bin ./bin/libs ./bin/data ./obj ./obj/linux64
-  ./obj/linux64/Debug ./obj/linux64/Debug/src ./lib
+  ./obj/linux64/Debug ./obj/linux64/Debug/src
 
 '
 - "LINK.f = f77  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -ldrm
@@ -1446,7 +1440,6 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
   -I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src
-  -I/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/lib
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/libs/ofxSmartFont
@@ -1454,7 +1447,7 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
   -I/. -I. -I./src -I/./bin -I./bin -I./bin/libs -I./bin/data -I./obj -I./obj/linux64
-  -I./obj/linux64/Debug -I./obj/linux64/Debug/src -I/./lib -I./lib
+  -I./obj/linux64/Debug -I./obj/linux64/Debug/src
 
 '
 - 'MY_RUBY_HOME = /home/ravenskrag/.rvm/rubies/ruby-2.4.0

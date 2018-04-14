@@ -60,7 +60,7 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/sound
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
-    -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
+    -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
   "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib
     -lrice /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
     \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed

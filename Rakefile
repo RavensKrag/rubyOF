@@ -33,6 +33,11 @@ load './rake/oF_deps.rake'
 require File.join(GEM_ROOT, 'build', 'build.rb')
 
 
+# check that all environment variables are set
+var_name = 'RUBYOF_PROJECT'
+if ENV[var_name].nil?
+	raise "ERROR: must set environment variable '#{var_name}'"
+end
 
 
 # --- helpers
@@ -165,6 +170,9 @@ end
 # 3) reverse engineer build vars for use in ruby's extconf.rb system
 # 4) use extconf.rb and Rice to build dynamic library of wrapper for *core oF* functionality
 # 5) move dynamic library into easy-to-load location
+
+# Assumes 'setup' has been run.
+desc "Namespace: update core bindings"
 namespace :core_wrapper do
 	root = Pathname.new(GEM_ROOT)
 	
@@ -300,6 +308,9 @@ end
 # + need to perform some patching of the oF project used previously,
 #   as position of the OpenFrameworks folder relative to the project
 #   is different than position relative to the core wrapper code directory.
+
+# Assumes 'setup' has been run.
+desc "Namespace: update project-specific C++ code"
 namespace :project_wrapper do
 	root = Pathname.new(GEM_ROOT)
 	
@@ -796,6 +807,7 @@ namespace :ruby do
 		Dir.chdir path do
 			puts "ruby level execution"
 			
+			# TODO: try setting environment variable for this path, to make it easier to load in GDB
 			exe_path = "./lib/main.rb"
 			p exe_path
 			puts "Path to core file above."
@@ -882,21 +894,6 @@ end
 
 
 
-
-# clean just a few things
-desc "For reversing :build_cpp_wrapper"
-task :clean_cpp_wrapper, [:rubyOF_project] => [
-	'cpp_wrapper_code:clean',
-	'cpp_project:clean',
-	'cpp_callbacks:clean'
-]
-
-desc "For reversing :build_project"
-task :clean_project, [:rubyOF_project] => [
-	'cpp_project:clean',
-	'cpp_callbacks:clean'
-]
-
 desc "For reversing :build_project"
 task :clobber_project, [:rubyOF_project] => [
 	'cpp_project:clobber',
@@ -922,10 +919,10 @@ task :clean   => [
 ]
 task :clobber => ['oF_deps:clobber', 'oF:clean']
 
-
-
 # TODO: Update clean tasks to remove the makefile after running "make clean"
 # (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
+
+
 
 
 
@@ -934,7 +931,7 @@ task :setup => [
 	# 'oF:download_libs',
 	'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
 	'oF:build',
-	'oF_project:build'
+	'core_wrapper:build_app'
 ] do
 	FileUtils.mkdir_p "bin/data"
 	FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
@@ -977,53 +974,9 @@ end
 
 # For working on a normal OpenFrameworks project in pure C++
 desc "Build a normal OpenFrameworks project in pure C++"
-task :build_cpp => ['oF:build', 'oF_project:build']
+task :build_cpp => ['oF:build', 'core_wrapper:build_app']
 
 
-
-# For integrating Rice bindings with the current RubyOF project
-# (can edit addons, oF core, oF project, Rice bindings, or RubyOF project)
-# 
-# Assumes 'setup' has been run.
-# 
-# Build dependencies shifted from explict to implied, (assumes task has run)
-# so that you don't duplicate the work being done in :setup.
-# This way, the build process will go a little faster.
-desc "For updating Rice code, and testing with current RubyOF project"
-task :build_cpp_wrapper, [:rubyOF_project] => [
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	'cpp_wrapper_code:build', # implicitly requires oF_project:build
-	# ^ multiple steps:
-	#   +  extconf.rb -> makefile
-	#   +  run the makefile -> build ruby dynamic lib (.so)
-	#   +  move ruby dynamic lib (.so) into proper position
-	#   +  ALSO rebuilds the clang symbol DB as necessary.
-	
-	:install_oF_dynamic_libs,
-] do
-	
-	puts ">>> BUILD COMPLETE <<<"
-	
-end
-
-
-# For using stable bindings with a custom blend of C++ and Ruby
-# (can edit addons, or RubyOF project)
-# 
-# Assumes 'setup' has been run
-# Assumes 'build_cpp_wrapper' has been run
-desc "For using stable bindings with a custom blend of C++ and Ruby"
-task :build_project, [:rubyOF_project] => [
-	'cpp_project:build_addons_lib',
-	
-	'cpp_project:build',
-	'cpp_callbacks:build'
-] do |t, args|
-	puts ">>> BUILD COMPLETE <<<"
-end
 
 # NOTE: parameters to rake task are passed to all dependencies as well
 # source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
@@ -1040,17 +993,6 @@ task :full_build, [:rubyOF_project] => [
 
 
 
-
-
-
-# (tasks that do not need the 'project' argument will ignore it)
-# desc "Run default build task (:build_cpp_wrapper)"
-# task :build, [:rubyOF_project] => :build_cpp_wrapper
-desc "Run main build tasks (:build_cpp_wrapper and :build_project)"
-task :build, [:rubyOF_project] => [
-	:build_cpp_wrapper,
-	:build_project
-]
 
 
 
