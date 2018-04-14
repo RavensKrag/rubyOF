@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 
-tasks = `env RUBYOF_PROJECT="youtube" rake --tasks --all`
+p ARGV[0]
+flags = 
+	case ARGV[0]
+		when "all"
+			"--all"
+		when nil
+			"" # no additional flags to add
+		else
+	end
+
+tasks = `env RUBYOF_PROJECT="youtube" rake --tasks #{flags}`
 task_lines = task_lines = tasks.each_line.to_a
 
 a,b = task_lines.partition{|x| x.include? ":"} # namespaced vs not namespaced
@@ -19,6 +29,9 @@ deps, not_deps_namespaced = not_oF_tasks.partition{|x| x.include? 'deps' }
 
 oF_deps, core_oF = oF_tasks.partition{|x| x.include? 'deps' }
 
-p oF_deps.sort
+# p oF_deps.sort
+
+
+
 
 puts file_tasks + deps + oF_deps + core_oF + not_deps_namespaced + non_namespaced
