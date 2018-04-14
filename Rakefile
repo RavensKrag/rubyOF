@@ -10,8 +10,6 @@ require './common'
 # ^ this file declares GEM_ROOT constant, other constants, and a some functions
 
 load './rake/helper_functions.rb'
-load './rake/clean_and_clobber.rb'
-
 
 
 # ==== rake argument documentation ====
@@ -153,12 +151,6 @@ def build_c_extension(c_extension_dir)
 	# FileUtils.cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
 	
 	
-	# TODO: split this into two tasks - 
-	#    1) execution of extconf.rb and
-	#    2) building c extension based on the created makefile 
-	# (and the 'hidden' third step of moving the .so is already separate)
-	
-	
 	puts "=> C extension build complete!"
 end
 
@@ -267,9 +259,7 @@ namespace :core_wrapper do
 	
 	
 	
-	# TODO: figure out where to clean up c_extension_file
-	#       is that in clean? clobber? something else? not sure
-	#       should there be install/uninstall tasks too?
+	# NOTE: clobber task will removed all .so files, including the dynamic library created in this namespace
 	
 	task :clean do
 		Dir.chdir OF_SKETCH_ROOT do
@@ -472,9 +462,7 @@ namespace :project_wrapper do
 	
 	
 	
-	# TODO: figure out where to clean up c_extension_file
-	#       is that in clean? clobber? something else? not sure
-	#       should there be install/uninstall tasks too?
+	# NOTE: clobber task will removed all .so files, including the dynamic library created in this namespace
 	
 	task :clean do
 		# NOTE: cleaning oF sketch also cleans addons
@@ -687,7 +675,7 @@ namespace :cpp_deps do
 		'core_wrapper:build_app'
 	] do
 		FileUtils.mkdir_p "bin/data"
-		FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
+		FileUtils.mkdir_p DYNAMIC_LIB_PATH # bin/lib/
 		
 		# -- bin/projects/ and specifically the 'boilerplate' project should 
 		#    always be present, and so the system does not have to manually
@@ -702,11 +690,6 @@ namespace :cpp_deps do
 	task :install do
 		puts "=== Copying OpenFrameworks dynamic libs..."
 		
-		# -rpath flag specifies where to look for dynamic libraries
-		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-		
-		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-		# (specified in extconf.rb)
 		
 		root = Pathname.new(OF_ROOT)
 		
@@ -714,8 +697,13 @@ namespace :cpp_deps do
 		dest = DYNAMIC_LIB_PATH
 		FileUtils.copy(src, dest)
 		
-		# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)
-		# (does not reference the constant)
+		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
+		# (specified in extconf.rb)
+		# 
+		# -rpath flag specifies where to look for dynamic libraries
+		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
+		
+		
 		
 		# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
 	end
@@ -884,48 +872,6 @@ end
 
 
 
-task :clean => [
-	'core_wrapper:clean',
-	'project_wrapper:clean'
-]
-
-task :clobber => [
-	'core_wrapper:clobber',
-	'project_wrapper:clobber'
-]
-
-# =============
-# old stuff
-
-desc "For reversing :build_project"
-task :clobber_project, [:rubyOF_project] => [
-	'cpp_project:clobber',
-	'cpp_callbacks:clobber'
-] do |t, args|
-	name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-	
-	filepath = (Pathname.new(path) + 'Gemfile.lock')
-	FileUtils.rm filepath if filepath.exist?
-end
-
-
-# add dependencies to default 'clean' / 'clobber' tasks
-# NOTE: Don't edit the actual body of the task
-task :clean   => [
-	'oF_project:clean',
-	'cpp_wrapper_code:clean',
-	'cpp_project:clean',  # requires :rubyOF_project var
-	'cpp_callbacks:clean' # requires :rubyOF_project var
-]
-task :clobber => ['oF_deps:clobber', 'oF:clean']
-
-# TODO: Update clean tasks to remove the makefile after running "make clean"
-# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
-
-# =============
-
-
-
 
 
 
@@ -949,32 +895,47 @@ end
 
 
 
-# cpp_wrapper_code   build / clean
-# cpp_callbacks      build / clean / clobber
-# cpp_project        build / clean / clobber
 
 
-# # clean
-# 	rake clean
-# 	rake clean_cpp_wrapper[rubyOF_project]
-# 	rake clean_project[rubyOF_project]
-	
+
+load './rake/clean_and_clobber.rb'
+
+# add dependencies to default 'clean' / 'clobber' tasks
+# NOTE: Don't edit the actual body of the task
+task :clean => [
+	'core_wrapper:clean',
+	'project_wrapper:clean'
+]
+
+task :clobber => [
+	'core_wrapper:clobber',
+	'project_wrapper:clobber'
+]
+
+# =============
+# old stuff
+
+# task :clobber => ['oF_deps:clobber', 'oF:clean']
+
+# TODO: Update clean tasks to remove the makefile after running "make clean"
+# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
+
+# =============
+
+
+
+
+
+
+
+
+
+
 # 	rake oF:clean
 # 		rake oF_deps:clean
 # 			rake oF_deps:kiss:clean
 # 			rake oF_deps:tess2:clean
 	
-# 	rake oF_project:clean
-# 	rake oF_project:static_lib:clean
-	
-# 	rake cpp_wrapper_code:clean
-	
-# 	rake cpp_project:clean[rubyOF_project]
-	
-# 	rake cpp_callbacks:clean[rubyOF_project]
-
-	
-
 # # clobber
 # 	rake clobber
 	
@@ -985,10 +946,6 @@ end
 # 	rake cpp_project:clobber[rubyOF_project]
 	
 # 	rake cpp_callbacks:clobber[rubyOF_project]
-
-
-
-
 
 
 
