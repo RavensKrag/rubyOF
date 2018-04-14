@@ -661,55 +661,268 @@ end
 # + load dynamic library for a particular project
 # + require Ruby code for that same project
 # + open and run the Window associated with that project
-namespace :execution do
-	# NOTE: Currently will only execute the 'youtube' project. Need to reconfigure build system so that any arbitrary project can be run.
-	# TODO: turn project_name into an argument (will be given to all tasks)
-	task :build_and_run => [:build, :run] 
-	
-	task :build => [
-		'core_wrapper:build',
-		'project_wrapper:build'
-	]
-	
-	task :run do
-		root = Pathname.new(GEM_ROOT)
+# NOTE: Currently will only execute the 'youtube' project. Need to reconfigure build system so that any arbitrary project can be run.
+
+
+# NOTE: Project name must always be specified as
+#       an environment variable, ENV['RUBYOF_PROJECT']
+#       for all tasks.
+
+
+
+
+
+
+
+
+# =============
+# manage C++ dependencies
+# =============
+namespace :cpp_deps do
+	desc "Set up environment on a new machine."
+	task :setup => [
+		# 'oF:download_libs',
+		'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
+		'oF:build',
+		'core_wrapper:build_app'
+	] do
+		FileUtils.mkdir_p "bin/data"
+		FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
 		
-		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
-		
-		project_name = 'youtube'
-		project_dir  = root/'bin'/'projects'/project_name
-		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
-		
-		Dir.chdir project_dir do
-			puts "ruby level execution"
-			
-			exe_path = "./lib/main.rb"
-			
-			cmd = [
-				'GALLIUM_HUD=fps,VRAM-usage',
-				"ruby #{exe_path}"
-			].join(' ')
-			
-			Kernel.exec(cmd)
-		end
+		# -- bin/projects/ and specifically the 'boilerplate' project should 
+		#    always be present, and so the system does not have to manually
+		#    establish those folders
+		# FileUtils.mkdir_p "bin/projects"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/bin"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/ext"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/lib"
 	end
 	
+	desc "Copy oF dynamic libs to correct location"
+	task :install do
+		puts "=== Copying OpenFrameworks dynamic libs..."
+		
+		# -rpath flag specifies where to look for dynamic libraries
+		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
+		
+		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
+		# (specified in extconf.rb)
+		
+		root = Pathname.new(OF_ROOT)
+		
+		src  = root/'libs'/'fmodex'/'lib'/PLATFORM/'libfmodex.so'
+		dest = DYNAMIC_LIB_PATH
+		FileUtils.copy(src, dest)
+		
+		# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)
+		# (does not reference the constant)
+		
+		# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
+	end
+end
+# =============
+# =============
+
+
+
+# =============
+# manage ruby-level dependencies
+# =============
+def bundle_install(path)
+	Dir.chdir path do
+		# run_i "unbuffer bundle install"
+		# # NOTE: unbuffer does work here, but it assumes that you have that utility installed, and it is not installed by default
+		# 	# sudo apt install expect
+		
+		begin
+			run_pty "bundle install"
+		rescue StandardError => e
+			puts "Bundler had an error."
+			exit
+		end
+	end
+end
+
+def bundle_uninstall(path)
+	Dir.chdir path do
+		FileUtils.rm_rf "./.bundle"      # settings directory
+		FileUtils.rm    "./Gemfile.lock" # lockfile
+		
+		# filepath = (Pathname.new(path) + 'Gemfile.lock')
+		# FileUtils.rm filepath if filepath.exist?
+	end
+end
+
+namespace :ruby_deps do
+	desc "use Bundler to install ruby dependencies"
+	task :install do
+		# core dependencies
+		puts "Bundler: Installing core dependencies"
+		bundle_install(GEM_ROOT)
+		
+		# project specific
+		name, path = RubyOF::Build.load_project(path_or_name)
+		puts "Bundler: Installing dependencies for project '#{name}'"
+		bundle_install(path)
+	end
 	
+	desc "remove dependencies installed by Bundler"
+	task :uninstall do
+		# core dependencies
+		puts "Bundler: Uninstalling core dependencies"
+		bundle_uninstall(GEM_ROOT)
+		
+		# project specific
+		name, path = RubyOF::Build.load_project(path_or_name)
+		puts "Bundler: Uninstalling dependencies for project '#{name}'"
+		bundle_uninstall(path)
+	end
 	
-	task :clean => [
-		'core_wrapper:clean',
-		'project_wrapper:clean'
-	]
+	task :reinstall => [:uninstall, :install]
+end
+# =============
+# =============
+
+
+task :setup => [
+	'cpp_deps:setup',
+	'cpp_deps:install',
+	'ruby_deps:install'
+]
+
+task :build_and_run => [:build, :run] 
+
+
+
+
+# NOTE: parameters to rake task are passed to all dependencies as well
+# source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
+
+# For working on a normal OpenFrameworks project in pure C++
+desc "Testing only: Build a normal OpenFrameworks project in pure C++"
+task :build_cpp => ['oF:build', 'core_wrapper:build_app']
+
+
+desc "Build up from a newly cloned repo"
+task :full_build => [
+	:setup,
+	:build
+]
+
+
+task :build => [
+	'core_wrapper:build',
+	'project_wrapper:build'
+]
+
+
+# NOTE: Project name must always be specified as
+#       an environment variable, ENV['RUBYOF_PROJECT']
+#       for all tasks.
+desc "run entire project"
+task :run do
+	root = Pathname.new(GEM_ROOT)
 	
-	task :clobber => [
-		'core_wrapper:clobber',
-		'project_wrapper:clobber'
-	]
+	core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+	
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
+	project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+	
+	Dir.chdir project_dir do
+		puts "ruby level execution"
+		
+		exe_path = "./lib/main.rb"
+		
+		cmd = [
+			'GALLIUM_HUD=fps,VRAM-usage',
+			"ruby #{exe_path}"
+		].join(' ')
+		
+		Kernel.exec(cmd)
+	end
+end
+
+desc "debug project using GDB"
+task :debug do
+	unless TARGET == 'Debug'
+		warning_message = [
+			"WARNING: Trying to debug, but c++ debug build is not being used.",
+			"         May want to set OF_DEBUG flag in common.rb,",
+			"         and run 'rake build' before trying to debug again."
+		].join("\n")
+		warn warning_message
+	end
+	# name, path = RubyOF::Build.load_project(args[:rubyOF_project])
+	
+	root = Pathname.new(GEM_ROOT)
+	
+	core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+	
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
+	project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+	
+	Dir.chdir project_dir do
+		puts "ruby level execution"
+		puts ""
+		puts "Remember: Type 'r' or 'run' to start"
+		puts "Remember: type 'q' to exit GDB."
+		puts "=============================="
+		puts ""
+		
+		exe_path = "./lib/main.rb"
+		# ENV['RUBYOF_RUBY_MAIN'] = exe_path
+		# https://stackoverflow.com/questions/6121094/how-do-i-run-a-program-with-commandline-args-using-gdb-within-a-bash-script
+		Kernel.exec "gdb --args ruby #{exe_path}"
+	end
 end
 
 
 
 
+
+
+
+task :clean => [
+	'core_wrapper:clean',
+	'project_wrapper:clean'
+]
+
+task :clobber => [
+	'core_wrapper:clobber',
+	'project_wrapper:clobber'
+]
+
+# =============
+# old stuff
+
+desc "For reversing :build_project"
+task :clobber_project, [:rubyOF_project] => [
+	'cpp_project:clobber',
+	'cpp_callbacks:clobber'
+] do |t, args|
+	name, path = RubyOF::Build.load_project(args[:rubyOF_project])
+	
+	filepath = (Pathname.new(path) + 'Gemfile.lock')
+	FileUtils.rm filepath if filepath.exist?
+end
+
+
+# add dependencies to default 'clean' / 'clobber' tasks
+# NOTE: Don't edit the actual body of the task
+task :clean   => [
+	'oF_project:clean',
+	'cpp_wrapper_code:clean',
+	'cpp_project:clean',  # requires :rubyOF_project var
+	'cpp_callbacks:clean' # requires :rubyOF_project var
+]
+task :clobber => ['oF_deps:clobber', 'oF:clean']
+
+# TODO: Update clean tasks to remove the makefile after running "make clean"
+# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
+
+# =============
 
 
 
@@ -720,134 +933,16 @@ end
 module RubyOF
 	module Build
 
-class RubyBundlerAutomation
-	def initialize
-		
-	end
-	
-	def install_core
-		# begin
-			puts "Bundler: Installing core dependencies"
-			bundle_install(GEM_ROOT)
-		# rescue StandardError => e
-		# 	puts "Bundler had an error."
-		# 	puts e
-		# 	puts e.backtrace
-		# 	exit
-		# end
-	end
-	
-	def uninstall_core
-		bundle_uninstall(GEM_ROOT)
-	end
-	
-	def install_project(path_or_name)
-		begin
-			name, path = RubyOF::Build.load_project(path_or_name)
-			
-			puts "Bundler: Installing dependencies for project '#{name}'"
-			bundle_install(path)
-		rescue StandardError => e
-			puts "Bundler had an error."
-			exit
-		end
-	end
-	
-	def uninstall_project(path_or_name)
-		name, path = RubyOF::Build.load_project(path_or_name)
-		bundle_uninstall(path)
-	end
-	
-	private
-	
-	def bundle_install(path)
-		Dir.chdir path do
-			# run_i "unbuffer bundle install"
-			# # NOTE: unbuffer does work here, but it assumes that you have that utility installed, and it is not installed by default
-			# 	# sudo apt install expect
-			
-			
-			run_pty "bundle install"
-		end
-	end
-	
-	def bundle_uninstall(path)
-		Dir.chdir path do
-			FileUtils.rm_rf "./.bundle"      # settings directory
-			FileUtils.rm    "./Gemfile.lock" # lockfile
-		end
-	end
-end
 
 end
 end
 
-# === Manage ruby-level code
-namespace :ruby do
-	desc "testing"
-	task :run, [:rubyOF_project] do |t, args|
-		name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-		Dir.chdir path do
-			puts "ruby level execution"
-			
-			exe_path = "./lib/main.rb"
-			
-			cmd = [
-				'GALLIUM_HUD=fps,VRAM-usage',
-				"ruby #{exe_path}"
-			].join(' ')
-			
-			Kernel.exec(cmd)
-		end
-	end
-	
-	desc "testing"
-	task :debug, [:rubyOF_project] do |t, args|
-		name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-		Dir.chdir path do
-			puts "ruby level execution"
-			
-			# TODO: try setting environment variable for this path, to make it easier to load in GDB
-			exe_path = "./lib/main.rb"
-			p exe_path
-			puts "Path to core file above."
-			puts "Type: run 'PATH_TO_CORE_FILE'"
-			puts "Remember: type 'q' to exit GDB."
-			puts "=============================="
-			puts ""
-			Kernel.exec "gdb ruby"
-		end
-	end
-	
-	
-	# manage ruby-level dependencies
-	namespace :deps do
-		obj = RubyOF::Build::RubyBundlerAutomation.new
-		
-		namespace :core do
-			task :install do
-				obj.install_core
-			end
-			
-			task :uninstall do
-				obj.uninstall_core
-			end
-		end
-		
-		
-		namespace :project do
-			task :install, [:rubyOF_project] do |t, args|
-				obj.install_project(args[:rubyOF_project])
-			end
-			
-			task :uninstall, [:rubyOF_project] do |t, args|
-				obj.uninstall_project(args[:rubyOF_project])
-			end
-		end
-	end
-	
-	
+
+# TODO: implement 'create_project' rake task
+task :create_project, [:project_name] do |t, args|
+	args[:project_name]
 end
+
 
 
 
@@ -894,134 +989,7 @@ end
 
 
 
-desc "For reversing :build_project"
-task :clobber_project, [:rubyOF_project] => [
-	'cpp_project:clobber',
-	'cpp_callbacks:clobber'
-] do |t, args|
-	name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-	
-	filepath = (Pathname.new(path) + 'Gemfile.lock')
-	FileUtils.rm filepath if filepath.exist?
-end
 
-
-
-
-
-# add dependencies to default 'clean' / 'clobber' tasks
-# NOTE: Don't edit the actual body of the task
-task :clean   => [
-	'oF_project:clean',
-	'cpp_wrapper_code:clean',
-	'cpp_project:clean',  # requires :rubyOF_project var
-	'cpp_callbacks:clean' # requires :rubyOF_project var
-]
-task :clobber => ['oF_deps:clobber', 'oF:clean']
-
-# TODO: Update clean tasks to remove the makefile after running "make clean"
-# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
-
-
-
-
-
-desc "Set up environment on a new machine."
-task :setup => [
-	# 'oF:download_libs',
-	'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
-	'oF:build',
-	'core_wrapper:build_app'
-] do
-	FileUtils.mkdir_p "bin/data"
-	FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
-	
-	# -- bin/projects/ and specifically the 'boilerplate' project should 
-	#    always be present, and so the system does not have to manually
-	#    establish those folders
-	# FileUtils.mkdir_p "bin/projects"
-	# FileUtils.mkdir_p "bin/projects/boilerplate/bin"
-	# FileUtils.mkdir_p "bin/projects/boilerplate/ext"
-	# FileUtils.mkdir_p "bin/projects/boilerplate/lib"
-end
-
-
-
-# desc "Copy oF dynamic libs to correct location"
-task :install_oF_dynamic_libs do
-	puts "=== Copying OpenFrameworks dynamic libs..."
-	
-	# -rpath flag specifies where to look for dynamic libraries
-	# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-	
-	# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-	# (specified in extconf.rb)
-	
-	src = File.expand_path(
-		        "./libs/fmodex/lib/#{PLATFORM}/libfmodex.so",
-	           OF_ROOT
-	      )
-	dest = DYNAMIC_LIB_PATH
-	FileUtils.copy(src, dest)
-	
-	# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)
-	# (does not reference the constant)
-	
-	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
-end
-
-
-
-# For working on a normal OpenFrameworks project in pure C++
-desc "Build a normal OpenFrameworks project in pure C++"
-task :build_cpp => ['oF:build', 'core_wrapper:build_app']
-
-
-
-# NOTE: parameters to rake task are passed to all dependencies as well
-# source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
-
-
-
-# --- pathway ---
-desc "Build up from a newly cloned repo"
-task :full_build, [:rubyOF_project] => [
-	:setup,
-	:build_cpp_wrapper,
-	:build_project
-]
-
-
-
-
-
-
-# task :run => 'oF_project:run'
-
-desc "Run the entire project, through the ruby level"
-task :run, [:rubyOF_project] => 'ruby:run'
-	# can't just say 'run' any more.
-	# need to specify what project is being run
-
-task :build_and_run, [:rubyOF_project]  => [:build, :run] do
-	
-end
-
-
-
-
-
-desc "Assumes build options are set to make 'Debug' target"
-task :debug_project => [
-	'oF:build',
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:debug'
-] do
-	
-end
-
-desc "Debug application through the Ruby level with GDB"
-task :debug, [:rubyOF_project]  => 'ruby:debug'
 
 
 
