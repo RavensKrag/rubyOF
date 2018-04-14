@@ -8,7 +8,7 @@
 #   The location of your root openFrameworks installation
 #       (default) OF_ROOT = ../../openFrameworks 
 ################################################################################
-OF_ROOT = $(realpath ../../../../../../ext/openFrameworks)
+# OF_ROOT = $(realpath ../../openFrameworks)
 
 ################################################################################
 # PROJECT ROOT

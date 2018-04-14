@@ -6,11 +6,28 @@ def main(project_root)
 	require (GEM_ROOT/'build'/'extension_loader')
 	# ^ defines the function 'load_c_extension_lib'
 	
-	puts "Load project-specific C++ code..."
-	load_c_extension_lib (project_root/'ext'/'callbacks'/'rubyOF_project')
 	
-	puts "Load final dynamic library (Rice wrapper and project code)..."
-	load_c_extension_lib (project_root/'bin'/'lib'/'rubyOF')
+	# TODO: overhaul the way constants are defined and loaded. I don't want to have to redefine the install paths in this file, or the 'rubyOF' name.
+	
+	root = Pathname.new(GEM_ROOT)
+	
+	name = 'rubyOF'
+	
+	
+	core_install_location    = root/'lib'/name/"#{name}.so"
+	
+	project_name = ENV['RUBYOF_PROJECT']
+	project_dir  = root/'bin'/'projects'/project_name
+	project_install_location = project_dir/'bin'/'lib'/"#{name}_project.so"
+	
+	puts "Loading c-extension for core..."
+	load_c_extension_lib core_install_location
+	
+	puts "Loading c-extension for project..."
+	load_c_extension_lib project_install_location
+	
+	
+	
 	
 	puts "loading Ruby dependencies using Bundler..."
 	# NOTE: The baseline Ruby code for RubyOF declares some dependencies through bundler. Those will be loaded in this step, as well as the dependencies for this particular project.

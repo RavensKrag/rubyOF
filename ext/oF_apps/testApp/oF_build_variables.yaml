@@ -193,7 +193,7 @@ CO:
 VTE_VERSION:
 - '4205'
 _:
-- "/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin/rake"
+- "/usr/bin/env"
 QT_AUTO_SCREEN_SCALE_FACTOR:
 - '0'
 PREPROCESS.F:
@@ -270,7 +270,7 @@ OPTIMIZATION_CFLAGS:
 OF_CORE_LIB_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64"
 DBUS_SESSION_BUS_ADDRESS:
-- unix:abstract=/tmp/dbus-OLR1nwzkpr,guid=309caacabe56500831b38b495a87ccd4
+- unix:abstract=/tmp/dbus-BI25jl6UWw,guid=9c402e6bb00272afc6f553e95aca17da
 GCC_MAJOR_EQ_4:
 - '0'
 CC:
@@ -286,6 +286,8 @@ OF_PROJECT_OBJS:
 - obj/linux64/Debug/src/main.o
 USER:
 - ravenskrag
+RUBYOF_PROJECT:
+- youtube
 OF_PROJECT_DEFINES: []
 CPP:
 - cc
@@ -307,7 +309,7 @@ XDG_SESSION_PATH:
 MAKE_HOST:
 - x86_64-pc-linux-gnu
 PATH:
-- "/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
 OF_CORE_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/lib/linux64/libtess2.a"
@@ -373,11 +375,11 @@ OF_CORE_THIRDPARTY_SHARED_LIBS:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/2977,unix/ravensnest:/tmp/.ICE-unix/2977
+- local/ravensnest:@/tmp/.ICE-unix/3071,unix/ravensnest:/tmp/.ICE-unix/3071
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
-COMPILE.mod:
-- m2c
+rvm_stored_umask:
+- '0002'
 XDG_RUNTIME_DIR:
 - "/run/user/1000"
 FIND:
@@ -402,7 +404,7 @@ LINK.r:
 - "-L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/"
 - "-lfmodex"
 WINDOWID:
-- '92274694'
+- '94371846'
 COMPILE.f:
 - f77
 - "-c"
@@ -449,8 +451,6 @@ HAS_SYSTEM_MPG123:
 - '0'
 TANGLE:
 - tangle
-rvm_ruby_string:
-- ruby-2.4.0
 ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/*/lib/linux64"
 OF_CORE_LIBS_PLATFORM_LIBS_STATICS:
@@ -464,7 +464,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-a5PWfz2dLmx0/agent.2776"
+- "/tmp/ssh-x5I1T4t0guS6/agent.2874"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -510,7 +510,6 @@ ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj/linux64/Debug/src"
-- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
 KDE_SESSION_VERSION:
 - '5'
 OF_CORE_HEADER_PATHS:
@@ -543,7 +542,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '2890'
+- '2985'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -785,11 +784,12 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-OLDPWD:
-- "/home/ravenskrag/Desktop/gem_structure/rake"
+COMPILE.cc:
+- g++
+- "-c"
 REQUESTED_PROJECT_ADDONS: []
-rvm_delete_flag:
-- '0'
+OF_PROJECT_INCLUDES_CFLAGS:
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
 ".VARIABLES":
 - PLATFORM_PKG_CONFIG
 - "<D"
@@ -855,6 +855,7 @@ rvm_delete_flag:
 - CHECKOUT,v
 - OF_PROJECT_OBJS
 - USER
+- RUBYOF_PROJECT
 - OF_PROJECT_DEFINES
 - CPP
 - OF_APPS_PATH
@@ -872,7 +873,7 @@ rvm_delete_flag:
 - XCURSOR_THEME
 - SESSION_MANAGER
 - OF_LIBS_OF_COMPILED_PATH
-- COMPILE.mod
+- rvm_stored_umask
 - XDG_RUNTIME_DIR
 - FIND
 - CFLAGS
@@ -891,7 +892,6 @@ rvm_delete_flag:
 - ".FEATURES"
 - HAS_SYSTEM_MPG123
 - TANGLE
-- rvm_ruby_string
 - ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
 - OF_CORE_LIBS_PLATFORM_LIBS_STATICS
 - OPTIMIZATION_LDFLAGS
@@ -983,9 +983,9 @@ rvm_delete_flag:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- OLDPWD
+- COMPILE.cc
 - REQUESTED_PROJECT_ADDONS
-- rvm_delete_flag
+- OF_PROJECT_INCLUDES_CFLAGS
 - ".VARIABLES"
 - PC
 - "*F"
@@ -1008,6 +1008,7 @@ rvm_delete_flag:
 - COMPILE.r
 - OBJS_WITH_PREFIX
 - OF_PROJECT_SOURCE_PATHS
+- rvm_user_install_flag
 - "+F"
 - M2C
 - PLATFORM_HEADER_SEARCH_PATHS
@@ -1021,13 +1022,12 @@ rvm_delete_flag:
 - LDFLAGS
 - PLATFORM_PKG_CONFIG_LIBRARIES
 - MAKEFILES
+- OF_PROJECT_DEFINES_CFLAGS
 - OF_PROJECT_DEPENDENCY_FILES
 - _system_type
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-- COMPILE.cc
 - HOST_ARCH
-- OF_PROJECT_INCLUDES_CFLAGS
 - "<F"
 - TARGET_LIBS
 - HAS_SYSTEM_GTK2
@@ -1038,6 +1038,7 @@ rvm_delete_flag:
 - LINK.C
 - OF_CORE_INCLUDES_CFLAGS
 - COMPILE.C
+- COMPILE.mod
 - OF_LIBS_OPENFRAMEWORKS_PATH
 - "^F"
 - COMPILE.S
@@ -1052,7 +1053,7 @@ rvm_delete_flag:
 - _system_arch
 - COMPILE.s
 - ".INCLUDE_DIRS"
-- OF_PROJECT_DEFINES_CFLAGS
+- rvm_loaded_flag
 - CORE_PKG_CONFIG_LIBRARIES
 - ".RECIPEPREFIX"
 - MAKEINFO
@@ -1145,7 +1146,8 @@ OBJS_WITH_PREFIX:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
 OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
-- "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
+rvm_user_install_flag:
+- '1'
 "+F": []
 M2C:
 - m2c
@@ -1194,6 +1196,7 @@ PLATFORM_PKG_CONFIG_LIBRARIES:
 - gtk+-3.0
 - libmpg123
 MAKEFILES: []
+OF_PROJECT_DEFINES_CFLAGS: []
 OF_PROJECT_DEPENDENCY_FILES:
 - obj/linux64/Debug/src/ofApp.d
 - obj/linux64/Debug/src/main.d
@@ -1214,14 +1217,8 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
-COMPILE.cc:
-- g++
-- "-c"
 HOST_ARCH:
 - x86_64
-OF_PROJECT_INCLUDES_CFLAGS:
-- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
-- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
 "<F": []
 TARGET_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a"
@@ -1308,6 +1305,8 @@ OF_CORE_INCLUDES_CFLAGS:
 COMPILE.C:
 - g++
 - "-c"
+COMPILE.mod:
+- m2c
 OF_LIBS_OPENFRAMEWORKS_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks"
 "^F": []
@@ -1441,7 +1440,8 @@ COMPILE.s:
 - "/usr/include"
 - "/usr/local/include"
 - "/usr/include"
-OF_PROJECT_DEFINES_CFLAGS: []
+rvm_loaded_flag:
+- '1'
 CORE_PKG_CONFIG_LIBRARIES:
 - cairo
 - zlib
@@ -1578,7 +1578,6 @@ PROJECT_INCLUDE_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
-- "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib"
 MY_RUBY_HOME:
 - "/home/ravenskrag/.rvm/rubies/ruby-2.4.0"
 OF_CORE_BASE_CFLAGS:

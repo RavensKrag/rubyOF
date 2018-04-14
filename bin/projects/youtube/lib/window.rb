@@ -494,6 +494,39 @@ class Window < RubyOF::Window
 	end
 	
 	
+	# Set parameters from C++ by passing a pointer (technically, a reference),
+	# wrapped up in a way that Ruby can understand.
+	# 
+	# name         name of the parameter being set
+	# value_ptr    &data from C++, wrapped up in a Ruby class
+	#              (uses the same class wrapper as normal Rice bindings)
+	def set_gui_parameter(name, value_ptr)
+		value_ptr.freeze
+		
+		case name
+			when "color"
+				@font_color = value_ptr
+			else
+				msg = 
+				[
+					"",
+					"Tried to set gui parameter, but I wasn't expecting this name.",
+					"method call: set_gui_parameter(name, value_ptr)",
+					"name:        #{name.inspect}",
+					"value_ptr:   #{value_ptr.inspect}",
+					"",
+					"NOTE: set_gui_parameter() is often called from C++ code.",
+					"      C++ backtrace information is not normally provided.",
+					"",
+					"NOTE: Sometimes C++ backtrace can be obtained using GDB",
+					"      (use 'rake debug' to get a GDB prompt)"
+				].join("\n") + "\n\n\n"
+				
+				raise msg
+		end
+	end
+	
+	
 	
 	private
 	
