@@ -1931,7 +1931,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/1"
+- "/dev/pts/2"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:

@@ -20,12 +20,13 @@ current_dir  = current_file.parent
 Dir.chdir current_dir do
 	require Pathname.new('./helpers.rb').expand_path
 	require Pathname.new('./fibers.rb').expand_path
-	require Pathname.new('./checkpoint.rb').expand_path
 	require Pathname.new('./camera.rb').expand_path
 	
 	require Pathname.new('./youtube_channel.rb').expand_path
 	
 	require_all Pathname.new('./monkey_patches/Chipmunk').expand_path
+	
+	require_all Pathname.new('./entities').expand_path
 end
 
 
@@ -483,15 +484,15 @@ class Window < RubyOF::Window
 	# OR
 	# you could use ofParameter#addListener to fire an event only when the value is changed (that could work)
 		# May still want to bind ofParameter on the Ruby side, especially if I can find a way to allow for setting event listeners in Ruby.
-	def font_color=(color)
-		p color
-		# puts color
-		# 'r g b a'.split.each do |channel|
-		# 	@font_color.send("#{channel}=", color.send(channel))
-		# end
-		@font_color = color
-		@font_color.freeze
-	end
+	# def font_color=(color)
+	# 	p color
+	# 	# puts color
+	# 	# 'r g b a'.split.each do |channel|
+	# 	# 	@font_color.send("#{channel}=", color.send(channel))
+	# 	# end
+	# 	@font_color = color
+	# 	@font_color.freeze
+	# end
 	
 	
 	# Set parameters from C++ by passing a pointer (technically, a reference),
