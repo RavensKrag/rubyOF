@@ -394,11 +394,11 @@ namespace :project_wrapper do
 	
 		extension_dependencies = Array.new.tap do |deps|
 			# Ruby / Rice CPP files
-			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
+			deps.concat Dir.glob File.join(c_extension_dir, "**/*{.cpp,.h}")
 			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
 			
-			deps << "ext/#{NAME}/extconf.rb"
-			deps << "ext/#{NAME}/extconf_common.rb"
+			deps << c_extension_dir/"extconf.rb"
+			# deps << "ext/#{NAME}/extconf_common.rb"
 			deps << "ext/#{NAME}/extconf_printer.rb"
 			deps << __FILE__ # depends on this Rakefile
 			deps << build_variable_file
