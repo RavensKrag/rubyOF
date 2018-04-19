@@ -6,6 +6,7 @@
 // openFrameworks addons
 #include "ofxGui.h"
 #include "ofxDatGui.h"
+#include "ofxImGui.h"
 // #include "ofxColorPicker.h"
 
 // rice data types
@@ -61,6 +62,10 @@ class rbApp : public ofBaseApp{
 		ofxDatGuiValuePlotter* mPlotter;
 		ofxDatGuiLabel*         mLabel1;
 		ofxDatGuiLabel*         mLabel2;
+		
+		
+		ofxImGui::Gui im_gui;
+		bool mUI_InputCapture;
 		
 		uint64_t timestamp_us; // timestamp in microseconds (u looks like a greek character)
 };

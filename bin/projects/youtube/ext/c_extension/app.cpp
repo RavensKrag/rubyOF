@@ -71,6 +71,13 @@ void rbApp::setup(){
 	
 	
 	
+	
+	
+	
+	im_gui.setup();
+	ImGui::GetIO().MouseDrawCursor = false;
+	
+	
 	// ========================================
 	// ========================================
 	
@@ -193,7 +200,118 @@ void rbApp::draw(){
 	mSelf.call("draw");
 	
 	
-	gui.draw();
+	gui.draw(); // ofxGui - for color picker
+	
+	// ofxDatGui is drawn automatically
+	
+	
+	// ========================================
+	// ==========  UI from ofxImGUI  ==========
+	
+	im_gui.begin();
+		
+		ImFontAtlas* atlas = ImGui::GetIO().Fonts;
+		auto* font = atlas->Fonts[0];
+		
+		font->Scale = 2.0f;
+		
+		
+		if (ImGui::IsMouseHoveringAnyWindow()){
+			ImGui::SetTooltip("hovering over UI");
+			mUI_InputCapture = true;
+		}
+		else{
+			mUI_InputCapture = false;
+		}
+		ImGui::CaptureKeyboardFromApp(mUI_InputCapture);
+		ImGui::CaptureMouseFromApp(mUI_InputCapture);
+		
+		// if (ImGui::IsItemHovered())
+      //       ImGui::SetTooltip("hovering over UI");
+		
+		ImGui::Text("Hello, world!");
+		// ImGui::SliderFloat("Float", &floatValue, 0.0f, 1.0f);
+		
+		static bool selected[4] = { false, true, false, false };
+		ImGui::Selectable("1. I am selectable", &selected[0]);
+		ImGui::Selectable("2. I am selectable", &selected[1]);
+		ImGui::Text("3. I am not selectable");
+		ImGui::Selectable("4. I am selectable", &selected[2]);
+		if (ImGui::Selectable("5. I am double clickable", selected[3], ImGuiSelectableFlags_AllowDoubleClick))
+			if (ImGui::IsMouseDoubleClicked(0))
+				selected[3] = !selected[3];
+		
+		
+		
+		ImGui::Text("Without border");
+		static int line = 50;
+		bool goto_line = ImGui::Button("Goto");
+		ImGui::SameLine();
+		ImGui::PushItemWidth(100);
+		goto_line |= ImGui::InputInt("##Line", &line, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::PopItemWidth();
+		// ImGui::BeginChild("Sub1", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f,300), false, ImGuiWindowFlags_HorizontalScrollbar);
+		
+		
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
+		ImGui::BeginChild("Sub2", ImVec2(100,300), true);
+			if (ImGui::Button("undo"))
+			{
+				// //bitwise OR
+				// show_another_window ^= 1;
+				
+			}
+			
+			if (ImGui::Button("redo"))
+			{
+				// //bitwise OR
+				// show_another_window ^= 1;
+				
+			}
+			
+			if (ImGui::Button("squash"))
+			{
+				// //bitwise OR
+				// show_another_window ^= 1;
+				
+			}
+		ImGui::EndChild();
+		ImGui::PopStyleVar();
+		
+		
+		ImGui::SameLine();
+		
+		
+		ImGui::BeginChild("Sub1", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);
+		for (int i = 0; i < 100; i++)
+		{
+				ImGui::Text("%04d: scrollable region", i);
+				if (goto_line && line == i)
+					ImGui::SetScrollHere();
+		}
+		if (goto_line && line >= 100)
+				ImGui::SetScrollHere();
+		ImGui::EndChild();
+		
+		
+		// NOTE: If width is set to 0, will take up the remainder of the space. If the first item in a row takes the full width, there will be no space left over.
+		// NOTE: Can use negative width to align to right edge
+		//       See "Widgets Width" example for details.
+		
+		// TODO: fix how UI handles scroll weel events - interfers with zoom
+		// NOTE: scrolling on ofxGUI causes scroll input to be handled by the UI widget only. However, scrolling on ofxDatGui or ofxImGui does not have that effect. Thus, scrolling on color picker does not zoom camera, but scrolling on other UI elements does zoom the camera.
+		
+		
+		// Consider the proposed "infinite history" feature. How would such a thing be implemented? What is the size of the scrolling list? Consider comparisons with version control.
+			// OpenFrameworks has over 16,000 commits in its git repo.
+			// it is possible for gitg to show all of these, though clearly the ones that are not currently on screen are being culled in some way. Is ImGui sophisticated enough to cull like that? Perhaps, but perhaps not. (I assume not.)
+		
+		
+	im_gui.end();
+	
+	// ========================================
+	// ========================================
 }
 
 void rbApp::exit(){
@@ -244,55 +362,73 @@ void rbApp::keyPressed(int key){
 	
 	
 	// TODO: consider listening for key symbols (the physical key buttons) as well / instead of this. Need to set up another hook into the oF event system to do that, but might be better / easier for setting up structural keybindings.
-	mSelf.call("key_pressed", key);
+	if (!mUI_InputCapture) {
+		mSelf.call("key_pressed", key);
+	}
 }
 
 void rbApp::keyReleased(int key){
 	ofBaseApp::keyReleased(key);
 	
-	mSelf.call("key_released", key);
+	if (!mUI_InputCapture) {
+		mSelf.call("key_released", key);
+	}
 }
 
 void rbApp::mouseMoved(int x, int y ){
 	ofBaseApp::mouseMoved(x,y);
 	
-	mSelf.call("mouse_moved", x,y);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_moved", x,y);
+	}
 }
 
 void rbApp::mouseDragged(int x, int y, int button){
 	ofBaseApp::mouseDragged(x,y,button);
 	
-	mSelf.call("mouse_dragged", x,y, button);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_dragged", x,y, button);
+	}
 }
 
 void rbApp::mousePressed(int x, int y, int button){
 	ofBaseApp::mousePressed(x,y,button);
 	
-	mSelf.call("mouse_pressed", x,y, button);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_pressed", x,y, button);
+	}
 }
 
 void rbApp::mouseReleased(int x, int y, int button){
 	ofBaseApp::mouseReleased(x,y,button);
 	
-	mSelf.call("mouse_released", x,y, button);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_released", x,y, button);
+	}
 }
 
 void rbApp::mouseEntered(int x, int y){
 	ofBaseApp::mouseEntered(x,y);
 	
-	mSelf.call("mouse_entered", x,y);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_entered", x,y);
+	}
 }
 
 void rbApp::mouseExited(int x, int y){
 	ofBaseApp::mouseExited(x,y);
 	
-	mSelf.call("mouse_exited", x,y);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_exited", x,y);
+	}
 }
 
 void rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
 	ofBaseApp::mouseScrolled(x,y, scrollX, scrollY);
 	
-	mSelf.call("mouse_scrolled", x,y, scrollX, scrollY);
+	if (!mUI_InputCapture) {
+		mSelf.call("mouse_scrolled", x,y, scrollX, scrollY);
+	}
 }
 
 void rbApp::windowResized(int w, int h){

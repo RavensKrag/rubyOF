@@ -1468,7 +1468,7 @@ CORE_PKG_CONFIG_LIBRARIES:
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/1"
+- "/dev/pts/2"
 OBJC:
 - cc
 LINK.f:
@@ -1501,6 +1501,7 @@ ALL_INSTALLED_ADDONS:
 - ofxThreadedImageLoader
 - ofxNetwork
 - ofxInfiniteCanvas
+- ofxGui
 - ofxColorPicker
 - ofxGPS
 - ofxGuiExtended
@@ -1518,7 +1519,7 @@ ALL_INSTALLED_ADDONS:
 - ofxAndroid
 - ofxDatGui
 - ofxiOS
-- ofxGui
+- ofxImGui
 OF_CORE_BASE_CXXFLAGS: []
 PLATFORM_LIB_SUBPATH:
 - linux64

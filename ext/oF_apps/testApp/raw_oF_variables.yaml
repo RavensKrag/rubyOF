@@ -1071,7 +1071,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/1
+- 'MAKE_TERMERR = /dev/pts/2
 
 '
 - 'OBJC = cc
@@ -1097,9 +1097,9 @@
   -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxInfiniteCanvas
-  ofxColorPicker ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics ofxXmlSettings
+  ofxGui ofxColorPicker ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics ofxXmlSettings
   ofxAccelerometer ofxOpenCv ofxOsc ofxSvg obj ofxEmscripten ofxAssimpModelLoader
-  ofxPoco ofxAndroid ofxDatGui ofxiOS ofxGui
+  ofxPoco ofxAndroid ofxDatGui ofxiOS ofxImGui
 
 '
 - "OF_CORE_BASE_CXXFLAGS = \n"
