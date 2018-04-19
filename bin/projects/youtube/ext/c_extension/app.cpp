@@ -258,23 +258,20 @@ void rbApp::draw(){
 		ImGui::BeginChild("Sub2", ImVec2(100,300), true);
 			if (ImGui::Button("undo"))
 			{
-				// //bitwise OR
-				// show_another_window ^= 1;
-				
+				// @history.undo
+				mSelf.call("history").call("undo");
 			}
 			
 			if (ImGui::Button("redo"))
 			{
-				// //bitwise OR
-				// show_another_window ^= 1;
-				
+				// @history.redo
+				mSelf.call("history").call("redo");
 			}
 			
 			if (ImGui::Button("squash"))
 			{
-				// //bitwise OR
-				// show_another_window ^= 1;
-				
+				// @history.squash
+				mSelf.call("history").call("squash");
 			}
 		ImGui::EndChild();
 		ImGui::PopStyleVar();
@@ -283,14 +280,58 @@ void rbApp::draw(){
 		ImGui::SameLine();
 		
 		
-		ImGui::BeginChild("Sub1", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);
-		for (int i = 0; i < 100; i++)
+		ImGui::BeginChild("History", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);
+		
+		Rice::Object history = mSelf.call("history");
+		// int length = history.call("length");
+		// cout << "c++: " << history[1] << "\n";
+		
+		// auto x = mSelf.call("history").call("list").call("size");
+		// cout << "c++: " << x << "\n";
+		
+		// display history list
+		Rice::Array history_list = history.call("list");
+		int length = from_ruby<int>(history.call("list").call("length"));
+		int pos    = from_ruby<int>(history.call("position"));
+		// ^ must do explict cast using from_ruby< T >()
+		// cout << "c++: " << "(" << length << ", " << pos << ")" << "\n";
+		
+		for (int i = 0; i < length; i++)
 		{
-				ImGui::Text("%04d: scrollable region", i);
-				if (goto_line && line == i)
-					ImGui::SetScrollHere();
+			if (i <= pos){
+				// ImGui::Button("%04d: scrollable region", i);
+				ImGui::Button("%04d: scrollable region");
+			}else{
+				// auto color = ImColor::HSV(i/7.0f, 0.6f, 0.6f);
+				auto color = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+				// ImGui::PushStyleColor(ImGuiCol_Button, color);
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
+				// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(i/7.0f, 0.7f, 0.7f));
+            // ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(i/7.0f, 0.8f, 0.8f));
+				ImGui::Button("%04d: scrollable region");
+				ImGui::PopStyleColor();
+				
+				
+				// NOTE: to push multiple styles unto the stack for a single object, use ImGui::PushID(int i)
+				
+				
+				// Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+				// ImGui::TextDisabled("%04d: scrollable region", i);
+			}
+			if (ImGui::IsItemHovered()){
+				if (ImGui::IsMouseClicked(1)){
+					history.call("goto", i);
+				}
+			}
+			
+			// ImGui::Text("%04d: scrollable region", i);
+			// auto name = history_list[i];
+			// ImGui::Text(name, i);
+			
+			if (goto_line && line == i)
+				ImGui::SetScrollHere();
 		}
-		if (goto_line && line >= 100)
+		if (goto_line && line >= length)
 				ImGui::SetScrollHere();
 		ImGui::EndChild();
 		

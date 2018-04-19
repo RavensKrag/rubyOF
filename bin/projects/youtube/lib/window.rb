@@ -30,6 +30,50 @@ Dir.chdir current_dir do
 end
 
 
+class History
+	attr_reader :list, :position
+	
+	def initialize
+		@list = [
+			"add entity: text",
+			"edit text: hello world!",
+			"move",
+			"resize",
+		]
+		@position = @list.size-1 # ASSUME: must have at least 1 item in list
+	end
+	
+	# Move to position i in the history stack,
+	# undoing / redoing actions as needed.
+	def goto(i)
+		puts "flipping #{i}"
+		@position = i
+	end
+	
+	def undo
+		
+		@position -= 1
+	end
+	
+	def redo
+		
+		@position += 1
+	end
+	
+	def squash
+		
+	end
+	
+	def length
+		@list.length
+	end
+	
+	def size
+		@list.size
+	end
+end
+
+
 class Window < RubyOF::Window
 	include HelperFunctions
 	include RubyOF::Graphics
@@ -55,6 +99,8 @@ class Window < RubyOF::Window
 		
 		
 	end
+	
+	attr_reader :history
 	
 	def setup
 		super()
@@ -82,6 +128,12 @@ class Window < RubyOF::Window
 		# ^ font color is currently being set through the color picker
 		
 		@collection = Array.new
+		
+		# @history = Array.new
+		@history = History.new
+		p @history.list
+		p @history.list.size
+		p @history.list.length
 	end
 	
 	def update
