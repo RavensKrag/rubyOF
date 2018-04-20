@@ -210,6 +210,8 @@ void rbApp::draw(){
 	
 	im_gui.begin();
 		const auto disabled_color = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+			// Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+			// ImGui::TextDisabled("%04d: scrollable region", i);
 		
 		ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 		auto* font = atlas->Fonts[0];
@@ -244,8 +246,10 @@ void rbApp::draw(){
 		
 		
 		
-		ImGui::Text("Without border");
-		static int line = 50;
+		ImGui::Text("History");
+		Rice::Object history = mSelf.call("history");
+		
+		static int line = -1; // invalid position, used as init flag
 		bool goto_line = ImGui::Button("Goto");
 		ImGui::SameLine();
 		ImGui::PushItemWidth(100);
@@ -256,23 +260,29 @@ void rbApp::draw(){
 		
 		
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
-		ImGui::BeginChild("Sub2", ImVec2(100,300), true);
+		ImGui::BeginChild("History Buttons", ImVec2(100,300), true);
 			if (ImGui::Button("undo"))
 			{
 				// @history.undo
-				mSelf.call("history").call("undo");
+				auto rb_i = history.call("undo");
+				goto_line = true;
+				line = from_ruby<int>(rb_i);
 			}
 			
 			if (ImGui::Button("redo"))
 			{
 				// @history.redo
-				mSelf.call("history").call("redo");
+				auto rb_i = history.call("redo");
+				goto_line = true;
+				line = from_ruby<int>(rb_i);
 			}
 			
 			if (ImGui::Button("squash"))
 			{
 				// @history.squash
-				mSelf.call("history").call("squash");
+				auto rb_i = history.call("squash");
+				goto_line = true;
+				line = from_ruby<int>(rb_i);
 			}
 		ImGui::EndChild();
 		ImGui::PopStyleVar();
@@ -283,7 +293,6 @@ void rbApp::draw(){
 		
 		ImGui::BeginChild("History", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);
 		
-		Rice::Object history = mSelf.call("history");
 		// int length = history.call("length");
 		// cout << "c++: " << history[1] << "\n";
 		
@@ -333,29 +342,29 @@ void rbApp::draw(){
 				// ^ Need to upgrade ofxImGui in order to set the button text alignment. That will, in turn, require an upgrade to OpenFrameworks.
 				
 				// NOTE: to push multiple styles unto the stack for a single object, use ImGui::PushID(int i)
-				
-				
-				// Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
-				// ImGui::TextDisabled("%04d: scrollable region", i);
 			}
 			if (ImGui::IsItemHovered()){
 				if (ImGui::IsMouseClicked(1)){
 					history.call("goto", i);
+					goto_line |= true;
+					line = i;
 				}
 			}
-			
-			// ImGui::Text("%04d: scrollable region", i);
-			// auto name = history_list[i];
-			// ImGui::Text(name, i);
-			
-			if (goto_line && line == i)
+			if (goto_line && line == i){
 				ImGui::SetScrollHere();
+			}
 		}
-		if (goto_line && line >= length){
+		if (goto_line && line >= length-1){
+			line = length-1;
+			ImGui::SetScrollHere();
+		}
+		if (line == -1){
+			// jump to end on initialization
+			int i = from_ruby<int>(history.call("position"));
+			line = i;
 			ImGui::SetScrollHere();
 		}
 		ImGui::EndChild();
-		
 		
 		// NOTE: If width is set to 0, will take up the remainder of the space. If the first item in a row takes the full width, there will be no space left over.
 		// NOTE: Can use negative width to align to right edge

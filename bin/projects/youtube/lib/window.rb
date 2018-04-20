@@ -60,22 +60,31 @@ class History
 	def goto(i)
 		puts "goto history index #{i}"
 		@position = i
+		
+		return @position
 	end
 	
 	def undo
 		if @position > 0
 			@position -= 1
 		end
+		
+		return @position
 	end
 	
 	def redo
-		if @position < @list.length
+		max_pos = @list.length-1
+		if @position < max_pos
+			# @position needs to still be a valid index
+			# after taking 1 step forward
 			@position += 1
 		end
+		
+		return @position
 	end
 	
 	def squash
-		
+		return @position
 	end
 	
 	def length
