@@ -39,6 +39,18 @@ class History
 			"edit text: hello world!",
 			"move",
 			"resize",
+			"move",
+			"resize",
+			"move",
+			"resize",
+			"move",
+			"resize",
+			"move",
+			"resize",
+			"move",
+			"resize",
+			"move",
+			"resize",
 		]
 		@position = @list.size-1 # ASSUME: must have at least 1 item in list
 	end
@@ -46,18 +58,20 @@ class History
 	# Move to position i in the history stack,
 	# undoing / redoing actions as needed.
 	def goto(i)
-		puts "flipping #{i}"
+		puts "goto history index #{i}"
 		@position = i
 	end
 	
 	def undo
-		
-		@position -= 1
+		if @position > 0
+			@position -= 1
+		end
 	end
 	
 	def redo
-		
-		@position += 1
+		if @position < @list.length
+			@position += 1
+		end
 	end
 	
 	def squash

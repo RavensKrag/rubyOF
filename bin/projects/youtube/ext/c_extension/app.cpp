@@ -209,6 +209,7 @@ void rbApp::draw(){
 	// ==========  UI from ofxImGUI  ==========
 	
 	im_gui.begin();
+		const auto disabled_color = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
 		
 		ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 		auto* font = atlas->Fonts[0];
@@ -217,7 +218,7 @@ void rbApp::draw(){
 		
 		
 		if (ImGui::IsMouseHoveringAnyWindow()){
-			ImGui::SetTooltip("hovering over UI");
+			// ImGui::SetTooltip("hovering over UI");
 			mUI_InputCapture = true;
 		}
 		else{
@@ -296,21 +297,40 @@ void rbApp::draw(){
 		// ^ must do explict cast using from_ruby< T >()
 		// cout << "c++: " << "(" << length << ", " << pos << ")" << "\n";
 		
-		for (int i = 0; i < length; i++)
+		// Rice::String 
+		Rice::Array::iterator itr = history_list.begin();
+		Rice::Array::iterator end = history_list.end();
+		for(; itr != end; ++itr) // NOTE: must be ++itr, not itr++
 		{
+			// std::string button_label = "%04d: scrollable region";
+			// const char *cstr = button_label.c_str();
+			// // ^ in a similar style, you can call c_str() on the Rice::String to get the underlying c array.
+			
+			// rb_str = history_list[i];
+			Rice::Object element = *itr;
+			Rice::String rb_str = element;
+			const char* cstr = rb_str.c_str();
+			
+			int i = itr.index();
 			if (i <= pos){
-				// ImGui::Button("%04d: scrollable region", i);
-				ImGui::Button("%04d: scrollable region");
+				// ImGui::PushItemWidth(-1);
+				ImGui::Button(cstr, ImVec2(-1,0));
+				// ImGui::PopItemWidth();
 			}else{
 				// auto color = ImColor::HSV(i/7.0f, 0.6f, 0.6f);
-				auto color = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+				
 				// ImGui::PushStyleColor(ImGuiCol_Button, color);
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
+				ImGui::PushStyleColor(ImGuiCol_Text, disabled_color);
 				// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(i/7.0f, 0.7f, 0.7f));
             // ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(i/7.0f, 0.8f, 0.8f));
-				ImGui::Button("%04d: scrollable region");
+				ImGui::Button(cstr, ImVec2(-1,0));
 				ImGui::PopStyleColor();
 				
+				
+				// ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, );
+				// ImGuiStyle& style = ImGui::GetStyle();
+				// style.ButtonTextAlign;
+				// ^ Need to upgrade ofxImGui in order to set the button text alignment. That will, in turn, require an upgrade to OpenFrameworks.
 				
 				// NOTE: to push multiple styles unto the stack for a single object, use ImGui::PushID(int i)
 				
@@ -331,8 +351,9 @@ void rbApp::draw(){
 			if (goto_line && line == i)
 				ImGui::SetScrollHere();
 		}
-		if (goto_line && line >= length)
-				ImGui::SetScrollHere();
+		if (goto_line && line >= length){
+			ImGui::SetScrollHere();
+		}
 		ImGui::EndChild();
 		
 		
