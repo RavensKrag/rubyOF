@@ -1,3 +1,8 @@
+#include <iostream>
+// using namespace std;
+using std::cout;
+using std::endl;
+
 #include "app.h"
 
 #include "constants/data_path.h"
@@ -232,17 +237,16 @@ void rbApp::draw(){
 		// if (ImGui::IsItemHovered())
       //       ImGui::SetTooltip("hovering over UI");
 		
-		ImGui::Text("Hello, world!");
 		// ImGui::SliderFloat("Float", &floatValue, 0.0f, 1.0f);
 		
-		static bool selected[4] = { false, true, false, false };
-		ImGui::Selectable("1. I am selectable", &selected[0]);
-		ImGui::Selectable("2. I am selectable", &selected[1]);
-		ImGui::Text("3. I am not selectable");
-		ImGui::Selectable("4. I am selectable", &selected[2]);
-		if (ImGui::Selectable("5. I am double clickable", selected[3], ImGuiSelectableFlags_AllowDoubleClick))
-			if (ImGui::IsMouseDoubleClicked(0))
-				selected[3] = !selected[3];
+		// static bool selected[4] = { false, true, false, false };
+		// ImGui::Selectable("1. I am selectable", &selected[0]);
+		// ImGui::Selectable("2. I am selectable", &selected[1]);
+		// ImGui::Text("3. I am not selectable");
+		// ImGui::Selectable("4. I am selectable", &selected[2]);
+		// if (ImGui::Selectable("5. I am double clickable", selected[3], ImGuiSelectableFlags_AllowDoubleClick))
+		// 	if (ImGui::IsMouseDoubleClicked(0))
+		// 		selected[3] = !selected[3];
 		
 		
 		
@@ -291,7 +295,7 @@ void rbApp::draw(){
 		ImGui::SameLine();
 		
 		
-		ImGui::BeginChild("History", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::BeginChild("History", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
 		
 		// int length = history.call("length");
 		// cout << "c++: " << history[1] << "\n";
@@ -351,19 +355,27 @@ void rbApp::draw(){
 				}
 			}
 			if (goto_line && line == i){
+				cout << "set scroll middle: " << line << endl;
 				ImGui::SetScrollHere();
 			}
 		}
-		if (goto_line && line >= length-1){
+		if (line == -1){
+			cout << "hello world! initial line count" << endl;
+			cout << "set scroll bottom: " << line << endl;
+			// jump to end on initialization
+			// int i = from_ruby<int>(history.call("position"));
+			goto_line = true;
+			line = length - 1;
+			ImGui::SetScrollHere();
+		}
+		if (goto_line && line > length-1){
+			cout << "set scroll overshoot bottom: " << line << endl;
+			// without the goto_line check, it constantly scrolls to the endpoint
+			// TODO: figure out how to get scrolling section to scroll to bottom on init only, not every frame
 			line = length-1;
 			ImGui::SetScrollHere();
 		}
-		if (line == -1){
-			// jump to end on initialization
-			int i = from_ruby<int>(history.call("position"));
-			line = i;
-			ImGui::SetScrollHere();
-		}
+		
 		ImGui::EndChild();
 		
 		// NOTE: If width is set to 0, will take up the remainder of the space. If the first item in a row takes the full width, there will be no space left over.
