@@ -300,12 +300,12 @@ void rbApp::draw(){
 		// int length = history.call("length");
 		// cout << "c++: " << history[1] << "\n";
 		
-		// auto x = mSelf.call("history").call("list").call("size");
+		// auto x = mSelf.call("history").call("messages").call("size");
 		// cout << "c++: " << x << "\n";
 		
 		// display history list
-		Rice::Array history_list = history.call("list");
-		int length = from_ruby<int>(history.call("list").call("length"));
+		Rice::Array history_list = history.call("messages");
+		int length = from_ruby<int>(history_list.call("length"));
 		int pos    = from_ruby<int>(history.call("position"));
 		// ^ must do explict cast using from_ruby< T >()
 		// cout << "c++: " << "(" << length << ", " << pos << ")" << "\n";
@@ -364,7 +364,7 @@ void rbApp::draw(){
 			cout << "set scroll bottom: " << line << endl;
 			// jump to end on initialization
 			// int i = from_ruby<int>(history.call("position"));
-			goto_line = true;
+			// goto_line = true;
 			line = length - 1;
 			ImGui::SetScrollHere();
 		}

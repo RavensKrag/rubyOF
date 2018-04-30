@@ -24,77 +24,14 @@ Dir.chdir current_dir do
 	
 	require Pathname.new('./youtube_channel.rb').expand_path
 	
+	require Pathname.new('./space.rb').expand_path
+	
+	require_all Pathname.new('./history').expand_path
 	require_all Pathname.new('./monkey_patches/Chipmunk').expand_path
 	
 	require_all Pathname.new('./entities').expand_path
 end
 
-
-class History
-	attr_reader :list, :position
-	
-	def initialize
-		@list = [
-			"add entity: text",
-			"edit text: hello world!",
-			"move",
-			"resize",
-			"move",
-			"resize",
-			"move",
-			"resize",
-			"move",
-			"resize",
-			"move",
-			"resize",
-			"move",
-			"resize",
-			"move",
-			"resize",
-		]
-		@position = @list.size-1 # ASSUME: must have at least 1 item in list
-	end
-	
-	# Move to position i in the history stack,
-	# undoing / redoing actions as needed.
-	def goto(i)
-		puts "goto history index #{i}"
-		@position = i
-		
-		return @position
-	end
-	
-	def undo
-		if @position > 0
-			@position -= 1
-		end
-		
-		return @position
-	end
-	
-	def redo
-		max_pos = @list.length-1
-		if @position < max_pos
-			# @position needs to still be a valid index
-			# after taking 1 step forward
-			@position += 1
-		end
-		
-		return @position
-	end
-	
-	def squash
-		return @position
-	end
-	
-	def length
-		@list.length
-	end
-	
-	def size
-		@list.size
-	end
-end
 
 
 class Window < RubyOF::Window
@@ -152,11 +89,11 @@ class Window < RubyOF::Window
 		
 		@collection = Array.new
 		
-		# @history = Array.new
-		@history = History.new
-		p @history.list
-		p @history.list.size
-		p @history.list.length
+		
+		@space = Space.new
+		
+		
+		@history = History.new @space
 	end
 	
 	def update
