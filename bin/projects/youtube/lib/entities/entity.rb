@@ -10,6 +10,9 @@ class Entity
 		
 		@id = nil # Unique identifier that persists between sessions.
 		          # (assigned not on init, but when Entity is added to Space)
+		
+		
+		@shape.obj = self
 	end
 	
 	def serialize

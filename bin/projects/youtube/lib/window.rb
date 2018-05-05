@@ -312,39 +312,6 @@ class Window < RubyOF::Window
 		# super()
 		
 		
-		
-		@draw_screen_relative ||= Fiber.new do 
-			# Render a bunch of different tasks
-			loop do
-				# TODO: only render the task if it is still alive (allow for non-looping tasks)
-				@draw_debug_ui.resume
-				# @draw_color_picker.resume
-				Fiber.yield # <----------------
-			end
-		end
-		
-		
-		@draw_world_relative ||= Fiber.new do 
-			loop do
-				@space.draw
-				
-				# ASSUME: @font has not changed since data was created
-				#  ^ if this assumption is broken, Text rendering may behave unpredictably
-				#  ^ if you don't bind the texture, just get white squares
-				
-				
-					# # @font.draw_string("From ruby: こんにちは", x, y)
-					# @font.draw_string(data['channel-name'], x, y)
-					# ofPopStyle()
-					
-					# # NOTE: to move string on z axis just use the normal ofTransform()
-					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-				
-				Fiber.yield # <----------------
-			end
-		end
-		
-		
 		@draw_debug_ui ||= Fiber.new do
 			c = RubyOF::Color.new
 			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
@@ -383,11 +350,53 @@ class Window < RubyOF::Window
 		
 		
 		
-		@camera.draw self.width, self.height do
-			@draw_world_relative.resume
+		# === Draw world relative
+		@camera.draw self.width, self.height do |bb|
+			render_queue = Array.new
+			
+			@space.bb_query(bb) do |entity|
+				render_queue << entity
+			end
+			
+			# puts "render queue: #{render_queue.size}"
+			# ^ if this line is active, get segfault on standard exit
+			
+			render_queue
+			.group_by{ |e| e.texture }
+			.each do |texture, same_texture|
+				# next if texture.nil?
+				
+				texture.bind unless texture.nil?
+				
+				same_texture.each do |entity|
+					entity.draw
+				end
+				
+				texture.unbind unless texture.nil?
+			end
+			
+			# ASSUME: @font has not changed since data was created
+				#  ^ if this assumption is broken, Text rendering may behave unpredictably
+				#  ^ if you don't bind the texture, just get white squares
+				
+				
+					# # @font.draw_string("From ruby: こんにちは", x, y)
+					# @font.draw_string(data['channel-name'], x, y)
+					# ofPopStyle()
+					
+					# # NOTE: to move string on z axis just use the normal ofTransform()
+					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
 		end
+		# =======
 		
-		@draw_screen_relative.resume
+		
+		# === Draw screen relative
+		# Render a bunch of different tasks
+		
+		# TODO: only render the task if it is still alive (allow for non-looping tasks)
+		@draw_debug_ui.resume
+		# @draw_color_picker.resume
+		# =======
 	end
 	
 	def on_exit
