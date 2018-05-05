@@ -41,13 +41,15 @@ class Space
 		
 		@entities.group_by{ |e| e.texture }
 		.each do |texture, same_texture|
-			texture.bind
+			# next if texture.nil?
+			
+			texture.bind unless texture.nil?
 			
 			same_texture.each do |entity|
 				entity.draw
 			end
 			
-			texture.unbind
+			texture.unbind unless texture.nil?
 		end
 		
 		# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms

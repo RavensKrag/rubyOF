@@ -1,6 +1,7 @@
 class Text < Entity
 	include RubyOF::Graphics 
 	
+	attr_accessor :z
 	attr_accessor :text_color
 	
 	def initialize(font, string)

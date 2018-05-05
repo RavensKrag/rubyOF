@@ -213,12 +213,23 @@ class Window < RubyOF::Window
 						
 						
 						
-						# (create text as free-floating Entities)
+						
+						# create icon as an Image entity
+						icon = Image.new(image)
+						icon.body.p.x = pos.x + dx*ix
+						icon.body.p.y = pos.y + dy*iy
+						
+						@space.add icon
+						
+						
+						# create text as free-floating Text entity
 						# (this is what actually gets rendered)
 						text = Text.new(@font, data['channel-name'])
 						text.body.p.x = pos.x + dx*ix + offset.x
 						text.body.p.y = pos.y + dy*iy + offset.y
 						text.text_color = @font_color
+						
+						text.update
 						
 						@space.add text
 					end
@@ -244,10 +255,11 @@ class Window < RubyOF::Window
 			end
 		end
 		
+		
+		@space.update
 		@update_fiber.resume
 		
 		
-		@space.update
 		
 		
 		# FIXME: Consider changing how helper functions are declared / used
@@ -321,36 +333,38 @@ class Window < RubyOF::Window
 				@space.draw
 				
 				# ASSUME: @font has not changed since data was created
-				@font.font_texture.bind
-				# ^ if you don't bind the texture, just get white squares
+				#  ^ if this assumption is broken, Text rendering may behave unpredictably
 				
-				@collection.each do |yt|
-					# -- render icon
-					x = yt.icon_pos.x
-					y = yt.icon_pos.y
-					z = 10 # arbitrary value
+				# @font.font_texture.bind
+				# # ^ if you don't bind the texture, just get white squares
+				
+				# @collection.each do |yt|
+				# 	# # -- render icon
+				# 	# x = yt.icon_pos.x
+				# 	# y = yt.icon_pos.y
+				# 	# z = 10 # arbitrary value
 					
-					yt.icon.draw(x,y,z)
+				# 	# yt.icon.draw(x,y,z)
 					
 					
-					# # -- render channel name
-					# ofPushMatrix()
-					# ofPushStyle()
-					# 	ofTranslate(yt.text_pos.x, yt.text_pos.y, z)
+				# 	# # -- render channel name
+				# 	# ofPushMatrix()
+				# 	# ofPushStyle()
+				# 	# 	ofTranslate(yt.text_pos.x, yt.text_pos.y, z)
 						
-					# 	ofSetColor(yt.text_color)
-					# 	yt.text_mesh.draw()
-					# ofPopStyle()
-					# ofPopMatrix()
-				end
-					# # @font.draw_string("From ruby: こんにちは", x, y)
-					# @font.draw_string(data['channel-name'], x, y)
-					# ofPopStyle()
+				# 	# 	ofSetColor(yt.text_color)
+				# 	# 	yt.text_mesh.draw()
+				# 	# ofPopStyle()
+				# 	# ofPopMatrix()
+				# end
+				# 	# # @font.draw_string("From ruby: こんにちは", x, y)
+				# 	# @font.draw_string(data['channel-name'], x, y)
+				# 	# ofPopStyle()
 					
-					# # NOTE: to move string on z axis just use the normal ofTransform()
-					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
+				# 	# # NOTE: to move string on z axis just use the normal ofTransform()
+				# 	# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
 				
-				@font.font_texture.unbind
+				# @font.font_texture.unbind
 				
 				Fiber.yield # <----------------
 			end
