@@ -1,9 +1,6 @@
 class Image < Entity
-	attr_accessor :z
-	
 	def initialize(image)
 		# Use default position CP::Vec2.new(0,0)
-		@z = 0
 		
 		@image = image
 		
@@ -11,13 +8,14 @@ class Image < Entity
 		
 		
 		# TODO: figure out what the proper initial values for Body are
-		@body  = CP::Body.new(1,1)
+		body  = CP::Body.new(1,1)
 		
 		offset=CP::Vec2.new(0,0)
 		width  = @image.width
 		height = @image.height
-		@shape = CP::Shape::Rect.new(@body, width, height, offset)
+		shape = CP::Shape::Rect.new(body, width, height, offset)
 		
+		super(body, shape)
 	end
 	
 	# TODO: figure out if an Image entity should be able to take a new image filepath.
@@ -28,6 +26,8 @@ class Image < Entity
 	def serialize
 		serialized = Serialized.new
 		
+		# to serialize an image you need the path to the file..
+		# so I can't completely separate the Image loading from the Entity in space
 		
 		return serialized
 	end

@@ -1,12 +1,10 @@
 class Text < Entity
 	include RubyOF::Graphics 
 	
-	attr_accessor :z
 	attr_accessor :text_color
 	
 	def initialize(font, string)
 		# Use default position CP::Vec2.new(0,0)
-		@z = 0
 		
 		@string = string
 		
@@ -24,13 +22,14 @@ class Text < Entity
 		
 		
 		# TODO: figure out what the proper initial values for Body are
-		@body  = CP::Body.new(1,1)
+		body  = CP::Body.new(1,1)
 		
 		offset=CP::Vec2.new(0,0)
 		width  = of_bb.width
 		height = of_bb.height
-		@shape = CP::Shape::Rect.new(@body, width, height, offset)
+		shape = CP::Shape::Rect.new(body, width, height, offset)
 		
+		super(body, shape)
 	end
 	
 	# can't use attr_accessor, because I need to perform other actions on set
