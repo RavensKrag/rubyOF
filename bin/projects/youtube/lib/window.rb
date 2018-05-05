@@ -90,10 +90,15 @@ class Window < RubyOF::Window
 		@collection = Array.new
 		
 		
+		
+		
 		@space = Space.new
 		
-		
 		@history = History.new @space
+		
+		
+		text = Text.new(@font, "hello world! This is a pen.")
+		@space.add text
 	end
 	
 	def update
@@ -231,6 +236,9 @@ class Window < RubyOF::Window
 		@update_fiber.resume
 		
 		
+		@space.update
+		
+		
 		# FIXME: Consider changing how helper functions are declared / used
 		
 		
@@ -303,6 +311,8 @@ class Window < RubyOF::Window
 		
 		@draw_world_relative ||= Fiber.new do 
 			loop do
+				@space.draw
+				
 				# ASSUME: @font has not changed since data was created
 				@font.font_texture.bind
 				# ^ if you don't bind the texture, just get white squares

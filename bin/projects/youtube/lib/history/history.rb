@@ -1,4 +1,6 @@
 class History
+	NULL_STATE = []
+	
 	attr_reader :messages, :position
 	
 	def initialize(space)
@@ -9,17 +11,17 @@ class History
 		@messages = Array.new
 		
 		# commit initial state
-		entities = @space.entities.collect{ |x| x }
-		state = entities.collect{ |x|  x.serialize}
-		commit state, "New document"
+		# entities = @space.entities.collect{ |x| x }
+		# state = entities.collect{ |x|  x.serialize}
+		commit NULL_STATE, "New document"
 		
 		
-		commit state, "hello"
+		commit NULL_STATE, "hello"
 		
 		
-		commit state, "world"
-		commit state, "test"
-		commit state, "foo"
+		commit NULL_STATE, "world"
+		commit NULL_STATE, "test"
+		commit NULL_STATE, "foo"
 	end
 	
 	# Move to position i in the history stack,

@@ -5,7 +5,7 @@ class Space
 	end
 	
 	
-	
+	# TODO: add entity to space as well
 	def add(entity)
 		@entities << entity
 	end
@@ -15,7 +15,37 @@ class Space
 	end
 	
 	def entities
-		@entities.freeze
+		# return frozen shallow copy
+		@entities.clone.freeze
+	end
+	
+	
+	
+	def update
+		@entities.each do |entity|
+			entity.update
+		end
+	end
+	
+	def draw
+		# TODO: only draw what is visible to some camera
+		
+		# Render queue should sort by shader, then texture, then z depth [2]
+		# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
+		# 
+		# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
+		# [2]  http://lspiroengine.com/?p=96
+		
+		@entities.group_by{ |e| e.texture }
+		.each do |texture, same_texture|
+			texture.bind
+			
+			same_texture.each do |entity|
+				entity.draw
+			end
+			
+			texture.unbind
+		end
 	end
 end 
 
