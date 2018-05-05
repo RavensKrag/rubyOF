@@ -48,7 +48,9 @@ class Image < Entity
 	
 	# NOTE: texture binding is handed by the render queue in Space
 	def texture
+		# No textures are returned for the general purpose Image class.
 		
+		# If you need to bind one texture and draw from it many times (e.g. sprite atalassing) then you need to make a separate Entity type for that.
 	end
 	
 	def draw
