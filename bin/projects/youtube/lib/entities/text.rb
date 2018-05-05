@@ -1,6 +1,8 @@
 class Text < Entity
 	include RubyOF::Graphics 
 	
+	attr_accessor :text_color
+	
 	def initialize(font, string)
 		# Use default position CP::Vec2.new(0,0)
 		@z = 0
@@ -30,7 +32,7 @@ class Text < Entity
 		
 	end
 	
-	# can't use attr_acessor, because I need to perform other actions on set
+	# can't use attr_accessor, because I need to perform other actions on set
 	# (TODO: consider using metaprogramming to make this cleaner?)
 	def font
 		return @font

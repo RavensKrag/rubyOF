@@ -210,6 +210,17 @@ class Window < RubyOF::Window
 						yt.text_pos.x = pos.x + dx*ix + offset.x
 						yt.text_pos.y = pos.y + dy*iy + offset.y
 						yt.text_color = @font_color
+						
+						
+						
+						# (create text as free-floating Entities)
+						# (this is what actually gets rendered)
+						text = Text.new(@font, data['channel-name'])
+						text.body.p.x = pos.x + dx*ix + offset.x
+						text.body.p.y = pos.y + dy*iy + offset.y
+						text.text_color = @font_color
+						
+						@space.add text
 					end
 				}.each
 			# load one piece of yt channel data at a time, pausing after each piece
@@ -268,10 +279,6 @@ class Window < RubyOF::Window
 		
 		
 		
-		# -- implement color picker
-		#    (maybe use oF c++ color picker that already exists?)
-		
-		
 		
 		# -- add more YouTube subscriptions without losing existng organization
 		
@@ -326,15 +333,15 @@ class Window < RubyOF::Window
 					yt.icon.draw(x,y,z)
 					
 					
-					# -- render channel name
-					ofPushMatrix()
-					ofPushStyle()
-						ofTranslate(yt.text_pos.x, yt.text_pos.y, z)
+					# # -- render channel name
+					# ofPushMatrix()
+					# ofPushStyle()
+					# 	ofTranslate(yt.text_pos.x, yt.text_pos.y, z)
 						
-						ofSetColor(yt.text_color)
-						yt.text_mesh.draw()
-					ofPopStyle()
-					ofPopMatrix()
+					# 	ofSetColor(yt.text_color)
+					# 	yt.text_mesh.draw()
+					# ofPopStyle()
+					# ofPopMatrix()
 				end
 					# # @font.draw_string("From ruby: こんにちは", x, y)
 					# @font.draw_string(data['channel-name'], x, y)
