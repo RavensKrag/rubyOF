@@ -358,8 +358,7 @@ class Window < RubyOF::Window
 				render_queue << entity
 			end
 			
-			# puts "render queue: #{render_queue.size}"
-			# ^ if this line is active, get segfault on standard exit
+			puts "render queue: #{render_queue.size}"
 			
 			
 			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
