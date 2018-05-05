@@ -361,6 +361,15 @@ class Window < RubyOF::Window
 			# puts "render queue: #{render_queue.size}"
 			# ^ if this line is active, get segfault on standard exit
 			
+			
+			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
+			
+			# Render queue should sort by shader, then texture, then z depth [2]
+			# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
+			# 
+			# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
+			# [2]  http://lspiroengine.com/?p=96
+			
 			render_queue
 			.group_by{ |e| e.texture }
 			.each do |texture, same_texture|
@@ -374,6 +383,11 @@ class Window < RubyOF::Window
 				
 				texture.unbind unless texture.nil?
 			end
+			
+			# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms
+				# (not really useful right now because everything is just translations, but perhaps useful later when rotations start kicking in.)
+			
+			
 			
 			# ASSUME: @font has not changed since data was created
 				#  ^ if this assumption is broken, Text rendering may behave unpredictably
