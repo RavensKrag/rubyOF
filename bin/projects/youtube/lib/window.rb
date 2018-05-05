@@ -281,10 +281,6 @@ class Window < RubyOF::Window
 		
 		
 		
-		# -- implement basic camera control (zoom, pan)
-		
-		
-		
 		
 		# -- allow direct manipulation of the data
 		#    (control layout of elements with mouse and keyboard, not code)
@@ -322,7 +318,7 @@ class Window < RubyOF::Window
 			loop do
 				# TODO: only render the task if it is still alive (allow for non-looping tasks)
 				@draw_debug_ui.resume
-				@draw_color_picker.resume
+				# @draw_color_picker.resume
 				Fiber.yield # <----------------
 			end
 		end
@@ -334,37 +330,15 @@ class Window < RubyOF::Window
 				
 				# ASSUME: @font has not changed since data was created
 				#  ^ if this assumption is broken, Text rendering may behave unpredictably
+				#  ^ if you don't bind the texture, just get white squares
 				
-				# @font.font_texture.bind
-				# # ^ if you don't bind the texture, just get white squares
 				
-				# @collection.each do |yt|
-				# 	# # -- render icon
-				# 	# x = yt.icon_pos.x
-				# 	# y = yt.icon_pos.y
-				# 	# z = 10 # arbitrary value
+					# # @font.draw_string("From ruby: こんにちは", x, y)
+					# @font.draw_string(data['channel-name'], x, y)
+					# ofPopStyle()
 					
-				# 	# yt.icon.draw(x,y,z)
-					
-					
-				# 	# # -- render channel name
-				# 	# ofPushMatrix()
-				# 	# ofPushStyle()
-				# 	# 	ofTranslate(yt.text_pos.x, yt.text_pos.y, z)
-						
-				# 	# 	ofSetColor(yt.text_color)
-				# 	# 	yt.text_mesh.draw()
-				# 	# ofPopStyle()
-				# 	# ofPopMatrix()
-				# end
-				# 	# # @font.draw_string("From ruby: こんにちは", x, y)
-				# 	# @font.draw_string(data['channel-name'], x, y)
-				# 	# ofPopStyle()
-					
-				# 	# # NOTE: to move string on z axis just use the normal ofTransform()
-				# 	# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-				
-				# @font.font_texture.unbind
+					# # NOTE: to move string on z axis just use the normal ofTransform()
+					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
 				
 				Fiber.yield # <----------------
 			end
@@ -397,15 +371,15 @@ class Window < RubyOF::Window
 			end
 		end
 		
-		# accept input on every #resume
-		@draw_color_picker ||= Fiber.new do 
-			# -- render data
-			loop do
+		# # accept input on every #resume
+		# @draw_color_picker ||= Fiber.new do 
+		# 	# -- render data
+		# 	loop do
 				
 				
-				Fiber.yield # <----------------
-			end
-		end
+		# 		Fiber.yield # <----------------
+		# 	end
+		# end
 		
 		
 		

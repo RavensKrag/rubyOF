@@ -86,6 +86,7 @@ class Text < Entity
 	# NOTE: texture binding is handed by the render queue in Space
 	def texture
 		@font.font_texture
+		# ^ if you don't bind the texture, just get white squares
 	end
 	
 	def draw
