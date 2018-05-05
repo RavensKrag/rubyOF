@@ -403,7 +403,16 @@ class Window < RubyOF::Window
 		super()
 		
 		
+		# --- Save data
 		dump_yaml [self.width, self.height] => @window_dimension_save_file
+		
+		# --- Clear variables that might be holding onto OpenFrameworks pointers.
+		# NOTE: Cases where Chipmunk can hold onto OpenFrameworks data are dangerous. Must free Chimpunk data using functions like cpSpaceFree() during the lifetime of OpenFrameworks data (automatically called by Chipmunk c extension on GC), otherwise a segfault will occur. However, this segfault will occur inside Chipmunk code, which is very confusing.
+		@space = nil
+		@history = nil
+		
+		# --- Clear Ruby-level memory
+		GC.start
 	end
 	
 	
