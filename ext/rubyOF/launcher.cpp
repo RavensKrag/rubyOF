@@ -4,6 +4,8 @@
 #include "launcher.h"
 #include "app_factory.h"
 
+#include "GLFW/glfw3.h"
+
 #include "rice/Exception.hpp"
 
 #include <iostream>
