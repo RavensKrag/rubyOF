@@ -103,6 +103,10 @@ namespace :oF do
 		run_task('base:build_static')
 	end
 	
+	task :build => [:build_dynamic, :build_static]
+	# must build dynamic first, and then static,
+	# otherwise the temporary files from dynamic build
+	# will clobber the static libraries.
 	
 	
 	
@@ -897,17 +901,19 @@ task :setup => [
 
 # TODO: refactor the cpp_deps namespace
 
-
 # + uncompress OF folder -> "openFrameworks"
 #   (make sure to rename, dropping the version number etc)
+	# env RUBYOF_PROJECT="youtube" rake oF:build_dynamic
 # + build shared library for OF core
 # + rename shared library files so they end in .so as expected
 # + move .so files to DYNAMIC_LIB_PATH so they can be linked against later
+	# env RUBYOF_PROJECT="youtube" rake oF:build_static
 # + build static library for OF core
 
 # (no need to muck with dependencies or anything like that)
 
 # (run a OF project and export build variables)
+	# env RUBYOF_PROJECT="youtube" rake core_wrapper:build
 # + build core wrapper
 # + build project wrapper
 
