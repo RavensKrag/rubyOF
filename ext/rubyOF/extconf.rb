@@ -162,8 +162,7 @@ of_project_addon_objs = of_build_variables['OF_PROJECT_ADDONS_OBJS'].join(' ')
 
 
 # libopenFrameworks.a
-# of_project_libs = of_build_variables['TARGET_LIBS'].join(' ')
-of_project_libs = "-L#{DYNAMIC_LIB_PATH} -lopenFrameworks#{OF_DEBUG ? "Debug" : ""}"
+of_project_libs = of_build_variables['TARGET_LIBS'].join(' ')
 	# link against "libopenFrameworksDebug.so" or "libopenFrameworks.so"
 	# and assume that the dynamic libraries have already been copied
 	# to the final location specified by DYNAMIC_LIB_PATH

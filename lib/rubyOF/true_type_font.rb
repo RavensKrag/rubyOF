@@ -43,7 +43,7 @@ module TrueTypeFont
 		
 		
 		font = self.class.new
-		font_settings = RubyOF::TtfSettings.new(config.path, config.size)
+		font_settings = RubyOF::TrueTypeFontSettings.new(config.path, config.size)
 		
 		config.alphabets.each do |x|
 			font_settings.add_alphabet x
@@ -65,11 +65,11 @@ module TrueTypeFont
 		end
 		
 		def add_alphabet(alphabet)
-			alphabet_list = RubyOF::TtfSettings::UnicodeAlphabets
+			alphabet_list = RubyOF::TrueTypeFontSettings::UnicodeAlphabets
 			unless alphabet_list.include? alphabet
 				message = [
 					"Alphabet '#{alphabet}' is not one of the supported values.",
-					"Use a value from TtfSettings::UnicodeAlphabets",
+					"Use a value from TrueTypeFontSettings::UnicodeAlphabets",
 					"Try one of these: #{alphabet_list.inspect}"
 				].join("\n")
 				
@@ -111,9 +111,10 @@ class TrueTypeFont
 	# end
 end
 
-class TtfSettings
+class TrueTypeFontSettings
 	UnicodeRanges = [
 		:Space,
+		:IdeographicSpace,
 		:Latin,
 		:Latin1Supplement,
 		:Greek,
@@ -158,7 +159,12 @@ class TtfSettings
 		:ArabicMath,
 		:MiscSymbolsAndPictographs,
 		:Emoticons,
-		:TransportAndMap
+		:TransportAndMap,
+		:EnclosedCharacters,
+		:Uncategorized,
+		:AdditionalEmoticons,
+		:AdditionalTransportAndMap,
+		:OtherAdditionalSymbols
 	]
 	
 	UnicodeAlphabets = [

@@ -83,7 +83,7 @@ namespace :oF do
 	task :build_static do
 		puts "=== Building OpenFrameworks core as STATIC library..."
 		Dir.chdir "#{OF_ROOT}/scripts/linux/" do
-			run_i "./compileOF.sh -j#{NUMBER_OF_CORES}"
+			run_i "env CFLAGS=-fPIC ./compileOF.sh -j#{NUMBER_OF_CORES}"
 		end
 	end
 	
@@ -195,7 +195,7 @@ def build_oF_app(name, sketch_root)
 		# TARGET specifies whether to build "Debug" or "Release" build
 		
 		begin
-			run_i "make #{TARGET} -j#{NUMBER_OF_CORES}"
+			run_i "env CFLAGS=-fPIC  make #{TARGET} -j#{NUMBER_OF_CORES}"
 		rescue StandardError => e
 			puts "ERROR: Could not build #{name}."
 			exit

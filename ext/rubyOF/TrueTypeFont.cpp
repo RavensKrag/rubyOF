@@ -3,6 +3,7 @@
 
 const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::Space,
+	ofUnicode::IdeographicSpace,
 	ofUnicode::Latin,
 	ofUnicode::Latin1Supplement,
 	ofUnicode::Greek,
@@ -47,7 +48,12 @@ const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::ArabicMath,
 	ofUnicode::MiscSymbolsAndPictographs,
 	ofUnicode::Emoticons,
-	ofUnicode::TransportAndMap
+	ofUnicode::TransportAndMap,
+	ofUnicode::EnclosedCharacters,
+	ofUnicode::Uncategorized,
+	ofUnicode::AdditionalEmoticons,
+	ofUnicode::AdditionalTransportAndMap,
+	ofUnicode::OtherAdditionalSymbols
 };
 
 

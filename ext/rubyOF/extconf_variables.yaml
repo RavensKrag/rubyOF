@@ -3,9 +3,9 @@
   :$SAFE, :$defs, :$fileutils_rb_have_lchmod, :$fileutils_rb_have_lchown, :$CPPFLAGS,
   :$LDFLAGS, :$LIBS, :$LIBRUBYARG, :$LIBRUBYARG_STATIC, :$CXXFLAGS, :$LDSHARED_CXX,
   :$&, :$`, :$'', :$+, :$=, :$KCODE, :$-K, :$CFLAGS, :$warnflags, :$typeof, :$-p,
-  :$-l, :$-a, :$CXX, :$RICE_CPPFLAGS, :$VERBOSE, :$-v, :$-w, :$-W, :$RICE_PREFIX,
-  :$-d, :$0, :$PROGRAM_NAME, :$RICE_USING_MINGW32, :$DEFLIBPATH, :$DEBUG, :$OBJEXT,
-  :$DLDFLAGS, :$arg_config, :$RICE_LDFLAGS, :$extconf_h, :$PKGCONFIG, :$LIBPATH, :$VPATH,
+  :$-l, :$-a, :$CXX, :$RICE_CPPFLAGS, :$RICE_LDFLAGS, :$VERBOSE, :$-v, :$-w, :$-W,
+  :$RICE_USING_MINGW32, :$-d, :$0, :$PROGRAM_NAME, :$DEFLIBPATH, :$arg_config, :$DEBUG,
+  :$OBJEXT, :$DLDFLAGS, :$extconf_h, :$RICE_PREFIX, :$PKGCONFIG, :$LIBPATH, :$VPATH,
   :$headers, :$LIBRUBYARG_SHARED, :$ruby, :$preload, :$cleanfiles, :$distcleanfiles,
   :$static, :$config_h, :$default_static, :$configure_args, :$libdir, :$rubylibdir,
   :$archdir, :$sitedir, :$sitelibdir, :$sitearchdir, :$vendordir, :$vendorlibdir,
@@ -64,7 +64,7 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
     -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
   "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/lib
-    -lrice -L/home/ravenskrag/Desktop/gem_structure/bin/lib -lopenFrameworksDebug
+    -lrice /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
     \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed
     -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
     -lfmodex   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a
@@ -92,13 +92,11 @@
   "$-a": false
   "$CXX": g++
   "$RICE_CPPFLAGS": ''
-  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib"
+  "$RICE_LDFLAGS": ''
   "$RICE_USING_MINGW32": false
   "$DEFLIBPATH":
   - "."
   - "$(libdir)"
-  "$OBJEXT": o
-  "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
   "$arg_config":
   - - "--with-opt-dir"
     - 
@@ -130,8 +128,10 @@
     - 
   - - "--without-stdc++lib"
     - 
-  "$RICE_LDFLAGS": ''
+  "$OBJEXT": o
+  "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
   "$extconf_h": 
+  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib"
   "$PKGCONFIG": 
   "$LIBPATH": []
   "$VPATH":
