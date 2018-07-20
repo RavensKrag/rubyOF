@@ -1,0 +1,3 @@
+[submodule "vendor/apothecary"]
+	path = vendor/apothecary
+	url = git@github.com:RavensKrag/apothecary.git
