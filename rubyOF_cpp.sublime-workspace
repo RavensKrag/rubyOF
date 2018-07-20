@@ -1,0 +1,4374 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"button",
+				"Button\tbool Button(const char *label)"
+			],
+			[
+				"butt",
+				"Button\tbool Button(const char *label)"
+			],
+			[
+				"sele",
+				"Selectable\tbool Selectable(const char *label)"
+			],
+			[
+				"f",
+				"fprintf\tfprintf …"
+			],
+			[
+				"fp",
+				"filepath"
+			],
+			[
+				"data",
+				"data_dir"
+			],
+			[
+				"update",
+				"update_fiber"
+			],
+			[
+				"local_",
+				"local_channel_info"
+			],
+			[
+				"yiel",
+				"yielding_collect"
+			],
+			[
+				"Stop",
+				"StopIteration"
+			],
+			[
+				"pipe",
+				"pipeline"
+			],
+			[
+				"window",
+				"window_size"
+			],
+			[
+				"save",
+				"save_filepath"
+			],
+			[
+				"yt",
+				"yt_channel"
+			],
+			[
+				"text_",
+				"text_mesh"
+			],
+			[
+				"attr",
+				"attr_reader"
+			],
+			[
+				"icn",
+				"icon_pos"
+			],
+			[
+				"font",
+				"font_color"
+			],
+			[
+				"scr",
+				"scrollY"
+			],
+			[
+				"require",
+				"require_all"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"Fiber",
+				"Fiber"
+			],
+			[
+				"loca",
+				"local_subscriptions"
+			],
+			[
+				"image",
+				"image_i"
+			],
+			[
+				"zip",
+				"zip_pair"
+			],
+			[
+				"chann",
+				"channel-name"
+			],
+			[
+				"channel",
+				"channel_name"
+			],
+			[
+				"icon_",
+				"icon_filepath"
+			],
+			[
+				"outp",
+				"output_path"
+			],
+			[
+				"channe",
+				"channel_name"
+			],
+			[
+				"OFB",
+				"OF_BUILD_VARIABLE_FILE"
+			],
+			[
+				"root",
+				"REPO_ROOT"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"exten",
+				"ofx_extension_name"
+			],
+			[
+				"repo",
+				"REPO_ROOT"
+			],
+			[
+				"expand",
+				"expand_path"
+			],
+			[
+				"onl",
+				"only_so"
+			],
+			[
+				"sketch",
+				"sketch_dump"
+			],
+			[
+				"dump",
+				"dump_so"
+			],
+			[
+				"cate",
+				"category_dir"
+			],
+			[
+				"exp",
+				"expand_path"
+			],
+			[
+				"trail",
+				"trail_dt"
+			],
+			[
+				"es",
+				"exit_status"
+			],
+			[
+				"have_",
+				"have_library"
+			],
+			[
+				"gstream",
+				"gstreamer"
+			],
+			[
+				"polib",
+				"poco_libs_dir"
+			],
+			[
+				"build_",
+				"build_tess2"
+			],
+			[
+				"depe",
+				"dependencies"
+			],
+			[
+				"ext",
+				"extconf"
+			],
+			[
+				"oF",
+				"oF_project"
+			],
+			[
+				"clb",
+				"c_library"
+			],
+			[
+				"work",
+				"work_dir"
+			],
+			[
+				"temp",
+				"temp_ext"
+			],
+			[
+				"mk",
+				"mySketch"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"bu",
+				"build"
+			],
+			[
+				"bur",
+				"build_library"
+			],
+			[
+				"clib",
+				"clean_library"
+			],
+			[
+				"ce",
+				"1.coerce"
+			],
+			[
+				"visua",
+				"visualizations"
+			],
+			[
+				"test_",
+				"test_package"
+			],
+			[
+				"prev",
+				"prev_tick"
+			],
+			[
+				"poss",
+				"possible_targets"
+			],
+			[
+				"const",
+				"constraint_target"
+			],
+			[
+				"rec",
+				"resources"
+			],
+			[
+				"Hash",
+				"HashWrapper"
+			],
+			[
+				"remo",
+				"removal_flag"
+			],
+			[
+				"con",
+				"constraint"
+			],
+			[
+				"paramet",
+				"parameterization"
+			],
+			[
+				"visu",
+				"visualization"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"necessary",
+				"necessary_pairs"
+			],
+			[
+				"cont",
+				"constraint_type"
+			],
+			[
+				"nece",
+				"necessary_pairs"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"inti",
+				"initialize"
+			],
+			[
+				"ent",
+				"entities"
+			],
+			[
+				"segment",
+				"segment_query"
+			],
+			[
+				"compo",
+				"components"
+			],
+			[
+				"query",
+				"query_data"
+			],
+			[
+				"origi",
+				"original_color"
+			],
+			[
+				"active",
+				"active_cascade"
+			],
+			[
+				"var",
+				"var_name"
+			],
+			[
+				"projec",
+				"project_directory"
+			],
+			[
+				"other",
+				"other_stuff"
+			],
+			[
+				"unpa",
+				"unpack_with_class_name"
+			],
+			[
+				"compon",
+				"component"
+			],
+			[
+				"qu",
+				"query_components"
+			],
+			[
+				"styl",
+				"style_components"
+			],
+			[
+				"names",
+				"named_styles"
+			],
+			[
+				"comp",
+				"component"
+			],
+			[
+				"full",
+				"full_path"
+			],
+			[
+				"sc",
+				"style_component"
+			],
+			[
+				"primary",
+				"primary_style"
+			],
+			[
+				"casc",
+				"cascade_list"
+			],
+			[
+				"enti",
+				"entity_id"
+			],
+			[
+				"component",
+				"component_data"
+			],
+			[
+				"componen",
+				"component"
+			],
+			[
+				"collec",
+				"collection"
+			],
+			[
+				"activ",
+				"active_list"
+			],
+			[
+				"write",
+				"write_data"
+			],
+			[
+				"wri",
+				"write_data"
+			],
+			[
+				"par",
+				"packed_array"
+			],
+			[
+				"compd",
+				"component_data"
+			],
+			[
+				"each_",
+				"each_with_index"
+			],
+			[
+				"all",
+				"all_style_objects"
+			],
+			[
+				"style",
+				"style_component"
+			],
+			[
+				"righc",
+				"right_callbacks"
+			],
+			[
+				"lftc",
+				"left_callbacks"
+			],
+			[
+				"actt",
+				"active_action"
+			],
+			[
+				"ti",
+				"text_input"
+			],
+			[
+				"acc",
+				"active_action"
+			],
+			[
+				"acti",
+				"active_action"
+			],
+			[
+				"mous",
+				"mouse_button"
+			],
+			[
+				"hit",
+				"hitbox_color"
+			],
+			[
+				"clone",
+				"clone_factory"
+			],
+			[
+				"old",
+				"old_text"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"regist",
+				"register_prototype"
+			],
+			[
+				"inp",
+				"text_input"
+			],
+			[
+				"text",
+				"text_input"
+			],
+			[
+				"est",
+				"estimated_i"
+			],
+			[
+				"first",
+				"first_guess"
+			],
+			[
+				"esti",
+				"estimated_i"
+			],
+			[
+				"meas",
+				"measured_offset"
+			],
+			[
+				"disp",
+				"measured_displacement"
+			],
+			[
+				"caret",
+				"caret_pos"
+			],
+			[
+				"dir",
+				"dirty"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/ravenskrag/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 618,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "rubyOF_cpp.sublime-project",
+			"settings":
+			{
+				"buffer_size": 4945,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/rubyOF/extconf_variables.yaml",
+			"settings":
+			{
+				"buffer_size": 10160,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/youtube/ext/c_extension/extconf_variables.yaml",
+			"settings":
+			{
+				"buffer_size": 14056,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/youtube/config/build_variables.rb",
+			"settings":
+			{
+				"buffer_size": 266,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "// #include <iostream>\n// // using namespace std;\n// using std::cout;\n// using std::endl;\n\n#include \"app.h\"\n\n#include \"constants/data_path.h\"\n\n\n\ntemplate<typename T>\nstruct Null_Free_Function\n{\n  static void free(T * obj) { }\n};\n\n\nrbApp::rbApp(Rice::Object self)\n: ofBaseApp()\n{\n\tstd::cout << \"c++: constructor - window\\n\";\n\t\n\t// ofSetupOpenGL(1024,768,OF_WINDOW); // <-------- setup the GL context\n\tmSelf = self;\n}\n\nrbApp::~rbApp(){\n\t\n}\n\nvoid rbApp::setup(){\n\tofSetDataPathRoot(DATA_PATH);\n\t\n\t\n\t// ========================================\n\t// ========== add new stuff here ==========\n\tmDatGui = new ofxDatGui(0, 50);\n\t\n\t// --- Track seconds / frame over time to see performance.\n\t//     Need a graph, not a single data point, and seconds rather than Hz\n\t\n\t// initialize timestamp for time plot\n\ttimestamp_us = 0;\n\t\n\t// initialize the time plot itself\n\tfloat min = 0;\n\tfloat max = 100000;\n\tmPlotter = mDatGui->addValuePlotter(\"micros / frame\", min, max);\n\t\n\t\n\t// -- add actcual FPS widget\n\tfloat framerate_monitor_refresh = 1.0f;\n\tmDatGui->addFRM(framerate_monitor_refresh);\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\tgui.setup(\"\", ofxPanelDefaultFilename, 1500, 0);\n\t// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));\n\tgui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));\n\t\n\t// mDatGui->addSlider(\"ofGui w\", 0, 800);\n\t// mDatGui->addSlider(\"ofGui h\", 0, 800);\n\tfloat w = 280;\n\tfloat h = 500;\n\tgui.setSize(w, h);\n\tgui.setWidthElements(w);\n\t// gui.setDefaultWidth(float w);\n\t// gui.setDefaultHeight(float h);\n\t// https://forum.openframeworks.cc/t/how-to-make-ofxgui-objects-width-smaller/14047\n\t\n\t\n\t\n\t\n\t\n\t\n\tim_gui.setup();\n\tImGui::GetIO().MouseDrawCursor = false;\n\t\n\t\n\t// ========================================\n\t// ========================================\n\t\n\t\n\t\n\t\n\t// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.\n\tmSelf.call(\"setup\");\n\t\n\t\n\t// -- More complex way to pass a pointer from C++ to Ruby\n\t//    Allows C++ code to maintain full control of memory management.\n\t\n\t// This is how you can pass a pointer to a C++ type to Ruby-land.\n\t// 'Rice::Data_Object' functions basically like a C++ smart pointer,\n\t// but allows for data to be sent to Ruby.\n\t// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.\n\t\n\t\n\t// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();\n\t// // ^ NOTE: This function is of type 'const void*'\n\t// //         so you must not write to this data location\n\t\n\t// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));\n\t// // strip away the const qualifier\n\t// // otherwise, can't pass this pointer to Rice::Data_Object< T >()\n\t\n\t// Rice::Data_Object<ofColor> rb_color_ptr(\n\t// \tcolor_ptr,\n\t// \tRice::Data_Type< ofColor >::klass(),\n\t// \tRice::Default_Mark_Function< ofColor >::mark,\n\t// \tNull_Free_Function< ofColor >::free\n\t// );\n\t// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.\n\t\n\t// rb_color_ptr.call(\"freeze\");\n\t// Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.\n\t\n\t// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast\n\t\n\t\n\t\n\t// ofParameter::get() returns reference to value,\n\t// and that is wrapped in a ruby object that acts as a \"pointer\" to C++ data.\n\t// Like a pointer, this data only needs to be passed once for changes to propagate.\n\tRice::Data_Object<ofColor> rb_color_ptr(\n\t\t&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),\n\t\tRice::Data_Type< ofColor >::klass(),\n\t\tRice::Default_Mark_Function< ofColor >::mark,\n\t\tNull_Free_Function< ofColor >::free\n\t);\n\t// ^ This works, but is not sufficient to draw colored strings fast.\n\t//   Make sure to also convert string -> mesh if you must draw many strings.\n\t\n\t\n\t// Null_Free_Function< T > is declared at the top of this file.\n\t// By creating this stubbed callback, the Ruby interpreter has\n\t// no mechanism to release the memory that has been declared.\n\t// In this way, memory management can be completely controlled\n\t// through C++ code (which is what I want for this project).\n\t\n\t\n\t// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object\n\tmSelf.call(\"set_gui_parameter\", \"color\", to_ruby(rb_color_ptr));\n}\n\nvoid rbApp::update(){\n\t// ========================================\n\t// ========== add new stuff here ==========\n\t\n\t\n\t// // ofColor picked = mColorPicker_Parameter.get();\n\t// // mColorPicker_Color.r = picked.r;\n\t// // mColorPicker_Color.g = picked.g;\n\t// // mColorPicker_Color.b = picked.b;\n\t// // mColorPicker_Color.a = picked.a;\n\t\n\t\n\t// // (This one-line style is cleaner, but I'm not sure if it's faster or not. Seems to be a lot of fluxuation in the framerate this way?)\n\t// mColorPicker_Color = mColorPicker_Parameter.get();\n\t\n\t\n\t// --- Track seconds / frame over time to see performance.\n\t//     Need a graph, not a single data point, and seconds rather than Hz\n\t\n\t// get the current time in microseconds\n\t// (time the app has been running)\n\tuint64_t now = ofGetElapsedTimeMicros();\n\t\n\t// update the time display based on the current time\n\tuint64_t microseconds = now - timestamp_us;\n\tmPlotter->setValue(microseconds);\n\t\n\t// save the new time\n\ttimestamp_us = now;\n\t\n\t\n\t\n\t// float w = mDatGui->getSlider(\"ofGui w\")->getValue();\n\t// float h = mDatGui->getSlider(\"ofGui h\")->getValue();\n\t// gui.setSize(w, h);\n\t// gui.setWidthElements(w);\n\t\n\t// ========================================\n\t// ========================================\n\t\n\tmSelf.call(\"update\");\n}\n\nvoid rbApp::draw(){\n\t// ========================================\n\t// ========== add new stuff here ==========\n\t\n\t\n\tfrom_ruby<int>(rb_i);\n\tprintf(\"%s\\n\", );\n\t\n\t// ========================================\n\t// ========================================\n\t\n\tmSelf.call(\"draw\");\n\t\n\t\n\tgui.draw(); // ofxGui - for color picker\n\t\n\t// ofxDatGui is drawn automatically\n\t\n\t\n\t// ========================================\n\t// ==========  UI from ofxImGUI  ==========\n\t\n\tim_gui.begin();\n\t\tconst auto disabled_color = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);\n\t\t\t// Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);\n\t\t\t// ImGui::TextDisabled(\"%04d: scrollable region\", i);\n\t\t\n\t\tImFontAtlas* atlas = ImGui::GetIO().Fonts;\n\t\tauto* font = atlas->Fonts[0];\n\t\t\n\t\tfont->Scale = 2.0f;\n\t\t\n\t\t\n\t\tif (ImGui::IsMouseHoveringAnyWindow()){\n\t\t\t// ImGui::SetTooltip(\"hovering over UI\");\n\t\t\tmUI_InputCapture = true;\n\t\t}\n\t\telse{\n\t\t\tmUI_InputCapture = false;\n\t\t}\n\t\tImGui::CaptureKeyboardFromApp(mUI_InputCapture);\n\t\tImGui::CaptureMouseFromApp(mUI_InputCapture);\n\t\t\n\t\t// if (ImGui::IsItemHovered())\n      //       ImGui::SetTooltip(\"hovering over UI\");\n\t\t\n\t\tImGui::Text(\"Hello, world!\");\n\t\t// ImGui::SliderFloat(\"Float\", &floatValue, 0.0f, 1.0f);\n\t\t\n\t\t// static bool selected[4] = { false, true, false, false };\n\t\t// ImGui::Selectable(\"1. I am selectable\", &selected[0]);\n\t\t// ImGui::Selectable(\"2. I am selectable\", &selected[1]);\n\t\t// ImGui::Text(\"3. I am not selectable\");\n\t\t// ImGui::Selectable(\"4. I am selectable\", &selected[2]);\n\t\t// if (ImGui::Selectable(\"5. I am double clickable\", selected[3], ImGuiSelectableFlags_AllowDoubleClick))\n\t\t// \tif (ImGui::IsMouseDoubleClicked(0))\n\t\t// \t\tselected[3] = !selected[3];\n\t\t\n\t\t\n\t\t\n\t\tImGui::Text(\"History\");\n\t\tRice::Object history = mSelf.call(\"history\");\n\t\t\n\t\tstatic int line = -1; // invalid position, used as init flag\n\t\tbool goto_line = ImGui::Button(\"Goto\");\n\t\tImGui::SameLine();\n\t\tImGui::PushItemWidth(100);\n\t\tgoto_line |= ImGui::InputInt(\"##Line\", &line, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);\n\t\tImGui::PopItemWidth();\n\t\t// ImGui::BeginChild(\"Sub1\", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f,300), false, ImGuiWindowFlags_HorizontalScrollbar);\n\t\t\n\t\t\n\t\t\n\t\tImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);\n\t\tImGui::BeginChild(\"History Buttons\", ImVec2(100,300), true);\n\t\t\tif (ImGui::Button(\"undo\"))\n\t\t\t{\n\t\t\t\t// @history.undo\n\t\t\t\tauto rb_i = history.call(\"undo\");\n\t\t\t\tgoto_line = true;\n\t\t\t\tline = from_ruby<int>(rb_i);\n\t\t\t}\n\t\t\t\n\t\t\tif (ImGui::Button(\"redo\"))\n\t\t\t{\n\t\t\t\t// @history.redo\n\t\t\t\tauto rb_i = history.call(\"redo\");\n\t\t\t\tgoto_line = true;\n\t\t\t\tline = from_ruby<int>(rb_i);\n\t\t\t}\n\t\t\t\n\t\t\tif (ImGui::Button(\"squash\"))\n\t\t\t{\n\t\t\t\t// @history.squash\n\t\t\t\tauto rb_i = history.call(\"squash\");\n\t\t\t\tgoto_line = true;\n\t\t\t\tline = from_ruby<int>(rb_i);\n\t\t\t}\n\t\tImGui::EndChild();\n\t\tImGui::PopStyleVar();\n\t\t\n\t\t\n\t\tImGui::SameLine();\n\t\t\n\t\t\n\t\tImGui::BeginChild(\"History\", ImVec2(0,300), false, ImGuiWindowFlags_HorizontalScrollbar);\n\t\t\n\t\t// int length = history.call(\"length\");\n\t\t// std::cout << \"c++: \" << history[1] << \"\\n\";\n\t\t\n\t\t// auto x = mSelf.call(\"history\").call(\"list\").call(\"size\");\n\t\t// std::cout << \"c++: \" << x << \"\\n\";\n\t\t\n\t\t// display history list\n\t\tRice::Array history_list = history.call(\"list\");\n\t\tint length = from_ruby<int>(history.call(\"list\").call(\"length\"));\n\t\tint pos    = from_ruby<int>(history.call(\"position\"));\n\t\t// ^ must do explict cast using from_ruby< T >()\n\t\t// std::cout << \"c++: \" << \"(\" << length << \", \" << pos << \")\" << \"\\n\";\n\t\t\n\t\t// Rice::String \n\t\tRice::Array::iterator itr = history_list.begin();\n\t\tRice::Array::iterator end = history_list.end();\n\t\tfor(; itr != end; ++itr) // NOTE: must be ++itr, not itr++\n\t\t{\n\t\t\t// std::string button_label = \"%04d: scrollable region\";\n\t\t\t// const char *cstr = button_label.c_str();\n\t\t\t// // ^ in a similar style, you can call c_str() on the Rice::String to get the underlying c array.\n\t\t\t\n\t\t\t// rb_str = history_list[i];\n\t\t\tRice::Object element = *itr;\n\t\t\tRice::String rb_str = element;\n\t\t\tconst char* cstr = rb_str.c_str();\n\t\t\t\n\t\t\tint i = itr.index();\n\t\t\tif (i <= pos){\n\t\t\t\t// ImGui::PushItemWidth(-1);\n\t\t\t\tImGui::Button(cstr, ImVec2(-1,0));\n\t\t\t\t// ImGui::PopItemWidth();\n\t\t\t}else{\n\t\t\t\t// auto color = ImColor::HSV(i/7.0f, 0.6f, 0.6f);\n\t\t\t\t\n\t\t\t\t// ImGui::PushStyleColor(ImGuiCol_Button, color);\n\t\t\t\tImGui::PushStyleColor(ImGuiCol_Text, disabled_color);\n\t\t\t\t// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(i/7.0f, 0.7f, 0.7f));\n            // ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(i/7.0f, 0.8f, 0.8f));\n\t\t\t\tImGui::Button(cstr, ImVec2(-1,0));\n\t\t\t\tImGui::PopStyleColor();\n\t\t\t\tprintf(\"%s\\n\", \"hello world\");\n\t\t\t\t\n\t\t\t\t// ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, );\n\t\t\t\t// ImGuiStyle& style = ImGui::GetStyle();\n\t\t\t\t// style.ButtonTextAlign;\n\t\t\t\t// ^ Need to upgrade ofxImGui in order to set the button text alignment. That will, in turn, require an upgrade to OpenFrameworks.\n\t\t\t\t\n\t\t\t\t// NOTE: to push multiple styles unto the stack for a single object, use ImGui::PushID(int i)\n\t\t\t}\n\t\t\tif (ImGui::IsItemHovered()){\n\t\t\t\tif (ImGui::IsMouseClicked(1)){\n\t\t\t\t\thistory.call(\"goto\", i);\n\t\t\t\t\tgoto_line |= true;\n\t\t\t\t\tline = i;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (goto_line && line == i){\n\t\t\t\tstd::cout << \"set scroll middle: \" << line << endl;\n\t\t\t\tImGui::SetScrollHere();\n\t\t\t}\n\t\t}\n\t\tif (line == -1){\n\t\t\tstd::cout << \"hello world! initial line count\" << endl;\n\t\t\tstd::cout << \"set scroll bottom: \" << line << endl;\n\t\t\t// jump to end on initialization\n\t\t\t// int i = from_ruby<int>(history.call(\"position\"));\n\t\t\tgoto_line = true;\n\t\t\tline = length -2;\n\t\t\tImGui::SetScrollHere();\n\t\t}\n\t\tif (goto_line && line >= length-1){\n\t\t\tstd::cout << \"set scroll overshoot bottom: \" << line << endl;\n\t\t\t// without the goto_line check, it constantly scrolls to the endpoint\n\t\t\t// TODO: figure out how to get scrolling section to scroll to bottom on init only, not every frame\n\t\t\tline = length-1;\n\t\t\tImGui::SetScrollHere();\n\t\t}\n\t\t\n\t\tImGui::EndChild();\n\t\t\n\t\t// NOTE: If width is set to 0, will take up the remainder of the space. If the first item in a row takes the full width, there will be no space left over.\n\t\t// NOTE: Can use negative width to align to right edge\n\t\t//       See \"Widgets Width\" example for details.\n\t\t\n\t\t// TODO: fix how UI handles scroll weel events - interfers with zoom\n\t\t// NOTE: scrolling on ofxGUI causes scroll input to be handled by the UI widget only. However, scrolling on ofxDatGui or ofxImGui does not have that effect. Thus, scrolling on color picker does not zoom camera, but scrolling on other UI elements does zoom the camera.\n\t\t\n\t\t\n\t\t// Consider the proposed \"infinite history\" feature. How would such a thing be implemented? What is the size of the scrolling list? Consider comparisons with version control.\n\t\t\t// OpenFrameworks has over 16,000 commits in its git repo.\n\t\t\t// it is possible for gitg to show all of these, though clearly the ones that are not currently on screen are being culled in some way. Is ImGui sophisticated enough to cull like that? Perhaps, but perhaps not. (I assume not.)\n\t\t\n\t\t\n\tim_gui.end();\n\t\n\t// ========================================\n\t// ========================================\n}\n\nvoid rbApp::exit(){\n\t// ofApp::exit(); // no parent behavior for exit callback defined\n\tstd::cout << \"c++: exit\\n\";\n\t\n\t\n\t// ========================================\n\t// ========== add new stuff here ==========\n\t\n\tdelete mDatGui;\n\t\n\t\n\t// ========================================\n\t// ========================================\n\t\n\t\n\tmSelf.call(\"on_exit\");\n}\n\n\nvoid rbApp::keyPressed(int key){\n\t// Something seems to be consuming most keyboard events\n\t// when the application is started via the Ruby layer in Rake.\n\t// \n\t// That problem prevents this funciton from being called,\n\t// and also prevents the app from closing when ESC is pressed,\n\t// like normal ofApp windows do\n\t// (including the window you get when you execute just the C++ layer of this very project)\n\t\n\tofBaseApp::keyPressed(key);\n\t\n\t\n\tofLog() << key;\n\t\n\t\n\t\n\t// ========================================\n\t// ========== add new stuff here ==========\n\t\n\t\n\t\n\t\n\t\n\t// ========================================\n\t// ========================================\n\t\n\t\n\t\n\t// TODO: consider listening for key symbols (the physical key buttons) as well / instead of this. Need to set up another hook into the oF event system to do that, but might be better / easier for setting up structural keybindings.\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"key_pressed\", key);\n\t}\n}\n\nvoid rbApp::keyReleased(int key){\n\tofBaseApp::keyReleased(key);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"key_released\", key);\n\t}\n}\n\nvoid rbApp::mouseMoved(int x, int y ){\n\tofBaseApp::mouseMoved(x,y);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_moved\", x,y);\n\t}\n}\n\nvoid rbApp::mouseDragged(int x, int y, int button){\n\tofBaseApp::mouseDragged(x,y,button);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_dragged\", x,y, button);\n\t}\n}\n\nvoid rbApp::mousePressed(int x, int y, int button){\n\tofBaseApp::mousePressed(x,y,button);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_pressed\", x,y, button);\n\t}\n}\n\nvoid rbApp::mouseReleased(int x, int y, int button){\n\tofBaseApp::mouseReleased(x,y,button);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_released\", x,y, button);\n\t}\n}\n\nvoid rbApp::mouseEntered(int x, int y){\n\tofBaseApp::mouseEntered(x,y);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_entered\", x,y);\n\t}\n}\n\nvoid rbApp::mouseExited(int x, int y){\n\tofBaseApp::mouseExited(x,y);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_exited\", x,y);\n\t}\n}\n\nvoid rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){\n\tofBaseApp::mouseScrolled(x,y, scrollX, scrollY);\n\t\n\tif (!mUI_InputCapture) {\n\t\tmSelf.call(\"mouse_scrolled\", x,y, scrollX, scrollY);\n\t}\n}\n\nvoid rbApp::windowResized(int w, int h){\n\tofBaseApp::windowResized(w,h);\n\t\n\tmSelf.call(\"window_resized\", w,h);\n}\n\nvoid rbApp::dragEvent(ofDragInfo dragInfo){\n\t// NOTE: drag event example works with Nautilus, but not Thunar (GLFW window)\n\t\n\t// https://github.com/openframeworks/openFrameworks/issues/1862\n\t// ^ this issue explains that Glut windows can not process file drag events on Linux\n\t\n\tofBaseApp::dragEvent(dragInfo);\n\t\n\t\n\t// NOTE: dragInfo.files is a std::vector, not an array. Apparently, Rice doesn't understand how to convert that into a Ruby array? so I guess that needs to be done manually...\n\t\n\t// ./test.rb:190:in `show': Unable to convert std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >* (ArgumentError)\n\t\n\tRice::Array filepaths;\n\t\n\tfor(std::__cxx11::basic_string<char>& e : dragInfo.files){\n\t\tfilepaths.push(to_ruby(e));\n\t}\n\n\tmSelf.call(\"drag_event\", filepaths, dragInfo.position);\n}\n\nvoid rbApp::gotMessage(ofMessage msg){\n\tofBaseApp::gotMessage(msg);\n\t\n\t// mSelf.call(\"got_message\", msg);\n}\n\n",
+			"file": "bin/projects/youtube/ext/c_extension/app.cpp",
+			"file_size": 16828,
+			"file_write_time": 131687918356762193,
+			"settings":
+			{
+				"buffer_size": 16863,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/projects/youtube/ext/c_extension/app.h",
+			"settings":
+			{
+				"buffer_size": 1945,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h",
+			"settings":
+			{
+				"buffer_size": 4154,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/usr/share/applications/sublime_text.desktop",
+			"settings":
+			{
+				"buffer_size": 532,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/.config/sublime-text-3/Installed Packages/C++ Starting Kit/C++.tmLanguage",
+			"settings":
+			{
+				"buffer_size": 38324,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/.config/sublime-text-3/Packages/Better C++/CCpp.tmLanguage",
+			"settings":
+			{
+				"buffer_size": 34221,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/.config/sublime-text-3/Packages/Better C++/CCpp.sublime-syntax",
+			"settings":
+			{
+				"buffer_size": 16857,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/.config/sublime-text-3/Packages/C++ Custom/C++.sublime-syntax",
+			"settings":
+			{
+				"buffer_size": 64312,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 279.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"syntax c++",
+				"Set Syntax: C++ (default with customization)"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"package",
+				"Package Control: List Unmanaged Packages"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"easyclan",
+				"EasyClangComplete: Clean current CMake cache"
+			],
+			[
+				"en",
+				"Package Control: Enable Package"
+			],
+			[
+				"dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"easy",
+				"EasyClangComplete: Open completion triggers location"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"enab",
+				"Package Control: Enable Package"
+			],
+			[
+				"theme",
+				"UI: Select Theme"
+			],
+			[
+				"color",
+				"UI: Select Color Scheme"
+			],
+			[
+				"package control sett",
+				"Preferences: Package Control Settings – User"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"clang ",
+				"EasyClangComplete: Settings"
+			],
+			[
+				"packen",
+				"Package Control: Enable Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"ori below",
+				"Origami: Create Pane Below"
+			],
+			[
+				"ori pan eri",
+				"Origami: Create Pane on the Right"
+			],
+			[
+				"ori dest",
+				"Origami: Destroy Pane on the Left"
+			],
+			[
+				"ori",
+				"Origami: Destroy Pane Below"
+			],
+			[
+				"ori de",
+				"Origami: Destroy Current Pane"
+			],
+			[
+				"origa pane le",
+				"Origami: Create Pane on the Left"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			],
+			[
+				"anno",
+				"Git: Toggle Annotations"
+			]
+		],
+		"width": 1017.0
+	},
+	"console":
+	{
+		"height": 528.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+	],
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/events/ofEvents.h",
+		"/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/include/rice/Data_Object_defn.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/.clang_complete",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/c_extension/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/compile_commands.json",
+		"/home/ravenskrag/Desktop/gem_structure/oF_deps.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/oF_deps.sublime-project",
+		"/home/ravenskrag/Desktop/gem_structure/oF_core_setup.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/oF_core_setup.sublime-project",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/monkey_patches/Chipmunk/Shape/Rect.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/rectangle.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/checkpoint.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/sketch/lazy_unzip.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/data.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/local_data.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/foo2.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/channel_info.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/Rakefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/monkey_patches/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/ofx2DCamExample/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/addon_config.mk",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/ext/callbacks/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/database/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/main.rb",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/fiber_test.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/TrueTypeFont.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/graphics.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/example/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/main2.rb",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/youtube_mining/local_data.yml",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/youtube_mining/youtube_subscriptions_2.html",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/src/ofxPDFium.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/src/ofxPDFium.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/ofApp.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/ofApp.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/main.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/libs/fpdfsdk/include/fpdf_dataavail.h",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/addons/ofxiOS/src/app/ofAppiOSWindow.mm",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CODE_OF_CONDUCT.md",
+		"/home/ravenskrag/Applications/0_ local launchers/Cytoscape-0.desktop",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/INSTALL.md",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-workspace",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/config.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile.static_lib",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/mkmf.log",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/oF_build_variables.yaml",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/Makefile.backup",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxGamepad/example/src/gamepadExampleApp.cpp",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/Rakefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/of_build_variables.yaml",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/utf8cpp/include/utf8.h",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/lib/test.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAssimpModelLoader/addon_config.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/ofxAssimpModelLoader/src/ofxAssimpMeshHelper.d",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/extconf.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxOsc/addon_config.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination.txt",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination_clobbered.txt",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_WIN32.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_VX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_POSIX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventLogChannel.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventArgs.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.build",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.make",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/configure",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Event.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Thread.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/kiss/include/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/AbstractEvent.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/tess2/Build/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/tess2/Build/tess2.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/FreeImage/include/FreeImage.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/utf8cpp/include/utf8/checked.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/boost/include/boost/system/system_error.hpp",
+		"/usr/include/boost/system/api_config.hpp"
+	],
+	"find":
+	{
+		"height": 47.0
+	},
+	"find_in_files":
+	{
+		"height": 264.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"cout",
+			".call(",
+			"call",
+			"endl",
+			"std::cout",
+			"std::",
+			"cout",
+			"std",
+			"ImGuiCol_Text",
+			"-W",
+			"-Werror",
+			"14",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			"/home/ravenskrag/Desktop/gem_structure",
+			"-I",
+			"-I/",
+			"-I",
+			"\t\t\t",
+			"/home/ravenskrag/Desktop/gem_structure",
+			"-I",
+			",",
+			"\"",
+			"-I",
+			"   \n",
+			"-I",
+			"youtube",
+			"-I",
+			"youtube/",
+			"     \n",
+			"     ",
+			"\n",
+			"-I",
+			"-i",
+			"-I",
+			"ImGuiCol_"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/ravenskrag/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 618,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								488,
+								488
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										532,
+										533
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										125,
+										126
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										532,
+										533
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										125,
+										126
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/zzz A File Icon zzz/aliases/JSON (Sublime).sublime-syntax",
+							"translate_tabs_to_spaces": false,
+							"wrap_width": 0
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "rubyOF_cpp.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4945,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								710,
+								710
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										840,
+										841
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										584,
+										585
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										726,
+										727
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"region.greenish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										703,
+										704
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"rulers":
+							[
+								100
+							],
+							"syntax": "Packages/zzz A File Icon zzz/aliases/JSON (Sublime).sublime-syntax",
+							"translate_tabs_to_spaces": false,
+							"word_wrap": true,
+							"wrap_width": 0
+						},
+						"translation.x": 0.0,
+						"translation.y": 682.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ext/rubyOF/extconf_variables.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10160,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9045,
+								9047
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4835,
+										4836
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"region.greenish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1770,
+										1771
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6773.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "bin/projects/youtube/ext/c_extension/extconf_variables.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14056,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10261,
+								10266
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1439,
+										1440
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										7,
+										8
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										10412,
+										10413
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"region.greenish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										10259,
+										10260
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5843.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "bin/projects/youtube/config/build_variables.rb",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 266,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": 676,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"history_list_is_closing": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "bin/projects/youtube/ext/c_extension/app.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16863,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3146,
+								3146
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										4700,
+										4701
+									]
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										4700,
+										4701
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++ Custom/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3720.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "bin/projects/youtube/ext/c_extension/app.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1945,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								490,
+								490
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1942,
+										1943
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										441,
+										442
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								373,
+								373
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										377,
+										378
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										364,
+										365
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
+							],
+							"git_gutter_is_enabled": true,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 8,
+					"file": "/usr/share/applications/sublime_text.desktop",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 532,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								109,
+								109
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/ravenskrag/.config/sublime-text-3/Installed Packages/C++ Starting Kit/C++.tmLanguage",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 38324,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								280,
+								280
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/ravenskrag/.config/sublime-text-3/Packages/Better C++/CCpp.tmLanguage",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34221,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/ravenskrag/.config/sublime-text-3/Packages/Better C++/CCpp.sublime-syntax",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16857,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								119,
+								119
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/ravenskrag/.config/sublime-text-3/Packages/C++ Custom/C++.sublime-syntax",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 64312,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								270,
+								270
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 47.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				2
+			],
+			[
+				0,
+				1,
+				1,
+				2
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.519408692679,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			0.207700955593,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "rubyOF_cpp.sublime-project",
+	"replace":
+	{
+		"height": 86.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"c++customc++subsyn",
+				"C++ Custom/C++.sublime-syntax"
+			],
+			[
+				"betterc++ccppsubs",
+				"Better C++/CCpp.sublime-syntax"
+			],
+			[
+				"betterc++ccpptml",
+				"Better C++/CCpp.tmLanguage"
+			],
+			[
+				"startingkitc++tm",
+				"C++ Starting Kit/C++.tmLanguage"
+			],
+			[
+				"ofbasea",
+				"ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.h"
+			],
+			[
+				"app.c",
+				"youtube/ext/c_extension/app.cpp"
+			],
+			[
+				"extconfvariables",
+				"youtube/ext/c_extension/extconf_variables.yaml"
+			],
+			[
+				".yaml",
+				"ext/rubyOF/extconf_variables.yaml"
+			],
+			[
+				"app.",
+				"youtube/ext/c_extension/app.cpp"
+			],
+			[
+				"rect",
+				"lib/rubyOF/rectangle.rb"
+			],
+			[
+				"h",
+				"youtube/lib/helpers.rb"
+			],
+			[
+				"wind",
+				"youtube/lib/window.rb"
+			],
+			[
+				"help",
+				"youtube/lib/helpers.rb"
+			],
+			[
+				"color",
+				"lib/rubyOF/color.rb"
+			],
+			[
+				"graphics",
+				"rubyOF/Graphics.cpp"
+			],
+			[
+				"grah",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"graph",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"rake",
+				"gem_structure/Rakefile"
+			],
+			[
+				"pdfim",
+				"ofxPDFium/src/ofxPDFium.cpp"
+			],
+			[
+				"ofh",
+				"example/src/ofApp.h"
+			],
+			[
+				"main",
+				"example/src/main.cpp"
+			],
+			[
+				"ofxgui",
+				"addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				"pocorulescompile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile"
+			],
+			[
+				"custompocolinux",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux"
+			],
+			[
+				"custompocomakefile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile"
+			],
+			[
+				"compileprojectmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"configproject",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"configsharedmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"comple",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"configlinux6",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compiledmakefilecommcompile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"openframeworksmakefile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"install",
+				"of_v0.9.3_linux64_release/INSTALL.md"
+			],
+			[
+				"releasecompile",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags"
+			],
+			[
+				"compilerflags",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags"
+			],
+			[
+				"sketchstatic",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile.static_lib"
+			],
+			[
+				"sketchaddons",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/addons.make"
+			],
+			[
+				"ofbuildvaria",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/oF_build_variables.yaml"
+			],
+			[
+				"of_testadd",
+				"~/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make"
+			],
+			[
+				"addons",
+				"of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make"
+			],
+			[
+				"ofbuild",
+				"RubyCPP/Oni/oF_build_variables.yaml"
+			],
+			[
+				"variables",
+				"RubyCPP/Oni/ext/oni/of_build_variables.yaml"
+			],
+			[
+				".gi",
+				"RubyCPP/.gitignore"
+			],
+			[
+				"extvar",
+				"RubyCPP/Oni/ext/oni/extconf_variables.rb"
+			],
+			[
+				"make",
+				"RubyCPP/Oni/ext/oni/Makefile"
+			],
+			[
+				"ext",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"extc",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"event.h",
+				"poco-1.7.4-all/Foundation/include/Poco/Event.h"
+			],
+			[
+				"event",
+				"poco-1.7.4-all/Foundation/src/Event.cpp"
+			],
+			[
+				"thread",
+				"poco-1.7.4-all/Foundation/src/Thread.cpp"
+			],
+			[
+				"test",
+				"Oni/lib/test.rb"
+			],
+			[
+				"xt",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"mysketchmake",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"gem",
+				"Oni/oni.gemspec"
+			],
+			[
+				"log",
+				"Oni/ext/oni/mkmf.log"
+			],
+			[
+				"extco",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				"compileco",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"config.m",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/config.make"
+			],
+			[
+				"link",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compileof",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"git",
+				"~/Experiments/RubyCPP/.gitignore"
+			],
+			[
+				"ex",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"e",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"confp",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"rubycppofmake",
+				"RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"rubycpprake",
+				"RubyCPP/Oni/Rakefile"
+			],
+			[
+				"rubycppext",
+				"RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"makefile",
+				"Oni/ext/oni/Makefile"
+			],
+			[
+				"extconf",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"trutype",
+				"libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+			],
+			[
+				"freeim",
+				"libs/FreeImage/include/FreeImage.h"
+			],
+			[
+				"ofimage",
+				"libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"mainh",
+				"libs/openFrameworks/ofMain.h"
+			],
+			[
+				"project",
+				"libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"rubymain",
+				"SublimeREPL/config/Ruby/Main.sublime-menu"
+			],
+			[
+				"pythonmain",
+				"SublimeREPL/config/Python/Main.sublime-menu"
+			],
+			[
+				"rep",
+				"*REPL* [octave]"
+			],
+			[
+				"plat",
+				"ex1/plotData.m"
+			],
+			[
+				"ex1m",
+				"ex1/ex1_multi.m"
+			],
+			[
+				"warm",
+				"warmUpExercise.m"
+			],
+			[
+				"locking",
+				"locking things in place"
+			],
+			[
+				"groupedi",
+				"TODO: group edit and resize"
+			],
+			[
+				"styecompo",
+				"all classes using Style Component should define de"
+			],
+			[
+				"empyt",
+				"rewrite 'empty space actions' as 'zero target acti"
+			],
+			[
+				"back",
+				"TODO: background coloring"
+			],
+			[
+				"spawn",
+				"spawn action - prototype factory - nested document"
+			],
+			[
+				"manysp",
+				"many spawn actions"
+			],
+			[
+				"groure",
+				"group resize"
+			],
+			[
+				"resize",
+				"group resize"
+			],
+			[
+				"querysb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"visandg",
+				"NOTE: constraint Visualizations and Groups now bot"
+			],
+			[
+				"put",
+				"TODO: put the style data on the Constraint maybe?"
+			],
+			[
+				"how",
+				"how are Queries shown visually?"
+			],
+			[
+				"visua",
+				"Visualizations need to save Style component data"
+			],
+			[
+				"styda",
+				"NOTE: style data not currently duplicated when Ent"
+			],
+			[
+				"stylcomp",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"text",
+				"is Text Box a new type?"
+			],
+			[
+				"savemu",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"trasqsb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"fio",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"applys",
+				"apply Style to multiple Entities at once"
+			],
+			[
+				"stylcr",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"editorwor",
+				"editor workflow versus core coding backend interfa"
+			],
+			[
+				"wyhqu",
+				"why did I need queries the last time I wanted quer"
+			],
+			[
+				"thinka",
+				"think ahead into selection"
+			],
+			[
+				"reasont",
+				"is there any reason to keep Component?"
+			],
+			[
+				"locki",
+				"locking things in place"
+			],
+			[
+				"reasonto",
+				"is there any reason to keep Component?"
+			],
+			[
+				"changeent",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"addremove",
+				"add / remove whole entities (including components)"
+			],
+			[
+				"cretaction",
+				"TODO: create action to delete a whole Entity"
+			],
+			[
+				"in",
+				"input system overhaul"
+			],
+			[
+				"over",
+				"TODO: consider overhaul of input system"
+			],
+			[
+				"butup",
+				"button up /  down"
+			],
+			[
+				"insertjo",
+				"are insert and join the same thing?"
+			],
+			[
+				"mousextra",
+				"TODO: consider action factory / mouse action extra"
+			],
+			[
+				"actionfactmous",
+				"TODO: consider action factory / mouse action extra"
+			],
+			[
+				"mul",
+				"multiple editor views"
+			],
+			[
+				"differ",
+				"TODO: consider different views of same space"
+			],
+			[
+				"changeen",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"stylewitho",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"scree",
+				"TODO: implement screen space to world space conver"
+			],
+			[
+				"ed",
+				"edit space point query"
+			],
+			[
+				"fixsho",
+				"TODO: fix short circuiting min by, and the entitie"
+			],
+			[
+				"search",
+				"implement text search of all Text objects"
+			],
+			[
+				"textresi",
+				"May want to change how text resizes horizontally o"
+			],
+			[
+				"poly",
+				"TODO: polymorphic edit and resize"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 2,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 363.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
