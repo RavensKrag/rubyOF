@@ -2,6 +2,13 @@
 
 #include "constants/data_path.h"
 
+
+template<typename T>
+struct Null_Free_Function
+{
+  static void free(T * obj) { }
+};
+
 rbApp::rbApp(Rice::Object self)
 : ofBaseApp()
 {
@@ -29,8 +36,62 @@ void rbApp::setup(){
 	std::cout << "c++ data: " << input << std::endl;
 	
 	Rice::Object out = mSelf.call("callback_to_cpp", to_ruby(input));
-	ofPoint ruby_ouput = from_ruby<ofPoint>(out);
-	std::cout << "c++ -> roundtrip from Ruby: " << ruby_ouput << std::endl;
+	ofPoint ruby_output = from_ruby<ofPoint>(out);
+	std::cout << "c++ -> roundtrip from Ruby: " << ruby_output << std::endl;
+	
+	
+	
+	// c++ --> ruby callback --> c++
+	// (pointer example)
+	
+	std::cout << "--------------------------" << std::endl;
+	std::cout << "c++ : again! pointer test!" << std::endl;
+	ofPoint input2(0,0,0);
+	std::cout << "c++ data: " << input2 << std::endl;
+	
+	
+	// -- More complex way to pass a pointer from C++ to Ruby
+	//    Allows C++ code to maintain full control of memory management.
+	
+	// This is how you can pass a pointer to a C++ type to Ruby-land.
+	// 'Rice::Data_Object' functions basically like a C++ smart pointer,
+	// but allows for data to be sent to Ruby.
+	// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
+	
+	Rice::Data_Object<ofPoint> rb_point_ptr(
+		&input2,
+		Rice::Data_Type< ofPoint >::klass(),
+		Rice::Default_Mark_Function< ofPoint >::mark,
+		Null_Free_Function< ofPoint >::free
+	);
+	
+	// Null_Free_Function< T > is declared at the top of this file.
+	// By creating this stubbed callback, the Ruby interpreter has
+	// no mechanism to release the memory that has been declared.
+	// In this way, memory management can be completely controlled
+	// through C++ code (which is what I want for this project).
+	
+	
+	Rice::Object out2 = mSelf.call("pointer_callback1", to_ruby(rb_point_ptr));
+	ofPoint return_value = from_ruby<ofPoint>(out2);
+	std::cout << "c++ -> roundtrip from Ruby: " << return_value << std::endl;
+	
+	Rice::Object out3 = mSelf.call("pointer_callback2");
+	
+	std::cout << "c++ -> original Point again: " << input2 << std::endl;
+	std::cout << "point fram callback1: " << return_value << std::endl;
+	std::cout << "--------------------------" << std::endl;
+	
+	// NOTE: If you just send a normal C++ object, it will pass by value, not by reference. As such, the data will not be shared between C++ and Ruby. You must use the pointer-wrapping style in order to pass by reference.
+	
+	// NOTE: Notice how 'input2' changes its value after pointer_callback2(), even though no data was passed to that Ruby method! This is because a pointer was sent to Ruby in pointer_callback1(), which is retained on the Ruby side.
+	
+	// NOTE: Notice that the data returned in 'return_value' stays the same value, even after pointer_callback2(). This is because 'return_value' is returned by value. Even though a pointer was sent to Ruby, Ruby sent a value back.
+	
+	
+	
+	// ========================================
+	// ========================================
 	
 	
 	
@@ -39,15 +100,6 @@ void rbApp::setup(){
 	// The actual c++ callbacks are defined in
 	// ext/callbacks/callbacks.cpp
 	
-	
-	
-	// ========================================
-	// ========================================
-	
-	
-	
-	
-	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
 	mSelf.call("setup");
 }
 

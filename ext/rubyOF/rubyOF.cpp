@@ -8,7 +8,9 @@
 // === Rice glue code
 // #include "Window.h" 
 #include "Graphics.h"
+#include "GraphicsAdvanced.h"
 #include "Fbo.h"
+#include "Mesh.h"
 #include "TrueTypeFont.h"
 #include "image.h"
 
@@ -26,7 +28,8 @@ void Init_rubyOF()
 	std::cout << "c++: set up module: RubyOF\n";
 	Module rb_mRubyOF = define_module("RubyOF");
 	
-	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);
+	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);    // immediate mode (slow)
+	Rice::Module rb_mGraphicsAdv  = Init_rubyOF_GraphicsAdv(rb_mRubyOF); // retained mode  (fast)
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	

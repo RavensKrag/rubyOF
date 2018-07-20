@@ -15,7 +15,7 @@ Oni/lib/projects/Scope/bin/data
 *.o
 *.log
 *.def
-.d
+*.d
 
 # Compiled extension binaries
 *.so
@@ -50,6 +50,7 @@ Oni/lib/projects/Scope/bin/data
 
 
 
+ext/openFrameworks
 
 
 
@@ -81,7 +82,6 @@ ext/oF_apps/testApp/bin/testApp
 ext/oF_apps/testApp/bin/testApp_debug
 
 # Building the Ruby c-extension
-ext/rubyOF/constants/data_path.h
 ext/rubyOF/Makefile
 compile_commands.json
 
@@ -92,10 +92,33 @@ bin/projects/*/ext/*/Makefile
 # ^ may have to un-ignore the makefile again,
 #   if you create a build system that doesn't use extconf at this level
 
-bin/projects/*/ext/*/constants/data_path.h
+# bin/projects/*/ext/*/constants/data_path.h
+
+bin/projects/*/ext/addons_app/testApp/bin
 
 
 
-=== Don't track Gemfile.lock
+# Ignore some temporary data files from the youtube subscriptions project
+bin/projects/youtube/bin/data/icons/*
+bin/projects/youtube/bin/data/icons_old/*
+bin/projects/youtube/bin/data/raw/YouTube - subscriptions_files
+
+
+
+
+
+bin/projects/youtube/ext/addons_app/testApp/obj/*
+bin/projects/youtube/ext/addons_app/testApp/bin/*
+bin/projects/youtube/ext/addons_app/testApp/lib/*
+
+bin/projects/youtube/ext/c_extension/Makefile
+
+
+
+
+
+
+
+# === Don't track Gemfile.lock
 Gemfile.lock
 bin/projects/*/Gemfile.lock

@@ -107,6 +107,9 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 			(float x, float y, float z) const
 			>(&ofImage::draw)
 		)
+		
+		.define_method("width",  &ofImage::getWidth)
+		.define_method("height", &ofImage::getHeight)
 	;
 	
 	

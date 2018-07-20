@@ -1,0 +1,138 @@
+{
+	"folders":
+	[
+		{
+			"path": "bin/projects/youtube"
+		},
+		{
+			"path": "ext"
+		},
+		{
+			"path": "/home/ravenskrag/.config/sublime-text-3/Packages/Better C++"
+		},
+		{
+			"path": "/home/ravenskrag/.config/sublime-text-3/Packages/C++ Custom"
+		},
+		{
+			"path": "/home/ravenskrag/.config/sublime-text-3/Installed Packages/C++ Starting Kit"
+		},
+		{
+			"path": "/opt/sublime_text/Packages"
+		}
+	],
+	"settings":
+	{
+		"auto_close_tags": true,
+		"auto_complete": true,
+		"auto_complete_commit_on_tab": false,
+		"auto_complete_cycle": false,
+		"auto_complete_delay": 50,
+		"auto_complete_selector": "source - comment, meta.tag - punctuation.definition.tag.begin",
+		"auto_complete_size_limit": 4194304,
+		"auto_complete_triggers":
+		[
+			{
+				"characters": "<",
+				"selector": "text.html"
+			},
+			{
+				"characters": ".",
+				"selector": "source.c++"
+			},
+			{
+				"characters": "->",
+				"selector": "source.c++"
+			},
+			{
+				"characters": "::",
+				"selector": "source.c++"
+			}
+		],
+		"auto_complete_with_fields": false,
+		"auto_find_in_selection": false,
+		"auto_match_enabled": true,
+		"ecc_autocomplete_all": false,
+		"ecc_common_flags":
+		[
+			"-I/usr/include",
+			"-I/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/include",
+			"-I/usr/include/gstreamer-1.0",
+			"-I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include",
+			"-I/usr/include/AL",
+			"-I/usr/include/alsa",
+			"-I/usr/include/libdrm",
+			"-I/usr/include/gtk-3.0",
+			"-I/usr/include/at-spi2-atk/2.0",
+			"-I/usr/include/at-spi-2.0",
+			"-I/usr/include/dbus-1.0",
+			"-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include",
+			"-I/usr/include/gtk-3.0",
+			"-I/usr/include/gio-unix-2.0/",
+			"-I/usr/include/mirclient",
+			"-I/usr/include/mircore",
+			"-I/usr/include/mircookie",
+			"-I/usr/include/cairo",
+			"-I/usr/include/pango-1.0",
+			"-I/usr/include/harfbuzz",
+			"-I/usr/include/pango-1.0",
+			"-I/usr/include/atk-1.0",
+			"-I/usr/include/cairo",
+			"-I/usr/include/pixman-1",
+			"-I/usr/include/freetype2",
+			"-I/usr/include/libpng12",
+			"-I/usr/include/gdk-pixbuf-2.0",
+			"-I/usr/include/libpng12",
+			"-I/usr/include/glib-2.0",
+			"-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+			"-I${project_path}/ext/openFrameworks/libs/fmodex/include",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include/glm",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include/glm/simd",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include/glm/gtx",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include/glm/detail",
+			"-I${project_path}/ext/openFrameworks/libs/glm/include/glm/gtc",
+			"-I${project_path}/ext/openFrameworks/libs/json/include",
+			"-I${project_path}/ext/openFrameworks/libs/kiss/include",
+			"-I${project_path}/ext/openFrameworks/libs/tess2/include",
+			"-I${project_path}/ext/openFrameworks/libs/utf8/include",
+			"-I${project_path}/ext/openFrameworks/libs/utf8/include/utf8",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/types",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/app",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/events",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/communication",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/graphics",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/video",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/3d",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/math",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/sound",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/utils",
+			"-I${project_path}/ext/openFrameworks/libs/openFrameworks/gl",
+			"-I${project_path}/bin/projects/youtube/ext/addons_app/testApp/src",
+			"-I${project_path}/ext/openFrameworks/addons/ofxGui/src",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src/libs",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src/libs/ofxSmartFont",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src/themes",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src/components",
+			"-I${project_path}/ext/openFrameworks/addons/ofxDatGui/src/core",
+			"-I${project_path}/ext/openFrameworks/addons/ofxImGui/src",
+			"-I${project_path}/ext/openFrameworks/addons/ofxImGui/libs",
+			"-I${project_path}/ext/openFrameworks/addons/ofxImGui/libs/imgui",
+			"-I${project_path}/ext/openFrameworks/addons/ofxImGui/libs/imgui/src",
+			"-I${project_path}/ext/rubyOF"
+		],
+		"ecc_cpp_flags":
+		[
+			"-std=c++14",
+			"-Wall"
+		],
+		"ecc_hide_default_completions": false,
+		"ecc_include_file_folder": false,
+		"ecc_include_file_parent_folder": false,
+		"ecc_max_cache_age": "00:30:00",
+		"ecc_show_type_info": true,
+		"ecc_use_libclang_caching": false,
+		"ecc_verbose": true
+	}
+}

@@ -4,6 +4,10 @@
 #include "launcher.h"
 #include "app_factory.h"
 
+#include "GLFW/glfw3.h"
+
+#include "rice/Exception.hpp"
+
 #include <iostream>
 
 
@@ -16,10 +20,41 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 		// It seems to break the existing implementation of Ruby-level window closing,
 		// but the Ruby-level close callback is still being called, so that's good.
 	
+	
+	// This is the easiest way to prevent a GLFW error:
+	// 
+	// Simply run the init method once here, and if you get an error code,
+	// then there's a problem. This initialization will be performed for real
+	// when a new ofAppGLFWWindow is created. We replicate this here only to
+	// get an error code, as openFrameworks only prints a human-readable error
+	// message. Do this *before* the openFrameworks initialization
+	// to make absolutely sure no state will be clobbered.
+	bool glfw_error = false;
+	if(!glfwInit( )){
+		cout << "-- GLFW ERROR DETECTED!!!!\n";
+		glfw_error = true;
+	}
+	
+	// Even if an error has been detected, still proceed with
+	// the full initialization. This way, openFrameworks has
+	// a chance to output it's error message.
+	cout << "-- creating GLFW window\n";
 	mWindow = new ofAppGLFWWindow();
 	
+	cout << "-- configuring GLFW window\n";
 	ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
 	
+	
+	// At this point, the error message is out, and the error flag is set.
+	// If there is an error, bail out here,
+	// to avoid a future Ruby-level segfault.
+	if(glfw_error){
+		throw Rice::Exception(rb_eRuntimeError, "GLFW initialization error.");
+	}
+	
+	
+	
+	cout << "-- creating openFrameworks app\n";
 	mApp = appFactory_create(self);
 	
 	// window is the drawing context

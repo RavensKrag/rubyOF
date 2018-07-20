@@ -139,4 +139,19 @@ class Window < RubyOF::Window
 		
 		return vector
 	end
+	
+	def pointer_callback1(vector)
+		puts "ruby callback 1"
+		vector.x = 12
+		puts "ruby: #{vector}"
+		
+		@vector = vector
+		
+		return vector
+	end
+	
+	def pointer_callback2()
+		puts "ruby callback 2"
+		@vector.y = 15
+	end
 end

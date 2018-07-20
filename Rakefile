@@ -4,54 +4,12 @@ require 'rake/clean'
 require 'fileutils'
 require 'open3'
 require 'yaml' # used for config files
-require 'json' # used to parse Clang DB
 
 
 require './common'
 # ^ this file declares GEM_ROOT constant, other constants, and a some functions
 
-# invoke a particular rake task by name (and then allow it to be run again later)
-def run_task(task, rake_args=nil)
-	Rake::Task[task].reenable
-	Rake::Task[task].invoke(*rake_args) # Splat is legal on nil
-	# Rake::Task[task].reenable
-	
-	# Original from here
-	# src: http://stackoverflow.com/questions/577944/how-to-run-rake-tasks-from-within-rake-tasks
-	# (slight modifications have been made)
-end
-
-
-# temporarily swap out the makefile for an alternate version
-# 
-# main_filepath, alt_filepath:  Paths to main and alt makefile, relative to common_root.
-# common_root:                  As above.
-# work_dir:                     Path under which to run the commands specified in the block.
-def swap_makefile(common_root, main_filepath, alt_filepath, &block)
-	swap_ext = ".temp"
-	swap_filepath = File.join(common_root, "Makefile#{swap_ext}")
-	
-	
-	main_filepath = File.expand_path(File.join(common_root, main_filepath))
-	alt_filepath  = File.expand_path(File.join(common_root, alt_filepath))
-	
-	
-	
-	
-	# run tasks associated with the alternate file
-	begin
-		FileUtils.mv main_filepath, swap_filepath # rename main makefile
-		FileUtils.cp alt_filepath, main_filepath  # switch to .a-creating mkfile
-		
-		block.call
-	ensure
-		FileUtils.cp swap_filepath, main_filepath # restore temp
-		FileUtils.rm swap_filepath                # delete temp		
-		# I think this ensure block should make it so the Makefile always restores,
-		# even if there is an error in the block.
-		# src: http://stackoverflow.com/questions/2191632/begin-rescue-and-ensure-in-ruby
-	end
-end
+load './rake/helper_functions.rb'
 
 
 # ==== rake argument documentation ====
@@ -62,9 +20,6 @@ end
 
 
 
-
-
-
 # generate depend file for gcc dependencies
 # sh "gcc -MM *.c > depend"
 
@@ -72,76 +27,63 @@ end
 
 
 
-# use 'rake clean' and 'rake clobber' to
-# easily delete generated files
 
+# + uncompress OF folder -> "openFrameworks"
+#   (make sure to rename, dropping the version number etc)
+# + build shared library for OF core
+# + rename shared library files so they end in .so as expected
+# + build static library for OF core
 
-CLEAN.include(OF_RAW_BUILD_VARIABLE_FILE)
-CLEAN.include(OF_BUILD_VARIABLE_FILE)
+# (no need to muck with dependencies or anything like that)
 
-# NOTE: Clean / clobber tasks may accidentally clobber oF dependencies if you are not careful.
-CLEAN.include('ext/rubyOF/Makefile')
-CLEAN.include('ext/**/*{.o,.log,.so}')
-CLEAN.include('ext/**/*{.a}')
-	# c1 = CLEAN.clone
-	# p CLEAN
-CLEAN.exclude('ext/openFrameworks/**/*')
-CLEAN.exclude('ext/oF_deps/**/*')
-# ^ remove the openFrameworks core
-	# c2 = CLEAN.clone
-	# p CLEAN
-# CLEAN.exclude('ext/oF_apps/**/*')
-# # ^ remove the test apps as well
+	# (run a OF project and export build variables)
+	# + build core wrapper
+	# + build project wrapper
 
-
-
-# Clean up clang file index as well
-# (build from inspection of 'make' as it builds the c-library)
-CLEAN.include(CLANG_SYMBOL_FILE)
-
-
-
-
-
-CLOBBER.include('bin/lib/*.so')
-CLOBBER.include('lib/**/*.so')
-CLOBBER.exclude('ext/openFrameworks/**/*')
-CLOBBER.exclude('ext/oF_deps/**/*')
-
-
-
-
-
-	# c3 = CLOBBER.clone
-	# p CLOBBER
-# CLOBBER.include('lib/**/*.gem') # fix this up. I do want to clobber the gem tho
-
-	# require 'irb'
-	# binding.irb
-
-	# exit
-	# raise "WHOOPS"
-
-
-
-
+	# + run project from the Ruby level
 
 
 namespace :oF do
-	desc "Download openFrameworks libraries (build deps)"
-	task :download_libs do
-		run_i "ext/openFrameworks/scripts/linux/download_libs.sh"
-		# ^ this script basically just triggers another script:
-		#   ext/openFrameworks/scripts/dev/download_libs.sh
+	# desc "Download openFrameworks libraries (build deps)"
+	# task :download_libs do
+	# 	run_i "ext/openFrameworks/scripts/linux/download_libs.sh"
+	# 	# ^ this script basically just triggers another script:
+	# 	#   ext/openFrameworks/scripts/dev/download_libs.sh
+	# end
+	## (don't need to download libs with a packaged released. only for git repo)
+	
+	
+	desc "Build core - shared lib"
+	task :build_dynamic do
+		puts "=== Building OpenFrameworks core as DYNAMIC library..."
+		
+		puts "-- building..."
+		Dir.chdir "#{OF_ROOT}/scripts/linux/" do
+			run_i "env SHAREDCORE=1 CFLAGS=-fPIC ./compileOF.sh -j#{NUMBER_OF_CORES}"
+		end
+		
+		Dir.chdir "#{OF_ROOT}/libs/openFrameworksCompiled/lib/#{PLATFORM}/" do
+			{
+				"libopenFrameworks.a"      => "libopenFrameworks.so",
+				"libopenFrameworksDebug.a" => "libopenFrameworksDebug.so",
+			}.each do |current_name, new_name|
+				puts "-- renaming..."
+				FileUtils.mv current_name, new_name
+				
+				puts "-- coping to final destination: #{DYNAMIC_LIB_PATH}"
+				FileUtils.cp new_name, DYNAMIC_LIB_PATH
+			end
+		end
+		
+		
+		puts "-- done!"
 	end
 	
-	# NOTE: If there is a problem with the core, try downloading libs again.
-	# NOTE: If there is a problem with building the oF project, download libs again, build the core again, and then rebuild the project.
-	desc "Build openFrameworks core (ubuntu)."
-	task :build do
-		puts "=== Building OpenFrameworks core..."
-		Dir.chdir "./ext/openFrameworks/scripts/linux/" do
-			run_i "./compileOF.sh -j#{NUMBER_OF_CORES}"
+	desc "Build core - static lib"
+	task :build_static do
+		puts "=== Building OpenFrameworks core as STATIC library..."
+		Dir.chdir "#{OF_ROOT}/scripts/linux/" do
+			run_i "env CFLAGS=-fPIC ./compileOF.sh -j#{NUMBER_OF_CORES}"
 		end
 	end
 	
@@ -157,15 +99,20 @@ namespace :oF do
 	desc "Clean and Rebuild oF core (ubuntu)."
 	task :rebuild do
 		run_task('base:clean')
-		run_task('base:build')
+		run_task('base:build_dynamic')
+		run_task('base:build_static')
 	end
 	
+	task :build => [:build_dynamic, :build_static]
+	# must build dynamic first, and then static,
+	# otherwise the temporary files from dynamic build
+	# will clobber the static libraries.
 	
 	
 	
 	
 	desc "Build the project generator."
-	task :compilePG => :build do
+	task :compilePG =>  :build_static do
 		Dir.chdir File.join(GEM_ROOT, "ext/openFrameworks/scripts/linux/") do
 			run_i "./compilePG.sh"
 		end
@@ -182,8 +129,7 @@ namespace :oF do
 		
 		
 		# NOTE: These paths need to be full paths, because they are being passed to another system, which is executing from a different directory.
-		dir = "ext/openFrameworks/apps/projectGenerator/commandLine/bin"
-		full_dir = File.expand_path dir, GEM_ROOT
+		full_dir = "#{OF_ROOT}/apps/projectGenerator/commandLine/bin"
 		
 		
 		a = File.join(GEM_ROOT, "ext", "openFrameworks")
@@ -200,1354 +146,867 @@ namespace :oF do
 end
 
 
-# NOTE: Build deps under the oF_deps folder, and then copy over the results
-namespace :oF_deps do
-	# ===== Setup Custom OpenFrameworks Dependencies =====
-	
-	# declare configuration
-	oF_lib_path  = File.join GEM_ROOT, "ext/openFrameworks/libs/"
-	default_libs = File.join GEM_ROOT, "ext/oF_deps/master/original/"
-	custom_libs  = File.join GEM_ROOT, "ext/oF_deps/master/custom/"
-	
-	# declare helper functions
-	foo = ->(dir){
-		Dir[dir + "*"]
-		.collect{  |x| x.sub dir, ""  }
-		.reject{   |x| x.downcase.include? "readme"  }
-	}
-	
-	remove_libs = ->(output_dir, source_dir){
-		Dir.chdir output_dir do
-			foo[source_dir].each{  |name|  FileUtils.rm_rf name  }
-		end
-	}
-	
-	replace_libs = ->(output_dir, source_dir){
-		Dir.chdir output_dir do
-			foo[source_dir].each do |name|
-				full_path = File.join(source_dir, name)
-				
-				FileUtils.copy_entry full_path, "./#{name}", true
-				# copy_entry(src, dest, preserve = false, dereference_root = false, remove_destination = false)
-			end
-		end
-	}
-	
-	desc "Use custom libs compiled with -fPIC for Ruby compatability."
-	task :inject => [
-		"kiss:package",
-		"tess2:package"
-	] do
-		unless foo[default_libs] == foo[custom_libs]
-			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
-		end
-		
-		puts "Injecting custom libs..."
-		
-		# remove default libs
-		remove_libs[oF_lib_path, default_libs]
-		
-		# copy over new libs
-		replace_libs[oF_lib_path, custom_libs]
-		
-		# remove the "repo" directory under the copy of the custom libs
-		# (keep only the built packages, discard the source)
-		# (the source will still be stored elsewhere anyway)
-		["kiss", "tess2"].each do |name|
-			Dir.chdir File.join(oF_lib_path, name) do
-				FileUtils.rm_rf "./repo"
-				FileUtils.rm_rf "./custom_build"
-			end
-		end
-		
-		puts "Done!"
-	end
-	
-	desc "Undo inject_custom_libs (return to default libs)"
-	task :revert do
-		unless foo[default_libs] == foo[custom_libs]
-			raise "ERROR: libraries in '#{default_libs}' not the same as those in '#{custom_libs}'"
-		end
-		
-		puts "Reverting OpenFrameworks core libs..."
-		
-		# remove injected libs
-		remove_libs[oF_lib_path, custom_libs]
-		
-		# restore default libs
-		replace_libs[oF_lib_path, default_libs]
-		
-		puts "Done!"
-	end
-	
-	
-	
-	# ====================================================
-	
-	
-	desc "Clean all custom deps"
-	task :clean => ['kiss:clean', 'tess2:clean']
-	
-	desc "Clobber all custom deps"
-	task :clobber => ['kiss:clobber', 'tess2:clobber']
-	
-	
-	# ====================================================
-	
-	
-	
-	
-	namespace :kiss do
-		# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.
-		basedir = 'ext/oF_deps/master/custom/kiss/'
-		subdir  = 'custom_build/'
-		
-		
-		# NOTE: This build process currently only guaranteed to work with 64-bit linux. Uses the openframeworks apothecary build process, ammended to add the -fPIC flag.
-		# desc "testing"
-		task :build do
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				p Dir.pwd
-				FileUtils.mkdir_p "./lib/"
-				run_i "make"
-			end
-		end
-		
-		# desc "Move files to mimic what oF expects."
-		task :package => :build do
-			puts "Packaging kisstff..."
-			
-			Dir.chdir File.join(GEM_ROOT, basedir) do
-				# kiss_fft.h
-				# kiss_fftr.h
-				# # => include/
-				FileUtils.mkdir_p "./include"
-				FileUtils.cp(
-					"./repo/kiss_fft.h",
-					"./include/kiss_fft.h",
-				)
-				FileUtils.cp(
-					"./repo/tools/kiss_fftr.h",
-					"./include/kiss_fftr.h",
-				)
-				
-				# COPYING
-				# # => license/
-				FileUtils.mkdir_p "./license"
-				FileUtils.cp(
-					"./repo/COPYING",
-					"./license/COPYING",
-				)
-				
-				# libkiss.a
-				# => lib/linux64/
-				output_dir = "./lib/#{PLATFORM}/"
-				FileUtils.mkdir_p output_dir
-				FileUtils.cp(
-					"./custom_build/lib/libkiss.a",
-					File.join(output_dir, "libkiss.a")
-				)
-				
-			end
-		end
-		
-		# desc "testing"
-		task :clean do
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				run_i "make clean"
-			end
-		end
-		
-		# desc "testing"
-		task :clobber => :clean do
-			path = File.join(GEM_ROOT, basedir, subdir, "libkiss.a")
-			if File.exists? path
-				FileUtils.rm path
-			end
-			
-			FileUtils.rm_rf File.join(GEM_ROOT, basedir, subdir, "lib")
-			FileUtils.rm_rf File.join(GEM_ROOT, basedir, "lib")
-			
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-			end
-		end
-	end
-	
-	namespace :tess2 do
-		# NOTE: Some of this path information is repeated above in the tasks that move the custom libraries into the oF build system.
-		basedir = 'ext/oF_deps/master/custom/tess2/'
-		subdir  = 'repo/'
-		
-		# src: https://github.com/memononen/libtess2
-		
-		# NOTE: assumes that premake is installed
-			# sudo apt-get install premake4
-		# NOTE: changes to the patch procedure in this file will force a rebuild
-			# (other non-related changes to Rakefile will also force a rebuild)
-		# desc "testing"
-		task :build => [__FILE__] do
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				p Dir.pwd
-				
-				# run premake (generate GNU makefile system)
-				run_i "premake4 gmake"
-				
-				# patch files (add the -fPIC flag)
-				filepath = "./Build/tess2.make"
-				lines = File.readlines(filepath)
-				
-					puts "Patching tess2 makefile..."
-					target_string = "CFLAGS    +="
-					lines
-					.select{  |line| line.include? target_string  }
-					.each do  |line|
-						line.sub! "\n", " -fPIC\n"
-						puts line
-					end
-				
-				File.open(filepath, "w") do |f|
-					f.write lines.join('')
-				end
-				
-				# build
-				Dir.chdir "Build" do 
-					run_i "make"
-				end
-			end
-		end
-		
-		# desc "Move files to mimic what oF expects."
-		task :package => :build do
-			puts "Packaging tess2..."
-			
-			Dir.chdir File.join(GEM_ROOT, basedir) do
-				# Include/tesselator.h
-				# # => include/
-				FileUtils.mkdir_p "./include"
-				FileUtils.cp(
-					"./repo/Include/tesselator.h",
-					"./include/tesselator.h",
-				)
-				
-				# LICENSE.txt
-				# # => license/
-				FileUtils.mkdir_p "./license"
-				FileUtils.cp(
-					"./repo/LICENSE.txt",
-					"./license/LICENSE.txt",
-				)
-				
-				# Build/libtess2.a
-				# # => lib/linux64/libtess2.a
-				output_dir = "./lib/#{PLATFORM}/"
-				FileUtils.mkdir_p output_dir
-				FileUtils.cp(
-					"./repo/Build/libtess2.a",
-					File.join(output_dir, "libtess2.a")
-				)
-				
-			end
-		end
-		
-		# desc "testing"
-		task :clean do
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				if Dir.exists? "Build"
-					Dir.chdir "Build" do 
-						run_i "make clean"
-					end
-				end
-			end
-		end
-		
-		# desc "testing"
-		task :clobber do
-			Dir.chdir File.join(GEM_ROOT, basedir, subdir) do
-				FileUtils.rm_rf "Build"
-			end
-		end
-	end
-end
-
-
-namespace :oF_project do
-	desc "Debug with gdb"
-	task :debug do
-		Dir.chdir OF_SKETCH_ROOT do
-			puts "Remember: type 'q' to exit GDB."
-			puts "=============================="
-			puts ""
-			Kernel.exec "gdb ./bin/#{OF_SKETCH_NAME}_debug"
-		end
-	end
-	
-	desc "Run just the C++ components for the oF sketch"
-	task :run do
-		Dir.chdir OF_SKETCH_ROOT do
-			run_i "make Run#{TARGET}"
-		end
-	end
-	
-	# NOTE: building the project requires the core to be built correctly.
-	desc "Build the oF project (C++ only) - generates .o files"
-	task :build do # implicity requires 'oF:build' task
-		puts "=== Building oF project..."
-		Dir.chdir OF_SKETCH_ROOT do
-			# Make the debug build if the flag is set,
-			# othwise, make the release build.
-			debug = OF_DEBUG ? "Debug" : ""
-			
-			
-			begin
-				run_i "make #{debug} -j#{NUMBER_OF_CORES}"
-			rescue StandardError => e
-				puts "ERROR: Could not build oF sketch."
-				exit
-			end
-			# FileUtils.touch 'oF_project_build_timestamp'
-		end
-	end
-	
-	
-	# desc "Update the timestamp by rebuilding the project."
-	# file File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp') => :build
-	
-	
-	desc "Clean the oF project (C++ only) [also cleans addons]"
-	task :clean do
-		Dir.chdir OF_SKETCH_ROOT do
-			run_i "make clean"
-		end
-	end
-	
-	
-	
-	# rebuilding the project should rebuild the addons too
-	desc "Rebuld the project."
-	task :rebuild do
-		run_task('oF_sketch:clean')
-		run_task('oF_sketch:build')
-	end
-	
-	
-	
-	
-	# show the .o files generated that are specific to this project
-	# (these are the files used to generate the static lib)
-	desc "DEBUG: show the .o files generated that are specific to this project"
-	task :examine do
-		Dir.chdir OF_SKETCH_BUILT_DIR do
-			puts "local oF build directory:"
-			puts Dir.pwd
-			p Dir['./*']
-		end
-	end
-	
-	
-	
-	
-	
-	# actually generates two files:
-	# + oF_build_variables.yaml (aka OF_BUILD_VARIABLE_FILE)
-	# + raw_oF_variables.yaml   (intermediate representation of raw data)
-	file OF_BUILD_VARIABLE_FILE => 
-	[
-		# # NOTE: slight indirection here - depend on timestamp file instead of build task directly, so that 
-		# File.join(OF_SKETCH_ROOT, 'oF_project_build_timestamp'),
-		File.expand_path("./Makefile.static_lib", OF_SKETCH_ROOT),
-		File.expand_path("./addons.make",         OF_SKETCH_ROOT),
-		__FILE__, # if the Rake task changes, then update the output file
-		COMMON_CONFIG # if config variables change, then build may be different
-	] do
-		puts "=== Exporting oF project build variables..."
-		
-		swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
-			Dir.chdir OF_SKETCH_ROOT do
-				# run_i "make printvars"
-				
-				out = `make printvars TARGET_NAME=#{TARGET}`
-				# p out
-				
-				out = out.each_line.to_a
-				
-				
-				File.open(OF_RAW_BUILD_VARIABLE_FILE, "w") do |f|
-					f.puts out.to_yaml
-				end
-				
-				
-				final = 
-					out.select{  |line|
-						line.include? '='
-					}.collect{   |line|
-						# can't just split on '='
-						# because there can be mulitple equal signs
-						# 
-						# The thing before the FIRST equal sign is the key,
-						# everything else on the line is the value associated with the key
-						i = line.index("=")
-						key   = line[0..(i-1)]
-						value = line[((i+1)..-1)]
-						
-						
-						key, value = [key, value].collect{ |x| x.strip }
-						
-						value = value.split()
-						
-						
-						[key, value]
-					}.to_h
-				
-				
-				
-				filepath = OF_BUILD_VARIABLE_FILE
-				File.open(filepath, "w") do |f|
-					f.puts final.to_yaml
-				end
-				
-				puts "=> Variables written to '#{filepath}'"
-				puts ""
-			end
-		end
-	end
-	
-	desc "Export build variables from oF build system (linux)."
-	task :export_build_variables => OF_BUILD_VARIABLE_FILE
-	
-	
-	desc "Drop to IRB to explore oF build system variables."
-	task :explore => :export_build_variables do
-		of_build_variables = YAML.load_file(OF_BUILD_VARIABLE_FILE)
-		
-		require 'irb'
-		binding.irb
-	end
-	
-	
-	
-	namespace :static_lib do
-		# use a modified version of the oF build system
-		# to generate a C++ static lib
-		# (same make file used to generate OF_BUILD_VARIABLE_FILE)
-		
-		
-		# outputs OF_SKETCH_LIB_FILE
-		# but don't want to write this as a file task,
-		# because I want the makefile to determine if things should be rebuilt or not
-		desc "generate static lib from oF project"
-		task :build do
-			puts "=== Making oF sketch into a static library..."
-			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
-				Dir.chdir OF_SKETCH_ROOT do
-					begin
-						run_i "make static_lib TARGET_NAME=#{TARGET}"
-					rescue StandardError => e
-						puts "ERROR: Could not make a static library out of the oF sketch project."
-						exit
-					end
-				end
-			end
-			
-			
-			
-			
-			# TODO: update this task so it actually works correctly.
-			# Often, it fails to rebuild the archive correctly, which invaldates steps further down the chain
-			# (or at least that's what this looks like)
-			# (i'm not actually sure, but it's super confusing why old symbols are cropping up in my final Ruby executable.)
-			
-			# NOTE: could potentially use the exported build variables file (the one whose primary use is in extconf.rb) in order to get the build variables, if you really need them. Seems like that might actually end up being better than doing the weird makefile switcheroo?
-			# If you contain more of the work in the Rakefile, maybe rake will have a better idea of the dependency chain, and not have to remake stuff so much?
-		end
-		
-		task :clean do
-			swap_makefile(OF_SKETCH_ROOT, "Makefile", "Makefile.static_lib") do
-				Dir.chdir OF_SKETCH_ROOT do
-					run_i "make clean_static_lib TARGET_NAME=#{TARGET}"
-				end
-			end
-		end
-	end
-	
-end
-
-
-
-
-# === Build the C extension
-namespace :cpp_wrapper_code do
-	# make the :test task depend on the shared
-	# object, so it will be built automatically
-	# before running the tests
-	
-	# rule to build the extension: this says
-	# that the extension should be rebuilt
-	# after any change to the files in ext
-	
-	c_library = "lib/#{NAME}/#{NAME}.so"
-	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
-	
-	
-	
-	# TODO: update source file list
-	c_library_deps = Array.new
-	# c_library_deps += Dir.glob("ext/#{NAME}/*{.rb,.c}")
-	
-	
-	# Ruby / Rice CPP files
-	c_library_deps += Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
-	
-	# 
-	c_library_deps << "ext/#{NAME}/extconf.rb"
-	c_library_deps << "ext/#{NAME}/extconf_common.rb"
-	c_library_deps << "ext/#{NAME}/extconf_printer.rb"
-	
-	c_library_deps << __FILE__ # depends on this Rakefile
-	
-	# c_library_deps << OF_BUILD_VARIABLE_FILE
-	# TODO: ^ re-enable this ASAP
-	
-	# NOTE: adding OF_BUILD_VARIABLE_FILE to the dependencies for the 'c_library' makes it so extconf.rb has to run every time, because the variable file is being regenerated every time.
-	
-	
-	# FIXME: can't seem to just run rake again to rebuild. keep having to clobber, and then do a full clean build again.
-	
-	# Mimic RubyGems gem install procedure, for testing purposes.
-	# * run extconf
-	# * execute the resultant makefile
-	# * move the .so to it's correct location
-	file c_library => c_library_deps do
-		Dir.chdir("ext/#{NAME}") do
-			# this does essentially the same thing
-			# as what RubyGems does
-			puts "=== starting extconf..."
-			
-			begin
-				run_i "ruby extconf.rb"
-			rescue StandardError => e
-				puts "ERROR: Could not configure c extension."
-				exit
-			end
-			
-			
-			puts "======= Top level Rakefile"
-			puts "=== configuration complete. building C extension"
-			
-			
-			# Run make
-			
-			flags = ""
-			# flags += " -j#{NUMBER_OF_CORES}" if Dir.exists? '/home/ravenskrag' # if running on my machine
-			
-			
-			# ======================================
-			# SPECIAL MOD
-			# regenerate the clang DB if necessary
-			if regenerate_clang_db? # see definition below
-				puts "Building and regenerating clang DB"
-				
-				# need to recompile everything to get a proper DB
-				# so go ahead and clean out everything
-				run_i "make clean"
-				
-				# ok, now examine the build process and build the DB
-				begin
-					run_i "bear make #{flags}"
-				rescue StandardError => e
-					puts "ERROR: Could not build c extension and / or clang DB"
-					exit
-				end
-				
-				# Clang DB file is generated here,
-				# but needs to be moved to the gem root to function
-				FileUtils.mv "./compile_commands.json", CLANG_SYMBOL_FILE
-				# => CLANG_SYMBOL_FILE
-				
-				# TODO: consider analying the app build as well, and then merging the two JSON documents together into a single clang DB
-				
-			else
-				# run normally
-				puts "Building..."
-				begin
-					run_i "make #{flags}"
-				rescue StandardError => e
-					puts "ERROR: Could not build c extension."
-					exit
-				end
-			end
-			# ======================================
-		end
-		
-		# NOTE: This is part of a normal extconf build, but I don't want it.
-		#       In the context of this build, this .so is only an intermediate.
-		# puts "=== Moving dynamic library into correct location..."
-		# FileUtils.cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
-		
-		
-		puts "=== C extension build complete!"
-	end
-	
-	# HELPER METHOD for c extension generation (managed clang DB)
-	# Number of known files on disk doesn't match up with the database.
-	# Must regenerate the database.
-	def regenerate_clang_db?
-		if File.exists? CLANG_SYMBOL_FILE
-			# check the contents of the DB to find out
-			data     = File.read(CLANG_SYMBOL_FILE)
-			clang_db = JSON.parse(data)
-			
-			directory        = File.join GEM_ROOT, "ext/#{NAME}"
-			cpp_source_files = Dir[File.join(directory, '*{.cpp}')]
-			
-			
-			return clang_db.length != cpp_source_files.length
-		else
-			# don't bother: you need to generate the DB
-			return true
-		end
-	end
-	
-	
-	
-	
-	# NOTE: This is a shortcut for the file task above.
-	desc "Build the C extension (core Rice glue code)"
-	task :build => c_library do
-		# FileUtils.rm c_library
-		# Just want the intermediates from the build process
-		# the actual final dynamic library should be discarded.
-		# This is because this is not the true final output.
-		# The final output can only be made when these intermediates
-		# are combined with the intermediates of the project-specific C++ build.
-		
-		# NO.
-		# Need to check against this library to make sure final link works.
-		# As such, you can't delete this .so
-	end
-	
-	
-	# Not sure how often you want to regenerate this file, but not every time you build.
-	# You need to run make and have something happen. If nothing gets build from the makefile, the clang database will end up empty.
-	
-	
-	
-	# TODO: make sure the clang symbols are generated as part of the standard build process
-	# TODO: add clang symbols file to the .gitignore. Should be able to generate this, instead of saving it.
-	
-	
-	
-	# Anything cleaned up here should already be
-	# caught by the main clean task rules.
-	# Only call this task if you need to clean
-	# just the few things from this build phase.
-	task :clean do
-		Dir.chdir("ext/#{NAME}") do
-			run_i "make clean"
-		end
-	end
-end
-
-
-
-
-
-
-
 
 # defines RubyOF::Build.create_project and RubyOF::Build.load_project
 require File.join(GEM_ROOT, 'build', 'build.rb')
 
 
-
-
-
-
-
-module Monad
-	class << self
-		# maybe monad that understand Ruby has exceptions
-		# contex: object to call the methods on
-		# list:   lisp-style list of functions (nested list)
-		#         eg) [[:foo, "hello", 2,3], [:baz, "world", 4,5, false]]
-		def maybe_e(context, list)
-			list.each_with_index do |fx, i|
-				begin
-					context.send *fx
-				rescue => e
-					puts "ERROR: Exception on function @ index #{i} in Maybe monad."
-					puts "=>     #{list[i]}"
-					raise e
-					
-					# break
-				end
-			end
-		end
-	end
+# check that all environment variables are set
+var_name = 'RUBYOF_PROJECT'
+if ENV[var_name].nil?
+	raise "ERROR: must set environment variable '#{var_name}'"
 end
 
 
-module RubyOF
-	module Build
-
-class ExtensionBuilder	
-	def initialize(project_name)
-		raise "ERROR: no project name specified" if project_name.nil?
-		# ^ Need to do this, because of how Rake tasks work
-		#   It is always possible to call a rake task that requires arguments
-		#   with no arguments at all.
-		# But the exception handling needs to be here,
-		# because the constructor is called in many tasks.
-		# (code duplication would be a hassle...)
-		
-		name, path = RubyOF::Build.load_project(project_name)
-		# name of the project
-		# (should be the same as the directory name)
-		@project_name = name
-		
-		# root directory for the project
-		@project_path = path
+# --- helpers
+def parse_build_variable_data(data)
+	data.select{  |line|
+		line.include? '='
+	}.collect{   |line|
+		# can't just split on '='
+		# because there can be mulitple equal signs
+		# 
+		# The thing before the FIRST equal sign is the key,
+		# everything else on the line is the value associated with the key
+		i = line.index("=")
+		key   = line[0..(i-1)]
+		value = line[((i+1)..-1)]
 		
 		
+		key, value = [key, value].collect{ |x| x.strip }
 		
-		# path to most of the .o files generated by core extension build
-		@core_path = File.join(GEM_ROOT, 'ext', NAME)
-		
-		# path to the app.o (generated for this RubyOF project)
-		@app_path  = File.join(@project_path, 'ext', 'window')
+		value = value.split()
 		
 		
-		
-		# 'extconf_variables.yaml' files
-		# (build system variable dumps)
-		@main_build_var_file = File.join(
-			GEM_ROOT, 'ext', NAME, 'extconf_variables.yaml'
-		)
-		
-		@project_build_var_file = File.join(
-			@app_path, 'extconf_variables.yaml'
-		)
-		
-		
-		
-		# where do the data files for the project go?
-		@data_path      = File.join(
-			@project_path, 'bin', 'data'
-		)
-		
-		# where is the data path constant defined?
-		# (C++ header. #defines constant for oF at C++ level)
-		# [this file is automatically generated by the rakefile build system]
-		@data_path_file = File.join(
-			@app_path, 'constants', 'data_path.h'
-		)
-		
-		
-		
-		
-		
-		@so_paths = {
-			# :wrapper = core Rice wrapper code
-			# :project = intermediate .so for project-specific code
-			# :final   = output .so that combines both :wrapper and :project
-			:wrapper => File.join(GEM_ROOT, 'ext', NAME, "#{NAME}.so"),
-			:project => File.join(@app_path, "#{NAME}.so"),
-			:final   => File.join(@app_path, 'final', "#{NAME}.so"),
-			
-			
-			# The final output goes here,
-			# to be loaded by the Ruby interpreter
-			:install => File.join(@project_path, 'bin', 'lib', "#{NAME}.so")
-		}
-	# NOTE: The wrapper build, project build, and final link can all live in harmory. No build phase will clobber any parts needed by other phase.
-		
-	end
-	
-	# ------------------------
-	
-	
-	
-	
-	# patch c constant file with proper data path
-	# 
-	# deps: @data_path_file    (variable)
-	#       @data_path         (variable)
-	def create_data_path_file
-		# NOTE: only need to run this method when @data_path is changed
-		puts "=== create file"
-		
-		FileUtils.mkdir_p File.dirname @data_path_file
-		
-		File.open(@data_path_file, 'w') do |f|
-			f.puts "#define DATA_PATH \"#{@data_path}\""
-		end
-	end
-	
-	
-	# # NOTE: generates project-specific 'app.o' file
-	# desc "build RubyOF project-specific C++ code (linux)"
-	def build
-		puts "=== build"
-		
-		# check if the 
-		# is newer than
-		# the intermidate .so from the main build
-			# "ext/#{NAME}/#{NAME}.so"
-		
-		
-		
-		puts "Building project-specific C++ code..."
-		Dir.chdir(@app_path) do
-			puts "=== Generating makefile for project '#{@project_name}'"
-			run_i "ruby extconf.rb"
-			# ^ dumps log of variables to @project_build_var_file
-			
-			puts "=== Building project..."
-			run_i "make"
-			# ^ creates .so @ this location => @so_paths[:project]
-		end
-	end
-	
-	# desc "link final dynamic library (linux)"
-	#   Combines obj files from Rice wrapper build
-	#   and obj files from project-specific build
-	#   into one cohesive whole
-	# 
-	# ASSUME: main extconf.rb and project-specific extconf.rb have run, and have succesfully outputed their variable files.
-	# NOTE: Only need to run this if 'build' has changed some files
-	def link
-		puts "=== Linking final dynamic library..."
-		
-		# === Create a place for the final .so to go
-		# Need to have a copy somewhere other than the install location
-		# because other projects may need to move into that space.
-		FileUtils.mkdir_p  File.dirname @so_paths[:final]
-		
-		
-		# === Load in environment variables
-		puts "loading main extconf variables..."
-		main_vars = load_extconf_data(@main_build_var_file)
-		
-		puts "loading #{NAME} project extconf variables..."
-		project_vars = load_extconf_data(@project_build_var_file)
-		
-		
-		# === Expand obj paths to full paths
-		main_objs = 
-			main_vars['$objs'].collect{ |x|
-				File.join(@core_path, x)
-			}
-		
-		
-		# === Mix in obj paths from the project
-		app_objs = 
-			project_vars['$objs'].collect{ |x|
-				File.join(@app_path, x)
-			}
-		
-		
-		# NOTE: The extconf.rb build files constantly relink the .so files, so their timestamps are not a reliable indicator of when the last build occurred. You must observe the time on the .o files instead.
-		timestamps = 
-			(main_objs + app_objs).collect{ |x|
-				Pathname.new(x)
-			}.collect{ |path|
-				path.mtime # get last modification time for file
-			}.sort # chronological order (oldest first)
-		puts "Dependency timestamps:"
-		p timestamps
-		# NOTE: older < newer
-		
-		
-		
-		
-		# only perform the link when the component obj files have been updated
-		# (one or more .o files are newer than the .so file)
-		# [aka, skip linking when .so is newer than the newest .o file]
-		so_location = Pathname.new(@so_paths[:final])
-		
-		print "Timestamp for final .so: "
-		p so_location.mtime if so_location.exist?
-		
-		if so_location.exist? and timestamps.last < so_location.mtime
-			puts "skipping link phase"
-			return
-			# use 'return' instead of 'raise' to continue the build
-		end
-		
-		
-		Dir.chdir(@app_path) do
-			# TODO: need to allow linking of additional stuff as well (any additional flags that might be set by the RubyOF project specific build)
-			# TOOD: Figure out if the flags used by the app are always a superset of the flags used by main (may not be a proper superset)
-			
-			
-			
-			# === Assemble the base link command
-			puts "reading gem environment..."
-			env = read_gem_env()
-			
-			# --- Extract exec_prefix from ruby environment data
-			# 'exec_prefix' is the directory that contains 'bin/ruby'
-			# As such, you just need to step up two levels in the filesystem.
-			exec_prefix =  File.expand_path '../..', env["RUBY EXECUTABLE"]
-			lib_dir = "#{exec_prefix}/lib"
-			
-			
-			final_link_command = 
-				[
-					main_vars['$LDSHARED_CXX'],
-					'-o', # have to supply this manually
-					"./final/#{NAME}.so",
-					app_objs,
-					main_objs,
-					"-L. -L#{lib_dir} -Wl,-R#{lib_dir}",
-					main_vars['$LDFLAGS'],
-					main_vars['$DLDFLAGS'],
-					main_vars['$libs'],
-					main_vars['$LIBRUBYARG'],
-					main_vars['$LIBS']
-				].join(' ')
-			
-			
-			
-			# === Makefile variable replacement
-			# just blank out ${ORIGIN}
-			# That seems to be what the original extconf.rb build did.
-			final_link_command.gsub! "${ORIGIN}", ''
-			
-			
-			
-			# === Display link command in terminal
-			# (substitute [GEM_ROOT] for the root path, like in 'run_i')
-			# (substitution is for display purposes only)
-			puts "Performing final link..."
-			puts final_link_command.gsub GEM_ROOT, '[GEM_ROOT]'
-			
-			
-			# === Execute the final link
-			run_i final_link_command
-		end
-		
-		
-		
-		puts "Final link complete!"
-	end
-	
-	private
-	
-	def load_extconf_data(path_to_yaml_dump)
-		extconf_data = YAML.load_file(path_to_yaml_dump)
-		extconf_variable_names, extconf_variable_hash = extconf_data
-		
-		return extconf_variable_hash
-	end
-	
-	# Turns out, the output of the command 'gem env' is basically YAML.
-	# As such, you can load that right up as a string,
-	# in order to get information about the enviornemnt.
-	def read_gem_env
-		# --- Gotta do a little bit of reformatting of this data...
-			# Top level data structure is an Array of Hash objects.
-			# "flatten" it out, merging all hashes together,
-			# and removing the containing Array.
-		env = YAML.load `gem env`
-		env = 
-			env["RubyGems Environment"]
-			.inject(Hash.new){ |hash, x|
-				hash.merge! x
-			}
-		# p env
-		
-		return env
-	end
-	
-	public
-	
-	
-	
-	
-	
-	def run_tests
-		puts "=== running tests"
-		
-		symbols = self.methods.grep /test_/
-		p symbols
-		
-		symbols.each do |sym|
-			self.send sym
-		end
-	end
-	
-		# Check final dynamic libary for symbols that will only exist
-		# when the final link is performed correctly.
-		# desc "make sure final link works as expected (linux)"
-		def test_final_link
-			puts "--- testing: make sure final link has happened"
-			
-			# The test symbol sholud be something that only exists
-			# in the base build, and not the project build.
-			# Thus, the presense of this symbol in the final linked product
-			# confirms that the link has succeded.
-			
-			
-			# --- first, make sure the baseline lib actually exists
-			#     (can't compare with something that's not there)
-			path = Pathname.new(@so_paths[:wrapper])
-			unless path.exist?
-				raise "ERROR: Baseline lib not found @ #{path}"
-			end
-			
-			
-			# --- check the output location too
-			path = Pathname.new(@so_paths[:final])
-			unless path.exist?
-				raise "ERROR: Dynamic lib from final link not found @ #{path}"
-			end
-			
-			
-			# --- perform the main checks
-			sym      = "Launcher"
-			test_cmd = "nm -C #{NAME}.so  | grep #{sym}"
-			
-			# baseline
-			cmd1 = nil
-			Dir.chdir(File.dirname(@so_paths[:wrapper])) do
-				cmd1 = `#{test_cmd}` # run test command in shell
-			end
-			
-			# final link
-			cmd2 = nil
-			Dir.chdir(File.dirname(@so_paths[:final])) do
-				cmd2 = `#{test_cmd}` # run test command in shell
-			end
-			
-			
-			# p cmd1
-			# p cmd2
-			if cmd1.nil? or cmd2.nil?
-				raise "ERROR: unexpected problem while inspecting final product."
-			elsif cmd1 == ''
-				raise "ERROR: symbol '#{sym}' not present in baseline lib."
-			elsif cmd2 == '' # at this point, no error for baseline lib
-				raise "ERROR: final .so did not contain symbol '#{sym}' as expected"
-			else
-				puts "no problems with final link"
-			end
-		end
-		
-		# Check if symbol is undefined, rather than merely if it is present.
-		# desc "Make sure app factory has been linked into final product (linux)"
-		def test_app_factory_link
-			puts "--- testing: looking for 'app factory' symbol"
-	
-			sym      = "appFactory_create"
-			test_cmd = "nm -C #{NAME}.so  | grep #{sym}"
-			
-			
-			out = nil
-			
-			Dir.chdir(File.dirname(@so_paths[:final])) do
-				out = `#{test_cmd}`
-			end
-			
-			
-			
-			
-			if out.nil?
-				raise "ERROR: unexpected problem while inspecting final product."
-			elsif out == ''
-				raise "ERROR: symbol '#{sym}' not found in final dynamic library"
-			elsif out.include? 'U'
-				# ex)  U appFactory_create(Rice::Object)
-				raise "ERROR: symbol '#{sym}' found, but was undefined"
-			else
-				# No problems!
-				puts "no problems - appFactory linked correctly"
-			end
-		end
-	
-	
-	
-	# desc "move completed dynamic library to final location (linux)"
-	# task :install do
-	def install
-		puts "=== install"
-		
-		src = @so_paths[:final]
-		dst = @so_paths[:install]
-		
-		puts "Moving completed dynamic library to '#{dst}'".gsub(GEM_ROOT, "[GEM_ROOT]")
-		# copy dynamic lib into final location
-		FileUtils.mkdir_p(Pathname.new(dst).dirname)
-		FileUtils.cp(src, dst)
-	end
-	
-	
-	
-	
-	# ------------------------
-	
-	def main
-		Monad.maybe_e self, [
-			[:create_data_path_file],
-			[:build],
-			[:link],
-			[:run_tests],
-			[:install],
-		]
-	end
-	
-	def clean
-		Dir.chdir(@app_path) do
-			begin 
-				run_i "make clean"
-			rescue StandardError => e
-				# FIXME: Can't seem to catch, suppress, and continue
-				puts "nothing to clean for #{@app_path}"
-			end
-		end
-		
-		# clean files
-		[
-			@project_build_var_file,
-			@data_path_file,
-			@so_paths[:final],
-			# @so_paths[:project], # should already be cleaned by 'make clean'
-		].each do |filepath|
-			FileUtils.rm filepath if File.exists? filepath
-		end
-		
-		# clean directories
-		[
-			File.dirname(@data_path_file),
-			File.dirname(@so_paths[:final])
-		].each do |filepath|
-			FileUtils.rm_rf filepath if Dir.exists? filepath
-		end
-	end
-	
-	def clobber
-		self.clean
-		
-		# clobber files
-		[
-			@so_paths[:install],
-			File.join(@app_path, "Makefile")
-		].each do |file_to_be_cleaned|
-			FileUtils.rm file_to_be_cleaned if File.exist? file_to_be_cleaned
-		end
-	end
-	
-end
-
-
-end
-end
-
-namespace :cpp_project do
-	
-	task :build, [:rubyOF_project] do |t, args|
-		obj = RubyOF::Build::ExtensionBuilder.new(args[:rubyOF_project])
-		obj.main
-	end	
-	
-	task :clean, [:rubyOF_project] do |t, args|
-		obj = RubyOF::Build::ExtensionBuilder.new(args[:rubyOF_project])
-		obj.clean
-	end
-	
-	task :clobber, [:rubyOF_project] => :clean do |t, args|
-		obj = RubyOF::Build::ExtensionBuilder.new(args[:rubyOF_project])
-		obj.clobber
-	end
-	
-	
+		[key, value]
+	}.to_h
 end
 
 
 
 
-# project-specific C++ code that gets built as a separate Ruby extension
-namespace :cpp_callbacks do
-	task :build, [:rubyOF_project] do |t, args|
-		name_or_path = args[:rubyOF_project]
-		name, path = RubyOF::Build.load_project(name_or_path)
-		
-			# TODO: consider turning #load_project into a block-taking method
-			# I think that style would let you omit parameters if you wanted?
-			# (e.g. I don't need the 'name' this time around)
-		
-		# PATH/ext/callbacks
-		build_dir = File.join(path, 'ext', 'callbacks')
-		
-		# Generate makefile
-		# and build the extension
-		puts "=== Building project-specific C++ into a separate extension"
-		
-		Dir.chdir build_dir do
-			run_i "ruby extconf.rb"
-			run_i "make"
-		end
-		
-	end
-	
-	task :clean, [:rubyOF_project] do |t, args|
-		name_or_path = args[:rubyOF_project]
-		name, path = RubyOF::Build.load_project(name_or_path)
-		build_dir = File.join(path, 'ext', 'callbacks')
-		
-		Dir.chdir(build_dir) do
-			begin 
-				run_i "make clean"
-			rescue StandardError => e
-				# FIXME: Can't seem to catch, suppress, and continue
-				puts "nothing to clean for #{build_dir}"
-			end
-		end
-	end
-	
-	task :clobber, [:rubyOF_project] => :clean do |t, args|
-		name_or_path = args[:rubyOF_project]
-		name, path = RubyOF::Build.load_project(name_or_path)
-		build_dir = File.join(path, 'ext', 'callbacks')
-		
-		[
-			"Makefile"
-		].each do |file_to_be_cleaned|
-			Dir.chdir(build_dir) do
-				FileUtils.rm file_to_be_cleaned if File.exist? file_to_be_cleaned
-			end
-		end
-	end
-end
+# --- core logic
 
-
-
-
-
-
-
-module RubyOF
-	module Build
-
-class RubyBundlerAutomation
-	def initialize
+# TARGET
+# NUMBER_OF_CORES
+def build_oF_app(name, sketch_root)
+	puts "=== Building #{name}..."
+	Dir.chdir sketch_root do
+		# TARGET specifies whether to build "Debug" or "Release" build
 		
-	end
-	
-	def install_core
-		# begin
-			puts "Bundler: Installing core dependencies"
-			bundle_install(GEM_ROOT)
-		# rescue StandardError => e
-		# 	puts "Bundler had an error."
-		# 	puts e
-		# 	puts e.backtrace
-		# 	exit
-		# end
-	end
-	
-	def uninstall_core
-		bundle_uninstall(GEM_ROOT)
-	end
-	
-	def install_project(path_or_name)
 		begin
-			name, path = RubyOF::Build.load_project(path_or_name)
+			run_i "env CFLAGS=-fPIC  make #{TARGET} -j#{NUMBER_OF_CORES}"
+		rescue StandardError => e
+			puts "ERROR: Could not build #{name}."
+			exit
+		end
+		# FileUtils.touch 'oF_project_build_timestamp'
+	end
+end
+
+# TARGET
+def export_oF_build_vars(sketch_root, raw_build_variable_file)
+	puts "=== Exporting oF project build variables..."
+	
+	Dir.chdir sketch_root do
+		swap_makefile(sketch_root, "Makefile", "Makefile.static_lib") do
+			# run_i "make printvars"
 			
-			puts "Bundler: Installing dependencies for project '#{name}'"
-			bundle_install(path)
+			out = `make printvars TARGET_NAME=#{TARGET}`
+			# p out
+			
+			out = out.each_line.to_a
+			
+			
+			File.open(raw_build_variable_file, "w") do |f|
+				f.puts out.to_yaml
+			end
+		end
+	end
+end
+
+def reformat_build_vars(raw_build_variable_file, build_variable_file)
+	puts "=== reformatting..."
+	data = YAML.load_file(raw_build_variable_file)
+			
+	File.open(build_variable_file, "w") do |f|
+		f.puts parse_build_variable_data(data).to_yaml
+	end
+	
+	puts "=> Variables written to '#{build_variable_file}'"
+	puts ""
+end
+
+def build_c_extension(c_extension_dir)
+	Dir.chdir(c_extension_dir) do
+		# this does essentially the same thing
+		# as what RubyGems does
+		puts "=> starting extconf..."
+		
+		begin
+			run_i "ruby extconf.rb"
+		rescue StandardError => e
+			puts "ERROR: Could not configure c extension."
+			exit
+		end
+		
+		puts "=> configuration complete. building C extension"
+		
+		
+		flags = ""
+		# flags += " -j#{NUMBER_OF_CORES}" if Dir.exists? '/home/ravenskrag' # if running on my machine
+		
+		puts "Building..."
+		begin
+			run_i "make #{flags}"
+		rescue StandardError => e
+			puts "ERROR: Could not build c extension."
+			exit
+		end
+	end
+	
+	# NOTE: This is part of a normal extconf build, but I don't want it.
+	#       I will move the .so as part of a separate task.
+	# # puts "=== Moving dynamic library into correct location..."
+	# FileUtils.cp "ext/#{NAME}/#{NAME}.so", "lib/#{NAME}"
+	
+	
+	puts "=> C extension build complete!"
+end
+
+
+
+
+# 1) build testApp using oF build system
+# 2) export build vars from testApp
+# 3) reverse engineer build vars for use in ruby's extconf.rb system
+# 4) use extconf.rb and Rice to build dynamic library of wrapper for *core oF* functionality
+# 5) move dynamic library into easy-to-load location
+
+# Assumes 'setup' has been run.
+desc "Namespace: update core bindings"
+namespace :core_wrapper do
+	root = Pathname.new(GEM_ROOT)
+	
+	c_extension_dir = root/"ext"/NAME
+	c_extension_file = c_extension_dir/"#{NAME}.so"
+	install_location = "lib/#{NAME}/#{NAME}.so"
+	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	
+	
+	
+	oF_app_executable = 
+		Array.new.tap{ |x|
+			x << OF_SKETCH_NAME
+			
+			suffix = OF_DEBUG ? "debug" : ""
+			x << suffix unless suffix.nil?
+		}.join('_')
+	
+	path_to_exe = Pathname.new(OF_SKETCH_ROOT)/'bin'/oF_app_executable
+	
+	
+	
+	# This build system makes it so that build variables are only exported again as necessary. This way, you can use a change in the build variables to trigger other events.
+	task :build => [
+		:build_app,		         # build testApp using oF build system
+		:build_c_extension,     # export build vars -> reformat -> build wrapper
+		:move_dynamic_lib       # move dynamic library into easy-to-load location
+	]
+	
+	
+	# 1) build testApp using oF build system
+	task :build_app do
+		build_oF_app("core oF sketch", OF_SKETCH_ROOT)
+	end
+	
+	# 2) export build vars from testApp
+	file OF_RAW_BUILD_VARIABLE_FILE => [
+		Pathname.new(OF_SKETCH_ROOT)/'Makefile.static_lib',
+		__FILE__,      # if the Rake task changes, then update the output file
+		COMMON_CONFIG, # if config variables change, then build may be different
+		path_to_exe    # if :build_app produces new binary, then re-export vars
+	] do
+		run_task 'project_wrapper:create_addons_app'
+		# ^ Copy over core app to the particular project.
+		#   only copy over app when the output of :build_app changes,
+		#   which is when this task will execute
+		
+		export_oF_build_vars(OF_SKETCH_ROOT, OF_RAW_BUILD_VARIABLE_FILE)
+	end
+	
+	# 3) reverse engineer build vars for use in ruby's extconf.rb system
+	file OF_BUILD_VARIABLE_FILE => OF_RAW_BUILD_VARIABLE_FILE do
+		reformat_build_vars(OF_RAW_BUILD_VARIABLE_FILE, OF_BUILD_VARIABLE_FILE)
+	end
+	
+	# 4) use extconf.rb and Rice to build dynamic library of wrapper for core oF functionality
+	
+	# Mimic RubyGems gem install procedure, for testing purposes.
+	# * run extconf
+	# * execute the resultant makefile
+	# * move the .so to it's correct location
+	task :build_c_extension => c_extension_file
+		
+		extension_dependencies = Array.new.tap do |deps|
+			# Ruby / Rice CPP files
+			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
+			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
+			
+			deps << "ext/#{NAME}/extconf.rb"
+			deps << "ext/#{NAME}/extconf_common.rb"
+			deps << "ext/#{NAME}/extconf_printer.rb"
+			deps << __FILE__ # depends on this Rakefile
+			deps << OF_BUILD_VARIABLE_FILE
+		end
+		
+		file c_extension_file => extension_dependencies do
+			puts "=== building core wrapper..."
+			build_c_extension(c_extension_dir)
+		end
+		
+	
+	# 5) move dynamic library into easy-to-load location]
+	task :move_dynamic_lib do
+		puts "=== moving core dynamic lib to easy-to-load location"
+		FileUtils.cp c_extension_file, install_location
+		puts "=> DONE!"
+	end
+	
+	
+	
+	
+	
+	
+	
+	# NOTE: clobber task will removed all .so files, including the dynamic library created in this namespace
+	
+	task :clean do
+		Dir.chdir OF_SKETCH_ROOT do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning #{OF_SKETCH_NAME}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+		
+		Dir.chdir c_extension_dir do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+				exit
+			end
+		end
+	end
+	
+	task :clobber => :clean do
+		FileUtils.rm install_location
+	end
+end
+
+
+
+# arguments:   [project_name]
+
+# Projects use some combination of Ruby and C++ to build on the framework,
+# and accomplish a specific goal.
+
+# same basic 5 step process as before, but with some additions
+# + need to perform some patching of the oF project used previously,
+#   as position of the OpenFrameworks folder relative to the project
+#   is different than position relative to the core wrapper code directory.
+
+# Assumes 'setup' has been run.
+desc "Namespace: update project-specific C++ code"
+namespace :project_wrapper do
+	root = Pathname.new(GEM_ROOT)
+	
+	# TODO: turn project_name into an argument (will be given to all tasks)
+	# NOTE: currently, project name needs to be set at this level. all other build variables declared in this top section require that project_name is set.
+	# GOT IT! => use environment variable instead of rake argument to set project name. This way, the project name will be visible everywhere.
+	# to run from command line:
+	# $ env RUBYOF_PROJECT="youtube" rake execution:build_and_run
+	
+	project_name = ENV['RUBYOF_PROJECT']
+	project_dir  = root/'bin'/'projects'/project_name
+	
+	
+	addons_app_root     = project_dir/'ext'/'addons_app'
+	addons_sketch_root    = addons_app_root/OF_SKETCH_NAME
+	raw_build_variable_file = addons_sketch_root/'raw_oF_variables.yaml'
+	build_variable_file     = addons_sketch_root/'oF_build_variables.yaml'
+	
+	
+	c_extension_dir     = project_dir/'ext'/'c_extension'
+	c_extension_file      = c_extension_dir/"#{NAME}.so"
+	install_location    = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+	# NOTE: This only works for linux, because it explicitly uses the ".so" extension
+	
+	
+	x = addons_app_root
+		source_addons_file = x/'addons.make'
+		active_addons_file = x/OF_SKETCH_NAME/'addons.make'
+		
+		source_oF_project_makefile = x/'Makefile'
+		active_oF_project_makefile = x/OF_SKETCH_NAME/'Makefile'
+		
+		source_oF_static_lib_makefile = x/'Makefile.static_lib'
+		active_oF_static_lib_makefile = x/OF_SKETCH_NAME/'Makefile.static_lib'
+	
+	
+	
+	
+	
+	oF_app_executable = 
+		Array.new.tap{ |x|
+			x << OF_SKETCH_NAME
+			
+			suffix = OF_DEBUG ? "debug" : ""
+			x << suffix unless suffix.nil?
+		}.join('_')
+	
+	path_to_exe = Pathname.new(addons_sketch_root)/'bin'/oF_app_executable
+	
+	
+	
+	# This build system makes it so that build variables are only exported again as necessary. This way, you can use a change in the build variables to trigger other events.
+	task :build => [
+		:build_app,		         # build testApp using oF build system
+		:build_c_extension,     # export build vars -> reformat -> build wrapper
+		:move_dynamic_lib       # move dynamic library into easy-to-load location
+	]
+	
+	
+	# 1) build testApp using oF build system
+	task :build_app => [
+		active_addons_file,
+		active_oF_project_makefile,
+		active_oF_static_lib_makefile
+	] do
+		build_oF_app("addons app", addons_sketch_root)
+	end
+	
+	# 2) export build vars from testApp
+	file raw_build_variable_file => [
+		Pathname.new(addons_sketch_root)/'Makefile.static_lib',
+		__FILE__,      # if the Rake task changes, then update the output file
+		COMMON_CONFIG, # if config variables change, then build may be different
+		path_to_exe    # if :build_app produces new binary, then re-export vars
+	] do
+		export_oF_build_vars(addons_sketch_root, raw_build_variable_file)
+	end
+	
+	# 3) reverse engineer build vars for use in ruby's extconf.rb system
+	file build_variable_file => raw_build_variable_file do
+		reformat_build_vars(raw_build_variable_file, build_variable_file)
+	end
+	
+	# 4) use extconf.rb and Rice to build dynamic library of wrapper for core oF functionality
+	
+	# Mimic RubyGems gem install procedure, for testing purposes.
+	# * run extconf
+	# * execute the resultant makefile
+	# * move the .so to it's correct location
+	task :build_c_extension => c_extension_file
+	
+		extension_dependencies = Array.new.tap do |deps|
+			# Ruby / Rice CPP files
+			deps.concat Dir.glob File.join(c_extension_dir, "**/*{.cpp,.h}")
+			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
+			
+			deps << c_extension_dir/"extconf.rb"
+			# deps << "ext/#{NAME}/extconf_common.rb"
+			deps << "ext/#{NAME}/extconf_printer.rb"
+			deps << __FILE__ # depends on this Rakefile
+			deps << build_variable_file
+		end
+	
+		file c_extension_file => extension_dependencies do
+			puts "=== building project C++ code..."
+			build_c_extension(c_extension_dir)
+		end
+		
+	
+	# 5) move dynamic library into easy-to-load location]
+	task :move_dynamic_lib do
+		puts "=== moving project dynamic lib to easy-to-load location"
+		FileUtils.cp c_extension_file, install_location
+		puts "=> DONE!"
+	end
+	
+	
+	
+	
+	# This helper task will be called by core_wrapper:build_app as necessary. Only when the core app is changed will the addons app be updated.
+	task :create_addons_app do
+		puts "=== Initializing project-specific addons app"
+		# + remove old oF project directory, if one exists
+		# + copy testApp from core wrapper
+		# + move addons.make for this project into app folder
+		# + move custom Makefile into app folder
+		
+		project_dir = addons_app_root/OF_SKETCH_NAME
+		FileUtils.rm_rf project_dir if project_dir.exist?
+		
+		FileUtils.cp_r OF_SKETCH_ROOT, addons_app_root/OF_SKETCH_NAME
+		
+		FileUtils.cp source_addons_file, active_addons_file
+		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
+		FileUtils.cp source_oF_static_lib_makefile, active_oF_static_lib_makefile
+	end
+	
+	
+	
+	# These helper tasks move configuration files into the actual oF project that will use them. The oF project is merely a driver for these elements. Often, a new copy of that driver will have to be copied in. Thus, I place these elements outside that folder, so the system can automatically patch at will.
+	# 
+	# Set as prereqs by the first task in the :project_wrapper namespace, so that this entire set of things will rebuild if these files have been modified.
+	# 
+	file active_addons_file => source_addons_file do
+		FileUtils.cp source_addons_file, active_addons_file
+	end
+	
+	file active_oF_project_makefile => source_oF_project_makefile do
+		FileUtils.cp source_oF_project_makefile, active_oF_project_makefile
+	end
+	
+	file active_oF_static_lib_makefile => source_oF_static_lib_makefile do
+		FileUtils.cp source_oF_static_lib_makefile, active_oF_static_lib_makefile
+	end
+	
+	
+	
+	
+	
+	
+	
+	# NOTE: clobber task will removed all .so files, including the dynamic library created in this namespace
+	
+	task :clean do
+		# NOTE: cleaning oF sketch also cleans addons
+		Dir.chdir addons_sketch_root do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning #{OF_SKETCH_NAME}."
+				exit
+			end
+			# FileUtils.touch 'oF_project_build_timestamp'
+		end
+		
+		Dir.chdir c_extension_dir do
+			begin
+				run_i "make clean"
+			rescue StandardError => e
+				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+				exit
+			end
+		end
+	end
+	
+	task :clobber => :clean do
+		FileUtils.rm install_location
+	end
+	
+	
+	
+	
+	# # 2.4) extract just the addons info from the build var data
+	# file addons_data => build_variable_file do
+	# 	puts "== extracting addon data..."
+		
+	# 	Dir.chdir addons_app_dir do
+	# 		data = YAML.load_file(build_variable_file)
+	# 		data['OF_PROJECT_ADDONS_OBJS']
+			
+			
+	# 		keys = %w[
+	# 			ALL_INSTALLED_ADDONS
+	# 			VALID_PROJECT_ADDONS
+	# 			PROJECT_ADDONS
+	# 			OF_PROJECT_ADDONS_OBJS
+	# 			PROJECT_ADDONS_CFLAGS
+	# 			PROJECT_ADDONS_DATA
+	# 			PROJECT_ADDONS_FRAMEWORKS
+	# 			PROJECT_ADDONS_INCLUDES
+	# 			PROJECT_ADDONS_LDFLAGS
+	# 			PROJECT_ADDONS_LIBS
+	# 		]
+	# 		final = 
+	# 			data.select {  |k,v|
+	# 				keys.include? k
+	# 			}
+			
+			
+	# 		filepath = addons_data
+	# 		File.open(filepath, "w") do |f|
+	# 			f.puts final.to_yaml
+	# 		end
+			
+	# 		puts "=> Variables written to '#{filepath}'"
+	# 		puts ""
+	# 	end
+	# 		# OF_PROJECT_ADDONS_OBJS
+	# 		# PROJECT_ADDONS
+	# 		# PROJECT_ADDONS_SOURCE_FILES
+	# 		# PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS
+	# 		# addon
+	# 		# PROJECT_ADDONS_LDFLAGS
+	# 		# PLATFORM_REQUIRED_ADDONS
+	# 		# PARSED_ADDONS_LIBS_SOURCE_INCLUDES
+	# 		# B_PROCESS_ADDONS: 'yes'
+	# 		# PARSED_ADDONS_LIBS_SOURCES
+	# 		# PARSED_ADDONS_FILTERED_INCLUDE_PATHS
+	# 		# ADDONS_INCLUDES_FILTER
+	# 		# TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
+	# 		# PROJECT_ADDONS_OBJ_FILES
+	# 		# PROJECT_ADDONS_FRAMEWORKS
+	# 		# PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS
+	# 		# PARSED_ADDONS_SOURCE_INCLUDES
+	# 		# INVALID_PROJECT_ADDONS
+	# 		# INVALID_GLOBAL_ADDONS
+	# 		# TMP_PROJECT_ADDONS_SOURCE_FILES
+	# 		# PARSED_ADDONS_SOURCE_PATHS
+	# 		# TMP_PROJECT_ADDONS_OBJ_FILES
+	# 		# VALID_PROJECT_ADDONS
+	# 		# PARSED_ADDONS_LIBS_SOURCE_PATHS
+	# 		# PARSED_ADDONS_SOURCE_FILES
+	# 		# TMP_PROJECT_ADDONS_LDFLAGS
+	# 		# ADDONS_SOURCES_FILTER
+	# 		# TMP_PROJECT_ADDONS_FRAMEWORKS
+	# 		# PARSED_ADDONS_LIBS_INCLUDES_PATHS
+	# 		# PROJECT_ADDONS_INCLUDES
+	# 		# PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS
+	# 		# REQUESTED_PROJECT_ADDONS
+	# 		# PROJECT_ADDONS_OBJ_PATH
+	# 		# OF_PROJECT_ADDONS_DEPS
+	# 		# parse_addons_sources
+	# 		# parse_addons_libraries
+	# 		# parse_addons_includes
+	# 		# TMP_PROJECT_ADDONS_INCLUDES
+	# 		# PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS
+	# 		# ADDON_INCLUDE_CFLAGS
+	# 		# PARSED_ADDONS_INCLUDES
+	# 		# PROJECT_ADDONS_CFLAGS
+	# 		# PARSED_ADDONS_OFX_SOURCES
+	# 		# PROJECT_ADDONS_DATA
+	# 		# PARSED_ADDONS_LIBS_INCLUDES
+	# 		# ADDON_LIBS
+	# 		# PROJECT_ADDONS_LIBS
+	# 		# ALL_INSTALLED_ADDONS
+			
+	# 		# -------------------------
+	# 		# raw data above, organized data below
+			
+			
+			
+	# 		# B_PROCESS_ADDONS: 'yes'
+			
+	# 		# ALL_INSTALLED_ADDONS
+	# 		# INVALID_GLOBAL_ADDONS
+	# 		# INVALID_PROJECT_ADDONS
+	# 		# VALID_PROJECT_ADDONS
+	# 		# PLATFORM_REQUIRED_ADDONS
+			
+	# 		# addon
+	# 		# ADDON_INCLUDE_CFLAGS
+	# 		# ADDON_LIBS
+	# 		# ADDONS_INCLUDES_FILTER
+	# 		# ADDONS_SOURCES_FILTER
+	# 		# OF_PROJECT_ADDONS_DEPS
+	# 		# OF_PROJECT_ADDONS_OBJS
+			
+	# 		# PROJECT_ADDONS
+	# 		# PROJECT_ADDONS_CFLAGS
+	# 		# PROJECT_ADDONS_DATA
+	# 		# PROJECT_ADDONS_FRAMEWORKS
+	# 		# PROJECT_ADDONS_INCLUDES
+	# 		# PROJECT_ADDONS_LDFLAGS
+	# 		# PROJECT_ADDONS_LIBS
+	# 		# PROJECT_ADDONS_OBJ_FILES
+	# 		# PROJECT_ADDONS_OBJ_PATH
+	# 		# REQUESTED_PROJECT_ADDONS
+	# 		# PROJECT_ADDONS_SOURCE_FILES
+			
+			
+	# 		# PARSED_ADDONS_FILTERED_INCLUDE_PATHS
+	# 		# PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS
+	# 		# PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS
+	# 		# PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS
+	# 		# PARSED_ADDONS_INCLUDES
+	# 		# PARSED_ADDONS_LIBS_INCLUDES
+	# 		# PARSED_ADDONS_LIBS_INCLUDES_PATHS
+	# 		# PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS
+	# 		# PARSED_ADDONS_LIBS_SOURCE_INCLUDES
+	# 		# PARSED_ADDONS_LIBS_SOURCE_PATHS
+	# 		# PARSED_ADDONS_LIBS_SOURCES
+	# 		# PARSED_ADDONS_OFX_SOURCES
+	# 		# PARSED_ADDONS_SOURCE_FILES
+	# 		# PARSED_ADDONS_SOURCE_INCLUDES
+	# 		# PARSED_ADDONS_SOURCE_PATHS
+			
+			
+	# 		# TMP_PROJECT_ADDONS_FRAMEWORKS
+	# 		# TMP_PROJECT_ADDONS_INCLUDES
+	# 		# TMP_PROJECT_ADDONS_LDFLAGS
+	# 		# TMP_PROJECT_ADDONS_OBJ_FILES
+	# 		# TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
+	# 		# TMP_PROJECT_ADDONS_SOURCE_FILES
+	# end
+	
+	
+		
+	# TODO: update extension file path
+	# TODO: update extension dependencies
+end
+
+
+
+# Put everything together
+# + load dynamic library for core wrapper
+# + load dynamic library for a particular project
+# + require Ruby code for that same project
+# + open and run the Window associated with that project
+# NOTE: Currently will only execute the 'youtube' project. Need to reconfigure build system so that any arbitrary project can be run.
+
+
+# NOTE: Project name must always be specified as
+#       an environment variable, ENV['RUBYOF_PROJECT']
+#       for all tasks.
+
+
+
+
+
+
+
+
+# =============
+# manage C++ dependencies
+# =============
+namespace :cpp_deps do
+	desc "Set up environment on a new machine."
+	task :setup => [
+		# 'oF:download_libs',
+		'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
+		'oF:build',
+		'core_wrapper:build_app'
+	] do
+		FileUtils.mkdir_p "bin/data"
+		FileUtils.mkdir_p DYNAMIC_LIB_PATH # bin/lib/
+		
+		# -- bin/projects/ and specifically the 'boilerplate' project should 
+		#    always be present, and so the system does not have to manually
+		#    establish those folders
+		# FileUtils.mkdir_p "bin/projects"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/bin"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/ext"
+		# FileUtils.mkdir_p "bin/projects/boilerplate/lib"
+	end
+	
+	desc "Copy oF dynamic libs to correct location"
+	task :install do
+		puts "=== Copying OpenFrameworks dynamic libs..."
+		
+		
+		root = Pathname.new(OF_ROOT)
+		
+		src  = root/'libs'/'fmodex'/'lib'/PLATFORM/'libfmodex.so'
+		dest = DYNAMIC_LIB_PATH
+		FileUtils.copy(src, dest)
+		
+		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
+		# (specified in extconf.rb)
+		# 
+		# -rpath flag specifies where to look for dynamic libraries
+		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
+		
+		
+		
+		# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
+	end
+end
+# =============
+# =============
+
+
+
+# =============
+# manage ruby-level dependencies
+# =============
+def bundle_install(path)
+	Dir.chdir path do
+		# run_i "unbuffer bundle install"
+		# # NOTE: unbuffer does work here, but it assumes that you have that utility installed, and it is not installed by default
+		# 	# sudo apt install expect
+		
+		begin
+			run_pty "bundle install"
 		rescue StandardError => e
 			puts "Bundler had an error."
 			exit
 		end
 	end
-	
-	def uninstall_project(path_or_name)
+end
+
+def bundle_uninstall(path)
+	Dir.chdir path do
+		FileUtils.rm_rf "./.bundle"      # settings directory
+		FileUtils.rm    "./Gemfile.lock" # lockfile
+		
+		# filepath = (Pathname.new(path) + 'Gemfile.lock')
+		# FileUtils.rm filepath if filepath.exist?
+	end
+end
+
+namespace :ruby_deps do
+	desc "use Bundler to install ruby dependencies"
+	task :install do
+		# core dependencies
+		puts "Bundler: Installing core dependencies"
+		bundle_install(GEM_ROOT)
+		
+		# project specific
 		name, path = RubyOF::Build.load_project(path_or_name)
+		puts "Bundler: Installing dependencies for project '#{name}'"
+		bundle_install(path)
+	end
+	
+	desc "remove dependencies installed by Bundler"
+	task :uninstall do
+		# core dependencies
+		puts "Bundler: Uninstalling core dependencies"
+		bundle_uninstall(GEM_ROOT)
+		
+		# project specific
+		name, path = RubyOF::Build.load_project(path_or_name)
+		puts "Bundler: Uninstalling dependencies for project '#{name}'"
 		bundle_uninstall(path)
 	end
 	
-	private
-	
-	def bundle_install(path)
-		Dir.chdir path do
-			# run_i "unbuffer bundle install"
-			# # NOTE: unbuffer does work here, but it assumes that you have that utility installed, and it is not installed by default
-			# 	# sudo apt install expect
-			
-			
-			run_pty "bundle install"
-		end
-	end
-	
-	def bundle_uninstall(path)
-		Dir.chdir path do
-			FileUtils.rm_rf "./.bundle"      # settings directory
-			FileUtils.rm    "./Gemfile.lock" # lockfile
-		end
-	end
+	task :reinstall => [:uninstall, :install]
 end
+# =============
+# =============
 
-end
-end
 
-# === Manage ruby-level code
-namespace :ruby do
-	desc "testing"
-	task :run, [:rubyOF_project] do |t, args|
-		name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-		Dir.chdir path do
-			puts "ruby level execution"
-			
-			exe_path = "./lib/main.rb"
-			Kernel.exec "ruby #{exe_path}"
-		end
-	end
+task :setup => [
+	'cpp_deps:setup',
+	'cpp_deps:install',
+	'ruby_deps:install'
+]
+
+
+# TODO: refactor the cpp_deps namespace
+
+# + uncompress OF folder -> "openFrameworks"
+#   (make sure to rename, dropping the version number etc)
+	# env RUBYOF_PROJECT="youtube" rake oF:build_dynamic
+# + build shared library for OF core
+# + rename shared library files so they end in .so as expected
+# + move .so files to DYNAMIC_LIB_PATH so they can be linked against later
+	# env RUBYOF_PROJECT="youtube" rake oF:build_static
+# + build static library for OF core
+
+# (no need to muck with dependencies or anything like that)
+
+# (run a OF project and export build variables)
+	# env RUBYOF_PROJECT="youtube" rake core_wrapper:build
+# + build core wrapper
+# + build project wrapper
+
+# + run project from the Ruby level
+
+
+
+task :build_and_run => [:build, :run] 
+
+
+
+
+# NOTE: parameters to rake task are passed to all dependencies as well
+# source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
+
+# For working on a normal OpenFrameworks project in pure C++
+desc "Testing only: Build a normal OpenFrameworks project in pure C++"
+task :build_cpp => ['oF:build', 'core_wrapper:build_app']
+
+
+desc "Build up from a newly cloned repo"
+task :full_build => [
+	:setup,
+	:build
+]
+
+
+task :build => [
+	'core_wrapper:build',
+	'project_wrapper:build'
+]
+
+
+# NOTE: Project name must always be specified as
+#       an environment variable, ENV['RUBYOF_PROJECT']
+#       for all tasks.
+desc "run entire project"
+task :run do
+	root = Pathname.new(GEM_ROOT)
 	
-	desc "testing"
-	task :debug, [:rubyOF_project] do |t, args|
-		name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-		Dir.chdir path do
-			puts "ruby level execution"
-			
-			exe_path = "./lib/main.rb"
-			p exe_path
-			puts "Path to core file above."
-			puts "Type: run 'PATH_TO_CORE_FILE'"
-			puts "Remember: type 'q' to exit GDB."
-			puts "=============================="
-			puts ""
-			Kernel.exec "gdb ruby"
-		end
-	end
+	core_install_location    = root/'lib'/NAME/"#{NAME}.so"
 	
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
+	project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
 	
-	# manage ruby-level dependencies
-	namespace :deps do
-		obj = RubyOF::Build::RubyBundlerAutomation.new
+	Dir.chdir project_dir do
+		puts "ruby level execution"
 		
-		namespace :core do
-			task :install do
-				obj.install_core
-			end
-			
-			task :uninstall do
-				obj.uninstall_core
-			end
-		end
+		exe_path = "./lib/main.rb"
 		
+		cmd = [
+			'GALLIUM_HUD=fps,VRAM-usage',
+			"ruby #{exe_path}"
+		].join(' ')
 		
-		namespace :project do
-			task :install, [:rubyOF_project] do |t, args|
-				obj.install_project(args[:rubyOF_project])
-			end
-			
-			task :uninstall, [:rubyOF_project] do |t, args|
-				obj.uninstall_project(args[:rubyOF_project])
-			end
-		end
+		Kernel.exec(cmd)
 	end
+end
+
+desc "debug project using GDB"
+task :debug do
+	unless TARGET == 'Debug'
+		warning_message = [
+			"WARNING: Trying to debug, but c++ debug build is not being used.",
+			"         May want to set OF_DEBUG flag in common.rb,",
+			"         and run 'rake build' before trying to debug again."
+		].join("\n")
+		warn warning_message
+	end
+	# name, path = RubyOF::Build.load_project(args[:rubyOF_project])
 	
+	root = Pathname.new(GEM_ROOT)
 	
+	core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+	
+	project_name = 'youtube'
+	project_dir  = root/'bin'/'projects'/project_name
+	project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+	
+	Dir.chdir project_dir do
+		puts "ruby level execution"
+		puts ""
+		puts "Remember: Type 'r' or 'run' to start"
+		puts "Remember: type 'q' to exit GDB."
+		puts "=============================="
+		puts ""
+		
+		exe_path = "./lib/main.rb"
+		# ENV['RUBYOF_RUBY_MAIN'] = exe_path
+		# https://stackoverflow.com/questions/6121094/how-do-i-run-a-program-with-commandline-args-using-gdb-within-a-bash-script
+		Kernel.exec "gdb --args ruby #{exe_path}"
+	end
 end
 
 
@@ -1555,32 +1014,71 @@ end
 
 
 
-# cpp_wrapper_code   build / clean
-# cpp_callbacks      build / clean / clobber
-# cpp_project        build / clean / clobber
 
 
-# # clean
-# 	rake clean
-# 	rake clean_cpp_wrapper[rubyOF_project]
-# 	rake clean_project[rubyOF_project]
-	
+
+
+
+module RubyOF
+	module Build
+
+
+end
+end
+
+
+# TODO: implement 'create_project' rake task
+task :create_project, [:project_name] do |t, args|
+	args[:project_name]
+end
+
+
+
+
+
+
+
+
+
+
+load './rake/clean_and_clobber.rb'
+
+# add dependencies to default 'clean' / 'clobber' tasks
+# NOTE: Don't edit the actual body of the task
+task :clean => [
+	'core_wrapper:clean',
+	'project_wrapper:clean'
+]
+
+task :clobber => [
+	'core_wrapper:clobber',
+	'project_wrapper:clobber'
+]
+
+# =============
+# old stuff
+
+# task :clobber => ['oF_deps:clobber', 'oF:clean']
+
+# TODO: Update clean tasks to remove the makefile after running "make clean"
+# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
+
+# =============
+
+
+
+
+
+
+
+
+
+
 # 	rake oF:clean
 # 		rake oF_deps:clean
 # 			rake oF_deps:kiss:clean
 # 			rake oF_deps:tess2:clean
 	
-# 	rake oF_project:clean
-# 	rake oF_project:static_lib:clean
-	
-# 	rake cpp_wrapper_code:clean
-	
-# 	rake cpp_project:clean[rubyOF_project]
-	
-# 	rake cpp_callbacks:clean[rubyOF_project]
-
-	
-
 # # clobber
 # 	rake clobber
 	
@@ -1595,251 +1093,4 @@ end
 
 
 
-
-# clean just a few things
-desc "For reversing :build_cpp_wrapper"
-task :clean_cpp_wrapper, [:rubyOF_project] => [
-	'cpp_wrapper_code:clean',
-	'cpp_project:clean',
-	'cpp_callbacks:clean'
-]
-
-desc "For reversing :build_project"
-task :clean_project, [:rubyOF_project] => [
-	'cpp_project:clean',
-	'cpp_callbacks:clean'
-]
-
-desc "For reversing :build_project"
-task :clobber_project, [:rubyOF_project] => [
-	'cpp_project:clobber',
-	'cpp_callbacks:clobber'
-] do |t, args|
-	name, path = RubyOF::Build.load_project(args[:rubyOF_project])
-	
-	filepath = (Pathname.new(path) + 'Gemfile.lock')
-	FileUtils.rm filepath if filepath.exist?
-end
-
-
-
-
-
-# add dependencies to default 'clean' / 'clobber' tasks
-# NOTE: Don't edit the actual body of the task
-task :clean   => [
-	'oF_project:clean',
-	'cpp_wrapper_code:clean',
-	'cpp_project:clean',  # requires :rubyOF_project var
-	'cpp_callbacks:clean' # requires :rubyOF_project var
-]
-task :clobber => ['oF_deps:clobber', 'oF:clean']
-
-
-
-# TODO: Update clean tasks to remove the makefile after running "make clean"
-# (the main Makefile is removed on 'clean', so I think all other auto-generated makefiles should follow suit)
-
-
-
-desc "Set up environment on a new machine."
-task :setup => [
-	# 'oF:download_libs',
-	'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
-	'oF:build',
-	'oF_project:build'
-] do
-	FileUtils.mkdir_p "bin/data"
-	FileUtils.mkdir_p "bin/lib" # <-- DYNAMIC_LIB_PATH
-	FileUtils.mkdir_p "bin/projects"
-	FileUtils.mkdir_p "bin/projects/testProjectRuby/bin"
-	FileUtils.mkdir_p "bin/projects/testProjectRuby/ext"
-	FileUtils.mkdir_p "bin/projects/testProjectRuby/lib"
-end
-
-
-
-# desc "Copy oF dynamic libs to correct location"
-task :install_oF_dynamic_libs do
-	puts "=== Copying OpenFrameworks dynamic libs..."
-	
-	# -rpath flag specifies where to look for dynamic libraries
-	# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-	
-	# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-	# (specified in extconf.rb)
-	
-	src = File.expand_path(
-		        "./libs/fmodex/lib/#{PLATFORM}/libfmodex.so",
-	           OF_ROOT
-	      )
-	dest = DYNAMIC_LIB_PATH
-	FileUtils.copy(src, dest)
-	
-	# (actual DYNAMIC_LIB_PATH directory created explictly in :setup task above)
-	# (does not reference the constant)
-	
-	# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
-end
-
-
-
-# For working on a normal OpenFrameworks project in pure C++
-desc "Build a normal OpenFrameworks project in pure C++"
-task :build_cpp => ['oF:build', 'oF_project:build']
-
-
-
-# For integrating Rice bindings with the current RubyOF project
-# (can edit addons, oF core, oF project, Rice bindings, or RubyOF project)
-# 
-# Assumes 'setup' has been run.
-# 
-# Build dependencies shifted from explict to implied, (assumes task has run)
-# so that you don't duplicate the work being done in :setup.
-# This way, the build process will go a little faster.
-desc "For updating Rice code, and testing with current RubyOF project"
-task :build_cpp_wrapper, [:rubyOF_project] => [
-	'oF:build',
-	
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	'cpp_wrapper_code:build', # implicitly requires oF_project:build
-	# ^ multiple steps:
-	#   +  extconf.rb -> makefile
-	#   +  run the makefile -> build ruby dynamic lib (.so)
-	#   +  move ruby dynamic lib (.so) into proper position
-	#   +  ALSO rebuilds the clang symbol DB as necessary.
-	
-	:install_oF_dynamic_libs,
-	
-	
-	'cpp_project:build',
-	'cpp_callbacks:build'
-] do
-	
-	puts ">>> BUILD COMPLETE <<<"
-	
-end
-
-
-# For using stable bindings with a custom blend of C++ and Ruby
-# (can edit addons, or RubyOF project)
-# 
-# Assumes 'setup' has been run
-# Assumes 'build_cpp_wrapper' has been run
-desc "For using stable bindings with a custom blend of C++ and Ruby"
-task :build_project, [:rubyOF_project] => [
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:export_build_variables', # implicitly requires oF_project:build
-	'oF_project:static_lib:build',
-	
-	:install_oF_dynamic_libs,
-	
-	'cpp_project:build',
-	'cpp_callbacks:build'
-] do |t, args|
-	puts ">>> BUILD COMPLETE <<<"
-end
-
-# NOTE: parameters to rake task are passed to all dependencies as well
-# source: https://stackoverflow.com/questions/12612323/rake-pass-parameters-to-dependent-tasks
-
-
-
-# --- pathway ---
-desc "Build up from a newly cloned repo"
-task :full_build, [:rubyOF_project] => [
-	:setup,
-	:build_cpp_wrapper,
-	:build_project
-]
-
-
-
-
-
-
-# (tasks that do not need the 'project' argument will ignore it)
-# desc "Run default build task (:build_cpp_wrapper)"
-# task :build, [:rubyOF_project] => :build_cpp_wrapper
-desc "Run default build task (:build_project)"
-task :build, [:rubyOF_project] => :build_project
-
-
-
-# task :run => 'oF_project:run'
-
-desc "Run the entire project, through the ruby level"
-task :run, [:rubyOF_project] => 'ruby:run'
-	# can't just say 'run' any more.
-	# need to specify what project is being run
-
-task :build_and_run, [:rubyOF_project]  => [:build, :run] do
-	
-end
-
-
-
-
-
-desc "Assumes build options are set to make 'Debug' target"
-task :debug_project => [
-	'oF:build',
-	'oF_project:build',                  # implicitly requires oF:build
-	'oF_project:debug'
-] do
-	
-end
-
-desc "Debug application through the Ruby level with GDB"
-task :debug, [:rubyOF_project]  => 'ruby:debug'
-
-
-
-
-
-# TODO: move this into the oF_deps namespace, and then consolodate all path definitions.
-# NOTE: Assumes you're running on Linux
-desc "Examine compiled libraries (linux)"
-task :examine, [:library_name] do |t, args|
-	name = args[:library_name].to_sym
-	path =
-		case name
-			when :kiss
-				"ext/oF_deps/master/custom/kiss/custom_build/lib/libkiss.a"
-			when :tess2
-				"ext/oF_deps/master/custom/tess2/lib/#{PLATFORM}/libtess2.a"
-			when :oF_core
-				"ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworks.a"
-			when :oF_project
-				if OF_DEBUG
-					"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}_debug"
-				else
-					"ext/oF_apps/#{OF_SKETCH_NAME}/bin/#{OF_SKETCH_NAME}"
-				end
-			when :oF_project_lib
-				"ext/oF_apps/#{OF_SKETCH_NAME}/lib/libOFSketch.a"
-			when :rubyOF
-				"ext/rubyOF/rubyOF.so"
-		end
-	
-	case File.extname path
-		when ".a"
-			run_i "nm -C #{path}"
-		when ".so"
-			run_i "nm -C -D #{path}"
-		else # linux executable
-			run_i "nm -C #{path}"
-	end
-	
-	# # the -C flag is for de-mangling the C++ function names
-	# run_i "nm -C #{path_to_lib}"
-	
-	# # this command will let you see inside an .so
-	# # nm -C -D libfmodex.so
-	# # src: http://stackoverflow.com/questions/4514745/how-do-i-view-the-list-of-functions-a-linux-shared-library-is-exporting
-end
-
+load './rake/examine.rake'

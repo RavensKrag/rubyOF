@@ -3,6 +3,7 @@
 
 const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::Space,
+	ofUnicode::IdeographicSpace,
 	ofUnicode::Latin,
 	ofUnicode::Latin1Supplement,
 	ofUnicode::Greek,
@@ -47,7 +48,12 @@ const ofUnicode::range ALL_UNICODE_RANGES[] = {
 	ofUnicode::ArabicMath,
 	ofUnicode::MiscSymbolsAndPictographs,
 	ofUnicode::Emoticons,
-	ofUnicode::TransportAndMap
+	ofUnicode::TransportAndMap,
+	ofUnicode::EnclosedCharacters,
+	ofUnicode::Uncategorized,
+	ofUnicode::AdditionalEmoticons,
+	ofUnicode::AdditionalTransportAndMap,
+	ofUnicode::OtherAdditionalSymbols
 };
 
 
@@ -66,29 +72,29 @@ const std::initializer_list<ofUnicode::range> ALL_UNICODE_ALPHABETS[] = {
 
 
 
-void ofTtfSettings_setFontName(ofTtfSettings& settings, std::string name)
+void ofTtfSettings_setFontName(ofTrueTypeFontSettings& settings, std::string name)
 {
 	settings.fontName = name;
 }
 
-std::string ofTtfSettings_getFontName(const ofTtfSettings& settings){
+std::string ofTtfSettings_getFontName(const ofTrueTypeFontSettings& settings){
 	return settings.fontName.string();
 }
 
-void ofTtfSettings_setFontSize(ofTtfSettings& settings, int size)
+void ofTtfSettings_setFontSize(ofTrueTypeFontSettings& settings, int size)
 {
 	settings.fontSize = size;
 }
 
-int ofTtfSettings_getFontSize(const ofTtfSettings& settings){
+int ofTtfSettings_getFontSize(const ofTrueTypeFontSettings& settings){
 	return settings.fontSize;
 }
 
-void ofTtfSettings_setAntialiased(ofTtfSettings& settings, bool aa){
+void ofTtfSettings_setAntialiased(ofTrueTypeFontSettings& settings, bool aa){
 	settings.antialiased = aa;
 }
 
-bool ofTtfSettings_isAntialiased(const ofTtfSettings& settings){
+bool ofTtfSettings_isAntialiased(const ofTrueTypeFontSettings& settings){
 	return settings.antialiased;
 }
 
@@ -96,11 +102,11 @@ bool ofTtfSettings_isAntialiased(const ofTtfSettings& settings){
 
 
 // TODO: Implement this.
-void ofTtfSettings_addRanges(ofTtfSettings& settings, Rice::Object rb_range_list){
+void ofTtfSettings_addRanges(ofTrueTypeFontSettings& settings, Rice::Object rb_range_list){
 	// settings.addRanges();
 }
 
-void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index){
+void ofTtfSettings_addRange(ofTrueTypeFontSettings& settings, Rice::Object rb_range_index){
 	
 	Rice::Object tmp_obj = rb_range_index;
 	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
@@ -110,7 +116,7 @@ void ofTtfSettings_addRange(ofTtfSettings& settings, Rice::Object rb_range_index
 }
 
 // NOTE: This is custom (not in the main OpenFrameworks API)
-void ofTtfSettings_addAlphabet(ofTtfSettings& settings, Rice::Object rb_range_index){
+void ofTtfSettings_addAlphabet(ofTrueTypeFontSettings& settings, Rice::Object rb_range_index){
 	
 	Rice::Object tmp_obj = rb_range_index;
 	int i = tmp_obj.is_nil() ? -1 : from_ruby<int>(tmp_obj);
@@ -133,7 +139,7 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 		.define_constructor(Constructor<ofTrueTypeFont>())
 		.define_method("load",
 			static_cast<bool (ofTrueTypeFont::*)
-			(const ofTtfSettings&)
+			(const ofTrueTypeFontSettings&)
 			>(&ofTrueTypeFont::load)
 		)
 		.define_method("draw_string",      &ofTrueTypeFont::drawString)
@@ -157,16 +163,27 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 			// "error: ‘int ofTrueTypeFont::getKerning(int, int) const’ is protected"
 		
 		.define_method("antialiased?",     &ofTrueTypeFont::isAntiAliased)
+		
+		
+		
+		.define_method("get_string_mesh",  &ofTrueTypeFont::getStringMesh)
+		// Returns the string as an ofMesh. Note: this is a mesh that contains vertices and texture coordinates for the textured font, not the points of the font that are returned via any of the get points functions.
+		// src: OpenFrameworks documentation
+		// 
+		// This mesh is just bounding boxes for each and every character.
+		
+		.define_method("font_texture",     &ofTrueTypeFont::getFontTexture)
+		// This is the texture associated with the mesh above
 	;
 	
 	
 	
 	
-	Data_Type<ofTtfSettings> rb_cTtfSettings = 
-		define_class_under<ofTtfSettings>(rb_mRubyOF, "TtfSettings");
+	Data_Type<ofTrueTypeFontSettings> rb_cTrueTypeFontSettings = 
+		define_class_under<ofTrueTypeFontSettings>(rb_mRubyOF, "TrueTypeFontSettings");
 	
-	rb_cTtfSettings
-		.define_constructor(Constructor<ofTtfSettings, const std::string, int>())
+	rb_cTrueTypeFontSettings
+		.define_constructor(Constructor<ofTrueTypeFontSettings, const std::string, int>())
 		.define_method("font_name",       &ofTtfSettings_getFontName)
 		.define_method("font_name=",      &ofTtfSettings_setFontName)
 		.define_method("font_size",       &ofTtfSettings_getFontSize)

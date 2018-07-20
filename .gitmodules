@@ -1,3 +1,15 @@
-[submodule "ext/openFrameworks"]
-	path = ext/openFrameworks
-	url = git@github.com:RavensKrag/openFrameworks.git
+[submodule "vendor/apothecary"]
+	path = vendor/apothecary
+	url = git@github.com:RavensKrag/apothecary.git
+[submodule "ext/openFrameworks/addons/ofxDatGui"]
+	path = ext/openFrameworks/addons/ofxDatGui
+	url = https://github.com/braitsch/ofxDatGui.git
+[submodule "ext/openFrameworks/addons/ofxGuiExtended"]
+	path = ext/openFrameworks/addons/ofxGuiExtended
+	url = https://github.com/frauzufall/ofxGuiExtended.git
+[submodule "ext/openFrameworks/addons/ofxInfiniteCanvas"]
+	path = ext/openFrameworks/addons/ofxInfiniteCanvas
+	url = https://github.com/roymacdonald/ofxInfiniteCanvas.git
+[submodule "ext/openFrameworks/addons/ofxImGui"]
+	path = ext/openFrameworks/addons/ofxImGui
+	url = https://github.com/jvcleave/ofxImGui.git

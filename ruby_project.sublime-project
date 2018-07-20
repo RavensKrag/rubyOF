@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": "bin/projects/youtube"
+		},
+		{
+			"path": "bin/projects/example"
+		},
+		{
+			"path": "lib"
+		},
+		{
+			"path": "ext/rubyOF"
+		}
+	]
+}

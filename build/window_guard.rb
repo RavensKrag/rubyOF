@@ -21,19 +21,23 @@ class WindowGuard < Window
 	
 	# wrap each and every callback method in an exception guard
 	# (also wrap initialize too, because why not)
-	[
-		:initialize,
-		:setup,
-		:update,
-		:draw,
-		:on_exit,
-		:key_pressed,
-		:key_released,
-		:mouse_moved,
-		:mouse_pressed,
-		:mouse_released,
-		:mouse_dragged
-	].each do |method|
+	
+	# [
+	# 	:initialize,
+	# 	:setup,
+	# 	:update,
+	# 	:draw,
+	# 	:on_exit,
+	# 	:key_pressed,
+	# 	:key_released,
+	# 	:mouse_moved,
+	# 	:mouse_pressed,
+	# 	:mouse_released,
+	# 	:mouse_dragged
+	# ]
+	methods = (Window.instance_methods - Object.instance_methods) +
+	          [:initialize]
+	methods.each do |method|
 		define_method method do |*args|
 			exception_guard do
 				super(*args)

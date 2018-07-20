@@ -1,0 +1,1821 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"fp",
+				"filepath"
+			],
+			[
+				"data",
+				"data_dir"
+			],
+			[
+				"update",
+				"update_fiber"
+			],
+			[
+				"local_",
+				"local_channel_info"
+			],
+			[
+				"yiel",
+				"yielding_collect"
+			],
+			[
+				"Stop",
+				"StopIteration"
+			],
+			[
+				"pipe",
+				"pipeline"
+			],
+			[
+				"window",
+				"window_size"
+			],
+			[
+				"save",
+				"save_filepath"
+			],
+			[
+				"yt",
+				"yt_channel"
+			],
+			[
+				"text_",
+				"text_mesh"
+			],
+			[
+				"attr",
+				"attr_reader"
+			],
+			[
+				"icn",
+				"icon_pos"
+			],
+			[
+				"font",
+				"font_color"
+			],
+			[
+				"scr",
+				"scrollY"
+			],
+			[
+				"require",
+				"require_all"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"Fiber",
+				"Fiber"
+			],
+			[
+				"loca",
+				"local_subscriptions"
+			],
+			[
+				"image",
+				"image_i"
+			],
+			[
+				"zip",
+				"zip_pair"
+			],
+			[
+				"chann",
+				"channel-name"
+			],
+			[
+				"channel",
+				"channel_name"
+			],
+			[
+				"icon_",
+				"icon_filepath"
+			],
+			[
+				"outp",
+				"output_path"
+			],
+			[
+				"channe",
+				"channel_name"
+			],
+			[
+				"OFB",
+				"OF_BUILD_VARIABLE_FILE"
+			],
+			[
+				"root",
+				"REPO_ROOT"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"exten",
+				"ofx_extension_name"
+			],
+			[
+				"repo",
+				"REPO_ROOT"
+			],
+			[
+				"expand",
+				"expand_path"
+			],
+			[
+				"onl",
+				"only_so"
+			],
+			[
+				"sketch",
+				"sketch_dump"
+			],
+			[
+				"dump",
+				"dump_so"
+			],
+			[
+				"cate",
+				"category_dir"
+			],
+			[
+				"exp",
+				"expand_path"
+			],
+			[
+				"trail",
+				"trail_dt"
+			],
+			[
+				"es",
+				"exit_status"
+			],
+			[
+				"have_",
+				"have_library"
+			],
+			[
+				"gstream",
+				"gstreamer"
+			],
+			[
+				"polib",
+				"poco_libs_dir"
+			],
+			[
+				"build_",
+				"build_tess2"
+			],
+			[
+				"depe",
+				"dependencies"
+			],
+			[
+				"ext",
+				"extconf"
+			],
+			[
+				"oF",
+				"oF_project"
+			],
+			[
+				"clb",
+				"c_library"
+			],
+			[
+				"work",
+				"work_dir"
+			],
+			[
+				"temp",
+				"temp_ext"
+			],
+			[
+				"mk",
+				"mySketch"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"bu",
+				"build"
+			],
+			[
+				"bur",
+				"build_library"
+			],
+			[
+				"clib",
+				"clean_library"
+			],
+			[
+				"ce",
+				"1.coerce"
+			],
+			[
+				"visua",
+				"visualizations"
+			],
+			[
+				"test_",
+				"test_package"
+			],
+			[
+				"prev",
+				"prev_tick"
+			],
+			[
+				"poss",
+				"possible_targets"
+			],
+			[
+				"const",
+				"constraint_target"
+			],
+			[
+				"rec",
+				"resources"
+			],
+			[
+				"Hash",
+				"HashWrapper"
+			],
+			[
+				"remo",
+				"removal_flag"
+			],
+			[
+				"con",
+				"constraint"
+			],
+			[
+				"paramet",
+				"parameterization"
+			],
+			[
+				"visu",
+				"visualization"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"necessary",
+				"necessary_pairs"
+			],
+			[
+				"cont",
+				"constraint_type"
+			],
+			[
+				"nece",
+				"necessary_pairs"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"inti",
+				"initialize"
+			],
+			[
+				"ent",
+				"entities"
+			],
+			[
+				"segment",
+				"segment_query"
+			],
+			[
+				"compo",
+				"components"
+			],
+			[
+				"query",
+				"query_data"
+			],
+			[
+				"origi",
+				"original_color"
+			],
+			[
+				"active",
+				"active_cascade"
+			],
+			[
+				"var",
+				"var_name"
+			],
+			[
+				"projec",
+				"project_directory"
+			],
+			[
+				"other",
+				"other_stuff"
+			],
+			[
+				"unpa",
+				"unpack_with_class_name"
+			],
+			[
+				"compon",
+				"component"
+			],
+			[
+				"qu",
+				"query_components"
+			],
+			[
+				"styl",
+				"style_components"
+			],
+			[
+				"names",
+				"named_styles"
+			],
+			[
+				"comp",
+				"component"
+			],
+			[
+				"full",
+				"full_path"
+			],
+			[
+				"sc",
+				"style_component"
+			],
+			[
+				"primary",
+				"primary_style"
+			],
+			[
+				"casc",
+				"cascade_list"
+			],
+			[
+				"enti",
+				"entity_id"
+			],
+			[
+				"component",
+				"component_data"
+			],
+			[
+				"componen",
+				"component"
+			],
+			[
+				"collec",
+				"collection"
+			],
+			[
+				"activ",
+				"active_list"
+			],
+			[
+				"write",
+				"write_data"
+			],
+			[
+				"wri",
+				"write_data"
+			],
+			[
+				"par",
+				"packed_array"
+			],
+			[
+				"compd",
+				"component_data"
+			],
+			[
+				"each_",
+				"each_with_index"
+			],
+			[
+				"all",
+				"all_style_objects"
+			],
+			[
+				"style",
+				"style_component"
+			],
+			[
+				"righc",
+				"right_callbacks"
+			],
+			[
+				"lftc",
+				"left_callbacks"
+			],
+			[
+				"butt",
+				"mouse_button"
+			],
+			[
+				"actt",
+				"active_action"
+			],
+			[
+				"ti",
+				"text_input"
+			],
+			[
+				"acc",
+				"active_action"
+			],
+			[
+				"acti",
+				"active_action"
+			],
+			[
+				"mous",
+				"mouse_button"
+			],
+			[
+				"button",
+				"button_phase"
+			],
+			[
+				"hit",
+				"hitbox_color"
+			],
+			[
+				"clone",
+				"clone_factory"
+			],
+			[
+				"old",
+				"old_text"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"regist",
+				"register_prototype"
+			],
+			[
+				"inp",
+				"text_input"
+			],
+			[
+				"text",
+				"text_input"
+			],
+			[
+				"est",
+				"estimated_i"
+			],
+			[
+				"first",
+				"first_guess"
+			],
+			[
+				"esti",
+				"estimated_i"
+			],
+			[
+				"meas",
+				"measured_offset"
+			],
+			[
+				"disp",
+				"measured_displacement"
+			],
+			[
+				"caret",
+				"caret_pos"
+			],
+			[
+				"dir",
+				"dirty"
+			],
+			[
+				"no",
+				"normalized_anchor"
+			],
+			[
+				"nw",
+				"new_height"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 750.0,
+		"last_filter": "packen",
+		"selected_items":
+		[
+			[
+				"packen",
+				"Package Control: Enable Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"ori below",
+				"Origami: Create Pane Below"
+			],
+			[
+				"ori pan eri",
+				"Origami: Create Pane on the Right"
+			],
+			[
+				"ori dest",
+				"Origami: Destroy Pane on the Left"
+			],
+			[
+				"ori",
+				"Origami: Destroy Pane Below"
+			],
+			[
+				"ori de",
+				"Origami: Destroy Current Pane"
+			],
+			[
+				"origa pane le",
+				"Origami: Create Pane on the Left"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"c++",
+				"Set Syntax: Objective-C++"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			],
+			[
+				"anno",
+				"Git: Toggle Annotations"
+			]
+		],
+		"width": 1062.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/ravenskrag/Desktop/gem_structure"
+	],
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/monkey_patches/Chipmunk/Shape/Rect.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/rectangle.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/checkpoint.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/sketch/lazy_unzip.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/data.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/local_data.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/foo2.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/channel_info.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/common.rb",
+		"/home/ravenskrag/Desktop/gem_structure/Rakefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/monkey_patches/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/ofx2DCamExample/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/addon_config.mk",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/ext/callbacks/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/database/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/main.rb",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/fiber_test.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/TrueTypeFont.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/graphics.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/example/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/main2.rb",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/youtube_mining/local_data.yml",
+		"/home/ravenskrag/Projects/1_Sketchbook/Current/youtube_mining/youtube_subscriptions_2.html",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/src/ofxPDFium.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/src/ofxPDFium.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/ofApp.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/ofApp.h",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/example/src/main.cpp",
+		"/home/ravenskrag/Projects/2_Personal/Current/of_pdf_import/ofxPDFium_test/ofxPDFium/libs/fpdfsdk/include/fpdf_dataavail.h",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/git_repo/addons/ofxiOS/src/app/ofAppiOSWindow.mm",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CHANGELOG.md",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/new/openFrameworks/CODE_OF_CONDUCT.md",
+		"/home/ravenskrag/Applications/0_ local launchers/Cytoscape-0.desktop",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/scripts/linux/compileOF.sh",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/INSTALL.md",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_build_system.sublime-workspace",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-project",
+		"/home/ravenskrag/Experiments/RubyCPP/project_files/oF_ruby_core.sublime-workspace",
+		"/home/ravenskrag/Code/Source/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/config.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile.static_lib",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/mkmf.log",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/oF_build_variables.yaml",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/Makefile.backup",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxGamepad/example/src/gamepadExampleApp.cpp",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/Rakefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/of_build_variables.yaml",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/utf8cpp/include/utf8.h",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/lib/test.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxAssimpModelLoader/addon_config.mk",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/obj/linux64/Release/ofxAssimpModelLoader/src/ofxAssimpMeshHelper.d",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/extconf.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/addons/ofxOsc/addon_config.mk",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination.txt",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/so_examination_clobbered.txt",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_WIN32.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_VX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event_POSIX.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventLogChannel.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/EventArgs.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/poco/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/README",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/glfw/include/GLFW/glfw3.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.build",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/config.make",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/configure",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/Event.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Event.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/src/Thread.cpp",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/original/kiss/include/kiss_fft.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Foundation/include/Poco/AbstractEvent.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/tess2/Build/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/tess2/Build/tess2.make",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/FreeImage/include/FreeImage.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/utf8cpp/include/utf8/checked.h",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/boost/include/boost/system/system_error.hpp",
+		"/usr/include/boost/system/api_config.hpp",
+		"/usr/include/boost/system/config.hpp",
+		"/usr/include/boost/system/cygwin_error.hpp",
+		"/usr/include/boost/system/error_code.hpp",
+		"/usr/include/boost/system/linux_error.hpp",
+		"/usr/include/boost/system/system_error.hpp",
+		"/usr/include/boost/accumulators/framework/accumulator_base.hpp",
+		"/home/ravenskrag/Experiments/RubyCPP/Oni/ext/oni/extconf.deploy.rb",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/build/Makefile",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/build/CMakeFiles/kiss.dir/flags.make",
+		"/home/ravenskrag/Experiments/OpenFrameworks/of_v0.9.3_libs/custom/kiss/build/cmake_install.cmake"
+	],
+	"find":
+	{
+		"height": 72.0
+	},
+	"find_in_files":
+	{
+		"height": 182.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 47.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "main_project.sublime-project",
+	"replace":
+	{
+		"height": 86.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"rect",
+				"lib/rubyOF/rectangle.rb"
+			],
+			[
+				"h",
+				"youtube/lib/helpers.rb"
+			],
+			[
+				"wind",
+				"youtube/lib/window.rb"
+			],
+			[
+				"help",
+				"youtube/lib/helpers.rb"
+			],
+			[
+				"color",
+				"lib/rubyOF/color.rb"
+			],
+			[
+				"graphics",
+				"rubyOF/Graphics.cpp"
+			],
+			[
+				"grah",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"graph",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"rake",
+				"gem_structure/Rakefile"
+			],
+			[
+				"pdfim",
+				"ofxPDFium/src/ofxPDFium.cpp"
+			],
+			[
+				"ofh",
+				"example/src/ofApp.h"
+			],
+			[
+				"main",
+				"example/src/main.cpp"
+			],
+			[
+				"ofxgui",
+				"addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				"pocorulescompile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile"
+			],
+			[
+				"custompocolinux",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux"
+			],
+			[
+				"custompocomakefile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile"
+			],
+			[
+				"compileprojectmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"configproject",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"configsharedmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"comple",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"configlinux6",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compiledmakefilecommcompile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"openframeworksmakefile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"install",
+				"of_v0.9.3_linux64_release/INSTALL.md"
+			],
+			[
+				"releasecompile",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags"
+			],
+			[
+				"compilerflags",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags"
+			],
+			[
+				"sketchstatic",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile.static_lib"
+			],
+			[
+				"sketchaddons",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/addons.make"
+			],
+			[
+				"ofbuildvaria",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/oF_build_variables.yaml"
+			],
+			[
+				"of_testadd",
+				"~/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make"
+			],
+			[
+				"addons",
+				"of_v0.9.3_linux64_release/addons/ofxAbletonLive/AbletonOSC/addons.make"
+			],
+			[
+				"ofbuild",
+				"RubyCPP/Oni/oF_build_variables.yaml"
+			],
+			[
+				"variables",
+				"RubyCPP/Oni/ext/oni/of_build_variables.yaml"
+			],
+			[
+				".gi",
+				"RubyCPP/.gitignore"
+			],
+			[
+				"extvar",
+				"RubyCPP/Oni/ext/oni/extconf_variables.rb"
+			],
+			[
+				"make",
+				"RubyCPP/Oni/ext/oni/Makefile"
+			],
+			[
+				"ext",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"extc",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"event.h",
+				"poco-1.7.4-all/Foundation/include/Poco/Event.h"
+			],
+			[
+				"event",
+				"poco-1.7.4-all/Foundation/src/Event.cpp"
+			],
+			[
+				"thread",
+				"poco-1.7.4-all/Foundation/src/Thread.cpp"
+			],
+			[
+				"test",
+				"Oni/lib/test.rb"
+			],
+			[
+				"xt",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"mysketchmake",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"gem",
+				"Oni/oni.gemspec"
+			],
+			[
+				"log",
+				"Oni/ext/oni/mkmf.log"
+			],
+			[
+				"extco",
+				"Oni/ext/oni/extconf.deploy.rb"
+			],
+			[
+				"compileco",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"config.m",
+				"Oni/ext/oni/cpp/oF_Test/mySketch/config.make"
+			],
+			[
+				"link",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compileof",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"git",
+				"~/Experiments/RubyCPP/.gitignore"
+			],
+			[
+				"ex",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"e",
+				"~/Experiments/RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"confp",
+				"~/Experiments/OpenFrameworks/of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"rubycppofmake",
+				"RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/Makefile"
+			],
+			[
+				"rubycpprake",
+				"RubyCPP/Oni/Rakefile"
+			],
+			[
+				"rubycppext",
+				"RubyCPP/Oni/ext/oni/extconf.rb"
+			],
+			[
+				"makefile",
+				"Oni/ext/oni/Makefile"
+			],
+			[
+				"extconf",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				"trutype",
+				"libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
+			],
+			[
+				"freeim",
+				"libs/FreeImage/include/FreeImage.h"
+			],
+			[
+				"ofimage",
+				"libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"mainh",
+				"libs/openFrameworks/ofMain.h"
+			],
+			[
+				"project",
+				"libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"rubymain",
+				"SublimeREPL/config/Ruby/Main.sublime-menu"
+			],
+			[
+				"pythonmain",
+				"SublimeREPL/config/Python/Main.sublime-menu"
+			],
+			[
+				"rep",
+				"*REPL* [octave]"
+			],
+			[
+				"plat",
+				"ex1/plotData.m"
+			],
+			[
+				"ex1m",
+				"ex1/ex1_multi.m"
+			],
+			[
+				"warm",
+				"warmUpExercise.m"
+			],
+			[
+				"locking",
+				"locking things in place"
+			],
+			[
+				"groupedi",
+				"TODO: group edit and resize"
+			],
+			[
+				"styecompo",
+				"all classes using Style Component should define de"
+			],
+			[
+				"empyt",
+				"rewrite 'empty space actions' as 'zero target acti"
+			],
+			[
+				"back",
+				"TODO: background coloring"
+			],
+			[
+				"spawn",
+				"spawn action - prototype factory - nested document"
+			],
+			[
+				"manysp",
+				"many spawn actions"
+			],
+			[
+				"groure",
+				"group resize"
+			],
+			[
+				"resize",
+				"group resize"
+			],
+			[
+				"querysb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"visandg",
+				"NOTE: constraint Visualizations and Groups now bot"
+			],
+			[
+				"put",
+				"TODO: put the style data on the Constraint maybe?"
+			],
+			[
+				"how",
+				"how are Queries shown visually?"
+			],
+			[
+				"visua",
+				"Visualizations need to save Style component data"
+			],
+			[
+				"styda",
+				"NOTE: style data not currently duplicated when Ent"
+			],
+			[
+				"stylcomp",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"text",
+				"is Text Box a new type?"
+			],
+			[
+				"savemu",
+				"NOTE: can't save multiple Style Components with id"
+			],
+			[
+				"trasqsb",
+				"TODO: track system - query style binding"
+			],
+			[
+				"fio",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"applys",
+				"apply Style to multiple Entities at once"
+			],
+			[
+				"stylcr",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"editorwor",
+				"editor workflow versus core coding backend interfa"
+			],
+			[
+				"wyhqu",
+				"why did I need queries the last time I wanted quer"
+			],
+			[
+				"thinka",
+				"think ahead into selection"
+			],
+			[
+				"reasont",
+				"is there any reason to keep Component?"
+			],
+			[
+				"locki",
+				"locking things in place"
+			],
+			[
+				"reasonto",
+				"is there any reason to keep Component?"
+			],
+			[
+				"changeent",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"addremove",
+				"add / remove whole entities (including components)"
+			],
+			[
+				"cretaction",
+				"TODO: create action to delete a whole Entity"
+			],
+			[
+				"in",
+				"input system overhaul"
+			],
+			[
+				"over",
+				"TODO: consider overhaul of input system"
+			],
+			[
+				"butup",
+				"button up /  down"
+			],
+			[
+				"insertjo",
+				"are insert and join the same thing?"
+			],
+			[
+				"mousextra",
+				"TODO: consider action factory / mouse action extra"
+			],
+			[
+				"actionfactmous",
+				"TODO: consider action factory / mouse action extra"
+			],
+			[
+				"mul",
+				"multiple editor views"
+			],
+			[
+				"differ",
+				"TODO: consider different views of same space"
+			],
+			[
+				"changeen",
+				"Figure out how to change Entities when style prope"
+			],
+			[
+				"stylewitho",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"scree",
+				"TODO: implement screen space to world space conver"
+			],
+			[
+				"ed",
+				"edit space point query"
+			],
+			[
+				"fixsho",
+				"TODO: fix short circuiting min by, and the entitie"
+			],
+			[
+				"search",
+				"implement text search of all Text objects"
+			],
+			[
+				"textresi",
+				"May want to change how text resizes horizontally o"
+			],
+			[
+				"poly",
+				"TODO: polymorphic edit and resize"
+			],
+			[
+				"cornerre",
+				"TODO: change the way corner resize of rectangles w"
+			],
+			[
+				"nesteddocum",
+				"nested document"
+			],
+			[
+				"layer",
+				"layers of interaction (for UI etc)"
+			],
+			[
+				"onespac",
+				"TODO: use one Space for UI and another for actual"
+			],
+			[
+				"stylepar",
+				"If Style is created without a parent, it's parent"
+			],
+			[
+				"removeob",
+				"TODO: remove Object delegate metaprogramming monke"
+			],
+			[
+				"removeobje",
+				"TODO: remove Object delegate metaprogramming monke"
+			],
+			[
+				"visu",
+				"NOTE: each Constraint Pair needs a separate Visual"
+			],
+			[
+				"constraint",
+				"NOTE: constraint Visualizations and Groups now bot"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 364.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

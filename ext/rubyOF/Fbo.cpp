@@ -32,9 +32,11 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 		
 		
 		.define_method("begin",
-			static_cast<void (ofFbo::*)(ofFboBeginMode)>(&ofFbo::begin),
+			static_cast< void (ofFbo::*)
+			(ofFboMode mode)
+			>(&ofFbo::begin),
 			(
-				Arg("mode") = ofFboBeginMode::Perspective | ofFboBeginMode::MatrixFlip
+				Arg("mode") = OF_FBOMODE_PERSPECTIVE | OF_FBOMODE_MATRIXFLIP
 			)
 		)
 		

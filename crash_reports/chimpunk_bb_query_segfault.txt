@@ -1,0 +1,54 @@
+Thread 1 "ruby" received signal SIGSEGV, Segmentation fault.
+cpBodyActivate (body=0x1c2aec0) at cpSpaceComponent.c:153
+153			if(!cpBodyIsStatic(other)) other->node.idleTime = 0.0f;
+(gdb) bt
+#0  cpBodyActivate (body=0x1c2aec0) at cpSpaceComponent.c:153
+#1  0x00007fffdbec26c4 in cpSpaceEachBody (space=space@entry=0x301eb40, func=0x7fffdbec3c40 <cpBodyActivate>, 
+    data=data@entry=0x0) at cpSpace.c:446
+#2  0x00007fffdbec2742 in cpSpaceDestroy (space=space@entry=0x301eb40) at cpSpace.c:147
+#3  0x00007fffdbec282e in cpSpaceFree (space=0x301eb40) at cpSpace.c:181
+#4  0x00007ffff79877c1 in run_final (zombie=17041520, objspace=0x6039d0) at gc.c:2752
+#5  finalize_list (objspace=objspace@entry=0x6039d0, zombie=17041520) at gc.c:2768
+#6  0x00007ffff79951ff in rb_objspace_call_finalizer (objspace=0x6039d0) at gc.c:2915
+#7  rb_gc_call_finalizer_at_exit () at gc.c:2840
+#8  0x00007ffff797c42e in ruby_finalize_1 () at eval.c:131
+#9  ruby_cleanup (ex=<optimized out>) at eval.c:221
+#10 0x00007ffff797c5c5 in ruby_run_node (n=0x800660) at eval.c:300
+#11 0x000000000040085b in main (argc=2, argv=0x7fffffffdab8) at main.c:36
+(gdb) r
+
+
+I have just introduced some code to cull rendering using chipmunk bb query. When OpenFrameworks shuts down, there appears be a segfault triggered in chimpunk. Not sure why.
+[backtrace is from GDB]
+
+to replicate, use the following git commit,
+SHA 36bdcd09a9a0e728f553af5f999e3f0980403330
+
+1) move camera off center as soon as program starts
+2) immediatly after moving camera, hit 'esc' key to close program
+3) occasionally, you will get a segfault at this stage (at least once or twice per 20 runs)
+
+with the proposed fix, I don't see any segfaults in 20 runs, so I'm reasonably convinced that it is fixed.
+
+
+
+Here's another backtrace:
+
+Thread 1 "ruby" received signal SIGSEGV, Segmentation fault.
+0x00007fffdbec3c6e in ComponentActivate (root=0x2) at cpSpaceComponent.c:122
+122		if(!root || !cpBodyIsSleeping(root)) return;
+(gdb) bt
+#0  0x00007fffdbec3c6e in ComponentActivate (root=0x2) at cpSpaceComponent.c:122
+#1  cpBodyActivate (body=0x21a0e90) at cpSpaceComponent.c:146
+#2  0x00007fffdbec26c4 in cpSpaceEachBody (space=space@entry=0x3021380, func=0x7fffdbec3c40 <cpBodyActivate>, 
+    data=data@entry=0x0) at cpSpace.c:446
+#3  0x00007fffdbec2742 in cpSpaceDestroy (space=space@entry=0x3021380) at cpSpace.c:147
+#4  0x00007fffdbec282e in cpSpaceFree (space=0x3021380) at cpSpace.c:181
+#5  0x00007ffff79877c1 in run_final (zombie=17833760, objspace=0x6039d0) at gc.c:2752
+#6  finalize_list (objspace=objspace@entry=0x6039d0, zombie=17833760) at gc.c:2768
+#7  0x00007ffff79951ff in rb_objspace_call_finalizer (objspace=0x6039d0) at gc.c:2915
+#8  rb_gc_call_finalizer_at_exit () at gc.c:2840
+#9  0x00007ffff797c42e in ruby_finalize_1 () at eval.c:131
+#10 ruby_cleanup (ex=<optimized out>) at eval.c:221
+#11 0x00007ffff797c5c5 in ruby_run_node (n=0x800660) at eval.c:300
+#12 0x000000000040085b in main (argc=2, argv=0x7fffffffdab8) at main.c:36
