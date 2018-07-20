@@ -465,7 +465,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1528,unix/ravensnest:/tmp/.ICE-unix/1528
+- local/ravensnest:@/tmp/.ICE-unix/1514,unix/ravensnest:/tmp/.ICE-unix/1514
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 rvm_stored_umask:
@@ -595,7 +595,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-jrhiVgFb0uwS/agent.1309"
+- "/tmp/ssh-ZqNLRKSlANRW/agent.1285"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj"
@@ -702,7 +702,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1446'
+- '1425'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.cpp"
@@ -2033,7 +2033,7 @@ COMPILE.C:
 COMPILE.mod:
 - m2c
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/3d510f7f_d4d2_4a65_868d_83aa8ef16208"
+- "/org/gnome/Terminal/screen/e335dfa1_c3a2_4430_9f2a_7b1d986b07b4"
 "^F": []
 COMPILE.S:
 - cc
@@ -2052,7 +2052,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.629"
+- ":1.330"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2259,7 +2259,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/10"
+- "/dev/pts/2"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
