@@ -15,21 +15,22 @@ require 'require_all'
 
 
 current_file = Pathname.new(__FILE__).expand_path
-current_dir  = current_file.parent
-
-Dir.chdir current_dir do
-	require Pathname.new('./helpers.rb').expand_path
-	require Pathname.new('./fibers.rb').expand_path
-	require Pathname.new('./camera.rb').expand_path
+current_file.parent.tap do |lib_dir|
+	require lib_dir/'helpers.rb'
+	require lib_dir/'fibers.rb'
+	require lib_dir/'camera.rb'
 	
-	require Pathname.new('./youtube_channel.rb').expand_path
+	require lib_dir/'youtube_channel.rb'
 	
-	require Pathname.new('./space.rb').expand_path
+	require lib_dir/'space.rb'
 	
-	require_all Pathname.new('./history').expand_path
-	require_all Pathname.new('./monkey_patches/Chipmunk').expand_path
+	require_all lib_dir/'history'
+	require_all lib_dir/'monkey_patches'/'Chipmunk'
 	
-	require_all Pathname.new('./entities').expand_path
+	require_all lib_dir/'entities'
+	
+	
+	require lib_dir/'live_coding'/'code_loader'
 end
 
 
@@ -55,9 +56,6 @@ class Window < RubyOF::Window
 		
 		
 		@p = [0,0]
-		
-		
-		
 	end
 	
 	attr_reader :history
@@ -99,6 +97,19 @@ class Window < RubyOF::Window
 		
 		text = Text.new(@font, "hello world! This is a pen.")
 		@space.add text
+		
+		
+		@live_coding = LiveCoding::DynamicObject.new(
+			self,
+			save_directory:   (PROJECT_DIR/'bin'/'data'),
+			dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
+			method_contract:  [
+				:serialize, :cleanup, :update, :draw,
+				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+			]
+		)
+		
+		@live_coding.setup
 	end
 	
 	def update
@@ -251,6 +262,8 @@ class Window < RubyOF::Window
 			# Do a sort of busy loop at the end for now,
 			# just to keep the main Fiber alive.
 			loop do
+				@live_coding.update
+				
 				Fiber.yield
 			end
 		end
@@ -310,7 +323,6 @@ class Window < RubyOF::Window
 	
 	def draw
 		# super()
-		
 		
 		@draw_debug_ui ||= Fiber.new do
 			c = RubyOF::Color.new
@@ -402,6 +414,8 @@ class Window < RubyOF::Window
 		end
 		# =======
 		
+		# @live_coding.draw(self, @camera)
+		@live_coding.draw()
 		
 		# === Draw screen relative
 		# Render a bunch of different tasks
@@ -415,6 +429,7 @@ class Window < RubyOF::Window
 	def on_exit
 		super()
 		
+		@live_coding.on_exit
 		
 		# --- Save data
 		dump_yaml [self.width, self.height] => @window_dimension_save_file
@@ -460,6 +475,8 @@ class Window < RubyOF::Window
 	
 	def mouse_moved(x,y)
 		@p = [x,y]
+		
+		@live_coding.mouse_moved(x,y)
 	end
 	
 	def mouse_pressed(x,y, button)
@@ -477,6 +494,8 @@ class Window < RubyOF::Window
 				@drag_origin = CP::Vec2.new(x,y)
 				@camera_origin = @camera.pos.clone
 		end
+		
+		@live_coding.mouse_pressed(x,y, button)
 	end
 	
 	def mouse_dragged(x,y, button)
@@ -488,6 +507,8 @@ class Window < RubyOF::Window
 				d = (pt - @drag_origin)/@camera.zoom
 				@camera.pos = d + @camera_origin
 		end
+		
+		@live_coding.mouse_dragged(x,y, button)
 	end
 	
 	def mouse_released(x,y, button)
@@ -497,6 +518,8 @@ class Window < RubyOF::Window
 			when 1 # middle click
 				
 		end
+		
+		@live_coding.mouse_released(x,y, button)
 	end
 	
 	def mouse_scrolled(x,y, scrollX, scrollY)
