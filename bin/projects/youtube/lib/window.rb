@@ -103,6 +103,9 @@ class Window < RubyOF::Window
 			self,
 			save_directory:   (PROJECT_DIR/'bin'/'data'),
 			dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
+			
+			parameters:[@space, @font],
+			
 			method_contract:  [
 				:serialize, :cleanup, :update, :draw,
 				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
@@ -324,6 +327,7 @@ class Window < RubyOF::Window
 	def draw
 		# super()
 		
+		
 		@draw_debug_ui ||= Fiber.new do
 			c = RubyOF::Color.new
 			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
@@ -350,6 +354,9 @@ class Window < RubyOF::Window
 			end
 		end
 		
+		
+		
+		
 		# # accept input on every #resume
 		# @draw_color_picker ||= Fiber.new do 
 		# 	# -- render data
@@ -361,69 +368,9 @@ class Window < RubyOF::Window
 		# end
 		
 		
+		@live_coding.draw(self, @camera)
 		
-		# === Draw world relative
-		@camera.draw self.width, self.height do |bb|
-			render_queue = Array.new
-			
-			@space.bb_query(bb) do |entity|
-				render_queue << entity
-			end
-			
-			puts "render queue: #{render_queue.size}"
-			
-			
-			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
-			
-			# Render queue should sort by shader, then texture, then z depth [2]
-			# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
-			# 
-			# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
-			# [2]  http://lspiroengine.com/?p=96
-			
-			render_queue
-			.group_by{ |e| e.texture }
-			.each do |texture, same_texture|
-				# next if texture.nil?
-				
-				texture.bind unless texture.nil?
-				
-				same_texture.each do |entity|
-					entity.draw
-				end
-				
-				texture.unbind unless texture.nil?
-			end
-			
-			# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms
-				# (not really useful right now because everything is just translations, but perhaps useful later when rotations start kicking in.)
-			
-			
-			
-			# ASSUME: @font has not changed since data was created
-				#  ^ if this assumption is broken, Text rendering may behave unpredictably
-				#  ^ if you don't bind the texture, just get white squares
-				
-				
-					# # @font.draw_string("From ruby: こんにちは", x, y)
-					# @font.draw_string(data['channel-name'], x, y)
-					# ofPopStyle()
-					
-					# # NOTE: to move string on z axis just use the normal ofTransform()
-					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-		end
-		# =======
-		
-		# @live_coding.draw(self, @camera)
-		@live_coding.draw()
-		
-		# === Draw screen relative
-		# Render a bunch of different tasks
-		
-		# TODO: only render the task if it is still alive (allow for non-looping tasks)
 		@draw_debug_ui.resume
-		# @draw_color_picker.resume
-		# =======
 	end
 	
 	def on_exit

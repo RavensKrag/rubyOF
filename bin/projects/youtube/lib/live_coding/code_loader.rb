@@ -25,6 +25,7 @@ class DynamicObject
 	    window,
 	    save_directory:,
 	    dynamic_code_file:,
+	    parameters:,
 	    method_contract:[]
 	)
 		if save_directory.nil?
@@ -34,6 +35,12 @@ class DynamicObject
 		if dynamic_code_file.nil?
 			raise "ERROR: Must specify path to the file to be watched using the 'filepath' keyword argument."
 		end
+		
+		if parameters.nil?
+			warn "Warning: No parameters provided to dynamic code loading from #{dynamic_code_file}. Specify parameters using the keyword argument 'parameters' as necessary. (Pack all params into one Array)"
+		end
+		
+		
 		
 		
 		@window = window
@@ -45,6 +52,9 @@ class DynamicObject
 		# Last time the file was loaded
 		# (nil means file was never loaded)
 		@last_load_time = nil
+		
+		# parameters to pass to the wrapper object on setup
+		@parameters = parameters
 		
 		# methods (messages) to be delegated to @wrapped_object
 		@contract = method_contract
@@ -307,7 +317,7 @@ class DynamicObject
 			
 			
 			
-			obj.setup(@window, @save_directory)
+			obj.setup(@window, @save_directory, @parameters)
 			puts "Loaded: #{@file}"
 			
 			
