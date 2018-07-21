@@ -1,14 +1,14 @@
 source 'https://rubygems.org' 
 
-ruby '2.4.0', :patchlevel => '0'
-gem 'bundler', "1.15.3"
+# ruby '2.5.1', :patchlevel => '0'
+gem 'bundler'
 
 
 
 # NOTE: this project also requires Rake,
 # but I don't think I want to force that rake be installed via gems.
 # gem 'rake'
-gem 'rice', "2.1.1"
+gem 'rice', "~>2.1.2"
 
 gem 'opengl', "0.10.0"
 # ^ this should be an explict dependency of the RubyOF gem or w/e
@@ -21,8 +21,8 @@ gem 'opengl', "0.10.0"
 
 
 gem 'json',     "~>2.1.0"
-gem 'nokogiri', "~>1.8.0" # prefer nokogiri over wrapping ofXml
-gem 'roo',      "~>2.2.0" # (for loading spreadsheets)
+gem 'nokogiri', "~>1.8.4" # prefer nokogiri over wrapping ofXml
+gem 'roo',      "~>2.7.1" # (for loading spreadsheets)
 
 
 # gem 'require_all'
@@ -31,10 +31,8 @@ gem 'roo',      "~>2.2.0" # (for loading spreadsheets)
 
 
 
-
 gem 'state_machine', '1.2.0'
 
-gem 'range_operators'
 
 
 
