@@ -1051,6 +1051,7 @@ task :clean => [
 ]
 
 task :clobber => [
+	'oF:clean',
 	'core_wrapper:clobber',
 	'project_wrapper:clobber'
 ]
