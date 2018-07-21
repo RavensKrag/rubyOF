@@ -24,11 +24,32 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 		@space, @font = *parameters
 		
 		
+		# # str = "screen text: hello world!"
 		
-		@text = Text.new(@font, "hello world! This is a pen.")
-		@text.body.p = CP::Vec2.new(200,200)
+		text = "hey"
+		@text = Text.new(@font, "screen text: #{text}")
+		@text.body.p = CP::Vec2.new(660,100)
+		
+		
+		@text.update
+		# @text.update # force an update, because we are already in #draw phase
+		# # (if you don't force the update, when system attempts to draw this text entity, it will fail, because the mesh has not yet been created.)
+		
 		
 		# @space.add @text
+		
+		
+		
+		@font_monospace = 
+			RubyOF::TrueTypeFont.new.dsl_load do |x|
+				# TakaoPGothic
+				x.path = "DejaVu Sans Mono"
+				x.size = 20
+				x.add_alphabet :Latin
+				# x.add_alphabet :Japanese
+			end
+		
+		
 	end
 	
 	# save the state of the object (dump state)
@@ -58,18 +79,40 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 	
 	
 	def update
-		# [
-		# 	@live_wrapper,
-		# 	@input_test,
-		# ].each do |dynamic_obj|
-		# 	dynamic_obj.update
-		# end
+		unless @mouse_text.nil?
+			text = @mouse_text.shape.bb.t.inspect 
+			text += " #{@window.width}  => #{@mouse_text.shape.bb.t  >  @window.width}"
+			
+			# add linebreaks
+			text = text.each_char.each_slice(70).collect{|x| x.join }.join("\n")
+			
+			@text = Text.new(@font_monospace, "debug out:\n #{text}")
+			@text.body.p = CP::Vec2.new(-1100,100)
+			
+			
+			@text.update # force an update, because we are already in #draw phase
+			# (if you don't force the update, when system attempts to draw this text entity, it will fail, because the mesh has not yet been created.)
+		end
+		
+		
+		# @text.string = "test"
+		# @text.update
+		#%^ note: currently now way to change the string on an existing Text entity. That would require regenerating a lot of data, but I should look into making a way to actually do it.
+		
 		
 		# data = @input_test.send_data
 		# @live_wrapper.recieve_data data
 		
 		# puts "hello world"
 		# puts @mouse
+		# puts @mouse
+		unless @mouse.nil?
+			# @text.body.p = @mouse 
+		end
+		
+		# p @text
+		# p @space.methods
+		# p @space.entities.collect{|x| x.class }
 	end
 	
 	def draw(window, camera)
@@ -81,7 +124,7 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 				render_queue << entity
 			end
 			
-			puts "render queue: #{render_queue.size}"
+			# puts "render queue: #{render_queue.size}"
 			
 			
 			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
@@ -122,6 +165,10 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 					
 					# # NOTE: to move string on z axis just use the normal ofTransform()
 					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
+			
+			
+			@text.texture.bind
+			@text.draw()
 		end
 		# =======
 		
@@ -130,6 +177,37 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 		# Render a bunch of different tasks
 		
 		# TODO: only render the task if it is still alive (allow for non-looping tasks)
+		
+		
+		
+		unless @mouse.nil?
+			@mouse_text = Text.new(@font, @mouse.to_s)
+			@mouse_text.update
+			
+			@mouse_text.body.p = @mouse
+			
+			# display text near mouse pointer,
+			# but offset so it doesn't go off the screen
+			offset = CP::Vec2.new(0,0)
+			
+			top_margin = 50
+			kickback = 20
+			
+			if @mouse_text.shape.bb.r > @window.width
+				offset.x = -(@mouse_text.shape.bb.r - @window.width)
+			end
+			if @mouse_text.shape.bb.b < top_margin
+				offset.y = (top_margin - @mouse_text.shape.bb.b)
+			end
+			
+			@mouse_text.body.p = @mouse + offset
+			
+			
+			@mouse_text.texture.bind
+			@mouse_text.draw
+		end
+		
+		
 		# @draw_debug_ui.resume
 		# @draw_color_picker.resume
 		# =======
