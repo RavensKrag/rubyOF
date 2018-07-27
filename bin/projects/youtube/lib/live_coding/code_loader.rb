@@ -344,6 +344,7 @@ class DynamicObject
 		puts "Unloading: #{@file}"
 		
 		unless @wrapped_object.nil?
+			@wrapped_object.cleanup()
 			if kill
 				# (kill now: dont save data, as it may be corrupted)
 				

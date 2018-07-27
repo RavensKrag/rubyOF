@@ -50,6 +50,17 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 			end
 		
 		
+		@mouse_sample_rate = 60
+		
+		@mouse_history = 
+			(30 * @mouse_sample_rate)
+			.times.collect{|x| CP::Vec2.new(0,0) }
+		
+		@mouse_trackers = 30.times.collect{|i| Text.new(@font, "m#{i}") }
+		@mouse_trackers.each do |mouse_tag|
+			mouse_tag.update()
+			@space.add mouse_tag
+		end
 	end
 	
 	# save the state of the object (dump state)
@@ -71,7 +82,11 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 	# Usually, this is just about deleting the
 	# entities you created and put in the space.
 	def cleanup
-		# @space.delete @text
+		@space.delete @text
+		
+		@mouse_trackers.each do |entity|
+			@space.delete entity
+		end
 	end
 	
 	# TODO: figure out if there needs to be a "redo" operation as well
@@ -79,9 +94,22 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 	
 	
 	def update
+		# if @mouse_history.length > 1
+		# 	@mouse_history.pop
+		# end
+		
+		@mouse_history.reverse_each.each_with_index do |point, i|
+			entity = @mouse_trackers[i / @mouse_sample_rate]
+			entity.body.p = point
+		end
+		
+		# puts @mouse_history.collect{|x| x.to_s }.join(' ')
+		
+		
+		
 		unless @mouse_text.nil?
 			text = @mouse_text.shape.bb.t.inspect 
-			text += " #{@window.width}  => #{@mouse_text.shape.bb.t  >  @window.width}"
+			text += "#{@window.width}  => #{@mouse_text.shape.bb.t  >  @window.width}"
 			
 			# add linebreaks
 			text = text.each_char.each_slice(70).collect{|x| x.join }.join("\n")
@@ -246,6 +274,10 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 		# end
 		
 		@mouse = CP::Vec2.new(x,y)
+		
+		x = @mouse_history.shift
+		x = @mouse
+		@mouse_history.push x
 	end
 	
 	def mouse_pressed(x,y, button)
