@@ -4,6 +4,6 @@ class Body
 	end
 	
 	def draw
-		puts "draw"
+		# puts "draw"
 	end
 end

@@ -32,7 +32,7 @@ current_file.parent.tap do |lib_dir|
 	
 	# require lib_dir/'live_coding'/'code_loader'
 	
-	require lib_dir/'live'/'live_coding'
+	require_all lib_dir/'live'/'loader'
 	require lib_dir/'live'/'coroutines'/'turn_counter'
 end
 
@@ -90,10 +90,10 @@ class Window < RubyOF::Window
 		
 		
 		@live =
-			LiveCoding.new(
+			LiveCoding::Loader.new(
 				"Body",
-				header: (PROJECT_DIR/'lib'/'live_coding'/'code'/'body_init.rb'),
-				body:   (PROJECT_DIR/'lib'/'live_coding'/'code'/'body_main.rb'),
+				header: (PROJECT_DIR/'lib'/'live'/'code'/'body_init.rb'),
+				body:   (PROJECT_DIR/'lib'/'live'/'code'/'body_main.rb'),
 				save_directory: @data_dir,
 				
 				method_contract:  [
