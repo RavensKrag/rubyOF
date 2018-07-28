@@ -2,6 +2,22 @@
 # without subclassing Fiber
 
 
+# Imagine playing a game, and you have a plan to play
+# certain moves on certain turns of the game.
+# The TurnCounter mechanism, in conjuction with Fiber,
+# will allow # you to enact that plan in such a way
+# that you can quit the game while it is paused
+# and resume play at some other time.
+# (serialize Fiber's execution position, but not its data)
+# 
+# Created to help implement time traveling code
+# in the style of Bret Victor's "Inventing on Principle"
+# 		https://vimeo.com/36579366
+# (Braid-style time travel while creating code)
+# and the JavaScript prototype "JS Dares"
+# 		http://jsdares.com
+# (a learning environment for javascript in the browser)
+
 
 class TurnCounter
 	def initialize(turn_number:0, step_by:1)
