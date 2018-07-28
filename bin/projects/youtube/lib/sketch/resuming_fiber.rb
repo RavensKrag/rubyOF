@@ -20,15 +20,14 @@
 
 
 class TurnCounter
-	def initialize(turn_number:0, step_by:1)
+	def initialize(turn_number:0)
 		@i = turn_number
-		@step = step_by
 	end
 	
 	def turn(i) # &block
 		# advance the counter, one turn at a time
 		while @i < i
-			@i += @step
+			@i += 1
 			Fiber.yield
 		end
 		
@@ -46,7 +45,8 @@ end
 
 # --- main ---
 puts "initialize"
-@counter ||= TurnCounter.new(turn_number:20, step_by:5)
+@turns_per_callback = 5
+@counter ||= TurnCounter.new(turn_number:0)
 # @counter ||= TurnCounter.new()
 
 @fiber ||= Fiber.new do |s|
@@ -66,8 +66,15 @@ end
 loop do
 	p @counter # show the memory address, to prove object reuse
 	puts "update"
-	@fiber.resume(@counter)
+	
+	@turns_per_callback.times do |i|
+		@fiber.resume(@counter)
+	end
 end
+
+
+# current code takes every nth turn. want to *pause* every n turn instead
+
 
 
 # in order to serialize:
