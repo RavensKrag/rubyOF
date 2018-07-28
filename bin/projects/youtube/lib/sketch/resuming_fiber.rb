@@ -20,14 +20,16 @@
 
 
 class TurnCounter
+	attr_reader :current_turn
+	
 	def initialize(turn_number:0)
-		@i = turn_number
+		@current_turn = turn_number
 	end
 	
 	def turn(i) # &block
 		# advance the counter, one turn at a time
-		while @i < i
-			@i += 1
+		while @current_turn < i
+			@current_turn += 1
 			Fiber.yield
 		end
 		
@@ -35,7 +37,7 @@ class TurnCounter
 		# the counter is initialized past the condition
 		# the yield will never trigger.
 		# (This is the key to skipping certain blocks in the Fiber.)
-		if @i == i
+		if @current_turn == i
 			yield
 		end
 	end
