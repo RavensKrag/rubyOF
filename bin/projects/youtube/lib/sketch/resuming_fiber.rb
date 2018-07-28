@@ -28,7 +28,9 @@ end
 
 # --- main ---
 puts "initialize"
-@state ||= StateClass.new(turn_number:0)
+@state ||= StateClass.new(turn_number:20, step_by:5)
+# @state ||= StateClass.new()
+
 @fiber ||= Fiber.new do |s|
 	s.turn 0 do
 		puts "hello"
