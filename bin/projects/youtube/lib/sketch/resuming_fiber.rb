@@ -2,16 +2,25 @@
 
 
 class StateClass
-	def initialize(turn_number:0)
+	def initialize(turn_number:0, step_by:1)
 		@i = turn_number
+		@step = step_by
 	end
 	
 	def turn(i) # &block
-		until @i == i
-			@i += 1
+		# advance the counter, one turn at a time
+		while @i < i
+			@i += @step
 			Fiber.yield
 		end
-		yield
+		
+		# guard the yield with another condition so if
+		# the counter is initialized past the condition
+		# the yield will never trigger.
+		# (This is the key to skipping certain blocks in the Fiber.)
+		if @i == i
+			yield
+		end
 	end
 end
 
@@ -39,3 +48,8 @@ loop do
 	puts "update"
 	@fiber.resume(@state)
 end
+
+
+# in order to serialize:
+# + save @state to remember the current turn
+# + DON'T save @fiber (if working inside of YAML serialiaztion, make sure that inside the saved data, @fiber := nil. The contents of @fiber are code, which is already saved in a file. Don't need / don't want to serialize that.)
