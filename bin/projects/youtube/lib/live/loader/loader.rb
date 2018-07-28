@@ -39,6 +39,10 @@ class Loader
 		end
 		
 		@wrapped_object = klass.new
+		
+		
+		
+		@history = Array.new
 	end
 
 	# automatically save data to disk before exiting
@@ -51,19 +55,29 @@ class Loader
 	def update
 		# puts "update"
 		
+		unless @wrapped_object.nil?
+			if @history.size < 10
+				@history << @wrapped_object.save 
+			elsif @history.size == 10
+				p @history
+				@history << nil
+			end
+		end
+		
+		
 		# -- update files as necessary
 		@files[:body].dynamic_load
 		
 		
 		# -- delegate update command
 		
-		# protect_runtime_errors do
+		protect_runtime_errors do
 			if @wrapped_object.nil?
-				# puts "null handler: #{sym}"
+				puts "null handler: update"
 			else
 				@wrapped_object.update
 			end
-		# end
+		end
 	end
 	
 	
@@ -135,13 +149,13 @@ class Loader
 		# --- create the acutal delegators
 		method_symbols.each do |sym|
 			meta_def sym do |*args|
-				# protect_runtime_errors do
+				protect_runtime_errors do
 					if @wrapped_object.nil?
 						# puts "null handler: #{sym}"
 					else
 						@wrapped_object.send sym, *args
 					end
-				# end
+				end
 			end
 		end
 	end
@@ -189,23 +203,6 @@ class Loader
 		end
 	end
 	
-	def protect_load_errors # &block
-		begin
-			
-		rescue StandardError => e
-			print_wrapped_error(e)
-			
-			# If there's a problem, you need to get rid of the class that's causing it,
-			# or errors will just stream into STDOUT, which is very bad.
-			unload(kill:true)
-			# (need to kill because #setup may have corrupted the state)
-			
-			# distinguish between 'safe shutdown' unloading, and 'kill this now' unloading. Safe shutdown needs to save state. Kill now should never save state (state is lkely to be corrupted.)
-		ensure
-			# always do this stuff
-		end
-	end
-	
 	# Deactivate an active instance of a Snippet
 	# (only save data when you have a reasonable guarantee it will be safe)
 	# (better to roll back a little, than to save bad data)
@@ -213,16 +210,16 @@ class Loader
 		puts "Unloading: #{@file}"
 		
 		unless @wrapped_object.nil?
-			@wrapped_object.cleanup()
+			@wrapped_object.on_exit()
 			if kill
 				# (kill now: dont save data, as it may be corrupted)
 				
 			else
 				# (safe shutdown: save data before unloading)
-				@wrapped_object.serialize(@save_directory)
+				data = @wrapped_object.save
 			end
 			
-			@wrapped_object =  nil
+			@wrapped_object = nil
 		end
 	end
 	
