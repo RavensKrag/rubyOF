@@ -18,6 +18,7 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 	
 	def setup(window, save_directory, parameters)
 		@window = window
+		p @window.methods
 		
 		root = Pathname.new(__FILE__).expand_path.dirname.parent.parent.parent
 		
