@@ -30,7 +30,10 @@ current_file.parent.tap do |lib_dir|
 	require_all lib_dir/'entities'
 	
 	
-	require lib_dir/'live_coding'/'code_loader'
+	# require lib_dir/'live_coding'/'code_loader'
+	
+	require lib_dir/'live'/'live_coding'
+	require lib_dir/'live'/'coroutines'/'turn_counter'
 end
 
 
@@ -78,8 +81,6 @@ class Window < RubyOF::Window
 		# end
 		# ^ font color is currently being set through the color picker
 		
-		@collection = Array.new
-		
 		
 		
 		
@@ -88,33 +89,44 @@ class Window < RubyOF::Window
 		@history = History.new @space
 		
 		
+		@live =
+			LiveCoding.new(
+				"Body",
+				header: (PROJECT_DIR/'lib'/'live_coding'/'code'/'body_init.rb'),
+				body:   (PROJECT_DIR/'lib'/'live_coding'/'code'/'body_main.rb'),
+				save_directory: @data_dir,
+				
+				method_contract:  [
+					:update, :draw
+				]
+			)
 		
-		
-		@live_coding = LiveCoding::DynamicObject.new(
-			self,
-			save_directory:   (PROJECT_DIR/'bin'/'data'),
-			dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
+		# @live_coding = LiveCoding::DynamicObject.new(
+		# 	self,
+		# 	save_directory:   (PROJECT_DIR/'bin'/'data'),
+		# 	dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
 			
-			parameters:[@space, @font],
+		# 	parameters:[@space, @font],
 			
-			method_contract:  [
-				:serialize, :cleanup, :update, :draw,
-				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
-			]
-		)
+		# 	method_contract:  [
+		# 		:serialize, :cleanup, :update, :draw,
+		# 		:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+		# 	]
+		# )
 		
-		@live_coding.setup
+		# @live_coding.setup
 	end
 	
 	def update
 		# super()
 		
+		@live.update
 	end
 	
 	def draw
 		# super()
 		
-		
+		@live.draw
 	end
 	
 	def on_exit
