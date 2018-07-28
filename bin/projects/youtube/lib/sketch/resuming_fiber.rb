@@ -1,7 +1,9 @@
+# a way to resume a Fiber
 # without subclassing Fiber
 
 
-class StateClass
+
+class TurnCounter
 	def initialize(turn_number:0, step_by:1)
 		@i = turn_number
 		@step = step_by
@@ -28,8 +30,8 @@ end
 
 # --- main ---
 puts "initialize"
-@state ||= StateClass.new(turn_number:20, step_by:5)
-# @state ||= StateClass.new()
+@counter ||= TurnCounter.new(turn_number:20, step_by:5)
+# @counter ||= TurnCounter.new()
 
 @fiber ||= Fiber.new do |s|
 	s.turn 0 do
@@ -46,9 +48,9 @@ puts "initialize"
 end
 
 loop do
-	p @state # show the memory address, to prove object reuse
+	p @counter # show the memory address, to prove object reuse
 	puts "update"
-	@fiber.resume(@state)
+	@fiber.resume(@counter)
 end
 
 
