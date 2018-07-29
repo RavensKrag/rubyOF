@@ -1,9 +1,10 @@
 class Body
 	def update
 		@i ||= 2
+		@update_counter ||= TurnCounter.new
 		
-		@fibers[:update] ||= Fiber.new do
-			10.times do |i|
+		@fibers[:update] ||= Fiber.new do |on|
+			on.turn 0..9 do
 				# puts "updating..."
 				# if i > 20
 				# 	raise "DERP"
@@ -19,14 +20,15 @@ class Body
 			end
 		end
 		
-		@fibers[:update].resume
+		@fibers[:update].resume @update_counter
 	end
 	
 	def draw
 		# puts "draw"
+		@draw_counter ||= TurnCounter.new
 		
-		@fibers[:draw] ||= Fiber.new do
-			10.times do |i|
+		@fibers[:draw] ||= Fiber.new do |on|
+			on.turn 0..9 do
 				# puts "drawing..."
 				# if i > 20
 				# 	raise "DERP"
@@ -39,7 +41,7 @@ class Body
 			end
 		end
 		
-		@fibers[:draw].resume
+		@fibers[:draw].resume @draw_counter
 	end
 	
 	def on_exit
@@ -68,5 +70,15 @@ class Body
 	# restore from saved data
 	def load(data)
 		
+	end
+	
+	
+	class << self
+		def from_data(data)
+			obj = self.new
+			obj.load(data)
+			
+			return obj
+		end
 	end
 end
