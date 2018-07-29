@@ -4,12 +4,12 @@ class Body
 		
 		@fibers[:update] ||= Fiber.new do
 			10.times do |i|
-				puts "updating..."
+				# puts "updating..."
 				# if i > 20
 				# 	raise "DERP"
 				# end
 				@i *= 2
-				puts @i
+				# puts @i
 				
 				Fiber.yield
 			end
@@ -27,7 +27,7 @@ class Body
 		
 		@fibers[:draw] ||= Fiber.new do
 			10.times do |i|
-				puts "drawing..."
+				# puts "drawing..."
 				# if i > 20
 				# 	raise "DERP"
 				# end

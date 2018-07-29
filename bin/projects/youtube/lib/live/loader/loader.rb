@@ -39,30 +39,23 @@ class Loader
 		end
 		
 		@wrapped_object = klass.new
-		
-		
-		
-		@history = Array.new
+		@history = ExecutionHistory.new
 	end
-
+	
 	# automatically save data to disk before exiting
 	def on_exit
 		
 	end
-
-
+	
+	
 	# reload code as needed
 	def update
 		# puts "update"
 		
 		unless @wrapped_object.nil?
-			if @history.size < 10
-				@history << @wrapped_object.save 
-			elsif @history.size == 10
-				p @history
-				@history << nil
-			end
+			@history.save @wrapped_object
 		end
+		
 		
 		
 		# -- update files as necessary

@@ -34,6 +34,7 @@ current_file.parent.tap do |lib_dir|
 	
 	require_all lib_dir/'live'/'loader'
 	require lib_dir/'live'/'coroutines'/'turn_counter'
+	require_all lib_dir/'live'/'history'
 end
 
 
