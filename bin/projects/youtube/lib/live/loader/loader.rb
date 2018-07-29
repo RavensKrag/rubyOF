@@ -50,7 +50,7 @@ class Loader
 	
 	# reload code as needed
 	def update
-		# puts "update"
+		puts "loader: update"
 		
 		
 		# -- update files as necessary
@@ -66,7 +66,10 @@ class Loader
 				
 				@history.save @wrapped_object
 				
+				
 				@wrapped_object.update
+				
+				
 				
 				
 			end

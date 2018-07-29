@@ -1,20 +1,19 @@
 class Body
 	def update
-		@i ||= 2
+		@i ||= 0
 		@update_counter ||= TurnCounter.new
 		
 		@fibers[:update] ||= Fiber.new do |on|
 			on.turn 0..9 do
-				# puts "updating..."
+				puts "  updating..."
 				# if i > 20
 				# 	raise "DERP"
 				# end
-				@i *= 2
+				@i += 1
 				# puts @i
-				
-				Fiber.yield
 			end
 			
+			# NOTE: Don't use Fiber.yield inside turn() block. turn() already implicitly calls yield. Calling Fiber.yield again will result in the Fiber only running every other tick.
 			loop do
 				Fiber.yield
 			end
@@ -29,13 +28,13 @@ class Body
 		
 		@fibers[:draw] ||= Fiber.new do |on|
 			on.turn 0..9 do
-				# puts "drawing..."
+				puts "  drawing..."
 				# if i > 20
 				# 	raise "DERP"
 				# end
-				Fiber.yield
 			end
 			
+			# NOTE: Don't use Fiber.yield inside turn() block. turn() already implicitly calls yield. Calling Fiber.yield again will result in the Fiber only running every other tick.
 			loop do
 				Fiber.yield
 			end
@@ -51,6 +50,8 @@ class Body
 	# save the entire state of the world.
 	# return the result, don't output to file here.
 	def save
+		puts "    saving, in body"
+		
 		out = Hash.new
 		
 		

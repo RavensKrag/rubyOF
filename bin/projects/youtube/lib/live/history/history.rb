@@ -20,6 +20,7 @@ class ExecutionHistory
 		#       References are being passed around, not deep copies.
 		
 		if @history.size < 10 # temp condition so history doesn't grow too large
+			puts "  saving, in history"
 			state = obj.save.to_yaml
 			@history << state
 		end
