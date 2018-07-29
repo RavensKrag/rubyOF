@@ -1,7 +1,6 @@
 class Body
 	def update
 		@i ||= 0
-		@update_counter ||= TurnCounter.new
 		
 		@fibers[:update] ||= Fiber.new do |on|
 			on.turn 0..9 do
@@ -24,7 +23,6 @@ class Body
 	
 	def draw
 		# puts "draw"
-		@draw_counter ||= TurnCounter.new
 		
 		@fibers[:draw] ||= Fiber.new do |on|
 			on.turn 0..9 do
