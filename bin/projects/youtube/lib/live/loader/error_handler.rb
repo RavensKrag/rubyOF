@@ -20,17 +20,28 @@ module ErrorHandler
 			
 			t1 = RubyOF::Utils.ofGetElapsedTimeMillis
 			
-			out = [
-				# e.class, # using this instead of "message"
-				# e.name, # for NameError
-				# e.local_variables.inspect,
-				# e.receiver, # this might actually be the slow bit?
-				e.message, # message is the "rate limiting step"
-				e.backtrace
-			]
+			# out = [
+			# 	# e.class, # using this instead of "message"
+			# 	# e.name, # for NameError
+			# 	# e.local_variables.inspect,
+			# 	# e.receiver, # this might actually be the slow bit?
+			# 	e.message, # message is the "rate limiting step"
+			# 	e.backtrace
+			# ]
 			
-			# p out
-			puts out.join("\n")
+			# p e
+			
+			puts e.full_message
+			# ^ use ruby internal code to format the message. implementation is in c for speed. this will format exactly the same as a normal exception, which in ruby 2.5 includes bolding and other font styles.
+			# sources:
+				# line 224, see the implementation in C
+				# https://github.com/ruby/ruby/blob/aa2b32ae4bac4e1fcfc5986977d9111b32d0458e/eval_error.c
+				
+				# search for "traceback" to see the tests, and usage Ruby-side
+				# https://github.com/ruby/ruby/blob/d459572c10d4f8a63a659278266facaf99293267/test/ruby/test_exception.rb
+				
+			
+			# puts out.join("\n")
 			
 			
 			t3 = RubyOF::Utils.ofGetElapsedTimeMillis

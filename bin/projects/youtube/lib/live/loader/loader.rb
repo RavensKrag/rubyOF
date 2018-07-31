@@ -118,7 +118,7 @@ class Loader
 		state :error do
 			# can't go forward until errors are fixed
 			def update
-				puts "error"
+				# puts "error"
 			end
 			
 			def draw
@@ -336,16 +336,16 @@ class Loader
 		instance_methods = klass.instance_methods
 		
 		unless contract.all?{|sym| instance_methods.include? sym }
-			a = contract.inspect
-			b = instance_methods.inspect
+			a = contract
+			b = instance_methods
 			
 			msg = 
 			[
-			"Failed to bind the following object from #{@file}: #{obj}",
-			"  Object returned from lambda does not respond to all methods specified in the method contract.",
-			"  contract: #{a}",
-			"  methods:  #{b}",
-			"  missing methods: #{a - b}",
+			"Failed to bind the class #{klass}",
+			"  Class does not respond to all methods specified in the method contract.",
+			"  contract: #{a.inspect}",
+			"  methods:  #{b.inspect}",
+			"  missing methods: #{(a - b).inspect}",
 			].join("\n")
 			
 			raise msg
