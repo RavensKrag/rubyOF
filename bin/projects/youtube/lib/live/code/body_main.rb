@@ -12,6 +12,10 @@ class Body
 				# puts @i
 			end
 			
+			on.turn 100 do
+				raise "END OF PROGRAM"
+			end
+			
 			# NOTE: Don't use Fiber.yield inside turn() block. turn() already implicitly calls yield. Calling Fiber.yield again will result in the Fiber only running every other tick.
 			loop do
 				Fiber.yield

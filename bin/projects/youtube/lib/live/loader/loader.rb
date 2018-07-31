@@ -7,6 +7,10 @@
 # From there, any reloading of additional types or data is
 # 
 
+require 'state_machine'
+
+
+
 module LiveCoding
 
 class Loader
@@ -16,6 +20,12 @@ class Loader
 	def initialize(class_constant_name,
 		header:, body:, save_directory:, method_contract:
 	)
+		super()
+		# Have to call super() to initialize state_machine
+		# if you don't, you get a symbol collision on '#draw'
+		# because that is the method used to visualize the state machine.
+		
+		
 		puts "setting up Live Coding environment"
 		
 		
@@ -29,6 +39,7 @@ class Loader
 			:body   => FilePair.new(body)
 		}
 		
+		# dynamic_load will change @execution_state
 		dynamic_load @files[:header]
 		dynamic_load @files[:body]
 		
@@ -40,6 +51,8 @@ class Loader
 		
 		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
+		
+		
 	end
 	
 	# automatically save data to disk before exiting
@@ -48,33 +61,264 @@ class Loader
 	end
 	
 	
-	# reload code as needed
-	def update
-		puts "loader: update"
+	
+	
 		
+	state_machine :state, :initial => :running do
+		state :running do
+			# reload code as needed
+			def update
+				puts "loader: update"
+				
+				
+				# -- update files as necessary
+				dynamic_load @files[:body]
+				
+				
+				# -- delegate update command
+				sym = :update
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						
+						@history.save @wrapped_object
+						
+						@wrapped_object.send sym
+					end
+				end
+			end
+			
+			def draw
+				sym = :draw
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						@wrapped_object.send sym
+					end
+				end
+			end
+		end
 		
-		# -- update files as necessary
-		dynamic_load @files[:body]
-		
-		
-		# -- delegate update command
-		
-		protect_runtime_errors do
-			if @wrapped_object.nil?
-				puts "null handler: update"
-			else
+		# Don't generate new state, but render current state
+		# and alllow time traveling. Can also just resume execution.
+		state :paused do
+			def update
 				
-				@history.save @wrapped_object
-				
-				
-				@wrapped_object.update
-				
-				
-				
+			end
+			
+			def draw
 				
 			end
 		end
+		
+		# Can't generate new state or resume until errors are fixed.
+		# Can also use time traveling to help fix the errors.
+		state :error do
+			# can't go forward until errors are fixed
+			def update
+				puts "error"
+			end
+			
+			def draw
+				
+			end
+		end
+		
+		
+		
+		
+		# 3 time traveling states:
+		# + good timeline      rolling all the way forward, can resume execution
+		#                      (original was good, looking for something new)
+		# 
+		# + doomed timeline    can only resume after successful forecasting
+		#                      (original was bad, need something good)
+		# 
+		# + forecast error     can only resume after successful forecasting
+		#                      (very bad - time record has become corrupted)
+		state :good_timeline do
+			def update
+				
+			end
+			
+			# draw onion-skin visualization
+			def draw
+				
+			end
+		end
+		
+		# A failed timeline caused by fairly standard program errors.
+		state :doomed_timeline do
+			def update
+				
+			end
+			
+			# draw onion-skin visualization
+			def draw
+				
+			end
+		end
+		
+		# A failed timeline caused by the time ripples from forecasting.
+		state :forecast_error do
+			def update
+				
+			end
+			
+			# draw onion-skin visualization
+			def draw
+				
+			end
+		end
+		
+		
+		
+		
+		# once you are in this state, the load has succeeded.
+		# at this point, you attempt to generate a forecast.
+		# if the forecast fails -> :forecast_error (a failed timeline variant)
+		state :forecasting do
+			# update everything all at once
+			# (maybe do that on the transition to this state?)
+			def update
+				# update the state
+				protect_runtime_errors do
+					
+					
+					raise "ERROR: forecasting failed"
+				end
+				
+				
+				# transition to time_traveling state,
+				# as long as update was successful
+				self.start_time_travel()
+			end
+			
+			# draw onion-skin visualization
+			def draw
+				
+			end
+		end
+		
+		
+		
+		
+		# 
+		# process errors
+		# 
+		
+		event :runtime_error do
+			# regular runtime errors
+			transition :running => :error
+			
+			# tried to forecast, but hit an exception while generating new state
+			transition :forecasting => :forecast_error
+		end
+		
+		event :load_error do
+			# tried to reload under normal execution conditions, but failed
+			transition :running => :error
+			transition :paused => :error
+			transition :error => :error
+			
+			
+			# tried to forecast, but there was a load error
+			transition :good_timeline => :forecast_error
+			transition :doomed_timeline => :forecast_error
+			transition :forecast_error => :forecast_error
+		end
+		
+		event :successful_reload do
+			transition :error => :running
+			transition :running => :running
+			transition :paused => :paused
+			
+			transition :doomed_timeline => :forecasting
+			transition :good_timeline => :forecasting
+			transition :forecast_error => :forecasting
+		end
+		
+		
+		
+		
+		# 
+		# standard transitions
+		# 
+		
+		event :pause do
+			transition :running => :paused
+		end
+		
+		event :resume do
+			transition :paused => :running
+			transition :running => :running
+		end
+		
+		
+		event :start_time_travel do
+			transition :paused => :good_timeline
+			transition :error => :doomed_timeline
+		end
+		
+		
+		
+		# 
+		# setup time travel variables
+		# 
+		
+		after_transition :from => :running, :to => :error,
+		                 :do => :foo_callback
+		after_transition :from => :running, :to => :paused,
+		                 :do => :foo_callback
+		
+		
+		
+		# # 
+		# # after a successful forecast, resume execution
+		# # 
+		
+		# after_transition :from => :running, :to => :forecasting,
+		#                  :do => :bar_callback
+		
+		# after_transition :from => :running, :to => :forecasting,
+		#                  :do => :bar_callback
+		
+		
+		
+		
+		
+		after_transition :to => :error, :do => :error_callback
+		# block callbacks will execute in the context of StateMachine,
+		# where as method callbacks will execute in the context of Loader
+		
+		
+		
 	end
+	
+	def error_callback
+		puts "------> error detected"
+		puts @klass_name
+		puts self.class
+	end
+	
+	def foo_callback
+		@t_jmp = nil # <- when did we time travel to before forecasting
+		@t_end = nil # <- set to whatever the current execution iterator is
+	end
+	
+	# when you forecast a succesful future, you need to change the bounds of time travel: can the forcasted future end sooner than you expect, if it "ends" in success?
+		# NO! because the Fiber will run forever, due to the infinite loop at the end.
+	def bar_callback
+		# @t_jmp = nil # <- when did we time travel to before forecasting
+		# @t_end = nil # <- set to whatever the current execution iterator is
+		
+	end
+	
+	
+	
+	
 	
 	
 	# NOTE: under this architecture, you can't dynamically change initialization or serialization code - you would have to restart the program if that sort of change is made
@@ -125,7 +369,7 @@ class Loader
 		
 		# --- blacklist some methods from being wrapped,
 		#     because they have been handled manually.
-		excluded_methods = [:update]
+		excluded_methods = [:update, :draw]
 		method_symbols = (method_contract - excluded_methods)
 		
 		
@@ -194,8 +438,8 @@ class Loader
 			# but still output the exception's information.
 			print_wrapped_error(e)
 			
-			pause_execution()
-			# ^ stop further execution of the bound @wrapped_object
+			
+			self.runtime_error()
 		end
 	end
 	
@@ -274,9 +518,9 @@ class Loader
 			
 			print_wrapped_error(e)
 			
-			# revert_data()
-			# revert_code()
-			pause_execution()
+			self.runtime_error()
+		else
+			self.successful_reload()
 		ensure
 			# NOW actually update the timestamp.
 			file.update_time
@@ -345,7 +589,16 @@ class Loader
 	# continue to run. This means you can hold just one frame
 	# on the screen. That might be useful for testing.
 	def pause_execution()
-		
+		# @execution_state = :paused
+	end
+	
+	# Resume normal execution.
+	# 
+	# This is not the same thing as forecasting, which shows
+	# how changes to the past will effect the future. This
+	# is just normally executing the code.
+	def resume_execution()
+		# @execution_state = :running
 	end
 	
 	# Forcasting creates new execution history, and new data
