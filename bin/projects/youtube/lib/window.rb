@@ -98,7 +98,9 @@ class Window < RubyOF::Window
 				save_directory: @data_dir,
 				
 				method_contract:  [
-					:update, :draw
+					:update, :draw,
+					:mouse_moved, :mouse_pressed, :mouse_dragged, :mouse_released,
+					:mouse_scrolled
 				]
 			)
 		
@@ -121,13 +123,14 @@ class Window < RubyOF::Window
 	def update
 		# super()
 		
-		@live.update
+		@live.font_color = @font_color
+		@live.update(self)
 	end
 	
 	def draw
 		# super()
 		
-		@live.draw
+		@live.draw(self)
 	end
 	
 	def on_exit
@@ -178,7 +181,7 @@ class Window < RubyOF::Window
 	
 	
 	def mouse_moved(x,y)
-		
+		@live.mouse_moved(x,y)
 	end
 	
 	def mouse_pressed(x,y, button)
@@ -197,7 +200,7 @@ class Window < RubyOF::Window
 		# 		@camera_origin = @camera.pos.clone
 		# end
 		
-		# @live_coding.mouse_pressed(x,y, button)
+		@live.mouse_pressed(x,y, button)
 	end
 	
 	def mouse_dragged(x,y, button)
@@ -210,7 +213,7 @@ class Window < RubyOF::Window
 		# 		@camera.pos = d + @camera_origin
 		# end
 		
-		# @live_coding.mouse_dragged(x,y, button)
+		@live.mouse_dragged(x,y, button)
 	end
 	
 	def mouse_released(x,y, button)
@@ -221,7 +224,7 @@ class Window < RubyOF::Window
 				
 		# end
 		
-		# @live_coding.mouse_released(x,y, button)
+		@live.mouse_released(x,y, button)
 	end
 	
 	def mouse_scrolled(x,y, scrollX, scrollY)
@@ -237,6 +240,8 @@ class Window < RubyOF::Window
 		# end
 		
 		# puts "camera zoom: #{@camera.zoom}"
+		
+		@live.mouse_scrolled(x,y, scrollX, scrollY)
 	end
 	
 	

@@ -60,6 +60,9 @@ class Loader
 		
 	end
 	
+	def font_color=(color)
+		@wrapped_object.font_color = color
+	end
 	
 	
 	
@@ -67,7 +70,7 @@ class Loader
 	state_machine :state, :initial => :running do
 		state :running do
 			# reload code as needed
-			def update
+			def update(window)
 				puts "loader: update"
 				
 				
@@ -84,18 +87,18 @@ class Loader
 						
 						@history.save @wrapped_object
 						
-						@wrapped_object.send sym
+						@wrapped_object.send sym, window
 					end
 				end
 			end
 			
-			def draw
+			def draw(window)
 				sym = :draw
 				protect_runtime_errors do
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						@wrapped_object.send sym
+						@wrapped_object.send sym, window, self.state
 					end
 				end
 			end
@@ -104,12 +107,19 @@ class Loader
 		# Don't generate new state, but render current state
 		# and alllow time traveling. Can also just resume execution.
 		state :paused do
-			def update
+			def update(window)
 				
 			end
 			
-			def draw
-				
+			def draw(window)
+				sym = :draw
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						@wrapped_object.send sym, window, self.state
+					end
+				end
 			end
 		end
 		
@@ -117,12 +127,19 @@ class Loader
 		# Can also use time traveling to help fix the errors.
 		state :error do
 			# can't go forward until errors are fixed
-			def update
+			def update(window)
 				# puts "error"
 			end
 			
-			def draw
-				
+			def draw(window)
+				sym = :draw
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						@wrapped_object.send sym, window, self.state
+					end
+				end
 			end
 		end
 		
@@ -139,36 +156,36 @@ class Loader
 		# + forecast error     can only resume after successful forecasting
 		#                      (very bad - time record has become corrupted)
 		state :good_timeline do
-			def update
+			def update(window)
 				
 			end
 			
 			# draw onion-skin visualization
-			def draw
+			def draw(window)
 				
 			end
 		end
 		
 		# A failed timeline caused by fairly standard program errors.
 		state :doomed_timeline do
-			def update
+			def update(window)
 				
 			end
 			
 			# draw onion-skin visualization
-			def draw
+			def draw(window)
 				
 			end
 		end
 		
 		# A failed timeline caused by the time ripples from forecasting.
 		state :forecast_error do
-			def update
+			def update(window)
 				
 			end
 			
 			# draw onion-skin visualization
-			def draw
+			def draw(window)
 				
 			end
 		end
@@ -182,7 +199,7 @@ class Loader
 		state :forecasting do
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
-			def update
+			def update(window)
 				# update the state
 				protect_runtime_errors do
 					
@@ -197,7 +214,7 @@ class Loader
 			end
 			
 			# draw onion-skin visualization
-			def draw
+			def draw(window)
 				
 			end
 		end
