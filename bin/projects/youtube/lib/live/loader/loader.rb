@@ -57,7 +57,7 @@ class Loader
 	
 	# automatically save data to disk before exiting
 	def on_exit
-		
+		puts "live coding history: #{@history.size} states"
 	end
 	
 	def font_color=(color)
@@ -84,10 +84,25 @@ class Loader
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						@history.save @wrapped_object
+						@update_fiber ||= Fiber.new do
+							signal = nil
+							while signal != :end
+								@history.save @wrapped_object
+								
+								signal = @wrapped_object.send sym, window
+								# self.fire_state_event(event) unless event.nil?
+								
+								Fiber.yield
+								
+								# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
+							end
+							
+							puts @history
+							
+							self.pause()
+						end
 						
-						event = @wrapped_object.send sym, window
-						# self.fire_state_event(event) unless event.nil?
+						@update_fiber.resume if @update_fiber.alive?
 					end
 				end
 			end
@@ -112,15 +127,14 @@ class Loader
 			end
 			
 			def draw(window)
-				# puts "paused"
-				# sym = :draw
-				# protect_runtime_errors do
-				# 	if @wrapped_object.nil?
-				# 		puts "null handler: #{sym}"
-				# 	else
-				# 		@wrapped_object.send sym, window, self.state
-				# 	end
-				# end
+				sym = :draw
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						@wrapped_object.send sym, window, self.state
+					end
+				end
 			end
 		end
 		

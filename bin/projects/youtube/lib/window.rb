@@ -144,7 +144,7 @@ class Window < RubyOF::Window
 	def on_exit
 		super()
 		
-		# @live_coding.on_exit
+		@live.on_exit
 		
 		# --- Save data
 		dump_yaml [self.width, self.height] => @window_dimension_save_file

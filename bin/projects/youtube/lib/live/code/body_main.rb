@@ -74,16 +74,11 @@ class Body
 			# 	raise "END OF PROGRAM"
 			# end
 			
-			loop do
-				Fiber.yield
-			end
-			
-			
 			
 			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.
 				# This is not completely true, as the user can still make changes based on direct manipulation. But those changes should generate new state, so hopefully this is all fine?
 				# Soon, will need to consider how direct input effects the time traveling paradigm.
-			# Fiber.yield :end
+			Fiber.yield :end
 			# (currently, 'pause' state still renders new frames, so this works fine)
 		end
 		@regenerate_update_thread = false

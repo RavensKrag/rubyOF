@@ -12,25 +12,17 @@ class ExecutionHistory
 		}.join("\n")
 	end
 	
-	def_delegators :@history, :size, :length
+	def_delegators :@history, 
+	               :size, :length
 	
 	
 	def save(obj)
 		# NOTE: Don't hang on to obj, and don't hang on to obj.save
 		#       References are being passed around, not deep copies.
 		
-		if @history.size < 10 # temp condition so history doesn't grow too large
-			puts "  saving, in history"
-			state = obj.save.to_yaml
-			@history << state
-		end
-		
-		
-		# temp code to print the state to the terminal
-		if @history.size == 10
-			puts self
-			@history << nil
-		end
+		puts "  saving, in history"
+		state = obj.save.to_yaml
+		@history << state
 	end
 	
 	# move back in time
