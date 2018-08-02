@@ -71,7 +71,7 @@ class Loader
 		state :running do
 			# reload code as needed
 			def update(window)
-				puts "loader: update"
+				# puts "loader: update"
 				
 				
 				# -- update files as necessary
@@ -84,10 +84,10 @@ class Loader
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						
 						@history.save @wrapped_object
 						
-						@wrapped_object.send sym, window
+						event = @wrapped_object.send sym, window
+						# self.fire_state_event(event) unless event.nil?
 					end
 				end
 			end
@@ -112,14 +112,15 @@ class Loader
 			end
 			
 			def draw(window)
-				sym = :draw
-				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						@wrapped_object.send sym, window, self.state
-					end
-				end
+				# puts "paused"
+				# sym = :draw
+				# protect_runtime_errors do
+				# 	if @wrapped_object.nil?
+				# 		puts "null handler: #{sym}"
+				# 	else
+				# 		@wrapped_object.send sym, window, self.state
+				# 	end
+				# end
 			end
 		end
 		
@@ -128,18 +129,23 @@ class Loader
 		state :error do
 			# can't go forward until errors are fixed
 			def update(window)
-				# puts "error"
+				window.show_text(CP::Vec2.new(352,100), "ERROR: see terminal for details")
+				
+				# -- update files as necessary
+				# need to try and load a new file,
+				# as loading is the only way to escape this state
+				dynamic_load @files[:body]
 			end
 			
 			def draw(window)
-				sym = :draw
-				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						@wrapped_object.send sym, window, self.state
-					end
-				end
+				# sym = :draw
+				# protect_runtime_errors do
+				# 	if @wrapped_object.nil?
+				# 		puts "null handler: #{sym}"
+				# 	else
+				# 		@wrapped_object.send sym, window, self.state
+				# 	end
+				# end
 			end
 		end
 		
@@ -258,6 +264,10 @@ class Loader
 		end
 		
 		after_transition :on => :successful_reload, :do => :on_reload
+		
+		# after_transition :error => :running do
+		# 	# puts "error resolved!"
+		# end
 		
 		
 		
@@ -522,6 +532,7 @@ class Loader
 			if file.changed?
 				puts "live loading #{file}"
 				load file.to_s
+				self.successful_reload()
 			end
 		rescue SyntaxError, ScriptError, NameError => e
 			# This block triggers if there is some sort of
@@ -545,7 +556,7 @@ class Loader
 			
 			self.runtime_error()
 		else
-			self.successful_reload()
+			
 		ensure
 			# NOW actually update the timestamp.
 			file.update_time

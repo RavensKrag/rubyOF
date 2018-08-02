@@ -87,7 +87,7 @@ class Body
 		if @fibers[:draw].nil? or @regenerate_draw_thread
 		@fibers[:draw] = Fiber.new do |on|		
 		loop do
-			puts "  drawing..."
+			# puts "  drawing..."
 			
 			# === Draw world relative
 			@camera.draw window.width, window.height do |bb|
@@ -147,26 +147,28 @@ class Body
 			# === Draw screen relative
 			# Render a bunch of different tasks
 			
-			@update_counter_text = Text.new(@font, @update_counter.current_turn.to_s)
+			update_text = "update: #{@update_counter.current_turn}"
+			@update_counter_text = Text.new(@font, update_text)
 			@update_counter_text.text_color = @font_color
 			
 			@update_counter_text.update
 			
 			
-			@update_counter_text.body.p = CP::Vec2.new(160,600)
+			@update_counter_text.body.p = CP::Vec2.new(43,1034)
 			@update_counter_text.draw()
 			
 			
 			
-			
-			# @draw_counter_text = Text.new(@font, @draw_counter.current_turn.to_s)
-			@draw_counter_text = Text.new(@font, @draw_counter.current_turn.to_s)
+			draw_text = "draw: #{@draw_counter.current_turn}"
+			# draw_text.lpad(, ' ')
+			@draw_counter_text = Text.new(@font, draw_text)
 			@draw_counter_text.text_color = @font_color
 			
 			@draw_counter_text.update
 			
-			@draw_counter_text.body.p = CP::Vec2.new(260,600)
+			@draw_counter_text.body.p = CP::Vec2.new(43,1069)
 			@draw_counter_text.draw()
+			
 			
 			
 			

@@ -73,9 +73,8 @@ class Window < RubyOF::Window
 			RubyOF::TrueTypeFont.new.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 20
+				x.size = 50
 				x.add_alphabet :Latin
-				x.add_alphabet :Japanese
 			end
 		# @font_color = RubyOF::Color.new.tap do |c|
 		# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
@@ -122,7 +121,7 @@ class Window < RubyOF::Window
 	
 	def update
 		# super()
-		
+		clear_text_buffer
 		@live.font_color = @font_color
 		@live.update(self)
 	end
@@ -131,6 +130,13 @@ class Window < RubyOF::Window
 		# super()
 		
 		@live.draw(self)
+		
+		
+		unless @text_buffer.nil?
+			@text_buffer.texture.bind
+			@text_buffer.draw 
+			@text_buffer.texture.unbind
+		end
 	end
 	
 	def on_exit
@@ -256,6 +262,22 @@ class Window < RubyOF::Window
 		# the 'position' variable is of an unknown type, leading to a crash
 	end
 	
+	def show_text(pos, obj)
+		@text_buffer = Text.new(@font, obj.to_s)
+		@text_buffer.text_color = @font_color
+		
+		@text_buffer.update
+		
+		@text_buffer.body.p = pos
+	end
+	
+	def clear_text_buffer
+		@text_buffer = nil
+	end
+	
+	
+	
+	
 	
 	
 	# NOTE: regaurdless of if you copy the values over, or copy the color object, the copying slows things down considerably if it is done repetedly. Need to either pass one pointer from c++ side to Ruby side, or need to wrap ofParameter and use ofParameter#makeReferenceTo to ensure that the same data is being used in both places.
@@ -281,6 +303,8 @@ class Window < RubyOF::Window
 	#              (uses the same class wrapper as normal Rice bindings)
 	def set_gui_parameter(name, value_ptr)
 		value_ptr.freeze
+		
+		# TODO: delegate core of this method to Loader, and then to the wrapped object inside. Want to be able to controll this dynamically.
 		
 		case name
 			when "color"
