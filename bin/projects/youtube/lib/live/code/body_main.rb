@@ -25,7 +25,10 @@ class Body
 				@font = 
 					RubyOF::TrueTypeFont.new.dsl_load do |x|
 						# TakaoPGothic
-						x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+						# ^ not installed on Ubunut any more, idk why
+						# try the package "fonts-takao" or "ttf-takao" as mentioned here:
+						# https://launchpad.net/takao-fonts
+						x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
 						x.size = 20
 						x.add_alphabet :Latin
 						x.add_alphabet :Japanese
@@ -33,14 +36,13 @@ class Body
 				
 				@monospace_font = 
 					RubyOF::TrueTypeFont.new.dsl_load do |x|
-						# TakaoPGothic
 						x.path = "DejaVu Sans Mono"
 						x.size = 20
 						x.add_alphabet :Latin
 					end
 				
 				
-				@text = Text.new(@font, "hello world")
+				@text = Text.new(@font, "hello world こんにちわ")
 				@text.text_color = @font_color
 				
 				# p @font_color
