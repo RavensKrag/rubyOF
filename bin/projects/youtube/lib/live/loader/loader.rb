@@ -84,6 +84,7 @@ class Loader
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
+						# TODO: if you run -> end, jump back in time, and then start updating again, you need to reset the fiber
 						@update_fiber ||= Fiber.new do
 							signal = nil
 							while signal != :end
@@ -95,6 +96,15 @@ class Loader
 								Fiber.yield
 								
 								# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
+								
+								
+								# jump the execution back to an earlier update phase
+								# (this is basically a goto)
+								i = @wrapped_object.update_counter.current_turn
+								if i > 30
+									 @wrapped_object.update_counter.current_turn = 1
+									 @wrapped_object.regenerate_update_thread!
+								end
 							end
 							
 							puts @history
@@ -123,7 +133,8 @@ class Loader
 		# and alllow time traveling. Can also just resume execution.
 		state :paused do
 			def update(window)
-				
+				# -- update files as necessary
+				dynamic_load @files[:body]
 			end
 			
 			def draw(window)

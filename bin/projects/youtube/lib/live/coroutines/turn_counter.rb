@@ -1,6 +1,6 @@
 
 class TurnCounter
-	attr_reader :current_turn
+	attr_accessor :current_turn
 	
 	def initialize(turn_number:0)
 		@current_turn = turn_number
