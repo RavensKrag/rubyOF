@@ -42,6 +42,8 @@ end
 class Window < RubyOF::Window
 	include HelperFunctions
 	
+	attr_reader :live
+	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
 		@window_dimension_save_file = PROJECT_DIR/'bin'/'data'/'window_size.yaml'

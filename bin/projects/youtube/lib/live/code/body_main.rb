@@ -196,6 +196,15 @@ class Body
 					end
 				
 				
+				draw_text = "state: #{window.live.state}"
+				@state_label =
+					Text.new(@font, draw_text).tap do |text|
+						text.text_color = @font_color
+						text.update
+						
+						text.body.p = CP::Vec2.new(43,1113)
+					end
+				
 				
 				
 				
@@ -203,6 +212,8 @@ class Body
 				queue << @update_counter_number
 				queue << @draw_counter_label
 				queue << @draw_counter_number
+				
+				queue << @state_label
 			}
 			.group_by{ |e| e.texture }
 			.each do |texture, same_texture|
