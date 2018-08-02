@@ -31,6 +31,14 @@ class Body
 						x.add_alphabet :Japanese
 					end
 				
+				@monospace_font = 
+					RubyOF::TrueTypeFont.new.dsl_load do |x|
+						# TakaoPGothic
+						x.path = "DejaVu Sans Mono"
+						x.size = 20
+						x.add_alphabet :Latin
+					end
+				
 				
 				@text = Text.new(@font, "hello world")
 				@text.text_color = @font_color
@@ -146,28 +154,66 @@ class Body
 			
 			# === Draw screen relative
 			# Render a bunch of different tasks
-			
-			update_text = "update: #{@update_counter.current_turn}"
-			@update_counter_text = Text.new(@font, update_text)
-			@update_counter_text.text_color = @font_color
-			
-			@update_counter_text.update
-			
-			
-			@update_counter_text.body.p = CP::Vec2.new(43,1034)
-			@update_counter_text.draw()
-			
-			
-			
-			draw_text = "draw: #{@draw_counter.current_turn}"
-			# draw_text.lpad(, ' ')
-			@draw_counter_text = Text.new(@font, draw_text)
-			@draw_counter_text.text_color = @font_color
-			
-			@draw_counter_text.update
-			
-			@draw_counter_text.body.p = CP::Vec2.new(43,1069)
-			@draw_counter_text.draw()
+			Array.new.tap{ |queue|
+				update_text = "update:"
+				@update_counter_label =
+					Text.new(@font, update_text).tap do |text|
+						text.text_color = @font_color
+						text.update
+						
+						text.body.p = CP::Vec2.new(43,1034)
+					end
+				
+				number = @update_counter.current_turn.to_s.rjust(5, ' ')
+				@update_counter_number =
+					Text.new(@monospace_font, number).tap do |text|
+						text.text_color = @font_color
+						text.update
+						
+						text.body.p = CP::Vec2.new(161,1034)
+					end
+				
+				
+				
+				draw_text = "draw:"
+				@draw_counter_label =
+					Text.new(@font, draw_text).tap do |text|
+						text.text_color = @font_color
+						text.update
+						
+						text.body.p = CP::Vec2.new(43,1069)
+					end
+					
+				number = @draw_counter.current_turn.to_s.rjust(5, ' ')
+				@draw_counter_number =
+					Text.new(@monospace_font, number).tap do |text|
+						text.text_color = @font_color
+						text.update
+						
+						text.body.p = CP::Vec2.new(161,1069)
+					end
+				
+				
+				
+				
+				
+				queue << @update_counter_label
+				queue << @update_counter_number
+				queue << @draw_counter_label
+				queue << @draw_counter_number
+			}
+			.group_by{ |e| e.texture }
+			.each do |texture, same_texture|
+				# next if texture.nil?
+				
+				texture.bind unless texture.nil?
+				
+				same_texture.each do |entity|
+					entity.draw
+				end
+				
+				texture.unbind unless texture.nil?
+			end
 			
 			
 			
