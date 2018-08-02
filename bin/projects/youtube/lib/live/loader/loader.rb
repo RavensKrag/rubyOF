@@ -257,6 +257,7 @@ class Loader
 			transition :forecast_error => :forecasting
 		end
 		
+		after_transition :on => :successful_reload, :do => :on_reload
 		
 		
 		
@@ -312,6 +313,13 @@ class Loader
 		
 		
 		
+	end
+	
+	def on_reload
+		unless @wrapped_object.nil?
+			@wrapped_object.regenerate_update_thread!
+			@wrapped_object.regenerate_draw_thread!
+		end
 	end
 	
 	def error_callback

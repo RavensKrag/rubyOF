@@ -1,4 +1,6 @@
 class Body
+	attr_accessor :update_counter, :draw_counter
+	
 	def initialize
 		@fibers = Hash.new
 		

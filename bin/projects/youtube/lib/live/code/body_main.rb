@@ -1,25 +1,37 @@
 class Body
+	include RubyOF::Graphics 
+	
 	def font_color=(color)
 		@font_color = color
 	end
 	
+	def regenerate_update_thread!
+		@regenerate_update_thread = true
+	end
+	
+	def regenerate_draw_thread!
+		@regenerate_draw_thread = true
+	end
+	
 	
 	def update(window)
-		@camera ||= Camera.new(window.width/2, window.height/2)
-		
-		@i ||= 0
-		
-		@font ||= 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
-				# TakaoPGothic
-				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 20
-				x.add_alphabet :Latin
-				x.add_alphabet :Japanese
-			end
-		
-		@fibers[:update] ||= Fiber.new do |on|
+		if @fibers[:update].nil? or @regenerate_update_thread
+		@fibers[:update] = Fiber.new do |on|
 			on.turn 0 do
+				@i = 0
+				
+				@camera = Camera.new(window.width/2, window.height/2)
+				
+				@font = 
+					RubyOF::TrueTypeFont.new.dsl_load do |x|
+						# TakaoPGothic
+						x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+						x.size = 20
+						x.add_alphabet :Latin
+						x.add_alphabet :Japanese
+					end
+				
+				
 				@text = Text.new(@font, "hello world")
 				@text.text_color = @font_color
 				
@@ -52,18 +64,28 @@ class Body
 			# 	raise "END OF PROGRAM"
 			# end
 			
-			# NOTE: Don't use Fiber.yield inside turn() block. turn() already implicitly calls yield. Calling Fiber.yield again will result in the Fiber only running every other tick.
 			loop do
-				
 				Fiber.yield
 			end
+			
+			
+			
+			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.
+				# This is not completely true, as the user can still make changes based on direct manipulation. But those changes should generate new state, so hopefully this is all fine?
+				# Soon, will need to consider how direct input effects the time traveling paradigm.
+			# Fiber.yield :end
+			# (currently, 'pause' state still renders new frames, so this works fine)
 		end
+		@regenerate_update_thread = false
+		end
+		
 		
 		@fibers[:update].resume @update_counter
 	end
 	
 	def draw(window, status)
-		@fibers[:draw] ||= Fiber.new do |on|		
+		if @fibers[:draw].nil? or @regenerate_draw_thread
+		@fibers[:draw] = Fiber.new do |on|		
 		loop do
 			puts "  drawing..."
 			
@@ -125,8 +147,31 @@ class Body
 			# === Draw screen relative
 			# Render a bunch of different tasks
 			
-			# TODO: only render the task if it is still alive (allow for non-looping tasks)
+			@update_counter_text = Text.new(@font, @update_counter.current_turn.to_s)
+			@update_counter_text.text_color = @font_color
 			
+			@update_counter_text.update
+			
+			
+			@update_counter_text.body.p = CP::Vec2.new(160,600)
+			@update_counter_text.draw()
+			
+			
+			
+			
+			# @draw_counter_text = Text.new(@font, @draw_counter.current_turn.to_s)
+			@draw_counter_text = Text.new(@font, @draw_counter.current_turn.to_s)
+			@draw_counter_text.text_color = @font_color
+			
+			@draw_counter_text.update
+			
+			@draw_counter_text.body.p = CP::Vec2.new(260,600)
+			@draw_counter_text.draw()
+			
+			
+			
+			# TODO: only render the task if it is still alive (allow for non-looping tasks)
+			# =======
 			
 			
 			
@@ -134,6 +179,9 @@ class Body
 			Fiber.yield
 		end
 		end
+		@regenerate_draw_thread = false
+		end
+		
 		
 		@fibers[:draw].resume @draw_counter
 	end
