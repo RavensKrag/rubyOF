@@ -16,6 +16,13 @@ require 'require_all'
 
 current_file = Pathname.new(__FILE__).expand_path
 current_file.parent.tap do |lib_dir|
+	require_all lib_dir/'history'
+	require_all lib_dir/'monkey_patches'/'Chipmunk'
+	
+	require_all lib_dir/'entities'
+	
+	require_all lib_dir/'serialization'
+	
 	require lib_dir/'helpers.rb'
 	require lib_dir/'fibers.rb'
 	require lib_dir/'camera.rb'
@@ -23,13 +30,6 @@ current_file.parent.tap do |lib_dir|
 	require lib_dir/'youtube_channel.rb'
 	
 	require lib_dir/'space.rb'
-	
-	require_all lib_dir/'history'
-	require_all lib_dir/'monkey_patches'/'Chipmunk'
-	
-	require_all lib_dir/'entities'
-	
-	
 	# require lib_dir/'live_coding'/'code_loader'
 	
 	require_all lib_dir/'live'/'loader'

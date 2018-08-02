@@ -14,10 +14,13 @@ module RubyOF
 
 # TODO: file bug report for ofTrueTypeFont, stating that name can not be retrieved from the font object, only the settings object.
 module TrueTypeFont
-
 	def load(settings)
-		@name = settings.font_name
+		@settings = settings
 		super(settings)
+	end
+	
+	def name
+		@settings.font_name
 	end
 	
 	# Return the font name as specified by the settings object
@@ -188,6 +191,8 @@ class TrueTypeFontSettings
 	# On the C++ side, that number will be converted to the actual
 	# range needed by the font system.
 	def add_unicode_range(range_name)
+		@ranges ||= Array.new
+		@ranges << range_name
 		i = UnicodeRanges.index(range_name)
 		add_range(i)
 	end
@@ -195,6 +200,8 @@ class TrueTypeFontSettings
 	
 	alias :cpp_add_alphabet :add_alphabet
 	def add_alphabet(alphabet_name)
+		@alphabets ||= Array.new
+		@alphabets << alphabet_name
 		i = UnicodeAlphabets.index(alphabet_name)
 		cpp_add_alphabet(i)
 	end

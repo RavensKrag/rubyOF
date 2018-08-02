@@ -58,6 +58,12 @@ class Body
 				
 				
 				
+				# round-trip serialization test for Text entity
+				p YAML.load @text.to_yaml
+				
+				
+				
+				
 				@i += 1
 			end
 			
@@ -70,9 +76,9 @@ class Body
 				# puts @i
 			end
 			
-			on.turn 100 do
-				puts "END OF PROGRAM"
-			end
+			# on.turn 100 do
+			# 	puts "END OF PROGRAM"
+			# end
 			
 			
 			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.

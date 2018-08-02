@@ -98,13 +98,13 @@ class Loader
 								# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
 								
 								
-								# jump the execution back to an earlier update phase
-								# (this is basically a goto)
-								i = @wrapped_object.update_counter.current_turn
-								if i > 30
-									 @wrapped_object.update_counter.current_turn = 1
-									 @wrapped_object.regenerate_update_thread!
-								end
+								# # jump the execution back to an earlier update phase
+								# # (this is basically a goto)
+								# i = @wrapped_object.update_counter.current_turn
+								# if i > 30
+								# 	 @wrapped_object.update_counter.current_turn = 1
+								# 	 @wrapped_object.regenerate_update_thread!
+								# end
 							end
 							
 							puts @history

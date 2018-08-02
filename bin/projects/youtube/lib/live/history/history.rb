@@ -42,4 +42,10 @@ class ExecutionHistory
 	def forecast
 		
 	end
+	
+	
+	
+	def [](i)
+		return @history[i]
+	end
 end
