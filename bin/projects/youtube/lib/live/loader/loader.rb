@@ -66,7 +66,7 @@ class Loader
 	
 	
 	
-		
+	
 	state_machine :state, :initial => :running do
 		state :running do
 			# reload code as needed
@@ -190,7 +190,7 @@ class Loader
 		#                      (very bad - time record has become corrupted)
 		state :good_timeline do
 			def update(window)
-				puts "============== good timeline ================"
+				# puts "============== good timeline ================"
 				# select a state
 				@time_travel_i = 2
 				
@@ -204,7 +204,7 @@ class Loader
 			
 			# draw onion-skin visualization
 			def draw(window)
-				p @history_cache
+				# p @history_cache
 				
 				# render the selected state
 				# (it has been rendered before, so it should render now without errors)

@@ -63,10 +63,10 @@ class Body
 				
 				
 				# round-trip serialization test for Text entity
-				p @text
-				yaml = @text.to_yaml
-				puts yaml
-				p YAML.load yaml
+				# p @text
+				# yaml = @text.to_yaml
+				# puts yaml
+				# p YAML.load yaml
 				
 				
 				

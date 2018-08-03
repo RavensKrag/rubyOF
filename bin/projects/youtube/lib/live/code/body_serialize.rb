@@ -50,7 +50,7 @@ class Body
 		
 		@fibers = Hash.new
 		
-		p coder.map
+		# p coder.map
 		
 		coder.map.each do |var_name, value|
 			deserialized_var = 

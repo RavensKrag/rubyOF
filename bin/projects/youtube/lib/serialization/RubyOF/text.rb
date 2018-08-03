@@ -23,7 +23,7 @@ class Text < Entity
 			data[var_name.to_s.gsub('@', '')] = serialized_var
 		end
 		
-		p self.instance_variables
+		# p self.instance_variables
 		# ^ has the @ symbol in front
 		
 		coder.represent_map to_yaml_type, data
@@ -32,7 +32,7 @@ class Text < Entity
 	def init_with(coder)
 		# Don't need to call initialize, as Entity types are plain-old Ruby objects. There is no underlying C++ data type that must be initialized. Thus, we can just set the instance variables here, and be done.
 		
-		p coder.map
+		# p coder.map
 		
 		coder.map.each do |var_name, value|
 			deserialized_var = 

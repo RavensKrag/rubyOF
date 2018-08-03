@@ -17,7 +17,7 @@ class ResourceManager
 		# Store references using WeakRef, so that when the resource manager holds the last reference to a resource, the resource can be freed.
 		# src: https://endofline.wordpress.com/2011/01/09/getting-to-know-the-ruby-standard-library-weakref/
 		
-		puts "ResourceManager#load"
+		# puts "ResourceManager#load"
 		case data_obj
 		when RubyOF::TrueTypeFontSettings
 			# puts "-----> loading font"
