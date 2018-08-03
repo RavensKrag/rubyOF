@@ -1,8 +1,8 @@
-# TODO: move this into RubyOF core
 require 'singleton'
+require 'weakref'
 
 module RubyOF
-	
+
 class ResourceManager
 	include Singleton
 	# access using ResourceManager.instance
@@ -14,6 +14,9 @@ class ResourceManager
 	
 	# load resource. return cached copy if already loaded
 	def load(data_obj)
+		# Store references using WeakRef, so that when the resource manager holds the last reference to a resource, the resource can be freed.
+		# src: https://endofline.wordpress.com/2011/01/09/getting-to-know-the-ruby-standard-library-weakref/
+		
 		puts "ResourceManager#load"
 		case data_obj
 		when RubyOF::TrueTypeFontSettings
@@ -22,13 +25,17 @@ class ResourceManager
 			@storage[:fonts] ||= Hash.new
 			
 			
-			unless @storage[:fonts].has_key? data_obj
+			stored = @storage[:fonts][data_obj]
+			if( stored.nil? || # never loaded
+				(stored.is_a?(WeakRef) && !stored.weakref_alive?) # got unloaded
+			)
 				font = RubyOF::TrueTypeFont.new
 				font.load(data_obj)
-				@storage[:fonts][data_obj] = font
+				@storage[:fonts][data_obj] = WeakRef.new(font)
 			end
 			
-			return @storage[:fonts][data_obj]
+			# return the underlying object, not the WeakRef wrapper
+			return @storage[:fonts][data_obj].__getobj__
 		end
 	end
 	
