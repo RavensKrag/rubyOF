@@ -135,6 +135,8 @@ class Loader
 			def update(window)
 				# -- update files as necessary
 				dynamic_load @files[:body]
+				
+				self.start_time_travel()
 			end
 			
 			def draw(window)
@@ -188,12 +190,31 @@ class Loader
 		#                      (very bad - time record has become corrupted)
 		state :good_timeline do
 			def update(window)
+				# select a state
+				@time_travel_i = 2
 				
+				# load a state from serialized data
+				@history_cache ||= Array.new
+				state = @history.load_state_at_index @klass_name, @time_travel_i
+				@history_cache[@time_travel_i] = state
 			end
 			
 			# draw onion-skin visualization
 			def draw(window)
-				
+				# render the selected state
+				# (it has been rendered before, so it should render now without errors)
+				unless @time_travel_i.nil?
+					# render the state
+					@history_cache[@time_travel_i].draw window, self.state
+					
+					
+					
+					# reloading from serialized state every frame is very bad
+					# -> there is secretly disk access being done
+					#    which is wrecking performance
+					# need to use a resource manager to prevent from re-loading resources (like fonts) that already exist in memory
+					# then, we change the serialization of TTF to load from the resource manager, instead of creating new TTF objects all the time
+				end
 			end
 		end
 		

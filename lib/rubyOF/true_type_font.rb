@@ -16,7 +16,10 @@ module RubyOF
 module TrueTypeFont
 	def load(settings)
 		@settings = settings
-		super(settings)
+		flag = super(settings)
+		unless flag
+			raise "ERROR: Could not load font #{@settings.font_name}"
+		end
 	end
 	
 	def name
@@ -34,55 +37,6 @@ module TrueTypeFont
 		return @name
 	end
 	# NOTE: no setter for this value, because you can't change the font face once the font object is loaded. (have to switch objects)
-	
-	
-	
-	# Create easy gemfile-style DSL for loading font parameters,
-	# including error checking.
-	def dsl_load # &block
-		config = DSL_Object.new
-		
-		yield config
-		
-		
-		font = self.class.new
-		font_settings = RubyOF::TrueTypeFontSettings.new(config.path, config.size)
-		
-		config.alphabets.each do |x|
-			font_settings.add_alphabet x
-		end
-		
-		
-		load_status = font.load(font_settings)
-		raise "Could not load font" unless load_status
-		
-		return font
-	end
-	
-	class DSL_Object
-		attr_reader :alphabets
-		attr_accessor :path, :size, :antialiased
-		
-		def initialize
-			@alphabets = Array.new
-		end
-		
-		def add_alphabet(alphabet)
-			alphabet_list = RubyOF::TrueTypeFontSettings::UnicodeAlphabets
-			unless alphabet_list.include? alphabet
-				message = [
-					"Alphabet '#{alphabet}' is not one of the supported values.",
-					"Use a value from TrueTypeFontSettings::UnicodeAlphabets",
-					"Try one of these: #{alphabet_list.inspect}"
-				].join("\n")
-				
-				raise message
-			end
-			
-			@alphabets << alphabet
-		end
-	end
-
 end
 
 
@@ -112,6 +66,56 @@ class TrueTypeFont
 		
 	# 	self.load_from_struct(i)
 	# end
+	
+	
+	# Create easy gemfile-style DSL for loading font parameters,
+	# including error checking.
+	class << self
+		def dsl_load # &block
+			config = DSL_Object.new
+			
+			yield config
+			
+			
+			font_settings = RubyOF::TrueTypeFontSettings.new(config.path, config.size)
+			
+			config.alphabets.each do |x|
+				font_settings.add_alphabet x
+			end
+			
+			
+			
+			puts "loading font"
+			font = RubyOF::ResourceManager.instance.load font_settings
+			# ^ will throw exception if font can not be loaded
+			
+			return font
+		end
+	end
+	
+	class DSL_Object
+		attr_reader :alphabets
+		attr_accessor :path, :size, :antialiased
+		
+		def initialize
+			@alphabets = Array.new
+		end
+		
+		def add_alphabet(alphabet)
+			alphabet_list = RubyOF::TrueTypeFontSettings::UnicodeAlphabets
+			unless alphabet_list.include? alphabet
+				message = [
+					"Alphabet '#{alphabet}' is not one of the supported values.",
+					"Use a value from TrueTypeFontSettings::UnicodeAlphabets",
+					"Try one of these: #{alphabet_list.inspect}"
+				].join("\n")
+				
+				raise message
+			end
+			
+			@alphabets << alphabet
+		end
+	end
 end
 
 class TrueTypeFontSettings
@@ -204,6 +208,44 @@ class TrueTypeFontSettings
 		@alphabets << alphabet_name
 		i = UnicodeAlphabets.index(alphabet_name)
 		cpp_add_alphabet(i)
+	end
+	
+	
+	
+	
+	def ==(other)
+		return true if other.equal?(self)
+		return false unless other.instance_of?(self.class)
+		
+		
+		return  (self.font_name == other.font_name &&
+		         self.font_size == other.font_size &&
+		         self.antialiased? == other.antialiased? &&
+		         @ranges == other.instance_variable_get('@ranges') &&
+		         @alphabets == other.instance_variable_get('@alphabets') )
+	end
+	
+	
+	
+	# Need to implement both eql? and hash to use this class as Hash key
+	# Resource manager needs to be able to use TrueTypeFontSettings as a key.
+	def eql?(other)
+		# by default this is the same as ==\
+		
+		# The eql? method returns true if obj and anObject have the same value. Used by Hash to test members for equality. For objects of class Object, eql? is synonymous with ==. Subclasses normally continue this tradition, but there are exceptions. Numeric types, for example, perform type conversion across ==, but not across eql?
+		# src: http://ruby-doc.org/core-1.9.3/Object.html#method-i-eql-3F
+		
+		self == other
+	end
+	
+	def hash
+		[
+			self.font_name,
+			self.font_size,
+			self.antialiased?,
+			@ranges,
+			@alphabets
+		].hash
 	end
 end
 

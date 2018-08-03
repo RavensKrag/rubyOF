@@ -72,7 +72,7 @@ class Window < RubyOF::Window
 		# NOTE: All files should be located in @data_dir (Pathname object)
 		
 		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+			RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 50
@@ -144,7 +144,7 @@ class Window < RubyOF::Window
 	def on_exit
 		super()
 		
-		@live.on_exit
+		@live.on_exit unless @live.nil?
 		
 		# --- Save data
 		dump_yaml [self.width, self.height] => @window_dimension_save_file

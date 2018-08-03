@@ -45,7 +45,13 @@ class ExecutionHistory
 	
 	
 	
-	def [](i)
-		return @history[i]
+	def load_state_at_index(class_name, i)
+		state = YAML.load @history[i]
+		
+		klass = Kernel.const_get class_name
+		obj = klass.new
+		obj.load(state)
+		
+		return obj
 	end
 end

@@ -42,7 +42,7 @@ require (gem_root/'lib'/'rubyOF'/'monkey_patches'/'chipmunk'/'vec2').to_s
 		
 		
 		@font_monospace = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+			RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "DejaVu Sans Mono"
 				x.size = 20

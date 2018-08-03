@@ -23,7 +23,7 @@ class Body
 				@camera = Camera.new(window.width/2, window.height/2)
 				
 				@font = 
-					RubyOF::TrueTypeFont.new.dsl_load do |x|
+					RubyOF::TrueTypeFont.dsl_load do |x|
 						# TakaoPGothic
 						# ^ not installed on Ubunut any more, idk why
 						# try the package "fonts-takao" or "ttf-takao" as mentioned here:
@@ -35,7 +35,7 @@ class Body
 					end
 				
 				@monospace_font = 
-					RubyOF::TrueTypeFont.new.dsl_load do |x|
+					RubyOF::TrueTypeFont.dsl_load do |x|
 						x.path = "DejaVu Sans Mono"
 						x.size = 20
 						x.add_alphabet :Latin
@@ -273,9 +273,11 @@ class Body
 		return out
 	end
 	
-	# restore from saved data
+	# restore from saved data (input is a Hash)
 	def load(data)
-		
+		data[:instance_vars].each do |var_name, value|
+			self.instance_variable_set var_name, value
+		end
 	end
 	
 	
