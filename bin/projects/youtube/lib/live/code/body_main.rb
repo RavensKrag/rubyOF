@@ -169,7 +169,6 @@ class Body
 				@update_counter_label =
 					Text.new(@font, update_text).tap do |text|
 						text.text_color = @font_color
-						text.update
 						
 						text.body.p = CP::Vec2.new(43,1034)
 					end
@@ -178,7 +177,6 @@ class Body
 				@update_counter_number =
 					Text.new(@monospace_font, number).tap do |text|
 						text.text_color = @font_color
-						text.update
 						
 						text.body.p = CP::Vec2.new(161,1034)
 					end
@@ -189,7 +187,6 @@ class Body
 				@draw_counter_label =
 					Text.new(@font, draw_text).tap do |text|
 						text.text_color = @font_color
-						text.update
 						
 						text.body.p = CP::Vec2.new(43,1069)
 					end
@@ -198,7 +195,6 @@ class Body
 				@draw_counter_number =
 					Text.new(@monospace_font, number).tap do |text|
 						text.text_color = @font_color
-						text.update
 						
 						text.body.p = CP::Vec2.new(161,1069)
 					end
@@ -208,7 +204,6 @@ class Body
 				@state_label =
 					Text.new(@font, draw_text).tap do |text|
 						text.text_color = @font_color
-						text.update
 						
 						text.body.p = CP::Vec2.new(43,1113)
 					end

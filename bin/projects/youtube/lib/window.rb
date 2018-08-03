@@ -268,8 +268,6 @@ class Window < RubyOF::Window
 		@text_buffer = Text.new(@font, obj.to_s)
 		@text_buffer.text_color = @font_color
 		
-		@text_buffer.update
-		
 		@text_buffer.body.p = pos
 	end
 	

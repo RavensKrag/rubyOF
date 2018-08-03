@@ -49,7 +49,6 @@ class Text < Entity
 		end
 		
 		# regenerate the text mesh, as that can not be saved
-		@text_mesh = nil
-		self.update
+		self.generate_mesh()
 	end
 end
