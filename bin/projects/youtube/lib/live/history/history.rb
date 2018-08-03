@@ -21,7 +21,7 @@ class ExecutionHistory
 		#       References are being passed around, not deep copies.
 		
 		puts "  saving, in history"
-		state = obj.save.to_yaml
+		state = obj.to_yaml
 		i = obj.update_counter.current_turn
 		@history[i] = state
 	end
@@ -45,13 +45,11 @@ class ExecutionHistory
 	
 	
 	
-	def load_state_at_index(class_name, i)
+	def [](i)
+		puts "loading old state from history"
 		state = YAML.load @history[i]
 		
-		klass = Kernel.const_get class_name
-		obj = klass.new
-		obj.load(state)
-		
-		return obj
+		puts "state loaded"
+		return state
 	end
 end

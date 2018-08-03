@@ -1,12 +1,24 @@
-class Text < Entity
+class Body
 	def to_yaml_type
 		"!ruby/object:#{self.class}"
 	end
 	
 	def encode_with(coder)
+		puts "    saving, in body"
+		
+		var_names = 
+			self.instance_variables
+			.collect{|sym| sym.to_s }
+			.reject{|x| x.include? '@fibers' }
+									
+		# var_values = var_names.collect{|x| self.instance_variable_get x }
+		
+		
+		
+		# from Text entity implementation
 		data = Hash.new
 		
-		self.instance_variables.each do |var_name|
+		var_names.each do |var_name|
 			var = self.instance_variable_get var_name
 			
 			# for most instance variables, just let YAML take care of it
@@ -23,13 +35,17 @@ class Text < Entity
 			data[var_name.to_s.gsub('@', '')] = serialized_var
 		end
 		
-		p self.instance_variables
+		# p self.instance_variables
 		# ^ has the @ symbol in front
 		
 		coder.represent_map to_yaml_type, data
 	end
 	
 	def init_with(coder)
+		# Code taken from Text entity, but should work here as well. Still dealing with a PORO.
+		
+		
+		
 		# Don't need to call initialize, as Entity types are plain-old Ruby objects. There is no underlying C++ data type that must be initialized. Thus, we can just set the instance variables here, and be done.
 		
 		p coder.map
@@ -47,9 +63,5 @@ class Text < Entity
 			# (or may have to pass this to initialize? idk)
 			self.instance_variable_set "@#{var_name}", deserialized_var
 		end
-		
-		# regenerate the text mesh, as that can not be saved
-		@text_mesh = nil
-		self.update
 	end
 end

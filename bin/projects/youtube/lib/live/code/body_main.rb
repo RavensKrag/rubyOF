@@ -1,3 +1,7 @@
+Dir.chdir Pathname.new(__FILE__).dirname.expand_path do
+	require './body_serialize.rb'
+end
+
 class Body
 	include RubyOF::Graphics 
 	
@@ -59,7 +63,10 @@ class Body
 				
 				
 				# round-trip serialization test for Text entity
-				p YAML.load @text.to_yaml
+				p @text
+				yaml = @text.to_yaml
+				puts yaml
+				p YAML.load yaml
 				
 				
 				
@@ -252,44 +259,8 @@ class Body
 		
 	end
 	
-	# save the entire state of the world.
-	# return the result, don't output to file here.
-	def save
-		puts "    saving, in body"
-		
-		out = Hash.new
-		
-		
-		var_names = 
-			self.instance_variables
-			.reject{|x| x.to_s.include? '@fibers' }
-									
-		var_values = var_names.collect{|x| self.instance_variable_get x }
-		
-		out[:instance_vars] = var_names.zip(var_values).to_h
-		
-		
-		
-		return out
-	end
 	
-	# restore from saved data (input is a Hash)
-	def load(data)
-		data[:instance_vars].each do |var_name, value|
-			self.instance_variable_set var_name, value
-		end
-	end
-	
-	
-	class << self
-		def from_data(data)
-			obj = self.new
-			obj.load(data)
-			
-			return obj
-		end
-	end
-	
+	# NOTE: serialization uses YAML, and is written in body_serialize.rb
 	
 	
 	
