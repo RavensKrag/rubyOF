@@ -46,10 +46,10 @@ class ExecutionHistory
 	
 	
 	def [](i)
-		puts "loading old state from history"
+		# puts "loading old state from history"
 		state = YAML.load @history[i]
 		
-		puts "state loaded"
+		# puts "state loaded"
 		return state
 	end
 end

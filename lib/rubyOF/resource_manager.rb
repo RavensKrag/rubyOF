@@ -17,7 +17,7 @@ class ResourceManager
 		puts "ResourceManager#load"
 		case data_obj
 		when RubyOF::TrueTypeFontSettings
-			puts "-----> loading font"
+			# puts "-----> loading font"
 			# use TrueTypeFontSettings to load TrueTypeFont
 			@storage[:fonts] ||= Hash.new
 			

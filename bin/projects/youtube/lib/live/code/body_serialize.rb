@@ -48,6 +48,8 @@ class Body
 		
 		# Don't need to call initialize, as Entity types are plain-old Ruby objects. There is no underlying C++ data type that must be initialized. Thus, we can just set the instance variables here, and be done.
 		
+		@fibers = Hash.new
+		
 		p coder.map
 		
 		coder.map.each do |var_name, value|
