@@ -90,7 +90,8 @@ class Loader
 								
 						signal = @wrapped_object.send sym, @window
 						
-						if signal == :end 
+						if signal == :end
+							puts @history
 							self.finish()
 						end
 						
@@ -127,7 +128,7 @@ class Loader
 				# -- update files as necessary
 				dynamic_load @files[:body]
 				
-				# self.start_time_travel()
+				self.start_time_travel()
 			end
 			
 			def draw
@@ -215,33 +216,46 @@ class Loader
 			def update
 				# puts "============== good timeline ================"
 				# select a state
-				@time_travel_i = 2
+				@time_travel_i = 5
 				
-				# load a state from serialized data
-				@history_cache ||= Array.new
-				state = @history[@time_travel_i]
-				# puts "state"
-				# p state
-				@history_cache[@time_travel_i] = state
+				
+				# populate state cache using serialized data
+				if @history_cache.nil?
+					@history_cache = Array.new
+					
+					(0..@time_travel_i).each do |i|
+						state = @history[i]
+						# p state
+						@history_cache[i] = state
+					end
+					
+					# p @history_cache
+				end
+				
+				
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				# p @history_cache
-				
 				# render the selected state
 				# (it has been rendered before, so it should render now without errors)
-				unless @time_travel_i.nil?
-					# render the state
-					@history_cache[@time_travel_i].draw @window, self.state
+				unless @history_cache.nil?
+					# render the states
+					puts "history: #{@history_cache.collect{|x| !x.nil?}.inspect}"
+					
+					
+					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0.
+					@history_cache[1..(@time_travel_i-1)].each do |state|
+						# p state
+						state.draw @window
+					end
 					
 					
 					
-					# reloading from serialized state every frame is very bad
-					# -> there is secretly disk access being done
-					#    which is wrecking performance
-					# need to use a resource manager to prevent from re-loading resources (like fonts) that already exist in memory
-					# then, we change the serialization of TTF to load from the resource manager, instead of creating new TTF objects all the time
+					# @history_cache[@time_travel_i].draw @window
+					
+					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+					# (or maybe onion-skinning the UI will be cool? idk)\					
 				end
 			end
 		end

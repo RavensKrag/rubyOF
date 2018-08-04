@@ -2,6 +2,10 @@ Dir.chdir Pathname.new(__FILE__).dirname.expand_path do
 	require './body_serialize.rb'
 end
 
+# NOTE: Don't do things based on Fiber state. It is unnecessary, and will not interact correctly with time travel modes. Use the state of the state machine instead.
+# window.live.state => String
+# window.live.state_name => Symbol
+
 class Body
 	include RubyOF::Graphics 
 	
@@ -181,13 +185,6 @@ class Body
 						text.body.p = CP::Vec2.new(161,1034)
 					end
 				
-				status = @fibers[:update].alive? ? "alive" : "dead"
-				@update_fiber_status = Text.new(@monospace_font, status).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(269,1034)
-					end
-				
 				
 				draw_text = "draw:"
 				@draw_counter_label =
@@ -203,13 +200,6 @@ class Body
 						text.text_color = @font_color
 						
 						text.body.p = CP::Vec2.new(161,1069)
-					end
-				
-				status = @fibers[:draw].alive? ? "alive" : "dead"
-				@draw_fiber_status = Text.new(@monospace_font, status).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(269,1069)
 					end
 				
 				
@@ -249,11 +239,8 @@ class Body
 				
 				queue << @update_counter_label
 				queue << @update_counter_number
-				queue << @update_fiber_status
-				
 				queue << @draw_counter_label
 				queue << @draw_counter_number
-				queue << @draw_fiber_status
 				
 				
 				queue << @state_label
@@ -379,6 +366,7 @@ class Body
 			puts "keyboard: '#{key.chr}'"
 			case key.chr
 			when ' '
+				# -- spacebar has been pressed --
 				# NOTE: state_name is a symbol, state is a string
 				
 				case window.live.state_name
@@ -392,9 +380,12 @@ class Body
 				
 			end
 		when OF_KEY_LEFT
-			# pause
+			case window.live.state_name
+			when :paused
+				# window.live.
+			end
 		when OF_KEY_RIGHT
-			# pause	
+			
 		end
 	end
 	
