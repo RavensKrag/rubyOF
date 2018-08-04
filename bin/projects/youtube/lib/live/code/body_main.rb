@@ -6,6 +6,20 @@ end
 # window.live.state => String
 # window.live.state_name => Symbol
 
+
+ONION_SKIN_OPACITY      = 0.7
+
+ONION_SKIN_BEFORE_COLOR = RubyOF::Color.new.tap do |c|
+	c.r, c.g, c.b, c.a = [255, 0, 0, (255*ONION_SKIN_OPACITY).to_i]
+end
+ONION_SKIN_NOW_COLOR = RubyOF::Color.new.tap do |c|
+	c.r, c.g, c.b, c.a = [255, 255, 255, (255).to_i]
+end
+ONION_SKIN_AFTER_COLOR = RubyOF::Color.new.tap do |c|
+	c.r, c.g, c.b, c.a = [0, 0, 255, (255*ONION_SKIN_OPACITY).to_i]
+end
+
+
 class Body
 	include RubyOF::Graphics 
 	
@@ -84,7 +98,7 @@ class Body
 				@i += 1
 				# puts @i
 				
-				@text.body.p = CP::Vec2.new(@i * 50,600)
+				@text.body.p = CP::Vec2.new(@i * 100,600)
 			end
 			
 			on.turn 100 do
@@ -380,12 +394,17 @@ class Body
 				
 			end
 		when OF_KEY_LEFT
+			puts "step back"
 			case window.live.state_name
-			when :paused
-				# window.live.
+			when :good_timeline
+				window.live.time_travel_i -= 1
 			end
 		when OF_KEY_RIGHT
-			
+			puts "step forward"
+			case window.live.state_name
+			when :good_timeline
+				window.live.time_travel_i += 1
+			end
 		end
 	end
 	

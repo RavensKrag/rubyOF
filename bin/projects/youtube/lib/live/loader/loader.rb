@@ -14,6 +14,11 @@ require 'state_machine'
 module LiveCoding
 
 class Loader
+	include RubyOF::Graphics
+	
+	
+	attr_accessor :time_travel_i
+	
 	# NOTE: Save @inner, not the entire wrapper. This means you can move the defining code to some other location on disk if you would like, or between computers (system always uses absolute paths, so changing computer would break data, which is pretty bad)
 
 	# remember file paths, and bind data	
@@ -54,6 +59,25 @@ class Loader
 		@history = ExecutionHistory.new
 		
 		
+		
+		
+		# TODO: reallocate FBOs when the window size changes
+		
+		# Initialize FBOs for onion skin rendering during time travel mode
+		settings = RubyOF::Fbo::Settings.new
+		settings.width     = @window.width
+		settings.height    = @window.height
+		settings.minFilter = GL::GL_NEAREST
+		settings.maxFilter = GL::GL_NEAREST
+		# ^ just set the width and height to match that of the window,
+		#   at least for now.
+		
+		@history_fbo = RubyOF::Fbo.new
+		@history_fbo.allocate(settings)
+		# TODO: create DSL for Fbo#allocate like with Font and Image
+			
+		@temp_fbo = RubyOF::Fbo.new
+		@temp_fbo.allocate(settings)
 	end
 	
 	# automatically save data to disk before exiting
@@ -216,14 +240,14 @@ class Loader
 			def update
 				# puts "============== good timeline ================"
 				# select a state
-				@time_travel_i = 5
+				@time_travel_i ||= 5
 				
 				
 				# populate state cache using serialized data
 				if @history_cache.nil?
 					@history_cache = Array.new
 					
-					(0..@time_travel_i).each do |i|
+					@history.size.times do |i|
 						state = @history[i]
 						# p state
 						@history_cache[i] = state
@@ -232,7 +256,7 @@ class Loader
 					# p @history_cache
 				end
 				
-				
+				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -241,14 +265,15 @@ class Loader
 				# (it has been rendered before, so it should render now without errors)
 				unless @history_cache.nil?
 					# render the states
-					puts "history: #{@history_cache.collect{|x| !x.nil?}.inspect}"
+					# puts "history: #{@history_cache.collect{|x| !x.nil?}.inspect}"
 					
 					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0.
-					@history_cache[1..(@time_travel_i-1)].each do |state|
-						# p state
-						state.draw @window
-					end
+					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+					render_onion_skin(
+						@history_cache[1..(@time_travel_i-1)],
+						@history_cache[@time_travel_i],
+						@history_cache[@time_travel_i..-1]
+					)
 					
 					
 					
@@ -357,7 +382,7 @@ class Loader
 			
 			
 			# tried to forecast, but there was a load error
-			transition :good_timeline => :paradox_timeline
+			# transition :good_timeline => :paradox_timeline
 			transition :doomed_timeline => :paradox_timeline
 			transition :paradox_timeline => :paradox_timeline
 			transition :true_timeline => :paradox_timeline
@@ -369,8 +394,8 @@ class Loader
 			transition :error => :running
 			transition :true_ending => :running
 			
+			# transition :good_timeline => :forecasting
 			transition :doomed_timeline => :forecasting
-			transition :good_timeline => :forecasting
 			transition :paradox_timeline => :forecasting
 			transition :true_timeline => :forecasting
 		end
@@ -826,9 +851,100 @@ class Loader
 	# 
 	# Modo:    backward = green; forward = blue		(customizable per entity)
 	# http://modo.docs.thefoundry.co.uk/modo/801/help/pages/animation/ActorActionPose.html
-	def render_onion_skin
+	def render_onion_skin(before_states, current_state, after_states)
+		# @history_fbo   used for final render
+		# 
+		# @temp_fbo      accumulation buffer. render each state to this
+		#                then render this into the final FBO
+		@history_fbo.begin()
+			# need to clear the buffer,
+			# or you get whatever garbage is in there
+			ofClear(255,255,255,0)
+		@history_fbo.end()
 		
+		
+		# -- render before states
+		# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0.
+		before_states.each do |state|
+			# p state
+			
+			# render one layer
+			render_onion_skin_layer(@temp_fbo) do
+				state.draw @window
+			end
+			
+			# composite this layer into the onion skin
+			@history_fbo.begin()
+				
+				ofSetColor(ONION_SKIN_BEFORE_COLOR)
+				@temp_fbo.draw(0,0)
+				
+			@history_fbo.end()
+		end
+		
+		
+		# -- render future states
+		after_states.each do |state|
+			# p state
+			
+			# render one layer
+			render_onion_skin_layer(@temp_fbo) do
+				state.draw @window
+			end
+			
+			# composite this layer into the onion skin
+			@history_fbo.begin()
+				
+				ofSetColor(ONION_SKIN_AFTER_COLOR)
+				@temp_fbo.draw(0,0)
+				
+			@history_fbo.end()
+		end
+		
+		
+		# -- render current state
+		# render one layer
+		render_onion_skin_layer(@temp_fbo) do
+			current_state.draw @window
+		end
+		
+		# composite this layer into the onion skin
+		@history_fbo.begin()
+			ofPushStyle()
+			
+				ofSetColor(ONION_SKIN_NOW_COLOR)
+				@temp_fbo.draw(0,0)
+				
+			ofPopStyle()
+		@history_fbo.end()
+		
+		
+		
+		# render the final onion skin visualization to the screen
+		@history_fbo.draw(0,0)
 	end
+	
+	def render_onion_skin_layer(fbo) # &block
+		# render state to a single "layer" using an FBO
+			fbo.begin()
+				# need to clear the buffer,
+				# or you get whatever garbage is in there
+				ofClear(255,255,255,0)
+				
+				# render some things into the fbo here
+				# (rendering relative to the orign of the FBO, which moves)
+				ofPushStyle()
+				ofPushMatrix()
+					
+					yield
+					
+				ofPopMatrix()
+				ofPopStyle()
+			fbo.end()
+	end
+	
+	
+	
 	
 	def render_standard_world
 		
