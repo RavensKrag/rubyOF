@@ -115,7 +115,11 @@ class Loader
 						signal = @wrapped_object.send sym, @window
 						
 						if signal == :end
-							# puts @history
+							puts "saving history to file..."
+							File.open(@window.data_dir/'history.log', "w") do |f|
+								f.puts @history
+							end
+							
 							self.finish()
 						end
 						

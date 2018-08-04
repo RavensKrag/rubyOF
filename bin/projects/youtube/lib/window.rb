@@ -42,7 +42,7 @@ end
 class Window < RubyOF::Window
 	include HelperFunctions
 	
-	attr_reader :live
+	attr_reader :live, :data_dir
 	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
