@@ -17,7 +17,7 @@ class Loader
 	# NOTE: Save @inner, not the entire wrapper. This means you can move the defining code to some other location on disk if you would like, or between computers (system always uses absolute paths, so changing computer would break data, which is pretty bad)
 
 	# remember file paths, and bind data	
-	def initialize(class_constant_name,
+	def initialize(window, class_constant_name,
 		header:, body:, save_directory:, method_contract:
 	)
 		super()
@@ -25,8 +25,9 @@ class Loader
 		# if you don't, you get a symbol collision on '#draw'
 		# because that is the method used to visualize the state machine.
 		
-		
 		puts "setting up Live Coding environment"
+		
+		@window = window # for passing window to all callbacks
 		
 		
 		@klass_name  = class_constant_name
@@ -70,7 +71,7 @@ class Loader
 	state_machine :state, :initial => :running do
 		state :running do
 			# reload code as needed
-			def update(window)
+			def update
 				# puts "loader: update"
 				
 				
@@ -84,46 +85,36 @@ class Loader
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						# TODO: if you run -> end, jump back in time, and then start updating again, you need to reset the fiber
-						@update_fiber ||= Fiber.new do
-							signal = nil
-							while signal != :end
-								@history.save @wrapped_object
+						
+						@history.save @wrapped_object
 								
-								signal = @wrapped_object.send sym, window
-								# self.fire_state_event(event) unless event.nil?
-								
-								Fiber.yield
-								
-								# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
-								
-								
-								# # jump the execution back to an earlier update phase
-								# # (this is basically a goto)
-								# i = @wrapped_object.update_counter.current_turn
-								# if i > 30
-								# 	 @wrapped_object.update_counter.current_turn = 1
-								# 	 @wrapped_object.regenerate_update_thread!
-								# end
-							end
-							
-							puts @history
-							
-							self.pause()
+						signal = @wrapped_object.send sym, @window
+						
+						if signal == :end 
+							self.finish()
 						end
 						
-						@update_fiber.resume if @update_fiber.alive?
+						# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
+						
+						
+						# # jump the execution back to an earlier update phase
+						# # (this is basically a goto)
+						# i = @wrapped_object.update_counter.current_turn
+						# if i > 30
+						# 	 @wrapped_object.update_counter.current_turn = 1
+						# 	 @wrapped_object.regenerate_update_thread!
+						# end
 					end
 				end
 			end
 			
-			def draw(window)
+			def draw
 				sym = :draw
 				protect_runtime_errors do
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						@wrapped_object.send sym, window, self.state
+						@wrapped_object.send sym, @window
 					end
 				end
 			end
@@ -132,20 +123,20 @@ class Loader
 		# Don't generate new state, but render current state
 		# and alllow time traveling. Can also just resume execution.
 		state :paused do
-			def update(window)
+			def update
 				# -- update files as necessary
 				dynamic_load @files[:body]
 				
-				self.start_time_travel()
+				# self.start_time_travel()
 			end
 			
-			def draw(window)
+			def draw
 				sym = :draw
 				protect_runtime_errors do
 					if @wrapped_object.nil?
 						puts "null handler: #{sym}"
 					else
-						@wrapped_object.send sym, window, self.state
+						@wrapped_object.send sym, @window
 					end
 				end
 			end
@@ -155,8 +146,8 @@ class Loader
 		# Can also use time traveling to help fix the errors.
 		state :error do
 			# can't go forward until errors are fixed
-			def update(window)
-				window.show_text(CP::Vec2.new(352,100), "ERROR: see terminal for details")
+			def update
+				@window.show_text(CP::Vec2.new(352,100), "ERROR: see terminal for details")
 				
 				# -- update files as necessary
 				# need to try and load a new file,
@@ -164,15 +155,41 @@ class Loader
 				dynamic_load @files[:body]
 			end
 			
-			def draw(window)
+			def draw
 				# sym = :draw
 				# protect_runtime_errors do
 				# 	if @wrapped_object.nil?
 				# 		puts "null handler: #{sym}"
 				# 	else
-				# 		@wrapped_object.send sym, window, self.state
+				# 		@wrapped_object.send sym, @window
 				# 	end
 				# end
+			end
+		end
+		
+		# Like the "true ending" of a video game.
+		# Execution has completed (update fiber has no more updates)
+		# Time travel is allowed, but no more forward progess is possible.
+		state :true_ending do
+			def update
+				# @window.show_text(CP::Vec2.new(352,100), "Program completed!")
+				
+				# -- update files as necessary
+				# need to try and load a new file,
+				# as loading is the only way to escape this state
+				dynamic_load @files[:body]
+			end
+			
+			# normal drawing
+			def draw
+				sym = :draw
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						puts "null handler: #{sym}"
+					else
+						@wrapped_object.send sym, @window
+					end
+				end
 			end
 		end
 		
@@ -186,10 +203,16 @@ class Loader
 		# + doomed timeline    can only resume after successful forecasting
 		#                      (original was bad, need something good)
 		# 
-		# + forecast error     can only resume after successful forecasting
+		# + paradox timeline   can only resume after successful forecasting
 		#                      (very bad - time record has become corrupted)
+		# 
+		# + true timeline      even if you roll all the way forward again,
+		#                      you can't resume execution again
+		#                      (execution complete, no more execution possbile)
+
+
 		state :good_timeline do
-			def update(window)
+			def update
 				# puts "============== good timeline ================"
 				# select a state
 				@time_travel_i = 2
@@ -203,14 +226,14 @@ class Loader
 			end
 			
 			# draw onion-skin visualization
-			def draw(window)
+			def draw
 				# p @history_cache
 				
 				# render the selected state
 				# (it has been rendered before, so it should render now without errors)
 				unless @time_travel_i.nil?
 					# render the state
-					@history_cache[@time_travel_i].draw window, self.state
+					@history_cache[@time_travel_i].draw @window, self.state
 					
 					
 					
@@ -225,24 +248,38 @@ class Loader
 		
 		# A failed timeline caused by fairly standard program errors.
 		state :doomed_timeline do
-			def update(window)
+			def update
 				
 			end
 			
 			# draw onion-skin visualization
-			def draw(window)
+			def draw
 				
 			end
 		end
 		
 		# A failed timeline caused by the time ripples from forecasting.
-		state :forecast_error do
-			def update(window)
+		state :paradox_timeline do
+			def update
 				
 			end
 			
 			# draw onion-skin visualization
-			def draw(window)
+			def draw
+				
+			end
+		end
+		
+		# The timeline that preceeds the "true ending."
+		# When you hit the "true_ending" state and proceed to time travel,
+		# this is the timeline that gets used.
+		state :true_timeline do
+			def update
+				
+			end
+			
+			# draw onion-skin visualization
+			def draw
 				
 			end
 		end
@@ -252,11 +289,11 @@ class Loader
 		
 		# once you are in this state, the load has succeeded.
 		# at this point, you attempt to generate a forecast.
-		# if the forecast fails -> :forecast_error (a failed timeline variant)
+		# if the forecast fails -> :paradox_timeline (a failed timeline variant)
 		state :forecasting do
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
-			def update(window)
+			def update
 				# update the state
 				protect_runtime_errors do
 					
@@ -267,11 +304,17 @@ class Loader
 				
 				# transition to time_traveling state,
 				# as long as update was successful
-				self.start_time_travel()
+				self.forecast_found_good_timeline()
+				
+				
+				# TODO: need to detect true timelines as well
+				# if the last state generated results in the update fiber running to completion, then the found timeline is actually the "true timeline". In that case, call this method instead:
+				
+				# self.forecast_found_true_timeline()
 			end
 			
 			# draw onion-skin visualization
-			def draw(window)
+			def draw
 				
 			end
 		end
@@ -288,7 +331,7 @@ class Loader
 			transition :running => :error
 			
 			# tried to forecast, but hit an exception while generating new state
-			transition :forecasting => :forecast_error
+			transition :forecasting => :paradox_timeline
 		end
 		
 		event :load_error do
@@ -296,22 +339,26 @@ class Loader
 			transition :running => :error
 			transition :paused => :error
 			transition :error => :error
+			transition :true_ending => :error
 			
 			
 			# tried to forecast, but there was a load error
-			transition :good_timeline => :forecast_error
-			transition :doomed_timeline => :forecast_error
-			transition :forecast_error => :forecast_error
+			transition :good_timeline => :paradox_timeline
+			transition :doomed_timeline => :paradox_timeline
+			transition :paradox_timeline => :paradox_timeline
+			transition :true_timeline => :paradox_timeline
 		end
 		
 		event :successful_reload do
-			transition :error => :running
 			transition :running => :running
 			transition :paused => :paused
+			transition :error => :running
+			transition :true_ending => :running
 			
 			transition :doomed_timeline => :forecasting
 			transition :good_timeline => :forecasting
-			transition :forecast_error => :forecasting
+			transition :paradox_timeline => :forecasting
+			transition :true_timeline => :forecasting
 		end
 		
 		after_transition :on => :successful_reload, :do => :on_reload
@@ -335,10 +382,25 @@ class Loader
 			transition :running => :running
 		end
 		
+		event :finish do
+			transition :running => :true_ending
+		end
 		
+		# You can "time travel," scrubbing through past states.
 		event :start_time_travel do
 			transition :paused => :good_timeline
 			transition :error => :doomed_timeline
+			transition :true_ending => :true_timeline
+		end
+		
+		# A good future unfolds in front of you, but you stay put for now.
+		event :forecast_found_good_timeline do
+			transition :forecasting => :good_timeline
+		end
+		
+		# The true timeline unfolds in front of you, but you stay put for now.
+		event :forecast_found_true_timeline do
+			transition :forecasting => :true_timeline
 		end
 		
 		
@@ -479,7 +541,7 @@ class Loader
 					if @wrapped_object.nil?
 						# puts "null handler: #{sym}"
 					else
-						@wrapped_object.send sym, *args
+						@wrapped_object.send sym, @window, *args
 					end
 				end
 			end
@@ -738,7 +800,7 @@ class Loader
 	
 	
 	
-	# Render mulitple time points to the same window, visualizing time as space.
+	# Render mulitple time points to the same @window, visualizing time as space.
 	# 
 	# The current time point should be solid, and time points in the 
 	# future and in the past should be semi transparent.

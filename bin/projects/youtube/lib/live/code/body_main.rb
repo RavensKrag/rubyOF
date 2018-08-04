@@ -51,10 +51,8 @@ class Body
 				
 				# p @font_color
 				
-				@text.update
-				
 				# @text.body.p = @p.clone
-				@text.body.p = CP::Vec2.new(560,600)
+				@text.body.p = CP::Vec2.new(160,600)
 				# @text.body.p = CP::Vec2.new(0,0)
 				
 				# @text.texture.bind
@@ -81,6 +79,8 @@ class Body
 				# end
 				@i += 1
 				# puts @i
+				
+				@text.body.p = CP::Vec2.new(@i * 50,600)
 			end
 			
 			# on.turn 100 do
@@ -92,7 +92,7 @@ class Body
 				# This is not completely true, as the user can still make changes based on direct manipulation. But those changes should generate new state, so hopefully this is all fine?
 				# Soon, will need to consider how direct input effects the time traveling paradigm.
 			Fiber.yield :end
-			# (currently, 'pause' state still renders new frames, so this works fine)
+			# (tell Loader to transition to "true ending" state)
 		end
 		@regenerate_update_thread = false
 		end
@@ -101,7 +101,7 @@ class Body
 		@fibers[:update].resume @update_counter
 	end
 	
-	def draw(window, status)
+	def draw(window)
 		if @fibers[:draw].nil? or @regenerate_draw_thread
 		@fibers[:draw] = Fiber.new do |on|		
 		loop do
@@ -181,6 +181,12 @@ class Body
 						text.body.p = CP::Vec2.new(161,1034)
 					end
 				
+				status = @fibers[:update].alive? ? "alive" : "dead"
+				@update_fiber_status = Text.new(@monospace_font, status).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(269,1034)
+					end
 				
 				
 				draw_text = "draw:"
@@ -199,6 +205,13 @@ class Body
 						text.body.p = CP::Vec2.new(161,1069)
 					end
 				
+				status = @fibers[:draw].alive? ? "alive" : "dead"
+				@draw_fiber_status = Text.new(@monospace_font, status).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(269,1069)
+					end
+				
 				
 				draw_text = "state: #{window.live.state}"
 				@state_label =
@@ -211,12 +224,41 @@ class Body
 				
 				
 				
+				# # state_text = "test"
+				# state_text = 
+				# 	window.live.instance_variable_get("@history")
+				# 	.inspect
+				# 	.each_char.each_slice(60)
+				# 	.collect{|chunk| chunk.join("")}.join("\n")
+				# 	# .inspect
+				
+				state_text = "hello"
+				
+				# state_text = @fibers[:update].alive? ? "alive" : "dead"
+				
+				@state_display = Text.new(@monospace_font, state_text).tap do |text|
+						text.text_color = @font_color
+						
+						# text.body.p = CP::Vec2.new(285,337)
+						text.body.p = CP::Vec2.new(383,937)
+						# text.body.p = CP::Vec2.new(285,1137)
+					end
+				
+				
+				
+				
 				queue << @update_counter_label
 				queue << @update_counter_number
+				queue << @update_fiber_status
+				
 				queue << @draw_counter_label
 				queue << @draw_counter_number
+				queue << @draw_fiber_status
+				
 				
 				queue << @state_label
+				
+				queue << @state_display
 			}
 			.group_by{ |e| e.texture }
 			.each do |texture, same_texture|
@@ -250,7 +292,7 @@ class Body
 		@fibers[:draw].resume @draw_counter
 	end
 	
-	def on_exit
+	def on_exit(window)
 		
 	end
 	
@@ -265,11 +307,11 @@ class Body
 	
 	
 	
-	def mouse_moved(x,y)
+	def mouse_moved(window, x,y)
 		@p = [x,y]
 	end
 	
-	def mouse_pressed(x,y, button)
+	def mouse_pressed(window, x,y, button)
 		puts "moving mouse"
 		# super(x,y, button)
 		
@@ -281,33 +323,33 @@ class Body
 		# # TODO: set button codes as constants?
 		
 		case button
-			when 1 # middle click
+			when OF_MOUSE_BUTTON_2 # middle click
 				@drag_origin = CP::Vec2.new(x,y)
 				@camera_origin = @camera.pos.clone
 		end
 	end
 	
-	def mouse_dragged(x,y, button)
+	def mouse_dragged(window, x,y, button)
 		# super(x,y, button)
 		
 		case button
-			when 1 # middle click
+			when OF_MOUSE_BUTTON_2 # middle click
 				pt = CP::Vec2.new(x,y)
 				d = (pt - @drag_origin)/@camera.zoom
 				@camera.pos = d + @camera_origin
 		end
 	end
 	
-	def mouse_released(x,y, button)
+	def mouse_released(window, x,y, button)
 		# super(x,y, button)
 		
 		case button
-			when 1 # middle click
+			when OF_MOUSE_BUTTON_2 # middle click
 				
 		end
 	end
 	
-	def mouse_scrolled(x,y, scrollX, scrollY)
+	def mouse_scrolled(window, x,y, scrollX, scrollY)
 		# super(x,y, scrollX, scrollY) # debug print
 		
 		zoom_factor = 1.05
@@ -321,5 +363,34 @@ class Body
 		
 		puts "camera zoom: #{@camera.zoom}"
 	end
+	
+	
+	
+	def key_pressed(window, key)
+		# TODO: figure out how to change Loader state from inside here
+		# (should probably have to Loader state change API from all callbacks, honestly... maybe just pass Loder or Window or both to all wrapped callbacks? could easily add it to the beginning of the callback list)
+		
+		# puts key.chr
+		puts key
+		
+		case key
+		when (0..127)
+			# interpret int:key as ASCII character
+			puts "keyboard: '#{key.chr}'"
+			case key.chr
+			when ' '
+				
+			end
+		when OF_KEY_LEFT
+			# pause
+		when OF_KEY_RIGHT
+			# pause	
+		end
+	end
+	
+	def key_released(window, key)
+		
+	end
+	
 	
 end

@@ -93,7 +93,8 @@ class Window < RubyOF::Window
 		
 		@live =
 			LiveCoding::Loader.new(
-				"Body",
+				self, # Window
+				"Body", # wrapped_object
 				header: (PROJECT_DIR/'lib'/'live'/'code'/'body_init.rb'),
 				body:   (PROJECT_DIR/'lib'/'live'/'code'/'body_main.rb'),
 				save_directory: @data_dir,
@@ -101,7 +102,8 @@ class Window < RubyOF::Window
 				method_contract:  [
 					:update, :draw,
 					:mouse_moved, :mouse_pressed, :mouse_dragged, :mouse_released,
-					:mouse_scrolled
+					:mouse_scrolled,
+					:key_pressed, :key_released
 				]
 			)
 		
@@ -125,13 +127,13 @@ class Window < RubyOF::Window
 		# super()
 		clear_text_buffer
 		@live.font_color = @font_color
-		@live.update(self)
+		@live.update
 	end
 	
 	def draw
 		# super()
 		
-		@live.draw(self)
+		@live.draw
 		
 		
 		unless @text_buffer.nil?
@@ -178,10 +180,14 @@ class Window < RubyOF::Window
 		rescue RangeError => e
 			
 		end
+		
+		@live.key_pressed(key)
 	end
 	
 	def key_released(key)
 		super(key)
+		
+		@live.key_released(key)
 	end
 	
 	
