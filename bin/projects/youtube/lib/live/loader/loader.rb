@@ -115,7 +115,7 @@ class Loader
 						signal = @wrapped_object.send sym, @window
 						
 						if signal == :end
-							puts @history
+							# puts @history
 							self.finish()
 						end
 						
@@ -269,6 +269,7 @@ class Loader
 					
 					
 					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+					# currently, framerate is down to ~30fps, because this render operation is expensive.
 					render_onion_skin(
 						@history_cache[1..(@time_travel_i-1)],
 						@history_cache[@time_travel_i],
@@ -860,6 +861,8 @@ class Loader
 		
 		# -- render before states
 		# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0.
+			# composite this layer into the onion skin
+			@history_fbo.begin()
 		before_states.each do |state|
 			# p state
 			
@@ -868,16 +871,16 @@ class Loader
 				state.draw @window
 			end
 			
-			# composite this layer into the onion skin
-			@history_fbo.begin()
 				
 				ofSetColor(ONION_SKIN_BEFORE_COLOR)
 				@temp_fbo.draw(0,0)
 				
-			@history_fbo.end()
 		end
+			@history_fbo.end()
 		
 		
+			# composite this layer into the onion skin
+			@history_fbo.begin()
 		# -- render future states
 		after_states.each do |state|
 			# p state
@@ -887,14 +890,12 @@ class Loader
 				state.draw @window
 			end
 			
-			# composite this layer into the onion skin
-			@history_fbo.begin()
 				
 				ofSetColor(ONION_SKIN_AFTER_COLOR)
 				@temp_fbo.draw(0,0)
 				
-			@history_fbo.end()
 		end
+			@history_fbo.end()
 		
 		
 		# -- render current state
