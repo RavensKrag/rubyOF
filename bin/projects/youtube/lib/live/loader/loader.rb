@@ -681,7 +681,18 @@ class Loader
 	# if the file has changed since the last load
 	def dynamic_load(file) # FilePair
 		begin
+			# NOTE: file timestamps only have 1 sec resolution, so there may be a slight delay when attempting to reload more than once per second.
 			if file.changed?
+				file.update_time
+				# NOTE: Timestamps updated whenever load is *attempted*
+					# This is actually what you want.
+					# If you don't do it this way, then when there is a load error,
+					# the system will try and fail to reload the file every tick
+					# of the main loop.
+					# This will generate a lot of useless noise in the log.
+					# However, once the file is updated, you expect the system to
+					# attempt a reload at least once.
+				
 				puts "live loading #{file}"
 				load file.to_s
 				self.successful_reload()
@@ -698,30 +709,14 @@ class Loader
 			# 
 			# If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
 			
-			# load failed.
-			# corresponding snippets have already been deactivated.
-			# only need to display the errors
-			
 			puts "FAILURE TO LOAD: #{file}"
 			
 			print_wrapped_error(e)
 			
 			self.runtime_error()
-		else
-			
 		ensure
-			# NOW actually update the timestamp.
-			file.update_time
+			
 		end
-		
-		
-		
-		
-		# NOTE: Timestamps updated even when load fails
-			# This is actually what you want.
-			# If you don't do it this way, then every tick of the main loop,
-			# the system will try, and fail, to load the file.
-			# This will generate a lot of useless noise in the log.
 	end
 	
 	
