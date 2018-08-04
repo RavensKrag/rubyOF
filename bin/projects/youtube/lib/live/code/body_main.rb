@@ -397,7 +397,9 @@ class Body
 			puts "step back"
 			case window.live.state_name
 			when :good_timeline
-				window.live.time_travel_i -= 1
+				if window.live.time_travel_i > 0
+					window.live.time_travel_i -= 1
+				end
 			end
 		when OF_KEY_RIGHT
 			puts "step forward"
