@@ -83,9 +83,9 @@ class Body
 				@text.body.p = CP::Vec2.new(@i * 50,600)
 			end
 			
-			# on.turn 100 do
-			# 	puts "END OF PROGRAM"
-			# end
+			on.turn 100 do
+				puts "END OF PROGRAM"
+			end
 			
 			
 			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.
@@ -379,6 +379,16 @@ class Body
 			puts "keyboard: '#{key.chr}'"
 			case key.chr
 			when ' '
+				# NOTE: state_name is a symbol, state is a string
+				
+				case window.live.state_name
+				when :running
+					puts "pausing..."
+					window.live.pause
+				when :paused
+					puts "resuming..."
+					window.live.resume
+				end
 				
 			end
 		when OF_KEY_LEFT
