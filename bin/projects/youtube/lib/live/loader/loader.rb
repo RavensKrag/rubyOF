@@ -58,10 +58,11 @@ class Loader
 		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
 		
-		
+		@history.save @wrapped_object
 		
 		
 		# TODO: reallocate FBOs when the window size changes
+		# TODO: see if changing FBO filtering makes text look less "thin"
 		
 		# Initialize FBOs for onion skin rendering during time travel mode
 		settings = RubyOF::Fbo::Settings.new
@@ -110,9 +111,13 @@ class Loader
 						puts "null handler: #{sym}"
 					else
 						
-						@history.save @wrapped_object
-								
 						signal = @wrapped_object.send sym, @window
+						
+						@history.save @wrapped_object
+						
+						i = @wrapped_object.update_counter.current_turn
+						puts "current turn: #{i}"
+						@time_travel_i = i
 						
 						if signal == :end
 							puts "saving history to file..."
@@ -156,7 +161,7 @@ class Loader
 				# -- update files as necessary
 				dynamic_load @files[:body]
 				
-				self.start_time_travel()
+				self.begin_time_travel()
 			end
 			
 			def draw
@@ -243,9 +248,6 @@ class Loader
 		state :good_timeline do
 			def update
 				# puts "============== good timeline ================"
-				# select a state
-				@time_travel_i ||= 5
-				
 				
 				# populate state cache using serialized data
 				if @history_cache.nil?
@@ -269,11 +271,12 @@ class Loader
 				# (it has been rendered before, so it should render now without errors)
 				unless @history_cache.nil?
 					# render the states
-					# puts "history: #{@history_cache.collect{|x| !x.nil?}.inspect}"
-					
+					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
 					
 					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
 					# currently, framerate is down to ~30fps, because this render operation is expensive.
+					
+					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
 					render_onion_skin(
 						@history_cache[1..(@time_travel_i-1)],
 						@history_cache[@time_travel_i],
@@ -319,12 +322,49 @@ class Loader
 		# this is the timeline that gets used.
 		state :true_timeline do
 			def update
+				# puts "============== true timeline ================"
 				
+				# populate state cache using serialized data
+				if @history_cache.nil?
+					@history_cache = Array.new
+					
+					@history.size.times do |i|
+						state = @history[i]
+						# p state
+						@history_cache[i] = state
+					end
+					
+					# p @history_cache
+				end
+				
+				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				
+				# render the selected state
+				# (it has been rendered before, so it should render now without errors)
+				unless @history_cache.nil?
+					# render the states
+					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+					
+					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+					# currently, framerate is down to ~30fps, because this render operation is expensive.
+					
+					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+					render_onion_skin(
+						@history_cache[1..(@time_travel_i-1)],
+						@history_cache[@time_travel_i],
+						@history_cache[@time_travel_i..-1]
+					)
+					
+					
+					
+					# @history_cache[@time_travel_i].draw @window
+					
+					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+					# (or maybe onion-skinning the UI will be cool? idk)\					
+				end
 			end
 		end
 		
@@ -387,7 +427,7 @@ class Loader
 			
 			
 			# tried to forecast, but there was a load error
-			# transition :good_timeline => :paradox_timeline
+			transition :good_timeline => :paradox_timeline
 			transition :doomed_timeline => :paradox_timeline
 			transition :paradox_timeline => :paradox_timeline
 			transition :true_timeline => :paradox_timeline
@@ -399,7 +439,7 @@ class Loader
 			transition :error => :running
 			transition :true_ending => :running
 			
-			# transition :good_timeline => :forecasting
+			transition :good_timeline => :forecasting
 			transition :doomed_timeline => :forecasting
 			transition :paradox_timeline => :forecasting
 			transition :true_timeline => :forecasting
@@ -417,25 +457,48 @@ class Loader
 		# standard transitions
 		# 
 		
+		# temporarily pause execution
+		# (really want to just pause the updating, but continue to draw)
 		event :pause do
 			transition :running => :paused
 		end
 		
+		# resume execution after pausing
 		event :resume do
 			transition :paused => :running
 			transition :running => :running
 		end
 		
+		# finsh execution
 		event :finish do
 			transition :running => :true_ending
 		end
 		
+		
 		# You can "time travel," scrubbing through past states.
-		event :start_time_travel do
+		event :begin_time_travel do
 			transition :paused => :good_timeline
 			transition :error => :doomed_timeline
 			transition :true_ending => :true_timeline
+			transition :paradox_timeline => :paradox_timeline
 		end
+		
+		after_transition :on => :begin_time_travel, :do => :on_time_travel_begin
+		
+		
+		# Stop time traveling, and return to a stable point in time.
+		event :end_time_travel do
+			transition :good_timeline => :running, :if => :end_of_timeline?
+			transition :doomed_timeline => :error, :if => :end_of_timeline?
+			transition :true_timeline => :true_ending, :if => :end_of_timeline?
+			# The only way to escape a :paradox_timeline is to forecast again.
+			# (you must jump to a new timeline, because this one is corrupted)
+		end
+		
+		after_transition :on => :end_time_travel, :do => :on_time_travel_end
+		
+		
+		
 		
 		# A good future unfolds in front of you, but you stay put for now.
 		event :forecast_found_good_timeline do
@@ -446,6 +509,12 @@ class Loader
 		event :forecast_found_true_timeline do
 			transition :forecasting => :true_timeline
 		end
+		
+		after_transition :on => :forecast_found_good_timeline,
+		                 :do => :on_successful_forecast
+		
+		after_transition :on => :forecast_found_true_timeline,
+		                 :do => :on_successful_forecast
 		
 		
 		
@@ -474,12 +543,122 @@ class Loader
 		
 		
 		
-		after_transition :to => :error, :do => :error_callback
+		after_transition :to => :error, :do => :on_error
 		# block callbacks will execute in the context of StateMachine,
 		# where as method callbacks will execute in the context of Loader
 		
 		
 		
+	end
+	
+	
+	# time travel interface
+	# Step backwards one frame in history
+	def step_back
+		puts "step back"
+		
+		# @time_travel_i == @history.length-1
+		puts "turn: #{@wrapped_object.update_counter.current_turn}" 
+		puts "target: #{@history.length-1}"
+		
+		if self.state.include? "timeline"
+			# (already in time traveling mode)
+			# step backwards in time
+			
+			# can't travel to t=0 ; the initial state is not renderable
+			if @time_travel_i > 1
+				@time_travel_i -= 1
+			end
+		else
+			# (not currently time traveling)
+			# start time traveling
+			return if self.state_name == :forecasting || self.state_name == :running
+				# + :forecasting is a transient state associated with time travel
+				# + :running is for actively executing code. pause execution first.
+			
+			self.begin_time_travel()
+			puts "time traveling to: #{self.state}"
+		end
+	end
+	
+	# time travel interface
+	# Step forwards one frame in history
+	def step_forward
+		if self.state.include? "timeline"
+			# (must be in time traveling mode)
+			puts "step forward"
+			
+			if self.state_name == :paradox_timeline
+				# Past a certain timepoint, time has been corrupted.
+				# This point will be earlier than the normal end of the timeline.
+				# Figure out what that end point is, and prevent moving past it.
+				
+				# (In other timelines, when you hit the end of a timeline, you stop time traveling and go back to a "normal" mode. With the paradox timeline, that is impossible.)
+			else
+				# Use normal timeline boundary, for normal actions.
+				
+				if end_of_timeline?
+					# TODO: try removing the pause state
+					
+					# if paused -> time travel : resume execution
+					# if error -> time travel : return to :error state
+					# if hit true ending -> time travel : return to true end
+					self.end_time_travel()
+					puts "time traveling to stable timepoint: #{self.state}"
+				else
+					
+					if @time_travel_i < @history.length-1
+						@time_travel_i += 1
+					end
+					
+				end
+			end
+			
+			
+		end
+	end
+	
+	def end_of_timeline?
+		# TODO: figure out how to detect this properly
+		# maybe compare the size of history to the turn counter?
+		
+		return (@time_travel_i == @history.length-1)
+	end
+	
+	
+	
+	private
+	
+	
+	
+	def on_time_travel_begin
+		# TODO: optimize history cache population and usage.
+		# + don't try to fill cache all in one frame
+		# + don't throw out the entire cache if some items are still good
+    #   (cache invalidation is hard)
+    # + optimize onion skin rendering
+		@history_cache = nil
+		
+		# i = @wrapped_object.update_counter.current_turn
+		# puts "current turn: #{i}"
+		# @time_travel_i = i
+	end
+	
+	def on_time_travel_end
+		
+	end
+	
+	# Final state in history cache is the new wrapped object
+	def on_successful_forecast
+		@wrapped_object = @history_cache.last
+	end
+	
+	
+	
+	def on_error
+		puts "------> error detected"
+		puts @klass_name
+		puts self.class
 	end
 	
 	def on_reload
@@ -489,11 +668,7 @@ class Loader
 		end
 	end
 	
-	def error_callback
-		puts "------> error detected"
-		puts @klass_name
-		puts self.class
-	end
+	
 	
 	def foo_callback
 		@t_jmp = nil # <- when did we time travel to before forecasting
@@ -509,15 +684,11 @@ class Loader
 	end
 	
 	
-	
-	
-	
-	
 	# NOTE: under this architecture, you can't dynamically change initialization or serialization code - you would have to restart the program if that sort of change is made
 	# ^ is this still true?
 	
 	
-	private
+	
 	
 	
 	# 
@@ -864,7 +1035,6 @@ class Loader
 		
 		
 		# -- render before states
-		# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0.
 			# composite this layer into the onion skin
 			@history_fbo.begin()
 		before_states.each do |state|

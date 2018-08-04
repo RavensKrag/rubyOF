@@ -10,7 +10,7 @@ end
 ONION_SKIN_OPACITY      = 0.7
 
 ONION_SKIN_BEFORE_COLOR = RubyOF::Color.new.tap do |c|
-	c.r, c.g, c.b, c.a = [255, 0, 0, (255*ONION_SKIN_OPACITY).to_i]
+	c.r, c.g, c.b, c.a = [0, 0, 255, (255*ONION_SKIN_OPACITY).to_i]
 end
 ONION_SKIN_NOW_COLOR = RubyOF::Color.new.tap do |c|
 	c.r, c.g, c.b, c.a = [255, 255, 255, (255).to_i]
@@ -394,19 +394,10 @@ class Body
 				
 			end
 		when OF_KEY_LEFT
-			puts "step back"
-			case window.live.state_name
-			when :good_timeline
-				if window.live.time_travel_i > 0
-					window.live.time_travel_i -= 1
-				end
-			end
+			# can't travel to t=0 ; the initial state is not renderable
+			window.live.step_back
 		when OF_KEY_RIGHT
-			puts "step forward"
-			case window.live.state_name
-			when :good_timeline
-				window.live.time_travel_i += 1
-			end
+			window.live.step_forward
 		end
 	end
 	
