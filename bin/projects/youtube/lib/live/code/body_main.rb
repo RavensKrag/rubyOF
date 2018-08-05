@@ -90,23 +90,130 @@ class Body
 				@i += 1
 			end
 			
-			on.turn 1..9 do
-				puts "  updating..."
-				# if i > 20
-				# 	raise "DERP"
-				# end
-				@i += 1
-				# puts @i
+			
+			
+			# need a motion that is the same for the first 
+			
+			
+			
+			# prototype version 3 code first.
+			# satify the following conditions:
+			
+			# v1, v2, and v3 run from t=1 -> t=10
+			
+			# there is a bifurcation between v1 and v3 @ t=4
+				# qualitatively different behavior in spatial dynamics
 				
-				@text.body.p = CP::Vec2.new(@i * 100,600)
+			# there is a bifurcation between v1 and v2 @ t=8
+				# in v2, code crashes the simulation -> error
+				# in v1, code runs normally, reaching true ending @ t=10
+			
+			
+			# (don't need to be able to visualze bifurcation points any time soon, but do need to see the alpha timeline. in Bret Victor's platforming example, you only want to see the path of your guy relative to the world, but sometimes in programming you don't know the goal: you only know what would be better relative to what youve seen. As such, you want to see how your new code compares to the old code - how the forecasted timeline compares to the alpha timeline)
+			
+			
+			version = 1
+			# version = 2
+			# version = 3
+			
+			on.turn 1 do
+				@i = 1
+				@text.body.p = CP::Vec2.new(@i * 30,600)
+			end
+			on.turn 2 do
+				@i = 2
+				@text.body.p = CP::Vec2.new(@i * 30,600)
+			end
+			on.turn 3 do
+				@i = 3
+				@text.body.p = CP::Vec2.new(@i * 30,600)
 			end
 			
-			# on.turn 30 do
-			# 	raise "BAIL OUT!!"
-			# end
+			case version
+			when 1
+			# 1) original timeline - linear movement
+			on.turn 4 do
+				@i = 4
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 5 do
+				@i = 5
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 6 do
+				@i = 6
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 7 do
+				@i = 7
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 8 do
+				@i = 8
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 9 do
+				@i = 9
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
+			on.turn 10 do
+				@i = 10
+				@text.body.p = CP::Vec2.new(@i * 70,600)
+			end
 			
-			on.turn 100 do
-				puts "END OF PROGRAM"
+			
+			
+			when 2
+			# 2) error to stop execution and get to paradox timeline
+			#    (should show *some* progress)
+			on.turn 4 do
+				@text.body.p = CP::Vec2.new(120,600)
+			end
+			on.turn 5 do
+				@text.body.p = CP::Vec2.new(200,600)
+			end
+			on.turn 6 do
+				@text.body.p = CP::Vec2.new(400,600)
+			end
+			on.turn 7 do
+				@text.body.p = CP::Vec2.new(800,600)
+			end
+			on.turn 8 do
+				@text.body.p = CP::Vec2.new(1000,600)
+			end
+			on.turn 9 do
+				raise "BAIL OUT!!"
+			end
+			
+				
+			when 3
+			# 3) fixed timeline - exponential movement
+			on.turn 4 do
+				@text.body.p = CP::Vec2.new(120,600)
+			end
+			on.turn 5 do
+				@text.body.p = CP::Vec2.new(200,600)
+			end
+			on.turn 6 do
+				@text.body.p = CP::Vec2.new(400,600)
+			end
+			on.turn 7 do
+				@text.body.p = CP::Vec2.new(800,600)
+			end
+			on.turn 8 do
+				@text.body.p = CP::Vec2.new(1000,600)
+			end
+			on.turn 9 do
+				@text.body.p = CP::Vec2.new(1200,600)
+			end
+			on.turn 10 do
+				@text.body.p = CP::Vec2.new(1200,600) # can't forecast 10
+				# (maybe need to save the current state before forecasting???)
+				# FIXME: fix off-by-one error on forecasting
+			end
+			
+			
+			
 			end
 			
 			
