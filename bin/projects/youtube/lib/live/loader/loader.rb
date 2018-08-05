@@ -160,8 +160,6 @@ class Loader
 			def update
 				# -- update files as necessary
 				dynamic_load @files[:body]
-				
-				self.begin_time_travel()
 			end
 			
 			def draw
@@ -488,7 +486,7 @@ class Loader
 		
 		# Stop time traveling, and return to a stable point in time.
 		event :end_time_travel do
-			transition :good_timeline => :running, :if => :end_of_timeline?
+			transition :good_timeline => :paused, :if => :end_of_timeline?
 			transition :doomed_timeline => :error, :if => :end_of_timeline?
 			transition :true_timeline => :true_ending, :if => :end_of_timeline?
 			# The only way to escape a :paradox_timeline is to forecast again.
@@ -915,94 +913,10 @@ class Loader
 	# revert_code() <-- not avialable yet
 	
 	
-	# Roll data back one step.
-	# 
-	# A standard undo operation. Paired with revert_execution() 
-	# you can achive the time travel effect.
-	def revert_data()
-		
-	end
-	
-	# Step forward in time by restoring saved data.
-	# 
-	# A standard redo operation. A combination of undo and redo
-	# can be used to scrub the simulation, like how one might
-	# scrub an animation or other video. More advanced tech is
-	# needed to achieve the time travel effect.
-	def advance_data()
-		
-	end
-	
-	# Roll back TurnCounter objects, to set execution back in time.
-	# 
-	# Normally, this operation is paired with rolling back data
-	# as well. If you don't revert both execution and data, you
-	# can't get the time travel effect.
-	def revert_execution()
-		
-	end
-	
-	# Prevent TurnCounter objects from stepping forward in time.
-	# 
-	# This effectively pauses execution, but the main loop will
-	# continue to run. This means you can hold just one frame
-	# on the screen. That might be useful for testing.
-	def pause_execution()
-		# @execution_state = :paused
-	end
-	
-	# Resume normal execution.
-	# 
-	# This is not the same thing as forecasting, which shows
-	# how changes to the past will effect the future. This
-	# is just normally executing the code.
-	def resume_execution()
-		# @execution_state = :running
-	end
-	
-	# Forcasting creates new execution history, and new data
-	# 
-	# To use forecast, first perform the following setup:
-	# + use revert_data() and revert_execution() to travel back in time
-	# + use pause_execution() to let the system render just that one state
-	# now you can use forecast.
-	# -> Call forecast() to re-simulate all time points from where 
-	#    you have paused, up to the end of observed time, using new code.
-	#    A naieve implementation will clobber the previous data and execution
-	#    state, which may not be what you want.
-	#    Saving previous data may be useful for comparison, but that
-	#    feature is not present in Bret Victor's original example.
-	#    "Inventing on Principle"   https://vimeo.com/36579366
-	# -> Forecast creates graphical state. Not sure how to handle that yet.
-	def forecast()
-		
-	end
 	
 	# (I can't do this right now. This would involve version control.)
 	def revert_code()
 		
-	end
-	
-	
-	
-	# Deactivate an active instance of a Snippet
-	# (only save data when you have a reasonable guarantee it will be safe)
-	# (better to roll back a little, than to save bad data)
-	def unload(kill:false)
-		puts "Unloading: #{@file}"
-		
-		unless @wrapped_object.nil?
-			@wrapped_object.on_exit()
-			if kill
-				# (kill now: dont save data, as it may be corrupted)
-				
-			else
-				# (safe shutdown: save data before unloading)
-				data = @wrapped_object.save
-			end
-			
-			@wrapped_object = nil
-		end
 	end
 	
 	
