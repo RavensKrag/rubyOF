@@ -7,19 +7,19 @@ end
 # window.live.state_name => Symbol
 
 
-ONION_SKIN_OPACITY      = 0.7
+ONION_SKIN_OPACITY      = 0.73
 
 ONION_SKIN_STANDARD_COLOR = RubyOF::Color.new.tap do |c|
-	c.r, c.g, c.b, c.a = [0, 0, 255, (255*ONION_SKIN_OPACITY).to_i]
+	c.r, c.g, c.b, c.a = [0, 113, 188, (255*ONION_SKIN_OPACITY).to_i]
 end
 ONION_SKIN_NOW_COLOR = RubyOF::Color.new.tap do |c|
 	c.r, c.g, c.b, c.a = [255, 255, 255, (255).to_i]
 end
 ONION_SKIN_FORECAST_COLOR = RubyOF::Color.new.tap do |c|
-	c.r, c.g, c.b, c.a = [0, 255, 0, (255*ONION_SKIN_OPACITY).to_i]
+	c.r, c.g, c.b, c.a = [34, 181, 115, (255*ONION_SKIN_OPACITY).to_i]
 end
 ONION_SKIN_ERROR_COLOR = RubyOF::Color.new.tap do |c|
-	c.r, c.g, c.b, c.a = [255, 0, 0, (255*ONION_SKIN_OPACITY).to_i]
+	c.r, c.g, c.b, c.a = [237, 28, 36, (255*ONION_SKIN_OPACITY).to_i]
 end
 
 
