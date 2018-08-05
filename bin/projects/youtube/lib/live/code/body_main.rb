@@ -9,14 +9,17 @@ end
 
 ONION_SKIN_OPACITY      = 0.7
 
-ONION_SKIN_BEFORE_COLOR = RubyOF::Color.new.tap do |c|
+ONION_SKIN_STANDARD_COLOR = RubyOF::Color.new.tap do |c|
 	c.r, c.g, c.b, c.a = [0, 0, 255, (255*ONION_SKIN_OPACITY).to_i]
 end
 ONION_SKIN_NOW_COLOR = RubyOF::Color.new.tap do |c|
 	c.r, c.g, c.b, c.a = [255, 255, 255, (255).to_i]
 end
-ONION_SKIN_AFTER_COLOR = RubyOF::Color.new.tap do |c|
-	c.r, c.g, c.b, c.a = [0, 0, 255, (255*ONION_SKIN_OPACITY).to_i]
+ONION_SKIN_FORECAST_COLOR = RubyOF::Color.new.tap do |c|
+	c.r, c.g, c.b, c.a = [0, 255, 0, (255*ONION_SKIN_OPACITY).to_i]
+end
+ONION_SKIN_ERROR_COLOR = RubyOF::Color.new.tap do |c|
+	c.r, c.g, c.b, c.a = [255, 0, 0, (255*ONION_SKIN_OPACITY).to_i]
 end
 
 
@@ -112,8 +115,8 @@ class Body
 			# (don't need to be able to visualze bifurcation points any time soon, but do need to see the alpha timeline. in Bret Victor's platforming example, you only want to see the path of your guy relative to the world, but sometimes in programming you don't know the goal: you only know what would be better relative to what youve seen. As such, you want to see how your new code compares to the old code - how the forecasted timeline compares to the alpha timeline)
 			
 			
-			version = 1
-			# version = 2
+			# version = 1
+			version = 2
 			# version = 3
 			
 			on.turn 1 do
