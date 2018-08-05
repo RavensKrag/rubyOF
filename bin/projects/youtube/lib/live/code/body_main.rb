@@ -116,8 +116,8 @@ class Body
 			
 			
 			# version = 1
-			version = 2
-			# version = 3
+			# version = 2
+			version = 3
 			
 			on.turn 1 do
 				@i = 1

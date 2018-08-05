@@ -400,10 +400,9 @@ class Loader
 								@forecast_range = ((target_range.min)..(i+1))
 								# ^ shows range of history that was overridden by forecasting
 								
-								saved_state = @history[@forecast_range.max]
-								# p saved_state
-								@history_cache[@forecast_range.max] = saved_state
-								
+								@history_cache[@forecast_range.max] = state
+								# ^ can store this state object in cache, because next frame I'll pull a new object from @history
+								# (In fact, the object I pull out will be a copy of this one)
 								
 								# if there's an error, we will transition to "forecasting_error"
 									# (automatically caught by protect_runtime_errors block)
@@ -437,7 +436,9 @@ class Loader
 					# nah, that sounds bad.
 				end
 				
-				@forecast_fiber.resume while @forecast_fiber.alive?
+				@forecast_fiber.resume while @forecast_fiber&.alive?
+				
+				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -556,6 +557,7 @@ class Loader
 		end
 		
 		after_transition :on => :successful_reload, :do => :on_reload
+		after_transition :to => :forecasting_error, :do => :on_reload
 		
 		# after_transition :error => :running do
 		# 	# puts "error resolved!"
@@ -859,6 +861,8 @@ class Loader
 			@wrapped_object.regenerate_update_thread!
 			@wrapped_object.regenerate_draw_thread!
 		end
+		
+		@forecast_fiber = nil
 	end
 	
 	
