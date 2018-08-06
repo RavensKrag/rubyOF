@@ -16,6 +16,13 @@ require 'require_all'
 
 current_file = Pathname.new(__FILE__).expand_path
 current_file.parent.tap do |lib_dir|
+	require_all lib_dir/'history'
+	require_all lib_dir/'monkey_patches'/'Chipmunk'
+	
+	require_all lib_dir/'entities'
+	
+	require_all lib_dir/'serialization'
+	
 	require lib_dir/'helpers.rb'
 	require lib_dir/'fibers.rb'
 	require lib_dir/'camera.rb'
@@ -23,21 +30,19 @@ current_file.parent.tap do |lib_dir|
 	require lib_dir/'youtube_channel.rb'
 	
 	require lib_dir/'space.rb'
+	# require lib_dir/'live_coding'/'code_loader'
 	
-	require_all lib_dir/'history'
-	require_all lib_dir/'monkey_patches'/'Chipmunk'
-	
-	require_all lib_dir/'entities'
-	
-	
-	require lib_dir/'live_coding'/'code_loader'
+	require_all lib_dir/'live'/'loader'
+	require lib_dir/'live'/'coroutines'/'turn_counter'
+	require_all lib_dir/'live'/'history'
 end
 
 
 
 class Window < RubyOF::Window
 	include HelperFunctions
-	include RubyOF::Graphics
+	
+	attr_reader :live, :data_dir
 	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
@@ -55,37 +60,28 @@ class Window < RubyOF::Window
 		puts "ruby: Window#initialize"
 		
 		
-		@p = [0,0]
 	end
 	
 	attr_reader :history
+	# needed to interface with the C++ history UI code
 	
 	def setup
 		super()
 		
-		@camera = Camera.new(self.width/2, self.height/2)
-		
-		
-		current_file = Pathname.new(__FILE__).expand_path
-		current_dir  = current_file.parent
-		project_dir  = current_dir.parent
-		@data_dir = project_dir / 'bin' / 'data'
+		@data_dir = PROJECT_DIR / 'bin' / 'data'
 		# NOTE: All files should be located in @data_dir (Pathname object)
 		
 		@font = 
-			RubyOF::TrueTypeFont.new.dsl_load do |x|
+			RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 20
+				x.size = 30
 				x.add_alphabet :Latin
-				x.add_alphabet :Japanese
 			end
 		# @font_color = RubyOF::Color.new.tap do |c|
 		# 	c.r, c.g, c.b, c.a = [171, 160, 228, 255]
 		# end
 		# ^ font color is currently being set through the color picker
-		
-		@collection = Array.new
 		
 		
 		
@@ -95,296 +91,70 @@ class Window < RubyOF::Window
 		@history = History.new @space
 		
 		
-		text = Text.new(@font, "hello world! This is a pen.")
-		@space.add text
+		@live =
+			LiveCoding::Loader.new(
+				self, # Window
+				"Body", # wrapped_object
+				header: (PROJECT_DIR/'lib'/'live'/'code'/'body_init.rb'),
+				body:   (PROJECT_DIR/'lib'/'live'/'code'/'body_main.rb'),
+				save_directory: @data_dir,
+				
+				method_contract:  [
+					:update, :draw,
+					:mouse_moved, :mouse_pressed, :mouse_dragged, :mouse_released,
+					:mouse_scrolled,
+					:key_pressed, :key_released
+				]
+			)
 		
-		
-		@live_coding = LiveCoding::DynamicObject.new(
-			self,
-			save_directory:   (PROJECT_DIR/'bin'/'data'),
-			dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
+		# @live_coding = LiveCoding::DynamicObject.new(
+		# 	self,
+		# 	save_directory:   (PROJECT_DIR/'bin'/'data'),
+		# 	dynamic_code_file:(PROJECT_DIR/'lib'/'live_coding'/'code'/'main.rb'),
 			
-			parameters:[@space, @font],
+		# 	parameters:[@space, @font],
 			
-			method_contract:  [
-				:serialize, :cleanup, :update, :draw,
-				:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
-			]
-		)
+		# 	method_contract:  [
+		# 		:serialize, :cleanup, :update, :draw,
+		# 		:mouse_moved, :mouse_pressed, :mouse_released, :mouse_dragged
+		# 	]
+		# )
 		
-		@live_coding.setup
+		# @live_coding.setup
 	end
 	
 	def update
 		# super()
-		
-		
-		# NOTE: The fiber must be created in #update to be used in #update
-		#       If it is created in one callback and then called from another:
-		#       => FiberError: fiber called across stack rewinding barrier
-		
-		# As a side effect of using a fiber, you can kill
-		# the downloding process in the middle by just
-		# closing the Window
-		
-		@update_fiber ||= Fiber.new do	
-			local_channel_info = cache @data_dir/'channel_info.yml' do 
-				# ==========
-				# ====================
-				html_file = path("./youtube_subscriptions.html")
-				channel_info_list = parse_youtube_subscriptions(html_file)
-				
-				enum = 
-					channel_info_list
-					.lazy
-					.collect{ |data|
-						# channel info -> icon paths on disk
-						channel_url = data['link']
-						icon_url    = data['json-icon-url']
-						name        = data['channel-name']
-						
-						# -- download the icons for all YT channels in subscription list
-						puts "downloading icon for #{name}  ..."
-						
-						icon_dir  = Pathname.new("./icons/").expand_path
-						FileUtils.mkdir_p icon_dir
-						
-						
-						# Channel names may include characters that are illegal in paths,
-						# but the channel URLs should be OK for filesystem paths too
-						basename = (File.basename(channel_url) + File.extname(icon_url))
-						output_path = icon_dir + basename
-						
-						# returns path to file when download is complete
-						download(icon_url => output_path)
-					}
-					.zip(channel_info_list)
-					.collect{ |icon_filepath, channel_info|
-						# reformat data so channel icons are referenced
-						# by file paths, not by URLs.
-						
-						# puts "reformating data..."
-						{
-							'channel-name'  => channel_info['channel-name'],
-							'link'          => channel_info['link'],
-							'icon-filepath' => icon_filepath,
-							'entry-count'   => channel_info['entry-count']
-						}
-					}
-					.each
-				# ====================
-				# ==========
-				
-				# download all icons, pausing after each icon
-				Array.new.tap do |out|
-					enum.each do |x|
-						out << x
-						Fiber.yield
-					end
-				end
-			end
-			
-			
-			
-			# load data into memory
-			# ---
-			enum = 
-				local_channel_info
-				.lazy
-				.collect{ |data|
-					# load icons
-					RubyOF::Image.new.dsl_load do |x|
-						x.path = data['icon-filepath'].to_s
-						# x.enable_accurate
-						# x.enable_exifRotate
-						# x.enable_grayscale
-						# x.enable_separateCMYK
-					end
-				}
-				.zip(local_channel_info).each_with_index.collect{ |zip_pair, i|
-					# yt channel data + icon -> object in memory
-					image, data = zip_pair
-					# -----
-					pos = CP::Vec2.new(100,150)
-					dx = 400 # space between columns
-					dy = 100 # space between rows
-					offset = CP::Vec2.new(100, 50) # offset between icon and text
-					
-					slices = 18
-					
-					YoutubeChannel.new(image, data['channel-name'], @font).tap do |yt|
-						ix = i / slices
-						iy = i % slices
-						
-						# Icon
-						yt.icon_pos.x = pos.x + dx*ix
-						yt.icon_pos.y = pos.y + dy*iy
-						
-						# Text
-						yt.text_pos.x = pos.x + dx*ix + offset.x
-						yt.text_pos.y = pos.y + dy*iy + offset.y
-						yt.text_color = @font_color
-						
-						
-						
-						
-						# create icon as an Image entity
-						icon = Image.new(image)
-						icon.body.p.x = pos.x + dx*ix
-						icon.body.p.y = pos.y + dy*iy
-						
-						@space.add icon
-						
-						
-						# create text as free-floating Text entity
-						# (this is what actually gets rendered)
-						text = Text.new(@font, data['channel-name'])
-						text.body.p.x = pos.x + dx*ix + offset.x
-						text.body.p.y = pos.y + dy*iy + offset.y
-						text.text_color = @font_color
-						
-						text.update
-						
-						@space.add text
-					end
-				}.each
-			# load one piece of yt channel data at a time, pausing after each piece
-			enum.each do |x|
-				@collection << x
-				Fiber.yield
-			end
-			
-			
-			
-			# Critical Question:
-			# Do you want to save to disk after each piece of data is processed?
-			# Or do you not want to save until you process the entire stream?
-			# (remember that it is possible the stream has infinite length)
-			
-			
-			# Do a sort of busy loop at the end for now,
-			# just to keep the main Fiber alive.
-			loop do
-				@live_coding.update
-				
-				Fiber.yield
-			end
-		end
-		
-		
-		@space.update
-		@update_fiber.resume
-		
-		
-		
-		
-		# FIXME: Consider changing how helper functions are declared / used
-		
-		
-		# TODO: use Fiber to create download progress bar / spinner to show progress in UI (not just in the terminal)
-		
-		
-		
-		
-		
-		
-		# -- implement basic "live coding" environment
-		#    (update doesn't necessarily need to be instant)
-		#    (but should be reasonably fast)
-		
-		# TODO: split Fiber definiton into separate reloadable files, or similar, so that these independent tasks can be redefined without having to reload the entire application.
-		
-		
-		
-		
-		
-		# -- allow direct manipulation of the data
-		#    (control layout of elements with mouse and keyboard, not code)
-		
-		
-		
-		
-		# -- add more YouTube subscriptions without losing existng organization
-		
-		
-		
-		
-		# -- click on links and go to YouTube pages
-		
-		
-		
-		# require 'irb'
-		# binding.irb
-		
-		# =====                   =====
-		
-		# NOTE: To pass data between #update and #draw, use an instance variable
-		#       (can't resume a Fiber declared in one callback from the other)
-		
-		
+		clear_text_buffer
+		@live.font_color = @font_color
+		@live.update
 	end
 	
 	def draw
 		# super()
 		
+		@live.draw
 		
-		@draw_debug_ui ||= Fiber.new do
-			c = RubyOF::Color.new
-			# c.r, c.g, c.b, c.a = [171, 160, 228, 255]
-			c.r, c.g, c.b, c.a = [0, 0, 0, 255]
-			
-			loop do
-				ofPushMatrix()
-				ofPushStyle()
-					ofSetColor(c)
-					
-					# The size of the characters in the oF bitmap font is
-					# height 11 px
-					# width : 8 px
-					start_position = [40, 30]
-					row_spacing    = 11 + 4
-					z              = 1
-					
-					draw_debug_info(start_position, row_spacing, z)
-				
-				ofPopStyle()
-				ofPopMatrix()
-				
-				Fiber.yield # <----------------
-			end
+		
+		unless @text_buffer.nil?
+			@text_buffer.texture.bind
+			@text_buffer.draw 
+			@text_buffer.texture.unbind
 		end
-		
-		
-		
-		
-		# # accept input on every #resume
-		# @draw_color_picker ||= Fiber.new do 
-		# 	# -- render data
-		# 	loop do
-				
-				
-		# 		Fiber.yield # <----------------
-		# 	end
-		# end
-		
-		
-		@live_coding.draw(self, @camera)
-		
-		@draw_debug_ui.resume
 	end
 	
 	def on_exit
 		super()
 		
-		@live_coding.on_exit
+		@live.on_exit unless @live.nil?
 		
 		# --- Save data
 		dump_yaml [self.width, self.height] => @window_dimension_save_file
 		
-		# --- Clear variables that might be holding onto OpenFrameworks pointers.
-		# NOTE: Cases where Chipmunk can hold onto OpenFrameworks data are dangerous. Must free Chimpunk data using functions like cpSpaceFree() during the lifetime of OpenFrameworks data (automatically called by Chipmunk c extension on GC), otherwise a segfault will occur. However, this segfault will occur inside Chipmunk code, which is very confusing.
-		@space = nil
-		@history = nil
+		# # --- Clear variables that might be holding onto OpenFrameworks pointers.
+		# # NOTE: Cases where Chipmunk can hold onto OpenFrameworks data are dangerous. Must free Chimpunk data using functions like cpSpaceFree() during the lifetime of OpenFrameworks data (automatically called by Chipmunk c extension on GC), otherwise a segfault will occur. However, this segfault will occur inside Chipmunk code, which is very confusing.
+		# @space = nil
+		# @history = nil
 		
 		# --- Clear Ruby-level memory
 		GC.start
@@ -410,10 +180,14 @@ class Window < RubyOF::Window
 		rescue RangeError => e
 			
 		end
+		
+		@live.key_pressed(key)
 	end
 	
 	def key_released(key)
 		super(key)
+		
+		@live.key_released(key)
 	end
 	
 	
@@ -421,9 +195,7 @@ class Window < RubyOF::Window
 	
 	
 	def mouse_moved(x,y)
-		@p = [x,y]
-		
-		@live_coding.mouse_moved(x,y)
+		@live.mouse_moved(x,y)
 	end
 	
 	def mouse_pressed(x,y, button)
@@ -436,52 +208,54 @@ class Window < RubyOF::Window
 			# Glut: 8
 		# TODO: set button codes as constants?
 		
-		case button
-			when 1 # middle click
-				@drag_origin = CP::Vec2.new(x,y)
-				@camera_origin = @camera.pos.clone
-		end
+		# case button
+		# 	when 1 # middle click
+		# 		@drag_origin = CP::Vec2.new(x,y)
+		# 		@camera_origin = @camera.pos.clone
+		# end
 		
-		@live_coding.mouse_pressed(x,y, button)
+		@live.mouse_pressed(x,y, button)
 	end
 	
 	def mouse_dragged(x,y, button)
 		super(x,y, button)
 		
-		case button
-			when 1 # middle click
-				pt = CP::Vec2.new(x,y)
-				d = (pt - @drag_origin)/@camera.zoom
-				@camera.pos = d + @camera_origin
-		end
+		# case button
+		# 	when 1 # middle click
+		# 		pt = CP::Vec2.new(x,y)
+		# 		d = (pt - @drag_origin)/@camera.zoom
+		# 		@camera.pos = d + @camera_origin
+		# end
 		
-		@live_coding.mouse_dragged(x,y, button)
+		@live.mouse_dragged(x,y, button)
 	end
 	
 	def mouse_released(x,y, button)
 		super(x,y, button)
 		
-		case button
-			when 1 # middle click
+		# case button
+		# 	when 1 # middle click
 				
-		end
+		# end
 		
-		@live_coding.mouse_released(x,y, button)
+		@live.mouse_released(x,y, button)
 	end
 	
 	def mouse_scrolled(x,y, scrollX, scrollY)
 		super(x,y, scrollX, scrollY) # debug print
 		
-		zoom_factor = 1.05
-		if scrollY > 0
-			@camera.zoom *= zoom_factor
-		elsif scrollY < 0
-			@camera.zoom /= zoom_factor
-		else
+		# zoom_factor = 1.05
+		# if scrollY > 0
+		# 	@camera.zoom *= zoom_factor
+		# elsif scrollY < 0
+		# 	@camera.zoom /= zoom_factor
+		# else
 			
-		end
+		# end
 		
-		puts "camera zoom: #{@camera.zoom}"
+		# puts "camera zoom: #{@camera.zoom}"
+		
+		@live.mouse_scrolled(x,y, scrollX, scrollY)
 	end
 	
 	
@@ -495,6 +269,44 @@ class Window < RubyOF::Window
 		
 		# the 'position' variable is of an unknown type, leading to a crash
 	end
+	
+	def show_text(pos, obj)
+		str = wordwrap(obj.to_s.split, 55)
+		      .collect{|line| line.join(" ") }.join("\n")
+		
+		@text_buffer = Text.new(@font, str)
+		@text_buffer.text_color = @font_color
+		
+		@text_buffer.body.p = pos
+	end
+	
+	def clear_text_buffer
+		@text_buffer = nil
+	end
+	
+	# wordwrap code below is from ruby docs or Enumerable
+	# src: https://ruby-doc.org/core-2.5.1/Enumerable.html#method-i-partition
+	
+	# Word wrapping.  This assumes all characters have same width.
+	def wordwrap(words, maxwidth)
+	  Enumerator.new {|y|
+	    # cols is initialized in Enumerator.new.
+	    cols = 0
+	    words.slice_before { |w|
+	      cols += 1 if cols != 0
+	      cols += w.length
+	      if maxwidth < cols
+	        cols = w.length
+	        true
+	      else
+	        false
+	      end
+	    }.each {|ws| y.yield ws }
+	  }
+	end
+	
+	
+	
 	
 	
 	
@@ -521,6 +333,8 @@ class Window < RubyOF::Window
 	#              (uses the same class wrapper as normal Rice bindings)
 	def set_gui_parameter(name, value_ptr)
 		value_ptr.freeze
+		
+		# TODO: delegate core of this method to Loader, and then to the wrapped object inside. Want to be able to controll this dynamically.
 		
 		case name
 			when "color"

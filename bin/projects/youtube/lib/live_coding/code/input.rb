@@ -378,7 +378,7 @@ end
 		
 		
 		@fonts = {
-			:standard  => RubyOF::TrueTypeFont.new.dsl_load do |x|
+			:standard  => RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 				x.size = 20
@@ -390,7 +390,7 @@ end
 				# maybe provide discoverable access through #alphabets on the DSL object?
 			end,
 			
-			:monospace => RubyOF::TrueTypeFont.new.dsl_load do |x|
+			:monospace => RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 				x.size = 18

@@ -30,6 +30,9 @@ class Text < Entity
 		shape = CP::Shape::Rect.new(body, width, height, offset)
 		
 		super(body, shape)
+		
+		
+		generate_mesh()
 	end
 	
 	# can't use attr_accessor, because I need to perform other actions on set
@@ -76,9 +79,7 @@ class Text < Entity
 	
 	
 	def update
-		x,y = [0,0]
-		vflip = true
-		@text_mesh ||= font.get_string_mesh(@string, x,y, vflip)
+		
 	end
 	
 	
@@ -98,5 +99,12 @@ class Text < Entity
 			@text_mesh.draw()
 		ofPopStyle()
 		ofPopMatrix()
+	end
+	
+	
+	def generate_mesh
+		x,y = [0,0]
+		vflip = true
+		@text_mesh ||= font.get_string_mesh(@string, x,y, vflip)
 	end
 end 

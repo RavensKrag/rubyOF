@@ -50,7 +50,11 @@ base_path = lib_dir/'rubyOF'
 	'point',
 	'rectangle',
 	'true_type_font',
-	'image'
+	'image',
+	
+	'button_event_codes',
+	
+	'resource_manager'
 ].each do |path|
 	require base_path/path
 end
