@@ -711,7 +711,6 @@ class Loader
 			# (not currently time traveling)
 			# start time traveling
 			return if self.state_name == :running
-				# + :forecasting is a transient state associated with time travel
 				# + :running is for actively executing code. pause execution first.
 			
 			self.begin_time_travel()
