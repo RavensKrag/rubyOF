@@ -179,7 +179,7 @@ class Loader
 		state :error do
 			# can't go forward until errors are fixed
 			def update
-				@window.show_text(CP::Vec2.new(352,100), "ERROR: see terminal for details")
+				@window.show_text(CP::Vec2.new(352,100), "ERROR: See terminal for details. Step back to start time traveling.")
 				
 				# -- update files as necessary
 				# need to try and load a new file,
@@ -289,12 +289,49 @@ class Loader
 		# A failed timeline caused by fairly standard program errors.
 		state :doomed_timeline do
 			def update
+				# puts "============== true timeline ================"
 				
+				# populate state cache using serialized data
+				if @history_cache.nil?
+					@history_cache = Array.new
+					
+					@history.size.times do |i|
+						state = @history[i]
+						# p state
+						@history_cache[i] = state
+					end
+					
+					# p @history_cache
+				end
+				
+				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				
+				# render the selected state
+				# (it has been rendered before, so it should render now without errors)
+				unless @history_cache.nil?
+					# render the states
+					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+					
+					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+					# currently, framerate is down to ~30fps, because this render operation is expensive.
+					
+					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+					render_onion_skin(
+						@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
+						@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
+						@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
+					)
+					
+					
+					
+					# @history_cache[@time_travel_i].draw @window
+					
+					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+					# (or maybe onion-skinning the UI will be cool? idk)\					
+				end
 			end
 		end
 		

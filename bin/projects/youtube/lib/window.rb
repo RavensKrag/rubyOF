@@ -75,7 +75,7 @@ class Window < RubyOF::Window
 			RubyOF::TrueTypeFont.dsl_load do |x|
 				# TakaoPGothic
 				x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-				x.size = 50
+				x.size = 30
 				x.add_alphabet :Latin
 			end
 		# @font_color = RubyOF::Color.new.tap do |c|
@@ -271,7 +271,10 @@ class Window < RubyOF::Window
 	end
 	
 	def show_text(pos, obj)
-		@text_buffer = Text.new(@font, obj.to_s)
+		str = wordwrap(obj.to_s.split, 55)
+		      .collect{|line| line.join(" ") }.join("\n")
+		
+		@text_buffer = Text.new(@font, str)
 		@text_buffer.text_color = @font_color
 		
 		@text_buffer.body.p = pos
@@ -279,6 +282,27 @@ class Window < RubyOF::Window
 	
 	def clear_text_buffer
 		@text_buffer = nil
+	end
+	
+	# wordwrap code below is from ruby docs or Enumerable
+	# src: https://ruby-doc.org/core-2.5.1/Enumerable.html#method-i-partition
+	
+	# Word wrapping.  This assumes all characters have same width.
+	def wordwrap(words, maxwidth)
+	  Enumerator.new {|y|
+	    # cols is initialized in Enumerator.new.
+	    cols = 0
+	    words.slice_before { |w|
+	      cols += 1 if cols != 0
+	      cols += w.length
+	      if maxwidth < cols
+	        cols = w.length
+	        true
+	      else
+	        false
+	      end
+	    }.each {|ws| y.yield ws }
+	  }
 	end
 	
 	
