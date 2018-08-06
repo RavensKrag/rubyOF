@@ -355,6 +355,8 @@ class Loader
 		# once you are in this state, the load has succeeded.
 		# at this point, you attempt to generate a forecast.
 		# if the forecast fails -> :forecasting_error (a failed timeline variant)
+		# 
+		# You transition out of :forecasting by stepping forward into new future.
 		state :forecasting do
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
@@ -611,49 +613,17 @@ class Loader
 		
 		
 		
-		
-		# A good future unfolds in front of you, but you stay put for now.
-		event :forecast_found_good_timeline do
-			transition :forecasting => :good_timeline
-		end
-		
-		after_transition :forecasting => :good_timeline,
-		                 :do => :on_forecast_to_good_timeline
-		
-		# The true timeline unfolds in front of you, but you stay put for now.
-		event :forecast_found_true_timeline do
-			transition :forecasting => :true_timeline
-		end
-		
-		after_transition :forecasting => :true_timeline,
-		                 :do => :on_forecast_to_true_timeline
-		
+		# After one or more forecasts, you have found a timeline worth exploring.
+		# Stepping into the time rift, the timelines collapse,
+		# and only the way to the new future remains.
+		# 
+		# Will take you to the good timeline, which may end up
+		# actually being a true timeline.
 		event :end_forecasting do
 			transition :forecasting =>  :good_timeline
 		end
 		
-		
-		
-		# 
-		# setup time travel variables
-		# 
-		
-		after_transition :from => :running, :to => :error,
-		                 :do => :foo_callback
-		after_transition :from => :running, :to => :paused,
-		                 :do => :foo_callback
-		
-		
-		
-		# # 
-		# # after a successful forecast, resume execution
-		# # 
-		
-		# after_transition :from => :running, :to => :forecasting,
-		#                  :do => :bar_callback
-		
-		# after_transition :from => :running, :to => :forecasting,
-		#                  :do => :bar_callback
+		after_transition :on => :end_forecasting, :do => :on_forecast_end
 		
 		
 		
@@ -674,13 +644,15 @@ class Loader
 		puts "step back"
 		
 		# @time_travel_i == @history.length-1
-		puts "turn: #{@wrapped_object.update_counter.current_turn}" 
-		puts "target: #{@history.length-1}"
+		# puts "turn: #{@wrapped_object.update_counter.current_turn}" 
+		# puts "target: #{@history.length-1}"
 		
 		# @forecasting_lock   # <-- if true, currently calculating forecast
 		
 		
 		if self.state_name == :forecasting
+			return if @forecasting_lock
+			
 			# can't travel to t=0 ; the initial state is not renderable
 			if @time_travel_i > 1
 				@time_travel_i -= 1
@@ -734,16 +706,15 @@ class Loader
 		elsif self.state_name == :forecasting_error
 			# Past a certain timepoint, time has been corrupted.
 			# This point will be earlier than the normal end of the timeline.
-			# Figure out what that end point is, and prevent moving past it.
-			
-			# (In other timelines, when you hit the end of a timeline, you stop time traveling and go back to a "normal" mode. With the paradox timeline, that is impossible.)
-			
-			# NAME CHANGE: "paradox timeline" has become "forecasting error"
-			# this is to reflect the fact that the state reached after failing to forecast does not behave like other timelines. you are only allowed to step backwards in the "forecasting error" state, and not forward. Stepping forward would take you into the unstable time rift, and change the end point of forecasting. We want to maintain the same endpoint, so many different futures can be compared against each other.
+			# You are not allowed to step into this corrupted time rift.
+			# 
+			# The only way to leave the :forecasting_error state
+			# is by performing a successful forecast.
 			
 			if @time_travel_i < @forecast_range.min-1
 				# the last state you can reach, is the one right before the time rift
 				@time_travel_i += 1
+				# (there is no good state in the rift to step into)
 			end
 		elsif self.state.include? "timeline"
 			# (must be in time traveling mode, excluding :forecasting)
@@ -777,10 +748,6 @@ class Loader
 		return (@time_travel_i == @history.length-1)
 	end
 	
-	def forecasted_the_end?
-		@forcasted_the_end
-	end
-	
 	
 	
 	private
@@ -808,20 +775,7 @@ class Loader
 	
 	
 	
-	def on_forecast_to_good_timeline
-		on_reload()
-		
-		# special code just for this transition
-		
-		
-		# final state in history cache is the new wrapped object
-		@wrapped_object = @history_cache.last
-		
-		# reset @forecast_range variable used by :forecasting
-		@forecast_range = nil
-	end
-	
-	def on_forecast_to_true_timeline
+	def on_forecast_end
 		on_reload()
 		
 		# resize the history cache
@@ -832,6 +786,7 @@ class Loader
 			#                and modify the array to delete that portion
 		
 		
+		
 		# final state in history cache is the new wrapped object
 		@wrapped_object = @history_cache.last
 		
@@ -839,10 +794,6 @@ class Loader
 		@forecast_range = nil
 	end
 	
-	# # Final state in history cache is the new wrapped object
-	# def on_successful_forecast
-	# 	@wrapped_object = @history_cache.last
-	# end
 	
 	def on_forecasting_error
 		puts "FORECASTING ERROR on turn #{@forecast_range.max} (message below)"
@@ -864,22 +815,6 @@ class Loader
 		
 		@forecast_fiber = nil
 	end
-	
-	
-	
-	def foo_callback
-		@t_jmp = nil # <- when did we time travel to before forecasting
-		@t_end = nil # <- set to whatever the current execution iterator is
-	end
-	
-	# when you forecast a succesful future, you need to change the bounds of time travel: can the forcasted future end sooner than you expect, if it "ends" in success?
-		# NO! because the Fiber will run forever, due to the infinite loop at the end.
-	def bar_callback
-		# @t_jmp = nil # <- when did we time travel to before forecasting
-		# @t_end = nil # <- set to whatever the current execution iterator is
-		
-	end
-	
 	
 	# NOTE: under this architecture, you can't dynamically change initialization or serialization code - you would have to restart the program if that sort of change is made
 	# ^ is this still true?
