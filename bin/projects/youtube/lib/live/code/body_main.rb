@@ -40,6 +40,9 @@ class Body
 	
 	
 	def update(window)
+		@world_space.update
+		@screen_space.update
+		
 		if @fibers[:update].nil? or @regenerate_update_thread
 		@fibers[:update] = Fiber.new do |on|
 			on.turn 0 do
@@ -72,11 +75,8 @@ class Body
 				
 				# @text.body.p = @p.clone
 				@text.body.p = CP::Vec2.new(160,600)
-				# @text.body.p = CP::Vec2.new(0,0)
 				
-				# @text.texture.bind
-				# @text.draw
-				
+				@world_space.add @text
 				
 				
 				# round-trip serialization test for Text entity
@@ -113,8 +113,8 @@ class Body
 			# (don't need to be able to visualze bifurcation points any time soon, but do need to see the alpha timeline. in Bret Victor's platforming example, you only want to see the path of your guy relative to the world, but sometimes in programming you don't know the goal: you only know what would be better relative to what youve seen. As such, you want to see how your new code compares to the old code - how the forecasted timeline compares to the alpha timeline)
 			
 			
-			# version = 1
-			version = 2
+			version = 1
+			# version = 2
 			# version = 3
 			
 			on.turn 1 do
@@ -242,10 +242,14 @@ class Body
 			window.camera.draw window.width, window.height do |bb|
 				render_queue = Array.new
 				
-				# @space.bb_query(bb) do |entity|
-				# 	render_queue << entity
-				# end
-				render_queue << @text
+				@world_space.bb_query(bb) do |entity|
+					render_queue << entity
+				end
+				
+				# p @world_space
+				# puts "render queue: #{render_queue.inspect}"
+				
+				# render_queue << @text
 				
 				# puts "render queue: #{render_queue.size}"
 				

@@ -31,6 +31,8 @@ class Space
 	
 	
 	def update
+		@cp_space.step(1/60.0)
+		
 		@entities.each do |entity|
 			entity.update
 		end

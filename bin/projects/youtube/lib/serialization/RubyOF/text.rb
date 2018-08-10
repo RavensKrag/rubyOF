@@ -48,6 +48,10 @@ class Text < Entity
 			self.instance_variable_set "@#{var_name}", deserialized_var
 		end
 		
+		# must re-attach entity to the shape on init,
+		# because we are not calling #initialize
+		@shape.obj = self
+		
 		# regenerate the text mesh, as that can not be saved
 		self.generate_mesh()
 	end
