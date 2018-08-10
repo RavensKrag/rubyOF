@@ -45,8 +45,6 @@ class Body
 			on.turn 0 do
 				@i = 0
 				
-				@camera = Camera.new(window.width/2, window.height/2)
-				
 				@font = 
 					RubyOF::TrueTypeFont.dsl_load do |x|
 						# TakaoPGothic
@@ -241,7 +239,7 @@ class Body
 			# puts "  drawing..."
 			
 			# === Draw world relative
-			@camera.draw window.width, window.height do |bb|
+			window.camera.draw window.width, window.height do |bb|
 				render_queue = Array.new
 				
 				# @space.bb_query(bb) do |entity|
@@ -441,7 +439,7 @@ class Body
 		case button
 			when OF_MOUSE_BUTTON_2 # middle click
 				@drag_origin = CP::Vec2.new(x,y)
-				@camera_origin = @camera.pos.clone
+				@camera_origin = window.camera.pos.clone
 		end
 	end
 	
@@ -451,8 +449,8 @@ class Body
 		case button
 			when OF_MOUSE_BUTTON_2 # middle click
 				pt = CP::Vec2.new(x,y)
-				d = (pt - @drag_origin)/@camera.zoom
-				@camera.pos = d + @camera_origin
+				d = (pt - @drag_origin)/window.camera.zoom
+				window.camera.pos = d + @camera_origin
 		end
 	end
 	
@@ -470,14 +468,14 @@ class Body
 		
 		zoom_factor = 1.05
 		if scrollY > 0
-			@camera.zoom *= zoom_factor
+			window.camera.zoom *= zoom_factor
 		elsif scrollY < 0
-			@camera.zoom /= zoom_factor
+			window.camera.zoom /= zoom_factor
 		else
 			
 		end
 		
-		puts "camera zoom: #{@camera.zoom}"
+		puts "camera zoom: #{window.camera.zoom}"
 	end
 	
 	

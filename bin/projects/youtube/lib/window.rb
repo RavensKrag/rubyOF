@@ -42,7 +42,7 @@ end
 class Window < RubyOF::Window
 	include HelperFunctions
 	
-	attr_reader :live, :data_dir
+	attr_reader :live, :data_dir, :camera
 	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
@@ -85,6 +85,7 @@ class Window < RubyOF::Window
 		
 		
 		
+		@camera = Camera.new(self.width/2, self.height/2)
 		
 		@space = Space.new
 		
