@@ -58,6 +58,34 @@ class Loader
 		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
 		
+		
+		
+		ms   = RubyOF::Utils.ofGetElapsedTimeMillis
+		turn = @wrapped_object.update_counter.current_turn
+		
+		# @wrapped_object.queue_input [ms, turn, sym, args]
+		
+		method_symbols = [
+			:mouse_moved,
+			:mouse_pressed, :mouse_dragged, :mouse_released,
+			:mouse_scrolled,
+			:key_pressed, :key_released
+		]
+		# --- create the acutal delegators
+		method_symbols.each do |sym|
+			meta_def sym do |*args|
+				protect_runtime_errors do
+					if @wrapped_object.nil?
+						# puts "null handler: #{sym}"
+					else
+						# @wrapped_object.send sym, @window, *args
+						@wrapped_object.queue_input [ms, turn, sym, args]
+					end
+				end
+			end
+		end
+		
+		
 		@history.save @wrapped_object
 		
 		
@@ -916,6 +944,7 @@ class Loader
 				sym, file, method_contract, method_symbols
 			)
 		end
+		
 		
 		# --- create the acutal delegators
 		method_symbols.each do |sym|

@@ -392,8 +392,8 @@ class Rect < Poly
 		commit_verts!(verts)
 		
 		
-		# following line is from on BB#to_rectangle
-		self.body.p = CP::Vec2.new(bb.l, bb.b)
+		# # following line is from on BB#to_rectangle
+		# self.body.p = CP::Vec2.new(bb.l, bb.b)
 	end
 	
 	

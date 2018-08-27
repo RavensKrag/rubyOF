@@ -89,11 +89,84 @@ class Body
 				
 				
 				@i += 1
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				update_text = "update:"
+				@update_counter_label =
+					Text.new(@font, update_text).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(43,1034)
+					end
+				
+				number = @update_counter.current_turn.to_s.rjust(5, ' ')
+				@update_counter_number =
+					Text.new(@monospace_font, number).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(161,1034)
+					end
+				
+				
+				draw_text = "draw:"
+				@draw_counter_label =
+					Text.new(@font, draw_text).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(43,1069)
+					end
+				
+				number = @draw_counter.current_turn.to_s.rjust(5, ' ')
+				@draw_counter_number =
+					Text.new(@monospace_font, number).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(161,1069)
+					end
+				
+				
+				draw_text = "state: #{window.live.state}"
+				@state_label =
+					Text.new(@font, draw_text).tap do |text|
+						text.text_color = @font_color
+						
+						text.body.p = CP::Vec2.new(43,1113)
+					end
+				
+				
+				
+				
+				@state_display = Text.new(@monospace_font, "").tap do |text|
+						text.text_color = @font_color
+						
+						# text.body.p = CP::Vec2.new(285,337)
+						text.body.p = CP::Vec2.new(383,937)
+						# text.body.p = CP::Vec2.new(285,1137)
+					end
+				
+				
+				
+				
+				@screen_space.add @update_counter_label
+				@screen_space.add @update_counter_number
+				@screen_space.add @draw_counter_label
+				@screen_space.add @draw_counter_number
+				
+				
+				@screen_space.add @state_label
+				
+				@screen_space.add @state_display
 			end
 			
 			
 			
-			# need a motion that is the same for the first 
 			
 			
 			
@@ -229,13 +302,56 @@ class Body
 		end
 		
 		
+		# This must be last, so the yield from the fiber can return to Loader.
+		# But if the UI code executes before turn 0, then nothing will render.
+		# TODO: consider separate method for UI code.
 		@fibers[:update].resume @update_counter
+	end
+	
+	# UI can contain both world-space and screen-space elements
+	def update_ui(window)
+		# @update_counter_label.print "update:"
+		update_turn = @update_counter.current_turn.to_s.rjust(5, ' ')
+		@update_counter_number.print update_turn
+		
+		# @draw_counter_label.print "draw:"
+		draw_turn = @draw_counter.current_turn.to_s.rjust(5, ' ')
+		@draw_counter_number.print draw_turn
+		
+		
+		
+		# # state_text = "test"
+		# state_text = 
+		# 	window.live.instance_variable_get("@history")
+		# 	.inspect
+		# 	.each_char.each_slice(60)
+		# 	.collect{|chunk| chunk.join("")}.join("\n")
+		# 	# .inspect
+		
+		# state_text = "hello"
+		
+		# state_text = @fibers[:update].alive? ? "alive" : "dead"
+		
+		state_text = "state: #{window.live.state}"
+		
+		@state_label.print state_text
+		
+		
+		
+		
+		@state_display.print "hello"
+		# @state_display.print @fibers[:update].alive? ? "alive" : "dead"
 	end
 	
 	def draw(window)
 		if @fibers[:draw].nil? or @regenerate_draw_thread
 		@fibers[:draw] = Fiber.new do |on|		
 		loop do
+			self.update_ui(window)
+			
+			
+			
+			
 			# puts "  drawing..."
 			
 			# === Draw world relative
@@ -297,87 +413,13 @@ class Body
 			# =======
 			
 			
+			
+			
 			# === Draw screen relative
 			# Render a bunch of different tasks
-			Array.new.tap{ |queue|
-				update_text = "update:"
-				@update_counter_label =
-					Text.new(@font, update_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1034)
-					end
-				
-				number = @update_counter.current_turn.to_s.rjust(5, ' ')
-				@update_counter_number =
-					Text.new(@monospace_font, number).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(161,1034)
-					end
-				
-				
-				draw_text = "draw:"
-				@draw_counter_label =
-					Text.new(@font, draw_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1069)
-					end
-					
-				number = @draw_counter.current_turn.to_s.rjust(5, ' ')
-				@draw_counter_number =
-					Text.new(@monospace_font, number).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(161,1069)
-					end
-				
-				
-				draw_text = "state: #{window.live.state}"
-				@state_label =
-					Text.new(@font, draw_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1113)
-					end
-				
-				
-				
-				
-				# # state_text = "test"
-				# state_text = 
-				# 	window.live.instance_variable_get("@history")
-				# 	.inspect
-				# 	.each_char.each_slice(60)
-				# 	.collect{|chunk| chunk.join("")}.join("\n")
-				# 	# .inspect
-				
-				state_text = "hello"
-				
-				# state_text = @fibers[:update].alive? ? "alive" : "dead"
-				
-				@state_display = Text.new(@monospace_font, state_text).tap do |text|
-						text.text_color = @font_color
-						
-						# text.body.p = CP::Vec2.new(285,337)
-						text.body.p = CP::Vec2.new(383,937)
-						# text.body.p = CP::Vec2.new(285,1137)
-					end
-				
-				
-				
-				
-				queue << @update_counter_label
-				queue << @update_counter_number
-				queue << @draw_counter_label
-				queue << @draw_counter_number
-				
-				
-				queue << @state_label
-				
-				queue << @state_display
-			}
+			puts "screen space: #{@screen_space.entities.to_a.size}"
+			
+			@screen_space.entities.each
 			.group_by{ |e| e.texture }
 			.each do |texture, same_texture|
 				# next if texture.nil?
@@ -385,6 +427,7 @@ class Body
 				texture.bind unless texture.nil?
 				
 				same_texture.each do |entity|
+					puts "drawing entity"
 					entity.draw
 				end
 				
@@ -423,7 +466,9 @@ class Body
 	
 	
 	
+	# I want to visualize inputs happening over time, so I can see what the actualy input signals I'm dealing with are. I need to measure time in both ms and turn count. I also need to see how spatial input (ie, mouse input) relate to the spatial component of data (time and space are linked).
 	
+	# I want interface code to be able to interact with spatial entities. How would I reference them by name? Variable names? Entity tags (like HTML ID)? Should I always first accquire entities through a spatial query (raycast?).
 	
 	def mouse_moved(window, x,y)
 		@p = [x,y]

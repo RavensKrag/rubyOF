@@ -54,6 +54,25 @@ class Text < Entity
 	end
 	
 	
+	attr_reader :string
+	def print(s)
+		# set string (backend storage)
+		@string = s
+		
+		# regenerate shape
+		x,y = [0,0]
+		of_bb = @font.string_bb(@string,x,y, vflip=true)
+		cpbb = CP::BB.new(0, 0, of_bb.width, of_bb.height)
+		puts of_bb
+		puts cpbb
+		# puts "bb l and b: #{cpbb.l}  #{cpbb.b}"
+		@shape.resize_by_bb!(cpbb)
+		
+		# regenerate mesh
+		generate_mesh()
+	end
+	
+	
 	
 	def serialize
 		serialized = Serialized.new
@@ -105,6 +124,6 @@ class Text < Entity
 	def generate_mesh
 		x,y = [0,0]
 		vflip = true
-		@text_mesh ||= font.get_string_mesh(@string, x,y, vflip)
+		@text_mesh = @font.get_string_mesh(@string, x,y, vflip)
 	end
 end 
