@@ -23,7 +23,7 @@ class Loader
 
 	# remember file paths, and bind data	
 	def initialize(window, class_constant_name,
-		header:, body:, save_directory:, method_contract:
+		header:, body:, ui:, save_directory:, method_contract:
 	)
 		super()
 		# Have to call super() to initialize state_machine
@@ -42,12 +42,14 @@ class Loader
 		
 		@files = {
 			:header => FilePair.new(header),
-			:body   => FilePair.new(body)
+			:body   => FilePair.new(body),
+			:ui     => FilePair.new(ui)
 		}
 		
 		# dynamic_load will change @execution_state
 		dynamic_load @files[:header]
 		dynamic_load @files[:body]
+		dynamic_load @files[:ui]
 		
 		
 		klass = Kernel.const_get @klass_name
@@ -58,10 +60,10 @@ class Loader
 		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
 		
+		@user_interface = UserInterface.new
 		
 		
-		ms   = RubyOF::Utils.ofGetElapsedTimeMillis
-		turn = @wrapped_object.update_counter.current_turn
+		
 		
 		# @wrapped_object.queue_input [ms, turn, sym, args]
 		
@@ -75,11 +77,14 @@ class Loader
 		method_symbols.each do |sym|
 			meta_def sym do |*args|
 				protect_runtime_errors do
+					ms   = RubyOF::Utils.ofGetElapsedTimeMillis
+					turn = @wrapped_object.update_counter.current_turn
+					
 					if @wrapped_object.nil?
 						# puts "null handler: #{sym}"
 					else
 						# @wrapped_object.send sym, @window, *args
-						@wrapped_object.queue_input [ms, turn, sym, args]
+						@user_interface.queue_input ms, turn, sym, args
 					end
 				end
 			end
@@ -123,6 +128,12 @@ class Loader
 	
 	state_machine :state, :initial => :running do
 		state :running do
+			def turn_number
+				# @time_travel_i has not been set yet,
+				# so get the value directly from the source
+				@wrapped_object.update_counter.current_turn
+			end
+			
 			# reload code as needed
 			def update
 				# puts "loader: update"
@@ -130,6 +141,10 @@ class Loader
 				
 				# -- update files as necessary
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 				
 				
 				# -- delegate update command
@@ -185,9 +200,17 @@ class Loader
 		# Don't generate new state, but render current state
 		# and alllow time traveling. Can also just resume execution.
 		state :paused do
+			def turn_number
+				@time_travel_i
+			end
+			
 			def update
 				# -- update files as necessary
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			def draw
@@ -205,6 +228,10 @@ class Loader
 		# Can't generate new state or resume until errors are fixed.
 		# Can also use time traveling to help fix the errors.
 		state :error do
+			def turn_number
+				@time_travel_i
+			end
+			
 			# can't go forward until errors are fixed
 			def update
 				@window.show_text(CP::Vec2.new(352,100), "ERROR: See terminal for details. Step back to start time traveling.")
@@ -213,6 +240,10 @@ class Loader
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			def draw
@@ -231,6 +262,10 @@ class Loader
 		# Execution has completed (update fiber has no more updates)
 		# Time travel is allowed, but no more forward progess is possible.
 		state :true_ending do
+			def turn_number
+				@time_travel_i
+			end
+			
 			def update
 				# @window.show_text(CP::Vec2.new(352,100), "Program completed!")
 				
@@ -238,6 +273,10 @@ class Loader
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# normal drawing
@@ -269,6 +308,10 @@ class Loader
 		
 		
 		state :good_timeline do
+			def turn_number
+				@time_travel_i
+			end
+			
 			def update
 				# puts "============== good timeline ================"
 				
@@ -286,6 +329,10 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -316,6 +363,10 @@ class Loader
 		
 		# A failed timeline caused by fairly standard program errors.
 		state :doomed_timeline do
+			def turn_number
+				@time_travel_i
+			end
+			
 			def update
 				# puts "============== true timeline ================"
 				
@@ -333,6 +384,10 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -367,6 +422,10 @@ class Loader
 		# When you hit the "true_ending" state and proceed to time travel,
 		# this is the timeline that gets used.
 		state :true_timeline do
+			def turn_number
+				@time_travel_i
+			end
+			
 			def update
 				# puts "============== true timeline ================"
 				
@@ -384,6 +443,10 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -423,6 +486,10 @@ class Loader
 		# 
 		# You transition out of :forecasting by stepping forward into new future.
 		state :forecasting do
+			def turn_number
+				@time_travel_i
+			end
+			
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
 			def update
@@ -506,6 +573,10 @@ class Loader
 				@forecast_fiber.resume while @forecast_fiber&.alive?
 				
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -542,12 +613,20 @@ class Loader
 		# Can only resume after successful forecasting
 		# (very bad - time record has become corrupted)
 		state :forecasting_error do
+			def turn_number
+				@time_travel_i
+			end
+			
 			# (code adapted from :error)
 			def update
 				# -- update files as necessary
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
+				dynamic_load @files[:ui]
+				
+				# -- process user input
+				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization

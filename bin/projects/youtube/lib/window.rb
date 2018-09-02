@@ -98,6 +98,7 @@ class Window < RubyOF::Window
 				"Body", # wrapped_object
 				header: (PROJECT_DIR/'lib'/'live'/'code'/'body_init.rb'),
 				body:   (PROJECT_DIR/'lib'/'live'/'code'/'body_main.rb'),
+				ui:     (PROJECT_DIR/'lib'/'live'/'code'/'user_interface.rb'),
 				save_directory: @data_dir,
 				
 				method_contract:  [

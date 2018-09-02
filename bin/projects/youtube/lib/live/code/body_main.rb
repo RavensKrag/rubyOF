@@ -40,8 +40,12 @@ class Body
 	
 	
 	def update(window)
+		parse_input(window)
+		
+		
 		@world_space.update
 		@screen_space.update
+		
 		
 		if @fibers[:update].nil? or @regenerate_update_thread
 		@fibers[:update] = Fiber.new do |on|
@@ -291,6 +295,10 @@ class Body
 			end
 			
 			
+			on.turn 11..100 do
+				# NO-OP
+			end
+			
 			
 			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.
 				# This is not completely true, as the user can still make changes based on direct manipulation. But those changes should generate new state, so hopefully this is all fine?
@@ -464,6 +472,62 @@ class Body
 	
 	
 	
+	
+	def queue_input(input_data)
+		@input_queue   ||= Array.new
+		@input_queue_i ||= 0 # entries @ index >= i have not yet been processed
+		@input_queue << input_data
+		
+		# p @input_queue
+	end
+	
+	# FIXME: extra inputs are being queued up while time traveling
+		# NO - it's actually even worse - we can't enter time traveling mode right now, because we're not actually processing the inputs. we're just queuing them up. The code to trigger the "pause" event when the spacebar is pressed is in this file, and it is not currently being called.
+		
+		# now I can pause state, but I can't move through time, because #update is not being called on the state, and that is what let's me parse inputs. so I need to restructure something, to allow for this to work.
+		
+	# FIXME: very many text entities are being created, and it is bogging down the system
+	def parse_input(window)
+		return if @input_queue.nil?
+		
+		
+		
+		# NOTE: ruby 2.6 will have "endless ranges" which allows for the following syntax: @input_queue[1..]
+		# however, as of 2018.8.25, ruby 2.6 has not yet been released
+			# https://medium.com/square-corner-blog/rubys-new-infinite-range-syntax-0-97777cf06270
+			# https://blog.bigbinary.com/2018/07/04/ruby-2-6-adds-endless-range.html
+			# https://bugs.ruby-lang.org/issues/12912
+		
+		# Associate input data with index in the input queue, not the index in the list of unprocessed items
+		@input_queue.each_with_index
+		.to_a[@input_queue_i..-1]
+		.each do |input_data, i|
+			timestamp_in_ms, turn_number, method_message, args = input_data
+			
+			
+			# # -- visualize the inputs
+			# input = Text.new(@font, i.to_s)
+			# input.body.p = CP::Vec2.new(i * 20, 600)
+			
+			# input.text_color = RubyOF::Color.new.tap do |c|
+			# 	c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+			# end
+			
+			
+			
+			# @screen_space.add input
+			
+			
+			# -- actually deal with the input
+			# TODO: send timestamp and turn number as well
+			p args
+			self.send method_message, window, *args
+		end
+		
+		# move the index to the end
+		# NOTE: ary[ary.length..-1] => []
+		@input_queue_i = @input_queue.length
+	end
 	
 	
 	# I want to visualize inputs happening over time, so I can see what the actualy input signals I'm dealing with are. I need to measure time in both ms and turn count. I also need to see how spatial input (ie, mouse input) relate to the spatial component of data (time and space are linked).
