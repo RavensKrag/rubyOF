@@ -78,7 +78,7 @@ class Loader
 			meta_def sym do |*args|
 				protect_runtime_errors do
 					ms   = RubyOF::Utils.ofGetElapsedTimeMillis
-					turn = @wrapped_object.update_counter.current_turn
+					turn = self.turn_number
 					
 					if @wrapped_object.nil?
 						# puts "null handler: #{sym}"

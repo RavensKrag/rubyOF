@@ -3,6 +3,7 @@ class UserInterface
 	
 	def initialize
 		@input_queue = Array.new
+		@last_input = 0
 	end
 	
 	def update(window, live, main)
@@ -34,8 +35,14 @@ class UserInterface
 	
 	# turn raw inputs into input actions
 	def parse_inputs(window, live, main, input_queue)
-		# Associate input data with index in the input queue, not the index in the list of unprocessed items
-		@input_queue.each do |input|
+		# when main code execution stops, the turn counter stops incrementing. with the current setup, this means that all inputs past a certain time will have turn=100. this is why when trying to zoom in and out, you just zoom exponentially past a certain point.
+		
+		
+		# @input_queue[@last_input..-1]
+		p @input_queue
+		@input_queue
+		.select{ |input| input.turn_number == live.turn_number}
+		.each do |input|
 			self.send(
 				input.method_message,
 				window, live, main,
@@ -43,6 +50,9 @@ class UserInterface
 				*input.args
 			)
 		end
+		
+		@last_input = @input_queue.length
+		
 	end
 	
 
@@ -125,21 +135,21 @@ class UserInterface
 				# -- spacebar has been pressed --
 				# NOTE: state_name is a symbol, state is a string
 				
-				case window.live.state_name
+				case live.state_name
 				when :running
 					puts "pausing..."
-					window.live.pause
+					live.pause
 				when :paused
 					puts "resuming..."
-					window.live.resume
+					live.resume
 				end
 				
 			end
 		when OF_KEY_LEFT
 			# can't travel to t=0 ; the initial state is not renderable
-			window.live.step_back
+			live.step_back
 		when OF_KEY_RIGHT
-			window.live.step_forward
+			live.step_forward
 		end
 	end
 	
