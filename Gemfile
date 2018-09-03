@@ -34,6 +34,10 @@ gem 'roo',      "~>2.7.1" # (for loading spreadsheets)
 gem 'state_machine', '1.2.0'
 
 
+gem 'pry'
+gem 'pry-byebug'
+
+
 
 
 

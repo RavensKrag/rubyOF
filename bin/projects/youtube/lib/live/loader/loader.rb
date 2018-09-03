@@ -873,8 +873,44 @@ class Loader
 		# end
 		@history_cache = nil
 			# end
+			@history_cache.each do |state|
+				world_space  = state.instance_variable_get "@world_space"
+				screen_space = state.instance_variable_get "@screen_space"
+				
+				
+				 = world_space.entities + screen_space.entities
+				[world_space, screen_space].each do |space|
+					space.clear
+					
+					require 'pry'
+					binding.pry
+					
+					# space.update(1/60.0)
+					
+					# ^ it seems like this may be sufficient to prevent the segfault? it's possible that there's some state that's supposed to get initialized on #update() that never gets initialized for states in history. That would make things complicated, to say the least.
+					
+					# TODO: Space#update has two parts. Try calling just CP::Space#step() or just updating the entities. Need to figure out which part is necessary to fix the error.
+					
+					# Space#update is supposed to take 0 arguments. If you actually pass 0 args -> segfault. If you pass this one arg -> no segfault. What is going on????
+						# when you pass 1 arg, you get a runtime error, but the system is blocking the program from crashing on that error, and the console is currently flodded with other messages, so you end up not seeing the error.
+					
+					
+					# space.instance_variable_get("@cp_space").step(1/60.0)
+					# ^ calling just CP::Space#step does not fix the issue. still segfault
+					
+					# space.instance_variable_get("@entities").each do |entity|
+					# 	entity.update
+					# end
+					
+				end
+			end
 		# ^ this is a hacky way to try and take control of when resources get released. I'm hoping this will fix the segfault. If it does, that means I understand the source of the error. From there, I need to actually implement a sane solution.
 		# YES. this does fix the problem.
+		
+		# well, it doesn't actually work.
+		# it just causes an execption to be thrown that prevents the line below to be called, thus avoiding the issue entirely...
+		
+		@history_cache = nil
 		
 		
 		# i = @wrapped_object.update_counter.current_turn
