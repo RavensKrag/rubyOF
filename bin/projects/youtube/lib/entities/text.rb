@@ -63,8 +63,8 @@ class Text < Entity
 		x,y = [0,0]
 		of_bb = @font.string_bb(@string,x,y, vflip=true)
 		cpbb = CP::BB.new(0, 0, of_bb.width, of_bb.height)
-		puts of_bb
-		puts cpbb
+		# puts of_bb
+		# puts cpbb
 		# puts "bb l and b: #{cpbb.l}  #{cpbb.b}"
 		@shape.resize_by_bb!(cpbb)
 		

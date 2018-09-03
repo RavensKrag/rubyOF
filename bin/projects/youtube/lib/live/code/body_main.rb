@@ -425,7 +425,7 @@ class Body
 			
 			# === Draw screen relative
 			# Render a bunch of different tasks
-			puts "screen space: #{@screen_space.entities.to_a.size}"
+			# puts "screen space: #{@screen_space.entities.to_a.size}"
 			
 			@screen_space.entities.each
 			.group_by{ |e| e.texture }
@@ -435,7 +435,7 @@ class Body
 				texture.bind unless texture.nil?
 				
 				same_texture.each do |entity|
-					puts "drawing entity"
+					# puts "drawing entity"
 					entity.draw
 				end
 				

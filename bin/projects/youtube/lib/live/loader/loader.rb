@@ -48,9 +48,7 @@ class Loader
 		
 		# dynamic_load will change @execution_state
 		dynamic_load @files[:header]
-		dynamic_load @files[:body]
-		dynamic_load @files[:ui]
-		
+		dynamic_load @files[:body]		
 		
 		klass = Kernel.const_get @klass_name
 		if method_contract_satisfied?(klass, @method_contract)
@@ -60,7 +58,6 @@ class Loader
 		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
 		
-		@user_interface = UserInterface.new
 		
 		
 		
@@ -83,8 +80,8 @@ class Loader
 					if @wrapped_object.nil?
 						# puts "null handler: #{sym}"
 					else
-						# @wrapped_object.send sym, @window, *args
-						@user_interface.queue_input ms, turn, sym, args
+						@wrapped_object.send sym, @window, *args
+						# @user_interface.queue_input ms, turn, sym, args
 					end
 				end
 			end
@@ -140,12 +137,7 @@ class Loader
 				
 				
 				# -- update files as necessary
-				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
-				
+				dynamic_load @files[:body]				
 				
 				# -- delegate update command
 				sym = :update
@@ -207,10 +199,6 @@ class Loader
 			def update
 				# -- update files as necessary
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			def draw
@@ -240,10 +228,6 @@ class Loader
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			def draw
@@ -273,10 +257,6 @@ class Loader
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# normal drawing
@@ -329,10 +309,6 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -384,10 +360,6 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -443,10 +415,6 @@ class Loader
 				end
 				
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -573,10 +541,6 @@ class Loader
 				@forecast_fiber.resume while @forecast_fiber&.alive?
 				
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -623,10 +587,6 @@ class Loader
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
 				dynamic_load @files[:body]
-				dynamic_load @files[:ui]
-				
-				# -- process user input
-				@user_interface.update(@window, self, @wrapped_object)
 			end
 			
 			# draw onion-skin visualization
@@ -903,7 +863,19 @@ class Loader
 		# + don't throw out the entire cache if some items are still good
     #   (cache invalidation is hard)
     # + optimize onion skin rendering
+		# @history_cache.each do |state|
+		# 	world_space  = state.instance_variable_get "@world_space"
+		# 	screen_space = state.instance_variable_get "@screen_space"
+			
+		# 	[world_space, screen_space].each do |space|
+		# 		space.clear
+		# 	end
+		# end
 		@history_cache = nil
+			# end
+		# ^ this is a hacky way to try and take control of when resources get released. I'm hoping this will fix the segfault. If it does, that means I understand the source of the error. From there, I need to actually implement a sane solution.
+		# YES. this does fix the problem.
+		
 		
 		# i = @wrapped_object.update_counter.current_turn
 		# puts "current turn: #{i}"
