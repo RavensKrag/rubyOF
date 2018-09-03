@@ -133,6 +133,10 @@ class Loader
 			
 			# reload code as needed
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# puts "loader: update"
 				
 				
@@ -197,6 +201,10 @@ class Loader
 			end
 			
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# -- update files as necessary
 				dynamic_load @files[:body]
 			end
@@ -222,6 +230,10 @@ class Loader
 			
 			# can't go forward until errors are fixed
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				@window.show_text(CP::Vec2.new(352,100), "ERROR: See terminal for details. Step back to start time traveling.")
 				
 				# -- update files as necessary
@@ -251,6 +263,10 @@ class Loader
 			end
 			
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# @window.show_text(CP::Vec2.new(352,100), "Program completed!")
 				
 				# -- update files as necessary
@@ -293,6 +309,10 @@ class Loader
 			end
 			
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# puts "============== good timeline ================"
 				
 				# populate state cache using serialized data
@@ -344,6 +364,10 @@ class Loader
 			end
 			
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# puts "============== true timeline ================"
 				
 				# populate state cache using serialized data
@@ -399,6 +423,10 @@ class Loader
 			end
 			
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# puts "============== true timeline ================"
 				
 				# populate state cache using serialized data
@@ -461,6 +489,10 @@ class Loader
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				@forecast_fiber ||= Fiber.new do
 					puts "forecasting..."
 					
@@ -583,6 +615,10 @@ class Loader
 			
 			# (code adapted from :error)
 			def update
+				if @clear_history
+					@history_cache = nil 
+					GC.start
+				end
 				# -- update files as necessary
 				# need to try and load a new file,
 				# as loading is the only way to escape this state
@@ -863,52 +899,11 @@ class Loader
 		# + don't throw out the entire cache if some items are still good
     #   (cache invalidation is hard)
     # + optimize onion skin rendering
-		# @history_cache.each do |state|
-		# 	world_space  = state.instance_variable_get "@world_space"
-		# 	screen_space = state.instance_variable_get "@screen_space"
-			
-		# 	[world_space, screen_space].each do |space|
-		# 		space.clear
-		# 	end
-		# end
-		@history_cache = nil
-			# end
-			@history_cache.each do |state|
-				world_space  = state.instance_variable_get "@world_space"
-				screen_space = state.instance_variable_get "@screen_space"
-				
-				
-				 = world_space.entities + screen_space.entities
-				[world_space, screen_space].each do |space|
-					space.clear
-					
-					require 'pry'
-					binding.pry
-					
-					# space.update(1/60.0)
-					
-					# ^ it seems like this may be sufficient to prevent the segfault? it's possible that there's some state that's supposed to get initialized on #update() that never gets initialized for states in history. That would make things complicated, to say the least.
-					
-					# TODO: Space#update has two parts. Try calling just CP::Space#step() or just updating the entities. Need to figure out which part is necessary to fix the error.
-					
-					# Space#update is supposed to take 0 arguments. If you actually pass 0 args -> segfault. If you pass this one arg -> no segfault. What is going on????
-						# when you pass 1 arg, you get a runtime error, but the system is blocking the program from crashing on that error, and the console is currently flodded with other messages, so you end up not seeing the error.
-					
-					
-					# space.instance_variable_get("@cp_space").step(1/60.0)
-					# ^ calling just CP::Space#step does not fix the issue. still segfault
-					
-					# space.instance_variable_get("@entities").each do |entity|
-					# 	entity.update
-					# end
-					
-				end
-			end
-		# ^ this is a hacky way to try and take control of when resources get released. I'm hoping this will fix the segfault. If it does, that means I understand the source of the error. From there, I need to actually implement a sane solution.
-		# YES. this does fix the problem.
+    if !@history_cache.nil?
+			@clear_history = true
+			# can't clear free CP::Space objects containing OpenFrameworks resources outside of the #update and #draw phases
+		end
 		
-		# well, it doesn't actually work.
-		# it just causes an execption to be thrown that prevents the line below to be called, thus avoiding the issue entirely...
 		
 		@history_cache = nil
 		
