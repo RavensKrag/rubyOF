@@ -23,6 +23,92 @@ ONION_SKIN_ERROR_COLOR = RubyOF::Color.new.tap do |c|
 end
 
 
+
+class UpdateFiber
+	class Helper
+		def turn(t, &block)
+			if t.is_a? Integer or t.is_a? Range
+				Fiber.yield t, block
+			else
+				raise TypeError, "Expected one argument, either Integer or Range, but recieved #{i_or_range.class}"
+				# NOTE: ArugmentError is for the number of arguments
+				#       TypeError seems to be more appropriate for argument type
+			end
+		end
+	end
+	
+	def initialize(&block)
+		@outer_block = block
+	end
+	
+	
+	# Use two fibers, that act together in a producer-consumer pattern,
+	# to first figure out which blocks of code to execute, and then
+	# when to execute those blocks.
+	# 
+	# @f2 produces, and @f1 consumes.
+	def update(turn_number)
+		@f2 ||= Fiber.new do |on|
+			Fiber.yield # first tick just establishes closure around Helper object
+			@outer_block.call(on) # implicity calls Fiber.yield via Helper#turn()
+			
+			# when @f2 completes final yield, the fiber will still be alive
+		end
+		
+		@f1 ||= Fiber.new do |turn_number|
+			helper = Helper.new()
+			@f2.resume(helper) # just pass the helper object in, no real work yet
+			
+			# producer-consumer pattern to deal with blocks
+			while @f2.alive?
+				target_turn, inner_block = @f2.resume()
+				break if target_turn.nil?
+				
+				# Target turn could be an Integer or a Range.
+				# === is the equality check used by 'case' statement.
+				# This will work as expected for both types.
+				min, core, max = 
+					case target_turn
+					when Integer
+						[target_turn,     target_turn, target_turn    ]
+					when Range
+						[target_turn.min, target_turn, target_turn.max]
+					end
+				
+				loop do
+					if turn_number < min
+						# not the correct turn yet. waiting...
+						# NO-OP
+						turn_number = Fiber.yield nil
+					elsif core === turn_number
+						# this is the turn / range of turns, so execute
+						inner_block.call(turn_number)
+						turn_number = Fiber.yield :non_blank
+					else # turn_number > max
+						# turn has passed (useful on reload / time travel)
+						break
+					end
+				end
+			end
+			
+			# signal that all parts of the outer block have completed
+			:finished
+		end
+		
+		# pass signals from @f1 to the outer calling context
+		if @f1.alive?
+			return @f1.resume(turn_number)
+		else
+			return nil
+		end
+	end
+	
+	
+end
+
+
+
+
 class Body
 	include RubyOF::Graphics 
 	
@@ -48,7 +134,7 @@ class Body
 		
 		
 		if @fibers[:update].nil? or @regenerate_update_thread
-		@fibers[:update] = Fiber.new do |on|
+		@fibers[:update] = UpdateFiber.new do |on|
 			on.turn 0 do
 				@i = 0
 				
@@ -110,7 +196,7 @@ class Body
 						text.body.p = CP::Vec2.new(43,1034)
 					end
 				
-				number = @update_counter.current_turn.to_s.rjust(5, ' ')
+				number = @turn.to_s.rjust(5, ' ')
 				@update_counter_number =
 					Text.new(@monospace_font, number).tap do |text|
 						text.text_color = @font_color
@@ -300,11 +386,7 @@ class Body
 			end
 			
 			
-			# When you reach the end of update tasks, tell the surrounding system to pause further execution. If no more updates are being made, then no new frames need to be rendered, right? Can just render the old state.
-				# This is not completely true, as the user can still make changes based on direct manipulation. But those changes should generate new state, so hopefully this is all fine?
-				# Soon, will need to consider how direct input effects the time traveling paradigm.
-			Fiber.yield :end
-			# (tell Loader to transition to "true ending" state)
+			
 		end
 		@regenerate_update_thread = false
 		end
@@ -313,13 +395,20 @@ class Body
 		# This must be last, so the yield from the fiber can return to Loader.
 		# But if the UI code executes before turn 0, then nothing will render.
 		# TODO: consider separate method for UI code.
-		@fibers[:update].resume @update_counter
+		out = @fibers[:update].update @turn
+		
+		puts "#{@turn} => #{out}"
+		
+		@turn += 1
+		
+		
+		return out
 	end
 	
 	# UI can contain both world-space and screen-space elements
 	def update_ui(window)
 		# @update_counter_label.print "update:"
-		update_turn = @update_counter.current_turn.to_s.rjust(5, ' ')
+		update_turn = @turn.to_s.rjust(5, ' ')
 		@update_counter_number.print update_turn
 		
 		# @draw_counter_label.print "draw:"

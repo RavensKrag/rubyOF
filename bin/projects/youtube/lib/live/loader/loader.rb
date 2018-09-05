@@ -158,7 +158,7 @@ class Loader
 						puts "current turn: #{i}"
 						@time_travel_i = i
 						
-						if signal == :end
+						if signal == :finished
 							puts "saving history to file..."
 							File.open(@window.data_dir/'history.log', "w") do |f|
 								f.puts @history
@@ -547,7 +547,7 @@ class Loader
 								
 								# otherwise, visualize the correct forecasting path by transitioning to a different time-traveling state
 								
-								if signal == :end
+								if signal == :finished
 									@forcasted_the_end = true
 									
 									# # if the last state generated results in the update fiber running to completion, then the found timeline is actually the "true timeline". In that case, call this method instead:

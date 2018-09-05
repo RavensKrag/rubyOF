@@ -22,7 +22,7 @@ class ExecutionHistory
 		
 		puts "  saving, in history"
 		state = obj.to_yaml
-		i = obj.update_counter.current_turn
+		i = obj.turn
 		@history[i] = state
 	end
 	
