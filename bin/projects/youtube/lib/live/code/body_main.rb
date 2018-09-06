@@ -62,7 +62,7 @@ class UpdateFiber
 			# producer-consumer pattern to deal with blocks
 			while @f2.alive?
 				target_turn, inner_block = @f2.resume()
-				break if target_turn.nil?
+				break if target_turn.nil? # @f2 lives for one extra turn because of yield being encapsulated in Helper class.
 				
 				# Target turn could be an Integer or a Range.
 				# === is the equality check used by 'case' statement.
@@ -92,7 +92,7 @@ class UpdateFiber
 			end
 			
 			# signal that all parts of the outer block have completed
-			:finished
+			:finished # implicit final Fiber.yield
 		end
 		
 		# pass signals from @f1 to the outer calling context
