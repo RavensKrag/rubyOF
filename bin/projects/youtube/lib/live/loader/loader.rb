@@ -50,13 +50,15 @@ class Loader
 		dynamic_load @files[:header]
 		dynamic_load @files[:body]		
 		
-		klass = Kernel.const_get @klass_name
-		if method_contract_satisfied?(klass, @method_contract)
-			setup_delegators(@method_contract)
-		end
-		
-		@wrapped_object = klass.new
 		@history = ExecutionHistory.new
+		
+		@turn = 0
+		# @time_travel_i = 0
+		
+		
+		init_wrapped_object() # @klass_name => @wrapped_object
+		@history.save @turn, @wrapped_object
+		
 		
 		
 		
@@ -88,7 +90,6 @@ class Loader
 		end
 		
 		
-		@history.save @wrapped_object
 		
 		
 		# TODO: reallocate FBOs when the window size changes
@@ -122,13 +123,22 @@ class Loader
 	
 	
 	
+	def init_wrapped_object
+		klass = Kernel.const_get @klass_name
+		if method_contract_satisfied?(klass, @method_contract)
+			setup_delegators(@method_contract)
+		end
+		
+		@wrapped_object = klass.new
+	end
+	
 	
 	state_machine :state, :initial => :running do
 		state :running do
 			def turn_number
 				# @time_travel_i has not been set yet,
 				# so get the value directly from the source
-				@wrapped_object.update_counter.current_turn
+				@turn
 			end
 			
 			# reload code as needed
@@ -144,52 +154,46 @@ class Loader
 				dynamic_load @files[:body]				
 				
 				# -- delegate update command
-				sym = :update
 				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						
-						signal = @wrapped_object.send sym, @window
-						
-						@history.save @wrapped_object
-						
-						i = @wrapped_object.update_counter.current_turn
-						puts "current turn: #{i}"
-						@time_travel_i = i
-						
-						if signal == :finished
-							puts "saving history to file..."
-							File.open(@window.data_dir/'history.log', "w") do |f|
-								f.puts @history
-							end
-							
-							self.finish()
+					puts "current turn: #{@turn}"
+					@time_travel_i = @turn
+					
+					signal = @wrapped_object.update @window, @turn
+					
+					@history.save @turn, @wrapped_object
+					
+					
+					
+					if signal == :finished
+						puts "saving history to file..."
+						File.open(@window.data_dir/'history.log', "w") do |f|
+							f.puts @history
 						end
 						
-						# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
-						
-						
-						# # jump the execution back to an earlier update phase
-						# # (this is basically a goto)
-						# i = @wrapped_object.update_counter.current_turn
-						# if i > 30
-						# 	 @wrapped_object.update_counter.current_turn = 1
-						# 	 @wrapped_object.regenerate_update_thread!
-						# end
+						self.finish()
 					end
+					
+					
+					# if you hit certain counter thresholds, you should pause for a bit, to slow execution down. that way, you can get the program to run in slow mo
+					
+					
+					# # jump the execution back to an earlier update phase
+					# # (this is basically a goto)
+					# i = @wrapped_object.update_counter.current_turn
+					# if i > 30
+					# 	 @wrapped_object.update_counter.current_turn = 1
+					# 	 @wrapped_object.regenerate_update_thread!
+					# end
 				end
 			end
 			
 			def draw
-				sym = :draw
 				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						@wrapped_object.send sym, @window
-					end
+					@wrapped_object.draw @window, @turn
 				end
+				
+				
+				@turn += 1
 			end
 		end
 		
@@ -210,13 +214,8 @@ class Loader
 			end
 			
 			def draw
-				sym = :draw
 				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						@wrapped_object.send sym, @window
-					end
+					@wrapped_object.draw @window, @turn
 				end
 			end
 		end
@@ -243,13 +242,8 @@ class Loader
 			end
 			
 			def draw
-				# sym = :draw
 				# protect_runtime_errors do
-				# 	if @wrapped_object.nil?
-				# 		puts "null handler: #{sym}"
-				# 	else
-				# 		@wrapped_object.send sym, @window
-				# 	end
+				# 	@wrapped_object.draw @window, @turn
 				# end
 			end
 		end
@@ -277,13 +271,8 @@ class Loader
 			
 			# normal drawing
 			def draw
-				sym = :draw
 				protect_runtime_errors do
-					if @wrapped_object.nil?
-						puts "null handler: #{sym}"
-					else
-						@wrapped_object.send sym, @window
-					end
+					@wrapped_object.draw @window, @turn
 				end
 			end
 		end
@@ -499,64 +488,60 @@ class Loader
 					# update the state
 					protect_runtime_errors do
 						# TODO: figure out if I can remove the nil check by enforcing some paths in the state system. can I be sure that by this point, @wrapped_object will be non-nil?
-						if @wrapped_object.nil?
-							puts "null handler: forecasting"
-						else
-							@forcasted_the_end = false
-							@forecasting_lock = true
+						@forcasted_the_end = false
+						@forecasting_lock = true
+						
+						# forecasting is a bit different from normal time traveling.
+						# In normal time traveling, you just need to draw the states,
+						# but in forecasting, you want to run the code again.
+						
+						# Therefore...
+						
+						# these are the states you want to draw
+						target_range = ((@time_travel_i+1)..(@history.length-1))
+						
+						# but you have to re-simulate them first,
+						# so you need the states prior to those
+						grab_range = ((target_range.min-1)..(target_range.max-1))
+						
+						# now we can grab states, update them, and then draw them
+						grab_range.each do |i|
+							# -- get the state
+							state = @history[i]
 							
-							# forecasting is a bit different from normal time traveling.
-							# In normal time traveling, you just need to draw the states,
-							# but in forecasting, you want to run the code again.
+							# -- update state
+							sym = :update
+							signal = state.send sym, @window
 							
-							# Therefore...
+							# -- save
+							@history.save @turn, state
 							
-							# these are the states you want to draw
-							target_range = ((@time_travel_i+1)..(@history.length-1))
+							# @time_travel_i = i
+							@forecast_range = ((target_range.min)..(i+1))
+							# ^ shows range of history that was overridden by forecasting
 							
-							# but you have to re-simulate them first,
-							# so you need the states prior to those
-							grab_range = ((target_range.min-1)..(target_range.max-1))
+							@history_cache[@forecast_range.max] = state
+							# ^ can store this state object in cache, because next frame I'll pull a new object from @history
+							# (In fact, the object I pull out will be a copy of this one)
 							
-							# now we can grab states, update them, and then draw them
-							grab_range.each do |i|
-								# -- get the state
-								state = @history[i]
+							# if there's an error, we will transition to "forecasting_error"
+								# (automatically caught by protect_runtime_errors block)
+								# (automatically transition due to state machine)
+							
+							
+							
+							
+							# otherwise, visualize the correct forecasting path by transitioning to a different time-traveling state
+							
+							if signal == :finished
+								@forcasted_the_end = true
 								
-								# -- update state
-								sym = :update
-								signal = state.send sym, @window
+								# # if the last state generated results in the update fiber running to completion, then the found timeline is actually the "true timeline". In that case, call this method instead:
+								# self.forecast_found_true_timeline()
+								# break # may be stopping short of the previous timeline's end
+								# # when breaking out into the true timeline, you can resize the history cache if the true ending occurs before the current end of the cache.
+								# 	# => callback: on_forecast_to_true_timeline
 								
-								# -- save
-								@history.save state
-								
-								# @time_travel_i = i
-								@forecast_range = ((target_range.min)..(i+1))
-								# ^ shows range of history that was overridden by forecasting
-								
-								@history_cache[@forecast_range.max] = state
-								# ^ can store this state object in cache, because next frame I'll pull a new object from @history
-								# (In fact, the object I pull out will be a copy of this one)
-								
-								# if there's an error, we will transition to "forecasting_error"
-									# (automatically caught by protect_runtime_errors block)
-									# (automatically transition due to state machine)
-								
-								
-								
-								
-								# otherwise, visualize the correct forecasting path by transitioning to a different time-traveling state
-								
-								if signal == :finished
-									@forcasted_the_end = true
-									
-									# # if the last state generated results in the update fiber running to completion, then the found timeline is actually the "true timeline". In that case, call this method instead:
-									# self.forecast_found_true_timeline()
-									# break # may be stopping short of the previous timeline's end
-									# # when breaking out into the true timeline, you can resize the history cache if the true ending occurs before the current end of the cache.
-									# 	# => callback: on_forecast_to_true_timeline
-									
-								end
 							end
 							
 							@forecasting_lock = false
@@ -1240,7 +1225,7 @@ class Loader
 			
 			# render one layer
 			render_onion_skin_layer(@temp_fbo) do
-				state.draw @window
+				state.draw @window, 0
 			end
 			
 				
@@ -1259,7 +1244,7 @@ class Loader
 			
 			# render one layer
 			render_onion_skin_layer(@temp_fbo) do
-				state.draw @window
+				state.draw @window, 0
 			end
 			
 				
@@ -1273,7 +1258,7 @@ class Loader
 		# -- render current state
 		# render one layer
 		render_onion_skin_layer(@temp_fbo) do
-			current_state.draw @window
+			current_state.draw @window, 0
 		end
 		
 		# composite this layer into the onion skin

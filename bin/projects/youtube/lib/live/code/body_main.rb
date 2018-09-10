@@ -30,6 +30,15 @@ end
 class Body
 	include RubyOF::Graphics 
 	
+	def initialize
+		@fibers = Hash.new
+		
+		
+		@world_space  = Space.new
+		@screen_space = Space.new
+	end
+	
+	
 	def font_color=(color)
 		@font_color = color
 	end
@@ -43,7 +52,7 @@ class Body
 	end
 	
 	
-	def update(window)
+	def update(window, turn_number)
 		parse_input(window)
 		
 		
@@ -106,38 +115,22 @@ class Body
 				
 				
 				
-				update_text = "update:"
-				@update_counter_label =
+				update_text = "turn: "
+				@turn_label =
 					Text.new(@font, update_text).tap do |text|
 						text.text_color = @font_color
 						
 						text.body.p = CP::Vec2.new(43,1034)
 					end
 				
-				number = @turn.to_s.rjust(5, ' ')
-				@update_counter_number =
+				number = turn_number.to_s.rjust(5, ' ')
+				@turn_number =
 					Text.new(@monospace_font, number).tap do |text|
 						text.text_color = @font_color
 						
 						text.body.p = CP::Vec2.new(161,1034)
 					end
 				
-				
-				draw_text = "draw:"
-				@draw_counter_label =
-					Text.new(@font, draw_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1069)
-					end
-				
-				number = @draw_counter.current_turn.to_s.rjust(5, ' ')
-				@draw_counter_number =
-					Text.new(@monospace_font, number).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(161,1069)
-					end
 				
 				
 				draw_text = "state: #{window.live.state}"
@@ -162,11 +155,8 @@ class Body
 				
 				
 				
-				@screen_space.add @update_counter_label
-				@screen_space.add @update_counter_number
-				@screen_space.add @draw_counter_label
-				@screen_space.add @draw_counter_number
-				
+				@screen_space.add @turn_label
+				@screen_space.add @turn_number
 				
 				@screen_space.add @state_label
 				
@@ -313,26 +303,23 @@ class Body
 		# This must be last, so the yield from the fiber can return to Loader.
 		# But if the UI code executes before turn 0, then nothing will render.
 		# TODO: consider separate method for UI code.
-		out = @fibers[:update].update @turn
+		out = @fibers[:update].update turn_number
 		
-		puts "#{@turn} => #{out}"
+		puts "#{turn_number} => #{out}"
 		
-		@turn += 1
+		turn_number += 1
 		
 		
 		return out
 	end
 	
 	# UI can contain both world-space and screen-space elements
-	def update_ui(window)
+	def update_ui(window, turn_number)
+		puts "turn_number in current state: #{turn_number}"
+		
 		# @update_counter_label.print "update:"
-		update_turn = @turn.to_s.rjust(5, ' ')
-		@update_counter_number.print update_turn
-		
-		# @draw_counter_label.print "draw:"
-		draw_turn = @draw_counter.current_turn.to_s.rjust(5, ' ')
-		@draw_counter_number.print draw_turn
-		
+		update_turn = turn_number.to_s.rjust(5, ' ')
+		@turn_number.print update_turn
 		
 		
 		# # state_text = "test"
@@ -358,83 +345,37 @@ class Body
 		# @state_display.print @fibers[:update].alive? ? "alive" : "dead"
 	end
 	
-	def draw(window)
-		if @fibers[:draw].nil? or @regenerate_draw_thread
-		@fibers[:draw] = Fiber.new do |on|		
-		loop do
-			self.update_ui(window)
+	def draw(window, turn_number)
+		self.update_ui(window, turn_number)
+		
+		
+		# puts "  drawing..."
+		
+		# === Draw world relative
+		window.camera.draw window.width, window.height do |bb|
+			render_queue = Array.new
 			
-			
-			
-			
-			# puts "  drawing..."
-			
-			# === Draw world relative
-			window.camera.draw window.width, window.height do |bb|
-				render_queue = Array.new
-				
-				@world_space.bb_query(bb) do |entity|
-					render_queue << entity
-				end
-				
-				# p @world_space
-				# puts "render queue: #{render_queue.inspect}"
-				
-				# render_queue << @text
-				
-				# puts "render queue: #{render_queue.size}"
-				
-				
-				# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
-				
-				# Render queue should sort by shader, then texture, then z depth [2]
-				# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
-				# 
-				# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
-				# [2]  http://lspiroengine.com/?p=96
-				
-				render_queue
-				.group_by{ |e| e.texture }
-				.each do |texture, same_texture|
-					# next if texture.nil?
-					
-					texture.bind unless texture.nil?
-					
-					same_texture.each do |entity|
-						entity.draw
-					end
-					
-					texture.unbind unless texture.nil?
-				end
-				
-				# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms
-					# (not really useful right now because everything is just translations, but perhaps useful later when rotations start kicking in.)
-				
-				
-				
-				# ASSUME: @font has not changed since data was created
-					#  ^ if this assumption is broken, Text rendering may behave unpredictably
-					#  ^ if you don't bind the texture, just get white squares
-					
-					
-						# # @font.draw_string("From ruby: こんにちは", x, y)
-						# @font.draw_string(data['channel-name'], x, y)
-						# ofPopStyle()
-						
-						# # NOTE: to move string on z axis just use the normal ofTransform()
-						# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
-				
+			@world_space.bb_query(bb) do |entity|
+				render_queue << entity
 			end
-			# =======
+			
+			# p @world_space
+			# puts "render queue: #{render_queue.inspect}"
+			
+			# render_queue << @text
+			
+			# puts "render queue: #{render_queue.size}"
 			
 			
+			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
 			
+			# Render queue should sort by shader, then texture, then z depth [2]
+			# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
+			# 
+			# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
+			# [2]  http://lspiroengine.com/?p=96
 			
-			# === Draw screen relative
-			# Render a bunch of different tasks
-			# puts "screen space: #{@screen_space.entities.to_a.size}"
-			
-			@screen_space.entities.each
+			render_queue
 			.group_by{ |e| e.texture }
 			.each do |texture, same_texture|
 				# next if texture.nil?
@@ -442,30 +383,53 @@ class Body
 				texture.bind unless texture.nil?
 				
 				same_texture.each do |entity|
-					# puts "drawing entity"
 					entity.draw
 				end
 				
 				texture.unbind unless texture.nil?
 			end
 			
+			# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms
+				# (not really useful right now because everything is just translations, but perhaps useful later when rotations start kicking in.)
 			
 			
 			
-			# TODO: only render the task if it is still alive (allow for non-looping tasks)
-			# =======
+			# ASSUME: @font has not changed since data was created
+				#  ^ if this assumption is broken, Text rendering may behave unpredictably
+				#  ^ if you don't bind the texture, just get white squares
+				
+				
+					# # @font.draw_string("From ruby: こんにちは", x, y)
+					# @font.draw_string(data['channel-name'], x, y)
+					# ofPopStyle()
+					
+					# # NOTE: to move string on z axis just use the normal ofTransform()
+					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
 			
-			
-			
-			
-			Fiber.yield
 		end
-		end
-		@regenerate_draw_thread = false
-		end
+		# =======
 		
 		
-		@fibers[:draw].resume @draw_counter
+		
+		
+		# === Draw screen relative
+		# Render a bunch of different tasks
+		# puts "screen space: #{@screen_space.entities.to_a.size}"
+		
+		@screen_space.entities.each
+		.group_by{ |e| e.texture }
+		.each do |texture, same_texture|
+			# next if texture.nil?
+			
+			texture.bind unless texture.nil?
+			
+			same_texture.each do |entity|
+				# puts "drawing entity"
+				entity.draw
+			end
+			
+			texture.unbind unless texture.nil?
+		end
 	end
 	
 	def on_exit(window)
