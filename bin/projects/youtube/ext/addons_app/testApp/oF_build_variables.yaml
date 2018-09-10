@@ -204,10 +204,6 @@ RM:
 - "-f"
 CO:
 - co
-PARSED_ADDONS_LIBS_SOURCE_INCLUDES:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src"
 VTE_VERSION:
 - '5202'
 OF_PROJECT_ADDONS_OBJS:
@@ -355,10 +351,6 @@ PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src"
-rvm_recommended_ruby:
-- rvm
-- install
-- ruby-2.4.0
 addon:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui"
 GCC_MINOR_GTEQ_9:
@@ -397,15 +389,17 @@ LINK.cc:
 - "-lfmodex"
 PAM_KWALLET5_LOGIN:
 - "/run/user/1000/kwallet5.socket"
-rvm_pretty_print_flag:
-- auto
+PARSED_ADDONS_LIBS_SOURCE_INCLUDES:
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src"
 XDG_SESSION_PATH:
 - "/org/freedesktop/DisplayManager/Session1"
 PARSED_ALL_PLATFORM_LIBS: []
 MAKE_HOST:
 - x86_64-pc-linux-gnu
 PATH:
-- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
+- "/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin"
 OF_CORE_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/lib/linux64/libtess2.a"
@@ -471,11 +465,11 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1514,unix/ravensnest:/tmp/.ICE-unix/1514
+- local/ravensnest:@/tmp/.ICE-unix/2379,unix/ravensnest:/tmp/.ICE-unix/2379
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
-COMPILE.mod:
-- m2c
+rvm_stored_umask:
+- '0002'
 XDG_RUNTIME_DIR:
 - "/run/user/1000"
 FIND:
@@ -601,7 +595,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-ZqNLRKSlANRW/agent.1285"
+- "/tmp/ssh-64FsoWHiODiZ/agent.2117"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/obj"
@@ -661,7 +655,7 @@ PLATFORM_OS:
 rvm_bin_path:
 - "/home/ravenskrag/.rvm/bin"
 PWD:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube"
+- "/home/ravenskrag/Desktop/gem_structure"
 ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin"
@@ -708,7 +702,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1425'
+- '2306'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/ofApp.cpp"
@@ -1122,7 +1116,6 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - SHELL
 - RM
 - CO
-- PARSED_ADDONS_LIBS_SOURCE_INCLUDES
 - VTE_VERSION
 - OF_PROJECT_ADDONS_OBJS
 - TMP_PROJECT_ADDONS_CFLAGS
@@ -1162,7 +1155,6 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - CC
 - PROJECT_ADDONS_SOURCE_FILES
 - PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS
-- rvm_recommended_ruby
 - addon
 - GCC_MINOR_GTEQ_9
 - PROJECT_ADDONS_LDFLAGS
@@ -1178,7 +1170,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_APPS_PATH
 - LINK.cc
 - PAM_KWALLET5_LOGIN
-- rvm_pretty_print_flag
+- PARSED_ADDONS_LIBS_SOURCE_INCLUDES
 - XDG_SESSION_PATH
 - PARSED_ALL_PLATFORM_LIBS
 - MAKE_HOST
@@ -1193,7 +1185,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - XCURSOR_THEME
 - SESSION_MANAGER
 - OF_LIBS_OF_COMPILED_PATH
-- COMPILE.mod
+- rvm_stored_umask
 - XDG_RUNTIME_DIR
 - FIND
 - CFLAGS
@@ -1368,6 +1360,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - COMPILE.r
 - OBJS_WITH_PREFIX
 - OF_PROJECT_SOURCE_PATHS
+- rvm_user_install_flag
 - ADDON_INCLUDES
 - "+F"
 - M2C
@@ -1387,6 +1380,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - TEXTDOMAINDIR
 - GCC_MINOR_GTEQ_7
 - MAKEFILES
+- OF_PROJECT_DEFINES_CFLAGS
 - OF_PROJECT_DEPENDENCY_FILES
 - ADDON_LDFLAGS
 - TMP_PROJECT_ADDONS_INCLUDES
@@ -1405,6 +1399,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_CORE_INCLUDES_CFLAGS
 - ADDON_CPPFLAGS
 - COMPILE.C
+- COMPILE.mod
 - GNOME_TERMINAL_SCREEN
 - "^F"
 - COMPILE.S
@@ -1424,7 +1419,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - PROJECT_ADDONS_CFLAGS
 - ".INCLUDE_DIRS"
 - PARSED_ADDONS_OFX_SOURCES
-- OF_PROJECT_DEFINES_CFLAGS
+- rvm_loaded_flag
 - ADDON_DATA
 - CORE_PKG_CONFIG_LIBRARIES
 - ".RECIPEPREFIX"
@@ -1582,6 +1577,8 @@ OBJS_WITH_PREFIX:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src/main.o
 OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src"
+rvm_user_install_flag:
+- '1'
 ADDON_INCLUDES:
 - "."
 - "./src"
@@ -1643,6 +1640,7 @@ TEXTDOMAINDIR:
 GCC_MINOR_GTEQ_7:
 - '1'
 MAKEFILES: []
+OF_PROJECT_DEFINES_CFLAGS: []
 OF_PROJECT_DEPENDENCY_FILES:
 - obj/linux64/Debug/src/ofApp.d
 - obj/linux64/Debug/src/main.d
@@ -2032,8 +2030,10 @@ ADDON_CPPFLAGS: []
 COMPILE.C:
 - g++
 - "-c"
+COMPILE.mod:
+- m2c
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/42d9e9fe_19bc_420a_9b38_7426ef0a0cc6"
+- "/org/gnome/Terminal/screen/c30aa512_003f_4ccd_9b7f_37095ff1d7cd"
 "^F": []
 COMPILE.S:
 - cc
@@ -2052,7 +2052,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.330"
+- ":1.81"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2229,7 +2229,8 @@ PROJECT_ADDONS_CFLAGS: []
 PARSED_ADDONS_OFX_SOURCES:
 - "./src/ofApp.cpp"
 - "./src/main.cpp"
-OF_PROJECT_DEFINES_CFLAGS: []
+rvm_loaded_flag:
+- '1'
 ADDON_DATA: []
 CORE_PKG_CONFIG_LIBRARIES:
 - cairo
@@ -2258,7 +2259,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/7"
+- "/dev/pts/2"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:

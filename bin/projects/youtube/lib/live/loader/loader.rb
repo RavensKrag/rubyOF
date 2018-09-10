@@ -48,7 +48,8 @@ class Loader
 		
 		# dynamic_load will change @execution_state
 		dynamic_load @files[:header]
-		dynamic_load @files[:body]		
+		dynamic_load @files[:body]
+		dynamic_load @files[:ui]
 		
 		@history = ExecutionHistory.new
 		
@@ -59,7 +60,7 @@ class Loader
 		init_wrapped_object() # @klass_name => @wrapped_object
 		@history.save @turn, @wrapped_object
 		
-		
+		@ui = UserInterface.new(window)
 		
 		
 		
@@ -184,12 +185,15 @@ class Loader
 					# 	 @wrapped_object.update_counter.current_turn = 1
 					# 	 @wrapped_object.regenerate_update_thread!
 					# end
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			def draw
 				protect_runtime_errors do
 					@wrapped_object.draw @window, @turn
+					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 				
 				
@@ -212,12 +216,16 @@ class Loader
 					end
 					# -- update files as necessary
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			def draw
 				protect_runtime_errors do
 					@wrapped_object.draw @window, @turn
+					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end
@@ -242,13 +250,17 @@ class Loader
 					# need to try and load a new file,
 					# as loading is the only way to escape this state
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			def draw
-				# protect_runtime_errors do
-				# 	@wrapped_object.draw @window, @turn
-				# end
+				protect_runtime_errors do
+					# @wrapped_object.draw @window, @turn
+				
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
+				end
 			end
 		end
 		
@@ -272,6 +284,8 @@ class Loader
 					# need to try and load a new file,
 					# as loading is the only way to escape this state
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
@@ -279,6 +293,8 @@ class Loader
 			def draw
 				protect_runtime_errors do
 					@wrapped_object.draw @window, @turn
+					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end
@@ -325,31 +341,38 @@ class Loader
 					end
 					
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				# render the selected state
-				# (it has been rendered before, so it should render now without errors)
-				unless @history_cache.nil?
-					# render the states
-					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
-					
-					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
-					# currently, framerate is down to ~30fps, because this render operation is expensive.
-					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
-					render_onion_skin(
-						@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
-						@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
-						@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
-					)
-					
-					# @history_cache[@time_travel_i].draw @window
-					
-					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
-					# (or maybe onion-skinning the UI will be cool? idk)\					
+				protect_runtime_errors do
+					# render the selected state
+					# (it has been rendered before, so it should render now without errors)
+					unless @history_cache.nil?
+						# render the states
+						# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+						
+						# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+						# currently, framerate is down to ~30fps, because this render operation is expensive.
+						
+						# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+						render_onion_skin(
+							@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
+							@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
+							@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
+						)
+						
+						# @history_cache[@time_travel_i].draw @window
+						
+						# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+						# (or maybe onion-skinning the UI will be cool? idk)
+					end
+				
+				
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end
@@ -382,33 +405,40 @@ class Loader
 					end
 					
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				# render the selected state
-				# (it has been rendered before, so it should render now without errors)
-				unless @history_cache.nil?
-					# render the states
-					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+				protect_runtime_errors do
+					# render the selected state
+					# (it has been rendered before, so it should render now without errors)
+					unless @history_cache.nil?
+						# render the states
+						# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+						
+						# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+						# currently, framerate is down to ~30fps, because this render operation is expensive.
+						
+						# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+						render_onion_skin(
+							@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
+							@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
+							@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
+						)
+						
+						
+						
+						# @history_cache[@time_travel_i].draw @window
+						
+						# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+						# (or maybe onion-skinning the UI will be cool? idk)\					
+					end
 					
-					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
-					# currently, framerate is down to ~30fps, because this render operation is expensive.
 					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
-					render_onion_skin(
-						@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
-						@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
-						@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
-					)
-					
-					
-					
-					# @history_cache[@time_travel_i].draw @window
-					
-					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
-					# (or maybe onion-skinning the UI will be cool? idk)\					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end
@@ -443,33 +473,40 @@ class Loader
 					end
 					
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				# render the selected state
-				# (it has been rendered before, so it should render now without errors)
-				unless @history_cache.nil?
-					# render the states
-					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+				protect_runtime_errors do
+					# render the selected state
+					# (it has been rendered before, so it should render now without errors)
+					unless @history_cache.nil?
+						# render the states
+						# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+						
+						# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+						# currently, framerate is down to ~30fps, because this render operation is expensive.
+						
+						# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+						render_onion_skin(
+							@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
+							@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
+							@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
+						)
+						
+						
+						
+						# @history_cache[@time_travel_i].draw @window
+						
+						# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+						# (or maybe onion-skinning the UI will be cool? idk)\					
+					end
 					
-					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
-					# currently, framerate is down to ~30fps, because this render operation is expensive.
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
-					render_onion_skin(
-						@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
-						@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
-						@history_cache[(@time_travel_i+1)..-1], ONION_SKIN_STANDARD_COLOR
-					)
-					
-					
-					
-					# @history_cache[@time_travel_i].draw @window
-					
-					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
-					# (or maybe onion-skinning the UI will be cool? idk)\					
 				end
 			end
 		end
@@ -568,33 +605,39 @@ class Loader
 					@forecast_fiber.resume while @forecast_fiber&.alive?
 					
 					dynamic_load @files[:body]
+					
+					@ui.update @window, self, @wrapped_object, turn_number()
 				end
 			end
 			
 			# draw onion-skin visualization
 			def draw
-				# render the selected state
-				# (it has been rendered before, so it should render now without errors)
-				unless @forecast_range.nil?
-					# render the states
-					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+				protect_runtime_errors do
+					# render the selected state
+					# (it has been rendered before, so it should render now without errors)
+					unless @forecast_range.nil?
+						# render the states
+						# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+						
+						# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+						# currently, framerate is down to ~30fps, because this render operation is expensive.
+						
+						# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+						render_onion_skin(
+							@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
+							@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
+							@history_cache[@forecast_range],        ONION_SKIN_FORECAST_COLOR
+						)
+						
+						
+						
+						# @history_cache[@time_travel_i].draw @window
+						
+						# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+						# (or maybe onion-skinning the UI will be cool? idk)\					
+					end
 					
-					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
-					# currently, framerate is down to ~30fps, because this render operation is expensive.
-					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
-					render_onion_skin(
-						@history_cache[1..(@time_travel_i-1)],  ONION_SKIN_STANDARD_COLOR,
-						@history_cache[@time_travel_i],         ONION_SKIN_NOW_COLOR,
-						@history_cache[@forecast_range],        ONION_SKIN_FORECAST_COLOR
-					)
-					
-					
-					
-					# @history_cache[@time_travel_i].draw @window
-					
-					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
-					# (or maybe onion-skinning the UI will be cool? idk)\					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end
@@ -620,33 +663,39 @@ class Loader
 					# need to try and load a new file,
 					# as loading is the only way to escape this state
 					dynamic_load @files[:body]
+					
+					@ui.update self, @wrapped_object, @window, turn_number()
 				end
 			end
 			
 			# draw onion-skin visualization
 			# (code copied from :true_timeline)
 			def draw
-				# render the selected state
-				# (it has been rendered before, so it should render now without errors)
-				unless @history_cache.nil?
-					# render the states
-					# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+				protect_runtime_errors do
+					# render the selected state
+					# (it has been rendered before, so it should render now without errors)
+					unless @history_cache.nil?
+						# render the states
+						# puts "history: #{@history_cache.size} - #{@history_cache.collect{|x| !x.nil?}.inspect}"
+						
+						# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
+						# currently, framerate is down to ~30fps, because this render operation is expensive.
+						
+						# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
+						render_onion_skin(
+							@history_cache[1..(@time_travel_i-1)], ONION_SKIN_STANDARD_COLOR,
+							@history_cache[@time_travel_i],        ONION_SKIN_NOW_COLOR,
+							@history_cache[@forecast_range],       ONION_SKIN_ERROR_COLOR
+						)
+						
+						
+						# @history_cache[@time_travel_i].draw @window
+						
+						# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
+						# (or maybe onion-skinning the UI will be cool? idk)\					
+					end
 					
-					# TODO: render to FBO once and then render that same state to the screen over and over again as long as @time_travel_i is unchanged
-					# currently, framerate is down to ~30fps, because this render operation is expensive.
-					
-					# State 0 is not renderable, because that is before the first update runs. Without the first update, the first draw will fail. Just skip state 0. Later, when we attempt to compress history by diffs, state 0 may come in handy.
-					render_onion_skin(
-						@history_cache[1..(@time_travel_i-1)], ONION_SKIN_STANDARD_COLOR,
-						@history_cache[@time_travel_i],        ONION_SKIN_NOW_COLOR,
-						@history_cache[@forecast_range],       ONION_SKIN_ERROR_COLOR
-					)
-					
-					
-					# @history_cache[@time_travel_i].draw @window
-					
-					# ^ currently the saved state is rendering some UI which shows what the current TurnCounter values are. This is going to have weird interactions with onion skinning. Should consider separating UI drawing from main entity drawing.
-					# (or maybe onion-skinning the UI will be cool? idk)\					
+					@ui.draw @window, @wrapped_object, @history_cache, @turn
 				end
 			end
 		end

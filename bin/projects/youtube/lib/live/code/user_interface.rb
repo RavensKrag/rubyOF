@@ -1,13 +1,142 @@
 class UserInterface
 	InputData = Struct.new(:timestamp, :turn_number, :method_message, :args)
 	
-	def initialize
+	def initialize(window)
 		@input_queue = Array.new
 		@last_input = 0
+		
+		
+		@world_space  = Space.new
+		@screen_space = Space.new
+		
+		
+		# TODO: make sure that the dsl_load interface always goes through the resource manager. more importantly: I created the same font here and in Body. Need to make sure it is only loaded once.
+		
+		@font = 
+			RubyOF::TrueTypeFont.dsl_load do |x|
+				# TakaoPGothic
+				# ^ not installed on Ubunut any more, idk why
+				# try the package "fonts-takao" or "ttf-takao" as mentioned here:
+				# https://launchpad.net/takao-fonts
+				x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
+				x.size = 20
+				x.add_alphabet :Latin
+				x.add_alphabet :Japanese
+			end
+		
+		@monospace_font = 
+			RubyOF::TrueTypeFont.dsl_load do |x|
+				x.path = "DejaVu Sans Mono"
+				x.size = 20
+				x.add_alphabet :Latin
+			end
+		
+		
+		
+		
+		
+		
+		update_text = "turn: "
+		@turn_label =
+			Text.new(@font, update_text).tap do |text|
+				text.text_color = window.font_color
+				
+				text.body.p = CP::Vec2.new(43,1034)
+			end
+		
+		@turn_number =
+			Text.new(@monospace_font, "").tap do |text|
+				text.text_color = window.font_color
+				
+				text.body.p = CP::Vec2.new(161,1034)
+			end
+		
+		
+		
+		draw_text = "state: ???"
+		@state_label =
+			Text.new(@font, draw_text).tap do |text|
+				text.text_color = window.font_color
+				
+				text.body.p = CP::Vec2.new(43,1113)
+			end
+		
+		
+		
+		
+		@state_display = Text.new(@monospace_font, "").tap do |text|
+				text.text_color = window.font_color
+				
+				# text.body.p = CP::Vec2.new(285,337)
+				text.body.p = CP::Vec2.new(383,937)
+				# text.body.p = CP::Vec2.new(285,1137)
+			end
+		
+		
+		
+		
+		
+		
+		# UI can contain both world-space and screen-space elements
+		
+		
+		# TODO: UI needs some way to draw entities to the screen. I need to be able to do spatial queries on these, for click events etc. However, they should not be tied to any one world state (the @wrapped_object, Body)
+		
+		# TODO: rename the live coding payload class, Body. Name is too similar to CP::Body, and it gets really confusing to think of the core code, and collision bodies in the same thought process.
+		
+		# TODO: pass camera to #update and #draw
+			# update - so user can move the camera
+			# draw   - so UI elements can be drawn world-relative
+		# or maybe move actual draw logic into Camera class, to reduce code duplication? but then I need to figure out how the UI spaces and the Body spaces will both be passed into the Camera. 
+		
+		
+		@screen_space.add @turn_label
+		@screen_space.add @turn_number
+		
+		@screen_space.add @state_label
+		
+		@screen_space.add @state_display
+		
+		
+		
 	end
 	
-	def update(window, live, main)
+	def update(window, live, main, turn_number)
+		
+		# -- input handling
 		parse_inputs(window, live, main, @input_queue)
+		
+		
+		
+		# -- manage visualization state
+		puts "turn_number in current state: #{turn_number}"
+		
+		# @update_counter_label.print "update:"
+		update_turn = turn_number.to_s.rjust(5, ' ')
+		@turn_number.print update_turn
+		
+		
+		# # state_text = "test"
+		# state_text = 
+		# 	window.live.instance_variable_get("@history")
+		# 	.inspect
+		# 	.each_char.each_slice(60)
+		# 	.collect{|chunk| chunk.join("")}.join("\n")
+		# 	# .inspect
+		
+		# state_text = "hello"
+		
+		# state_text = @fibers[:update].alive? ? "alive" : "dead"
+		
+		state_text = "state: #{window.live.state}"
+		
+		@state_label.print state_text
+		
+		
+		
+		
+		@state_display.print "hello"
+		# @state_display.print @fibers[:update].alive? ? "alive" : "dead"
 	end
 	
 	# Allow rendering of one state, or many
@@ -19,8 +148,86 @@ class UserInterface
 	#             (live instances, not serialized data)
 	# 
 	# current_i : index into states, that indicates the current state
-	def draw(window, state, history, current_i)
+	def draw(window, state, history, turn_number)
+		# === Draw world relative
+		window.camera.draw window.width, window.height do |bb|
+			render_queue = Array.new
+			
+			@world_space.bb_query(bb) do |entity|
+				render_queue << entity
+			end
+			
+			# p @world_space
+			# puts "render queue: #{render_queue.inspect}"
+			
+			# render_queue << @text
+			
+			# puts "render queue: #{render_queue.size}"
+			
+			
+			# TODO: only sort the render queue when a new item is added, shaders are changed, textures are changed, or z index is changed, not every frame.
+			
+			# Render queue should sort by shader, then texture, then z depth [2]
+			# (I may want to sort by z first, just because that feels more natural? Sorting by z last may occasionally cause errors. If you sort by z first, the user is always in control.)
+			# 
+			# [1]  https://www.gamedev.net/forums/topic/643277-game-engine-batch-rendering-advice/
+			# [2]  http://lspiroengine.com/?p=96
+			
+			render_queue
+			.group_by{ |e| e.texture }
+			.each do |texture, same_texture|
+				# next if texture.nil?
+				
+				texture.bind unless texture.nil?
+				
+				same_texture.each do |entity|
+					entity.draw
+				end
+				
+				texture.unbind unless texture.nil?
+			end
+			
+			# TODO: set up transform hiearchy, with parents and children, in order to reduce the amount of work needed to compute positions / other transforms
+				# (not really useful right now because everything is just translations, but perhaps useful later when rotations start kicking in.)
+			
+			
+			
+			# ASSUME: @font has not changed since data was created
+				#  ^ if this assumption is broken, Text rendering may behave unpredictably
+				#  ^ if you don't bind the texture, just get white squares
+				
+				
+					# # @font.draw_string("From ruby: こんにちは", x, y)
+					# @font.draw_string(data['channel-name'], x, y)
+					# ofPopStyle()
+					
+					# # NOTE: to move string on z axis just use the normal ofTransform()
+					# # src: https://forum.openframeworks.cc/t/is-there-any-means-to-draw-multibyte-string-in-3d/13838/4
+			
+		end
+		# =======
 		
+		
+		
+		
+		# === Draw screen relative
+		# Render a bunch of different tasks
+		# puts "screen space: #{@screen_space.entities.to_a.size}"
+		
+		@screen_space.entities.each
+		.group_by{ |e| e.texture }
+		.each do |texture, same_texture|
+			# next if texture.nil?
+			
+			texture.bind unless texture.nil?
+			
+			same_texture.each do |entity|
+				# puts "drawing entity"
+				entity.draw
+			end
+			
+			texture.unbind unless texture.nil?
+		end
 	end
 	# TODO: change structure so this class has a state machine too, and both the state machine here and the one in Loader are kept in sync by some code in Loader
 	

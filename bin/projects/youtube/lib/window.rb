@@ -45,6 +45,7 @@ class Window < RubyOF::Window
 	include HelperFunctions
 	
 	attr_reader :live, :data_dir, :camera
+	attr_reader :font_color
 	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize

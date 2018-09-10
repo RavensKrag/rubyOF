@@ -106,61 +106,6 @@ class Body
 				
 				
 				@i += 1
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				update_text = "turn: "
-				@turn_label =
-					Text.new(@font, update_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1034)
-					end
-				
-				number = turn_number.to_s.rjust(5, ' ')
-				@turn_number =
-					Text.new(@monospace_font, number).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(161,1034)
-					end
-				
-				
-				
-				draw_text = "state: #{window.live.state}"
-				@state_label =
-					Text.new(@font, draw_text).tap do |text|
-						text.text_color = @font_color
-						
-						text.body.p = CP::Vec2.new(43,1113)
-					end
-				
-				
-				
-				
-				@state_display = Text.new(@monospace_font, "").tap do |text|
-						text.text_color = @font_color
-						
-						# text.body.p = CP::Vec2.new(285,337)
-						text.body.p = CP::Vec2.new(383,937)
-						# text.body.p = CP::Vec2.new(285,1137)
-					end
-				
-				
-				
-				
-				@screen_space.add @turn_label
-				@screen_space.add @turn_number
-				
-				@screen_space.add @state_label
-				
-				@screen_space.add @state_display
 			end
 			
 			
@@ -313,42 +258,7 @@ class Body
 		return out
 	end
 	
-	# UI can contain both world-space and screen-space elements
-	def update_ui(window, turn_number)
-		puts "turn_number in current state: #{turn_number}"
-		
-		# @update_counter_label.print "update:"
-		update_turn = turn_number.to_s.rjust(5, ' ')
-		@turn_number.print update_turn
-		
-		
-		# # state_text = "test"
-		# state_text = 
-		# 	window.live.instance_variable_get("@history")
-		# 	.inspect
-		# 	.each_char.each_slice(60)
-		# 	.collect{|chunk| chunk.join("")}.join("\n")
-		# 	# .inspect
-		
-		# state_text = "hello"
-		
-		# state_text = @fibers[:update].alive? ? "alive" : "dead"
-		
-		state_text = "state: #{window.live.state}"
-		
-		@state_label.print state_text
-		
-		
-		
-		
-		@state_display.print "hello"
-		# @state_display.print @fibers[:update].alive? ? "alive" : "dead"
-	end
-	
 	def draw(window, turn_number)
-		self.update_ui(window, turn_number)
-		
-		
 		# puts "  drawing..."
 		
 		# === Draw world relative
