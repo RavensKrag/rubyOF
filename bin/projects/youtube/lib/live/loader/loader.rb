@@ -143,18 +143,18 @@ class Loader
 			
 			# reload code as needed
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
-				end
-				# puts "loader: update"
-				
-				
-				# -- update files as necessary
-				dynamic_load @files[:body]				
-				
-				# -- delegate update command
 				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# puts "loader: update"
+					
+					
+					# -- update files as necessary
+					dynamic_load @files[:body]
+					
+								
 					puts "current turn: #{@turn}"
 					@time_travel_i = @turn
 					
@@ -205,12 +205,14 @@ class Loader
 			end
 			
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# -- update files as necessary
+					dynamic_load @files[:body]
 				end
-				# -- update files as necessary
-				dynamic_load @files[:body]
 			end
 			
 			def draw
@@ -229,16 +231,18 @@ class Loader
 			
 			# can't go forward until errors are fixed
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					@window.show_text(CP::Vec2.new(352,100), "ERROR: See terminal for details. Step back to start time traveling.")
+					
+					# -- update files as necessary
+					# need to try and load a new file,
+					# as loading is the only way to escape this state
+					dynamic_load @files[:body]
 				end
-				@window.show_text(CP::Vec2.new(352,100), "ERROR: See terminal for details. Step back to start time traveling.")
-				
-				# -- update files as necessary
-				# need to try and load a new file,
-				# as loading is the only way to escape this state
-				dynamic_load @files[:body]
 			end
 			
 			def draw
@@ -257,16 +261,18 @@ class Loader
 			end
 			
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# @window.show_text(CP::Vec2.new(352,100), "Program completed!")
+					
+					# -- update files as necessary
+					# need to try and load a new file,
+					# as loading is the only way to escape this state
+					dynamic_load @files[:body]
 				end
-				# @window.show_text(CP::Vec2.new(352,100), "Program completed!")
-				
-				# -- update files as necessary
-				# need to try and load a new file,
-				# as loading is the only way to escape this state
-				dynamic_load @files[:body]
 			end
 			
 			# normal drawing
@@ -298,26 +304,28 @@ class Loader
 			end
 			
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
-				end
-				# puts "============== good timeline ================"
-				
-				# populate state cache using serialized data
-				if @history_cache.nil?
-					@history_cache = Array.new
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# puts "============== good timeline ================"
 					
-					@history.size.times do |i|
-						state = @history[i]
-						# p state
-						@history_cache[i] = state
+					# populate state cache using serialized data
+					if @history_cache.nil?
+						@history_cache = Array.new
+						
+						@history.size.times do |i|
+							state = @history[i]
+							# p state
+							@history_cache[i] = state
+						end
+						
+						# p @history_cache
 					end
 					
-					# p @history_cache
+					dynamic_load @files[:body]
 				end
-				
-				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -353,26 +361,28 @@ class Loader
 			end
 			
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
-				end
-				# puts "============== true timeline ================"
-				
-				# populate state cache using serialized data
-				if @history_cache.nil?
-					@history_cache = Array.new
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# puts "============== true timeline ================"
 					
-					@history.size.times do |i|
-						state = @history[i]
-						# p state
-						@history_cache[i] = state
+					# populate state cache using serialized data
+					if @history_cache.nil?
+						@history_cache = Array.new
+						
+						@history.size.times do |i|
+							state = @history[i]
+							# p state
+							@history_cache[i] = state
+						end
+						
+						# p @history_cache
 					end
 					
-					# p @history_cache
+					dynamic_load @files[:body]
 				end
-				
-				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -412,26 +422,28 @@ class Loader
 			end
 			
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
-				end
-				# puts "============== true timeline ================"
-				
-				# populate state cache using serialized data
-				if @history_cache.nil?
-					@history_cache = Array.new
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# puts "============== true timeline ================"
 					
-					@history.size.times do |i|
-						state = @history[i]
-						# p state
-						@history_cache[i] = state
+					# populate state cache using serialized data
+					if @history_cache.nil?
+						@history_cache = Array.new
+						
+						@history.size.times do |i|
+							state = @history[i]
+							# p state
+							@history_cache[i] = state
+						end
+						
+						# p @history_cache
 					end
 					
-					# p @history_cache
+					dynamic_load @files[:body]
 				end
-				
-				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -478,15 +490,15 @@ class Loader
 			# update everything all at once
 			# (maybe do that on the transition to this state?)
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
-				end
-				@forecast_fiber ||= Fiber.new do
-					puts "forecasting..."
-					
-					# update the state
-					protect_runtime_errors do
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					@forecast_fiber ||= Fiber.new do
+						puts "forecasting..."
+						
+						# update the state
 						# TODO: figure out if I can remove the nil check by enforcing some paths in the state system. can I be sure that by this point, @wrapped_object will be non-nil?
 						@forcasted_the_end = false
 						@forecasting_lock = true
@@ -546,18 +558,17 @@ class Loader
 							
 							@forecasting_lock = false
 						end
+						
+						# When time traveling ends in the true timeline, execution temporarily returns to the :running state, executes a NO-OP and then proceeds to the "true ending."
+						# May not have to have separate forecast_found_good_timeline() and forecast_found_true_timeline() functions. It may be sufficient to return to the paused / running state.
+						
+						# alternatively: may be able to use the same timeline called state, and then branch based on a callback defined elsewhere?
+						# nah, that sounds bad.
 					end
+					@forecast_fiber.resume while @forecast_fiber&.alive?
 					
-					# When time traveling ends in the true timeline, execution temporarily returns to the :running state, executes a NO-OP and then proceeds to the "true ending."
-					# May not have to have separate forecast_found_good_timeline() and forecast_found_true_timeline() functions. It may be sufficient to return to the paused / running state.
-					
-					# alternatively: may be able to use the same timeline called state, and then branch based on a callback defined elsewhere?
-					# nah, that sounds bad.
+					dynamic_load @files[:body]
 				end
-				
-				@forecast_fiber.resume while @forecast_fiber&.alive?
-				
-				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
@@ -600,14 +611,16 @@ class Loader
 			
 			# (code adapted from :error)
 			def update
-				if @clear_history
-					@history_cache = nil 
-					GC.start
+				protect_runtime_errors do
+					if @clear_history
+						@history_cache = nil 
+						GC.start
+					end
+					# -- update files as necessary
+					# need to try and load a new file,
+					# as loading is the only way to escape this state
+					dynamic_load @files[:body]
 				end
-				# -- update files as necessary
-				# need to try and load a new file,
-				# as loading is the only way to escape this state
-				dynamic_load @files[:body]
 			end
 			
 			# draw onion-skin visualization
