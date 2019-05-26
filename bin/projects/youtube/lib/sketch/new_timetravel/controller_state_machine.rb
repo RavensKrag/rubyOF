@@ -152,8 +152,8 @@ class Controller
   
   # ==== for debugging ====
   
-  def print_state
-    p [@i, @live_code.inner.value]
+  def to_s
+    "controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}"
   end
   
   # =======================
@@ -185,12 +185,15 @@ class Controller
   # step back through history that has already been written
   def on_step_back
     @i -= 1
+    
+    @live_code.step_back
   end
   
   # step forward through history that has already been written
   def on_step_forward
     @i += 1
     
+    @live_code.step_forward
   end
   
   # step forward and generate new state
