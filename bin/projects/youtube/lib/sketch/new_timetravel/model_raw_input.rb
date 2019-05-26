@@ -3,5 +3,9 @@ module Model
     def initialize
       
     end
+    
+    def update
+      
+    end
   end
 end

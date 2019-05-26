@@ -3,8 +3,13 @@ require 'state_machine'
 class Controller
   attr_reader :i
   
-  def initialize()
+  def initialize(main_code, space, user_input)
     super()
+    
+    @live_code  = main_code     # code env with live reloading
+    @core_space = space         # space containing main entities
+    @user_input = user_input    # raw user input data (drives sequences)
+    
     
     @i = 0
   end
@@ -145,6 +150,15 @@ class Controller
   
   
   
+  # ==== for debugging ====
+  
+  def print_state
+    p [@i, @live_code.inner.value]
+  end
+  
+  # =======================
+  
+  
   private
   
   
@@ -171,7 +185,6 @@ class Controller
   # step back through history that has already been written
   def on_step_back
     @i -= 1
-    
   end
   
   # step forward through history that has already been written
@@ -185,6 +198,8 @@ class Controller
     @i += 1
     
     # TODO: generate new state
+    @live_code.update
+    puts "live code data: #{@live_code.inner.value.inspect}"
   end
   
   def on_run
@@ -217,13 +232,3 @@ class Controller
     # wait no -- it's only opening steins gate when you cause a bifurcation in the system and enter a new attractor field. the only known mechanism for doing that is to decieve yourself and the world, changing events while maintaining the apperance of un-change. (krisu appears dead, but she is actually alive)
 end
 
-
-
-x = Controller.new
-
-puts "initial states:"
-print "=> "
-p [x.execution_state, x.i]
-
-require 'irb'
-binding.irb
