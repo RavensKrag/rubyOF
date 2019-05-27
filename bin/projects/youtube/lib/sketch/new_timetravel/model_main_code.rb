@@ -1,15 +1,21 @@
 module Model
   class MainCode
-    attr_reader :value
-    
-    def initialize
-      @value = 1000
+    def initialize(core_space, user_input)
+      @space_history = core_space
+      @input_history = user_input
     end
     
     def update
-      @value = @value + 10
+      @space_history.inner.tap do |space|
+        space.value = space.value + 10
+      end
+      
       
       return true # return true if update was successful
+    end
+    
+    def value
+      @space_history.inner.value
     end
   end
 end

@@ -51,6 +51,15 @@ class History
     
   end
   
+  def each_data
+    
+  end
+  
+  def length
+    return @data.length
+  end
+  alias :size :length
+  
   
   private
   

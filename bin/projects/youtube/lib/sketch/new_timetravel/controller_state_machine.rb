@@ -153,7 +153,20 @@ class Controller
   # ==== for debugging ====
   
   def to_s
-    "state: #{self.execution_state}; controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}; cache size: #{@live_code.instance_variable_get(:@data).length}"
+    msg = [
+      "state: #{self.execution_state}",
+      "controller i: #{@i}",
+      "model i: #{[@live_code.i,
+                   @core_space.i,
+                   @user_input.i]}",
+      "cache size: #{[@live_code.length,
+                      @core_space.length,
+                      @user_input.length]}",
+      "@core_space: #{@core_space.inner.instance_variable_get(:@value).inspect}"
+    ].join("; ")
+    
+    return msg
+    "state: #{self.execution_state}; controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}; cache size: #{}"
   end
   
   # =======================

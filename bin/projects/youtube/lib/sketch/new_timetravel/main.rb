@@ -27,16 +27,18 @@ class Main
     # (must be global - can't store in LiveCode due to History serialization)
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
+    
+    # space containing main entities
+    @core_space = History.new(Model::CoreSpace.new)
+    
+    # raw user input data (drives sequences)
+    @user_input = History.new(Model::RawInput.new)
+    
     # code env with live reloading
     @main_code =  History.new(
                     LiveCode.new(
-                      Model::MainCode.new, './model_main_code.rb'))
-    
-    # space containing main entities
-    @core_space = History.new(Model::RawInput.new)
-    
-    # raw user input data (drives sequences)
-    @user_input = History.new(Model::CoreSpace.new)
+                      Model::MainCode.new(@core_space, @user_input),
+                      './model_main_code.rb'))
     
     
     
