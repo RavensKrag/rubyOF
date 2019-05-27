@@ -1,8 +1,12 @@
 require 'yaml'
 require 'pathname'
 
+
 require './history'
+
+require './nonblocking_error_output'
 require './live_code_loader'
+
 
 require './model_main_code'
 require './model_raw_input'
@@ -15,26 +19,14 @@ class Main
   def initialize
     # wrap all models in History objects, to preserve history
     
-    # FIXME: History has problems with loading LiveCode because it contains an Proc (error handling callbacks)
+    # Initial output stream for LiveCode
+    # (must be global - can't store in LiveCode due to History serialization)
+    $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
     # code env with live reloading
     @main_code =  History.new(
                     LiveCode.new(
-                      Model::MainCode.new, './model_main_code',
-                      on_load_attempt: ->(file){
-                        puts "live loading #{file}"
-                      },
-                      on_load:  ->(file){
-                        puts "file loaded"
-                      },
-                      on_error: ->(file, e){
-                        puts "FAILURE TO LOAD: #{file}"
-                        
-                        # Should print the error to some sort of log.
-                        # Specific handling may need to use another thread.
-                      }
-                    ))
-    
+                      Model::MainCode.new, './model_main_code.rb'))
     
     # space containing main entities
     @core_space = History.new(Model::RawInput.new)

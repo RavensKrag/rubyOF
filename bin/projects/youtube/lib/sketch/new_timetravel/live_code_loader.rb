@@ -4,14 +4,9 @@
 class LiveCode
   # inner                : object to be wrapped
   # inner_class_filepath : file that defines inner.class 
-  def initialize(inner, inner_class_filepath, on_load_attempt:, on_load:, on_error:)
+  def initialize(inner, inner_class_filepath)
     @inner = inner
-    @filepath = Pathname.new inner_class_filepath # handle Pathname and String
-    
-    @on_load_attempt_callback = 
-    @on_load_callback = on_load
-    @on_error_callback = on_error
-    
+    @file = Pathname.new inner_class_filepath # handle Pathname and String
     @last_time = nil # set to nil so file is always reloaded the first time
   end
   
@@ -20,7 +15,40 @@ class LiveCode
   end
   
   def update
-    reload_file if file_changed?
+    # Try to load the file once, and then update the timestamp
+    # (prevents busted files every tick, which would flood the logs)
+    if file_changed?
+      # update the timestamp
+      @last_time = Time.now
+      
+      begin
+        # reload the file
+        
+        puts "live loading #{@file}"
+        load @file.to_s
+      rescue SyntaxError, ScriptError, NameError => e
+        # This block triggers if there is some sort of
+        # syntax error or similar - something that is
+        # caught on load, rather than on run.
+        
+        # ----
+        
+        # NameError is a specific subclass of StandardError
+        # other forms of StandardError should not happen on load.
+        # 
+        # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
+        
+        # @on_error_callback.call(file, e)
+        
+        puts "FAILURE TO LOAD: #{@file}"
+        $nonblocking_error.puts(e)
+      else
+        # run if no exceptions
+        puts "file loaded"
+      ensure
+        # run whether or not there was an exception
+      end
+    end
     
     @inner.update
   end
@@ -45,34 +73,4 @@ class LiveCode
     @last_time.nil? or @file.mtime > @last_time
   end
   
-  # Try to load the file once, and then update the timestamp
-  # (prevents busted files every tick, which would flood the logs)
-  def reload_file
-    # update the timestamp
-    @last_time = Time.now
-    
-    begin
-      # reload the file
-      @on_load_attempt_callback.call(@filepath)
-      load @filepath.to_s
-    rescue SyntaxError, ScriptError, NameError => e
-      # This block triggers if there is some sort of
-      # syntax error or similar - something that is
-      # caught on load, rather than on run.
-      
-      # ----
-      
-      # NameError is a specific subclass of StandardError
-      # other forms of StandardError should not happen on load.
-      # 
-      # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
-      
-      @on_error_callback.call(file, e)
-    else
-      # run if no exceptions
-      @on_load_callback.call(@filepath)
-    ensure
-      # run whether or not there was an exception
-    end
-  end
 end
