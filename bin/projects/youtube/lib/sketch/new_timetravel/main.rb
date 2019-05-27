@@ -1,6 +1,8 @@
 require 'yaml'
+require 'pathname'
 
 require './history'
+require './live_code_loader'
 
 require './model_main_code'
 require './model_raw_input'
@@ -8,17 +10,37 @@ require './model_core_space'
 
 require './controller_state_machine'
 
+
 class Main
   def initialize
-    # @live_code  = []                 # code env with live reloading
-    main_code  = Model::MainCode.new  # code env with live reloading
-    core_space = Model::RawInput.new  # space containing main entities
-    user_input = Model::CoreSpace.new # raw user input data (drives sequences)
-    
     # wrap all models in History objects, to preserve history
-    @main_code  = History.new(main_code)
-    @core_space = History.new(core_space)
-    @user_input = History.new(user_input)
+    
+    # FIXME: History has problems with loading LiveCode because it contains an Proc (error handling callbacks)
+    
+    # code env with live reloading
+    @main_code =  History.new(
+                    LiveCode.new(
+                      Model::MainCode.new, './model_main_code',
+                      on_load_attempt: ->(file){
+                        puts "live loading #{file}"
+                      },
+                      on_load:  ->(file){
+                        puts "file loaded"
+                      },
+                      on_error: ->(file, e){
+                        puts "FAILURE TO LOAD: #{file}"
+                        
+                        # Should print the error to some sort of log.
+                        # Specific handling may need to use another thread.
+                      }
+                    ))
+    
+    
+    # space containing main entities
+    @core_space = History.new(Model::RawInput.new)
+    
+    # raw user input data (drives sequences)
+    @user_input = History.new(Model::CoreSpace.new)
     
     
     
