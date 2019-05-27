@@ -1,3 +1,5 @@
+require 'yaml'
+
 require './history'
 
 require './model_main_code'
