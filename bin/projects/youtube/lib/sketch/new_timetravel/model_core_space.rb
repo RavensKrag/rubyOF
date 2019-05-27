@@ -7,7 +7,7 @@ module Model
     end
     
     def update
-      
+      return true
     end
   end
 end

@@ -199,6 +199,7 @@ class Controller
     @i -= 1
     
     @live_code.step_back
+    @core_space.step_back
   end
   
   # step forward through history that has already been written
@@ -206,13 +207,20 @@ class Controller
     @i += 1
     
     @live_code.step_forward
+    @core_space.step_forward
   end
   
   # step forward and generate new state
   def on_update
     # generate new state
+    # TODO: if you have more than one dynamic code object, make sure all dynamic code is properly loaded before advancing the state.
+    # TODO: it might be possible for certain pieces of dynamic code to fail, and not others, causing synchronization issues. watch out for that.
     update_successful = @live_code.update(@core_space, @user_input)
     if update_successful
+      # maybe not all models have autonomous updates,
+      # but #update also causes state to be saved in History
+      @core_space.update
+      
       @i += 1
       # puts "live code data: #{@live_code.inner.inspect}"
     else

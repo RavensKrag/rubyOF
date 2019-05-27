@@ -22,6 +22,7 @@ class History
       @i += 1
       return true
     else
+      puts "update failed for #{@inner.class}"
       return false
     end
   end
