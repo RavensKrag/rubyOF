@@ -7,7 +7,9 @@ class LiveCode
   def initialize(inner, inner_class_filepath)
     @inner = inner
     @file = Pathname.new inner_class_filepath # handle Pathname and String
+    
     @last_time = nil # set to nil so file is always reloaded the first time
+    @state = :normal # [:normal, :error]
   end
   
   def method_missing(method, *args)
@@ -17,40 +19,58 @@ class LiveCode
   def update
     # Try to load the file once, and then update the timestamp
     # (prevents busted files every tick, which would flood the logs)
-    if file_changed?
-      # update the timestamp
-      @last_time = Time.now
-      
-      begin
-        # reload the file
+    
+    begin
+      if file_changed?
+        # update the timestamp
+        @last_time = Time.now
         
+        # reload the file
         puts "live loading #{@file}"
         load @file.to_s
-      rescue SyntaxError, ScriptError, NameError => e
-        # This block triggers if there is some sort of
-        # syntax error or similar - something that is
-        # caught on load, rather than on run.
         
-        # ----
-        
-        # NameError is a specific subclass of StandardError
-        # other forms of StandardError should not happen on load.
-        # 
-        # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
-        
-        # @on_error_callback.call(file, e)
-        
-        puts "FAILURE TO LOAD: #{@file}"
-        $nonblocking_error.puts(e)
-      else
-        # run if no exceptions
         puts "file loaded"
-      ensure
-        # run whether or not there was an exception
+        @state = :normal
       end
+    rescue SyntaxError, ScriptError, NameError => e
+      # This block triggers if there is some sort of
+      # syntax error or similar - something that is
+      # caught on load, rather than on run.
+      
+      # ----
+      
+      # NameError is a specific subclass of StandardError
+      # other forms of StandardError should not happen on load.
+      # 
+      # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
+      
+      # @on_error_callback.call(file, e)
+      
+      puts "FAILURE TO LOAD: #{@file}"
+      $nonblocking_error.puts(e)
+      
+      @state = :error
+      return false
+    else
+      # run if no exceptions
+      case @state
+        when :normal
+          update_successful = @inner.update
+          return update_successful
+        when :error
+          return false
+        else
+          msg = [
+            "ERROR: unknown state encountered in live loader: #{@state}",
+            "Expecting either :normal or :error."
+          ].join("\n")
+          raise msg
+      end
+    ensure
+      # run whether or not there was an exception
     end
     
-    @inner.update
+    
   end
   
   def inner_class

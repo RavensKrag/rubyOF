@@ -19,6 +19,10 @@ class Main
   def initialize
     # wrap all models in History objects, to preserve history
     
+    
+    # TODO: After going back in time (to the past) and making a change, state between the past and the present will be invalidated. Need a way to overwrite this state in the alternate timeline. Currently, the old state will persist. Thus, reloading is only useful for effecting future state, which is... dramatically less useful.
+    
+    
     # Initial output stream for LiveCode
     # (must be global - can't store in LiveCode due to History serialization)
     $nonblocking_error = NonblockingErrorOutput.new($stdout)

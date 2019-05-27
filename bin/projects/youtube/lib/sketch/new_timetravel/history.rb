@@ -16,11 +16,14 @@ class History
   
   # update the inner item
   def update
-    @inner.update
-    
-    save()
-    
-    @i += 1
+    update_successful = @inner.update
+    if update_successful
+      save()
+      @i += 1
+      return true
+    else
+      return false
+    end
   end
   
   def step_forward

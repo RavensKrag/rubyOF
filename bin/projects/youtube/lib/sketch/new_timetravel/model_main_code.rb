@@ -8,6 +8,8 @@ module Model
     
     def update
       @value = @value + 10
+      
+      return true # return true if update was successful
     end
   end
 end

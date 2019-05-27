@@ -198,11 +198,15 @@ class Controller
   
   # step forward and generate new state
   def on_update
-    @i += 1
+    # generate new state
+    update_successful = @live_code.update
+    if update_successful
+      @i += 1
+      puts "live code data: #{@live_code.inner.value.inspect}"
+    else
+      puts "update failed at step @i=#{@i}"
+    end
     
-    # TODO: generate new state
-    @live_code.update
-    puts "live code data: #{@live_code.inner.value.inspect}"
   end
   
   def on_run
