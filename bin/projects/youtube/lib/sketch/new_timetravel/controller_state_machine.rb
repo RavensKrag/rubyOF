@@ -153,7 +153,7 @@ class Controller
   # ==== for debugging ====
   
   def to_s
-    "state: #{self.execution_state}; controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}"
+    "state: #{self.execution_state}; controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}; cache size: #{@live_code.instance_variable_get(:@data).length}"
   end
   
   # =======================

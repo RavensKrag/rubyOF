@@ -8,6 +8,8 @@ class History
     
     @data  = [] # serialized data (holds all data)
     @cache = [] # live objects (often only a subset of @data)
+    
+    save() # save initial state as @i == 0
   end
   
   
@@ -16,25 +18,17 @@ class History
   def update
     @inner.update
     
-    # NOTE: model_main_code currently has a Fiber inside of it, and that Fiber can not be serialized properly
-    @data  << @inner.to_yaml
-    @cache << YAML.load(@data.last)
+    save()
     
     @i += 1
   end
   
-  # FIXME: problem with last step forward:
-    # see next two temp files and the terminal
-  # possible off-by-one on forward stepping iterations
   def step_forward
-    if @i < @data.length-1
+    if @i < @data.length
       # stepping forward through history
       @i += 1
       
       @inner = @cache[@i]
-    elsif @i == @data.length-1
-      # returning to present
-      @inner = @present
     end
     
   end
@@ -43,8 +37,7 @@ class History
     if @i > 0
       @i -= 1
       
-      # TODO: get rid of the Fiber problem and remove this line
-      @present = @inner # need to save the Fiber, which can't be serialized
+      @present = @inner
       
       @inner = @cache[@i]
     end
@@ -53,5 +46,14 @@ class History
   
   def each_in_cache
     
+  end
+  
+  
+  private
+  
+  
+  def save
+    @data  << @inner.to_yaml
+    @cache << YAML.load(@data.last)
   end
 end

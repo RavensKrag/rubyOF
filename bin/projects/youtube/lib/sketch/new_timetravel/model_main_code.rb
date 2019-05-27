@@ -3,20 +3,11 @@ module Model
     attr_reader :value
     
     def initialize
-      
+      @value = 1000
     end
     
     def update
-      @fiber ||= Fiber.new do
-        
-        ('a'..'z').each do |letter|
-          @value = letter
-          Fiber.yield
-        end
-        
-      end
-      
-      @fiber.resume
+      @value = @value + 10
     end
   end
 end
