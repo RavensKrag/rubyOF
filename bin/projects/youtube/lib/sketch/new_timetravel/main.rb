@@ -36,9 +36,8 @@ class Main
     
     # code env with live reloading
     @main_code =  History.new(
-                    LiveCode.new(
-                      Model::MainCode.new(@core_space, @user_input),
-                      './model_main_code.rb'))
+                    LiveCode.new(Model::MainCode.new,
+                                 './model_main_code.rb'))
     
     
     

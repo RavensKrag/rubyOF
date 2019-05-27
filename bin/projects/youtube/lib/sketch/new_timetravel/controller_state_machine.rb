@@ -166,7 +166,6 @@ class Controller
     ].join("; ")
     
     return msg
-    "state: #{self.execution_state}; controller i: #{@i};  @live_code i: #{@live_code.i.inspect}; @live_code value: #{@live_code.inner.value.inspect}; cache size: #{}"
   end
   
   # =======================
@@ -212,10 +211,10 @@ class Controller
   # step forward and generate new state
   def on_update
     # generate new state
-    update_successful = @live_code.update
+    update_successful = @live_code.update(@core_space, @user_input)
     if update_successful
       @i += 1
-      puts "live code data: #{@live_code.inner.value.inspect}"
+      # puts "live code data: #{@live_code.inner.inspect}"
     else
       puts "update failed at step @i=#{@i}"
     end

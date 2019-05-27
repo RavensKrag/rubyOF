@@ -16,7 +16,7 @@ class LiveCode
     args.empty? ? @inner.send(method) : @inner.send(method, args)
   end
   
-  def update
+  def update(*args)
     # Try to load the file once, and then update the timestamp
     # (prevents busted files every tick, which would flood the logs)
     
@@ -55,7 +55,7 @@ class LiveCode
       # run if no exceptions
       case @state
         when :normal
-          update_successful = @inner.update
+          update_successful = @inner.update(*args)
           return update_successful
         when :error
           return false

@@ -15,8 +15,8 @@ class History
   
   
   # update the inner item
-  def update
-    update_successful = @inner.update
+  def update(*args)
+    update_successful = @inner.update(*args)
     if update_successful
       save()
       @i += 1
