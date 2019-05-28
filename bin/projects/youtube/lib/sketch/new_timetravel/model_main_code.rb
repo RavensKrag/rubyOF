@@ -18,10 +18,6 @@ module Model
         # understanding space over time might be good for understanding movement?
       # maybe just leave things like this for now
       
-      space_history.inner.tap do |space|
-        space.value = space.value + 10
-      end
-      
       
       # TODO: currently, turn 0 is not executing. When integrating with RubyOF, see if it is necessary to initialize things with turn 0. I think it was necessary before, because certain parts of RubyOF do not come online until the first update, rather than on initialization. But I may want to handle that at the RubyOF level, instead of in the application code.
       if @fibers[:update].nil? or @regenerate_update_thread
@@ -33,20 +29,24 @@ module Model
         
         on.turn 1 do
           puts "turn 1"
+          
+          space_history.inner.tap do |space|
+            space.value = space.value + 10
+          end
+          
         end
         
-        on.turn 5 do
-          puts puts "turn 5"
-        end
-        
-        on.turn 10 do
-          puts "turn 10"
-        end
-        
-        
-        on.turn 11..100 do |t|
+        on.turn 2..10 do |t|
           puts "turn #{t}"
+          
+          space_history.inner.tap do |space|
+            space.value = space.value + 10
+          end
+          
         end
+        
+        # system takes one additional step to do nothing,
+        # while it processes the :finished signal from UpdateFiber
       end
       @regenerate_update_thread = false
       end

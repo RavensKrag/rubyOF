@@ -225,7 +225,7 @@ class Controller
       @i = next_i
       # puts "live code data: #{@live_code.inner.inspect}"
     else
-      puts "update failed at step @i=#{@i}"
+      puts "update failed while advancing from @i=#{@i} to @i=#{next_i}"
     end
     
   end
