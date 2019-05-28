@@ -31,6 +31,8 @@ class LiveCode
         
         puts "file loaded"
         @state = :normal
+        
+        on_reload()
       end
     rescue SyntaxError, ScriptError, NameError => e
       # This block triggers if there is some sort of
@@ -93,4 +95,8 @@ class LiveCode
     @last_time.nil? or @file.mtime > @last_time
   end
   
+  
+  def on_reload
+    @inner.on_reload
+  end
 end

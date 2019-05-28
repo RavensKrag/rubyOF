@@ -1,12 +1,13 @@
 require 'yaml'
 require 'pathname'
+require 'fiber'
 
 
 require './history'
 
 require './nonblocking_error_output'
 require './live_code_loader'
-
+require './update_fiber'
 
 require './model_main_code'
 require './model_raw_input'

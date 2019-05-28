@@ -215,13 +215,14 @@ class Controller
     # generate new state
     # TODO: if you have more than one dynamic code object, make sure all dynamic code is properly loaded before advancing the state.
     # TODO: it might be possible for certain pieces of dynamic code to fail, and not others, causing synchronization issues. watch out for that.
-    update_successful = @live_code.update(@core_space, @user_input)
+    next_i = @i + 1
+    update_successful = @live_code.update(next_i, @core_space, @user_input)
     if update_successful
       # maybe not all models have autonomous updates,
       # but #update also causes state to be saved in History
       @core_space.update
       
-      @i += 1
+      @i = next_i
       # puts "live code data: #{@live_code.inner.inspect}"
     else
       puts "update failed at step @i=#{@i}"

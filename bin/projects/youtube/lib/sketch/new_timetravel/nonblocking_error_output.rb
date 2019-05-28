@@ -20,17 +20,6 @@ class NonblockingErrorOutput
       
       # t1 = RubyOF::Utils.ofGetElapsedTimeMillis
       
-      # out = [
-      #   # e.class, # using this instead of "message"
-      #   # e.name, # for NameError
-      #   # e.local_variables.inspect,
-      #   # e.receiver, # this might actually be the slow bit?
-      #   e.message, # message is the "rate limiting step"
-      #   e.backtrace
-      # ]
-      
-      # p e
-      
       @io.puts e.full_message
       # ^ use ruby internal code to format the message. implementation is in c for speed. this will format exactly the same as a normal exception, which in ruby 2.5 includes bolding and other font styles.
       # sources:
@@ -39,10 +28,6 @@ class NonblockingErrorOutput
         
         # search for "traceback" to see the tests, and usage Ruby-side
         # https://github.com/ruby/ruby/blob/d459572c10d4f8a63a659278266facaf99293267/test/ruby/test_exception.rb
-        
-      
-      #  @io.puts out.join("\n")
-      
       
       # t3 = RubyOF::Utils.ofGetElapsedTimeMillis
       # dt = t3 - t1
