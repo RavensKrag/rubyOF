@@ -11,6 +11,13 @@ module Model
     end
     
     def update(turn_number, space_history, input_history)
+      # Pass key values into the block by using @instance_variables.
+      # (local variables can only be passed once - closure binds first value)
+      @space_history = space_history
+      @input_history = input_history
+      
+      
+      
       # TODO: does the code need to be a model? should it be a controller?
         # it does have to be a model in a sense, as it owns non-spatial data
       # TODO: does this code need access to the entire history, or is it sufficient to only pass it the current state of the space / input?
@@ -19,14 +26,10 @@ module Model
       # maybe just leave things like this for now
       
       
-      # TODO: currently, turn 0 is not executing. When integrating with RubyOF, see if it is necessary to initialize things with turn 0. I think it was necessary before, because certain parts of RubyOF do not come online until the first update, rather than on initialization. But I may want to handle that at the RubyOF level, instead of in the application code.
+      # TODO: initialize objects with proper timing, such that application code can use #initialize instead of having to specify turn 0 actions.
+        # currently, turn 0 is not executing. When integrating with RubyOF, see if it is necessary to initialize things with turn 0. I think it was necessary before, because certain parts of RubyOF do not come online until the first update, rather than on initialization. But I may want to handle that at the RubyOF level, instead of in the application code.
       
       # FIXME: Code is pretty ugly right now. This file should not contain details like how the separate fibers are maintained, or how this class is serialized. Create a parent class with that, such that MainCode < ParentClass. That way, many classes can use this turn-based structure if necessary
-      
-      
-      
-      # FIXME: how does passing in the space_history variable in the function signature mesh with the block on UpdateFiber.new ?  Is the block functioning as a closure? What happens if you send a different value to this method on the next iteration? Will it still be closed around the previous value?
-      
       
       
       if @fibers[:update].nil? or @regenerate_update_thread
@@ -39,7 +42,10 @@ module Model
         on.turn 1 do
           puts "turn 1"
           
-          space_history.inner.tap do |space|
+          puts turn_number # => 1
+          puts @payload # => 42 # @instance_var is evaluated in lexical scope
+          
+          @space_history.inner.tap do |space|
             space.value = space.value + 10
           end
           
@@ -48,7 +54,9 @@ module Model
         on.turn 2..10 do |t|
           puts "turn #{t}"
           
-          space_history.inner.tap do |space|
+          puts turn_number # => 1   # it's a closure; closes on the first value
+          
+          @space_history.inner.tap do |space|
             space.value = space.value + 10
           end
           
@@ -69,6 +77,7 @@ module Model
       
       puts "#{turn_number} => #{out}"
       # possible out states = [:waiting, :executing, :finished]
+      
       
       # return true if update was successful (needed by History)
       if out == :finished || out == nil

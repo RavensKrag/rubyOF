@@ -36,12 +36,13 @@ class Main
     @user_input = History.new(Model::RawInput.new)
     
     # code env with live reloading
+    # (depends on @core_space and @user_input)
     @main_code =  History.new(
                     LiveCode.new(Model::MainCode.new,
                                  './model_main_code.rb'))
     
     
-    
+    # the controller passes information between many objects
     @x = Controller.new(@main_code, @core_space, @user_input)
   end
   
