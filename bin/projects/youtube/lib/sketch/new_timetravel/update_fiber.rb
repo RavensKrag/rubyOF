@@ -41,24 +41,24 @@ class UpdateFiber
 				# Target turn could be an Integer or a Range.
 				# === is the equality check used by 'case' statement.
 				# This will work as expected for both types.
-				min, core, max = 
+				turn_range = 
 					case target_turn
 					when Integer
-						[target_turn,     target_turn, target_turn    ]
+						(target_turn..target_turn)
 					when Range
-						[target_turn.min, target_turn, target_turn.max]
+						target_turn
 					end
 				
 				loop do
-					if turn_number < min
+					if turn_number < turn_range.min
 						# not the correct turn yet. waiting...
 						# NO-OP
 						turn_number = Fiber.yield :waiting
-					elsif core === turn_number
+					elsif turn_range.include? turn_number
 						# this is the turn / range of turns, so execute
 						inner_block.call(turn_number)
 						turn_number = Fiber.yield :executing
-					else # turn_number > max
+					else # turn_number > turn_range.max
 						# turn has passed (useful on reload / time travel)
 						break
 					end

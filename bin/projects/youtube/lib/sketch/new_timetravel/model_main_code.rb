@@ -20,6 +20,15 @@ module Model
       
       
       # TODO: currently, turn 0 is not executing. When integrating with RubyOF, see if it is necessary to initialize things with turn 0. I think it was necessary before, because certain parts of RubyOF do not come online until the first update, rather than on initialization. But I may want to handle that at the RubyOF level, instead of in the application code.
+      
+      # FIXME: Code is pretty ugly right now. This file should not contain details like how the separate fibers are maintained, or how this class is serialized. Create a parent class with that, such that MainCode < ParentClass. That way, many classes can use this turn-based structure if necessary
+      
+      
+      
+      # FIXME: how does passing in the space_history variable in the function signature mesh with the block on UpdateFiber.new ?  Is the block functioning as a closure? What happens if you send a different value to this method on the next iteration? Will it still be closed around the previous value?
+      
+      
+      
       if @fibers[:update].nil? or @regenerate_update_thread
       @fibers[:update] = UpdateFiber.new do |on|
         on.turn 0 do
@@ -61,7 +70,12 @@ module Model
       puts "#{turn_number} => #{out}"
       # possible out states = [:waiting, :executing, :finished]
       
-      return out # return truthy if update was successful (needed by History)
+      # return true if update was successful (needed by History)
+      if out == :finished || out == nil
+        return false
+      else
+        return true
+      end
     end
     
     def draw(window)
