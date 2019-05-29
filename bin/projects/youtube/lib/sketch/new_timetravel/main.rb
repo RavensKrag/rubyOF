@@ -9,6 +9,7 @@ require './nonblocking_error_output'
 require './live_code_loader'
 require './update_fiber'
 
+require './model_code'
 require './model_main_code'
 require './model_raw_input'
 require './model_core_space'
