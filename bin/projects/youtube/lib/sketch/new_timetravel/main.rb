@@ -22,7 +22,18 @@ class Main
     # wrap all models in History objects, to preserve history
     
     
-    # TODO: After going back in time (to the past) and making a change, state between the past and the present will be invalidated. Need a way to overwrite this state in the alternate timeline. Currently, the old state will persist. Thus, reloading is only useful for effecting future state, which is... dramatically less useful.
+    # FIXME: After going back in time (to the past) and making a change, state between the past and the present will be invalidated. Need a way to overwrite this state in the alternate timeline. Currently, the old state will persist. Thus, reloading is only useful for effecting future state, which is... dramatically less useful.
+    
+    # FIXME: Integrate this code with RubyOF in a new project (make copy of 'youtube' project)
+      # start by creating a View class for visualization
+      # have been doing a lot of repetitive typing to step back and forth
+      # get a UI for that instead (just use OpenFrameworks UI stuff)
+      # and instead of guess and check recompiling of C++,
+      # set unknown values through Ruby calls, that can be tried in REPL.
+      # 
+      # May actually need to set up RubyOF + REPL first
+      # because REPL is a good fallback from direct manipulation.
+      # -- how can I step with both the REPL and a GUI??
     
     
     # Initial output stream for LiveCode
