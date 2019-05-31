@@ -119,6 +119,13 @@ bin/projects/youtube/ext/c_extension/Makefile
 
 
 
+bin/projects/livecode2/ext/addons_app/testApp/raw_oF_variables.yaml
+bin/projects/livecode2/ext/addons_app/testApp/oF_build_variables.yaml
+bin/projects/livecode2/ext/addons_app/**/.compiler_flags
+
+
+
+
 
 # === Don't track Gemfile.lock
 Gemfile.lock

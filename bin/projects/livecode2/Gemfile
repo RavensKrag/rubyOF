@@ -1,0 +1,14 @@
+Dir.chdir Pathname.new(__FILE__).dirname.expand_path do
+	
+GEM_ROOT = Pathname.new('../../..').expand_path
+puts '---- inside gemfile'
+puts "GEM_ROOT = #{GEM_ROOT}"
+
+end
+
+
+eval_gemfile File.join GEM_ROOT, 'Gemfile'
+gem 'require_all'
+gem 'chipmunk'
+
+puts '--------------------'
