@@ -13,34 +13,69 @@ require (GEM_ROOT/'bin'/'main')
 
 
 
-data_dir = project_root / 'bin' / 'data'
-stdout = File.new(data_dir / 'output.log', 'a')
-stderr = File.new(data_dir / 'output.log', 'a')
 
-[stdout, stderr].each do |io|
+
+
+
+
+
+
+
+# open alternate files
+data_dir = project_root / 'bin' / 'data'
+stdout_logfile = File.new(data_dir / 'output.log', 'a')
+stderr_logfile = File.new(data_dir / 'output.log', 'a')
+
+[stdout_logfile, stderr_logfile].each do |io|
 	io.sync = true # flush to OS level so 'tail -f' works as expected
 end
 
-# $stdout = stdout
-# $stderr = stderr
-
-STDOUT = $stdout.dup
-STDERR = $stderr.dup
-
-$stdout = $stdout.reopen stdout
-$stderr = $stderr.reopen stderr
 
 
+# dup the streams
+stdout_term = $stdout.dup
+stderr_term = $stderr.dup
+
+[stdout_term, stdout_term].each do |io|
+	io.sync = true # flush to OS level so 'tail -f' works as expected
+end
+
+$stdout.reopen stdout_logfile
+$stderr.reopen stderr_logfile
+
+
+# connect irb output back to terminal
+STDOUT = stdout_term
+STDERR = stderr_term
+
+
+
+
+# output message to log file 
+5.times do
+	puts ''
+end
+puts "starting new session: #{Time.now}"
+puts ''
+
+# run the main program
 main(project_root)
 
 
-$stdout.close
-$stderr.close
 
-$stdout = STDOUT
-$stderr = STDERR
 
-puts "hello world!"
+
+# close the files
+[stdout_logfile, stderr_logfile].each do |io|
+	io.close
+end
+
+
+# restore streams to default value (using duped copies)
+$stdout.reopen stdout_term
+$stderr.reopen stdout_term
+
+
 
 # FIXME: clean this up a bit more
 # need to dup the IO file descriptor thing so that I can restore it
