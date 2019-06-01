@@ -1,0 +1,13 @@
+Feature List
+---
+
++ LiveCode: dynamic reloading of code
++ History: wrap any PORO and save state over time
++ roll back history with #step_back and go forward again with #step_forward
++ when viewing latest state, #step_forward calls #update to generate new state
+
++ must call #pause before initial call to #step_back (helps prevent accidents)
+
++ can write code to execute on certain turns (frames)
++ main execution pauses when there are no more turns
+	BUGFIX: no extra turn after TurnCounter sends :finished signal
