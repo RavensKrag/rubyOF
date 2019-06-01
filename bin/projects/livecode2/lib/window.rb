@@ -33,6 +33,8 @@ require LIB_DIR / 'model_core_space'
 
 require LIB_DIR / 'controller_state_machine'
 
+require LIB_DIR / 'view_visualize_controller'
+
 
 
 class Window < RubyOF::Window
@@ -104,19 +106,26 @@ class Window < RubyOF::Window
     
     # the controller passes information between many objects
     @x = Controller.new(@main_code, @core_space, @user_input)
+    
+    # visualize info
+    @main_view = LiveCode.new(View.new(@x),
+                              LIB_DIR / 'view_visualize_controller.rb')
   end
   
   def update
     # super()
     
+    @main_view.update
     
   end
   
   def draw
     # super()
     
+    @main_view.draw
+    
     # @x.draw(self)
-    @main_code.draw(self)
+    # @main_code.inner.draw(self)
     # FIXME: figure out how to let @main_code draw to the screen
   end
   

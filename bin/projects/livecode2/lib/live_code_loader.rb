@@ -5,34 +5,126 @@ class LiveCode
   # inner                : object to be wrapped
   # inner_class_filepath : file that defines inner.class 
   def initialize(inner, inner_class_filepath)
+    super()
+    
     @inner = inner
     @file = Pathname.new inner_class_filepath # handle Pathname and String
     
     @last_time = nil # set to nil so file is always reloaded the first time
-    @state = :normal # [:normal, :error]
   end
   
-  def method_missing(method, *args)
-    args.empty? ? @inner.send(method) : @inner.send(method, args)
-  end
   
-  def update(*args)
-    # Try to load the file once, and then update the timestamp
-    # (prevents busted files every tick, which would flood the logs)
+  state_machine :state, :initial => :normal do
+    state :normal do
+      
+      def method_missing(method, *args)
+        begin
+          return args.empty? ? @inner.send(method) : @inner.send(method, *args)
+        rescue StandardError => e
+          # puts "method missing error handler in LiveCode"
+          puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
+          
+          self.runtime_error_detected
+          return false
+        end
+      end
+      
+      def update(*args)
+        # Try to load the file once, and then update the timestamp
+        # (prevents busted files every tick, which would flood the logs)
+        
+        
+        # :reload_successful
+        # :file_unchanged
+        # :reload_failed
+        signal = attempt_reload()
+        if signal == :reload_successful || signal == :file_unchanged
+          begin
+            update_successful = @inner.update(*args)
+            return update_successful
+          rescue StandardError => e
+            puts e.full_message
+            
+            self.runtime_error_detected
+            return false
+          end
+        else # signal == :reload_failed
+          return false
+        end
+      end
+        
+    end
     
+    
+    # error detected. don't run any more until the file is updated.
+    state :error do
+      
+      def method_missing(method, *args)
+        # suspend delegation in order to suppress additional errors
+      end
+      
+      def update(*args)
+        # :reload_successful
+        # :file_unchanged
+        # :reload_failed
+        signal = attempt_reload()
+        if signal == :reload_successful
+          self.error_patched
+          
+          begin
+            update_successful = @inner.update(*args)
+            return update_successful
+          rescue StandardError => e
+            puts e.full_message
+            
+            self.runtime_error_detected
+            return false
+          end
+        else # signal == :reload_failed || signal == :file_unchanged
+          return false
+        end
+      end
+      
+    end
+    
+    
+    event :load_error_detected do
+      transition :normal => :error
+    end
+    
+    event :runtime_error_detected do
+      transition :normal => :error
+    end
+    
+    event :error_patched do
+      transition :error => :normal
+    end
+    
+    
+    
+    # after_transition :on => :load_error_detected,    :do => :on_run
+    after_transition :on => :runtime_error_detected, :do => ->(){puts "LiveCode: error detected"}
+    after_transition :on => :error_patched, :do => ->(){puts "LiveCode: error patched!"}
+  end
+  
+  
+  def attempt_reload
     begin
       if file_changed?
         # update the timestamp
         @last_time = Time.now
         
         # reload the file
-        puts "live loading #{@file}"
+        puts "live loading #{@file.to_s.gsub GEM_ROOT.to_s, '[GEM_ROOT]'}"
         load @file.to_s
         
         puts "file loaded"
-        @state = :normal
+        
         
         on_reload()
+        return :reload_successful
+      else
+        return :file_unchanged
       end
     rescue SyntaxError, ScriptError, NameError => e
       # This block triggers if there is some sort of
@@ -51,29 +143,13 @@ class LiveCode
       puts "FAILURE TO LOAD: #{@file}"
       $nonblocking_error.puts(e)
       
-      @state = :error
-      return false
-    else
-      # run if no exceptions
-      case @state
-        when :normal
-          update_successful = @inner.update(*args)
-          return update_successful
-        when :error
-          return false
-        else
-          msg = [
-            "ERROR: unknown state encountered in live loader: #{@state}",
-            "Expecting either :normal or :error."
-          ].join("\n")
-          raise msg
-      end
-    ensure
-      # run whether or not there was an exception
+      self.load_error_detected
+      return :reload_failed
     end
-    
-    
   end
+  
+  
+  
   
   def inner_class
     @inner.class
