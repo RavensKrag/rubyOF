@@ -58,11 +58,43 @@ class Window < RubyOF::Window
 		# NOTE: All files should be located in @data_dir (Pathname object)
 		
 		
+		
+		
+		@repl_thread = Thread.new do
+			Thread.current[:stdout] = STDOUT
+			Thread.current[:stderr] = STDERR
+			
+			require 'irb'
+			binding.irb
+			
+			# FIXME: route stdout to a file, and then route that into another terminal window (another tab, really)
+		end
+		
+		
+		
+		# $stdout = File.new(@data_dir / 'output.log', 'a')
+		# $stderr = File.new(@data_dir / 'output.log', 'a')
+		
+		# # $stdout = $stdout.reopen File.new(@data_dir / 'output.log', 'w')
+		# # $stderr = $stderr.reopen File.new(@data_dir / 'output.log', 'w')
+		
+		# [$stdout, $stderr].each do |io|
+		# 	io.sync = true # flush to OS level so 'tail -f' works as expected
+		# end
+		
+		5.times do
+			puts ''
+		end
+		puts "starting new session: #{Time.now}"
+		
 	end
 	
 	def update
 		# super()
 		
+		
+		STDOUT.flush
+		STDERR.flush
 	end
 	
 	def draw
@@ -84,8 +116,22 @@ class Window < RubyOF::Window
 		# @space = nil
 		# @history = nil
 		
+		# wait for REPL to end
+		puts "waiting for REPL to end..."
+		@repl_thread.join
+		puts "exiting"
+		
+		# restore stdout and stderr streams
+		[$stdout, $stderr].each do |io|
+			io.close
+		end
+		
+		$stdout = STDOUT
+		$stderr = STDERR
+		
 		# --- Clear Ruby-level memory
 		GC.start
+		
 	end
 	
 	

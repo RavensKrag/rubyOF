@@ -11,4 +11,40 @@ require (project_root/'config'/'build_variables')
 require (GEM_ROOT/'bin'/'main')
 # ^ defines main() function
 
+
+
+data_dir = project_root / 'bin' / 'data'
+stdout = File.new(data_dir / 'output.log', 'a')
+stderr = File.new(data_dir / 'output.log', 'a')
+
+[stdout, stderr].each do |io|
+	io.sync = true # flush to OS level so 'tail -f' works as expected
+end
+
+# $stdout = stdout
+# $stderr = stderr
+
+STDOUT = $stdout.dup
+STDERR = $stderr.dup
+
+$stdout = $stdout.reopen stdout
+$stderr = $stderr.reopen stderr
+
+
 main(project_root)
+
+
+$stdout.close
+$stderr.close
+
+$stdout = STDOUT
+$stderr = STDERR
+
+puts "hello world!"
+
+# FIXME: clean this up a bit more
+# need to dup the IO file descriptor thing so that I can restore it
+# (IO#reopen is a weird method)
+# but then need to save the duped thing to a constant, otherwise the repl thread can't seem to grab a hold of it
+# then, need to remember to flush the REPL thread, otherwise it doesn't out to console.
+	# do I need to run sync on the duped IO?
