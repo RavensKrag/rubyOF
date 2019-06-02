@@ -95,17 +95,19 @@ class Window < RubyOF::Window
     @core_space = History.new(Model::CoreSpace.new)
     
     # raw user input data (drives sequences)
-    @user_input = History.new(Model::RawInput.new)
+    @raw_input = History.new(LiveCode.new(
+                             Model::RawInput.new,
+                             LIB_DIR / 'model_raw_input.rb'))
     
     # code env with live reloading
-    # (depends on @core_space and @user_input)
+    # (depends on @core_space and @raw_input)
     @main_code =  History.new(
                     LiveCode.new(Model::MainCode.new,
                                  LIB_DIR / 'model_main_code.rb'))
     
     
     # the controller passes information between many objects
-    @x = Controller.new(@main_code, @core_space, @user_input)
+    @x = Controller.new(@main_code, @core_space, @raw_input)
     
     # visualize info
     @main_view = LiveCode.new(View.new(@x),
@@ -114,6 +116,8 @@ class Window < RubyOF::Window
   
   def update
     # super()
+    
+    @raw_input.update # need to run update to save history
     
     @main_view.update
     
@@ -155,100 +159,51 @@ class Window < RubyOF::Window
   
   
   
+  # == delegate raw inputs to @raw_input ==
   def key_pressed(key)
     super(key)
     
-    begin
-      string = 
-        if key == 32
-          "<space>"
-        elsif key == 13
-          "<enter>"
-        else
-          key.chr
-        end
-        
-      puts string
-    rescue RangeError => e
-      
-    end
-    
-    # @live.key_pressed(key)
+    @raw_input.inner.key_pressed(key)
   end
   
   def key_released(key)
     super(key)
     
-    # @live.key_released(key)
+    @raw_input.inner.key_released(key)
   end
   
   
-  
-  
-  
   def mouse_moved(x,y)
-    # @live.mouse_moved(x,y)
+    @raw_input.inner.mouse_moved(x,y)
   end
   
   def mouse_pressed(x,y, button)
     super(x,y, button)
     
     ofExit() if button == 8
-    # different window systems return different numbers
-    # for the 'forward' mouse button:
-      # GLFW: 4
-      # Glut: 8
-    # TODO: set button codes as constants?
     
-    # case button
-    #   when 1 # middle click
-    #     @drag_origin = CP::Vec2.new(x,y)
-    #     @camera_origin = @camera.pos.clone
-    # end
-    
-    # @live.mouse_pressed(x,y, button)
+    @raw_input.inner.mouse_pressed(x,y, button)
   end
   
   def mouse_dragged(x,y, button)
     super(x,y, button)
     
-    # case button
-    #   when 1 # middle click
-    #     pt = CP::Vec2.new(x,y)
-    #     d = (pt - @drag_origin)/@camera.zoom
-    #     @camera.pos = d + @camera_origin
-    # end
-    
-    # @live.mouse_dragged(x,y, button)
+    @raw_input.inner.mouse_dragged(x,y, button)
   end
   
   def mouse_released(x,y, button)
     super(x,y, button)
     
-    # case button
-    #   when 1 # middle click
-        
-    # end
-    
-    # @live.mouse_released(x,y, button)
+    @raw_input.inner.mouse_released(x,y, button)
   end
   
   def mouse_scrolled(x,y, scrollX, scrollY)
     super(x,y, scrollX, scrollY) # debug print
     
-    # zoom_factor = 1.05
-    # if scrollY > 0
-    #   @camera.zoom *= zoom_factor
-    # elsif scrollY < 0
-    #   @camera.zoom /= zoom_factor
-    # else
-      
-    # end
-    
-    # puts "camera zoom: #{@camera.zoom}"
-    
-    # @live.mouse_scrolled(x,y, scrollX, scrollY)
+    @raw_input.inner.mouse_scrolled(x,y, button)
   end
+  
+  
   
   
   
