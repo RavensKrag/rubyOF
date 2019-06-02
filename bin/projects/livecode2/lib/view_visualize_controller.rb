@@ -80,12 +80,6 @@ class View
       start = CP::Vec2.new(70,450)
       
       
-      screen_print(font: font, color: @colors[0],
-                   string: "#{@controller.to_s} (starts at 0)",
-                   position: start + CP::Vec2.new(0,-100-30))
-      
-      
-      
       
       # display history information over time
       var_names = [:@live_code, :@core_space, :@user_input]
@@ -98,6 +92,15 @@ class View
       
       line_height = 35
       em = 20
+      
+      
+      
+      value = vars[:@core_space].inner.instance_variable_get(:@value).inspect
+      
+      screen_print(font: font, color: @colors[0],
+                     string: "state: #{@controller.execution_state}\nvalue: #{value}",
+                     position: start + CP::Vec2.new(0, -line_height*3))
+      
       
       # == position pointer == 
       i = @controller.i
@@ -112,6 +115,9 @@ class View
         screen_print(font: font, color: @colors[3],
                      string: ' 0000',
                      position: start)
+        screen_print(font: font, color: @colors[4],
+                     string: '->',
+                     position: start+CP::Vec2.new(-1*em*2,0))
         
         
         screen_print(font: font, color: @colors[0],
@@ -124,11 +130,17 @@ class View
       length = @controller.instance_variable_get(:@branch_i)
       length ||= @controller.i
       (0..length).each do |i|
+        label = i.to_s
         screen_print(font: font, color: @colors[3],
-                     string: i.to_s,
+                     string: label,
                      position: start + CP::Vec2.new(em*18-7 + em*(i*2), 0))
       end
       
+      
+      # FIXME: Use compressed format for non-active timelines
+        # stack 3 symbols: O, X, _
+        # one symbol for each type of collection (code, space, input)
+        # s.t. you can have a single row of characters (like a minimized mode)
       # == core data output == 
       var_names.each_with_index do |sym,i|
         screen_print(font: font, color: @colors[2],
