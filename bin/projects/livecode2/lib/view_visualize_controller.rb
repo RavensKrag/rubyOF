@@ -44,7 +44,7 @@ class View
     
     
     
-    @colors ||= Array.new(5, RubyOF::Color.new)
+    @colors = 5.times.collect{ RubyOF::Color.new }
     
     @colors[0].tap do |c|
       c.r, c.g, c.b, c.a = [80, 80, 80, 255]
