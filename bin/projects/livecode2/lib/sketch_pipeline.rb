@@ -67,24 +67,39 @@ class Bar
   end
 end
 
-    
+
+require 'fiber' # defines Fiber#alive?
+
 class Pipeline
-  def initialize(first)
-    @first = first
-    @queue = Array.new
-  end
-  
-  def pipe(&block)
-    @queue << block
-    return self
-  end
-  
-  def value
-    @queue.reverse_each.inject(@first) do |prev_obj, curr_block|
+  def self.open(&block)
+    h = Helper.new
+    block.call h
+    
+    h.queue.reverse_each.inject(h.first) do |prev_obj, curr_block|
       p [prev_obj, curr_block]
       curr_block.call(prev_obj)
     end
   end
+  
+  class Helper
+    attr_reader :first, :queue
+    
+    def initialize
+      @first = first
+      @queue = Array.new
+    end
+    
+    def start(first)
+      @first = first
+    end
+    
+    def pipe(&block)
+      raise "ERROR: First line in Pipeline block must call #{self.class}#start. Pass in a single object to #start to initate the pipeline. Then, subsequent lines can call #pipe." if @first.nil?
+      
+      @queue << block
+    end
+  end
+  
 end
 
 
@@ -93,13 +108,17 @@ second = Baz.new
 third = Bar.new
 
 out =
-  Pipeline.new(first)
-  .pipe{|x| second.update x }
-  .pipe{|x| third.update x }
-  .value
+  Pipeline.open do |p| 
+    p.start first
+    p.pipe{|x| second.update x }
+    p.pipe{|x| third.update x }
+  end
 
 p out
 
+
+
+      
 
 
 
