@@ -16,11 +16,10 @@ module Model
     # TODO: initialize objects with proper timing, such that application code can use #initialize instead of having to specify turn 0 actions.
       # currently, turn 0 is not executing. When integrating with RubyOF, see if it is necessary to initialize things with turn 0. I think it was necessary before, because certain parts of RubyOF do not come online until the first update, rather than on initialization. But I may want to handle that at the RubyOF level, instead of in the application code.
     
-    def update(turn_number, space_history, input_history)
+    def update(turn_number, space_history)
       # Pass key values into the block by using @instance_variables.
       # (local variables can only be passed once - closure binds first value)
       @space_history = space_history
-      @input_history = input_history
       
       
       super(turn_number) do |on|
@@ -50,6 +49,10 @@ module Model
             space.value = space.value + 10
           end
           
+          
+          # if t == 5
+          #   raise "BOOM"
+          # end
         end
       end
       

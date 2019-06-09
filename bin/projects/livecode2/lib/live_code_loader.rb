@@ -25,7 +25,7 @@ class LiveCode
           puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
           
           self.runtime_error_detected
-          return false
+          return nil
         end
       end
       
@@ -40,16 +40,16 @@ class LiveCode
         signal = attempt_reload()
         if signal == :reload_successful || signal == :file_unchanged
           begin
-            update_successful = @inner.update(*args)
-            return update_successful
+            update_signal = @inner.update(*args)
+            return update_signal
           rescue StandardError => e
             puts e.full_message
             
             self.runtime_error_detected
-            return false
+            return :error
           end
         else # signal == :reload_failed
-          return false
+          return nil
         end
       end
         
@@ -72,16 +72,16 @@ class LiveCode
           self.error_patched
           
           begin
-            update_successful = @inner.update(*args)
-            return update_successful
+            update_signal = @inner.update(*args)
+            return update_signal
           rescue StandardError => e
             puts e.full_message
             
             self.runtime_error_detected
-            return false
+            return :error
           end
         else # signal == :reload_failed || signal == :file_unchanged
-          return false
+          return :error
         end
       end
       

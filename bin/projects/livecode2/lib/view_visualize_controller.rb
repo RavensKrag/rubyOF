@@ -4,7 +4,7 @@ class View
   
   def initialize(controller)
     @controller = controller
-    
+    on_reload
   end
   
   def on_reload
@@ -82,7 +82,7 @@ class View
       
       
       # display history information over time
-      var_names = [:@live_code, :@core_space, :@user_input]
+      var_names = [:@main_code, :@core_space, :@input_history]
       var_values  = 
         var_names.collect do |sym|
           @controller.instance_variable_get sym
@@ -93,7 +93,8 @@ class View
       line_height = 35
       em = 20
       
-      
+      col2_x = 13
+      col3_x = 20
       
       value = vars[:@core_space].inner.instance_variable_get(:@value).inspect
       
@@ -106,7 +107,7 @@ class View
       i = @controller.i
       screen_print(font: font, color: @colors[4],
                    string: "|\nV",
-                   position: start + CP::Vec2.new(em*18-7 + em*(i*2),-line_height*2))
+                   position: start + CP::Vec2.new(em*col3_x-7 + em*(i*2),-line_height*2))
       
       # == section titles == 
         screen_print(font: font, color: @colors[0],
@@ -122,7 +123,7 @@ class View
         
         screen_print(font: font, color: @colors[0],
                      string: "size",
-                     position: start + CP::Vec2.new(em*12-3, 0))
+                     position: start + CP::Vec2.new(em*(col2_x+1)-3, 0))
       
       # FIXME: better method to get the full 'length' of the controller i
       # FIXME: change numbers to smaller proportional font so they sit over the 'x' marks, even with 2 or 3 digit numbers
@@ -133,7 +134,7 @@ class View
         label = i.to_s
         screen_print(font: font, color: @colors[3],
                      string: label,
-                     position: start + CP::Vec2.new(em*18-7 + em*(i*2), 0))
+                     position: start + CP::Vec2.new(em*col3_x-7 + em*(i*2), 0))
       end
       
       
@@ -151,18 +152,18 @@ class View
         
         screen_print(font: font, color: @colors[1],
                      string: "(    )",
-                     position: start + CP::Vec2.new(em*11, line_height*(i+1)))
+                     position: start + CP::Vec2.new(em*col2_x, line_height*(i+1)))
         
         screen_print(font: font, color: @colors[3],
                      string: vars[sym].length.to_s.rjust(5),
-                     position: start + CP::Vec2.new(em*11, line_height*(i+1)))
+                     position: start + CP::Vec2.new(em*col2_x, line_height*(i+1)))
         
         
       # FIXME: put '_' in columns where there is no data, rather than just leaving it blank 
         vars[sym].length.times do |j|
           screen_print(font: font, color: @colors[0],
                        string: 'x',
-                       position: start + CP::Vec2.new(em*18-7 + em*(j*2), line_height*(i+1)))
+                       position: start + CP::Vec2.new(em*col3_x-7 + em*(j*2), line_height*(i+1)))
         end
       end
       

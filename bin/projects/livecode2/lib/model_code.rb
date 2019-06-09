@@ -33,12 +33,18 @@ module Model
       # possible out states = [:waiting, :executing, :finished]
       
       
-      # return true if update was successful (needed by History)
-      if out == :finished || out == nil
-        return false
+      # Only return symbols on error (interface for History)
+      # when there is no error, you can return anything you like.
+      # Live code errors will be handled by live loader,
+      # so the only "error" is when you reach the end of execution.
+      # (need to output an error code so History doesn't save any more states)
+      case out
+      when :finished, nil
+        return :finished
       else
         return true
       end
+      
     end
     
     def draw(window)

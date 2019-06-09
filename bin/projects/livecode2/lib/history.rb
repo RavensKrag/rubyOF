@@ -15,15 +15,18 @@ class History
   
   
   # update the inner item
+  
+  # signal seems to either be self, or an error code (Symbol)
+  
   def update(*args)
-    update_successful = @inner.update(*args)
-    if update_successful
+    signal = @inner.update(*args)
+    if signal.is_a? Symbol # symbols are used for error codes
+      puts "update failed for #{@inner.class}"
+      return signal # pass signal to calling controller for error handling
+    else
       save()
       @i += 1
-      return true
-    else
-      puts "update failed for #{@inner.class}"
-      return false
+      return self
     end
   end
   

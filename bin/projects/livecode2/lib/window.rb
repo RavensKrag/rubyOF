@@ -20,6 +20,9 @@ LIB_DIR = current_file.parent
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
 
+require LIB_DIR / 'pipeline'
+
+
 require LIB_DIR / 'history'
 
 require LIB_DIR / 'nonblocking_error_output'
@@ -30,8 +33,13 @@ require LIB_DIR / 'model_code'
 require LIB_DIR / 'model_main_code'
 require LIB_DIR / 'model_raw_input'
 require LIB_DIR / 'model_core_space'
+require LIB_DIR / 'UI_model'
 
 require LIB_DIR / 'controller_state_machine'
+
+require LIB_DIR / 'UI_InputController'
+require LIB_DIR / 'Core_InputController'
+
 
 require LIB_DIR / 'view_visualize_controller'
 
@@ -64,25 +72,14 @@ class Window < RubyOF::Window
   attr_reader :history
   # needed to interface with the C++ history UI code
   
+  attr_reader :timeline_controller
+  
   def setup
     super()
     
     @data_dir = PROJECT_DIR / 'bin' / 'data'
     # NOTE: All files should be located in @data_dir (Pathname object)
     
-    
-    # irb outputs
-    # ---
-    # $stdout     puts output and similar
-    # STDOUT       actual REPL line
-    # src: https://rubytalk.org/t/redirecting-stderr-in-irb/56728/3
-    @repl_thread = Thread.new do
-      # Thread.current[:stdout] = STDOUT
-      # Thread.current[:stderr] = STDERR
-      
-      require 'irb'
-      binding.irb
-    end
     
     
     
@@ -94,30 +91,116 @@ class Window < RubyOF::Window
     # space containing main entities
     @core_space = History.new(Model::CoreSpace.new)
     
-    # raw user input data (drives sequences)
-    @raw_input = History.new(LiveCode.new(
+    # data for UI (various state machines)
+    @ui_model = UI_Model.new
+    
+    
+    # Input controller for UI. Acts based on inputs since last frame.
+    @ui_input = LiveCode.new(
+                  UI_InputController.new(@ui_model),
+                  LIB_DIR / 'UI_InputController.rb')
+    
+    # Raw user input data (drives sequences)
+    @raw_input_history = History.new(LiveCode.new(
                              Model::RawInput.new,
                              LIB_DIR / 'model_raw_input.rb'))
     
+    # Generate complex input events. Use history to see inputs across time.
+    @core_input = LiveCode.new(
+                    Core_InputController.new, # history passed on update
+                    LIB_DIR / 'Core_InputController.rb')
+    
+    
     # code env with live reloading
-    # (depends on @core_space and @raw_input)
+    # (depends on @core_space and @raw_input_history)
     @main_code =  History.new(
                     LiveCode.new(Model::MainCode.new,
                                  LIB_DIR / 'model_main_code.rb'))
     
     
     # the controller passes information between many objects
-    @x = Controller.new(@main_code, @core_space, @raw_input)
+    @timeline_controller = 
+          Controller.new(@raw_input_history, @ui_input, @core_input,
+                         @main_code, @core_space)
     
     # visualize info
-    @main_view = LiveCode.new(View.new(@x),
+    @main_view = LiveCode.new(View.new(@timeline_controller),
                               LIB_DIR / 'view_visualize_controller.rb')
+    
+    @input_queue = Array.new # queue up input events that happened this frame
+    
+    
+    
+    
+    # irb outputs
+    # ---
+    # $stdout     puts output and similar
+    # STDOUT       actual REPL line
+    # src: https://rubytalk.org/t/redirecting-stderr-in-irb/56728/3
+    @repl_thread = Thread.new do
+      # Thread.current[:stdout] = STDOUT
+      # Thread.current[:stderr] = STDERR
+      
+      x = @timeline_controller
+      
+      require 'irb'
+      binding.irb
+    end
+    
+    puts "setup complete"
+  end
+  
+  # delegate inputs to input handler
+  INPUT_EVENTS = 
+  [
+    :key_pressed,
+    :key_released,
+    :mouse_moved,
+    :mouse_pressed,
+    :mouse_dragged,
+    :mouse_released,
+    :mouse_scrolled,
+  ]
+  INPUT_EVENTS.each do |sym|
+    define_method sym do |*args|
+      # super(*args)
+      # ^ Calls Ruby-defined callback functions, not the C++ ones.
+      #   Useful for baseline debugging, but not otherwise necessary
+      
+      @input_queue << [sym, args]
+    end
   end
   
   def update
     # super()
     
-    @raw_input.update # need to run update to save history
+    
+    # input_queue -> @ui_input
+    Pipeline.open do |p| 
+      p.start @input_queue
+      p.pipe{|x| @ui_input.update x => self  }
+    end
+    
+    # input_queue -> @input_history -> @core_input
+    # @core_space -> @main_code ---> signal
+    @timeline_controller.update self, @input_queue
+    # (only updates @input_history when appropriate - not when time traveling)
+    
+    @input_queue = Array.new
+    # Pass the entire queue object to controller.
+    # Otherwise, the controller would have to make a deep clone of the queue.
+    
+    
+    
+    # FIXME: don't want to update input history all the time though - if execution is paused then only parse direct UI inputs
+    
+    # FIXME: need two modes - (1) step forward in a controlled manner, frame by frame and (2) run the simulation forward as fast as possible
+    
+    
+    # FIXME: remove input history from the main controller, and into this controller
+      # wait, but how does that work when you step back in time???
+      # maybe this controller specifies how new inputs enter the queue, but then the other controller explains how inputs are processed? that makes sense
+    
     
     @main_view.update
     
@@ -128,7 +211,7 @@ class Window < RubyOF::Window
     
     @main_view.draw
     
-    # @x.draw(self)
+    # @timeline_controller.draw(self)
     # @main_code.inner.draw(self)
     # FIXME: figure out how to let @main_code draw to the screen
   end
@@ -159,49 +242,49 @@ class Window < RubyOF::Window
   
   
   
-  # == delegate raw inputs to @raw_input ==
-  def key_pressed(key)
-    super(key)
+  # # == delegate raw inputs to @raw_input_history ==
+  # def key_pressed(key)
+  #   super(key)
     
-    @raw_input.inner.key_pressed(key)
-  end
+  #   @raw_input_history.inner.key_pressed(key)
+  # end
   
-  def key_released(key)
-    super(key)
+  # def key_released(key)
+  #   super(key)
     
-    @raw_input.inner.key_released(key)
-  end
+  #   @raw_input_history.inner.key_released(key)
+  # end
   
   
-  def mouse_moved(x,y)
-    @raw_input.inner.mouse_moved(x,y)
-  end
+  # def mouse_moved(x,y)
+  #   @raw_input_history.inner.mouse_moved(x,y)
+  # end
   
-  def mouse_pressed(x,y, button)
-    super(x,y, button)
+  # def mouse_pressed(x,y, button)
+  #   super(x,y, button)
     
-    ofExit() if button == 8
+  #   ofExit() if button == 8
     
-    @raw_input.inner.mouse_pressed(x,y, button)
-  end
+  #   @raw_input_history.inner.mouse_pressed(x,y, button)
+  # end
   
-  def mouse_dragged(x,y, button)
-    super(x,y, button)
+  # def mouse_dragged(x,y, button)
+  #   super(x,y, button)
     
-    @raw_input.inner.mouse_dragged(x,y, button)
-  end
+  #   @raw_input_history.inner.mouse_dragged(x,y, button)
+  # end
   
-  def mouse_released(x,y, button)
-    super(x,y, button)
+  # def mouse_released(x,y, button)
+  #   super(x,y, button)
     
-    @raw_input.inner.mouse_released(x,y, button)
-  end
+  #   @raw_input_history.inner.mouse_released(x,y, button)
+  # end
   
-  def mouse_scrolled(x,y, scrollX, scrollY)
-    super(x,y, scrollX, scrollY) # debug print
+  # def mouse_scrolled(x,y, scrollX, scrollY)
+  #   super(x,y, scrollX, scrollY) # debug print
     
-    @raw_input.inner.mouse_scrolled(x,y, button)
-  end
+  #   @raw_input_history.inner.mouse_scrolled(x,y, button)
+  # end
   
   
   

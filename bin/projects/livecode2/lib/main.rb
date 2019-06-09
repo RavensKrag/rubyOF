@@ -13,7 +13,7 @@ require (GEM_ROOT/'bin'/'main')
 
 
 
-
+MAIN_OBJ = self
 
 
 
