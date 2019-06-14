@@ -1,3 +1,4 @@
+require 'objspace'
 
 class View
   include RubyOF::Graphics
@@ -189,6 +190,33 @@ class View
       
       
     end
+    
+    # puts "--- get memory"
+    @fonts[:monospace].tap do |font|
+      origin = CP::Vec2.new(500,112)
+      line_height = 38
+      
+      screen_print(font: font, color: @colors[0],
+                   string: "ram usage",
+                   position: origin+CP::Vec2.new(0,line_height*0))
+      
+      # FIXME: mem_size(@controller) causes major FPS dips as history queue gets longer (> 100 items). [FPS dropping to 20-30 instead of 60]. This is likely because the tree of items to examine is getting much bigger, an the entire tree must be traversed all the time. Could be much smarter, saving known memory values, and only updating the count where the data is actually being changed / added.
+        # but even with that disabled, after abount 500 entries, things stay really slow.
+        # at that point, it seems that even attempting to display the UI for how many time points have been saved becomes prohibitive
+        # need to make the UI rendering faster as well
+      
+      # TODO: right align numbers using lpad or something
+      # TODO: show memory usage as graph over time (useful for #memsize_of_all, which seems to fluctuate periodically)
+      size = mem_size(@controller)
+      screen_print(font: font, color: @colors[0],
+                   string: "local usage: #{format_number(size/1000).rjust(8)} kb",
+                   position: origin+CP::Vec2.new(0,line_height*1))
+      
+      size_all = ObjectSpace.memsize_of_all
+      screen_print(font: font, color: @colors[0],
+                   string: "total usage: #{format_number(size_all/1000).rjust(8)} kb",
+                   position: origin+CP::Vec2.new(0,line_height*2))
+    end
   end
   
   
@@ -216,5 +244,31 @@ class View
     
   end
   
+  # size in bytes (recursive)
+  # WARNING: calling every frame may cause memory usage to explode
+  def mem_size(x)
+    # TODO: convert this proc to a helper function or similar. Don't want to be defining this proc again and again all the time. It's just a nice way to prototype the idea.
+    foo = ->(x){ ObjectSpace.constants.any?{|const| x.is_a? ObjectSpace.const_get(const) }}
+    
+    # Don't examine class definition space: Class definitions have a bunch of weird stuff inside. Not gonna measure that.
+    # Need to avoid dependency loops - Proc and Fiber both loop back, because they reference lines of code defined in another class / file.
+    # Don't examine ObjectSpace classes - those also tend to cause loops
+    if x.is_a? Class or x.is_a? Proc or x.is_a? Fiber or foo[x]
+      # puts "base case"
+      ObjectSpace.memsize_of(x)
+    else
+      # puts "recursive case: examine #{x.class} #{x.object_id}"
+      ObjectSpace.memsize_of(x) +
+      ObjectSpace.reachable_objects_from(x).map{|x| mem_size(x) }.reduce(&:+)
+    end
+  end
+  
+  def format_number(number, digits_per_group=3, delimiter=',')
+    number.to_s.each_char.reverse_each
+    .each_slice(digits_per_group).collect{|chunk| chunk.reverse.join() }
+    .reverse.join(delimiter)
+    
+  end
+
 end
 
