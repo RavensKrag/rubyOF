@@ -4,7 +4,8 @@ class Pipeline
     h = Helper.new
     block.call h
     
-    h.queue.reverse_each.inject(h.first) do |prev_obj, curr_block|
+    # p h.queue
+    h.queue.each.inject(h.first) do |prev_obj, curr_block|
       curr_block.call(prev_obj)
     end
   end

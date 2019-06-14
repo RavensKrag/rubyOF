@@ -249,31 +249,40 @@ class Controller
     # TODO: it might be possible for certain pieces of dynamic code to fail, and not others, causing synchronization issues. watch out for that.
     
     
+    # @core_space = History.new(Model::CoreSpace.new)
+    # @raw_input_history = History.new(LiveCode.new(
+    # @main_code =  History.new(
+    
+    puts "--- controller on_update BEGIN ---"
+    
     @i += 1
     
-    # FIXME: make sure all classes return self on update, otherwise the pipeline will not work as expected
+    # FIXME: make sure all classes return self on update, otherwise the Pipeline will not work as expected
     
     # input_queue -> @input_history -> @core_input
-    Pipeline.open do |p| 
-      p.start input_queue
-      p.pipe{|x| @input_history.update x }
-      p.pipe{|x| @core_input.update x => window }
-    end
-    
-    # @core_space -> @main_code ---> signal
     signal = 
       Pipeline.open do |p| 
-        p.start @core_space.update
-        p.pipe{|x| @main_code.update @i, x }
+        p.start input_queue
+        p.pipe{|x| @input_history.update x }
+        p.pipe{|x| @core_input.update x => window }
       end
-    p signal.class
+    # TODO: make sure there is a signal being returned here, and then deal with the error and stop early if necessary
+    
+    
+    # @core_space -> @main_code ---> signal
+    signal = @main_code.update @i, @core_space
+    @core_space.update
+      # p signal.class
     if signal == :error
       self.error_detected()
     end
-  
+    # NOTE: must update space LAST, otherwise any changes to space made by @main_code will not be saved until the next frame.
+    
+    
     # FIXME: need a way to generate new state from old user input, after code is changed (go back in time and change the past code, but keep the same inputs - interpret them differently)
       # will do this once I have mulitple timelines that can be edited
     
+    puts "--- controller on_update END ---"
   end
   
   def on_play

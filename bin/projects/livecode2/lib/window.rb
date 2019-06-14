@@ -101,7 +101,7 @@ class Window < RubyOF::Window
                   LIB_DIR / 'UI_InputController.rb')
     
     # Raw user input data (drives sequences)
-    @raw_input_history = History.new(LiveCode.new(
+    @input_history = History.new(LiveCode.new(
                              Model::RawInput.new,
                              LIB_DIR / 'model_raw_input.rb'))
     
@@ -112,7 +112,7 @@ class Window < RubyOF::Window
     
     
     # code env with live reloading
-    # (depends on @core_space and @raw_input_history)
+    # (depends on @core_space and @input_history)
     @main_code =  History.new(
                     LiveCode.new(Model::MainCode.new,
                                  LIB_DIR / 'model_main_code.rb'))
@@ -120,7 +120,7 @@ class Window < RubyOF::Window
     
     # the controller passes information between many objects
     @timeline_controller = 
-          Controller.new(@raw_input_history, @ui_input, @core_input,
+          Controller.new(@input_history, @ui_input, @core_input,
                          @main_code, @core_space)
     
     # visualize info
@@ -239,52 +239,6 @@ class Window < RubyOF::Window
     
   end
   
-  
-  
-  
-  # # == delegate raw inputs to @raw_input_history ==
-  # def key_pressed(key)
-  #   super(key)
-    
-  #   @raw_input_history.inner.key_pressed(key)
-  # end
-  
-  # def key_released(key)
-  #   super(key)
-    
-  #   @raw_input_history.inner.key_released(key)
-  # end
-  
-  
-  # def mouse_moved(x,y)
-  #   @raw_input_history.inner.mouse_moved(x,y)
-  # end
-  
-  # def mouse_pressed(x,y, button)
-  #   super(x,y, button)
-    
-  #   ofExit() if button == 8
-    
-  #   @raw_input_history.inner.mouse_pressed(x,y, button)
-  # end
-  
-  # def mouse_dragged(x,y, button)
-  #   super(x,y, button)
-    
-  #   @raw_input_history.inner.mouse_dragged(x,y, button)
-  # end
-  
-  # def mouse_released(x,y, button)
-  #   super(x,y, button)
-    
-  #   @raw_input_history.inner.mouse_released(x,y, button)
-  # end
-  
-  # def mouse_scrolled(x,y, scrollX, scrollY)
-  #   super(x,y, scrollX, scrollY) # debug print
-    
-  #   @raw_input_history.inner.mouse_scrolled(x,y, button)
-  # end
   
   
   

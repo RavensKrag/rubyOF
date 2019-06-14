@@ -29,7 +29,7 @@ module Model
       # TODO: consider separate method for UI code.
       out = @fibers[:update].update turn_number
       
-      puts "#{turn_number} => #{out}"
+      puts "#{self.class} : turn #{turn_number} => #{out.inspect}"
       # possible out states = [:waiting, :executing, :finished]
       
       
@@ -60,16 +60,17 @@ module Model
     end
     
     def encode_with(coder)
-      puts "    saving, in body"
+      puts "    saving, in Model::Code > #{self.class}"
       
       var_names = 
         self.instance_variables
         .collect{|sym| sym.to_s }
         .reject{|x| x.include? '@fibers' }
+        .reject{|x| x.include? 'history' }
                     
       # var_values = var_names.collect{|x| self.instance_variable_get x }
       
-      
+      # puts "history inner value: #{@space_history.inner.value}" 
       
       # from Text entity implementation
       data = Hash.new

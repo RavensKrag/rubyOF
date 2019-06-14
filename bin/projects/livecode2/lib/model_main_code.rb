@@ -20,6 +20,8 @@ module Model
       # Pass key values into the block by using @instance_variables.
       # (local variables can only be passed once - closure binds first value)
       @space_history = space_history
+      # NOTE: any varible with the word "history" in it will not be saved
+      # (may need to change this and make it so that there is a @tmp hash that I can use to pass data to the turns?? definitely don't want this object hanging on to other objects that use History when this one gets serialized. That's very bad.)
       
       
       super(turn_number) do |on|
@@ -35,7 +37,11 @@ module Model
           puts @payload # => 42 # @instance_var is evaluated in lexical scope
           
           @space_history.inner.tap do |space|
+            puts space.value
+            
             space.value = space.value + 10
+            
+            puts space.value
           end
           
         end

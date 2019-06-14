@@ -19,15 +19,17 @@ class History
   # signal seems to either be self, or an error code (Symbol)
   
   def update(*args)
+    puts "History#update : step #{@i} -> #{@i + 1} for #{@inner.class}"
     signal = @inner.update(*args)
     if signal.is_a? Symbol # symbols are used for error codes
-      puts "update failed for #{@inner.class}"
+      puts "update failed => #{signal.inspect}"
       return signal # pass signal to calling controller for error handling
     else
-      save()
       @i += 1
+      save()
       return self
     end
+      puts "---------"
   end
   
   def step_forward
@@ -69,7 +71,9 @@ class History
   
   
   def save
+    puts "saving... #{@inner.class}"
     @data  << @inner.to_yaml
+    puts "data size: #{@data.size}"
     @cache << YAML.load(@data.last)
   end
 end
