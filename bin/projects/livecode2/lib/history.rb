@@ -33,7 +33,7 @@ class History
   end
   
   def step_forward
-    if @i < @data.length
+    if @i < @data.length-1
       # stepping forward through history
       @i += 1
       
