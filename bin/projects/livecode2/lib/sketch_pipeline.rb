@@ -1,5 +1,28 @@
 
     
+    # # -- update
+    # @timeline_controller # back / forward / pause / play
+      
+    #   # input
+    #   @input_queue -> @ui_input
+    #   @input_queue -> @raw_input_history -> @core_input
+      
+    #   # code
+    #   @main_code
+      
+    #   # space
+    #   @core_space
+      
+      
+    # # visualization
+    # @main_view
+    # # -----
+    
+    
+    # # draw
+    # @main_view
+    
+
     # def =>(other)
     #   self
       
