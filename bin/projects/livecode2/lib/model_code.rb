@@ -8,6 +8,7 @@ module Model
     end
     
     def on_reload
+      @tmp = Hash.new
       @regenerate_update_thread = true
     end
     
@@ -66,7 +67,7 @@ module Model
         self.instance_variables
         .collect{|sym| sym.to_s }
         .reject{|x| x.include? '@fibers' }
-        .reject{|x| x.include? 'history' }
+        .reject{|x| x.include? '@tmp' }
                     
       # var_values = var_names.collect{|x| self.instance_variable_get x }
       
