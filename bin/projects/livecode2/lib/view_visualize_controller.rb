@@ -100,8 +100,13 @@ class View
       
       value = vars[:@core_space].inner.instance_variable_get(:@value).inspect
       
+      msg = [
+        "error state:     #{@controller.error_flag}",
+        "execution state: #{@controller.execution_state}",
+        "value: #{value}"
+      ].join("\n")
       screen_print(font: font, color: @colors[0],
-                     string: "state: #{@controller.execution_state}\nvalue: #{value}",
+                     string: msg,
                      position: start + CP::Vec2.new(0, -line_height*3))
       
       

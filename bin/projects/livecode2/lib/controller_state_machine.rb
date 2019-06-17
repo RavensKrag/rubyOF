@@ -76,7 +76,7 @@ class Controller
     # ----------
     
     event :play do
-      transition :paused => :running
+      transition :paused => :running, :if => :no_error?
     end
     
     after_transition :on => :play, :do => :on_play
@@ -87,15 +87,31 @@ class Controller
     end
     
     after_transition :on => :pause, :do => :on_pause
+  end
+  
+  
+  state_machine :error_flag, :initial => :no_error do
+    state :no_error do
+      
+    end
+    
+    state :error do
+      
+    end
     
     
     event :error_detected do
-      transition :running => :runtime_error
+      transition :no_error => :error
     end
     
+    after_transition :on => :error_detected, :do => :on_error_detected
+    
+    
     event :error_fixed do
-      transition :runtime_error => :running
+      transition :error => :no_error
     end
+    
+    after_transition :on => :error_fixed, :do => :on_error_fixed
   end
   
   # Can only step back in time if there is saved history to replay
@@ -292,6 +308,19 @@ class Controller
   def on_pause
     
   end
+  
+  
+  
+  
+  def on_error_detected
+    puts "error detected"
+    self.pause()
+  end
+  
+  def on_error_fixed
+    
+  end
+  
   
   
   
