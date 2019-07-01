@@ -19,7 +19,7 @@ app.h
 app.cpp
 
 
-002 - backbone of time traveling system
+005 - backbone of time traveling system
 ---
 history.rb
 
@@ -38,7 +38,7 @@ view_visualize_controller.rb
 
 
 
-003 - control from both UI and REPL
+006 - control from both UI and REPL
 ---
 pipeline.rb
 
