@@ -36,6 +36,7 @@ require LIB_DIR / 'model_core_space'
 require LIB_DIR / 'UI_model'
 
 require LIB_DIR / 'controller_state_machine'
+require LIB_DIR / 'controller_timeline'
 
 require LIB_DIR / 'UI_InputController'
 require LIB_DIR / 'Core_InputController'
