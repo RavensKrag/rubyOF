@@ -7,7 +7,19 @@ Some documentation to help explain now just what classes are, but how they fit t
 
 == groups of related files ==
 
-1 - backbone of time traveling system
+001 - baseline (main and window)
+---
+.gitignore
+button_event_codes.rb
+window.rb - lib/rubyOF
+window_guard.rb
+main.rb - bin
+main.rb bin/../lib
+app.h
+app.cpp
+
+
+002 - backbone of time traveling system
 ---
 history.rb
 
@@ -26,7 +38,7 @@ view_visualize_controller.rb
 
 
 
-2 - control from both UI and REPL
+003 - control from both UI and REPL
 ---
 pipeline.rb
 
