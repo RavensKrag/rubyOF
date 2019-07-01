@@ -7,7 +7,7 @@ Some documentation to help explain now just what classes are, but how they fit t
 
 == groups of related files ==
 
-001 - baseline (main and window)
+000-001 baseline (main and window)
 ---
 .gitignore
 button_event_codes.rb
@@ -19,7 +19,7 @@ app.h
 app.cpp
 
 
-005 - backbone of time traveling system
+000-005 backbone of time traveling system
 ---
 history.rb
 
@@ -38,7 +38,7 @@ view_visualize_controller.rb
 
 
 
-006 - control from both UI and REPL
+000-006 control from both UI and REPL
 ---
 pipeline.rb
 
@@ -52,3 +52,9 @@ Core_InputController.rb --> Core_InputController
 
 model_code.rb
 model_main_code.rb
+
+
+
+001-000 control from both UI and REPL
+---
+

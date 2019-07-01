@@ -1556,20 +1556,30 @@
 							{
 								"close":
 								{
+									"1":
+									[
+										4657,
+										4658
+									]
 								},
 								"icon":
 								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
 								},
 								"open":
 								{
+									"1":
+									[
+										4624,
+										4625
+									]
 								},
 								"unmatched":
 								{
-									"1":
-									[
-										870,
-										875
-									]
 								}
 							},
 							"bracket_highlighter.clone_regions":
