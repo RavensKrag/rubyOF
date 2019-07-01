@@ -77,7 +77,7 @@ class Controller
     
     event :play do
       transition :paused => :running, :if => :no_error?
-    end
+    end 
     
     after_transition :on => :play, :do => :on_play
     
@@ -342,5 +342,6 @@ class Controller
   # In the show, it means the ability to sense that the timeline has changed.
     # (Wait, that actually refers to change by d-mail. You don't move through time persay, but the world line moves around you. If you time leap / take a time machine back, and then cause a change - without incurring a time paradox - that's "opening steins;gate" [S01 E23, "Open the Steins Gate"])
     # wait no -- it's only opening steins gate when you cause a bifurcation in the system and enter a new attractor field. the only known mechanism for doing that is to decieve yourself and the world, changing events while maintaining the apperance of un-change. (krisu appears dead, but she is actually alive)
+
 end
 
