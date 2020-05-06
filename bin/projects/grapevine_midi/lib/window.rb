@@ -35,6 +35,14 @@ class Window < RubyOF::Window
     super("grapevine communication", w,h) # half screen
     # super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
     
+    
+    
+    screen_size = read_screen_size("Screen 0")
+    screen_w, screen_h = screen_size["current"]
+    puts "screen size: #{[screen_w, screen_h].inspect}"
+    
+    
+    
     # ofSetEscapeQuitsApp false
     
     puts "ruby: Window#initialize"
@@ -45,6 +53,7 @@ class Window < RubyOF::Window
   def setup
     super()
     
+    @first_draw = true
     
   end
   
@@ -76,6 +85,35 @@ class Window < RubyOF::Window
   
   def draw
     # super()
+    
+    
+    # NOTE: can't move window until window is open, so move on first draw call
+    if @first_draw
+      puts "pid: #{Process.pid}" 
+      
+      # list all windows (-l), displaying PID (-p) and window geometry (-G)
+      p "wmctrl -lpG | grep #{Process.pid}"
+      geometry_info = `wmctrl -lpG | grep #{Process.pid}`
+      puts "window geometry: #{geometry_info}"
+      
+      window_id_hex, desktop_num, pid, x_offset, y_offset, width, height, machine_name, *window_title = geometry_info.split(' ')
+      
+      puts "window position: #{[x_offset, y_offset].inspect}"
+      
+      
+      g = 0 # use default gravity
+      x = 0
+      y = 95
+      w = self.width
+      h = self.height
+      `wmctrl -ir #{window_id_hex} -e #{g},#{x},#{y},#{w},#{h}`
+      # ^ need to use wmctrl's "numeric window identity" hex id, not the PID
+      
+      # NOTE: could potentially also use wmctrl to restore windows to the same *workspace* as the last time the program was run
+      
+      
+      @first_draw = false
+    end
     
   end
   
@@ -192,5 +230,25 @@ class Window < RubyOF::Window
       
       ofDrawBitmapString(string, x,y,z)
     end
+  end
+  
+  # get hash of screen size info using xrandr
+  def read_screen_size(screen_id)
+    xrandr_description = `xrandr | grep "#{screen_id}"`
+    # => "Screen 0: minimum 320 x 200, current 3840 x 2160, maximum 16384 x 16384\n"
+    
+    screen_size = 
+      xrandr_description.chomp
+      .split(':')
+      .last.split(',')
+      .collect{|x|
+        property,x,_,y = x.split(' ');
+        x = x.to_i
+        y = y.to_i
+        
+        { property => [x,y] }
+      }.reduce(:merge)
+    
+    return screen_size
   end
 end
