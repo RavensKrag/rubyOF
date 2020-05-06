@@ -1,77 +1,73 @@
 ---
-- '[:$preload, :$:, :$-I, :$LOAD_PATH, :$", :$LOADED_FEATURES, :$cleanfiles, :$distcleanfiles,
-  :$static, :$config_h, :$default_static, :$configure_args, :$nmake, :$target, :$libdir,
-  :$rubylibdir, :$@, :$!, :$sitedir, :$archdir, :$sitearchdir, :$sitelibdir, :$vendorlibdir,
-  :$vendordir, :$mswin, :$vendorarchdir, :$cygwin, :$mingw, :$haiku, :$netbsd, :$universal,
-  :$solaris, :$srcs, :$stdin, :$stdout, :$stderr, :$>, :$extout, :$extmk, :$extout_prefix,
-  :$dest_prefix_pattern, :$LIBEXT, :$ASMEXT, :$hdrdir, :$topdir, :$top_srcdir, :$arch_hdrdir,
-  :$makefile_created, :$<, :$installed_list, :$., :$FILENAME, :$-i, :$*, :$curdir,
-  :$ignore_error, :$enable_shared, :$make, :$objs, :$distcleandirs, :$SAFE, :$INSTALLFILES,
-  :$&, :$`, :$'', :$+, :$=, :$KCODE, :$-K, :$have_devel, :$INCFLAGS, :$ARCH_FLAG,
-  :$LOCAL_LIBS, :$libs, :$srcdir, :$EXEEXT, :$VERBOSE, :$-v, :$-w, :$-W, :$DEBUG,
-  :$-d, :$0, :$PROGRAM_NAME, :$NONINSTALLFILES, :$fileutils_rb_have_lchmod, :$defs,
-  :$fileutils_rb_have_lchown, :$CPPFLAGS, :$LDFLAGS, :$LIBS, :$LIBRUBYARG, :$LIBRUBYARG_STATIC,
-  :$CXXFLAGS, :$LDSHARED_CXX, :$CFLAGS, :$typeof, :$warnflags, :$_, :$~, :$-p, :$-l,
-  :$?, :$$, :$arg_config, :$-a, :$CXX, :$;, :$-F, :$RICE_CPPFLAGS, :$RICE_LDFLAGS,
-  :$RICE_PREFIX, :$RICE_USING_MINGW32, :$DEFLIBPATH, :$extconf_h, :$OBJEXT, :$DLDFLAGS,
-  :$PKGCONFIG, :$,, :$/, :$-0, :$\, :$VPATH, :$LIBPATH, :$headers, :$LIBRUBYARG_SHARED,
-  :$ruby]'
-- "$preload": 
+- '[:$OBJEXT, :$:, :$-I, :$LOAD_PATH, :$", :$LOADED_FEATURES, :$DLDFLAGS, :$PKGCONFIG,
+  :$VPATH, :$LIBPATH, :$headers, :$LIBRUBYARG_SHARED, :$@, :$!, :$preload, :$ruby,
+  :$cleanfiles, :$distcleanfiles, :$static, :$config_h, :$stdin, :$stdout, :$stderr,
+  :$>, :$configure_args, :$libdir, :$default_static, :$archdir, :$rubylibdir, :$sitelibdir,
+  :$sitedir, :$vendordir, :$sitearchdir, :$vendorarchdir, :$vendorlibdir, :$<, :$mswin,
+  :$., :$FILENAME, :$-i, :$*, :$cygwin, :$netbsd, :$haiku, :$mingw, :$universal, :$dest_prefix_pattern,
+  :$extout, :$solaris, :$extmk, :$SAFE, :$LIBEXT, :$extout_prefix, :$hdrdir, :$topdir,
+  :$top_srcdir, :$arch_hdrdir, :$nmake, :$target, :$installed_list, :$makefile_created,
+  :$objs, :$INSTALLFILES, :$srcs, :$curdir, :$ignore_error, :$ASMEXT, :$make, :$distcleandirs,
+  :$enable_shared, :$&, :$`, :$'', :$+, :$=, :$KCODE, :$-K, :$have_devel, :$INCFLAGS,
+  :$ARCH_FLAG, :$VERBOSE, :$-v, :$-w, :$-W, :$DEBUG, :$-d, :$0, :$PROGRAM_NAME, :$LOCAL_LIBS,
+  :$libs, :$EXEEXT, :$srcdir, :$NONINSTALLFILES, :$defs, :$CPPFLAGS, :$LDFLAGS, :$LIBS,
+  :$LIBRUBYARG, :$_, :$~, :$CXXFLAGS, :$LIBRUBYARG_STATIC, :$?, :$$, :$CFLAGS, :$LDSHARED_CXX,
+  :$;, :$-F, :$typeof, :$warnflags, :$-p, :$-l, :$-a, :$,, :$/, :$-0, :$\, :$RICE_CPPFLAGS,
+  :$CXX, :$RICE_PREFIX, :$RICE_LDFLAGS, :$DEFLIBPATH, :$RICE_USING_MINGW32, :$arg_config,
+  :$extconf_h]'
+- "$OBJEXT": o
+  "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
+  "$PKGCONFIG": 
+  "$VPATH":
+  - "$(srcdir)"
+  - "$(arch_hdrdir)/ruby"
+  - "$(hdrdir)/ruby"
+  "$LIBPATH": []
+  "$headers": []
+  "$LIBRUBYARG_SHARED": "-Wl,-rpath,$(libdir) -L$(libdir) -l$(RUBY_SO_NAME)"
+  "$preload": 
+  "$ruby": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin/$(RUBY_BASE_NAME)"
   "$cleanfiles":
   - mkmf.log
   "$distcleanfiles": []
   "$static": 
   "$config_h": "$(arch_hdrdir)/ruby/config.h"
-  "$default_static": 
   "$configure_args":
     "--prefix": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1"
     "--disable-install-doc": true
     "--enable-shared": true
     "--topsrcdir": "."
     "--topdir": "."
-  "$nmake": 
-  "$target": rubyOF/rubyOF
   "$libdir": "$(exec_prefix)/lib"
-  "$rubylibdir": "$(rubylibprefix)/$(ruby_version)"
-  "$sitedir": "$(rubylibprefix)/site_ruby"
+  "$default_static": 
   "$archdir": "$(rubyarchdir)"
-  "$sitearchdir": "$(sitelibdir)/$(sitearch)"
+  "$rubylibdir": "$(rubylibprefix)/$(ruby_version)"
   "$sitelibdir": "$(sitedir)/$(ruby_version)"
-  "$vendorlibdir": "$(vendordir)/$(ruby_version)"
+  "$sitedir": "$(rubylibprefix)/site_ruby"
   "$vendordir": "$(rubylibprefix)/vendor_ruby"
-  "$mswin": 
+  "$sitearchdir": "$(sitelibdir)/$(sitearch)"
   "$vendorarchdir": "$(vendorlibdir)/$(sitearch)"
+  "$vendorlibdir": "$(vendordir)/$(ruby_version)"
+  "$mswin": 
   "$cygwin": 
-  "$mingw": 
-  "$haiku": 
   "$netbsd": 
+  "$haiku": 
+  "$mingw": 
   "$universal": 
-  "$solaris": 
-  "$srcs":
-  - "./Fbo.cpp"
-  - "./Graphics.cpp"
-  - "./GraphicsAdvanced.cpp"
-  - "./Mesh.cpp"
-  - "./TrueTypeFont.cpp"
-  - "./image.cpp"
-  - "./launcher.cpp"
-  - "./rubyOF.cpp"
-  "$extout": 
-  "$extmk": false
-  "$extout_prefix": 
   "$dest_prefix_pattern": !ruby/regexp /\A/
+  "$extout": 
+  "$solaris": 
+  "$extmk": false
   "$LIBEXT": a
-  "$ASMEXT": S
+  "$extout_prefix": 
   "$hdrdir": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/include/ruby-2.5.0"
   "$topdir": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/include/ruby-2.5.0"
   "$top_srcdir": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/include/ruby-2.5.0"
   "$arch_hdrdir": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/include/ruby-2.5.0/x86_64-linux"
-  "$makefile_created": true
+  "$nmake": 
+  "$target": rubyOF/rubyOF
   "$installed_list": 
-  "$curdir": "."
-  "$ignore_error": " 2> /dev/null || true"
-  "$enable_shared": true
-  "$make": make
+  "$makefile_created": true
   "$objs":
   - Fbo.o
   - Graphics.o
@@ -81,15 +77,29 @@
   - image.o
   - launcher.o
   - rubyOF.o
-  "$distcleandirs": []
   "$INSTALLFILES": []
+  "$srcs":
+  - "./Fbo.cpp"
+  - "./Graphics.cpp"
+  - "./GraphicsAdvanced.cpp"
+  - "./Mesh.cpp"
+  - "./TrueTypeFont.cpp"
+  - "./image.cpp"
+  - "./launcher.cpp"
+  - "./rubyOF.cpp"
+  "$curdir": "."
+  "$ignore_error": " 2> /dev/null || true"
+  "$ASMEXT": S
+  "$make": make
+  "$distcleandirs": []
+  "$enable_shared": true
   "$have_devel": true
   "$INCFLAGS": "-I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)"
   "$ARCH_FLAG": ''
   "$LOCAL_LIBS": ''
   "$libs": "-lstdc++ "
-  "$srcdir": "."
   "$EXEEXT": ''
+  "$srcdir": "."
   "$NONINSTALLFILES":
   - !ruby/regexp /~\z/
   - !ruby/regexp /\A#.*#\z/
@@ -99,10 +109,8 @@
   - !ruby/regexp /\.rej\z/
   - !ruby/regexp /\.l[ao]\z/
   - !ruby/regexp /\.o\z/
-  "$fileutils_rb_have_lchmod": 
   "$defs": []
-  "$fileutils_rb_have_lchown": 
-  "$CPPFLAGS": " $(DEFS) $(cppflags)  -I/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.2/ruby/lib/include
+  "$CPPFLAGS": " $(DEFS) $(cppflags)  -I/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib/include
     -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/orc-0.4
     -I/usr/include/gstreamer-1.0 -I/usr/include/AL -I/usr/include/x86_64-linux-gnu
     -I/usr/include/rtaudio -I/usr/include/alsa -I/usr/include/libdrm -I/usr/include/gtk-3.0
@@ -136,7 +144,7 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
     -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
-  "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.2/ruby/lib/lib
+  "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib/lib
     -lrice /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
     \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed
     -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
@@ -151,12 +159,12 @@
   "$LIBS": "-lpthread -lgmp -ldl -lcrypt -lm   -lc"
   "$LIBRUBYARG": "-Wl,-rpath,/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib -L/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib
     -lruby"
-  "$LIBRUBYARG_STATIC": "-Wl,-rpath,/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib -L/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib
-    -lruby-static"
   "$CXXFLAGS": " -Wall -g -O3 -march=native -mtune=native -Werror=return-type -std=c++14
     -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"
-  "$LDSHARED_CXX": g++ -shared
+  "$LIBRUBYARG_STATIC": "-Wl,-rpath,/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib -L/home/ravenskrag/.rvm/rubies/ruby-2.5.1/lib
+    -lruby-static"
   "$CFLAGS": "$(cflags)  -fPIC -fdiagnostics-color=always"
+  "$LDSHARED_CXX": g++ -shared
   "$typeof": 
   "$warnflags": "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long
     -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings
@@ -164,6 +172,15 @@
     -Wsuggest-attribute=format -Wno-maybe-uninitialized"
   "$-p": false
   "$-l": false
+  "$-a": false
+  "$RICE_CPPFLAGS": ''
+  "$CXX": g++
+  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib"
+  "$RICE_LDFLAGS": ''
+  "$DEFLIBPATH":
+  - "."
+  - "$(libdir)"
+  "$RICE_USING_MINGW32": false
   "$arg_config":
   - - "--with-opt-dir"
     - 
@@ -195,24 +212,4 @@
     - 
   - - "--without-stdc++lib"
     - 
-  "$-a": false
-  "$CXX": g++
-  "$RICE_CPPFLAGS": ''
-  "$RICE_LDFLAGS": ''
-  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.2/ruby/lib"
-  "$RICE_USING_MINGW32": false
-  "$DEFLIBPATH":
-  - "."
-  - "$(libdir)"
   "$extconf_h": 
-  "$OBJEXT": o
-  "$DLDFLAGS": "-Wl,--compress-debug-sections=zlib"
-  "$PKGCONFIG": 
-  "$VPATH":
-  - "$(srcdir)"
-  - "$(arch_hdrdir)/ruby"
-  - "$(hdrdir)/ruby"
-  "$LIBPATH": []
-  "$headers": []
-  "$LIBRUBYARG_SHARED": "-Wl,-rpath,$(libdir) -L$(libdir) -l$(RUBY_SO_NAME)"
-  "$ruby": "/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin/$(RUBY_BASE_NAME)"

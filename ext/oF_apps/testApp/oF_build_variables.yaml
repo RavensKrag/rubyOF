@@ -295,7 +295,7 @@ LESSOPEN:
 - "/usr/bin/lesspipe"
 - "%s"
 RUBYOF_PROJECT:
-- livecode2
+- grapevine_midi
 OF_PROJECT_DEFINES: []
 CPP:
 - cc
@@ -384,7 +384,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1601,unix/ravensnest:/tmp/.ICE-unix/1601
+- local/ravensnest:@/tmp/.ICE-unix/1831,unix/ravensnest:/tmp/.ICE-unix/1831
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 rvm_stored_umask:
@@ -474,7 +474,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-nc0L6Ajo6LDb/agent.1381"
+- "/tmp/ssh-dZZF0riczsnj/agent.1582"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -532,7 +532,7 @@ PLATFORM_OS:
 rvm_bin_path:
 - "/home/ravenskrag/.rvm/bin"
 PWD:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/sketch/new_timetravel"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects"
 ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
 KDE_SESSION_VERSION:
@@ -568,7 +568,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1527'
+- '1728'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -1332,7 +1332,7 @@ COMPILE.C:
 COMPILE.mod:
 - m2c
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/1f7d3d76_b005_48f9_b105_34291b351eaf"
+- "/org/gnome/Terminal/screen/ce4281d1_ff83_40d5_a5a2_656ae7c9a100"
 "^F": []
 COMPILE.S:
 - cc
@@ -1351,7 +1351,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.1399"
+- ":1.478"
 SUFFIXES:
 - ".out"
 - ".a"
