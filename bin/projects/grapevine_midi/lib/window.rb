@@ -32,7 +32,7 @@ class Window < RubyOF::Window
     w,h = *window_size
     
     # super("Youtube Subscription Browser", 1853, 1250)
-    super("livecode v2.0", w,h) # half screen
+    super("grapevine communication", w,h) # half screen
     # super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
     
     # ofSetEscapeQuitsApp false
