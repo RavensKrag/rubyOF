@@ -65,7 +65,7 @@ class Window < RubyOF::Window
       # ^ Calls Ruby-defined callback functions, not the C++ ones.
       #   Useful for baseline debugging, but not otherwise necessary
       
-      @input_queue << [sym, args]
+      # @input_queue << [sym, args]
     end
   end
   
@@ -82,7 +82,6 @@ class Window < RubyOF::Window
   def on_exit
     super()
     
-    # @live.on_exit unless @live.nil?
     
     # --- Save data
     dump_yaml [self.width, self.height] => @window_dimension_save_file
@@ -90,6 +89,8 @@ class Window < RubyOF::Window
     
     # --- Clear Ruby-level memory
     GC.start
+    
+    puts "FINISHED!"
     
   end
   

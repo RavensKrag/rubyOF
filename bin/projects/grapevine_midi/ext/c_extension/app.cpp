@@ -108,8 +108,8 @@ void rbApp::setup(){
 	// through C++ code (which is what I want for this project).
 	
 	
-	// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
-	mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
+	// // NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
+	// mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
 	
 	
 	
@@ -353,13 +353,13 @@ void rbApp::dragEvent(ofDragInfo dragInfo){
 	
 	// ./test.rb:190:in `show': Unable to convert std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >* (ArgumentError)
 	
-	Rice::Array filepaths;
+	// Rice::Array filepaths;
 	
-	for(std::__cxx11::basic_string<char>& e : dragInfo.files){
-		filepaths.push(to_ruby(e));
-	}
+	// for(std::__cxx11::basic_string<char>& e : dragInfo.files){
+	// 	filepaths.push(to_ruby(e));
+	// }
 
-	mSelf.call("drag_event", filepaths, dragInfo.position);
+	// mSelf.call("drag_event", filepaths, dragInfo.position);
 }
 
 void rbApp::gotMessage(ofMessage msg){
