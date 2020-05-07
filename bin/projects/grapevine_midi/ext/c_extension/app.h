@@ -8,6 +8,7 @@
 #include "ofxDatGui.h"
 #include "ofxImGui.h"
 // #include "ofxColorPicker.h"
+#include "ofxMidi.h"
 
 // rice data types
 #include "rice/Data_Type.hpp"
@@ -20,7 +21,7 @@
 // #include "rice/ruby_try_catch.hpp"
 
 
-class rbApp : public ofBaseApp{
+class rbApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
 		rbApp(Rice::Object);
@@ -30,7 +31,7 @@ class rbApp : public ofBaseApp{
 		virtual void update();
 		virtual void draw();
 		virtual void exit();
-
+		
 		virtual void keyPressed(int key);
 		virtual void keyReleased(int key);
 		virtual void mouseMoved(int x, int y );
@@ -44,6 +45,8 @@ class rbApp : public ofBaseApp{
 		virtual void dragEvent(ofDragInfo dragInfo);
 		virtual void gotMessage(ofMessage msg);
 	
+		void newMidiMessage(ofxMidiMessage& msg);
+		
 	protected:
 		Rice::Object mSelf;
 		
@@ -68,4 +71,9 @@ class rbApp : public ofBaseApp{
 		bool mUI_InputCapture;
 		
 		uint64_t timestamp_us; // timestamp in microseconds (u looks like a greek character)
+		
+		
+		ofxMidiIn midiIn;
+		std::vector<ofxMidiMessage> midiMessages;
+		std::size_t maxMessages = 10; //< max number of messages to keep track of
 };

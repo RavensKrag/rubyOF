@@ -83,6 +83,44 @@ void rbApp::setup(){
 	ImGui::GetIO().MouseDrawCursor = false;
 	
 	
+	
+	
+	
+	
+	// print input ports to console
+	midiIn.listInPorts();
+	
+	// // open port by number (you may need to change this)
+	// midiIn.openPort(1);
+	// //midiIn.openPort("IAC Pure Data In");	// by name
+	// //midiIn.openVirtualPort("ofxMidiIn Input"); // open a virtual port
+	
+	midiIn.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
+	
+	
+	
+	// don't ignore sysex, timing, & active sense messages,
+	// these are ignored by default
+	midiIn.ignoreTypes(false, false, false);
+	
+	// add ofApp as a listener
+	midiIn.addListener(this);
+	
+	// print received messages to the console
+	midiIn.setVerbose(true);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// ========================================
 	// ========================================
 	
@@ -213,6 +251,58 @@ void rbApp::draw(){
 	
 	
 	
+	
+	
+	for(unsigned int i = 0; i < midiMessages.size(); ++i) {
+		
+		ofxMidiMessage &message = midiMessages[i];
+		int x = 10;
+		int y = i*40 + 40;
+		
+		// draw the last recieved message contents to the screen,
+		// this doesn't print all the data from every status type
+		// but you should get the general idea
+		stringstream text;
+		text << ofxMidiMessage::getStatusString(message.status);
+		while(text.str().length() < 16) { // pad status width
+			text << " ";
+		}
+		
+		ofSetColor(127);
+		if(message.status < MIDI_SYSEX) {
+			text << "chan: " << message.channel;
+			if(message.status == MIDI_CONTROL_CHANGE) {
+				text << "\tctl: " << message.control;
+				ofDrawRectangle(x + ofGetWidth()*0.2, y + 12,
+					ofMap(message.control, 0, 127, 0, ofGetWidth()*0.2), 10);
+			}
+			else if(message.status == MIDI_PITCH_BEND) {
+				text << "\tval: " << message.value;
+				ofDrawRectangle(x + ofGetWidth()*0.2, y + 12,
+					ofMap(message.value, 0, MIDI_MAX_BEND, 0, ofGetWidth()*0.2), 10);
+			}
+			else {
+				text << "\tpitch: " << message.pitch;
+				ofDrawRectangle(x + ofGetWidth()*0.2, y + 12,
+					ofMap(message.pitch, 0, 127, 0, ofGetWidth()*0.2), 10);
+
+				text << "\tvel: " << message.velocity;
+				ofDrawRectangle(x + (ofGetWidth()*0.2 * 2), y + 12,
+					ofMap(message.velocity, 0, 127, 0, ofGetWidth()*0.2), 10);
+			}
+			text << " "; // pad for delta print
+		}
+
+		text << "delta: " << message.deltatime;
+		ofSetColor(0);
+		ofDrawBitmapString(text.str(), x, y);
+		text.str(""); // clear
+	}
+	
+	
+	
+	
+	
 	// ========================================
 	// ========================================
 }
@@ -228,6 +318,11 @@ void rbApp::exit(){
 	delete mDatGui;
 	
 	
+	// clean up
+	midiIn.closePort();
+	midiIn.removeListener(this);
+	
+	
 	// ========================================
 	// ========================================
 	
@@ -236,6 +331,19 @@ void rbApp::exit(){
 }
 
 
+//--------------------------------------------------------------
+void rbApp::newMidiMessage(ofxMidiMessage& msg) {
+	
+	// add the latest message to the message queue
+	midiMessages.push_back(msg);
+	
+	// remove any old messages if we have too many
+	while(midiMessages.size() > maxMessages) {
+		midiMessages.erase(midiMessages.begin());
+	}
+}
+
+//--------------------------------------------------------------
 void rbApp::keyPressed(int key){
 	// Something seems to be consuming most keyboard events
 	// when the application is started via the Ruby layer in Rake.
@@ -270,6 +378,7 @@ void rbApp::keyPressed(int key){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::keyReleased(int key){
 	ofBaseApp::keyReleased(key);
 	
@@ -278,6 +387,7 @@ void rbApp::keyReleased(int key){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseMoved(int x, int y ){
 	ofBaseApp::mouseMoved(x,y);
 	
@@ -286,6 +396,7 @@ void rbApp::mouseMoved(int x, int y ){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseDragged(int x, int y, int button){
 	ofBaseApp::mouseDragged(x,y,button);
 	
@@ -294,6 +405,7 @@ void rbApp::mouseDragged(int x, int y, int button){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mousePressed(int x, int y, int button){
 	ofBaseApp::mousePressed(x,y,button);
 	
@@ -302,6 +414,7 @@ void rbApp::mousePressed(int x, int y, int button){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseReleased(int x, int y, int button){
 	ofBaseApp::mouseReleased(x,y,button);
 	
@@ -310,6 +423,7 @@ void rbApp::mouseReleased(int x, int y, int button){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseEntered(int x, int y){
 	ofBaseApp::mouseEntered(x,y);
 	
@@ -318,6 +432,7 @@ void rbApp::mouseEntered(int x, int y){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseExited(int x, int y){
 	ofBaseApp::mouseExited(x,y);
 	
@@ -326,6 +441,7 @@ void rbApp::mouseExited(int x, int y){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
 	ofBaseApp::mouseScrolled(x,y, scrollX, scrollY);
 	
@@ -334,12 +450,14 @@ void rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
 	}
 }
 
+//--------------------------------------------------------------
 void rbApp::windowResized(int w, int h){
 	ofBaseApp::windowResized(w,h);
 	
 	mSelf.call("window_resized", w,h);
 }
 
+//--------------------------------------------------------------
 void rbApp::dragEvent(ofDragInfo dragInfo){
 	// NOTE: drag event example works with Nautilus, but not Thunar (GLFW window)
 	
@@ -362,6 +480,7 @@ void rbApp::dragEvent(ofDragInfo dragInfo){
 	// mSelf.call("drag_event", filepaths, dragInfo.position);
 }
 
+//--------------------------------------------------------------
 void rbApp::gotMessage(ofMessage msg){
 	ofBaseApp::gotMessage(msg);
 	
