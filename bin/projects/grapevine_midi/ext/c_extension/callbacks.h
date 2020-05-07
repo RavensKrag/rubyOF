@@ -2,6 +2,7 @@
 
 
 #include "ofMain.h"
+#include "ofxMidi.h"
 
 // must be AFTER OpenFrameworks includes, or compiler gets confused
 // NOTE: Might be able to just run this 'include' from the main CPP file?

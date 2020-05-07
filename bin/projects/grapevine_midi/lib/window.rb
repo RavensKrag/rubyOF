@@ -20,12 +20,19 @@ LIB_DIR = current_file.parent
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
 
+require LIB_DIR/'input_handler.rb'
+
+
+require LIB_DIR/'ofx_extensions.rb'
+
 
 class Window < RubyOF::Window
   include HelperFunctions
   
   PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
   def initialize
+    @cpp_ptr = Hash.new
+    
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
     window_geometry = YAML.load_file(@window_geometry_file)
@@ -44,6 +51,74 @@ class Window < RubyOF::Window
     puts "ruby: Window#initialize"
     
     
+    @input_handler = InputHandler.new
+    
+    
+    
+    # btn_id = 120 # the 'x' key
+    btn_id = 'x'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press x"
+        
+        channel = 2
+        note = 72
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release x"
+        
+        channel = 2
+        note = 72
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
+    
+    # btn_id = 100 # the 'd' key
+    btn_id = 'd'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press d"
+        
+        channel = 2
+        note = 72+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release d"
+        
+        channel = 2
+        note = 72+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
+    # if you try to send two notes at once, then synth freaks out and gets stuck - not sure why, but I need to fix that asap to have proper communication via midi
+    
+    
   end
   
   def setup
@@ -53,11 +128,37 @@ class Window < RubyOF::Window
     
   end
   
+  def update
+    # super()
+    
+    @input_handler.update
+  end
+  
+  def draw
+    # super()
+    
+    
+    if @first_draw
+      # screen_size = read_screen_size("Screen 0")
+      # screen_w, screen_h = screen_size["current"]
+      # puts "screen size: #{[screen_w, screen_h].inspect}"
+      
+      puts "---> callback from ruby"
+      @cpp_ptr["midiOut"].listOutPorts()
+      puts "<--- callback end"
+      
+      
+      @first_draw = false
+    end
+    
+  end
+  
+  
   # delegate inputs to input handler
   INPUT_EVENTS = 
   [
-    :key_pressed,
-    :key_released,
+    # :key_pressed,
+    # :key_released,
     :mouse_moved,
     :mouse_pressed,
     :mouse_dragged,
@@ -74,27 +175,14 @@ class Window < RubyOF::Window
     end
   end
   
-  def update
-    # super()
-    
+  def key_pressed(key)
+    @input_handler.key_pressed(key)
   end
   
-  def draw
-    # super()
-    
-    
-    if @first_draw
-      # screen_size = read_screen_size("Screen 0")
-      # screen_w, screen_h = screen_size["current"]
-      # puts "screen size: #{[screen_w, screen_h].inspect}"
-      
-      
-      
-      
-      @first_draw = false
-    end
-    
+  def key_released(key)
+    @input_handler.key_released(key)
   end
+  
   
   def on_exit
     super()
@@ -191,6 +279,10 @@ class Window < RubyOF::Window
     end
   end
   
+  
+  def recieve_cpp_pointer(name, data)
+    @cpp_ptr[name] = data
+  end
   
   
   private

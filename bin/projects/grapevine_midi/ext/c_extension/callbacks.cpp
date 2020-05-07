@@ -22,4 +22,95 @@ void Init_rubyOF_project()
 	rb_mCallbacks
 		.define_module_function("test_callback", &cpp_callback)
 	;
+	
+	
+	
+	
+	
+	
+	
+	// 
+	// standard binding example:
+	// 
+	
+	// Data_Type<ofPoint> rb_cPoint =
+	// 	define_class_under<ofPoint>(rb_mRubyOF, "Point");
+	
+	// rb_cPoint
+	// 	.define_constructor(Constructor<ofPoint, float, float, float>())
+	// 	.define_method("get_component",   &ofVec3f_get_component)
+	// 	.define_method("set_component",   &ofVec3f_set_component)
+	// ;
+	
+	
+	// 
+	// binding overloaded member function example
+	// 
+	
+	// rb_cFbo
+	// 	.define_constructor(Constructor<ofFbo>())
+		
+	// 	// .define_method("allocate",  ofFbo_allocWRAP(&ofFbo::allocate))
+	// 	.define_method("allocate",  &ofFbo_allocate_from_struct)
+		
+	// 	.define_method("begin",
+	// 		static_cast< void (ofFbo::*)
+	// 		(ofFboMode mode)
+	// 		>(&ofFbo::begin),
+	// 		(
+	// 			Arg("mode") = OF_FBOMODE_PERSPECTIVE | OF_FBOMODE_MATRIXFLIP
+	// 		)
+	// 	)
+	// ;
+	
+	
+	// 
+	// binding overloaded C++ function example
+	// 
+	
+	// // --- Ok, time to bind some useful stuff.
+	// Module rb_mGraphics = define_module_under(rb_mRubyOF, "Graphics");
+	// // ------------------
+	// // global oF functions
+	// // ------------------
+	
+	// typedef void (*wrap_matrix_op)(const glm::mat4 & m);
+	
+	// rb_mGraphics
+	// 	// bitmap string
+	// 	.define_method("ofDrawBitmapString",
+	// 		static_cast< void (*)
+	// 		(const std::string& textString, float x, float y, float z)
+	// 		>(&ofDrawBitmapString)
+	// 	)
+	// ;
+	
+	
+	
+	
+	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
+	
+	Data_Type<ofxMidiOut> rb_c_ofxMidiOut =
+		define_class_under<ofxMidiOut>(rb_mOFX, "MidiOut");
+	
+	rb_c_ofxMidiOut
+		.define_constructor(Constructor<ofxMidiOut>())
+		.define_method("sendNoteOn",   &ofxMidiOut::sendNoteOn)
+		.define_method("sendNoteOff",  &ofxMidiOut::sendNoteOff)
+		.define_method("listOutPorts", &ofxMidiOut::listOutPorts)
+		
+		// .define_method("openPort",     &ofxMidiOut::openPort)
+		.define_method("openPort_uint",
+			static_cast< bool (ofxMidiOut::*)
+			(unsigned int portNumber)
+			>(&ofxMidiOut::openPort)
+		)
+		.define_method("openPort_string",
+			static_cast< bool (ofxMidiOut::*)
+			(std::string deviceName)
+			>(&ofxMidiOut::openPort)
+		)
+	;
+	
+	// ofxMidiOut midiOut
 }

@@ -121,7 +121,16 @@ void rbApp::setup(){
 	
 	
 	
+	// give ruby access to the midiOut object
 	
+	Rice::Data_Object<ofxMidiOut> rb_ofxMidiOut_ptr(
+		&midiOut,
+		Rice::Data_Type< ofxMidiOut >::klass(),
+		Rice::Default_Mark_Function< ofxMidiOut >::mark,
+		Null_Free_Function< ofxMidiOut >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "midiOut", rb_ofxMidiOut_ptr);
 	
 	
 	
@@ -373,19 +382,6 @@ void rbApp::keyPressed(int key){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	if(key == 'u'){
-		int channel = 2;
-		int note = 72;
-		int velocity = 64;
-		midiOut.sendNoteOn(channel, note,  velocity);
-	}
-	
-	if(key == 'U'){
-		int channel = 3;
-		int note = 72;
-		int velocity = 64;
-		midiOut.sendNoteOn(channel, note,  velocity);
-	}
 	
 	
 	// ========================================
@@ -405,20 +401,6 @@ void rbApp::keyReleased(int key){
 	
 	
 	
-	
-	if(key == 'u'){
-		int channel = 2;
-		int note = 72;
-		int velocity = 0;
-		midiOut.sendNoteOff(channel, note,  velocity);
-	}
-	
-	if(key == 'U'){
-		int channel = 3;
-		int note = 72;
-		int velocity = 0;
-		midiOut.sendNoteOff(channel, note,  velocity);
-	}
 	
 	
 	
