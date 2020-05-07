@@ -208,10 +208,6 @@ class Window < RubyOF::Window
   def drag_event(files, position)
     p [files, position]
     
-    #   ./lib/main.rb:41:in `show': Unable to convert glm::tvec2<float, (glm::precision)0>* (ArgumentError)
-    # from ./lib/main.rb:41:in `<main>'
-    
-    # the 'position' variable is of an unknown type, leading to a crash
   end
   
   def show_text(pos, obj)

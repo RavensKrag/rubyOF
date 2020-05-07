@@ -113,4 +113,32 @@ void Init_rubyOF_project()
 	;
 	
 	// ofxMidiOut midiOut
+	
+	
+	
+	
+	// glm uses functions not methods
+	// https://openframeworks.cc/documentation/glm/
+	
+	// can get members of vector either as x and y, or with array-style access
+	
+	Module rb_mGLM    = define_module("GLM");
+	
+	Data_Type<glm::tvec2<float>> rb_cVec2_float =
+		define_class_under<glm::tvec2<float>>(rb_mGLM, "Vec2_float");
+	
+	rb_cVec2_float
+		.define_method("get_component",   &glm_tvec2_float_get_component)
+		.define_method("set_component",   &glm_tvec2_float_set_component)
+	;
 }
+
+
+float glm_tvec2_float_get_component(glm::tvec2<float>& p, int i){
+	return p[i];
+}
+
+void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value){
+	
+}
+

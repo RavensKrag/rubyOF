@@ -485,21 +485,33 @@ void rbApp::dragEvent(ofDragInfo dragInfo){
 	
 	// https://github.com/openframeworks/openFrameworks/issues/1862
 	// ^ this issue explains that Glut windows can not process file drag events on Linux
+	// as of 2020.05.07, the issue has been resolved
+	// in fact, it was closed on 2017.01.30
 	
 	ofBaseApp::dragEvent(dragInfo);
+	
 	
 	
 	// NOTE: dragInfo.files is a std::vector, not an array. Apparently, Rice doesn't understand how to convert that into a Ruby array? so I guess that needs to be done manually...
 	
 	// ./test.rb:190:in `show': Unable to convert std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >* (ArgumentError)
 	
-	// Rice::Array filepaths;
+	Rice::Array filepaths;
 	
-	// for(std::__cxx11::basic_string<char>& e : dragInfo.files){
+	
+	for(int i=0; i < dragInfo.files.size(); i++) {
+		std::string &s = dragInfo.files[i];
+		filepaths.push(to_ruby(s));
+	}
+	
+	// ofxMidiMessage &message = midiMessages[i];
+	
+	
+	// for(std::string e : dragInfo.files){
 	// 	filepaths.push(to_ruby(e));
 	// }
 
-	// mSelf.call("drag_event", filepaths, dragInfo.position);
+	mSelf.call("drag_event", filepaths, dragInfo.position);
 }
 
 //--------------------------------------------------------------
