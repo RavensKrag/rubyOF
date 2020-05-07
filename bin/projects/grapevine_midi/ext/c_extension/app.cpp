@@ -94,10 +94,7 @@ void rbApp::setup(){
 	// midiIn.openPort(1);
 	// //midiIn.openPort("IAC Pure Data In");	// by name
 	// //midiIn.openVirtualPort("ofxMidiIn Input"); // open a virtual port
-	
 	midiIn.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
-	
-	
 	
 	// don't ignore sysex, timing, & active sense messages,
 	// these are ignored by default
@@ -110,6 +107,17 @@ void rbApp::setup(){
 	midiIn.setVerbose(true);
 	
 	
+	
+	
+	
+	// print the available output ports to the console
+	midiOut.listOutPorts();
+	
+	// connect
+	// midiOut.openPort(0); // by number
+	// //midiOut.openPort("IAC Driver Pure Data In"); // by name
+	// //midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
+	midiOut.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
 	
 	
 	
@@ -322,6 +330,8 @@ void rbApp::exit(){
 	midiIn.closePort();
 	midiIn.removeListener(this);
 	
+	midiOut.closePort();
+	
 	
 	// ========================================
 	// ========================================
@@ -363,8 +373,19 @@ void rbApp::keyPressed(int key){
 	// ========================================
 	// ========== add new stuff here ==========
 	
+	if(key == 'u'){
+		int channel = 2;
+		int note = 72;
+		int velocity = 64;
+		midiOut.sendNoteOn(channel, note,  velocity);
+	}
 	
-	
+	if(key == 'U'){
+		int channel = 3;
+		int note = 72;
+		int velocity = 64;
+		midiOut.sendNoteOn(channel, note,  velocity);
+	}
 	
 	
 	// ========================================
@@ -381,6 +402,25 @@ void rbApp::keyPressed(int key){
 //--------------------------------------------------------------
 void rbApp::keyReleased(int key){
 	ofBaseApp::keyReleased(key);
+	
+	
+	
+	
+	if(key == 'u'){
+		int channel = 2;
+		int note = 72;
+		int velocity = 0;
+		midiOut.sendNoteOff(channel, note,  velocity);
+	}
+	
+	if(key == 'U'){
+		int channel = 3;
+		int note = 72;
+		int velocity = 0;
+		midiOut.sendNoteOff(channel, note,  velocity);
+	}
+	
+	
 	
 	if (!mUI_InputCapture) {
 		mSelf.call("key_released", key);
