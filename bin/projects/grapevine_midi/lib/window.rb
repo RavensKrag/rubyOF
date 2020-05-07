@@ -128,6 +128,32 @@ class Window < RubyOF::Window
     
   end
   
+  def update
+    # super()
+    
+    @input_handler.update
+  end
+  
+  def draw
+    # super()
+    
+    
+    if @first_draw
+      # screen_size = read_screen_size("Screen 0")
+      # screen_w, screen_h = screen_size["current"]
+      # puts "screen size: #{[screen_w, screen_h].inspect}"
+      
+      puts "---> callback from ruby"
+      @cpp_ptr["midiOut"].listOutPorts()
+      puts "<--- callback end"
+      
+      
+      @first_draw = false
+    end
+    
+  end
+  
+  
   # delegate inputs to input handler
   INPUT_EVENTS = 
   [
@@ -157,30 +183,6 @@ class Window < RubyOF::Window
     @input_handler.key_released(key)
   end
   
-  def update
-    # super()
-    
-    @input_handler.update
-  end
-  
-  def draw
-    # super()
-    
-    
-    if @first_draw
-      # screen_size = read_screen_size("Screen 0")
-      # screen_w, screen_h = screen_size["current"]
-      # puts "screen size: #{[screen_w, screen_h].inspect}"
-      
-      puts "---> callback from ruby"
-      @cpp_ptr["midiOut"].listOutPorts()
-      puts "<--- callback end"
-      
-      
-      @first_draw = false
-    end
-    
-  end
   
   def on_exit
     super()
