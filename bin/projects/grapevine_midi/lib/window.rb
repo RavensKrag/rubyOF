@@ -20,6 +20,9 @@ LIB_DIR = current_file.parent
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
 
+require LIB_DIR/'ofx_extensions.rb'
+
+
 
 class Window < RubyOF::Window
   include HelperFunctions
