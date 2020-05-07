@@ -1,3 +1,4 @@
 ofxGui
 ofxDatGui
 ofxImGui
+ofxMidi
