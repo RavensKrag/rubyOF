@@ -88,7 +88,9 @@ class Window < RubyOF::Window
       # screen_w, screen_h = screen_size["current"]
       # puts "screen size: #{[screen_w, screen_h].inspect}"
       
-      
+      puts "---> callback from ruby"
+      @cpp_ptr["midiOut"].listOutPorts()
+      puts "<--- callback end"
       
       
       @first_draw = false
@@ -191,6 +193,11 @@ class Window < RubyOF::Window
     end
   end
   
+  
+  def recieve_cpp_pointer(name, data)
+    @cpp_ptr ||= Hash.new
+    @cpp_ptr[name] = data
+  end
   
   
   private

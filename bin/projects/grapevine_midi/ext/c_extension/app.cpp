@@ -121,7 +121,16 @@ void rbApp::setup(){
 	
 	
 	
+	// give ruby access to the midiOut object
 	
+	Rice::Data_Object<ofxMidiOut> rb_ofxMidiOut_ptr(
+		&midiOut,
+		Rice::Data_Type< ofxMidiOut >::klass(),
+		Rice::Default_Mark_Function< ofxMidiOut >::mark,
+		Null_Free_Function< ofxMidiOut >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "midiOut", rb_ofxMidiOut_ptr);
 	
 	
 	
