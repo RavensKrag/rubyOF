@@ -85,22 +85,22 @@ class Window < RubyOF::Window
     end
     
     
-    btn_id = 117 # the 'u' key
+    btn_id = 100 # the 'd' key
     @input_handler.register_callback(btn_id) do |btn|
       btn.on_press do
-        puts "press x"
+        puts "press d"
         
-        channel = 3
-        note = 72
+        channel = 2
+        note = 72+7
         velocity = 64
         @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
       end
       
       btn.on_release do
-        puts "release x"
+        puts "release d"
         
-        channel = 3
-        note = 72
+        channel = 2
+        note = 72+7
         velocity = 64
         @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
       end
