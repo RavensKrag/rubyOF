@@ -55,7 +55,8 @@ class Window < RubyOF::Window
     
     
     
-    btn_id = 120 # the 'x' key
+    # btn_id = 120 # the 'x' key
+    btn_id = 'x'.codepoints.first
     @input_handler.register_callback(btn_id) do |btn|
       btn.on_press do
         puts "press x"
@@ -85,7 +86,8 @@ class Window < RubyOF::Window
     end
     
     
-    btn_id = 100 # the 'd' key
+    # btn_id = 100 # the 'd' key
+    btn_id = 'd'.codepoints.first
     @input_handler.register_callback(btn_id) do |btn|
       btn.on_press do
         puts "press d"
