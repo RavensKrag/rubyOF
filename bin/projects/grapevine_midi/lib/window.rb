@@ -36,8 +36,7 @@ class Window < RubyOF::Window
     # super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
     
     
-    # NOTE: window width and height set here, but position can't be set until window is opened. Thus, position is set on the first #draw call
-    
+    self.set_window_position(x, y)
     
     
     # ofSetEscapeQuitsApp false
@@ -84,16 +83,12 @@ class Window < RubyOF::Window
     # super()
     
     
-    # NOTE: can't move window until window is open, so move on first draw call
     if @first_draw
-      screen_size = read_screen_size("Screen 0")
-      screen_w, screen_h = screen_size["current"]
-      puts "screen size: #{[screen_w, screen_h].inspect}"
+      # screen_size = read_screen_size("Screen 0")
+      # screen_w, screen_h = screen_size["current"]
+      # puts "screen size: #{[screen_w, screen_h].inspect}"
       
       
-      window_geometry = YAML.load_file(@window_geometry_file)
-      x,y,w,h = *window_geometry
-      set_window_pos(x, y)
       
       
       @first_draw = false
@@ -106,8 +101,8 @@ class Window < RubyOF::Window
     
     
     # --- Save data
-    x,y = get_window_pos()
-    dump_yaml [x,y, self.width, self.height] => @window_geometry_file
+    pt = self.get_window_position()
+    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start
@@ -237,46 +232,4 @@ class Window < RubyOF::Window
   end
   
   
-  # ASSUME: application only has one window open
-  def set_window_pos(x,y)
-    # puts "pid: #{Process.pid}" 
-    
-    # list all windows (-l), displaying PID (-p) and window geometry (-G)
-    wmctrl_cmd = "wmctrl -lpG | grep #{Process.pid}"
-      # p wmctrl_cmd
-    geometry_info = `#{wmctrl_cmd}`
-      # puts "window geometry: #{geometry_info}"
-    
-    window_id_hex, desktop_num, pid, x_offset, y_offset, width, height, machine_name, *window_title = geometry_info.split(' ')
-    
-    puts "window position: #{[x_offset, y_offset].inspect}"
-    
-    
-    g = 0 # use default gravity
-    # x = 0
-    # y = 95
-    w = self.width
-    h = self.height
-    `wmctrl -ir #{window_id_hex} -e #{g},#{x},#{y},#{w},#{h}`
-    # ^ need to use wmctrl's "numeric window identity" hex id, not the PID
-    
-    # NOTE: could potentially also use wmctrl to restore windows to the same *workspace* as the last time the program was run
-    
-  end
-  
-  def get_window_pos()
-    # puts "pid: #{Process.pid}" 
-    
-    # list all windows (-l), displaying PID (-p) and window geometry (-G)
-    wmctrl_cmd = "wmctrl -lpG | grep #{Process.pid}"
-      # p wmctrl_cmd
-    geometry_info = `#{wmctrl_cmd}`
-      # puts "window geometry: #{geometry_info}"
-    
-    window_id_hex, desktop_num, pid, x_offset, y_offset, width, height, machine_name, *window_title = geometry_info.split(' ')
-    
-    puts "window position: #{[x_offset, y_offset].inspect}"
-    
-    return [x_offset, y_offset].map{|x| x.to_i }
-  end
 end
