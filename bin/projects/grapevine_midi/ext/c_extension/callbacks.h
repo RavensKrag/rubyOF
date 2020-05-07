@@ -13,3 +13,5 @@
 #include "rice/Module.hpp"
 
 
+float glm_tvec2_float_get_component(glm::tvec2<float>& p, int i);
+void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value);
