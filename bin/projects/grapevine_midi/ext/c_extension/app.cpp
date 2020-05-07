@@ -382,19 +382,6 @@ void rbApp::keyPressed(int key){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	if(key == 'u'){
-		int channel = 2;
-		int note = 72;
-		int velocity = 64;
-		midiOut.sendNoteOn(channel, note,  velocity);
-	}
-	
-	if(key == 'U'){
-		int channel = 3;
-		int note = 72;
-		int velocity = 64;
-		midiOut.sendNoteOn(channel, note,  velocity);
-	}
 	
 	
 	// ========================================
@@ -414,20 +401,6 @@ void rbApp::keyReleased(int key){
 	
 	
 	
-	
-	if(key == 'u'){
-		int channel = 2;
-		int note = 72;
-		int velocity = 0;
-		midiOut.sendNoteOff(channel, note,  velocity);
-	}
-	
-	if(key == 'U'){
-		int channel = 3;
-		int note = 72;
-		int velocity = 0;
-		midiOut.sendNoteOff(channel, note,  velocity);
-	}
 	
 	
 	

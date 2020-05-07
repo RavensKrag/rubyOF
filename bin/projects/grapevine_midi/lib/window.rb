@@ -24,11 +24,137 @@ require LIB_DIR/'ofx_extensions.rb'
 
 
 
+# input handler will supress OS-level key repeat events
+class InputHandler
+  def initialize
+    @buttons = Hash.new
+    @callbacks = Hash.new
+  end
+  
+  def register_callback(btn, &block)
+    @buttons[btn] = false
+    
+    helper = InputHandlerHelper.new
+    block.call(helper)
+    @callbacks[btn] = helper
+  end
+  
+  # 4 states
+  # ----
+  # idle
+  # positive edge
+  # active
+  # negative edge
+  
+  def update
+    @callbacks.each do |btn, callback_obj|
+      current_state = @buttons[btn]
+      
+      # p callback_obj
+      
+      # require 'irb'
+      # binding.irb
+      
+      if current_state
+        # hi = active
+        callback_obj.while_active_call()
+      else
+        # low = idle
+        callback_obj.while_idle_call()
+      end
+    end
+  end
+  
+  def key_pressed(id)
+    if id == OF_KEY_ESC
+      return
+      # bypass this whole thing when the escape key is pressed
+      # (escape quits the app)
+    end
+    if @buttons[id].nil?
+      warn "ERROR: no callbacks registered for button id: #{id}"
+      return
+    end
+    
+    current_state = @buttons[id]
+    
+    if current_state
+      # hi -> hi
+      # NO-OP
+    else
+      # low -> hi
+      # positive edge
+      callback_obj = @callbacks[id]
+      callback_obj.on_press_call()
+    end
+        
+    
+    @buttons[id] = true
+  end
+  
+  def key_released(id)
+    if id == OF_KEY_ESC
+      return
+      # bypass this whole thing when the escape key is pressed
+      # (escape quits the app)
+    end
+    if @buttons[id].nil?
+      warn "ERROR: no callbacks registered for button id: #{id}"
+      return
+    end
+    
+    
+    current_state = @buttons[id]
+    
+    if current_state
+      # hi -> low
+      callback_obj = @callbacks[id]
+      callback_obj.on_release_call()
+    else
+      # low -> low
+      # NO-OP
+    end
+    
+    @buttons[id] = false
+  end
+  
+  private
+  
+  
+  class InputHandlerHelper
+    def on_press(&block)
+      @on_press = block
+    end
+    
+    def on_release(&block)
+      @on_release = block
+    end
+    
+    def while_idle(&block)
+      puts "idle callback set"
+      @while_idle = block
+    end
+    
+    def while_active(&block)
+      @while_active = block
+    end
+    
+    [:on_press, :on_release, :while_idle, :while_active].each do |sym|
+      define_method "#{sym}_call" do |*args|
+        instance_variable_get("@#{sym}").call(*args)
+      end
+    end
+  end
+end
+
+
 class Window < RubyOF::Window
   include HelperFunctions
   
   PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
   def initialize
+    @cpp_ptr = Hash.new
+    
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
     window_geometry = YAML.load_file(@window_geometry_file)
@@ -47,6 +173,39 @@ class Window < RubyOF::Window
     puts "ruby: Window#initialize"
     
     
+    @input_handler = InputHandler.new
+    
+    
+    
+    btn_id = 120 # the 'x' key
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press x"
+        
+        channel = 2
+        note = 72
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release x"
+        
+        channel = 2
+        note = 72
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
   end
   
   def setup
@@ -59,8 +218,8 @@ class Window < RubyOF::Window
   # delegate inputs to input handler
   INPUT_EVENTS = 
   [
-    :key_pressed,
-    :key_released,
+    # :key_pressed,
+    # :key_released,
     :mouse_moved,
     :mouse_pressed,
     :mouse_dragged,
@@ -77,9 +236,18 @@ class Window < RubyOF::Window
     end
   end
   
+  def key_pressed(key)
+    @input_handler.key_pressed(key)
+  end
+  
+  def key_released(key)
+    @input_handler.key_released(key)
+  end
+  
   def update
     # super()
     
+    @input_handler.update
   end
   
   def draw
@@ -198,7 +366,6 @@ class Window < RubyOF::Window
   
   
   def recieve_cpp_pointer(name, data)
-    @cpp_ptr ||= Hash.new
     @cpp_ptr[name] = data
   end
   
