@@ -112,6 +112,49 @@ void Init_rubyOF_project()
 		)
 	;
 	
+	
+	Data_Type<ofxMidiMessage> rb_c_ofxMidiMessage =
+		define_class_under<ofxMidiMessage>(rb_mOFX, "MidiMessage");
+	
+	rb_c_ofxMidiMessage
+		.define_constructor(Constructor<ofxMidiMessage>())
+		
+		// .define_method("status",    &ofxMidiMessage__get_status)
+		
+		.define_method("channel",   &ofxMidiMessage__get_channel)
+		.define_method("pitch",     &ofxMidiMessage__get_pitch)
+		.define_method("velocity",  &ofxMidiMessage__get_velocity)
+		.define_method("value",     &ofxMidiMessage__get_value)
+		
+		.define_method("deltatime", &ofxMidiMessage__get_deltatime)
+		
+		.define_method("portNum",   &ofxMidiMessage__get_portNum)
+		.define_method("portName",  &ofxMidiMessage__get_portName)
+		
+		
+		
+		// .define_method("status=",    &ofxMidiMessage__set_status)
+		
+		.define_method("channel=",   &ofxMidiMessage__set_channel)
+		.define_method("pitch=",     &ofxMidiMessage__set_pitch)
+		.define_method("velocity=",  &ofxMidiMessage__set_velocity)
+		.define_method("value=",     &ofxMidiMessage__set_value)
+		
+		.define_method("deltatime=", &ofxMidiMessage__set_deltatime)
+		
+		.define_method("portNum=",   &ofxMidiMessage__set_portNum)
+		.define_method("portName=",  &ofxMidiMessage__set_portName)
+		
+		
+		
+		.define_method("get_num_bytes",  &ofxMidiMessage__get_num_bytes)
+		.define_method("get_byte",       &ofxMidiMessage__get_byte)
+	;
+	
+	
+	// TODO: write glue code to access these fields:
+	
+	
 	// ofxMidiOut midiOut
 	
 	
@@ -134,6 +177,9 @@ void Init_rubyOF_project()
 }
 
 
+// 
+// ext/openFrameworks/libs/glm/include/glm/detail/type_vec2.hpp
+// 
 float glm_tvec2_float_get_component(glm::tvec2<float>& p, int i){
 	return p[i];
 }
@@ -142,3 +188,75 @@ void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value){
 	p[i] = value;
 }
 
+
+// 
+// ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.h
+// 
+
+// unsigned char ofxMidiMessage__get_status(ofxMidiMessage self){
+	
+// }
+
+int ofxMidiMessage__get_channel(ofxMidiMessage self){
+	return self.channel;
+}
+int ofxMidiMessage__get_pitch(ofxMidiMessage self){
+	return self.pitch;
+}
+int ofxMidiMessage__get_velocity(ofxMidiMessage self){
+	return self.velocity;
+}
+int ofxMidiMessage__get_value(ofxMidiMessage self){
+	return self.value;
+}
+
+double ofxMidiMessage__get_deltatime(ofxMidiMessage self){
+	return self.deltatime;
+}
+
+int ofxMidiMessage__get_portNum(ofxMidiMessage self){
+	return self.portNum;
+}
+std::string ofxMidiMessage__get_portName(ofxMidiMessage self){
+	return self.portName;
+}
+
+
+
+// void ofxMidiMessage__set_status(){
+	
+// }
+
+void ofxMidiMessage__set_channel(ofxMidiMessage self, int ch){
+	self.channel = ch;
+}
+void ofxMidiMessage__set_pitch(ofxMidiMessage self, int pitch){
+	self.pitch = pitch;
+}
+void ofxMidiMessage__set_velocity(ofxMidiMessage self, int vel){
+	self.velocity = vel;
+}
+void ofxMidiMessage__set_value(ofxMidiMessage self, int val){
+	self.value = val;
+}
+
+void ofxMidiMessage__set_deltatime(ofxMidiMessage self, double dt){
+	self.deltatime = dt;
+}
+
+void ofxMidiMessage__set_portNum(ofxMidiMessage self, int port){
+	self.portNum = port;
+}
+void ofxMidiMessage__set_portName(ofxMidiMessage self, std::string port){
+	self.portName = port;
+}
+
+
+
+int ofxMidiMessage__get_num_bytes(ofxMidiMessage self){
+	return self.bytes.size();
+}
+
+unsigned char ofxMidiMessage__get_byte(ofxMidiMessage self, int i){
+	return self.bytes[i];
+}

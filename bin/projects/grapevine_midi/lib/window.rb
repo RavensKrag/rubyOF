@@ -21,9 +21,10 @@ require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
 
 require LIB_DIR/'input_handler.rb'
-
+require LIB_DIR/'sequence_memory.rb'
 
 require LIB_DIR/'ofx_extensions.rb'
+
 
 
 class Window < RubyOF::Window
@@ -31,63 +32,103 @@ class Window < RubyOF::Window
   
   PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
   def initialize
-    @cpp_ptr = Hash.new
+    @cpp_ptr  = Hash.new
+    @cpp_val = Hash.new
     
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    # super("Youtube Subscription Browser", 1853, 1250)
     super("grapevine communication", w,h) # half screen
-    # super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
-    
-    
     self.set_window_position(x, y)
     
-    
     # ofSetEscapeQuitsApp false
+    
     
     puts "ruby: Window#initialize"
     
     
     @input_handler = InputHandler.new
     
-    
-    
-    [
-      ['x', 2, 72,     64, 0],
-      ['d', 2, 72+7,   64, 0],
-      ['h', 3, 72+2+7, 64, 0],
-      ['c', 3, 72+3+7, 64, 0],
-      ['n', 3, 72+7,   64, 0]
-    ].each do |char, channel, note, on_velocity, off_velocity|
-      btn_id = char.codepoints.first
+    # [
+    #   ['x', 2, 72,     64, 0],
+    #   ['d', 2, 72+7,   64, 0],
+    #   ['h', 3, 72+2+7, 64, 0],
+    #   ['c', 3, 72+3+7, 64, 0],
+    #   ['n', 3, 72+7,   64, 0]
+    # ].each do |char, channel, note, on_velocity, off_velocity|
+    #   btn_id = char.codepoints.first
       
-      @input_handler.register_callback(btn_id) do |btn|
-        btn.on_press do
-          puts "press #{char}"
+    #   @input_handler.register_callback(btn_id) do |btn|
+    #     btn.on_press do
+    #       puts "press #{char}"
           
-          @cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
+    #       @cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
+    #     end
+        
+    #     btn.on_release do
+    #       puts "release #{char}"
+          
+    #       @cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
+    #     end
+        
+    #     btn.while_idle do
+          
+    #     end
+        
+    #     btn.while_active do
+          
+    #     end
+    #   end
+    # end
+    
+    
+    
+    @midi_msg_memory = SequenceMemory.new
+    
+    
+    
+    @looper_mode = :idle
+    @looper = Array.new
+    
+    btn_id = 'x'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        case @looper_mode 
+        when :record
+          # record -> playback
+          # => stop recording, and switch to playing back the saved recording
+          @looper_end = RubyOF::Utils.ofGetElapsedTimeMillis()
+          
+          
+          @looper_mode = :playback
+          
+        when :playback, :idle
+          # playback -> record
+          # => start a fresh recording
+          @looper.clear
+          @looper_fiber = nil
+          
+          
+          @looper_mode = :record
+        
         end
         
-        btn.on_release do
-          puts "release #{char}"
-          
-          @cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
-        end
+      end
+      
+      btn.on_release do
         
-        btn.while_idle do
-          
-        end
+      end
+      
+      btn.while_idle do
         
-        btn.while_active do
-          
-        end
+      end
+      
+      btn.while_active do
+        
       end
     end
-    
-    
     
   end
   
@@ -102,6 +143,107 @@ class Window < RubyOF::Window
     # super()
     
     @input_handler.update
+    
+    
+    
+    # p @cpp_val["midiMessageQueue"]
+    
+    delta = @midi_msg_memory.delta_from_sample(@cpp_val["midiMessageQueue"])
+    # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
+    
+    
+    
+    
+    
+    delta.each do |midi_msg|
+      # case midi_msg[0]
+      # when 0x90 # note on
+      #   @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+      #   @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+      #   # puts "ON: #{midi_msg.to_s}"
+        
+      # when 0x80 # note off
+      #   @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+      #   @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+      #   # puts "OFF: #{midi_msg.to_s}"
+        
+      # end
+      
+      @looper << midi_msg
+    end
+    
+    
+    if @looper_mode == :playback
+      @looper_fiber ||= Fiber.new do 
+        @looper_acc = 0
+        @looper_i = 0
+        
+        now = RubyOF::Utils.ofGetElapsedTimeMillis()
+        @looper_start = now
+        
+        
+        msg = @looper[@looper_i]
+        case msg[0]
+        when 0x90 # note on
+          @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
+        when 0x80 # note off
+          @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
+        end
+        
+        
+        loop do
+          @looper_i += 1
+          @looper_i = 0 if @looper_i >= @looper.length
+          
+          msg = @looper[@looper_i]
+          @looper_acc += msg.deltatime
+          
+          now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          dt = now - @looper_start
+          
+          until dt >= @looper_acc
+            Fiber.yield
+            
+            now = RubyOF::Utils.ofGetElapsedTimeMillis()
+            dt = now - @looper_start
+          end
+          
+          case msg[0]
+          when 0x90 # note on
+            @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
+          when 0x80 # note off
+            @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
+          end
+          
+          
+          
+          
+          # # after final note, wait until the end of the loop clip
+          # if @looper_i == @looper.length-1
+          #   loop_length = @looper_end - @looper_start
+          #   final_acc = loop_length - @looper_acc
+            
+          #   now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          #   dt = now - @looper_start
+            
+          #   until dt >= final_acc
+          #     Fiber.yield
+              
+          #     now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          #     dt = now - @looper_start
+          #   end
+          # end
+          
+          
+        end
+        
+        
+      end
+      
+      
+      @looper_fiber.resume()
+    end
+    
   end
   
   def draw
@@ -246,8 +388,14 @@ class Window < RubyOF::Window
   end
   
   
+  # direct access to data used on the C++ side
   def recieve_cpp_pointer(name, data)
     @cpp_ptr[name] = data
+  end
+  
+  # copy of the data from the C++ side
+  def recieve_cpp_value(name, data)
+    @cpp_val[name] = data
   end
   
   

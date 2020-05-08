@@ -1,4 +1,4 @@
-module RubyOf
+module RubyOF
   module OFX
 
 
@@ -14,12 +14,54 @@ class MidiOut
     end
   end
 end
+
+class MidiMessage
+  def ==(other)
+    if other.is_a? self.class
+      # TODO: implement this comparison
+      self.each_byte.to_a == other.each_byte.to_a
+    else
+      return false
+    end
+  end
+  
+  private :get_num_bytes, :get_byte
+  
+  def each_byte() # &block
+    return enum_for(:each_byte) unless block_given?
+    
+    get_num_bytes.times do |i|
+      yield get_byte(i)
+    end
+    
+  end
+  
+  def [](i)
+    return get_byte(i)
+  end
+  
+  
+  def to_s
+    return "[#{self.each_byte.to_a.map{|x| "0x#{'%02x' % x}" }.join(", ")}]"
+  end
+  
+  def inspect
+    id = '%x' % (self.object_id << 1) # get ID for object
+    
+    fmt = '%.03f'
+    return "#<#{self.class}:0x#{id} bytes=#{self.to_s} >"
+  end
+end
   
 
 end
 end
 
-
+# @cpp_ptr["midiMessageQueue"].map{ |x| x.each_byte.to_a }
+# # ^ this is the interface we want
+# #   Can't create a full array at the C++ level - obj lifetime is too confusing
+# #   Instead, implement an interface to get one byte at a time,
+# #   and then at the ruby level, we can create an Enumeration -> Array
 
 
 

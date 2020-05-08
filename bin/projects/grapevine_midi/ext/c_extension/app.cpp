@@ -245,6 +245,22 @@ void rbApp::update(){
 	// gui.setSize(w, h);
 	// gui.setWidthElements(w);
 	
+	
+	
+	
+	Rice::Array rb_midiMessageQueue;
+	
+	for(int i=0; i < midiMessages.size(); i++) {
+		ofxMidiMessage &msg = midiMessages[i];
+		rb_midiMessageQueue.push(to_ruby(msg));
+	}
+	
+	mSelf.call("recieve_cpp_value", "midiMessageQueue", rb_midiMessageQueue);
+	
+	
+	
+	
+	
 	// ========================================
 	// ========================================
 	
@@ -273,7 +289,7 @@ void rbApp::draw(){
 	for(unsigned int i = 0; i < midiMessages.size(); ++i) {
 		
 		ofxMidiMessage &message = midiMessages[i];
-		int x = 10;
+		int x = 370;
 		int y = i*40 + 40;
 		
 		// draw the last recieved message contents to the screen,
