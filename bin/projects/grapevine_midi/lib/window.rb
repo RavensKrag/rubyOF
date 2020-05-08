@@ -31,7 +31,8 @@ class Window < RubyOF::Window
   
   PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
   def initialize
-    @cpp_ptr = Hash.new
+    @cpp_ptr  = Hash.new
+    @cpp_data = Hash.new
     
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
@@ -102,6 +103,59 @@ class Window < RubyOF::Window
     # super()
     
     @input_handler.update
+    
+    
+    
+    # p @cpp_ptr["midiMessageQueue"]
+    
+    @prev_msg_queue ||= []
+    new_queue = @cpp_ptr["midiMessageQueue"]
+    
+    # diff = new_queue - @prev_msg_queue
+    
+    calc_diff = ->(old_queue, new_queue){
+      # want just the elements of new_queue that do not appear in old_queue
+      
+      
+      # align segments of old_queue to the new_queue
+      # do not have to check all k-mers:
+      #   only contiguous segments from the tail end of old_queue
+      # stop when you find the first match, ie, the longest possible one
+      
+      k_mers = 
+        ((1)..(old_queue.length)).collect do |i|
+          old_queue.last(i)
+        end
+      
+      overlap_length = 0;
+      k_mers.reverse_each do |seq|
+        # puts "#{new_queue.first(seq.length)} vs #{seq}"
+        
+        if new_queue.first(seq.length) == seq
+          overlap_length = seq.length
+          break
+        end
+      end
+      
+      
+      if overlap_length == 0
+        # no items in sequenced matched
+        # thus, data is all brand new
+        return new_queue
+      else
+        # 
+        return new_queue.last(new_queue.size - overlap_length)
+      end
+      
+    }
+    
+    diff = calc_diff.call(@prev_msg_queue, new_queue)
+    
+    print "diff size: #{diff.size}  "
+    p diff.map{|x| x.to_s }
+    
+    @prev_msg_queue = new_queue
+    
   end
   
   def draw
@@ -246,8 +300,14 @@ class Window < RubyOF::Window
   end
   
   
+  # direct access to data used on the C++ side
   def recieve_cpp_pointer(name, data)
     @cpp_ptr[name] = data
+  end
+  
+  # copy of the data from the C++ side
+  def recieve_cpp_data(name, data)
+    @cpp_data[name] = data
   end
   
   
