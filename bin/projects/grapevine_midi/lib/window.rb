@@ -51,41 +51,84 @@ class Window < RubyOF::Window
     
     @input_handler = InputHandler.new
     
-    [
-      ['x', 2, 72,     64, 0],
-      ['d', 2, 72+7,   64, 0],
-      ['h', 3, 72+2+7, 64, 0],
-      ['c', 3, 72+3+7, 64, 0],
-      ['n', 3, 72+7,   64, 0]
-    ].each do |char, channel, note, on_velocity, off_velocity|
-      btn_id = char.codepoints.first
+    # [
+    #   ['x', 2, 72,     64, 0],
+    #   ['d', 2, 72+7,   64, 0],
+    #   ['h', 3, 72+2+7, 64, 0],
+    #   ['c', 3, 72+3+7, 64, 0],
+    #   ['n', 3, 72+7,   64, 0]
+    # ].each do |char, channel, note, on_velocity, off_velocity|
+    #   btn_id = char.codepoints.first
       
-      @input_handler.register_callback(btn_id) do |btn|
-        btn.on_press do
-          puts "press #{char}"
+    #   @input_handler.register_callback(btn_id) do |btn|
+    #     btn.on_press do
+    #       puts "press #{char}"
           
-          @cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
-        end
+    #       @cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
+    #     end
         
-        btn.on_release do
-          puts "release #{char}"
+    #     btn.on_release do
+    #       puts "release #{char}"
           
-          @cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
-        end
+    #       @cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
+    #     end
         
-        btn.while_idle do
+    #     btn.while_idle do
           
-        end
+    #     end
         
-        btn.while_active do
+    #     btn.while_active do
           
-        end
-      end
-    end
+    #     end
+    #   end
+    # end
     
     
     
     @midi_msg_memory = SequenceMemory.new
+    
+    
+    
+    @looper_mode = :idle
+    @looper = Array.new
+    
+    btn_id = 'x'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        case @looper_mode 
+        when :record
+          # record -> playback
+          # => stop recording, and switch to playing back the saved recording
+          @looper_end = RubyOF::Utils.ofGetElapsedTimeMillis()
+          
+          
+          @looper_mode = :playback
+          
+        when :playback, :idle
+          # playback -> record
+          # => start a fresh recording
+          @looper.clear
+          @looper_fiber = nil
+          
+          
+          @looper_mode = :record
+        
+        end
+        
+      end
+      
+      btn.on_release do
+        
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
     
   end
   
@@ -113,22 +156,93 @@ class Window < RubyOF::Window
     
     
     delta.each do |midi_msg|
-      case midi_msg[0]
-      when 0x90 # note on
-        @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
-        @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
-        # puts "ON: #{midi_msg.to_s}"
+      # case midi_msg[0]
+      # when 0x90 # note on
+      #   @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+      #   @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+      #   # puts "ON: #{midi_msg.to_s}"
         
-      when 0x80 # note off
-        @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
-        @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
-        # puts "OFF: #{midi_msg.to_s}"
+      # when 0x80 # note off
+      #   @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+      #   @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+      #   # puts "OFF: #{midi_msg.to_s}"
         
-      end
+      # end
       
+      @looper << midi_msg
     end
     
     
+    if @looper_mode == :playback
+      @looper_fiber ||= Fiber.new do 
+        @looper_acc = 0
+        @looper_i = 0
+        
+        now = RubyOF::Utils.ofGetElapsedTimeMillis()
+        @looper_start = now
+        
+        
+        msg = @looper[@looper_i]
+        case msg[0]
+        when 0x90 # note on
+          @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
+        when 0x80 # note off
+          @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
+        end
+        
+        
+        loop do
+          @looper_i += 1
+          @looper_i = 0 if @looper_i >= @looper.length
+          
+          msg = @looper[@looper_i]
+          @looper_acc += msg.deltatime
+          
+          now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          dt = now - @looper_start
+          
+          until dt >= @looper_acc
+            Fiber.yield
+            
+            now = RubyOF::Utils.ofGetElapsedTimeMillis()
+            dt = now - @looper_start
+          end
+          
+          case msg[0]
+          when 0x90 # note on
+            @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
+          when 0x80 # note off
+            @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
+          end
+          
+          
+          
+          
+          # # after final note, wait until the end of the loop clip
+          # if @looper_i == @looper.length-1
+          #   loop_length = @looper_end - @looper_start
+          #   final_acc = loop_length - @looper_acc
+            
+          #   now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          #   dt = now - @looper_start
+            
+          #   until dt >= final_acc
+          #     Fiber.yield
+              
+          #     now = RubyOF::Utils.ofGetElapsedTimeMillis()
+          #     dt = now - @looper_start
+          #   end
+          # end
+          
+          
+        end
+        
+        
+      end
+      
+      
+      @looper_fiber.resume()
+    end
     
   end
   
