@@ -151,10 +151,34 @@ class Window < RubyOF::Window
     
     diff = calc_diff.call(@prev_msg_queue, new_queue)
     
-    print "diff size: #{diff.size}  "
-    p diff.map{|x| x.to_s }
+    # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
     
     @prev_msg_queue = new_queue
+    
+    
+    
+    
+    
+    
+    
+    
+    diff.each do |midi_msg|
+      case midi_msg[0]
+      when 0x90 # note on
+        @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+        @cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+        # puts "ON: #{midi_msg.to_s}"
+        
+      when 0x80 # note off
+        # puts "OFF: #{midi_msg.to_s}"
+        
+        @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+        @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+      end
+      
+    end
+    
+    
     
   end
   

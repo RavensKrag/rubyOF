@@ -36,6 +36,10 @@ class MidiMessage
     
   end
   
+  def [](i)
+    return get_byte(i)
+  end
+  
   
   def to_s
     return "[#{self.each_byte.to_a.map{|x| "0x#{'%02x' % x}" }.join(", ")}]"
