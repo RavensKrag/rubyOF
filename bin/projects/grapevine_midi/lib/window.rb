@@ -26,35 +26,89 @@ require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'ofx_extensions.rb'
 
 
+# Maintain some sort of memory about the entire sequence of events
+# such that although you only see a small stretch of events at any
+# given time, you can compute a delta of what things have elapsed
+# since the previous update.
+class SequenceMemory
+  def initialize
+    @prev_msg_queue = []
+  end
+  
+  def delta_from_sample(new_queue)
+    # diff = new_queue - @prev_msg_queue
+    
+    diff = calc_diff(@prev_msg_queue, new_queue)
+    
+    
+    @prev_msg_queue = new_queue
+    
+    
+    return diff
+  end
+  
+  private
+  
+  # want just the elements of new_queue that do not appear in old_queue
+  def calc_diff(old_queue, new_queue)
+    
+    # align segments of old_queue to the new_queue
+    # do not have to check all k-mers:
+    #   only contiguous segments from the tail end of old_queue
+    # stop when you find the first match, ie, the longest possible one
+    
+    k_mers = 
+      ((1)..(old_queue.length)).collect do |i|
+        old_queue.last(i)
+      end
+    
+    overlap_length = 0;
+    k_mers.reverse_each do |seq|
+      # puts "#{new_queue.first(seq.length)} vs #{seq}"
+      
+      if new_queue.first(seq.length) == seq
+        overlap_length = seq.length
+        break
+      end
+    end
+    
+    
+    if overlap_length == 0
+      # no items in sequenced matched
+      # thus, data is all brand new
+      return new_queue
+    else
+      # 
+      return new_queue.last(new_queue.size - overlap_length)
+    end
+    
+  end
+end
+
+
 class Window < RubyOF::Window
   include HelperFunctions
   
   PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
   def initialize
     @cpp_ptr  = Hash.new
-    @cpp_data = Hash.new
+    @cpp_val = Hash.new
     
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    # super("Youtube Subscription Browser", 1853, 1250)
     super("grapevine communication", w,h) # half screen
-    # super("Youtube Subscription Browser", 2230, 1986) # overlapping w/ editor
-    
-    
     self.set_window_position(x, y)
     
-    
     # ofSetEscapeQuitsApp false
+    
     
     puts "ruby: Window#initialize"
     
     
     @input_handler = InputHandler.new
-    
-    
     
     [
       ['x', 2, 72,     64, 0],
@@ -90,6 +144,8 @@ class Window < RubyOF::Window
     
     
     
+    @midi_msg_memory = SequenceMemory.new
+    
   end
   
   def setup
@@ -106,57 +162,12 @@ class Window < RubyOF::Window
     
     
     
-    # p @cpp_ptr["midiMessageQueue"]
+    # p @cpp_val["midiMessageQueue"]
     
-    @prev_msg_queue ||= []
-    new_queue = @cpp_ptr["midiMessageQueue"]
     
-    # diff = new_queue - @prev_msg_queue
     
-    calc_diff = ->(old_queue, new_queue){
-      # want just the elements of new_queue that do not appear in old_queue
-      
-      
-      # align segments of old_queue to the new_queue
-      # do not have to check all k-mers:
-      #   only contiguous segments from the tail end of old_queue
-      # stop when you find the first match, ie, the longest possible one
-      
-      k_mers = 
-        ((1)..(old_queue.length)).collect do |i|
-          old_queue.last(i)
-        end
-      
-      overlap_length = 0;
-      k_mers.reverse_each do |seq|
-        # puts "#{new_queue.first(seq.length)} vs #{seq}"
-        
-        if new_queue.first(seq.length) == seq
-          overlap_length = seq.length
-          break
-        end
-      end
-      
-      
-      if overlap_length == 0
-        # no items in sequenced matched
-        # thus, data is all brand new
-        return new_queue
-      else
-        # 
-        return new_queue.last(new_queue.size - overlap_length)
-      end
-      
-    }
-    
-    diff = calc_diff.call(@prev_msg_queue, new_queue)
-    
+    diff = @midi_msg_memory.delta_from_sample(@cpp_val["midiMessageQueue"])
     # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
-    
-    @prev_msg_queue = new_queue
-    
-    
-    
     
     
     
@@ -330,8 +341,8 @@ class Window < RubyOF::Window
   end
   
   # copy of the data from the C++ side
-  def recieve_cpp_data(name, data)
-    @cpp_data[name] = data
+  def recieve_cpp_value(name, data)
+    @cpp_val[name] = data
   end
   
   

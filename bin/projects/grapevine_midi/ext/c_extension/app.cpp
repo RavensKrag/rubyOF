@@ -255,7 +255,7 @@ void rbApp::update(){
 		rb_midiMessageQueue.push(to_ruby(msg));
 	}
 	
-	mSelf.call("recieve_cpp_pointer", "midiMessageQueue", rb_midiMessageQueue);
+	mSelf.call("recieve_cpp_value", "midiMessageQueue", rb_midiMessageQueue);
 	
 	
 	
