@@ -116,7 +116,101 @@ class Window < RubyOF::Window
       end
     end
     
-    # if you try to send two notes at once, then synth freaks out and gets stuck - not sure why, but I need to fix that asap to have proper communication via midi
+    
+    # btn_id = 100 # the 'd' key
+    btn_id = 'h'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press d"
+        
+        channel = 3
+        note = 72+2+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release d"
+        
+        channel = 3
+        note = 72+2+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
+    
+    
+    # btn_id = 100 # the 'd' key
+    btn_id = 'c'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press d"
+        
+        channel = 3
+        note = 72+3+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release d"
+        
+        channel = 3
+        note = 72+3+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
+    
+    # btn_id = 100 # the 'd' key
+    btn_id = 'n'.codepoints.first
+    @input_handler.register_callback(btn_id) do |btn|
+      btn.on_press do
+        puts "press d"
+        
+        channel = 3
+        note = 72+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
+      end
+      
+      btn.on_release do
+        puts "release d"
+        
+        channel = 3
+        note = 72+7
+        velocity = 64
+        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
+    
+    
     
     
   end
