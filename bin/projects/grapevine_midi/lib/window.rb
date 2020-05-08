@@ -55,68 +55,38 @@ class Window < RubyOF::Window
     
     
     
-    # btn_id = 120 # the 'x' key
-    btn_id = 'x'.codepoints.first
-    @input_handler.register_callback(btn_id) do |btn|
-      btn.on_press do
-        puts "press x"
-        
-        channel = 2
-        note = 72
-        velocity = 64
-        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
-      end
+    [
+      ['x', 2, 72,     64, 0],
+      ['d', 2, 72+7,   64, 0],
+      ['h', 3, 72+2+7, 64, 0],
+      ['c', 3, 72+3+7, 64, 0],
+      ['n', 3, 72+7,   64, 0]
+    ].each do |char, channel, note, on_velocity, off_velocity|
+      btn_id = char.codepoints.first
       
-      btn.on_release do
-        puts "release x"
+      @input_handler.register_callback(btn_id) do |btn|
+        btn.on_press do
+          puts "press #{char}"
+          
+          @cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
+        end
         
-        channel = 2
-        note = 72
-        velocity = 64
-        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
-      end
-      
-      btn.while_idle do
+        btn.on_release do
+          puts "release #{char}"
+          
+          @cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
+        end
         
-      end
-      
-      btn.while_active do
+        btn.while_idle do
+          
+        end
         
+        btn.while_active do
+          
+        end
       end
     end
     
-    
-    # btn_id = 100 # the 'd' key
-    btn_id = 'd'.codepoints.first
-    @input_handler.register_callback(btn_id) do |btn|
-      btn.on_press do
-        puts "press d"
-        
-        channel = 2
-        note = 72+7
-        velocity = 64
-        @cpp_ptr["midiOut"].sendNoteOn(channel, note, velocity)
-      end
-      
-      btn.on_release do
-        puts "release d"
-        
-        channel = 2
-        note = 72+7
-        velocity = 64
-        @cpp_ptr["midiOut"].sendNoteOff(channel, note, velocity)
-      end
-      
-      btn.while_idle do
-        
-      end
-      
-      btn.while_active do
-        
-      end
-    end
-    
-    # if you try to send two notes at once, then synth freaks out and gets stuck - not sure why, but I need to fix that asap to have proper communication via midi
     
     
   end
