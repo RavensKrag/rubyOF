@@ -105,8 +105,6 @@ class Window < RubyOF::Window
     
     # p @cpp_val["midiMessageQueue"]
     
-    
-    
     delta = @midi_msg_memory.delta_from_sample(@cpp_val["midiMessageQueue"])
     # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
     
@@ -122,10 +120,10 @@ class Window < RubyOF::Window
         # puts "ON: #{midi_msg.to_s}"
         
       when 0x80 # note off
-        # puts "OFF: #{midi_msg.to_s}"
-        
         @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
         @cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+        # puts "OFF: #{midi_msg.to_s}"
+        
       end
       
     end
