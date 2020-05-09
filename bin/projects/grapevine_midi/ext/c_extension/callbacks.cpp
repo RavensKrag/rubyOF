@@ -11,6 +11,20 @@ int cpp_callback(int x) {
 	return 1;
 }
 
+void set_char_display_bg_color(ofMesh & _displayBG, int i, ofColor & c) {
+	
+	_displayBG.setColor(0+i*4, c);
+	_displayBG.setColor(1+i*4, c);
+	_displayBG.setColor(2+i*4, c);
+	_displayBG.setColor(3+i*4, c);
+	
+	
+	// TODO: consider using getColorsPointer() to set mulitple colors at once
+	// https://openframeworks.cc/documentation/3d/ofMesh/#show_getColorsPointer
+	
+}
+
+
 
 // "main" section
 extern "C"
@@ -21,6 +35,9 @@ void Init_rubyOF_project()
 	
 	rb_mCallbacks
 		.define_module_function("test_callback", &cpp_callback)
+		
+		.define_module_function("set_char_display_bg_color", 
+			                     &set_char_display_bg_color)
 	;
 	
 	

@@ -216,20 +216,20 @@ void rbApp::setup(){
 	mesh_h = from_ruby<int>(rb_ary[1]);
 	
 	_displayBG.setMode( OF_PRIMITIVE_TRIANGLES );
-	for(int i=0; i < mesh_w; i++){
-		for(int j=0; j < mesh_h; j++){
+	for(int j=0; j < mesh_h; j++){
+		for(int i=0; i < mesh_w; i++){
 		
 			_displayBG.addVertex(glm::vec3((i+0), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,0,0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
 			
 			_displayBG.addVertex(glm::vec3((i+1), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,0,0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
 			
 			_displayBG.addVertex(glm::vec3((i+0), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,0,0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
 			
 			_displayBG.addVertex(glm::vec3((i+1), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,0,0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
 			
 		}
 	}

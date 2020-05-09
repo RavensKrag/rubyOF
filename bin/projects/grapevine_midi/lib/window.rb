@@ -162,6 +162,11 @@ class Window < RubyOF::Window
      
     
     
+    @char_grid_width  = 20*3
+    @char_grid_height = 18*1
+    
+    # @char_grid_width  = 5
+    # @char_grid_height = 4
     
   end
   
@@ -316,6 +321,22 @@ class Window < RubyOF::Window
     
     
     
+    @disp_bg_colors ||= (@char_grid_width*@char_grid_height).times.collect do
+      RubyOF::Color.new.tap do |c|
+        c.r, c.g, c.b, c.a = [100, 100, 100, 255]
+      end
+    end
+    
+    @disp_bg_colors.each_with_index do |c, i|
+      
+      RubyOF::CPP_Callbacks.set_char_display_bg_color(
+        @cpp_ptr["display_bg_mesh"], i, c
+      )
+      
+    end
+    
+    
+    
     z = 1
     
     x,y = [0,0]
@@ -363,12 +384,6 @@ class Window < RubyOF::Window
   end
   
   def setup_character_mesh
-    @char_grid_width  = 20*3
-    @char_grid_height = 18*1
-    
-    # @char_grid_width  = 5
-    # @char_grid_height = 4
-    
     return [@char_grid_width, @char_grid_height]
   end
   
