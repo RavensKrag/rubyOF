@@ -130,6 +130,17 @@ class CharMappedDisplay
   #   c.r, c.g, c.b, c.a = [255, 255, 255, 255]
   # end
   def background_color(char_pos, &block)
+    case char_pos
+    when CP::Vec2
+      pos = char_pos
+      char_pos = pos.x.to_i + pos.y.to_i*(@x_chars)
+      # no need to add 1 here, because this only counts visible chars
+      # and disregaurds the invisible newline at the end of each line
+    when Numeric
+      # NO-OP
+      # char_pos can just be used as-is
+    end
+    
     color = @bg_colors[char_pos]
     
     block.call(color)
@@ -382,9 +393,34 @@ class Window < RubyOF::Window
     )
     
     @display.print_string(5, "hello world!")
+      "hello world!".length.times do |i|
+        pos = 5 + i
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+        end
+      end
+      
+      "hello world!".length.times do |i|
+        pos = CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+        end
+      end
+      
     
     @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
     @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
+    
+      start_pt = CP::Vec2.new(7, 5)
+      "spatial inputs~".length.times do |i|
+        pos = start_pt + CP::Vec2.new(i, 0)
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+        end
+      end
     
     @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
     @display.print_string(CP::Vec2.new(0, 18), "this should not print")
