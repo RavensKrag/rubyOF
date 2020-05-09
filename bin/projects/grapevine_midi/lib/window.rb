@@ -30,12 +30,24 @@ require LIB_DIR/'ofx_extensions.rb'
 class CharMappedDisplay
   include RubyOF::Graphics
   
+  attr_reader :char_width_pxs, :char_height_pxs
+  
   def initialize(mesh, font)
     @x_chars = 20*3
     @y_chars = 18*1
     
     @mesh = mesh
     @font = font
+    
+    
+    x,y = [0,0]
+    vflip = true
+    char_box__em = @font.string_bb("m", x,y, vflip);
+    ascender_height  = @font.ascender_height
+    descender_height = @font.descender_height
+    
+    @char_width_pxs  = char_box__em.width
+    @char_height_pxs = ascender_height - descender_height
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
@@ -79,9 +91,12 @@ class CharMappedDisplay
     vflip = true
     position = origin + CP::Vec2.new(0,line_height*1)
     
+    
+    
     char_box__em = @font.string_bb("m", x,y, vflip);
     ascender_height  = @font.ascender_height
     descender_height = @font.descender_height
+    
     
     
       ofPushMatrix()
@@ -89,7 +104,7 @@ class CharMappedDisplay
     begin
       ofTranslate(position.x, position.y - ascender_height, z)
       
-      ofScale(char_box__em.width, ascender_height - descender_height, 1)
+      ofScale(@char_width_pxs, @char_height_pxs, 1)
       @mesh.draw()
       
     ensure
@@ -438,7 +453,7 @@ class Window < RubyOF::Window
     # NOTE: need live coding before I can fiddle with graphics code
     # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
     
-    origin = CP::Vec2.new(370,500)
+    @origin ||= CP::Vec2.new(370,500)
     # line_height = 38
     
     
@@ -462,7 +477,7 @@ class Window < RubyOF::Window
     
     # char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
     z = 5
-    @display.draw(origin, z)
+    @display.draw(@origin, z)
     
   end
   
@@ -501,9 +516,9 @@ class Window < RubyOF::Window
   [
     # :key_pressed,
     # :key_released,
-    :mouse_moved,
-    :mouse_pressed,
-    :mouse_dragged,
+    # :mouse_moved,
+    # :mouse_pressed,
+    # :mouse_dragged,
     :mouse_released,
     :mouse_scrolled,
   ]
@@ -524,6 +539,47 @@ class Window < RubyOF::Window
   def key_released(key)
     @input_handler.key_released(key)
   end
+  
+  
+  
+  # 
+  # mouse prints position in character grid to STDOUT
+  # 
+  
+  def mouse_moved(x,y)
+    # p "mouse position: #{[x,y]}.inspect"
+  end
+  
+  def mouse_pressed(x,y, button)
+    # p [:pressed, x,y, button]
+    
+    offset = CP::Vec2.new(0,10)
+    
+    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    
+    out.x = (out.x / @display.char_width_pxs).to_i
+    out.y = (out.y / @display.char_height_pxs).to_i
+    
+    puts out
+  end
+  
+  def mouse_dragged(x,y, button)
+    # p [:dragged, x,y, button]
+    
+    offset = CP::Vec2.new(0,10)
+    
+    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    
+    out.x = (out.x / @display.char_width_pxs).to_i
+    out.y = (out.y / @display.char_height_pxs).to_i
+    
+    puts out
+  end
+  
+  def mouse_released(x,y, button)
+    # p [:released, x,y, button]
+  end
+  
   
   
   def on_exit
