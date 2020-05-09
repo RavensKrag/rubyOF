@@ -11,6 +11,47 @@ int cpp_callback(int x) {
 	return 1;
 }
 
+void init_char_display_bg_mesh(ofMesh & _displayBG, int mesh_w, int mesh_h){
+	// create uniform mesh based on dimensions specified by Ruby code
+	
+	_displayBG.setMode( OF_PRIMITIVE_TRIANGLES );
+	for(int j=0; j < mesh_h; j++){
+		for(int i=0; i < mesh_w; i++){
+		
+			_displayBG.addVertex(glm::vec3((i+0), (j+0), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+1), (j+0), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+0), (j+1), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+1), (j+1), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+		}
+	}
+	
+	for(int i=0; i < mesh_w*mesh_h; i++){
+		_displayBG.addIndex(2+i*4);
+		_displayBG.addIndex(1+i*4);
+		_displayBG.addIndex(0+i*4);
+		
+		_displayBG.addIndex(2+i*4);
+		_displayBG.addIndex(3+i*4);
+		_displayBG.addIndex(1+i*4);
+	}
+	
+	
+	// apparently, ofColor will auto convert to ofFloatColor as necessary
+	// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
+	
+	
+	// need to replicate the verticies, because each vertex can only take one color
+	
+}
+
 void set_char_display_bg_color(ofMesh & _displayBG, int i, ofColor & c) {
 	
 	_displayBG.setColor(0+i*4, c);
@@ -35,6 +76,11 @@ void Init_rubyOF_project()
 	
 	rb_mCallbacks
 		.define_module_function("test_callback", &cpp_callback)
+		
+		
+		
+		.define_module_function("init_char_display_bg_mesh", 
+			                     &init_char_display_bg_mesh)
 		
 		.define_module_function("set_char_display_bg_color", 
 			                     &set_char_display_bg_color)

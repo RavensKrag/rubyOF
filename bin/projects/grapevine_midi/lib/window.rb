@@ -27,6 +27,146 @@ require LIB_DIR/'ofx_extensions.rb'
 
 
 
+class CharMappedDisplay
+  include RubyOF::Graphics
+  
+  def initialize(mesh, font)
+    @x_chars = 20*3
+    @y_chars = 18*1
+    
+    @mesh = mesh
+    @font = font
+    
+    
+    @char_grid = ("F" * @x_chars + "\n") * @y_chars
+    
+    
+    RubyOF::CPP_Callbacks.init_char_display_bg_mesh(
+      @mesh, @x_chars,@y_chars
+    )
+    
+    @bg_colors = (@x_chars*@y_chars).times.collect do
+      RubyOF::Color.new.tap do |c|
+        c.r, c.g, c.b, c.a = [100, 100, 100, 255]
+      end
+    end
+    
+    @fg_colors = (@x_chars*@y_chars).times.collect do
+      RubyOF::Color.new.tap do |c|
+        c.r, c.g, c.b, c.a = [255, 255, 255, 255]
+      end
+    end
+    
+    
+    
+    
+    @bg_colors.each_with_index do |c,i|
+      RubyOF::CPP_Callbacks.set_char_display_bg_color(
+        @mesh, i, c
+      )
+    end
+    
+    @fg_colors.each_with_index do |c,i|
+      # setForegroundColor(i,c)
+    end
+  end
+  
+  
+  def draw(origin, z)
+    line_height = 38
+    
+    x,y = [0,0]
+    vflip = true
+    position = origin + CP::Vec2.new(0,line_height*1)
+    
+    char_box__em = @font.string_bb("m", x,y, vflip);
+    ascender_height  = @font.ascender_height
+    descender_height = @font.descender_height
+    
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y - ascender_height, z)
+      
+      ofScale(char_box__em.width, ascender_height - descender_height, 1)
+      @mesh.draw()
+      
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+    end
+    
+    
+    
+    # TODO: need to make it so that each character can have a separate color
+    screen_print(font: @font, color: @fg_colors[0],
+                 string: @char_grid,
+                 position: origin+CP::Vec2.new(0,line_height*1),
+                 z: 5)
+    
+  end
+  
+  
+  
+  
+  # @display.background_color do |c|
+  #   c.r, c.g, c.b, c.a = [255, 255, 255, 255]
+  # end
+  def background_color(char_pos, &block)
+    color = @bg_colors[char_pos]
+    
+    block.call(color)
+    
+    RubyOF::CPP_Callbacks.set_char_display_bg_color(
+      @mesh, char_pos, color
+    )
+  end
+  
+  def foreground_color(char_pos, &block)
+    color = @fg_colors[char_pos]
+    
+    block.call(color)
+    
+    # RubyOF::CPP_Callbacks.set_char_display_bg_color(
+    #   @mesh, char_pos, color
+    # )
+  end
+  
+  
+  
+  
+  private
+  
+  def screen_print(font:, string:, position:, color:, z:1)
+    
+      font.font_texture.bind
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y, z)
+      
+      ofSetColor(color)
+      
+      x,y = [0,0]
+      vflip = true
+      text_mesh = font.get_string_mesh(string, x,y, vflip)
+      text_mesh.draw()
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      font.font_texture.unbind
+    end
+    
+  end
+  
+  
+end
+
+
 class Window < RubyOF::Window
   include HelperFunctions
   
@@ -132,15 +272,13 @@ class Window < RubyOF::Window
     
     
     
+  end
+  
+  def setup
+    super()
     
+    @first_draw = true
     
-    @text_fg_color = RubyOF::Color.new.tap do |c|
-      c.r, c.g, c.b, c.a = [255, 255, 255, 255]
-    end
-    
-    @text_bg_color = RubyOF::Color.new.tap do |c|
-      c.r, c.g, c.b, c.a = [255, 0, 0, 255]
-    end
     
     
     @fonts = Hash.new
@@ -162,18 +300,11 @@ class Window < RubyOF::Window
      
     
     
-    @char_grid_width  = 20*3
-    @char_grid_height = 18*1
     
-    # @char_grid_width  = 5
-    # @char_grid_height = 4
-    
-  end
-  
-  def setup
-    super()
-    
-    @first_draw = true
+    @display = CharMappedDisplay.new(
+      @cpp_ptr["display_bg_mesh"], 
+      @fonts[:monospace]
+    )
     
   end
   
@@ -285,8 +416,6 @@ class Window < RubyOF::Window
   end
   
   
-  include RubyOF::Graphics
-  
   def draw
     # super()
     
@@ -310,7 +439,7 @@ class Window < RubyOF::Window
     # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
     
     origin = CP::Vec2.new(370,500)
-    line_height = 38
+    # line_height = 38
     
     
     # screen_print(font: @fonts[:monospace], color: @text_fg_color,
@@ -321,65 +450,19 @@ class Window < RubyOF::Window
     
     
     
-    @disp_bg_colors ||= (@char_grid_width*@char_grid_height).times.collect do
-      RubyOF::Color.new.tap do |c|
-        c.r, c.g, c.b, c.a = [100, 100, 100, 255]
-      end
-    end
     
-    @disp_bg_colors.each_with_index do |c, i|
+    # @disp_bg_colors.each_with_index do |c, i|
       
-      RubyOF::CPP_Callbacks.set_char_display_bg_color(
-        @cpp_ptr["display_bg_mesh"], i, c
-      )
+    #   @cpp_ptr["display_bg_mesh"].setBackgroundColor(i,c)
       
-    end
-    
-    
-    
-    z = 1
-    
-    x,y = [0,0]
-    vflip = true
-    position = origin + CP::Vec2.new(0,line_height*1)
-    
-    char_box__em = @fonts[:monospace].string_bb("m", x,y, vflip);
-    ascender_height  = @fonts[:monospace].ascender_height
-    descender_height = @fonts[:monospace].descender_height
-    
-    
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      ofTranslate(position.x, position.y - ascender_height, z)
-      
-      # ofSetColor(@text_bg_color)
-      
-      # x,y = [0,0]
-      # vflip = true
-      # text_mesh = font.get_string_mesh(string, x,y, vflip)
-      # text_mesh.draw()
-      
-      ofScale(char_box__em.width, ascender_height - descender_height, 1)
-      @cpp_ptr["display_bg_mesh"].draw()
-      
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-    end
+    # end
     
     
     # print_char_grid()
     
-    char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
-    
-    
-    
-    screen_print(font: @fonts[:monospace], color: @text_fg_color,
-                 string: char_grid,
-                 position: origin+CP::Vec2.new(0,line_height*1),
-                 z: 5)
+    # char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
+    z = 5
+    @display.draw(origin, z)
     
   end
   

@@ -170,6 +170,22 @@ void rbApp::setup(){
 	
 	
 	
+	// transfer pointer to mesh by character display to Ruby level
+	Rice::Data_Object<ofMesh> rb_cMesh_ptr(
+		&_displayBG,
+		Rice::Data_Type< ofMesh >::klass(),
+		Rice::Default_Mark_Function< ofMesh >::mark,
+		Null_Free_Function< ofMesh >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "display_bg_mesh", rb_cMesh_ptr);
+	
+	
+	
+	
+	
+	
+	
 	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
 	mSelf.call("setup");
 	
@@ -203,91 +219,6 @@ void rbApp::setup(){
 	// Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
 	
 	// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
-	
-	
-	
-	// create uniform mesh based on dimensions specified by Ruby code
-	
-	Rice::Array rb_ary = mSelf.call("setup_character_mesh");
-	
-	int mesh_w, mesh_h;
-	
-	mesh_w = from_ruby<int>(rb_ary[0]);	
-	mesh_h = from_ruby<int>(rb_ary[1]);
-	
-	_displayBG.setMode( OF_PRIMITIVE_TRIANGLES );
-	for(int j=0; j < mesh_h; j++){
-		for(int i=0; i < mesh_w; i++){
-		
-			_displayBG.addVertex(glm::vec3((i+0), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+1), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+0), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+1), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-		}
-	}
-	
-	for(int i=0; i < mesh_w*mesh_h; i++){
-		_displayBG.addIndex(2+i*4);
-		_displayBG.addIndex(1+i*4);
-		_displayBG.addIndex(0+i*4);
-		
-		_displayBG.addIndex(2+i*4);
-		_displayBG.addIndex(3+i*4);
-		_displayBG.addIndex(1+i*4);
-	}
-	
-	// transfer pointer to mesh to Ruby level
-	
-	Rice::Data_Object<ofMesh> rb_cMesh_ptr(
-		&_displayBG,
-		Rice::Data_Type< ofMesh >::klass(),
-		Rice::Default_Mark_Function< ofMesh >::mark,
-		Null_Free_Function< ofMesh >::free
-	);
-	
-	mSelf.call("recieve_cpp_pointer", "display_bg_mesh", rb_cMesh_ptr);
-	
-	
-	
-	
-	
-	
-	// openGL is right handed = ccw rotation -> front facing
-	
-	
-	
-	// display_bg.addVertex(glm::vec3(0,0,0));
-	// display_bg.addColor(ofFloatColor(1,0,0));
-	
-	// display_bg.addVertex(glm::vec3(1,0,0));
-	// display_bg.addColor(ofFloatColor(1,0,0));
-	
-	// display_bg.addVertex(glm::vec3(0,1,0));
-	// display_bg.addColor(ofFloatColor(1,0,0));
-	
-	// mesh.setColor(i, ofFloatColor(0,1,0));
-	// ^ use this to set colors on the mesh later
-	
-	// apparently, ofColor will auto convert to ofFloatColor as necessary
-	// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
-	
-	
-	// need to replicate the verticies, because each vertex can only take one color
-	
-	// mesh.addIndex(0);
-	// mesh.addIndex(1);
-	// mesh.addIndex(2);
-	// ^ if replicating verts, no need for index buffer
-	// (at least, I don't think so)
-	
 	
 	
 	
