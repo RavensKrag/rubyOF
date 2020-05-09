@@ -165,6 +165,8 @@ Rice::Class Init_rubyOF_trueTypeFont(Rice::Module rb_mRubyOF)
 		.define_method("antialiased?",     &ofTrueTypeFont::isAntiAliased)
 		
 		
+		.define_method("glyph_bb",         &ofTrueTypeFont::getGlyphBBox)
+		
 		
 		.define_method("get_string_mesh",  &ofTrueTypeFont::getStringMesh)
 		// Returns the string as an ofMesh. Note: this is a mesh that contains vertices and texture coordinates for the textured font, not the points of the font that are returned via any of the get points functions.

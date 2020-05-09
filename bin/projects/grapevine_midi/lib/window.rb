@@ -130,6 +130,39 @@ class Window < RubyOF::Window
       end
     end
     
+    
+    
+    
+    
+    @text_fg_color = RubyOF::Color.new.tap do |c|
+      c.r, c.g, c.b, c.a = [255, 255, 255, 255]
+    end
+    
+    @text_bg_color = RubyOF::Color.new.tap do |c|
+      c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+    end
+    
+    
+    @fonts = Hash.new
+    
+    @fonts[:monospace] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        x.path = "DejaVu Sans Mono"
+        x.size = 23
+        x.add_alphabet :Latin
+      end
+    
+    @fonts[:english] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        # TakaoPGothic
+        x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+        x.size = 23
+        x.add_alphabet :Latin
+      end
+     
+    
+    
+    
   end
   
   def setup
@@ -246,6 +279,9 @@ class Window < RubyOF::Window
     
   end
   
+  
+  include RubyOF::Graphics
+  
   def draw
     # super()
     
@@ -261,6 +297,102 @@ class Window < RubyOF::Window
       
       
       @first_draw = false
+    end
+    
+    
+    
+    # NOTE: need live coding before I can fiddle with graphics code
+    # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
+    
+    origin = CP::Vec2.new(370,500)
+    line_height = 38
+    
+    
+    # screen_print(font: @fonts[:monospace], color: @text_fg_color,
+    #              string: "hello world!",
+    #              position: origin+CP::Vec2.new(0,line_height*0))
+    
+    # ^ if you bind the font texture here before drawing the rectangular mesh below, then the mesh will be invisible. not sure why. likely some bug is happening with textures?
+    
+    
+    
+    z = 1
+    
+    x,y = [0,0]
+    vflip = true
+    position = origin + CP::Vec2.new(0,line_height*1)
+    
+    char_box__em = @fonts[:monospace].string_bb("m", x,y, vflip);
+    ascender_height  = @fonts[:monospace].ascender_height
+    descender_height = @fonts[:monospace].descender_height
+    
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y - ascender_height, z)
+      
+      # ofSetColor(@text_bg_color)
+      
+      # x,y = [0,0]
+      # vflip = true
+      # text_mesh = font.get_string_mesh(string, x,y, vflip)
+      # text_mesh.draw()
+      
+      ofScale(char_box__em.width, ascender_height - descender_height, 1)
+      @cpp_ptr["display_bg_mesh"].draw()
+      
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+    end
+    
+    
+    # print_char_grid()
+    
+    char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
+    
+    
+    
+    screen_print(font: @fonts[:monospace], color: @text_fg_color,
+                 string: char_grid,
+                 position: origin+CP::Vec2.new(0,line_height*1),
+                 z: 5)
+    
+  end
+  
+  def setup_character_mesh
+    @char_grid_width  = 20*3
+    @char_grid_height = 18*1
+    
+    # @char_grid_width  = 5
+    # @char_grid_height = 4
+    
+    return [@char_grid_width, @char_grid_height]
+  end
+  
+  
+  def screen_print(font:, string:, position:, z:1, color: @text_fg_color)
+    
+      font.font_texture.bind
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y, z)
+      
+      ofSetColor(color)
+      
+      x,y = [0,0]
+      vflip = true
+      text_mesh = font.get_string_mesh(string, x,y, vflip)
+      text_mesh.draw()
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      font.font_texture.unbind
     end
     
   end

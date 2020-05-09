@@ -78,4 +78,8 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		std::size_t maxMessages = 10; //< max number of messages to keep track of
 		
 		ofxMidiOut midiOut;
+		
+		
+		
+		ofMesh _displayBG;
 };
