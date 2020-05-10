@@ -3,6 +3,20 @@
 
 using namespace Rice;
 
+#include "rice/Array.hpp"
+
+bool shader_load(ofShader &shader, Rice::Array args){
+   if(args.size() == 1){
+      Rice::Object x = args[0];
+      std::string path = from_ruby<std::string>(x);
+      return shader.load(path);
+   }else if(args.size() == 2 || args.size() == 3){
+      return false;
+   }
+   
+   return false;
+}
+
 
 Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    Module rb_mGLM = define_module("GLM");
@@ -51,11 +65,11 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (const glm::vec3 & p)
          >(&ofPath::lineTo)
       )
-      .define_method("lineTo",
-         static_cast< void (ofPath::*)
-         (const glm::vec3 & p)
-         >(&ofPath::lineTo)
-      )
+      // .define_method("lineTo",
+      //    static_cast< void (ofPath::*)
+      //    (const glm::vec3 & p)
+      //    >(&ofPath::lineTo)
+      // )
       .define_method("close",
          &ofPath::close
       )
@@ -71,6 +85,68 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    //  path.setFilled(true);
    //  path.setStrokeWidth(2);
    //  tessellation = path.getTessellation();  // => ofVboMesh
+   
+   
+   
+   Data_Type<ofShader> rb_cShader = 
+      define_class_under<ofShader>(rb_mRubyOF, "Shader");
+   
+   rb_cShader
+      .define_constructor(Constructor<ofShader>())
+      .define_method("begin", &ofShader::begin)
+      .define_method("end",   &ofShader::end)
+      
+      
+      .define_method("load",  &shader_load)
+      // either 1 string if the fragment shaders have the same name
+      //    i.e. "dof.vert" and "dof.frag"
+      // or up to 3 strings if the shaders have different names
+      //    i.e ("dof.vert", "dof.frag", "dof.geom")
+      // (geometry shader is optional)
+      
+      // ^ using helper function instead of casting the funciton pointer because the default argument is boost::filesystem::path, which I don't want to bind in Rice
+      
+      
+      
+      // .define_method("load_oneNameVertAndFrag",
+      //    static_cast< bool (ofShader::*)
+      //    (const filesystem::path &shaderName)
+      //    >(&ofShader::load)
+      // )
+      
+      // .define_method("load_VertFragGeom",
+      //    static_cast< bool (ofShader::*)
+      //    (const filesystem::path &vertName, const filesystem::path &fragName, const filesystem::path &geomName)
+      //    >(&ofShader::load),
+      //    (
+      //       Arg("vert_shader"),
+      //       Arg("frag_shader"),
+      //       Arg("geom_shader") = ""
+      //    )
+      // )
+      
+      
+      
+      
+      // .define_method("bind",
+      //    static_cast< void (ofShader::*)
+      //    (int) const
+      //    >(&ofShader::bind),
+      //    (
+      //       Arg("textureLocation") = 0
+      //    )
+      // )
+      // .define_method("unbind",
+      //    static_cast< void (ofShader::*)
+      //    (int) const
+      //    >(&ofShader::bind),
+      //    (
+      //       Arg("textureLocation") = 0
+      //    )
+      // )
+   ;
+   
+   
    
    
    Data_Type<ofTexture> rb_cTexture = 
@@ -101,11 +177,27 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
 		define_class_under<ofMesh>(rb_mRubyOF, "Mesh");
    
    rb_cMesh
+      .define_constructor(Constructor<ofMesh>())
       .define_method("draw",
          static_cast< void (ofMesh::*)
          () const
          >(&ofMesh::draw)
       )
+      // .define_method("addVertex",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addVertex)
+      // )
+      // .define_method("addColor",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addColor)
+      // )
+      // .define_method("addIndex",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addIndex)
+      // )
    ;
    // mesh.addVertex(ofVec3f(20,20));
    // mesh.addColor(ofColor::red);
@@ -149,3 +241,4 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    return rb_mGLM;
 }
+

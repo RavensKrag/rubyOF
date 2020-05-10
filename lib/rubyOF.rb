@@ -68,6 +68,28 @@ end
 module RubyOF
 
 
+class Shader
+	# private :load_oneNameVertAndFrag, :load_VertFragGeom
+	
+	def load(*args)
+		
+		if(args.length <= 3)
+			super(*args)
+		else
+			raise ArgumentError, 'Expected either one path (vertex and fragment shaders have the same name, i.e. dof.vert and dof.frag) or up to 3 paths: vert,frag,geom (geometry shader is optional)'
+		end
+		
+		# case args.length
+		# when 1
+		# 	load_oneNameVertAndFrag(args.first)
+		# when 2,3
+		# 	load_VertFragGeom(*args)
+		# else
+		# 	raise ArgumentError, 'Expected either one path (vertex and fragment shaders have the same name, i.e. dof.vert and dof.frag) or up to 3 paths: vert,frag,geom (geometry shader is optional)'
+		# end
+		
+	end
+end
 
 class Texture
 	# TODO: clean up the interface for 'draw_wh' and 'draw_pt' bound from C++ layer

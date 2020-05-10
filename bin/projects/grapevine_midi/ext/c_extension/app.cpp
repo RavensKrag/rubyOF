@@ -32,6 +32,7 @@ rbApp::~rbApp(){
 void rbApp::setup(){
 	ofSetDataPathRoot(DATA_PATH);
 	
+	mUI_InputCapture = false;
 	
 	// ========================================
 	// ========== add new stuff here ==========
@@ -181,6 +182,14 @@ void rbApp::setup(){
 	mSelf.call("recieve_cpp_pointer", "display_bg_mesh", rb_cMesh_ptr);
 	
 	
+	
+	
+	ofShader shader;
+	if(shader.load("char_display")){
+		std::cout << "shaders loaded" << std::endl;
+	}else{
+		std::cout << "ERROR: could not load shader files" << std::endl;
+	}
 	
 	
 	

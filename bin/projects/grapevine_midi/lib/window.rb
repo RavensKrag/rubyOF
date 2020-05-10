@@ -311,8 +311,10 @@ class Window < RubyOF::Window
   end
   
   
+  include RubyOF::Graphics
   def draw
     # super()
+    ofBackground(200, 200, 200, 255)
     
     
     if @first_draw
@@ -377,6 +379,8 @@ class Window < RubyOF::Window
       
       ofSetColor(color)
       
+      # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
+      
       x,y = [0,0]
       vflip = true
       text_mesh = font.get_string_mesh(string, x,y, vflip)
@@ -427,13 +431,13 @@ class Window < RubyOF::Window
   # 
   
   def mouse_moved(x,y)
-    # p "mouse position: #{[x,y]}.inspect"
+    p "mouse position: #{[x,y]}.inspect"
   end
   
   def mouse_pressed(x,y, button)
     # p [:pressed, x,y, button]
     
-    offset = CP::Vec2.new(0,10)
+    offset = CP::Vec2.new(0,10) # probably related to font ascender height
     
     out = ( CP::Vec2.new(x,y) - @origin - offset )
     

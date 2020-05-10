@@ -14,6 +14,21 @@ class CharMappedDisplay
     
     @mesh = mesh
     @font = font
+    @shader = RubyOF::Shader.new
+    
+    # @shader.load("char_display")
+    shader_load_args = ["char_display"]
+    
+    load_flag = RubyOF::CPP_Callbacks.load_char_display_shaders(
+      @shader, ["char_display"]
+    )
+    # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
+    
+    if load_flag
+      puts "Ruby: shader loaded"
+    else
+      puts "ERROR: couldn't load shaders '#{shader_load_args.inspect}'"
+    end
     
     
     x,y = [0,0]
@@ -41,7 +56,7 @@ class CharMappedDisplay
     
     @fg_colors = (@x_chars*@y_chars).times.collect do
       RubyOF::Color.new.tap do |c|
-        c.r, c.g, c.b, c.a = [255, 255, 255, 255]
+        c.r, c.g, c.b, c.a = [255, 0, 255, 255]
       end
     end
     
@@ -55,7 +70,9 @@ class CharMappedDisplay
     end
     
     @fg_colors.each_with_index do |c,i|
-      # setForegroundColor(i,c)
+      # RubyOF::CPP_Callbacks.set_char_display_bg_color(
+      #   @mesh, char_pos, color
+      # )
     end
   end
   
@@ -144,7 +161,7 @@ class CharMappedDisplay
       case char_pos
       when CP::Vec2
         pos = char_pos
-        puts pos
+        # puts pos
         
         
         start_x = pos.x.to_i
@@ -156,7 +173,7 @@ class CharMappedDisplay
         stop_i = start_i + stop_x - start_x
         
         range = start_i..stop_i
-        puts range
+        # puts range
           # range.size               (counts number of elements)
           # range.min   range.first
           # range.max   range.last
@@ -215,7 +232,35 @@ class CharMappedDisplay
       x,y = [0,0]
       vflip = true
       text_mesh = font.get_string_mesh(string, x,y, vflip)
+        
+        @fg_colors.each_with_index do |c,i|
+          # puts "vertex color: #{i}"
+          # RubyOF::CPP_Callbacks.colorize_char_display_mesh(
+          #   text_mesh, i, c
+          # )
+          
+          # ^ Can't modify mesh because it's const.
+          
+        end
+        
+        
+        
+        
+        
+        
+        
+        # ^ If I want to specify text color using vertex coloring, I need to write a shader that will combine the text information with the vertex colors.
+        
+        
+        # other route is to use stencil buffer, but stencil seems to not be supported on all platforms [1], and OpenFrameworks does not enable stencil buffer by default [2]. Also, I think this would require the text to be represented as geometry, like in this example with some shapes [3], rather than using a texture map. Overall, it is best to use a shader.
+        
+        # [1] https://forum.openframeworks.cc/t/ofxstencil/4561
+        # [2] https://forum.openframeworks.cc/t/easy-stenciltest/25863
+        # [3] https://forum.openframeworks.cc/t/how-to-draw-shape-clipped-inside-the-other-shape/25531/5
+        
+      @shader.begin()
       text_mesh.draw()
+      @shader.end()
     ensure
       ofPopStyle()
       ofPopMatrix()

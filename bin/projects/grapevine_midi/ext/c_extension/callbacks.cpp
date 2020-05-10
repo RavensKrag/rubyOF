@@ -65,6 +65,28 @@ void set_char_display_bg_color(ofMesh & _displayBG, int i, ofColor & c) {
 	
 }
 
+void colorize_char_display_mesh(ofMesh & textMesh, int i, ofColor & c){
+	
+	textMesh.setColor(0+i*4, c);
+	textMesh.setColor(1+i*4, c);
+	textMesh.setColor(2+i*4, c);
+	textMesh.setColor(3+i*4, c);
+	// ^ can't write to this mesh b/c the reference I recieve from ofTrueTypeFont::getStringMesh() is const.
+	
+}
+
+bool load_char_display_shaders(ofShader & shader, Rice::Array args){
+	if(args.size() == 1){
+      Rice::Object x = args[0];
+      std::string path = from_ruby<std::string>(x);
+      return shader.load(path);
+   }else if(args.size() == 2 || args.size() == 3){
+      return false;
+   }
+   
+   return false;
+}
+
 
 
 // "main" section
@@ -84,6 +106,12 @@ void Init_rubyOF_project()
 		
 		.define_module_function("set_char_display_bg_color", 
 			                     &set_char_display_bg_color)
+		
+		.define_module_function("colorize_char_display_mesh", 
+			                     &colorize_char_display_mesh)
+		
+		.define_module_function("load_char_display_shaders", 
+			                     &load_char_display_shaders)
 	;
 	
 	
