@@ -165,6 +165,8 @@ class Window < RubyOF::Window
     
     @display = CharMappedDisplay.new(
       @cpp_ptr["display_bg_mesh"], 
+      @cpp_ptr["display_fg_pixels"], 
+      @cpp_ptr["display_fg_texture"], 
       @fonts[:monospace]
     )
     
@@ -357,9 +359,23 @@ class Window < RubyOF::Window
     
     # print_char_grid()
     
+    @display.reload_shader
+    
     # char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
     z = 5
     @display.draw(@origin, z)
+    
+    
+    
+    RubyOF::CPP_Callbacks.render_material_editor(
+      @cpp_ptr["materialEditor_mesh"],
+      @cpp_ptr["materialEditor_shader"], "material_editor",
+      
+      @fonts[:monospace].font_texture,
+      @cpp_ptr["display_fg_texture"],
+      
+      20, 500, 300, 300 # x,y,w,h
+    )
     
   end
   

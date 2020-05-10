@@ -8,28 +8,17 @@ class CharMappedDisplay
   
   attr_reader :char_width_pxs, :char_height_pxs
   
-  def initialize(mesh, font)
+  def initialize(mesh, pixels, texture, font)
     @x_chars = 20*3
     @y_chars = 18*1
     
     @mesh = mesh
     @font = font
-    @shader = RubyOF::Shader.new
     
-    # @shader.load("char_display")
-    shader_load_args = ["char_display"]
     
-    load_flag = RubyOF::CPP_Callbacks.load_char_display_shaders(
-      @shader, ["char_display"]
-    )
-    # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
-    
-    if load_flag
-      puts "Ruby: shader loaded"
-    else
-      puts "ERROR: couldn't load shaders '#{shader_load_args.inspect}'"
-    end
-    
+    # 
+    # set up grids of characters and colors (foreground and background color)
+    # 
     
     x,y = [0,0]
     vflip = true
@@ -56,12 +45,39 @@ class CharMappedDisplay
     
     @fg_colors = (@x_chars*@y_chars).times.collect do
       RubyOF::Color.new.tap do |c|
-        c.r, c.g, c.b, c.a = [255, 0, 255, 255]
+        c.r, c.g, c.b, c.a = [255, 255, 255, 255]
       end
     end
     
     
     
+    
+    
+    
+    # 
+    # set up information needed for text coloring shader
+    # 
+    
+    @shader = RubyOF::Shader.new
+    load_shader("char_display")
+    
+    
+    
+    # @text_colors_cpu = RubyOF::Pixels.new
+    @text_colors_cpu = pixels
+    # @text_colors_cpu.allocate(@char_width_pxs, @char_height_pxs)
+    
+    # @text_colors_gpu = RubyOF::Texture.new
+    @text_colors_gpu = texture
+    # @text_colors_gpu.loadData(@text_colors_cpu)
+    
+    
+    
+    
+    
+    # 
+    # assign background and foreground colors
+    # 
     
     @bg_colors.each_with_index do |c,i|
       RubyOF::CPP_Callbacks.set_char_display_bg_color(
@@ -70,10 +86,15 @@ class CharMappedDisplay
     end
     
     @fg_colors.each_with_index do |c,i|
-      # RubyOF::CPP_Callbacks.set_char_display_bg_color(
-      #   @mesh, char_pos, color
-      # )
+      # @text_colors_cpu[i] = c
+      # @text_colors_gpu.loadData(@text_colors_cpu)
     end
+    
+    
+  end
+  
+  def reload_shader
+    load_shader("char_display")
   end
   
   
@@ -144,13 +165,23 @@ class CharMappedDisplay
   end
   
   def foreground_color(char_pos, &block)
+    case char_pos
+    when CP::Vec2
+      pos = char_pos
+      char_pos = pos.x.to_i + pos.y.to_i*(@x_chars)
+      # no need to add 1 here, because this only counts visible chars
+      # and disregaurds the invisible newline at the end of each line
+    when Numeric
+      # NO-OP
+      # char_pos can just be used as-is
+    end
+    
     color = @fg_colors[char_pos]
     
     block.call(color)
     
-    # RubyOF::CPP_Callbacks.set_char_display_bg_color(
-    #   @mesh, char_pos, color
-    # )
+    # @text_colors_cpu[char_pos] = color
+    # @text_colors_gpu.loadData(@text_colors_cpu)
   end
   
   
@@ -220,8 +251,11 @@ class CharMappedDisplay
   
   def screen_print(font:, string:, position:, color:, z:1)
     
-      font.font_texture.bind
-    
+      @shader.begin()
+      
+      @shader.setUniformTexture("trueTypeTexture", font.font_texture, 0)
+      @shader.setUniformTexture("fontColorMap",    @text_colors_gpu,  1)
+      
       ofPushMatrix()
       ofPushStyle()
     begin
@@ -244,30 +278,39 @@ class CharMappedDisplay
         end
         
         
+        # New approach:
+          # bind an annotional texture. each pixel in the texture will specify the color of one character, based on that character's position on screen.
+          
+          # to do this I need to wrap the classes ofPixels (CPU-side image) and ofTexture (GPU-side image, as well as the ability the switch between the two.
+          
+          # https://openframeworks.cc/documentation/graphics/ofPixels/
         
         
         
         
-        
-        # ^ If I want to specify text color using vertex coloring, I need to write a shader that will combine the text information with the vertex colors.
-        
-        
-        # other route is to use stencil buffer, but stencil seems to not be supported on all platforms [1], and OpenFrameworks does not enable stencil buffer by default [2]. Also, I think this would require the text to be represented as geometry, like in this example with some shapes [3], rather than using a texture map. Overall, it is best to use a shader.
-        
-        # [1] https://forum.openframeworks.cc/t/ofxstencil/4561
-        # [2] https://forum.openframeworks.cc/t/easy-stenciltest/25863
-        # [3] https://forum.openframeworks.cc/t/how-to-draw-shape-clipped-inside-the-other-shape/25531/5
-        
-      @shader.begin()
       text_mesh.draw()
-      @shader.end()
     ensure
       ofPopStyle()
       ofPopMatrix()
       
       font.font_texture.unbind
+      @text_colors_gpu.unbind
+      @shader.end()
     end
     
+  end
+  
+  def load_shader(*args)
+    load_flag = RubyOF::CPP_Callbacks.load_char_display_shaders(
+      @shader, args
+    )
+    # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
+    
+    if load_flag
+      # puts "Ruby: shader loaded"
+    else
+      puts "ERROR: couldn't load shaders '#{args.inspect}'"
+    end
   end
   
   

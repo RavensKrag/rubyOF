@@ -11,6 +11,36 @@ int cpp_callback(int x) {
 	return 1;
 }
 
+
+void render_material_editor(
+	ofMesh & mesh, ofShader & shader, std::string & shader_filepath,
+	ofTexture & tex0, ofTexture & tex1,
+	int x, int y, int w, int h)
+{
+	
+	
+	shader.load(shader_filepath);
+	shader.begin();
+	
+	shader.setUniformTexture("tex0", tex0, 0);
+	shader.setUniformTexture("tex1", tex1, 1);
+	
+	
+	ofPushMatrix();
+		ofTranslate(x,y);
+      ofScale(w,h);
+		
+		mesh.draw();
+		
+	ofPopMatrix();
+	
+	
+	shader.end();
+	
+}
+
+
+
 void init_char_display_bg_mesh(ofMesh & _displayBG, int mesh_w, int mesh_h){
 	// create uniform mesh based on dimensions specified by Ruby code
 	
@@ -112,6 +142,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("load_char_display_shaders", 
 			                     &load_char_display_shaders)
+		
+		
+		.define_module_function("render_material_editor", 
+			                     &render_material_editor)
 	;
 	
 	

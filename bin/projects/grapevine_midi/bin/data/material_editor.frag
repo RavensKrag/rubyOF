@@ -6,8 +6,8 @@
 in vec2 f_texcoord;
 
 // inputs to the fragment shader specifically
-uniform sampler2DRect trueTypeTexture;
-uniform sampler2DRect fontColorMap;
+uniform sampler2DRect tex0;
+uniform sampler2DRect tex1;
 out vec4 outputColor;
 
 void main()
@@ -24,9 +24,14 @@ void main()
   float g = gl_FragCoord.y / windowHeight;
   float b = 1.0;
   float a = 1.0;
-  // outputColor = vec4(r, g, b, a);
+  outputColor = vec4(r, g, b, a);
   
   // outputColor = gl_Color;
   
-  outputColor = texture(fontColorMap, vec2(0,0));
+  // outputColor = texture(tex0, f_texcoord);
+  
+  // coordinates sampler2DRect are texel values, not normalized coordinates
+  // src: https://www.khronos.org/opengl/wiki/Rectangle_Texture
+  // outputColor = texture(tex1, vec2(0,0));
+  
 }

@@ -91,6 +91,18 @@ class Shader
 	end
 end
 
+class Pixels
+	private :setColor_i, :setColor_xy
+	
+	def setColor(x,y, c)
+		setColor_xy(x,y, c)
+	end
+	
+	def []=(i, c)
+		setColor_i(i, c)
+	end
+end
+
 class Texture
 	# TODO: clean up the interface for 'draw_wh' and 'draw_pt' bound from C++ layer
 	# TODO: perhaps bind other methods of Texture?

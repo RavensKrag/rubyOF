@@ -17,6 +17,25 @@ bool shader_load(ofShader &shader, Rice::Array args){
    return false;
 }
 
+void ofShader__setUniformTexture(ofShader &shader, const string &name, const ofTexture &img, int textureLocation){
+   shader.setUniformTexture(name, img, textureLocation);
+}
+
+
+
+ofColor ofPixels__getColor(ofPixels &pixels, size_t x, size_t y){
+   return pixels.getColor(x,y);
+}
+
+void ofPixels__setColor_xy(ofPixels &pixels, size_t x, size_t y, const ofColor &color){
+   pixels.setColor(x,y,color);
+}
+
+void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
+   pixels.setColor(i,color);
+}
+
+
 
 Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    Module rb_mGLM = define_module("GLM");
@@ -96,7 +115,6 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("begin", &ofShader::begin)
       .define_method("end",   &ofShader::end)
       
-      
       .define_method("load",  &shader_load)
       // either 1 string if the fragment shaders have the same name
       //    i.e. "dof.vert" and "dof.frag"
@@ -106,6 +124,14 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       // ^ using helper function instead of casting the funciton pointer because the default argument is boost::filesystem::path, which I don't want to bind in Rice
       
+      
+      .define_method("setUniform1i",  &ofShader::setUniform1i)
+      .define_method("setUniform2i",  &ofShader::setUniform2i)
+      .define_method("setUniform3i",  &ofShader::setUniform3i)
+      .define_method("setUniform4i",  &ofShader::setUniform4i)
+      
+      .define_method("setUniformTexture", &ofShader__setUniformTexture)
+      // (the textureLocation is just the slot number)
       
       
       // .define_method("load_oneNameVertAndFrag",
@@ -124,28 +150,33 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       //       Arg("geom_shader") = ""
       //    )
       // )
-      
-      
-      
-      
-      // .define_method("bind",
-      //    static_cast< void (ofShader::*)
-      //    (int) const
-      //    >(&ofShader::bind),
-      //    (
-      //       Arg("textureLocation") = 0
-      //    )
-      // )
-      // .define_method("unbind",
-      //    static_cast< void (ofShader::*)
-      //    (int) const
-      //    >(&ofShader::bind),
-      //    (
-      //       Arg("textureLocation") = 0
-      //    )
-      // )
    ;
    
+   
+   Data_Type<ofPixels> rb_cPixels = 
+      define_class_under<ofPixels>(rb_mRubyOF, "Pixels");
+   
+   rb_cPixels
+      .define_constructor(Constructor<ofPixels>())
+      .define_method("allocate",
+         static_cast< void (ofPixels::*)
+         (size_t w, size_t h, ofPixelFormat pixelFormat)
+         >(&ofPixels::allocate),
+         (
+            Arg("width"),
+            Arg("height"),
+            Arg("pixelFormat") = OF_PIXELS_RGBA
+         )
+      )
+      .define_method("crop",          &ofPixels::crop)
+      .define_method("cropTo",        &ofPixels::cropTo)
+      .define_method("getColor",      &ofPixels__getColor)
+      .define_method("setColor_i",    &ofPixels__setColor_i)
+      .define_method("setColor_xy",   &ofPixels__setColor_xy)
+      .define_method("getPixelIndex", &ofPixels::getPixelIndex)
+      .define_method("getTotalBytes", &ofPixels::getTotalBytes)
+      .define_method("size",          &ofPixels::size)
+   ;
    
    
    
@@ -153,6 +184,7 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
    
    rb_cTexture
+      .define_constructor(Constructor<ofTexture>())
       .define_method("bind",
          static_cast< void (ofTexture::*)
          (int) const
@@ -168,6 +200,16 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (
 				Arg("textureLocation") = 0
 			)
+      )
+      .define_method("readToPixels",
+         static_cast< void (ofTexture::*)
+         (ofPixels &pixels) const
+         >(&ofTexture::readToPixels)
+      )
+      .define_method("loadData",
+         static_cast< void (ofTexture::*)
+         (const ofPixels &pix)
+         >(&ofTexture::loadData)
       )
    ;
    
