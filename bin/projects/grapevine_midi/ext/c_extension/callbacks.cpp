@@ -17,7 +17,10 @@ void render_material_editor(
 	ofTexture & tex0, ofTexture & tex1,
 	int x, int y, int w, int h)
 {
+	stringstream textOut1, textOut2;
 	
+	textOut1 << "tex0 size: " << tex0.getWidth() << " x " << tex0.getHeight();
+	textOut2 << "tex1 size: " << tex1.getWidth() << " x " << tex1.getHeight();
 	
 	shader.load(shader_filepath);
 	shader.begin();
@@ -34,9 +37,21 @@ void render_material_editor(
 		
 	ofPopMatrix();
 	
-	
 	shader.end();
 	
+	
+	ofPushStyle();
+	
+	ofColor text_color(0.0);
+	
+	ofSetColor(text_color);
+	
+	int bitmap_lineheight = 10;
+	int offset = bitmap_lineheight;
+	ofDrawBitmapString(textOut1.str(), x, y+offset+h+bitmap_lineheight*1);
+	ofDrawBitmapString(textOut2.str(), x, y+offset+h+bitmap_lineheight*2);
+	
+	ofPopStyle();
 }
 
 
