@@ -9,10 +9,23 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	Data_Type<ofMatrixMode> rb_cMatrixMode = 
 		define_class_under<ofMatrixMode>(rb_mRubyOF, "MatrixMode");
 	
+	
+	
 	Data_Type<ofMatrix4x4> rb_cMatrix4x4 = 
 		define_class_under<ofMatrix4x4>(rb_mRubyOF,  "Matrix4x4");
-		
+	
+	rb_cMatrix4x4
+		.define_constructor(Constructor<ofMatrix4x4>())
+		.define_method("set",			
+         static_cast< void (ofMatrix4x4::*)
+         (const float *const ptr)
+         >(&ofMatrix4x4::set)
+		)
+	;
+	
 		// wrap #set to bind a series of floats to your matrix (it's overloaded)
+	
+	
 	
 	Data_Type<ofQuaternion> rb_cQuaternion = 
 		define_class_under<ofQuaternion>(rb_mRubyOF, "Quaternion");
@@ -232,10 +245,10 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			&ofLoadIdentityMatrix // ()
 		)
 		
-		.define_method(
-			"ofLoadMatrix",
-			wrap_matrix_op(&ofLoadMatrix)
-		)
+		// .define_method(
+		// 	"ofLoadMatrix",
+		// 	wrap_matrix_op(&ofLoadMatrix)
+		// )
 		.define_method(
 			"ofMultMatrix",
 			wrap_matrix_op(&ofMultMatrix)

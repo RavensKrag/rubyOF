@@ -150,16 +150,16 @@ ITP_Tuple Init_rubyOF_image_texture_pixels(Rice::Module rb_mRubyOF)
 			(float x, float y, float z, float w, float h) const
 			>(&ofTexture::draw)
 		)
-		.define_method("draw_pt",
-			static_cast< void (ofTexture::*)
-			(
-				const glm::vec3 & p1,
-				const glm::vec3 & p2,
-				const glm::vec3 & p3,
-				const glm::vec3 & p4
-			) const
-			>(&ofTexture::draw)
-		)
+		// .define_method("draw_pt",
+		// 	static_cast< void (ofTexture::*)
+		// 	(
+		// 		const glm::vec3 & p1,
+		// 		const glm::vec3 & p2,
+		// 		const glm::vec3 & p3,
+		// 		const glm::vec3 & p4
+		// 	) const
+		// 	>(&ofTexture::draw)
+		// )
 	;
 	
 	// void draw(float x, float y, float z, float w, float h) const;
