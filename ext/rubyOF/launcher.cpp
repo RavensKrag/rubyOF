@@ -112,7 +112,9 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 				// mainLoop()->createWindow(settings)
 	// ext/openFrameworks/libs/openFrameworks/app/ofMainLoop.cpp
 	// 
-
+	// 
+	// ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp
+	
 	
 	
 	// the correct way to set up a window is using ofCreateWindow()
