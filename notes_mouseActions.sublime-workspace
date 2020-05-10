@@ -1,0 +1,2333 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pause",
+				"pause_execution"
+			],
+			[
+				"dynamic",
+				"dynamic_load"
+			],
+			[
+				"wrapped",
+				"wrapped_object"
+			],
+			[
+				"time",
+				"timestamp"
+			],
+			[
+				"dynam",
+				"dynamic_load"
+			],
+			[
+				"currn",
+				"current_turn"
+			],
+			[
+				"current",
+				"current_turn"
+			],
+			[
+				"turn",
+				"turn_number"
+			],
+			[
+				"pre",
+				"protect_runtime_errors"
+			],
+			[
+				"save",
+				"save_directory"
+			],
+			[
+				"mous",
+				"mouse_history"
+			],
+			[
+				"on",
+				"on_draw"
+			],
+			[
+				"prod",
+				"project_dir"
+			],
+			[
+				"Path",
+				"Pathname"
+			],
+			[
+				"cext",
+				"c_extension_dir"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"Fiber",
+				"Fiber"
+			],
+			[
+				"loca",
+				"local_subscriptions"
+			],
+			[
+				"image",
+				"image_i"
+			],
+			[
+				"zip",
+				"zip_pair"
+			],
+			[
+				"chann",
+				"channel-name"
+			],
+			[
+				"data",
+				"data_path"
+			],
+			[
+				"channel",
+				"channel_name"
+			],
+			[
+				"icon_",
+				"icon_filepath"
+			],
+			[
+				"outp",
+				"output_path"
+			],
+			[
+				"channe",
+				"channel_name"
+			],
+			[
+				"OFB",
+				"OF_BUILD_VARIABLE_FILE"
+			],
+			[
+				"root",
+				"REPO_ROOT"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"exten",
+				"ofx_extension_name"
+			],
+			[
+				"repo",
+				"REPO_ROOT"
+			],
+			[
+				"expand",
+				"expand_path"
+			],
+			[
+				"onl",
+				"only_so"
+			],
+			[
+				"sketch",
+				"sketch_dump"
+			],
+			[
+				"dump",
+				"dump_so"
+			],
+			[
+				"cate",
+				"category_dir"
+			],
+			[
+				"exp",
+				"expand_path"
+			],
+			[
+				"trail",
+				"trail_dt"
+			],
+			[
+				"es",
+				"exit_status"
+			],
+			[
+				"have_",
+				"have_library"
+			],
+			[
+				"gstream",
+				"gstreamer"
+			],
+			[
+				"polib",
+				"poco_libs_dir"
+			],
+			[
+				"build_",
+				"build_tess2"
+			],
+			[
+				"depe",
+				"dependencies"
+			],
+			[
+				"ext",
+				"extconf"
+			],
+			[
+				"oF",
+				"oF_project"
+			],
+			[
+				"clb",
+				"c_library"
+			],
+			[
+				"work",
+				"work_dir"
+			],
+			[
+				"temp",
+				"temp_ext"
+			],
+			[
+				"mk",
+				"mySketch"
+			],
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"bu",
+				"build"
+			],
+			[
+				"bur",
+				"build_library"
+			],
+			[
+				"clib",
+				"clean_library"
+			],
+			[
+				"ce",
+				"1.coerce"
+			],
+			[
+				"visua",
+				"visualizations"
+			],
+			[
+				"test_",
+				"test_package"
+			],
+			[
+				"prev",
+				"prev_tick"
+			],
+			[
+				"poss",
+				"possible_targets"
+			],
+			[
+				"const",
+				"constraint_target"
+			],
+			[
+				"rec",
+				"resources"
+			],
+			[
+				"Hash",
+				"HashWrapper"
+			],
+			[
+				"remo",
+				"removal_flag"
+			],
+			[
+				"con",
+				"constraint"
+			],
+			[
+				"paramet",
+				"parameterization"
+			],
+			[
+				"visu",
+				"visualization"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"necessary",
+				"necessary_pairs"
+			],
+			[
+				"cont",
+				"constraint_type"
+			],
+			[
+				"nece",
+				"necessary_pairs"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"inti",
+				"initialize"
+			],
+			[
+				"ent",
+				"entities"
+			],
+			[
+				"segment",
+				"segment_query"
+			],
+			[
+				"compo",
+				"components"
+			],
+			[
+				"query",
+				"query_data"
+			],
+			[
+				"origi",
+				"original_color"
+			],
+			[
+				"active",
+				"active_cascade"
+			],
+			[
+				"var",
+				"var_name"
+			],
+			[
+				"projec",
+				"project_directory"
+			],
+			[
+				"other",
+				"other_stuff"
+			],
+			[
+				"unpa",
+				"unpack_with_class_name"
+			],
+			[
+				"compon",
+				"component"
+			],
+			[
+				"qu",
+				"query_components"
+			],
+			[
+				"styl",
+				"style_components"
+			],
+			[
+				"names",
+				"named_styles"
+			],
+			[
+				"comp",
+				"component"
+			],
+			[
+				"full",
+				"full_path"
+			],
+			[
+				"sc",
+				"style_component"
+			],
+			[
+				"primary",
+				"primary_style"
+			],
+			[
+				"casc",
+				"cascade_list"
+			],
+			[
+				"enti",
+				"entity_id"
+			],
+			[
+				"component",
+				"component_data"
+			],
+			[
+				"componen",
+				"component"
+			],
+			[
+				"collec",
+				"collection"
+			],
+			[
+				"activ",
+				"active_list"
+			],
+			[
+				"write",
+				"write_data"
+			],
+			[
+				"wri",
+				"write_data"
+			],
+			[
+				"par",
+				"packed_array"
+			],
+			[
+				"compd",
+				"component_data"
+			],
+			[
+				"each_",
+				"each_with_index"
+			],
+			[
+				"all",
+				"all_style_objects"
+			],
+			[
+				"style",
+				"style_component"
+			],
+			[
+				"righc",
+				"right_callbacks"
+			],
+			[
+				"lftc",
+				"left_callbacks"
+			],
+			[
+				"butt",
+				"mouse_button"
+			],
+			[
+				"actt",
+				"active_action"
+			],
+			[
+				"ti",
+				"text_input"
+			],
+			[
+				"acc",
+				"active_action"
+			],
+			[
+				"acti",
+				"active_action"
+			],
+			[
+				"button",
+				"button_phase"
+			],
+			[
+				"hit",
+				"hitbox_color"
+			],
+			[
+				"clone",
+				"clone_factory"
+			],
+			[
+				"old",
+				"old_text"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"regist",
+				"register_prototype"
+			],
+			[
+				"inp",
+				"text_input"
+			],
+			[
+				"text",
+				"text_input"
+			],
+			[
+				"est",
+				"estimated_i"
+			],
+			[
+				"first",
+				"first_guess"
+			],
+			[
+				"esti",
+				"estimated_i"
+			],
+			[
+				"meas",
+				"measured_offset"
+			],
+			[
+				"disp",
+				"measured_displacement"
+			],
+			[
+				"caret",
+				"caret_pos"
+			],
+			[
+				"dir",
+				"dirty"
+			],
+			[
+				"no",
+				"normalized_anchor"
+			],
+			[
+				"nw",
+				"new_height"
+			],
+			[
+				"plac",
+				"place_to_look"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "# move\n# dup\n# dup linked\n# insert text\n# flip (mirror over x axis, or y axis)\n# rotate\n# resize\n# select\n# \tbox select\n# \tlasso select\n# \tadd to selection\n# \ttoggle selection (add if not part of selection, remove if already in [XOR])\n\n# camera - pan\n# camera - zoom in\n# camera - zoom out\n\n# bring to front\n# bring forward\n# send backward\n# send to back\n\n# increase opacity\n# decrease opacity\n\n\n\n\n\nselection\n\n\n\n\n# shift, click\n# click, shift\n\n\n\n# apply to active\nactive = []\nactive.each{|x| action(x) }\n\n\n# modify active action\n# (move / dup / locked to axis)",
+			"settings":
+			{
+				"buffer_size": 560,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "+  move\n+  dup\n+  dup linked\n+  insert text\n+  flip (mirror over x axis, or y axis)\n+  rotate\n+  resize\n   select\n   \tbox select\n   \tlasso select\n   \tadd to selection\n   \ttoggle selection (not selected? add; selected? remove; (xor)\n\n   camera - pan\n   camera - zoom in\n   camera - zoom out\n\n   bring to front\n   bring forward\n   send backward\n   send to back\n\n   increase opacity\n   decrease opacity\n\n\n\n\n\n   selection\n\n\n\n\n\nbasic entity support    entities have geometry and spatial position\n   text\n\nbaseline action test    alter the state of entities through spatial queries\n   move\n\ntime travel foundation\n   serialize all entities each frame to roll back state\n      use YAML\n   can roll back in time, reload code, and then proceed (error happed in past)\n      don't crash the entire program on code error (pause on error)\n      remember what code bits were fired to roll forward (forecasting)\n      reload code dynamically (can fix the error and continue)\n\nbetter entity support\n   text  (already implemented)\n   image\n      drag and drop to create an image\n      (copy image from clipboard)\n   \nbasic action support\n+  move\n+  dup\n+  dup linked\n+  insert text\n+  flip (mirror over x axis, or y axis)\n+  rotate\n+  resize\n   select\n      box select\n      lasso select\n      add to selection\n      toggle selection (not selected? add; selected? remove; (xor)\n\n   camera - pan\n   camera - zoom in\n   camera - zoom out\n\n   bring to front\n   bring forward\n   send backward\n   send to back\n\n   increase opacity\n   decrease opacity\n\nbasic UI\n   action binding (mouse input binding)\n   timeline rollback\n      step back\n      step forward\n      play\n      pause\n\n\n-----\n\nadvanced collage actions\n   align to bottom/top/left/right\n   same size\n   same height\n   same width\n   pack\n\nbasic search\n   search for text\n   \nadvanced search\n   search by color\n\nadvanced entites\n   circle\n   triangle\n   rectangle\n\nbasic graphics editing mode\n   vertex select\n   vertex move\n   mode switch UI [create, collage]\n   color change UI\n   font change UI\n   font resize action\n\nconstraint system\n   mode switch UI [create, collage, constraints]\n   linked colors\n   linked fonts\n   constrainted position\n      within x units - circular path\n      align bottom/top/side\n\nadvanced graphics editing\n   shape builder\n   gradients\n\nfull UI editing toolset\n   button-like code triggers\n      on click\n      on hover\n      on overlap\n      arbitrary spatial queries (within x units, etc)",
+			"settings":
+			{
+				"buffer_size": 2459,
+				"line_ending": "Unix",
+				"name": "+  move"
+			}
+		},
+		{
+			"contents": "Timeline\n\tcode\t  (annotated blocks called \"turns\" - like a clock tick)\n\tinputs  (each \"turn\" record all input sequences)\n\tactions (fire high-level functions based on input sequences)\n\t\n\tUI\n\t\tneed a timeline\n\t\tshow how code, inputs, and actions are being fired through time\n\n\ntime travel (based on Jon Blow's \"Braid\")\n\teach turn, save all state into a serialized buffer\n\tto step forward or backwards in time, just load the appropriate state\n\t(use a buffer for performance)\n\t\n\tAs demonstrated by Jon Blow, this structure allows for you to apply compression on top, which is much more robust. All the serialization code is pretty much the same, and compression can take into account bigger trends.\n\t\n\t\n\tThis method of saving states allows for some powerful and interesting things, like being able to hit a bug, and then roll back in time and see how it happened. But then, you really want to be able to fix the bug, and continue to roll forward with execution.\n\t\n\tThus we move on to....\n\n\nforecasting\n\tbased on \"Learnable Programming\" by Brett Victor\n\tand JS Dares by Jan Paul Posma (which attempts to implement those ideas)\n\t\n\t\n\ttravel back in time,\n\tmake some change to the timeline,\n\tand see how those changes effect the future\n\t(if there's a crash in forecasting, don't crash the whole program)\n\t\t(see \"Up and Down the Ladder of Abstraction\" by Brett Victor)\n\t\t\n\t\t(Abstracting over Time)\n\t\tBy visualizing one timeline into the future, we can see motion overlayed into the spatial dimension, like onionskinning in animation.\n\t\t\n\t\t\n\t\t(Abstracting the Algorithm)\n\t\tBy visualizing *many different futures* we obtain a different level of abstraction, allowing us to detect bifurcations in the simulation.\n\t\t\n\t\n\t\n\tRelative to Brett Victor's work, and JS Dares, my implementation has some problems:\n\t\n\tIt is hard to start with concrete data and work your way up.\n\tFor colors, you need to use a variable, which is controlled by a UI element.\n\tThis is an OK interface for color, but with numbers, it might be better to allow for direct controll - scrubbing of numbers in the code, etc.\n\t\n\tAlso, I want something that feels like a REPL, and I'm not sure that this accomplishes that.\n\tHow might I ask the computer what variables / methods are available at a particular point in the code? Is there a way to pause execution on a certain line, not just a certain \"turn\"? Would a debugger-like structure like this remove the need to annotate key blocks of code with \"turn\" numbers?\n\t\n\t\n\tAlso: need to be able to back chain:\n\tDon't just allow scrubbing through variations in the code / parameters to find a desired result. Visualize many results, and pick one with the mouse. Then, show what code + parameters are needed to generate that interesting result.\n",
+			"settings":
+			{
+				"buffer_size": 2743,
+				"line_ending": "Unix",
+				"name": "Timeline"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 750.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"synt rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"auto",
+				"Toggle AutoSave: current file only"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"sort",
+				"Sort Lines"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"krake",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"c++",
+				"Set Syntax: Objective-C++"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			],
+			[
+				"anno",
+				"Git: Toggle Annotations"
+			]
+		],
+		"width": 1062.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxPoco/libs/poco/include/Poco/DOM/EventDispatcher.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/RubyOF/text.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/meta.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/RubyOF/font.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/monkey_patches/Chipmunk/BB.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/monkey_patches/Chipmunk/Vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/data.yml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/live_coding/code/body_main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/live_coding/code/body_init.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/sketch/resuming_fiber.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/livecoding/test_job.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/livecoding/livecoding_job.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/livecoding/livecoding_core.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/livecoding/livecoding_init.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/entities/text.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/live_coding/code/test.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/live_coding/code_loader.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/live_coding/code/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/entities/entity.rb",
+		"/home/ravenskrag/.profile",
+		"/home/ravenskrag/.bash_profile",
+		"/home/ravenskrag/.bashrc",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/sketch/lib/repl.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecoding/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/app_factory.h",
+		"/home/ravenskrag/Desktop/gem_structure/Rakefile",
+		"/home/ravenskrag/Desktop/gem_structure/rake/oF_core.rake",
+		"/home/ravenskrag/Desktop/gem_structure/rake/oF_deps.rake",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/settings.xml",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/example-demo/bin/imgui.ini",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/image.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/build_system.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGuiExtended/src/controls/ofxGuiValuePlotter.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGuiExtended/src/ofxGuiExtended.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGuiExtended/exampleAdvancedGui/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofTessellator.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofTessellator.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxBaseGui.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxInputField.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/rake/clean_and_clobber.rb",
+		"/home/ravenskrag/Desktop/gem_structure/rake/extension_builder.rb",
+		"/home/ravenskrag/Desktop/gem_structure/rake/extension.rake",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/app_factory.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/app.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/extconf_variables.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/oF_build_variables.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/rake/helper_functions.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/addons.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/c_extension/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/config/build_variables.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/ext/window/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/constants/data_path.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/app.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/app_factory.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/addons_app/testApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/callbacks/extconf.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/Makefile.static_lib",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/new/projectApp/src/main.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/launcher.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib_diff.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/lib/dump.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/README.txt",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/callbacks/callbacks.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/callbacks/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/addons.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/ofxDatGui.h",
+		"/home/ravenskrag/Desktop/gem_structure/.gitignore",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Release/.compiler_flags",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/.compiler_flags",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/devApps/VboExample/makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/addon_config.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.addons.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/Makefile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAssimpModelLoader/addon_config.mk",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxBaseGui.d",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/freezable.rb",
+		"/home/ravenskrag/Desktop/gem_structure/build/project_generator.rb",
+		"/home/ravenskrag/Desktop/gem_structure/build/extension_loader.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGuiExtended/exampleAdvancedGui/src/main.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/ext/callbacks/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/ext/window/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/launcher.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/ext/window/app_factory.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/app_factory.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/boilerplate/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include/tesselator.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/window/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/build/window_guard.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/database/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/example/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/round_tripping/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/hunspell/lib/window.rb"
+	],
+	"find":
+	{
+		"height": 59.0
+	},
+	"find_in_files":
+	{
+		"height": 264.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 560,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								560,
+								560
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Ruby/Ruby.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2459,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1847,
+								1847
+							]
+						],
+						"settings":
+						{
+							"auto_name": "+  move",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.clone_regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"git_gutter_is_enabled": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2443.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2743,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								985,
+								985
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Timeline",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.clone": -1,
+							"bracket_highlighter.clone_locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 59.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "notes_mouseActions.sublime-project",
+	"replace":
+	{
+		"height": 110.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"rectan",
+				"lib/rubyOF/rectangle.rb"
+			],
+			[
+				"basewin",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppBaseWindow.h"
+			],
+			[
+				"openframeworks window",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppGlutWindow.cpp"
+			],
+			[
+				"poly",
+				"bin/projects/youtube/lib/monkey_patches/Chipmunk/Shape/Poly.rb"
+			],
+			[
+				"rect",
+				"bin/projects/youtube/lib/monkey_patches/Chipmunk/Shape/Rect.rb"
+			],
+			[
+				"font ",
+				"bin/projects/youtube/lib/serialization/RubyOF/font.rb"
+			],
+			[
+				"tty",
+				"ext/rubyOF/TrueTypeFont.h"
+			],
+			[
+				"trty",
+				"ext/rubyOF/TrueTypeFont.cpp"
+			],
+			[
+				"color",
+				"lib/rubyOF/color.rb"
+			],
+			[
+				"truetyp.r",
+				"lib/rubyOF/true_type_font.rb"
+			],
+			[
+				"window ",
+				"build/window_guard.rb"
+			],
+			[
+				"text",
+				"lib/entities/text.rb"
+			],
+			[
+				"entit",
+				"lib/entities/entity.rb"
+			],
+			[
+				"space",
+				"lib/space.rb"
+			],
+			[
+				"win",
+				"lib/window.rb"
+			],
+			[
+				"conf",
+				"ext/addons_app/testApp/config.make"
+			],
+			[
+				"appfac",
+				"ext/rubyOF/app_factory.h"
+			],
+			[
+				"rake",
+				"Rakefile"
+			],
+			[
+				"appf",
+				"ext/rubyOF/app_factory.h"
+			],
+			[
+				".gitmo",
+				".gitmodules"
+			],
+			[
+				"setting",
+				"bin/projects/youtube/bin/data/settings.xml"
+			],
+			[
+				"settings.xml",
+				"bin/projects/youtube/bin/data/settings.xml"
+			],
+			[
+				"extimage",
+				"ext/rubyOF/image.cpp"
+			],
+			[
+				"build",
+				"build/build.rb"
+			],
+			[
+				"addons/ofxinputfield",
+				"ext/openFrameworks/addons/ofxGui/src/ofxInputField.cpp"
+			],
+			[
+				"ofxinputfi",
+				"ext/openFrameworks/addons/ofxGui/src/ofxInputField.cpp"
+			],
+			[
+				"ofxguivalupl",
+				"ext/openFrameworks/addons/ofxGuiExtended/src/controls/ofxGuiValuePlotter.cpp"
+			],
+			[
+				"ofxguiextended",
+				"ext/openFrameworks/addons/ofxGuiExtended/src/ofxGuiExtended.h"
+			],
+			[
+				"ofxguiextedadvancedguiofapp",
+				"ext/openFrameworks/addons/ofxGuiExtended/exampleAdvancedGui/src/ofApp.cpp"
+			],
+			[
+				"ofapp",
+				"ext/oF_apps/testApp/src/ofApp.cpp"
+			],
+			[
+				"oftess",
+				"ext/openFrameworks/libs/openFrameworks/graphics/ofTessellator.cpp"
+			],
+			[
+				"ofxbasegu",
+				"ext/openFrameworks/addons/ofxGui/src/ofxBaseGui.cpp"
+			],
+			[
+				"buildvar",
+				"bin/projects/boilerplate/config/build_variables.rb"
+			],
+			[
+				"extload",
+				"build/extension_loader.rb"
+			],
+			[
+				"build_vari",
+				"bin/projects/boilerplate/config/build_variables.rb"
+			],
+			[
+				"libmain",
+				"bin/projects/boilerplate/lib/main.rb"
+			],
+			[
+				"main.rb",
+				"bin/main.rb"
+			],
+			[
+				"appfa",
+				"ext/rubyOF/app_factory.h"
+			],
+			[
+				"extc",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"helper",
+				"rake/helper_functions.rb"
+			],
+			[
+				"staticlib",
+				"ext/oF_apps/testApp/Makefile.static_lib"
+			],
+			[
+				".git",
+				".gitignore"
+			],
+			[
+				"appfact",
+				"ext/rubyOF/app_factory.h"
+			],
+			[
+				"youtubeextconf",
+				"bin/projects/youtube/ext/window/extconf.rb"
+			],
+			[
+				"varia.yaml",
+				"ext/oF_apps/testApp/oF_build_variables.yaml"
+			],
+			[
+				"datapath.h",
+				"bin/projects/boilerplate/ext/window/constants/data_path.h"
+			],
+			[
+				"extconf",
+				"ext/rubyOF/extconf.rb"
+			],
+			[
+				"comm",
+				"common.rb"
+			],
+			[
+				"extconb.",
+				"ext/rubyOF/extconf_variables.yaml"
+			],
+			[
+				"ofcore",
+				"rake/oF_core.rake"
+			],
+			[
+				"ofdep",
+				"rake/oF_deps.rake"
+			],
+			[
+				"rakefi",
+				"Rakefile"
+			],
+			[
+				"static",
+				"ext/oF_apps/testApp/Makefile.static_lib"
+			],
+			[
+				"extconfc.",
+				"ext/rubyOF/extconf_common.rb"
+			],
+			[
+				"config.make",
+				"ext/oF_apps/testApp/config.make"
+			],
+			[
+				"extenbu",
+				"rake/extension_builder.rb"
+			],
+			[
+				"window",
+				"lib/rubyOF/window.rb"
+			],
+			[
+				"ofxdatgui.h",
+				"ext/openFrameworks/addons/ofxDatGui/src/ofxDatGui.h"
+			],
+			[
+				"youtubeaddons.make",
+				"bin/projects/youtube/ext/addons_app/testApp/addons.make"
+			],
+			[
+				"com",
+				"common.rb"
+			],
+			[
+				"addonconfig",
+				"ext/openFrameworks/addons/ofxAssimpModelLoader/addon_config.mk"
+			],
+			[
+				"compileproject",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"addons",
+				"ext/oF_apps/testApp/addons.make"
+			],
+			[
+				"addonconf",
+				"ext/openFrameworks/addons/ofxInfiniteCanvas/addon_config.mk"
+			],
+			[
+				"config.addons",
+				"ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.addons.mk"
+			],
+			[
+				"freeza",
+				"lib/rubyOF/freezable.rb"
+			],
+			[
+				"free",
+				"lib/rubyOF/freezable.rb"
+			],
+			[
+				"color.rb",
+				"lib/rubyOF/color.rb"
+			],
+			[
+				"testappmake",
+				"ext/oF_apps/testApp/Makefile"
+			],
+			[
+				"build.rb",
+				"build/build.rb"
+			],
+			[
+				"valueplotter",
+				"ext/openFrameworks/addons/ofxGuiExtended/src/controls/ofxGuiValuePlotter.cpp"
+			],
+			[
+				"testappaddons",
+				"ext/oF_apps/testApp/addons.make"
+			],
+			[
+				"ofxguiextend",
+				"ext/openFrameworks/addons/ofxGuiExtended/src/ofxGuiExtended.h"
+			],
+			[
+				"advancedguiapp",
+				"ext/openFrameworks/addons/ofxGuiExtended/exampleAdvancedGui/src/ofApp.cpp"
+			],
+			[
+				"advancedguimain",
+				"ext/openFrameworks/addons/ofxGuiExtended/exampleAdvancedGui/src/main.cpp"
+			],
+			[
+				"rubyof.cpp",
+				"ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"launch",
+				"ext/rubyOF/launcher.cpp"
+			],
+			[
+				"window.rb",
+				"lib/rubyOF/window.rb"
+			],
+			[
+				"main",
+				"bin/projects/boilerplate/lib/main.rb"
+			],
+			[
+				"apph",
+				"ext/rubyOF/app_factory.h"
+			],
+			[
+				"launcher",
+				"ext/rubyOF/launcher.cpp"
+			],
+			[
+				"project/round",
+				"bin/projects/round_tripping/lib/window.rb"
+			],
+			[
+				"projects/example/win",
+				"bin/projects/example/lib/window.rb"
+			],
+			[
+				"extconfcommon",
+				"ext/rubyOF/extconf_common.rb"
+			],
+			[
+				"ofbuildvar",
+				"ext/oF_apps/testApp/oF_build_variables.yaml"
+			],
+			[
+				"youtubeextcon",
+				"bin/projects/youtube/ext/window/extconf_variables.yaml"
+			],
+			[
+				"extextconfvara",
+				"ext/rubyOF/extconf_variables.yaml"
+			],
+			[
+				"commo",
+				"common.rb"
+			],
+			[
+				"buildvaria",
+				"bin/projects/boilerplate/config/build_variables.rb"
+			],
+			[
+				"windog",
+				"build/window_guard.rb"
+			],
+			[
+				"youtubeappfacto",
+				"bin/projects/youtube/ext/window/app_factory.cpp"
+			],
+			[
+				"youtubeapp.cpp",
+				"bin/projects/youtube/ext/window/app.cpp"
+			],
+			[
+				"rakefile",
+				"Rakefile"
+			],
+			[
+				"graphics",
+				"rubyOF/Graphics.cpp"
+			],
+			[
+				"grah",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"graph",
+				"lib/rubyOF/graphics.rb"
+			],
+			[
+				"pdfim",
+				"ofxPDFium/src/ofxPDFium.cpp"
+			],
+			[
+				"ofh",
+				"example/src/ofApp.h"
+			],
+			[
+				"ofxgui",
+				"addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				"pocorulescompile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/rules/compile"
+			],
+			[
+				"custompocolinux",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/build/config/Linux"
+			],
+			[
+				"custompocomakefile",
+				"of_v0.9.3_libs/custom/poco/poco-1.7.4-all/Makefile"
+			],
+			[
+				"compileprojectmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk"
+			],
+			[
+				"configproject",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk"
+			],
+			[
+				"configsharedmk",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/config.shared.mk"
+			],
+			[
+				"comple",
+				"of_v0.9.3_linux64_release/scripts/linux/compileOF.sh"
+			],
+			[
+				"configlinux6",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/linux64/config.linux64.default.mk"
+			],
+			[
+				"compiledmakefilecommcompile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/makefileCommon/compile.core.mk"
+			],
+			[
+				"openframeworksmakefile",
+				"of_v0.9.3_linux64_release/libs/openFrameworksCompiled/project/Makefile"
+			],
+			[
+				"install",
+				"of_v0.9.3_linux64_release/INSTALL.md"
+			],
+			[
+				"releasecompile",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Release/.compiler_flags"
+			],
+			[
+				"compilerflags",
+				"of_v0.9.3_linux64_release/addons/obj/linux64/Debug/.compiler_flags"
+			],
+			[
+				"sketchstatic",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/Makefile.static_lib"
+			],
+			[
+				"sketchaddons",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/addons.make"
+			],
+			[
+				"ofbuildvaria",
+				"RubyCPP/Oni/ext/oni/cpp/mySketch/oF_build_variables.yaml"
+			],
+			[
+				"of_testadd",
+				"~/Experiments/RubyCPP/Oni/ext/oni/cpp/oF_Test/mySketch/addons.make"
+			],
+			[
+				"ofbuild",
+				"RubyCPP/Oni/oF_build_variables.yaml"
+			],
+			[
+				"variables",
+				"RubyCPP/Oni/ext/oni/of_build_variables.yaml"
+			],
+			[
+				".gi",
+				"RubyCPP/.gitignore"
+			],
+			[
+				"extvar",
+				"RubyCPP/Oni/ext/oni/extconf_variables.rb"
+			],
+			[
+				"make",
+				"RubyCPP/Oni/ext/oni/Makefile"
+			],
+			[
+				"ext",
+				"Oni/ext/oni/extconf.rb"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"event.h",
+				"poco-1.7.4-all/Foundation/include/Poco/Event.h"
+			],
+			[
+				"event",
+				"poco-1.7.4-all/Foundation/src/Event.cpp"
+			],
+			[
+				"thread",
+				"poco-1.7.4-all/Foundation/src/Thread.cpp"
+			],
+			[
+				"test",
+				"Oni/lib/test.rb"
+			],
+			[
+				"xt",
+				"Oni/ext/oni/extconf.rb"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 513.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
