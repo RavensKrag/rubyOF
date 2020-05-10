@@ -99,6 +99,10 @@ class CharMappedDisplay
   
   
   def draw(origin, z)
+    @uniform__origin = origin
+    @uniform__charSize = CP::Vec2.new(@char_width_pxs, @char_height_pxs)
+    
+    
     line_height = 38
     
     x,y = [0,0]
@@ -256,6 +260,11 @@ class CharMappedDisplay
       @shader.setUniformTexture("trueTypeTexture", font.font_texture, 0)
       @shader.setUniformTexture("fontColorMap",    @text_colors_gpu,  1)
       
+      @shader.setUniform2i("origin",   @uniform__origin.x.to_i, @uniform__origin.y.to_i)
+      @shader.setUniform2i("charSize", @uniform__charSize.x.to_i, @uniform__charSize.y.to_i)
+      
+      # p @uniform__charSize.to_a
+      
       ofPushMatrix()
       ofPushStyle()
     begin
@@ -293,8 +302,8 @@ class CharMappedDisplay
       ofPopStyle()
       ofPopMatrix()
       
-      font.font_texture.unbind
-      @text_colors_gpu.unbind
+      # font.font_texture.unbind
+      # @text_colors_gpu.unbind
       @shader.end()
     end
     

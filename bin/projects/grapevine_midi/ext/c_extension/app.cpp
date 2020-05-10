@@ -206,7 +206,7 @@ void rbApp::setup(){
 	// clear out the garbage
 	for(int x=0; x<fg_buffer_w; x++){
 		for(int y=0; y<fg_buffer_h; y++){
-			ofColor c = ofColor();
+			ofColor c;
 			c.r = 0;
 			c.g = 0;
 			c.b = 0;
@@ -217,8 +217,8 @@ void rbApp::setup(){
 	}
 	
 	// set specific colors
-	for(int i=0; i<60; i++){
-		ofColor c = ofColor();
+	for(int i=0; i<30; i++){
+		ofColor c;
 		c.r = 0;
 		c.g = 255;
 		c.b = 0;
@@ -226,9 +226,34 @@ void rbApp::setup(){
 		
 		_displayFG_pixels.setColor(i,0, c);
 	}
+	for(int i=0; i<30; i++){
+		ofColor c;
+		c.r = 0;
+		c.g = 255;
+		c.b = 255;
+		c.a = 255;
+		
+		_displayFG_pixels.setColor(i,1, c);
+	}
+	for(int i=0; i<30; i++){
+		ofColor c;
+		c.r = 0;
+		c.g = 0;
+		c.b = 255;
+		c.a = 255;
+		
+		_displayFG_pixels.setColor(i,2, c);
+	}
+	
+	ofColor white(1.0);
+	_displayFG_pixels.setColor(0,0, white);
+	_displayFG_pixels.setColor(0,1, white);
+	_displayFG_pixels.setColor(1,0, white);
+	_displayFG_pixels.setColor(1,1, white);
+	
 	
 	_displayFG_texture.loadData(_displayFG_pixels, GL_RGBA);
-	
+	// _displayFG_texture.setTextureWrap(GL_REPEAT, GL_REPEAT);
 	
 	
 	Rice::Data_Object<ofPixels> rb_cPixels_ptr(

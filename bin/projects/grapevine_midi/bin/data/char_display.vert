@@ -4,22 +4,46 @@
 
 // these are for the programmable pipeline system and are passed in
 // by default from OpenFrameworks
+
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 textureMatrix;
 uniform mat4 modelViewProjectionMatrix;
 
-in vec4 position;
-in vec4 color;
-in vec4 normal;
-in vec2 texcoord;
-// this is the end of the default functionality
+in vec4  position;
+in vec2  texcoord;
+in vec4  color;
+in vec3  normal;
 
-// this is something we're creating for this shader
-out vec2 f_texcoord;
+// these outputs get passed to the next stage of the pipeline (to fragment)
+out vec4 colorVarying;
+out vec2 texCoordVarying;
+out vec4 normalVarying;
 
-void main(){
-  f_texcoord = texcoord;
-  
+// custom
+out vec2 charVarying;
+
+uniform vec2 origin;
+uniform vec2 charSize;
+
+void main()
+{
+  colorVarying = color;
+  texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
   gl_Position = modelViewProjectionMatrix * position;
+  
+  
+  // charVarying = ((gl_Position.xy - origin - vec2(0,10)) / charSize);
+  
+  // charVarying = position.xy;
+	  charVarying = position.xy - vec2(0,100);
+	  
+	  charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35));
+	  // charVarying = (position.xy + vec2(0, 18) + vec2(0, 10) )/ (charSize);
+	  
+	  // charVarying = charSize;
+	  
+	  
+	  // charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) + vec2(-1,0) )/ vec2(18, 35));
+	  // charVarying = (position.xy  );
 }

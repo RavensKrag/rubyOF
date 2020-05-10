@@ -4,6 +4,7 @@
 
 // from the previous stage of pipeline (vertex shader)
 in vec2 f_texcoord;
+in vec4 f_position;
 
 // inputs to the fragment shader specifically
 uniform sampler2DRect tex0;
@@ -28,10 +29,20 @@ void main()
   
   // outputColor = gl_Color;
   
-  // outputColor = texture(tex0, f_texcoord);
+  
+  // texture() returns normalized RGBA color
+  // src: https://forum.openframeworks.cc/t/what-does-the-texture-function-in-glsl-do/21196
+  
+  // vec4 text_color = texture(tex0, vec2(gl_FragCoord.x, gl_FragCoord.y));
+  // float r = text_color[0];
+  // float g = text_color[1];
+  // float b = text_color[2];
+  // float a = text_color[3];
+  // outputColor = vec4(r,g,b,a);
+  // outputColor = text_color;
   
   // coordinates sampler2DRect are texel values, not normalized coordinates
   // src: https://www.khronos.org/opengl/wiki/Rectangle_Texture
-  // outputColor = texture(tex1, vec2(0,0));
+  // outputColor = texture(tex1, vec2(0, 0 + 0.5));
   
 }
