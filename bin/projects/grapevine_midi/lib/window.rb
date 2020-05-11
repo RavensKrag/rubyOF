@@ -160,6 +160,18 @@ class Window < RubyOF::Window
         x.add_alphabet :Latin
       end
      
+    # @fonts[:japanese] = 
+    #     RubyOF::TrueTypeFont.dsl_load do |x|
+    #       # TakaoPGothic
+    #       # ^ not installed on Ubunut any more, idk why
+    #       # try the package "fonts-takao" or "ttf-takao" as mentioned here:
+    #       # https://launchpad.net/takao-fonts
+    #       x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
+    #       x.size = 40
+    #       x.add_alphabet :Latin
+    #       x.add_alphabet :Japanese
+    #     end
+    
     
     
     
