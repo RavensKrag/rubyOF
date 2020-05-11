@@ -80,11 +80,6 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		ofxMidiOut midiOut;
 		
 		
-		
-		ofMesh    _displayBG;
-		ofPixels  _displayFG_pixels;
-		ofTexture _displayFG_texture;
-		
 		ofShader _materialEditor_shader;
 		ofMesh   _materialEditor_mesh;
 };

@@ -174,26 +174,12 @@ class Window < RubyOF::Window
     
     
     
+    @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
     
-    @display = CharMappedDisplay.new(
-      @cpp_ptr["display_bg_mesh"], 
-      @cpp_ptr["display_fg_pixels"], 
-      @cpp_ptr["display_fg_texture"], 
-      @fonts[:monospace]
-    )
     
     @display.print_string(5, "hello world!")
       "hello world!".length.times do |i|
-        pos = 5 + i
-        puts pos
-        @display.background_color pos do |c|
-           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
-        end
-      end
-      
-      "hello world!".length.times do |i|
         pos = CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
-        puts pos
         @display.background_color pos do |c|
            c.r, c.g, c.b, c.a = [0, 0, 255, 255]
         end
@@ -370,15 +356,15 @@ class Window < RubyOF::Window
     
     
     
-    RubyOF::CPP_Callbacks.render_material_editor(
-      @cpp_ptr["materialEditor_mesh"],
-      @cpp_ptr["materialEditor_shader"], "material_editor",
+    # RubyOF::CPP_Callbacks.render_material_editor(
+    #   @cpp_ptr["materialEditor_mesh"],
+    #   @cpp_ptr["materialEditor_shader"], "material_editor",
       
-      @fonts[:monospace].font_texture,
-      @cpp_ptr["display_fg_texture"],
+    #   @fonts[:monospace].font_texture,
+    #   @cpp_ptr["display_fg_texture"], # <-- no longer available
       
-      20, 500, 300, 300 # x,y,w,h
-    )
+    #   20, 500, 300, 300 # x,y,w,h
+    # )
     
   end
   

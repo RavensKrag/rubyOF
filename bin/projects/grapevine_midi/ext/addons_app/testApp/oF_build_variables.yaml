@@ -697,7 +697,7 @@ PLATFORM_OS:
 rvm_bin_path:
 - "/home/ravenskrag/.rvm/bin"
 PWD:
-- "/home/ravenskrag/Desktop/gem_structure"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi"
 ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src"
 OBJS_WITHOUT_EXTERNAL:
@@ -1153,7 +1153,7 @@ LINK.cpp:
 F77:
 - f77
 OLDPWD:
-- "/home/ravenskrag/Desktop/gem_structure/ext"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects"
 ADDON_LIBS_EXCLUDE: []
 REQUESTED_PROJECT_ADDONS:
 - ofxGui
@@ -2140,7 +2140,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/74175481_eed2_43db_bff0_bedc3031c929"
+- "/org/gnome/Terminal/screen/ce4281d1_ff83_40d5_a5a2_656ae7c9a100"
 "^F": []
 COMPILE.S:
 - cc
@@ -2372,7 +2372,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/5"
+- "/dev/pts/3"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
