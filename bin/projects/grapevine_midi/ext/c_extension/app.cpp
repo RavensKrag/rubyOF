@@ -32,6 +32,7 @@ rbApp::~rbApp(){
 void rbApp::setup(){
 	ofSetDataPathRoot(DATA_PATH);
 	
+	mUI_InputCapture = false;
 	
 	// ========================================
 	// ========== add new stuff here ==========
@@ -170,6 +171,168 @@ void rbApp::setup(){
 	
 	
 	
+	// transfer pointer to mesh by character display to Ruby level
+	Rice::Data_Object<ofMesh> rb_cMesh_ptr(
+		&_displayBG,
+		Rice::Data_Type< ofMesh >::klass(),
+		Rice::Default_Mark_Function< ofMesh >::mark,
+		Null_Free_Function< ofMesh >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "display_bg_mesh", rb_cMesh_ptr);
+	
+	
+	
+	
+	// ofShader shader;
+	// if(shader.load("char_display")){
+	// 	std::cout << "shaders loaded" << std::endl;
+	// }else{
+	// 	std::cout << "ERROR: could not load shader files" << std::endl;
+	// }
+	
+	
+	
+	
+	
+	// _displayFG_pixels.clear(); // clear frees the color data - not needed
+	
+	int fg_buffer_w = 60;
+	int fg_buffer_h = 18;
+	
+	// allocate the memory
+	_displayFG_pixels.allocate(fg_buffer_w,fg_buffer_h, OF_PIXELS_RGBA);
+	
+	// clear out the garbage
+	for(int x=0; x<fg_buffer_w; x++){
+		for(int y=0; y<fg_buffer_h; y++){
+			ofColor c;
+			c.r = 0;
+			c.g = 0;
+			c.b = 0;
+			c.a = 255;
+			
+			_displayFG_pixels.setColor(x,y, c);
+		}
+	}
+	
+	// set specific colors
+	for(int i=0; i<30; i++){
+		ofColor c;
+		c.r = 0;
+		c.g = 255;
+		c.b = 0;
+		c.a = 255;
+		
+		_displayFG_pixels.setColor(i,0, c);
+	}
+	for(int i=0; i<30; i++){
+		ofColor c;
+		c.r = 0;
+		c.g = 255;
+		c.b = 255;
+		c.a = 255;
+		
+		_displayFG_pixels.setColor(i,1, c);
+	}
+	for(int i=0; i<30; i++){
+		ofColor c;
+		c.r = 0;
+		c.g = 0;
+		c.b = 255;
+		c.a = 255;
+		
+		_displayFG_pixels.setColor(i,2, c);
+	}
+	
+	ofColor white(255, 255, 255,  255 );
+	// illuminate 4 px in the top left
+	_displayFG_pixels.setColor(0,0, white);
+	_displayFG_pixels.setColor(0,1, white);
+	_displayFG_pixels.setColor(1,0, white);
+	_displayFG_pixels.setColor(1,1, white);
+	// and light up the other 3 corners with 1 px each
+	_displayFG_pixels.setColor(0,fg_buffer_h-1, white);
+	_displayFG_pixels.setColor(fg_buffer_w-1,0, white);
+	_displayFG_pixels.setColor(fg_buffer_w-1,fg_buffer_h-1, white);
+	
+	
+	_displayFG_texture.loadData(_displayFG_pixels, GL_RGBA);
+	// _displayFG_texture.setTextureWrap(GL_REPEAT, GL_REPEAT);
+	_displayFG_texture.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+	
+	
+	Rice::Data_Object<ofPixels> rb_cPixels_ptr(
+		&_displayFG_pixels,
+		Rice::Data_Type< ofPixels >::klass(),
+		Rice::Default_Mark_Function< ofPixels >::mark,
+		Null_Free_Function< ofPixels >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "display_fg_pixels", rb_cPixels_ptr);
+	
+	
+	
+	Rice::Data_Object<ofTexture> rb_cTexture_ptr(
+		&_displayFG_texture,
+		Rice::Data_Type< ofTexture >::klass(),
+		Rice::Default_Mark_Function< ofTexture >::mark,
+		Null_Free_Function< ofTexture >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "display_fg_texture", rb_cTexture_ptr);
+	
+	
+	
+	
+	
+	
+	
+	
+	// material editor needs a single quad as a mesh (two tris)
+	_materialEditor_mesh.addVertex(glm::vec3(0,0, 0));
+	_materialEditor_mesh.addVertex(glm::vec3(1,0, 0));
+	_materialEditor_mesh.addVertex(glm::vec3(0,1, 0));
+	_materialEditor_mesh.addVertex(glm::vec3(1,1, 0));
+	
+	
+	_materialEditor_mesh.addIndex(2);
+	_materialEditor_mesh.addIndex(1);
+	_materialEditor_mesh.addIndex(0);
+	
+	_materialEditor_mesh.addIndex(2);
+	_materialEditor_mesh.addIndex(3);
+	_materialEditor_mesh.addIndex(1);
+	
+	
+	
+	Rice::Data_Object<ofMesh> rb_c_matEd_mesh(
+		&_materialEditor_mesh,
+		Rice::Data_Type< ofMesh >::klass(),
+		Rice::Default_Mark_Function< ofMesh >::mark,
+		Null_Free_Function< ofMesh >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "materialEditor_mesh", rb_c_matEd_mesh);
+	
+	
+	Rice::Data_Object<ofShader> rb_c_matEd_shd(
+		&_materialEditor_shader,
+		Rice::Data_Type< ofShader >::klass(),
+		Rice::Default_Mark_Function< ofShader >::mark,
+		Null_Free_Function< ofShader >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "materialEditor_shader", rb_c_matEd_shd);
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
 	mSelf.call("setup");
 	
@@ -270,7 +433,6 @@ void rbApp::update(){
 void rbApp::draw(){
 	// ========================================
 	// ========== add new stuff here ==========
-	
 	
 	
 	

@@ -17,13 +17,15 @@ require 'require_all'
 current_file = Pathname.new(__FILE__).expand_path
 LIB_DIR = current_file.parent
 
+require LIB_DIR/'ofx_extensions.rb'
+
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
 
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
+require LIB_DIR/'char_mapped_display.rb'
 
-require LIB_DIR/'ofx_extensions.rb'
 
 
 
@@ -130,12 +132,88 @@ class Window < RubyOF::Window
       end
     end
     
+    
+    
   end
   
   def setup
     super()
     
     @first_draw = true
+    
+    
+    
+    @fonts = Hash.new
+    
+    @fonts[:monospace] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        x.path = "DejaVu Sans Mono"
+        x.size = 23
+        x.add_alphabet :Latin
+      end
+    
+    @fonts[:english] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        # TakaoPGothic
+        x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+        x.size = 23
+        x.add_alphabet :Latin
+      end
+     
+    # @fonts[:japanese] = 
+    #     RubyOF::TrueTypeFont.dsl_load do |x|
+    #       # TakaoPGothic
+    #       # ^ not installed on Ubunut any more, idk why
+    #       # try the package "fonts-takao" or "ttf-takao" as mentioned here:
+    #       # https://launchpad.net/takao-fonts
+    #       x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
+    #       x.size = 40
+    #       x.add_alphabet :Latin
+    #       x.add_alphabet :Japanese
+    #     end
+    
+    
+    
+    
+    @display = CharMappedDisplay.new(
+      @cpp_ptr["display_bg_mesh"], 
+      @cpp_ptr["display_fg_pixels"], 
+      @cpp_ptr["display_fg_texture"], 
+      @fonts[:monospace]
+    )
+    
+    @display.print_string(5, "hello world!")
+      "hello world!".length.times do |i|
+        pos = 5 + i
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+        end
+      end
+      
+      "hello world!".length.times do |i|
+        pos = CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+        end
+      end
+      
+    
+    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
+    @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
+    
+      start_pt = CP::Vec2.new(7, 5)
+      "spatial inputs~".length.times do |i|
+        pos = start_pt + CP::Vec2.new(i, 0)
+        puts pos
+        @display.background_color pos do |c|
+           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+        end
+      end
+    
+    @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
+    @display.print_string(CP::Vec2.new(0, 18), "this should not print")
     
   end
   
@@ -246,8 +324,11 @@ class Window < RubyOF::Window
     
   end
   
+  
+  include RubyOF::Graphics
   def draw
     # super()
+    ofBackground(200, 200, 200, 255)
     
     
     if @first_draw
@@ -263,6 +344,73 @@ class Window < RubyOF::Window
       @first_draw = false
     end
     
+    
+    
+    # NOTE: need live coding before I can fiddle with graphics code
+    # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
+    
+    @origin ||= CP::Vec2.new(370,500)
+    # line_height = 38
+    
+    
+    # screen_print(font: @fonts[:monospace], color: @text_fg_color,
+    #              string: "hello world!",
+    #              position: origin+CP::Vec2.new(0,line_height*0))
+    
+    # ^ if you bind the font texture here before drawing the rectangular mesh below, then the mesh will be invisible. not sure why. likely some bug is happening with textures?
+    
+    
+    
+    
+    
+    # @display.reload_shader
+    
+    z = 5
+    @display.draw(@origin, z)
+    
+    
+    
+    RubyOF::CPP_Callbacks.render_material_editor(
+      @cpp_ptr["materialEditor_mesh"],
+      @cpp_ptr["materialEditor_shader"], "material_editor",
+      
+      @fonts[:monospace].font_texture,
+      @cpp_ptr["display_fg_texture"],
+      
+      20, 500, 300, 300 # x,y,w,h
+    )
+    
+  end
+  
+  def setup_character_mesh
+    return [@char_grid_width, @char_grid_height]
+  end
+  
+  
+  def screen_print(font:, string:, position:, z:1, color: @text_fg_color)
+    
+      font.font_texture.bind
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y, z)
+      
+      ofSetColor(color)
+      
+      # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
+      
+      x,y = [0,0]
+      vflip = true
+      text_mesh = font.get_string_mesh(string, x,y, vflip)
+      text_mesh.draw()
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      font.font_texture.unbind
+    end
+    
   end
   
   
@@ -271,9 +419,9 @@ class Window < RubyOF::Window
   [
     # :key_pressed,
     # :key_released,
-    :mouse_moved,
-    :mouse_pressed,
-    :mouse_dragged,
+    # :mouse_moved,
+    # :mouse_pressed,
+    # :mouse_dragged,
     :mouse_released,
     :mouse_scrolled,
   ]
@@ -296,13 +444,54 @@ class Window < RubyOF::Window
   end
   
   
+  
+  # 
+  # mouse prints position in character grid to STDOUT
+  # 
+  
+  def mouse_moved(x,y)
+    p "mouse position: #{[x,y]}.inspect"
+  end
+  
+  def mouse_pressed(x,y, button)
+    # p [:pressed, x,y, button]
+    
+    offset = CP::Vec2.new(0,10) # probably related to font ascender height
+    
+    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    
+    out.x = (out.x / @display.char_width_pxs).to_i
+    out.y = (out.y / @display.char_height_pxs).to_i
+    
+    puts out
+  end
+  
+  def mouse_dragged(x,y, button)
+    # p [:dragged, x,y, button]
+    
+    offset = CP::Vec2.new(0,10)
+    
+    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    
+    out.x = (out.x / @display.char_width_pxs).to_i
+    out.y = (out.y / @display.char_height_pxs).to_i
+    
+    puts out
+  end
+  
+  def mouse_released(x,y, button)
+    # p [:released, x,y, button]
+  end
+  
+  
+  
   def on_exit
     super()
     
     
     # --- Save data
-    pt = self.get_window_position()
-    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    # pt = self.get_window_position()
+    # dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start

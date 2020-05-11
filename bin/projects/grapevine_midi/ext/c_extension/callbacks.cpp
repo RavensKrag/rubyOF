@@ -12,6 +12,136 @@ int cpp_callback(int x) {
 }
 
 
+void render_material_editor(
+	ofMesh & mesh, ofShader & shader, std::string & shader_filepath,
+	ofTexture & tex0, ofTexture & tex1,
+	int x, int y, int w, int h)
+{
+	stringstream textOut1, textOut2;
+	
+	textOut1 << "tex0 size: " << tex0.getWidth() << " x " << tex0.getHeight();
+	textOut2 << "tex1 size: " << tex1.getWidth() << " x " << tex1.getHeight();
+	
+	shader.load(shader_filepath);
+	shader.begin();
+	
+	shader.setUniformTexture("tex0", tex0, 0);
+	shader.setUniformTexture("tex1", tex1, 1);
+	
+	
+	ofPushMatrix();
+		ofTranslate(x,y);
+      ofScale(w,h);
+		
+		mesh.draw();
+		
+	ofPopMatrix();
+	
+	shader.end();
+	
+	
+	ofPushStyle();
+	
+	ofColor text_color(0.0);
+	
+	ofSetColor(text_color);
+	
+	int bitmap_lineheight = 10;
+	int offset = bitmap_lineheight;
+	ofDrawBitmapString(textOut1.str(), x, y+offset+h+bitmap_lineheight*1);
+	ofDrawBitmapString(textOut2.str(), x, y+offset+h+bitmap_lineheight*2);
+	
+	ofPopStyle();
+}
+
+
+
+void init_char_display_bg_mesh(ofMesh & _displayBG, int mesh_w, int mesh_h){
+	// create uniform mesh based on dimensions specified by Ruby code
+	
+	_displayBG.setMode( OF_PRIMITIVE_TRIANGLES );
+	for(int j=0; j < mesh_h; j++){
+		for(int i=0; i < mesh_w; i++){
+		
+			_displayBG.addVertex(glm::vec3((i+0), (j+0), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+1), (j+0), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+0), (j+1), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+			_displayBG.addVertex(glm::vec3((i+1), (j+1), 0));
+			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
+			
+		}
+	}
+	
+	for(int i=0; i < mesh_w*mesh_h; i++){
+		_displayBG.addIndex(2+i*4);
+		_displayBG.addIndex(1+i*4);
+		_displayBG.addIndex(0+i*4);
+		
+		_displayBG.addIndex(2+i*4);
+		_displayBG.addIndex(3+i*4);
+		_displayBG.addIndex(1+i*4);
+	}
+	
+	
+	// apparently, ofColor will auto convert to ofFloatColor as necessary
+	// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
+	
+	
+	// need to replicate the verticies, because each vertex can only take one color
+	
+}
+
+void set_char_display_bg_color(ofMesh & _displayBG, int i, ofColor & c) {
+	
+	_displayBG.setColor(0+i*4, c);
+	_displayBG.setColor(1+i*4, c);
+	_displayBG.setColor(2+i*4, c);
+	_displayBG.setColor(3+i*4, c);
+	
+	
+	// TODO: consider using getColorsPointer() to set mulitple colors at once
+	// https://openframeworks.cc/documentation/3d/ofMesh/#show_getColorsPointer
+	
+}
+
+void colorize_char_display_mesh(ofMesh & textMesh, int i, ofColor & c){
+	
+	textMesh.setColor(0+i*4, c);
+	textMesh.setColor(1+i*4, c);
+	textMesh.setColor(2+i*4, c);
+	textMesh.setColor(3+i*4, c);
+	// ^ can't write to this mesh b/c the reference I recieve from ofTrueTypeFont::getStringMesh() is const.
+	
+}
+
+void bind_char_display_params(ofShader & shader, 
+	std::string name1, float p1x, float p1y,
+	std::string name2, float p2x, float p2y)
+{
+	shader.setUniform2f(name1, glm::vec2(p1x, p1y));
+	shader.setUniform2f(name2, glm::vec2(p2x, p2y));
+}
+
+bool load_char_display_shaders(ofShader & shader, Rice::Array args){
+	if(args.size() == 1){
+      Rice::Object x = args[0];
+      std::string path = from_ruby<std::string>(x);
+      return shader.load(path);
+   }else if(args.size() == 2 || args.size() == 3){
+      return false;
+   }
+   
+   return false;
+}
+
+
+
 // "main" section
 extern "C"
 void Init_rubyOF_project()
@@ -21,6 +151,29 @@ void Init_rubyOF_project()
 	
 	rb_mCallbacks
 		.define_module_function("test_callback", &cpp_callback)
+		
+		
+		
+		.define_module_function("init_char_display_bg_mesh", 
+			                     &init_char_display_bg_mesh)
+		
+		.define_module_function("set_char_display_bg_color", 
+			                     &set_char_display_bg_color)
+		
+		.define_module_function("colorize_char_display_mesh", 
+			                     &colorize_char_display_mesh)
+		
+		.define_module_function("bind_char_display_params", 
+			                     &bind_char_display_params)
+		
+		.define_module_function("load_char_display_shaders", 
+			                     &load_char_display_shaders)
+		
+		
+		
+		
+		.define_module_function("render_material_editor", 
+			                     &render_material_editor)
 	;
 	
 	

@@ -156,7 +156,7 @@ void Init_rubyOF()
 		// .define_method("intersects?",   &ofRectangle::intersects)
 		
 		.define_method("inside_xy",   ofRectangle_test_xy(&ofRectangle::inside))
-		.define_method("inside_p",    ofRectangle_test_p(&ofRectangle::inside))
+		// .define_method("inside_p",    ofRectangle_test_p(&ofRectangle::inside))
 		.define_method("inside_r",    ofRectangle_test_r(&ofRectangle::inside))
 		.define_method("inside_pp",   ofRectangle_test_pp(&ofRectangle::inside))
 		

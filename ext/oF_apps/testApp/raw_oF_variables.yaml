@@ -1,22 +1,4 @@
 ---
-- 'HOST_OS=Linux
-
-'
-- "checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
-  gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal libcurl glfw3 rtaudio
-  libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 \n"
-- 'with PKG_CONFIG_LIBDIR=
-
-'
-- 'HOST_OS=Linux
-
-'
-- "checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
-  gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal libcurl glfw3 rtaudio
-  libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 \n"
-- 'with PKG_CONFIG_LIBDIR=
-
-'
 - 'PLATFORM_PKG_CONFIG = pkg-config
 
 '
@@ -174,10 +156,11 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
 
 '
 - "OF_PROJECT_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
@@ -373,9 +356,7 @@
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
 
 '
-- 'rvm_stored_umask = 0002
-
-'
+- "COMPILE.mod = m2c   \n"
 - 'XDG_RUNTIME_DIR = /run/user/1000
 
 '
@@ -489,7 +470,7 @@
 - 'rvm_bin_path = /home/ravenskrag/.rvm/bin
 
 '
-- 'PWD = /home/ravenskrag/Desktop/gem_structure/bin/projects
+- 'PWD = /home/ravenskrag/Desktop/gem_structure
 
 '
 - 'ALL_OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
@@ -762,7 +743,7 @@
 - 'F77 = f77
 
 '
-- 'COMPILE.cc = g++    -c
+- 'OLDPWD = /home/ravenskrag/Desktop/gem_structure/ext
 
 '
 - "REQUESTED_PROJECT_ADDONS =  \n"
@@ -783,7 +764,7 @@
   LESSOPEN RUBYOF_PROJECT OF_PROJECT_DEFINES CPP OF_APPS_PATH LINK.cc PAM_KWALLET5_LOGIN
   XDG_SESSION_PATH MAKE_HOST PATH OF_CORE_LIBS LD B_PROCESS_ADDONS ALL_OF_CORE_LIBS_PATHS
   TEXI2DVI OF_CORE_THIRDPARTY_SHARED_LIBS GPG_AGENT_INFO XCURSOR_THEME SESSION_MANAGER
-  OF_LIBS_OF_COMPILED_PATH rvm_stored_umask XDG_RUNTIME_DIR FIND CFLAGS ARFLAGS TEXTDOMAIN
+  OF_LIBS_OF_COMPILED_PATH COMPILE.mod XDG_RUNTIME_DIR FIND CFLAGS ARFLAGS TEXTDOMAIN
   LINK.r LINT COMPILE.f OF_CORE_SOURCE_PATHS LINT.c YACC.m YACC.y _system_name AR
   GTK2_RC_FILES .FEATURES HAS_SYSTEM_MPG123 TANGLE ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
   OF_CORE_LIBS_PLATFORM_LIBS_STATICS OPTIMIZATION_LDFLAGS LS_COLORS PLATFORM_STATIC_LIBRARIES
@@ -801,19 +782,19 @@
   AS TARGET_NAME OF_PROJECT_OBJ_OUTPUT_PATH PREPROCESS.S MAKEOVERRIDES HOST_OS ALL_LDFLAGS
   COMPILE.p XDG_SESSION_ID USER FC .DEFAULT_GOAL XDG_CURRENT_DESKTOP PLATFORM_ARCH
   OF_PROJECT_DEPS OF_ROOT FAILED_PKG rvm_version %D OF_EXAMPLES_PATH WEAVE MAKE_COMMAND
-  LINK.cpp F77 COMPILE.cc REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS .VARIABLES
+  LINK.cpp F77 OLDPWD REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS .VARIABLES
   PC *F XDG_SEAT_PATH PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def LEX
   MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH
   OF_CORE_LIBS_THAT_NEED_ORDER LEX.l LEX.m ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS
-  COMPILE.r OBJS_WITH_PREFIX OF_PROJECT_SOURCE_PATHS rvm_user_install_flag +F M2C
-  PLATFORM_HEADER_SEARCH_PATHS ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS
-  CLEANTARGET QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS DEFAULTS_PATH LDFLAGS GTK_RC_FILES
-  TEXTDOMAINDIR GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEFINES_CFLAGS OF_PROJECT_DEPENDENCY_FILES
-  _system_type YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
-  CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS COMPILE.C
-  COMPILE.mod GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT GNOME_TERMINAL_SERVICE
+  COMPILE.r OBJS_WITH_PREFIX OF_PROJECT_SOURCE_PATHS +F M2C PLATFORM_HEADER_SEARCH_PATHS
+  ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS CLEANTARGET
+  QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS DEFAULTS_PATH LDFLAGS GTK_RC_FILES
+  TEXTDOMAINDIR GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES _system_type
+  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS COMPILE.cc HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
+  CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES
+  COMPILE.C GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT GNOME_TERMINAL_SERVICE
   SUFFIXES GS_LIB COMPILE.c ADDON_INCLUDE_CFLAGS OBJS_WITHOUT_EXTERNAL _system_arch
-  COMPILE.s .INCLUDE_DIRS rvm_loaded_flag CORE_PKG_CONFIG_LIBRARIES .RECIPEPREFIX
+  COMPILE.s .INCLUDE_DIRS OF_PROJECT_DEFINES_CFLAGS CORE_PKG_CONFIG_LIBRARIES .RECIPEPREFIX
   MAKEINFO MAKE_TERMERR OBJC LINK.f TEX GST_VERSION LANG TERM F77FLAGS LINK.o ALL_INSTALLED_ADDONS
   OF_CORE_BASE_CXXFLAGS PLATFORM_LIB_SUBPATH PROJECT_INCLUDE_CFLAGS MY_RUBY_HOME OF_CORE_BASE_CFLAGS
   KDE_SESSION_UID\n"
@@ -892,9 +873,6 @@
 - 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src
 
 '
-- 'rvm_user_install_flag = 1
-
-'
 - "+F = \n"
 - 'M2C = m2c
 
@@ -934,7 +912,6 @@
 
 '
 - "MAKEFILES = \n"
-- "OF_PROJECT_DEFINES_CFLAGS = \n"
 - "OF_PROJECT_DEPENDENCY_FILES = obj/linux64/Debug/src/ofApp.d obj/linux64/Debug/src/main.d
   \n"
 - '_system_type = Linux
@@ -943,15 +920,226 @@
 - 'YACC = yacc
 
 '
-- 'ALL_OF_CORE_THIRDPARTY_HEADER_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/include
+- 'ALL_OF_CORE_THIRDPARTY_HEADER_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/FreeImage/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/tuple
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/tuple/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/smart_ptr
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/smart_ptr/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/utility
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/utility/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/type_index
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/type_index/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/type_traits
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/type_traits/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/tree
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/tools
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/tools/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/tools/old
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils/runtime
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils/runtime/cla
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils/runtime/env
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils/basic_cstring
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/utils/iterator
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/output
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/impl
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/test/included
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/optional
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/optional/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/list
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/list/aux_
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/list/aux_/preprocessed
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/list/aux_/preprocessed/plain
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/limits
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector/aux_
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector/aux_/preprocessed
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector/aux_/preprocessed/plain
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector/aux_/preprocessed/no_ctps
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/vector/aux_/preprocessed/typeof_based
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessor
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/config
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/bcc551
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/msvc60
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/plain
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/dmc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/no_ctps
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/bcc_pre590
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/mwcw
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/msvc70
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/bcc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/no_ttp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/mpl/aux_/preprocessed/gcc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/ratio
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/ratio/mpl
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/ratio/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/ratio/detail/mpl
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/intrusive
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/intrusive/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/regex
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/regex/v4
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/regex/config
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/regex/pending
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/container
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/container/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/atomic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/atomic/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/atomic/detail/type_traits
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/numeric
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/numeric/conversion
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/numeric/conversion/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/numeric/conversion/detail/preprocessed
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/other
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/platform
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/language
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/compiler
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/library
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/library/c
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/library/std
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware/simd
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware/simd/x86_amd
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware/simd/ppc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware/simd/arm
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/hardware/simd/x86
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/os
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/os/bsd
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/architecture
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/predef/architecture/x86
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/filesystem
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/filesystem/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/tuple
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/tuple/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/comparison
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/seq
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/seq/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/iteration
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/iteration/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/iteration/detail/bounds
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/iteration/detail/iter
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/slot
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/slot/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/debug
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/list
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/list/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/list/detail/dmc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/list/detail/edg
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/logical
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/detail/dmc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/variadic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/config
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/arithmetic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/arithmetic/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/punctuation
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/punctuation/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/repetition
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/repetition/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/repetition/detail/dmc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/repetition/detail/msvc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/repetition/detail/edg
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/control
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/control/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/control/detail/dmc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/control/detail/msvc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/control/detail/edg
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/array
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/facilities
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/preprocessor/facilities/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/functional
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/functional/hash
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/functional/hash/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/core
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/detail/winapi
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/bind
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/platform
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/compiler
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/abi
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/stdlib
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/config/no_tr1
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/range
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/range/adaptor
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/range/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/range/algorithm
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/io
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/io/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/function
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/function/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/integer
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono/detail/inlined
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono/detail/inlined/mac
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono/detail/inlined/win
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/chrono/detail/inlined/posix
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/math
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/math/tools
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/math/special_functions
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/math/special_functions/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/math/policies
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/exception
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/exception/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/executors
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/futures
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/v2
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/csbl
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/csbl/memory
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/win32
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/thread/pthread
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/algorithm
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/algorithm/cxx11
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/algorithm/string
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/algorithm/string/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/move
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/move/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/move/algo
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/move/algo/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/concept
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/concept/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/date_time
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/date_time/gregorian
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/date_time/posix_time
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/lexical_cast
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/lexical_cast/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/iterator
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/iterator/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/system
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/system/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/timer
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include/freetype2
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include/freetype2/freetype
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include/freetype2/freetype/internal
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include/freetype2/freetype/internal/services
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/freetype/include/freetype2/freetype/config
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
+
+'
+- 'COMPILE.cc = g++    -c
 
 '
 - 'HOST_ARCH = x86_64
@@ -989,8 +1177,10 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks
@@ -1007,11 +1197,11 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
 
 '
+- "OF_PROJECT_RESOURCES = \n"
 - 'COMPILE.C = g++    -c
 
 '
-- "COMPILE.mod = m2c   \n"
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/ce4281d1_ff83_40d5_a5a2_656ae7c9a100
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/74175481_eed2_43db_bff0_bedc3031c929
 
 '
 - "^F = \n"
@@ -1055,8 +1245,10 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks
@@ -1082,9 +1274,7 @@
 '
 - "COMPILE.s = as  \n"
 - ".INCLUDE_DIRS = /usr/include /usr/local/include /usr/include\n"
-- 'rvm_loaded_flag = 1
-
-'
+- "OF_PROJECT_DEFINES_CFLAGS = \n"
 - "CORE_PKG_CONFIG_LIBRARIES =   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
   gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal libcurl glfw3 rtaudio
   libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 \n"
@@ -1092,7 +1282,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/3
+- 'MAKE_TERMERR = /dev/pts/5
 
 '
 - 'OBJC = cc
@@ -1119,7 +1309,7 @@
   -lfmodex \n"
 - 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxInfiniteCanvas
   ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics ofxXmlSettings ofxAccelerometer
-  ofxOpenCv ofxOsc ofxSvg obj ofxEmscripten ofxAssimpModelLoader ofxPoco ofxAndroid
+  ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxEmscripten ofxAssimpModelLoader ofxPoco ofxAndroid
   ofxDatGui ofxiOS ofxImGui
 
 '
@@ -1141,8 +1331,10 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks

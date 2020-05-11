@@ -1,1 +1,1 @@
-#define DATA_PATH "/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data"
+#define DATA_PATH "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/bin/data"

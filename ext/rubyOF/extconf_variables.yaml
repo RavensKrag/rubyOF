@@ -125,9 +125,11 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/simd
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtx
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/ext
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/gtc
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/json/include
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/include
+    -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/pugixml/include
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/include
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
