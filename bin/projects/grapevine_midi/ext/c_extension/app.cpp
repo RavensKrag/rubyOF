@@ -245,15 +245,21 @@ void rbApp::setup(){
 		_displayFG_pixels.setColor(i,2, c);
 	}
 	
-	ofColor white(1.0);
+	ofColor white(255, 255, 255,  255 );
+	// illuminate 4 px in the top left
 	_displayFG_pixels.setColor(0,0, white);
 	_displayFG_pixels.setColor(0,1, white);
 	_displayFG_pixels.setColor(1,0, white);
 	_displayFG_pixels.setColor(1,1, white);
+	// and light up the other 3 corners with 1 px each
+	_displayFG_pixels.setColor(0,fg_buffer_h-1, white);
+	_displayFG_pixels.setColor(fg_buffer_w-1,0, white);
+	_displayFG_pixels.setColor(fg_buffer_w-1,fg_buffer_h-1, white);
 	
 	
 	_displayFG_texture.loadData(_displayFG_pixels, GL_RGBA);
 	// _displayFG_texture.setTextureWrap(GL_REPEAT, GL_REPEAT);
+	_displayFG_texture.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
 	
 	
 	Rice::Data_Object<ofPixels> rb_cPixels_ptr(

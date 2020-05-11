@@ -38,7 +38,7 @@ void main()
   // charVarying = position.xy;
 	  charVarying = position.xy - vec2(0,100);
 	  
-	  charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35));
+	  charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35.7));
 	  // charVarying = (position.xy + vec2(0, 18) + vec2(0, 10) )/ (charSize);
 	  
 	  // charVarying = charSize;
