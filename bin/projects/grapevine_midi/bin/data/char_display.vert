@@ -32,18 +32,10 @@ void main()
   texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
   gl_Position = modelViewProjectionMatrix * position;
   
-  
-  // charVarying = ((gl_Position.xy - origin - vec2(0,10)) / charSize);
-  
   // charVarying = position.xy;
-	  charVarying = position.xy - vec2(0,100);
-	  
-	  charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35.7));
-	  // charVarying = (position.xy + vec2(0, 18) + vec2(0, 10) )/ (charSize);
-	  
-	  // charVarying = charSize;
-	  
-	  
-	  // charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) + vec2(-1,0) )/ vec2(18, 35));
-	  // charVarying = (position.xy  );
+  	  // charVarying = (position.xy ) / charSize;
+  	  
+		  // charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35.7));
+		  
+		  charVarying = (position.xy + vec2(0, charSize.y+1) ) / charSize;
 }

@@ -260,8 +260,14 @@ class CharMappedDisplay
       @shader.setUniformTexture("trueTypeTexture", font.font_texture, 0)
       @shader.setUniformTexture("fontColorMap",    @text_colors_gpu,  1)
       
-      @shader.setUniform2i("origin",   @uniform__origin.x.to_i, @uniform__origin.y.to_i)
-      @shader.setUniform2i("charSize", @uniform__charSize.x.to_i, @uniform__charSize.y.to_i)
+      RubyOF::CPP_Callbacks.bind_char_display_params(
+        @shader,
+        "origin",   @uniform__origin.x,   @uniform__origin.y,
+        "charSize", @uniform__charSize.x, @uniform__charSize.y
+      )
+      
+      # @shader.setUniform2f("origin",   )
+      # @shader.setUniform2f("charSize", )
       
       # p @uniform__charSize.to_a
       

@@ -120,6 +120,14 @@ void colorize_char_display_mesh(ofMesh & textMesh, int i, ofColor & c){
 	
 }
 
+void bind_char_display_params(ofShader & shader, 
+	std::string name1, float p1x, float p1y,
+	std::string name2, float p2x, float p2y)
+{
+	shader.setUniform2f(name1, glm::vec2(p1x, p1y));
+	shader.setUniform2f(name2, glm::vec2(p2x, p2y));
+}
+
 bool load_char_display_shaders(ofShader & shader, Rice::Array args){
 	if(args.size() == 1){
       Rice::Object x = args[0];
@@ -155,8 +163,13 @@ void Init_rubyOF_project()
 		.define_module_function("colorize_char_display_mesh", 
 			                     &colorize_char_display_mesh)
 		
+		.define_module_function("bind_char_display_params", 
+			                     &bind_char_display_params)
+		
 		.define_module_function("load_char_display_shaders", 
 			                     &load_char_display_shaders)
+		
+		
 		
 		
 		.define_module_function("render_material_editor", 
