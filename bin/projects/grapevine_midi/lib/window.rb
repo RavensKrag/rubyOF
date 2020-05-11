@@ -350,18 +350,9 @@ class Window < RubyOF::Window
     
     
     
-    # @disp_bg_colors.each_with_index do |c, i|
-      
-    #   @cpp_ptr["display_bg_mesh"].setBackgroundColor(i,c)
-      
-    # end
     
+    # @display.reload_shader
     
-    # print_char_grid()
-    
-    @display.reload_shader
-    
-    # char_grid = ("F" * @char_grid_width + "\n") * @char_grid_height
     z = 5
     @display.draw(@origin, z)
     
