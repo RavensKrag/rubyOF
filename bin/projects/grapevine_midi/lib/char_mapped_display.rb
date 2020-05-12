@@ -272,11 +272,24 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
     
     # manipulate color at a particular pixel
-    def pixel(pos_vec2) # &block
-      # TODO: implement bounds checking
+    def pixel(pos) # &block |RubyOF::Color, RubyOF::Color, CP::Vec2|
       
+      unless( pos.x >= 0 && pos.x < @display.x_chars && 
+              pos.y >= 0 && pos.y < @display.y_chars
+      )
+        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
+      end
       
-      yield c1, p1, c2, p2
+      pos.to_a.tap do |x,y|
+        c1 = @images[0].getColor(x, y)
+        c2 = @images[1].getColor(x, y)
+        
+        yield c1, c2, pos
+        
+        @display.setColor_bg(x, y, c1)
+        @display.setColor_fg(x, y, c2)
+      end
+      
     end
   end
   

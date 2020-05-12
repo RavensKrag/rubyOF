@@ -213,6 +213,14 @@ class Window < RubyOF::Window
     @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
     @display.print_string(CP::Vec2.new(0, 18), "this should not print")
     
+    
+    
+    
+    @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c, pos|
+      bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
+      fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
+    end
+    
   end
   
   def update
