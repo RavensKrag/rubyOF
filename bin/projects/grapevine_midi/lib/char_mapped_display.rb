@@ -127,6 +127,17 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         end
       end
     end
+    
+    def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block |x,y|
+      if( pos.x >= 0 && pos.x < x_size && 
+              pos.y >= 0 && pos.y < y_size
+      )
+        yield pos.x, pos.y
+      else
+        msg = "position #{pos} is out of bounds [w,h] = [#{x_size}, #{y_size}]"
+        raise IndexError, msg
+      end
+    end
   end
   
   
@@ -165,19 +176,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # manipulate color at a particular pixel
     def pixel(pos) # &block
-      
-      unless( pos.x >= 0 && pos.x < @display.x_chars && 
-              pos.y >= 0 && pos.y < @display.y_chars
-      )
-        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
+        color = @image.getColor(x,y)
+        yield color, pos
+        @display.setColor_bg(x,y, color)
       end
-      
-      
-      color = @image.getColor(pos.x, pos.y)
-      yield color, pos
-      
-      @display.setColor_bg(pos.x, pos.y, color)
-      
     end
   end
   
@@ -212,19 +215,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # manipulate color at a particular pixel
     def pixel(pos)
-      
-      unless( pos.x >= 0 && pos.x < @display.x_chars && 
-              pos.y >= 0 && pos.y < @display.y_chars
-      )
-        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
+        color = @image.getColor(x,y)
+        yield color, pos
+        @display.setColor_fg(x,y, color)
       end
-      
-      
-      color = @image.getColor(pos.x, pos.y)
-      yield color, pos
-      
-      @display.setColor_fg(pos.x, pos.y, color)
-      
     end
   end
   
@@ -273,14 +268,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # manipulate color at a particular pixel
     def pixel(pos) # &block |RubyOF::Color, RubyOF::Color, CP::Vec2|
-      
-      unless( pos.x >= 0 && pos.x < @display.x_chars && 
-              pos.y >= 0 && pos.y < @display.y_chars
-      )
-        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
-      end
-      
-      pos.to_a.tap do |x,y|
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
+        
         c1 = @images[0].getColor(x, y)
         c2 = @images[1].getColor(x, y)
         
@@ -288,8 +277,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         
         @display.setColor_bg(x, y, c1)
         @display.setColor_fg(x, y, c2)
+        
       end
-      
     end
   end
   
@@ -310,60 +299,28 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   # @display.bg_colors.each do |color|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
   
   # @display.bg_colors.each_with_index do |color, pos|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
   
   # @display.bg_colors.pixel Vec2.new(0,0) do |color|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
   
   # @display.colors.pixel Vec2.new(0,0) do |bg_color, fg_color|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
   
   # @display.colors.each do |bg_color, fg_color|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
   
   # @display.colors.each_with_index do |bg_color, p1, fg_color, p2|
-    
+  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
   # end
-  
-  
-  
-  
-  # TODO: depreciate #background_color and #foreground_color
-  
-  # @display.background_color do |c|
-  #   c.r, c.g, c.b, c.a = [255, 255, 255, 255]
-  # end
-  def background_color(char_pos, &block)
-    puts "setting bg color @ #{char_pos}"
-    
-    color = getColor_bg(char_pos.x, char_pos.y)
-    
-    block.call(color)
-    
-    # autoUpdateColor_bg(false)
-      setColor_bg(char_pos.x, char_pos.y, color)
-    # flushColors_bg()
-    # autoUpdateColor_bg(true)
-  end
-  
-  def foreground_color(char_pos, &block)
-    color = getColor_fg(char_pos.x, char_pos.y)
-    
-    block.call(color)
-    
-    # autoUpdateColor_fg(false)
-      setColor_fg(char_pos.x, char_pos.y, color)
-    # flushColors_fg()
-    # autoUpdateColor_fg(true)
-  end
   
   
   
