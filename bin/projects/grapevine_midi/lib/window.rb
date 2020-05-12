@@ -197,7 +197,7 @@ class Window < RubyOF::Window
            c.r, c.g, c.b, c.a = [0, 0, 255, 255]
         end
       end
-      
+    
     
     @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
     @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
