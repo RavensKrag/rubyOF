@@ -112,27 +112,24 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   
-  
-  module EnumHelper
-    def enum_each_color_in_image_with_index(image)
-      Enumerator.new do |yielder|
-        w = image.width
-        h = image.height
-        
+  class Matrix2DEnum < Enumerator
+    def initialize(w,h) # &block
+      super() do |yielder|
         w.times do |x|
           h.times do |y|
-            pos = CP::Vec2.new(x,y)
-            yielder.yield image.getColor(pos.x, pos.y), pos
+            yielder << CP::Vec2.new(x,y)
           end
         end
       end
     end
-    
-    def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block |x,y|
+  end
+  
+  module EnumHelper
+    def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block
       if( pos.x >= 0 && pos.x < x_size && 
           pos.y >= 0 && pos.y < y_size
       )
-        yield pos.x, pos.y
+        yield
       else
         msg = "position #{pos} is out of bounds [w,h] = [#{x_size}, #{y_size}]"
         raise IndexError, msg
@@ -142,15 +139,12 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   private :fgText_getShader, :fgText_getTexture
-  private :getColorPixels_bg, :getColorPixels_fg
-  
   
   class ColorHelper_bgOnly
     include EnumHelper
     
-    def initialize(display, image)
+    def initialize(display)
       @display = display
-      @image = image
     end
     
     # iterate through every pixel in the image
@@ -164,10 +158,12 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     def each_with_index() # &block
       @display.autoUpdateColor_bg(false)
       
-      en = enum_each_color_in_image_with_index(@image)
-      en.each do |color, pos|
+      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
+        color = @display.getColor_bg(pos.x, pos.y)
+        
         yield color, pos
-        @display.setColor_bg(pos.x, pos.y, color)
+        
+        @display.setColor_bg(pos.x,pos.y, color)
       end
       
       @display.flushColors_bg()
@@ -175,11 +171,13 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
     
     # manipulate color at a particular pixel
-    def pixel(pos) # &block
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
-        color = @image.getColor(x,y)
+    def pixel(pos)
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
+        color = @display.getColor_bg(pos.x,pos.y)
+        
         yield color, pos
-        @display.setColor_bg(x,y, color)
+        
+        @display.setColor_bg(pos.x,pos.y, color)
       end
     end
   end
@@ -187,9 +185,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   class ColorHelper_fgOnly
     include EnumHelper
     
-    def initialize(display, image)
+    def initialize(display)
       @display = display
-      @image = image
     end
     
     # iterate through every pixel in the image
@@ -203,10 +200,12 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     def each_with_index() # &block
       @display.autoUpdateColor_fg(false)
       
-      en = enum_each_color_in_image_with_index(@image)
-      en.each do |color, pos|
+      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
+        color = @display.getColor_fg(pos.x, pos.y)
+        
         yield color, pos
-        @display.setColor_fg(pos.x, pos.y, color)
+        
+        @display.setColor_fg(pos.x,pos.y, color)
       end
       
       @display.flushColors_fg()
@@ -215,20 +214,22 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # manipulate color at a particular pixel
     def pixel(pos)
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
-        color = @image.getColor(x,y)
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
+        color = @display.getColor_fg(pos.x,pos.y)
+        
         yield color, pos
-        @display.setColor_fg(x,y, color)
+        
+        @display.setColor_fg(pos.x,pos.y, color)
       end
     end
   end
   
+  
   class ColorHelper_bgANDfg
     include EnumHelper
     
-    def initialize(display, bg, fg)
+    def initialize(display)
       @display = display
-      @images = [bg, fg]
     end
     
     # iterate through every pixel in the image
@@ -244,20 +245,17 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       @display.autoUpdateColor_fg(false)
       
       
-      bg_enum = enum_each_color_in_image_with_index(@images[0])
-      fg_enum = enum_each_color_in_image_with_index(@images[1])
-      
-      loop do
-        c1, p1 = bg_enum.next
-        c2, p2 = fg_enum.next
+      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
+        bg_c = @display.getColor_bg(pos.x, pos.y)
+        fg_c = @display.getColor_fg(pos.x, pos.y)
         
-        yield c1, p1, c2, p2
+        yield bg_c, fg_c, pos
         # colors and positions are in-out arguments
         
-        @display.setColor_bg(p1.x, p1.y, c1)
-        @display.setColor_fg(p2.x, p2.y, c2)
+        @display.setColor_bg(pos.x, pos.y, bg_c)
+        @display.setColor_fg(pos.x, pos.y, fg_c)
       end
-      # when Enumeration#next fails, it throws StopIteration exception, which breaks the loop (e.g., loops automatically catch this exception type)
+      
       
       @display.flushColors_bg()
       @display.autoUpdateColor_bg(true)
@@ -268,15 +266,15 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # manipulate color at a particular pixel
     def pixel(pos) # &block |RubyOF::Color, RubyOF::Color, CP::Vec2|
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do |x,y|
+      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
         
-        c1 = @images[0].getColor(x, y)
-        c2 = @images[1].getColor(x, y)
+        bg_c = @display.getColor_bg(pos.x, pos.y)
+        fg_c = @display.getColor_fg(pos.x, pos.y)
         
-        yield c1, c2, pos
+        yield bg_c, fg_c, pos
         
-        @display.setColor_bg(x, y, c1)
-        @display.setColor_fg(x, y, c2)
+        @display.setColor_bg(pos.x, pos.y, bg_c)
+        @display.setColor_fg(pos.x, pos.y, fg_c)
         
       end
     end
@@ -284,17 +282,15 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   def bg_colors
-    return ColorHelper_bgOnly.new( self, getColorPixels_bg() )
+    return ColorHelper_bgOnly.new(self)
   end
   
   def fg_colors
-    return ColorHelper_bgOnly.new( self, getColorPixels_fg() )
+    return ColorHelper_bgOnly.new(self)
   end
   
   def colors
-    return ColorHelper_bgANDfg.new(self, 
-      getColorPixels_bg(), getColorPixels_fg()
-    )
+    return ColorHelper_bgANDfg.new(self)
   end
   
   

@@ -179,8 +179,8 @@ class Window < RubyOF::Window
     # @display.autoUpdateColor_fg(false)
     
     
-    
-    @display.colors.each_with_index do |bg_c, bg_pos, fg_c, fg_pos|
+    # clear out the garbage bg + test pattern fg
+    @display.colors.each_with_index do |bg_c, fg_c, pos|
       bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.5*255).to_i]*3 + [255])
       fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.1*255).to_i]*3 + [255])
     end
