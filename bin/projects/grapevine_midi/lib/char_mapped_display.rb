@@ -7,6 +7,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   include RubyOF::Graphics
   
   attr_reader :char_width_pxs, :char_height_pxs
+  attr_reader :x_chars, :y_chars
+  
   
   def initialize(font, x_chars, y_chars)
     super()
@@ -14,8 +16,13 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     setup(x_chars, y_chars)
     @font = font
     
-    @x_chars = getNumCharsX()
-    @y_chars = getNumCharsY()
+    
+    # @x_chars = getNumCharsX()
+    # @y_chars = getNumCharsY()
+    @x_chars = x_chars
+    @y_chars = y_chars
+    
+    
     
     
     
@@ -103,10 +110,227 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   
+  
+  
+  
+  module EnumHelper
+    def enum_each_color_in_image_with_index(image)
+      Enumerator.new do |yielder|
+        w = image.width
+        h = image.height
+        
+        w.times do |x|
+          h.times do |y|
+            pos = CP::Vec2.new(x,y)
+            yielder.yield image.getColor(pos.x, pos.y), pos
+          end
+        end
+      end
+    end
+  end
+  
+  
+  private :fgText_getShader, :fgText_getTexture
+  private :getColorPixels_bg, :getColorPixels_fg
+  
+  
+  class ColorHelper_bgOnly
+    include EnumHelper
+    
+    def initialize(display, image)
+      @display = display
+      @image = image
+    end
+    
+    # iterate through every pixel in the image
+    # DO NOT RETURN Enumeration - will not work as expected
+    # (need to first build up additional indirection for pixel access)
+    def each() # &block
+      
+    end
+    
+    # index is a CP::Vec2 encoding position
+    def each_with_index() # &block
+      @display.autoUpdateColor_bg(false)
+      
+      en = enum_each_color_in_image_with_index(@image)
+      en.each do |color, pos|
+        yield color, pos
+        @display.setColor_bg(pos.x, pos.y, color)
+      end
+      
+      @display.flushColors_bg()
+      @display.autoUpdateColor_bg(true)
+    end
+    
+    # manipulate color at a particular pixel
+    def pixel(pos) # &block
+      
+      unless( pos.x >= 0 && pos.x < @display.x_chars && 
+              pos.y >= 0 && pos.y < @display.y_chars
+      )
+        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
+      end
+      
+      
+      color = @image.getColor(pos.x, pos.y)
+      yield color, pos
+      
+      @display.setColor_bg(pos.x, pos.y, color)
+      
+    end
+  end
+  
+  class ColorHelper_fgOnly
+    include EnumHelper
+    
+    def initialize(display, image)
+      @display = display
+      @image = image
+    end
+    
+    # iterate through every pixel in the image
+    # DO NOT RETURN Enumeration - will not work as expected
+    # (need to first build up additional indirection for pixel access)
+    def each() # &block
+      
+    end
+    
+    # index is a CP::Vec2 encoding position
+    def each_with_index() # &block
+      @display.autoUpdateColor_fg(false)
+      
+      en = enum_each_color_in_image_with_index(@image)
+      en.each do |color, pos|
+        yield color, pos
+        @display.setColor_fg(pos.x, pos.y, color)
+      end
+      
+      @display.flushColors_fg()
+      @display.autoUpdateColor_fg(true)
+    end
+    
+    # manipulate color at a particular pixel
+    def pixel(pos)
+      
+      unless( pos.x >= 0 && pos.x < @display.x_chars && 
+              pos.y >= 0 && pos.y < @display.y_chars
+      )
+        raise IndexError, "position #{pos} is out of bounds [w,h] = [#{@x_chars}, #{@y_chars}]"
+      end
+      
+      
+      color = @image.getColor(pos.x, pos.y)
+      yield color, pos
+      
+      @display.setColor_fg(pos.x, pos.y, color)
+      
+    end
+  end
+  
+  class ColorHelper_bgANDfg
+    include EnumHelper
+    
+    def initialize(display, bg, fg)
+      @display = display
+      @images = [bg, fg]
+    end
+    
+    # iterate through every pixel in the image
+    # DO NOT RETURN Enumeration - will not work as expected
+    # (need to first build up additional indirection for pixel access)
+    def each() # &block
+      
+    end
+    
+    # index is a CP::Vec2 encoding position
+    def each_with_index() # &block
+      @display.autoUpdateColor_bg(false)
+      @display.autoUpdateColor_fg(false)
+      
+      
+      bg_enum = enum_each_color_in_image_with_index(@images[0])
+      fg_enum = enum_each_color_in_image_with_index(@images[1])
+      
+      loop do
+        c1, p1 = bg_enum.next
+        c2, p2 = fg_enum.next
+        
+        yield c1, p1, c2, p2
+        # colors and positions are in-out arguments
+        
+        @display.setColor_bg(p1.x, p1.y, c1)
+        @display.setColor_fg(p2.x, p2.y, c2)
+      end
+      # when Enumeration#next fails, it throws StopIteration exception, which breaks the loop (e.g., loops automatically catch this exception type)
+      
+      @display.flushColors_bg()
+      @display.autoUpdateColor_bg(true)
+      
+      @display.flushColors_fg()
+      @display.autoUpdateColor_fg(true)
+    end
+    
+    # manipulate color at a particular pixel
+    def pixel(pos_vec2) # &block
+      # TODO: implement bounds checking
+      
+      
+      yield c1, p1, c2, p2
+    end
+  end
+  
+  
+  def bg_colors
+    return ColorHelper_bgOnly.new( self, getColorPixels_bg() )
+  end
+  
+  def fg_colors
+    return ColorHelper_bgOnly.new( self, getColorPixels_fg() )
+  end
+  
+  def colors
+    return ColorHelper_bgANDfg.new(self, 
+      getColorPixels_bg(), getColorPixels_fg()
+    )
+  end
+  
+  
+  # @display.bg_colors.each do |color|
+    
+  # end
+  
+  # @display.bg_colors.each_with_index do |color, pos|
+    
+  # end
+  
+  # @display.bg_colors.pixel Vec2.new(0,0) do |color|
+    
+  # end
+  
+  # @display.colors.pixel Vec2.new(0,0) do |bg_color, fg_color|
+    
+  # end
+  
+  # @display.colors.each do |bg_color, fg_color|
+    
+  # end
+  
+  # @display.colors.each_with_index do |bg_color, p1, fg_color, p2|
+    
+  # end
+  
+  
+  
+  
+  # TODO: depreciate #background_color and #foreground_color
+  
   # @display.background_color do |c|
   #   c.r, c.g, c.b, c.a = [255, 255, 255, 255]
   # end
   def background_color(char_pos, &block)
+    puts "setting bg color @ #{char_pos}"
+    
     color = getColor_bg(char_pos.x, char_pos.y)
     
     block.call(color)
@@ -129,6 +353,9 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   
+  
+  
+  # TODO: should return some Enumerator to access the color control pixels in the range of the printed string (it is common to want to print and then also adjust the color)
   
   # mind the invisible newline character at the end of every line
   def print_string(char_pos, str)

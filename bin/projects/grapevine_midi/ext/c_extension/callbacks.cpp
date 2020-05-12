@@ -178,7 +178,7 @@ public:
 	void flushColors_bg(){
 		for(int x=0; x < _numCharsX; x++){
 			for(int y=0; y < _numCharsY; y++){
-				ofColor c(255,0,y*255/_numCharsY, 255);
+				ofColor c = _bgColorPixels.getColor(x,y);
 				int i = x + y*_numCharsX;
 				
 				_bgMesh.setColor(0+i*4, c);
@@ -234,6 +234,28 @@ public:
 			Rice::Data_Type< ofTexture >::klass(),
 			Rice::Default_Mark_Function< ofTexture >::mark,
 			Null_Free_Function< ofTexture >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofPixels> getColorPixels_bg(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_bgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofPixels> getColorPixels_fg(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_fgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
 		);
 		
 		return rb_cPtr;
@@ -450,6 +472,13 @@ void Init_rubyOF_project()
 		.define_method("fgText_getTexture",
 			&CharMappedDisplay::fgText_getTexture
 		)
+		.define_method("getColorPixels_bg",
+			&CharMappedDisplay::getColorPixels_bg
+		)
+		.define_method("getColorPixels_fg",
+			&CharMappedDisplay::getColorPixels_fg
+		)
+		
 		
 		.define_method("bgMesh_draw",
 			&CharMappedDisplay::bgMesh_draw

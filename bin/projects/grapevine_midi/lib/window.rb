@@ -176,11 +176,24 @@ class Window < RubyOF::Window
     
     @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
     
+    # @display.autoUpdateColor_bg(false)
+    # @display.autoUpdateColor_fg(false)
+    
+    pos = CP::Vec2.new(0,0)
+    
+    
+    @display.colors.each_with_index do |bg_c, bg_pos, fg_c, fg_pos|
+      bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.5*255).to_i]*3 + [255])
+      fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.1*255).to_i]*3 + [255])
+    end
+    
     
     @display.print_string(5, "hello world!")
-      "hello world!".length.times do |i|
-        pos = CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
-        @display.background_color pos do |c|
+    
+      "hello world!".length.times.collect{ |i|
+        CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
+      }.each do |pos|
+        @display.bg_colors.pixel pos do |c|
            c.r, c.g, c.b, c.a = [0, 0, 255, 255]
         end
       end
@@ -189,11 +202,10 @@ class Window < RubyOF::Window
     @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
     @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
     
-      start_pt = CP::Vec2.new(7, 5)
-      "spatial inputs~".length.times do |i|
-        pos = start_pt + CP::Vec2.new(i, 0)
-        puts pos
-        @display.background_color pos do |c|
+      "spatial inputs~".length.times.collect { |i|
+        CP::Vec2.new(7, 5) + CP::Vec2.new(i, 0)
+      }.each do |pos|
+        @display.bg_colors.pixel pos do |c|
            c.r, c.g, c.b, c.a = [255, 0, 0, 255]
         end
       end
