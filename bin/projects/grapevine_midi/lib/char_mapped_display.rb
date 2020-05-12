@@ -99,12 +99,47 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    # TODO: need to make it so that each character can have a separate color
-    screen_print(font: @font,
-                 string: @char_grid,
-                 position: origin+CP::Vec2.new(0,line_height*1),
-                 z: 5)
     
+    shader = fgText_getShader()
+    
+    shader.begin()
+    
+    shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
+    shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
+    
+    RubyOF::CPP_Callbacks.ofShader_bindUniforms(
+      shader,
+      "origin",   @uniform__origin.x,   @uniform__origin.y,
+      "charSize", @uniform__charSize.x, @uniform__charSize.y
+    )
+    
+    # shader.setUniform2f("origin",   )
+    # shader.setUniform2f("charSize", )
+    
+    # p @uniform__charSize.to_a
+    
+    ofPushMatrix()
+    ofPushStyle()
+  begin
+    pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
+    ofTranslate(pos.x, pos.y, z)
+    
+    # ofSetColor(color)
+    
+    x,y = [0,0]
+    vflip = true
+    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+    
+    text_mesh.draw()
+  ensure
+    ofPopStyle()
+    ofPopMatrix()
+    
+    # @font.font_texture.unbind
+    # @text_colors_gpu.unbind
+    shader.end()
+  end
+  
   end
   
   
@@ -398,48 +433,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   private
   
-  def screen_print(font:, string:, position:, z:1)
-      shader = fgText_getShader()
-      
-      
-      shader.begin()
-      
-      shader.setUniformTexture("trueTypeTexture", font.font_texture,   0)
-      shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
-      
-      RubyOF::CPP_Callbacks.ofShader_bindUniforms(
-        shader,
-        "origin",   @uniform__origin.x,   @uniform__origin.y,
-        "charSize", @uniform__charSize.x, @uniform__charSize.y
-      )
-      
-      # shader.setUniform2f("origin",   )
-      # shader.setUniform2f("charSize", )
-      
-      # p @uniform__charSize.to_a
-      
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      ofTranslate(position.x, position.y, z)
-      
-      # ofSetColor(color)
-      
-      x,y = [0,0]
-      vflip = true
-      text_mesh = font.get_string_mesh(string, x,y, vflip)
-      
-      text_mesh.draw()
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-      # font.font_texture.unbind
-      # @text_colors_gpu.unbind
-      shader.end()
-    end
-    
-  end
   
   def load_shaders(*args)
     shader = fgText_getShader()
