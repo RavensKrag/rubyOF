@@ -175,11 +175,9 @@ class Window < RubyOF::Window
     
     
     @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
-    
     # @display.autoUpdateColor_bg(false)
     # @display.autoUpdateColor_fg(false)
     
-    pos = CP::Vec2.new(0,0)
     
     
     @display.colors.each_with_index do |bg_c, bg_pos, fg_c, fg_pos|
@@ -189,29 +187,33 @@ class Window < RubyOF::Window
     
     
     @display.print_string(5, "hello world!")
-    
-      "hello world!".length.times.collect{ |i|
-        CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
-      }.each do |pos|
-        @display.bg_colors.pixel pos do |c|
-           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
-        end
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+         c.r, c.g, c.b, c.a = [0, 0, 255, 255]
       end
+    end
     
     
-    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
     @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
-    
-      "spatial inputs~".length.times.collect { |i|
-        CP::Vec2.new(7, 5) + CP::Vec2.new(i, 0)
-      }.each do |pos|
-        @display.bg_colors.pixel pos do |c|
-           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
-        end
+    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+         c.r, c.g, c.b, c.a = [255, 0, 0, 255]
       end
+    end
     
     @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
     @display.print_string(CP::Vec2.new(0, 18), "this should not print")
+    
+    
+    msg = "gets cut off somewhere in the middle"
+    @display.print_string(CP::Vec2.new(30, 9), msg)
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+        c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+      end
+    end
+    # ^ Enumerator stops at end of display where the text was clipped
     
     
     

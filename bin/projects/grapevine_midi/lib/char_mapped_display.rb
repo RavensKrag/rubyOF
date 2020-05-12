@@ -130,7 +130,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block |x,y|
       if( pos.x >= 0 && pos.x < x_size && 
-              pos.y >= 0 && pos.y < y_size
+          pos.y >= 0 && pos.y < y_size
       )
         yield pos.x, pos.y
       else
@@ -325,63 +325,75 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   
-  # TODO: should return some Enumerator to access the color control pixels in the range of the printed string (it is common to want to print and then also adjust the color)
-  
   # mind the invisible newline character at the end of every line
+  # => Enumerator over the positions in the grid that were written to
+  #    (if no characters were written, return nil)
   def print_string(char_pos, str)
-  
-      case char_pos
-      when CP::Vec2
-        pos = char_pos
-        # puts pos
-        
-        
-        start_x = pos.x.to_i
-        start_y = pos.y.to_i
-        start_i = start_x + start_y*(@x_chars+1)
-        
-        stop_x = start_x + str.length-1
-        stop_y = start_y
-        stop_i = start_i + stop_x - start_x
-        
-        range = start_i..stop_i
-        # puts range
-          # range.size               (counts number of elements)
-          # range.min   range.first
-          # range.max   range.last
-        
-        return if start_y >= @y_chars # off the bottom
-        return if start_y < 0         # off the top
-        return if start_x < 0         # off the left edge
-        
-        if start_x >= @x_chars
-          # NO-OP
+    range = nil
+    
+    case char_pos
+    when CP::Vec2
+      pos = char_pos
+      # puts pos
+      
+      
+      start_x = pos.x.to_i
+      start_y = pos.y.to_i
+      start_i = start_x + start_y*(@x_chars+1)
+      
+      stop_x = start_x + str.length-1
+      stop_y = start_y
+      stop_i = start_i + stop_x - start_x
+      
+      range = start_i..stop_i
+      # puts range
+        # range.size               (counts number of elements)
+        # range.min   range.first
+        # range.max   range.last
+      
+      return if start_y >= @y_chars # off the bottom
+      return if start_y < 0         # off the top
+      return if start_x < 0         # off the left edge
+      
+      if start_x >= @x_chars
+        # NO-OP
+      else
+        if stop_x >= @x_chars 
+          # clip some of the output string, s.t. everything fits
+          
+          # range.size
+          
+          new_stop_x = @x_chars-1
+          new_stop_y = stop_y
+          new_stop_i = start_i + new_stop_x - start_x
+          
+          range = start_i..new_stop_i
+          
+          @char_grid[range] = str[(0)..(range.size-1)]
+          
         else
-          if stop_x >= @x_chars 
-            # clip some of the output string, s.t. everything fits
-            
-            # range.size
-            
-            new_stop_x = @x_chars-1
-            new_stop_y = stop_y
-            new_stop_i = start_i + new_stop_x - start_x
-            
-            new_range = start_i..new_stop_i
-            
-            @char_grid[new_range] = str[(0)..(new_range.size-1)]
-            
-          else
-            # display the full string
-            
-            @char_grid[range] = str
-          end
+          # display the full string
+          
+          @char_grid[range] = str
         end
-        
-        
-      when Numeric
-        range = (char_pos)..(char_pos+str.length-1)
-        @char_grid[range] = str
       end
+      
+      
+    when Numeric
+      range = (char_pos)..(char_pos+str.length-1)
+      @char_grid[range] = str
+    end
+    
+    
+    # convert i [index in character grid] to (x,y) coordinate pair
+    return Enumerator.new do |yielder|
+      range.each do |i|
+        x = i % (@x_chars+1)
+        y = i / (@x_chars+1)
+        
+        yielder << CP::Vec2.new(x,y)
+      end
+    end
     
   end
   
