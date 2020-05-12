@@ -174,46 +174,59 @@ class Window < RubyOF::Window
     
     
     
+    @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
+    # @display.autoUpdateColor_bg(false)
+    # @display.autoUpdateColor_fg(false)
     
-    @display = CharMappedDisplay.new(
-      @cpp_ptr["display_bg_mesh"], 
-      @cpp_ptr["display_fg_pixels"], 
-      @cpp_ptr["display_fg_texture"], 
-      @fonts[:monospace]
-    )
+    
+    
+    @display.colors.each_with_index do |bg_c, bg_pos, fg_c, fg_pos|
+      bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.5*255).to_i]*3 + [255])
+      fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.1*255).to_i]*3 + [255])
+    end
+    
     
     @display.print_string(5, "hello world!")
-      "hello world!".length.times do |i|
-        pos = 5 + i
-        puts pos
-        @display.background_color pos do |c|
-           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
-        end
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+         c.r, c.g, c.b, c.a = [0, 0, 255, 255]
       end
-      
-      "hello world!".length.times do |i|
-        pos = CP::Vec2.new(5,0) + CP::Vec2.new(i, 1)
-        puts pos
-        @display.background_color pos do |c|
-           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
-        end
-      end
-      
+    end
     
-    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
+    
     @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
-    
-      start_pt = CP::Vec2.new(7, 5)
-      "spatial inputs~".length.times do |i|
-        pos = start_pt + CP::Vec2.new(i, 0)
-        puts pos
-        @display.background_color pos do |c|
-           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
-        end
+    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+         c.r, c.g, c.b, c.a = [255, 0, 0, 255]
       end
+    end
     
     @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
     @display.print_string(CP::Vec2.new(0, 18), "this should not print")
+    
+    
+    msg = "gets cut off somewhere in the middle"
+    @display.print_string(CP::Vec2.new(30, 9), msg)
+    .each do |pos|
+      @display.bg_colors.pixel pos do |c|
+        c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+      end
+    end
+    # ^ Enumerator stops at end of display where the text was clipped
+    
+    
+    
+    
+    @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c, pos|
+      bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
+      fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
+    end
+    
+    # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c, pos|
+    #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
+    #   fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
+    # end
     
   end
   
@@ -370,15 +383,15 @@ class Window < RubyOF::Window
     
     
     
-    RubyOF::CPP_Callbacks.render_material_editor(
-      @cpp_ptr["materialEditor_mesh"],
-      @cpp_ptr["materialEditor_shader"], "material_editor",
+    # RubyOF::CPP_Callbacks.render_material_editor(
+    #   @cpp_ptr["materialEditor_mesh"],
+    #   @cpp_ptr["materialEditor_shader"], "material_editor",
       
-      @fonts[:monospace].font_texture,
-      @cpp_ptr["display_fg_texture"],
+    #   @fonts[:monospace].font_texture,
+    #   @cpp_ptr["display_fg_texture"], # <-- no longer available
       
-      20, 500, 300, 300 # x,y,w,h
-    )
+    #   20, 500, 300, 300 # x,y,w,h
+    # )
     
   end
   

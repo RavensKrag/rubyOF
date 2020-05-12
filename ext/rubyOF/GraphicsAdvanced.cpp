@@ -130,6 +130,24 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setUniform3i",  &ofShader::setUniform3i)
       .define_method("setUniform4i",  &ofShader::setUniform4i)
       
+      // .define_method("setUniform1f",  &ofShader::setUniform1f)
+      // .define_method("setUniform2f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2)
+      //    >(&ofShader::setUniform2f)
+      // )
+      // .define_method("setUniform3f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2, float v3)
+      //    >(&ofShader::setUniform3f)
+      // )
+      // .define_method("setUniform4f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2, float v3, float v4)
+      //    >(&ofShader::setUniform4f)
+      // )
+      
+      
       .define_method("setUniformTexture", &ofShader__setUniformTexture)
       // (the textureLocation is just the slot number)
       
@@ -171,11 +189,18 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("crop",          &ofPixels::crop)
       .define_method("cropTo",        &ofPixels::cropTo)
       .define_method("getColor",      &ofPixels__getColor)
+      
       .define_method("setColor_i",    &ofPixels__setColor_i)
+      // ^ I think set_i actually fills an entire channel?
+      //   see ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp:837-840
+      
       .define_method("setColor_xy",   &ofPixels__setColor_xy)
       .define_method("getPixelIndex", &ofPixels::getPixelIndex)
       .define_method("getTotalBytes", &ofPixels::getTotalBytes)
-      .define_method("size",          &ofPixels::size)
+      
+      .define_method("size",          &ofPixels::size) // total num pixels
+      .define_method("width",          &ofPixels::getWidth)
+      .define_method("height",          &ofPixels::getHeight)
    ;
    
    

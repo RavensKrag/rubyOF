@@ -5,6 +5,13 @@
 using namespace Rice;
 
 
+template<typename T>
+struct Null_Free_Function
+{
+  static void free(T * obj) { }
+};
+
+
 // define your callbacks here
 int cpp_callback(int x) {
 	
@@ -55,90 +62,346 @@ void render_material_editor(
 }
 
 
-
-void init_char_display_bg_mesh(ofMesh & _displayBG, int mesh_w, int mesh_h){
-	// create uniform mesh based on dimensions specified by Ruby code
-	
-	_displayBG.setMode( OF_PRIMITIVE_TRIANGLES );
-	for(int j=0; j < mesh_h; j++){
-		for(int i=0; i < mesh_w; i++){
-		
-			_displayBG.addVertex(glm::vec3((i+0), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+1), (j+0), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+0), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-			_displayBG.addVertex(glm::vec3((i+1), (j+1), 0));
-			_displayBG.addColor(ofFloatColor(1,((float) i)/mesh_w,0));
-			
-		}
+// Rice can't convert std::string into std::filesystem::path, but they will convert. Thus, we use this helper function. Can establish automatic conversions in Rice, but only when both types are bound.
+// 
+// https://github.com/jasonroelofs/rice#implicit-casting-implicit_cast
+// 
+bool ofShader_loadShaders(ofShader & shader, Rice::Array args){
+	if(args.size() == 1){
+		Rice::Object x = args[0];
+		std::string path = from_ruby<std::string>(x);
+		return shader.load(path);
+	}else if(args.size() == 2 || args.size() == 3){
+		return false; // TODO: implement this form as well
 	}
 	
-	for(int i=0; i < mesh_w*mesh_h; i++){
-		_displayBG.addIndex(2+i*4);
-		_displayBG.addIndex(1+i*4);
-		_displayBG.addIndex(0+i*4);
-		
-		_displayBG.addIndex(2+i*4);
-		_displayBG.addIndex(3+i*4);
-		_displayBG.addIndex(1+i*4);
-	}
-	
-	
-	// apparently, ofColor will auto convert to ofFloatColor as necessary
-	// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
-	
-	
-	// need to replicate the verticies, because each vertex can only take one color
-	
+	return false;
 }
 
-void set_char_display_bg_color(ofMesh & _displayBG, int i, ofColor & c) {
-	
-	_displayBG.setColor(0+i*4, c);
-	_displayBG.setColor(1+i*4, c);
-	_displayBG.setColor(2+i*4, c);
-	_displayBG.setColor(3+i*4, c);
-	
-	
-	// TODO: consider using getColorsPointer() to set mulitple colors at once
-	// https://openframeworks.cc/documentation/3d/ofMesh/#show_getColorsPointer
-	
-}
-
-void colorize_char_display_mesh(ofMesh & textMesh, int i, ofColor & c){
-	
-	textMesh.setColor(0+i*4, c);
-	textMesh.setColor(1+i*4, c);
-	textMesh.setColor(2+i*4, c);
-	textMesh.setColor(3+i*4, c);
-	// ^ can't write to this mesh b/c the reference I recieve from ofTrueTypeFont::getStringMesh() is const.
-	
-}
-
-void bind_char_display_params(ofShader & shader, 
+// TODO: eventually want to bind uniforms through the ofShader member function, this is just a hold-over
+void ofShader_bindUniforms(ofShader & shader, 
 	std::string name1, float p1x, float p1y,
-	std::string name2, float p2x, float p2y)
+	std::string name2, float p2x, float p2y )
 {
 	shader.setUniform2f(name1, glm::vec2(p1x, p1y));
 	shader.setUniform2f(name2, glm::vec2(p2x, p2y));
 }
 
-bool load_char_display_shaders(ofShader & shader, Rice::Array args){
-	if(args.size() == 1){
-      Rice::Object x = args[0];
-      std::string path = from_ruby<std::string>(x);
-      return shader.load(path);
-   }else if(args.size() == 2 || args.size() == 3){
-      return false;
-   }
-   
-   return false;
-}
+
+
+// "header only" class style, at least for now
+class CharMappedDisplay{
+private:
+	int _numCharsX, _numCharsY;
+	bool _fgColorUpdateFlag = true;
+	bool _bgColorUpdateFlag = true;
+	
+	// TODO: initialize some more c++ values here, instead of doing them elsewhere and passing them in via the Ruby layer
+	
+	ofPixels  _bgColorPixels;
+	ofMesh    _bgMesh;        // likely the same across instances
+	
+	
+	ofPixels  _fgColorPixels;
+	ofTexture _fgColorTexture;
+	ofShader  _fgColorShader; // should be the same across instances
+	// NOTE: if you're creating multiple instances of this class, probably only need 1 mesh and 1 shader (singleton?)
+	
+public:
+	// CharMappedDisplay(){
+		
+	// }
+	
+	// ~CharMappedDisplay(){
+		
+	// }
+	
+	
+	
+	ofColor getColor_fg(int x, int y){
+		return _fgColorPixels.getColor(x,y);
+	}
+	
+	ofColor getColor_bg(int x, int y){
+		return _bgColorPixels.getColor(x,y);
+	}
+	
+	void setColor_fg(int x, int y, ofColor & c){	
+		// set local color cache
+		
+		
+		// (move colors from cache to pixels)
+		// set pixel color
+		_fgColorPixels.setColor(x,y, c);
+		
+		if(_fgColorUpdateFlag){
+			// move pixel data to texture
+			_fgColorTexture.loadData(_fgColorPixels, GL_RGBA);
+		}
+		// OPTIMIZE: similar to neopixel arduino code, can specify a bunch a pixel changes, and then push them to the GPU all at once
+		
+	}
+	
+	void setColor_bg(int x, int y, ofColor & c){
+		_bgColorPixels.setColor(x,y, c);
+		
+		if(_bgColorUpdateFlag){
+			// i = pos.x.to_i + pos.y.to_i*(@x_chars) # <-- ruby code
+			int i = x + y*_numCharsX;
+			// no need to add 1 here, because this only counts visible chars
+			// and disregaurds the invisible newline at the end of each line
+			
+			_bgMesh.setColor(0+i*4, c);
+			_bgMesh.setColor(1+i*4, c);
+			_bgMesh.setColor(2+i*4, c);
+			_bgMesh.setColor(3+i*4, c);
+			
+			// OPTIMIZE: consider using getColorsPointer() to set mulitple colors at once
+			// https://openframeworks.cc/documentation/3d/ofMesh/#show_getColorsPointer
+		}
+	}
+	
+	
+	int getNumCharsX(){
+		return _numCharsX;
+	}
+	
+	int getNumCharsY(){
+		return _numCharsY;
+	}
+	
+	
+	
+	
+	
+	
+	void flushColors_bg(){
+		for(int x=0; x < _numCharsX; x++){
+			for(int y=0; y < _numCharsY; y++){
+				ofColor c = _bgColorPixels.getColor(x,y);
+				int i = x + y*_numCharsX;
+				
+				_bgMesh.setColor(0+i*4, c);
+				_bgMesh.setColor(1+i*4, c);
+				_bgMesh.setColor(2+i*4, c);
+				_bgMesh.setColor(3+i*4, c);
+			}
+		}
+	}
+	
+	void flushColors_fg(){
+		_fgColorTexture.loadData(_fgColorPixels, GL_RGBA);
+	}
+	
+	
+	
+	// the "autoUpdate" interface style taken
+	// from arduino neopixel library by adafruit
+	void autoUpdateColor_fg(bool flag){
+		_fgColorUpdateFlag = flag;
+	}
+	
+	void autoUpdateColor_bg(bool flag){
+		_bgColorUpdateFlag = flag;
+	}
+	
+	// flush colors to output
+	void flush(){
+		flushColors_bg();
+		flushColors_fg();
+	}
+	
+	
+	
+	
+	
+	
+	
+	Rice::Data_Object<ofShader> fgText_getShader(){
+		Rice::Data_Object<ofShader> rb_cPtr(
+			&_fgColorShader,
+			Rice::Data_Type< ofShader >::klass(),
+			Rice::Default_Mark_Function< ofShader >::mark,
+			Null_Free_Function< ofShader >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofTexture> fgText_getTexture(){
+		Rice::Data_Object<ofTexture> rb_cPtr(
+			&_fgColorTexture,
+			Rice::Data_Type< ofTexture >::klass(),
+			Rice::Default_Mark_Function< ofTexture >::mark,
+			Null_Free_Function< ofTexture >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofPixels> getColorPixels_bg(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_bgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofPixels> getColorPixels_fg(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_fgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	
+	void bgMesh_draw(){
+		_bgMesh.draw();
+	}
+	
+	
+	
+	
+	
+	// create uniform mesh based on dimensions specified by Ruby code
+	void bgMesh_setup(int w, int h){
+		_bgMesh.setMode( OF_PRIMITIVE_TRIANGLES );
+		
+		for(int j=0; j < h; j++){
+			for(int i=0; i < w; i++){
+				
+				_bgMesh.addVertex(glm::vec3((i+0), (j+0), 0));
+				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				
+				_bgMesh.addVertex(glm::vec3((i+1), (j+0), 0));
+				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				
+				_bgMesh.addVertex(glm::vec3((i+0), (j+1), 0));
+				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				
+				_bgMesh.addVertex(glm::vec3((i+1), (j+1), 0));
+				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				
+				// ofColor will auto convert to ofFloatColor as necessary
+				// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
+				
+				// need to replicate the verticies, because each vertex can only take one color
+				
+			}
+		}
+		
+		for(int i=0; i < w*h; i++){
+			_bgMesh.addIndex(2+i*4);
+			_bgMesh.addIndex(1+i*4);
+			_bgMesh.addIndex(0+i*4);
+			
+			_bgMesh.addIndex(2+i*4);
+			_bgMesh.addIndex(3+i*4);
+			_bgMesh.addIndex(1+i*4);
+		}
+	}
+	
+	
+	void bgPixels_setup(int w, int h){
+		// _fgColorPixels.clear(); // clear frees the color data - not needed
+		
+		// clear out the garbage
+		for(int x=0; x<w; x++){
+			for(int y=0; y<h; y++){
+				ofColor c(100, 100, 100, 255);
+				
+				_fgColorPixels.setColor(x,y, c);
+			}
+		}
+	}
+	
+	
+	void fgPixels_setup(int w, int h){
+		// _fgColorPixels.clear(); // clear frees the color data - not needed
+		
+		// clear out the garbage
+		for(int x=0; x<w; x++){
+			for(int y=0; y<h; y++){
+				ofColor c(255, 255, 255, 255);
+				
+				_fgColorPixels.setColor(x,y, c);
+			}
+		}
+		
+		// set specific colors
+		for(int i=0; i<30; i++){
+			ofColor c;
+			c.r = 0;
+			c.g = 255;
+			c.b = 0;
+			c.a = 255;
+			
+			_fgColorPixels.setColor(i,0, c);
+		}
+		for(int i=0; i<30; i++){
+			ofColor c;
+			c.r = 0;
+			c.g = 255;
+			c.b = 255;
+			c.a = 255;
+			
+			_fgColorPixels.setColor(i,1, c);
+		}
+		for(int i=0; i<30; i++){
+			ofColor c;
+			c.r = 0;
+			c.g = 0;
+			c.b = 255;
+			c.a = 255;
+			
+			_fgColorPixels.setColor(i,2, c);
+		}
+		
+		ofColor white(255, 255, 255,  255 );
+		// illuminate 4 px in the top left
+		_fgColorPixels.setColor(0,0, white);
+		_fgColorPixels.setColor(0,1, white);
+		_fgColorPixels.setColor(1,0, white);
+		_fgColorPixels.setColor(1,1, white);
+		// and light up the other 3 corners with 1 px each
+		_fgColorPixels.setColor(0,h-1, white);
+		_fgColorPixels.setColor(w-1,0, white);
+		_fgColorPixels.setColor(w-1,h-1, white);
+	}
+	
+	void setup( int w, int h ){
+		_numCharsX = w;
+		_numCharsY = h;
+		// int w = 60;
+		// int h = 18;
+		
+		
+		_bgColorPixels.allocate(_numCharsX,_numCharsY, OF_PIXELS_RGBA);
+		_fgColorPixels.allocate(_numCharsX,_numCharsY, OF_PIXELS_RGBA);
+		
+		
+		bgMesh_setup(_numCharsX,_numCharsY);
+		
+		bgPixels_setup(_numCharsX,_numCharsY);
+		fgPixels_setup(_numCharsX,_numCharsY);
+		
+		flush();
+		
+		
+		// _fgColorTexture.setTextureWrap(GL_REPEAT, GL_REPEAT);
+		_fgColorTexture.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+	}
+	
+	
+};
+
 
 
 
@@ -154,89 +417,77 @@ void Init_rubyOF_project()
 		
 		
 		
-		.define_module_function("init_char_display_bg_mesh", 
-			                     &init_char_display_bg_mesh)
-		
-		.define_module_function("set_char_display_bg_color", 
-			                     &set_char_display_bg_color)
-		
-		.define_module_function("colorize_char_display_mesh", 
-			                     &colorize_char_display_mesh)
-		
-		.define_module_function("bind_char_display_params", 
-			                     &bind_char_display_params)
-		
-		.define_module_function("load_char_display_shaders", 
-			                     &load_char_display_shaders)
-		
-		
-		
-		
 		.define_module_function("render_material_editor", 
 			                     &render_material_editor)
+		
+		
+		.define_module_function("ofShader_loadShaders", 
+			                     &ofShader_loadShaders)
+		
+		.define_module_function("ofShader_bindUniforms", 
+			                     &ofShader_bindUniforms)
 	;
 	
 	
 	
 	
 	
+	Module rb_mProject = define_module_under(rb_mRubyOF, "Project");
 	
+	Data_Type<CharMappedDisplay> rb_c_ofCharMappedDisplay =
+		define_class_under<CharMappedDisplay>(rb_mProject, "CharMappedDisplay");
 	
-	// 
-	// standard binding example:
-	// 
-	
-	// Data_Type<ofPoint> rb_cPoint =
-	// 	define_class_under<ofPoint>(rb_mRubyOF, "Point");
-	
-	// rb_cPoint
-	// 	.define_constructor(Constructor<ofPoint, float, float, float>())
-	// 	.define_method("get_component",   &ofVec3f_get_component)
-	// 	.define_method("set_component",   &ofVec3f_set_component)
-	// ;
-	
-	
-	// 
-	// binding overloaded member function example
-	// 
-	
-	// rb_cFbo
-	// 	.define_constructor(Constructor<ofFbo>())
+	rb_c_ofCharMappedDisplay
+		.define_constructor(Constructor<CharMappedDisplay>())
 		
-	// 	// .define_method("allocate",  ofFbo_allocWRAP(&ofFbo::allocate))
-	// 	.define_method("allocate",  &ofFbo_allocate_from_struct)
+		.define_method("bgMesh_setup",   &CharMappedDisplay::bgMesh_setup)
+		.define_method("bgPixels_setup", &CharMappedDisplay::bgPixels_setup)
+		.define_method("fgPixels_setup", &CharMappedDisplay::fgPixels_setup)
+		.define_method("setup",          &CharMappedDisplay::setup)
 		
-	// 	.define_method("begin",
-	// 		static_cast< void (ofFbo::*)
-	// 		(ofFboMode mode)
-	// 		>(&ofFbo::begin),
-	// 		(
-	// 			Arg("mode") = OF_FBOMODE_PERSPECTIVE | OF_FBOMODE_MATRIXFLIP
-	// 		)
-	// 	)
-	// ;
+		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
+		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)
+		.define_method("setColor_fg",    &CharMappedDisplay::setColor_fg)
+		.define_method("setColor_bg",    &CharMappedDisplay::setColor_bg)
+		
+		.define_method("getNumCharsX",   &CharMappedDisplay::getNumCharsX)
+		.define_method("getNumCharsY",   &CharMappedDisplay::getNumCharsY)
+		
+		
+		.define_method("flushColors_bg", &CharMappedDisplay::flushColors_bg)
+		.define_method("flushColors_fg", &CharMappedDisplay::flushColors_fg)
+		.define_method("flush",
+			&CharMappedDisplay::flush
+		)
+		.define_method("autoUpdateColor_fg", 
+			&CharMappedDisplay::autoUpdateColor_fg
+		)
+		.define_method("autoUpdateColor_bg", 
+			&CharMappedDisplay::autoUpdateColor_bg
+		)
+		
+		.define_method("fgText_getShader",
+			&CharMappedDisplay::fgText_getShader
+		)
+		.define_method("fgText_getTexture",
+			&CharMappedDisplay::fgText_getTexture
+		)
+		.define_method("getColorPixels_bg",
+			&CharMappedDisplay::getColorPixels_bg
+		)
+		.define_method("getColorPixels_fg",
+			&CharMappedDisplay::getColorPixels_fg
+		)
+		
+		
+		.define_method("bgMesh_draw",
+			&CharMappedDisplay::bgMesh_draw
+		)
+	;
 	
 	
-	// 
-	// binding overloaded C++ function example
-	// 
 	
-	// // --- Ok, time to bind some useful stuff.
-	// Module rb_mGraphics = define_module_under(rb_mRubyOF, "Graphics");
-	// // ------------------
-	// // global oF functions
-	// // ------------------
 	
-	// typedef void (*wrap_matrix_op)(const glm::mat4 & m);
-	
-	// rb_mGraphics
-	// 	// bitmap string
-	// 	.define_method("ofDrawBitmapString",
-	// 		static_cast< void (*)
-	// 		(const std::string& textString, float x, float y, float z)
-	// 		>(&ofDrawBitmapString)
-	// 	)
-	// ;
 	
 	
 	
