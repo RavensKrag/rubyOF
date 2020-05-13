@@ -26,6 +26,8 @@ require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
 require LIB_DIR/'char_mapped_display.rb'
 
+require LIB_DIR/'looper_pedal.rb'
+
 
 
 
@@ -49,6 +51,10 @@ class Window < RubyOF::Window
     
     
     puts "ruby: Window#initialize"
+  end
+  
+  def setup
+    super()
     
     
     @input_handler = InputHandler.new
@@ -91,53 +97,46 @@ class Window < RubyOF::Window
     
     
     
-    @looper_mode = :idle
-    @looper = Array.new
+    
+    
+    @looper_pedal = LooperPedal.new
+    @looper_pedal.setup
     
     btn_id = 'x'.codepoints.first
-    @input_handler.register_callback(btn_id) do |btn|
-      btn.on_press do
-        case @looper_mode 
-        when :record
-          # record -> playback
-          # => stop recording, and switch to playing back the saved recording
-          @looper_end = RubyOF::Utils.ofGetElapsedTimeMillis()
-          
-          
-          @looper_mode = :playback
-          
-        when :playback, :idle
-          # playback -> record
-          # => start a fresh recording
-          @looper.clear
-          @looper_fiber = nil
-          
-          
-          @looper_mode = :record
-        
-        end
-        
-      end
-      
-      btn.on_release do
-        
-      end
-      
-      btn.while_idle do
-        
-      end
-      
-      btn.while_active do
-        
-      end
-    end
+    @input_handler.register_callback(btn_id, &@looper_pedal.button_handler)
     
     
     
-  end
-  
-  def setup
-    super()
+    
+    # + check list of files and load them again if necssary
+    # + make sure you call #setup for each corresponding object on load
+    # + there needs to be a block that passes variables to the classes that are reloaded. that block needs to be reloadable too. that block should have access to everything in the Window
+    
+    
+    @live_loader_callbacks = {
+      :setup => ->(){
+        
+      },
+      
+      :update => ->(){
+        
+      },
+      
+      :draw => ->(){
+        
+      }
+    }
+    
+    # set up an enum for now. should update later
+    enum = [:FILE, :OBJECT]
+    @live_loader_enum = enum.zip((0..enum.size-1).to_a).to_h
+    @live_loader_mappings = [
+      [LIB_DIR/'looper_pedal.rb', @looper_pedal]
+    ]
+    
+    
+    
+    
     
     @first_draw = true
     
@@ -178,7 +177,6 @@ class Window < RubyOF::Window
     @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
     # @display.autoUpdateColor_bg(false)
     # @display.autoUpdateColor_fg(false)
-    
     
     # clear out the garbage bg + test pattern fg
     @display.colors.each_with_index do |bg_c, fg_c, pos|
@@ -231,6 +229,7 @@ class Window < RubyOF::Window
     
     
     
+    # clear the area where midi message data will be drawn
     
     # CP::BB
     # l,b,r,t
@@ -246,7 +245,6 @@ class Window < RubyOF::Window
     (0..(bb.t)).each do |i|
       @display.print_string(CP::Vec2.new(0, i), " "*(bb.r+1))
     end
-    
     
   end
   
@@ -280,87 +278,12 @@ class Window < RubyOF::Window
         
       # end
       
-      if @looper_mode == :record
-        @looper << midi_msg
-      end
     end
     
     
     
     
-    
-    
-    if @looper_mode == :playback
-      @looper_fiber ||= Fiber.new do 
-        @looper_acc = 0
-        @looper_i = 0
-        
-        now = RubyOF::Utils.ofGetElapsedTimeMillis()
-        @looper_start = now
-        
-        
-        msg = @looper[@looper_i]
-        case msg[0]
-        when 0x90 # note on
-          @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
-        when 0x80 # note off
-          @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
-        end
-        
-        
-        loop do
-          @looper_i += 1
-          @looper_i = 0 if @looper_i >= @looper.length
-          
-          msg = @looper[@looper_i]
-          @looper_acc += msg.deltatime
-          
-          now = RubyOF::Utils.ofGetElapsedTimeMillis()
-          dt = now - @looper_start
-          
-          until dt >= @looper_acc
-            Fiber.yield
-            
-            now = RubyOF::Utils.ofGetElapsedTimeMillis()
-            dt = now - @looper_start
-          end
-          
-          case msg[0]
-          when 0x90 # note on
-            @cpp_ptr["midiOut"].sendNoteOn( 3, msg.pitch, msg.velocity)
-          when 0x80 # note off
-            @cpp_ptr["midiOut"].sendNoteOff(3, msg.pitch, msg.velocity)
-          end
-          
-          
-          
-          
-          # # after final note, wait until the end of the loop clip
-          # if @looper_i == @looper.length-1
-          #   loop_length = @looper_end - @looper_start
-          #   final_acc = loop_length - @looper_acc
-            
-          #   now = RubyOF::Utils.ofGetElapsedTimeMillis()
-          #   dt = now - @looper_start
-            
-          #   until dt >= final_acc
-          #     Fiber.yield
-              
-          #     now = RubyOF::Utils.ofGetElapsedTimeMillis()
-          #     dt = now - @looper_start
-          #   end
-          # end
-          
-          
-        end
-        
-        
-      end
-      
-      
-      @looper_fiber.resume()
-    end
-    
+    @looper_pedal.update(delta, @cpp_ptr["midiOut"])
     
     
     
@@ -571,10 +494,6 @@ class Window < RubyOF::Window
     
   end
   
-  def setup_character_mesh
-    return [@char_grid_width, @char_grid_height]
-  end
-  
   
   def screen_print(font:, string:, position:, z:1, color: @text_fg_color)
     
@@ -674,6 +593,15 @@ class Window < RubyOF::Window
   
   
   
+  # this is for drag-and-drop, not for mouse dragging
+  def drag_event(files, position)
+    p [files, position]
+    
+  end
+  
+  
+  
+  
   def on_exit
     super()
     
@@ -694,27 +622,6 @@ class Window < RubyOF::Window
   
   
   
-  # this is for drag-and-drop, not for mouse dragging
-  def drag_event(files, position)
-    p [files, position]
-    
-  end
-  
-  def show_text(pos, obj)
-    # str = wordwrap(obj.to_s.split, 55)
-    #       .collect{|line| line.join(" ") }.join("\n")
-    
-    # @text_buffer = Text.new(@font, str)
-    # @text_buffer.text_color = @font_color
-    
-    # @text_buffer.body.p = pos
-  end
-  
-  def clear_text_buffer
-    # @text_buffer = nil
-  end
-  
-  
   
   # NOTE: regaurdless of if you copy the values over, or copy the color object, the copying slows things down considerably if it is done repetedly. Need to either pass one pointer from c++ side to Ruby side, or need to wrap ofParameter and use ofParameter#makeReferenceTo to ensure that the same data is being used in both places.
   # OR
@@ -730,42 +637,6 @@ class Window < RubyOF::Window
   #   @font_color.freeze
   # end
   
-  
-  # Set parameters from C++ by passing a pointer (technically, a reference),
-  # wrapped up in a way that Ruby can understand.
-  # 
-  # name         name of the parameter being set
-  # value_ptr    &data from C++, wrapped up in a Ruby class
-  #              (uses the same class wrapper as normal Rice bindings)
-  def set_gui_parameter(name, value_ptr)
-    value_ptr.freeze
-    
-    # TODO: delegate core of this method to Loader, and then to the wrapped object inside. Want to be able to controll this dynamically.
-    
-    case name
-      when "color"
-        @font_color = value_ptr
-      else
-        msg = 
-        [
-          "",
-          "Tried to set gui parameter, but I wasn't expecting this name.",
-          "method call: set_gui_parameter(name, value_ptr)",
-          "name:        #{name.inspect}",
-          "value_ptr:   #{value_ptr.inspect}",
-          "",
-          "NOTE: set_gui_parameter() is often called from C++ code.",
-          "      C++ backtrace information is not normally provided.",
-          "",
-          "NOTE: Sometimes C++ backtrace can be obtained using GDB",
-          "      (use 'rake debug' to get a GDB prompt)"
-        ].join("\n") + "\n\n\n"
-        
-        raise msg
-    end
-  end
-  
-  
   # direct access to data used on the C++ side
   def recieve_cpp_pointer(name, data)
     @cpp_ptr[name] = data
@@ -779,21 +650,6 @@ class Window < RubyOF::Window
   
   private
   
-  def draw_debug_info(start_position, row_spacing, z=1)
-    [
-      "mouse: #{@p.inspect}",
-      "window size: #{window_size.to_s}",
-      "dt: #{ofGetLastFrameTime.round(5)}",
-      "fps: #{ofGetFrameRate.round(5)}",
-      "time (uSec): #{RubyOF::Utils.ofGetElapsedTimeMicros}",
-      "time (mSec): #{RubyOF::Utils.ofGetElapsedTimeMillis}"
-    ].each_with_index do |string, i|
-      x,y = start_position
-      y += i*row_spacing
-      
-      ofDrawBitmapString(string, x,y,z)
-    end
-  end
   
   # get hash of screen size info using xrandr
   def read_screen_size(screen_id)
