@@ -475,7 +475,7 @@ class Window < RubyOF::Window
     
     
     
-    # hmmm drawing a vertical bar is harder, because there's no iterators in this direction...
+    # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
     count = 4
     anchor = CP::Vec2.new(20,15) # bottom left position
     bg_color = ([(0.5*255).to_i]*3 + [255])
