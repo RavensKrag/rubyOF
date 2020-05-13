@@ -27,6 +27,7 @@ require LIB_DIR/'sequence_memory.rb'
 require LIB_DIR/'char_mapped_display.rb'
 
 require LIB_DIR/'looper_pedal.rb'
+require LIB_DIR/'live_code.rb'
 
 
 
