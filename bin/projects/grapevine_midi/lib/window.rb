@@ -503,8 +503,8 @@ class Window < RubyOF::Window
     
     
     # --- Save data
-    # pt = self.get_window_position()
-    # dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    pt = self.get_window_position()
+    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start
