@@ -476,6 +476,11 @@ class Window < RubyOF::Window
     )
     
     
+    # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
+    
+      # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
+      
+      # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
     
     # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
     count = 4
