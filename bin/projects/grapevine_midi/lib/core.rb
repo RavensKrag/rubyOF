@@ -128,8 +128,8 @@ class Core
     # l,b,r,t
     x = 0
     y = 0
-    w = 18
-    h = 10
+    w = 36
+    h = 11
     @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
     
     @display.colors.each_with_index do |bg_c, fg_c, pos|
@@ -195,6 +195,12 @@ class Core
     
     
     
+    @display.autoUpdateColor_bg(false)
+    @display.autoUpdateColor_fg(false)
+    
+    
+    
+    
   end
   
   def update
@@ -237,9 +243,29 @@ class Core
     
     
     
+    @hbar ||= {
+      '8/8' => '█',
+      '7/8' => '▉',
+      '6/8' => '▊',
+      '5/8' => '▋',
+      '4/8' => '▌',
+      '3/8' => '▍',
+      '2/8' => '▎',
+      '1/8' => '▏',
+      '0/8' => ''
+    }
     
-    
-    
+    @vbar ||= {
+      '0/8' => '',
+      '1/8' => '▁',
+      '2/8' => '▂',
+      '3/8' => '▃',
+      '4/8' => '▄',
+      '5/8' => '▅',
+      '6/8' => '▆',
+      '7/8' => '▇',
+      '8/8' => '█'
+    }
     
     lilac       = [0xf6, 0xbf, 0xff, 0xff]
     pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
@@ -276,10 +302,11 @@ class Core
         # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
       end
     end
-      
+    
     
     @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
       
+      # midi bytes
       @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
       
       @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
@@ -287,6 +314,7 @@ class Core
       @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
       
       
+      # deltatime
       midi_dt = midi_msg.deltatime
         max_display_num = 99999.999
       midi_dt = [max_display_num, midi_dt].min
@@ -295,7 +323,45 @@ class Core
       @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
       
       
+      
+      # note value (as bar graph)
+      
+      count = 16
+        # 128 midi notes, so 16 chars of 8 increments each
+        # will cover it at 1 fraction per note
+      value = 15
+      range = 0..127
+      bg_color = ([(0.5*255).to_i]*3 + [255])
+      fg_color = lilac
+      
+      full_bars = midi_msg.pitch / 8
+      fractions = midi_msg.pitch % 8
+      
+      bar_graph  = @hbar['8/8']*full_bars
+      bar_graph ||= '' # bar graph can be nil if full_bars == 0
+      bar_graph += @hbar["#{fractions}/8"]
+      
+      @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+      .each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+        end
+      end
+      
+      @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
+      
+      
+      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
+      
+      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
+      
+      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
+      
+      
     end
+    
+    @display.print_string(CP::Vec2.new(41,6), ((0..127).size/16 / 8).to_s)
     
     
     # 
@@ -325,30 +391,11 @@ class Core
     
     
     
-    @hbar ||= {
-      '8/8' => '█',
-      '7/8' => '▉',
-      '6/8' => '▊',
-      '5/8' => '▋',
-      '4/8' => '▌',
-      '3/8' => '▍',
-      '2/8' => '▎',
-      '1/8' => '▏'
-    }
-    
-    @vbar ||= {
-      '1/8' => '▁',
-      '2/8' => '▂',
-      '3/8' => '▃',
-      '4/8' => '▄',
-      '5/8' => '▅',
-      '6/8' => '▆',
-      '7/8' => '▇',
-      '8/8' => '█'
-    }
     
     
-    
+    # 
+    # bar graph tests
+    # 
     
     count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
     bg_color = ([(0.5*255).to_i]*3 + [255])
@@ -405,6 +452,8 @@ class Core
     end
     
     
+    @display.flushColors_bg()
+    @display.flushColors_fg()
   end
   
   include RubyOF::Graphics
@@ -482,33 +531,25 @@ class Core
   # 
   
   def mouse_moved(x,y)
-    p "mouse position: #{[x,y]}.inspect"
+    # p "mouse position: #{[x,y]}.inspect"
   end
   
   def mouse_pressed(x,y, button)
     # p [:pressed, x,y, button]
     
-    offset = CP::Vec2.new(0,10) # probably related to font ascender height
+    # offset = CP::Vec2.new(0,10) # probably related to font ascender height
     
-    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    # out = ( CP::Vec2.new(x,y) - @origin - offset )
     
-    out.x = (out.x / @display.char_width_pxs).to_i
-    out.y = (out.y / @display.char_height_pxs).to_i
+    # out.x = (out.x / @display.char_width_pxs).to_i
+    # out.y = (out.y / @display.char_height_pxs).to_i
     
-    puts out
+    # puts out
   end
   
   def mouse_dragged(x,y, button)
     # p [:dragged, x,y, button]
     
-    offset = CP::Vec2.new(0,10)
-    
-    out = ( CP::Vec2.new(x,y) - @origin - offset )
-    
-    out.x = (out.x / @display.char_width_pxs).to_i
-    out.y = (out.y / @display.char_height_pxs).to_i
-    
-    puts out
   end
   
   def mouse_released(x,y, button)
@@ -532,6 +573,17 @@ class Core
   
   
   private
+  
+  def mouse_to_char_display_pos(x,y)
+    offset = CP::Vec2.new(0,10)
+    
+    out = ( CP::Vec2.new(x,y) - @origin - offset )
+    
+    out.x = (out.x / @display.char_width_pxs).to_i
+    out.y = (out.y / @display.char_height_pxs).to_i
+    
+    return out
+  end
   
   
   
