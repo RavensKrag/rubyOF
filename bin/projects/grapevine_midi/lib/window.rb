@@ -480,7 +480,7 @@ class Window < RubyOF::Window
     anchor = CP::Vec2.new(20,15) # bottom left position
     bg_color = ([(0.5*255).to_i]*3 + [255])
     fg_color = pale_yellow
-    @display.colors.each_with_index do |bg_c, fg_c, pos|
+    @display.each_index do |pos|
       if pos.x == (anchor.x+0) and ((anchor.y-count)..(anchor.y)).include?(pos.y)
         @display.print_string(pos, 'x')
       end
@@ -495,8 +495,10 @@ class Window < RubyOF::Window
         
         if ((anchor.y-count)..(anchor.y)).include? pos.y
           # full range to set the colors
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+          @display.colors.pixel pos do |bg_c, fg_c|
+            bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+            fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+          end
         end
       end
     end

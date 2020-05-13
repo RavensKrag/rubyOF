@@ -328,6 +328,20 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     return ColorHelper_bgANDfg.new(self)
   end
   
+  def each_index() # &block
+    enum = Matrix2DEnum.new(self.x_chars, self.y_chars)
+    
+    if block_given?
+      
+      enum.each do |pos|
+        yield pos
+      end
+      
+    else
+      return enum
+    end
+  end
+  
   
   # @display.bg_colors.each do |color|
   #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
