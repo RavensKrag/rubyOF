@@ -280,7 +280,9 @@ class Window < RubyOF::Window
         
       # end
       
-      @looper << midi_msg
+      if @looper_mode == :record
+        @looper << midi_msg
+      end
     end
     
     
