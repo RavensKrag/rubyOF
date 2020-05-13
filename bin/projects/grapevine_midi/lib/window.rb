@@ -453,12 +453,11 @@ class Window < RubyOF::Window
     
     
     count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
+    bg_color = ([(0.5*255).to_i]*3 + [255])
+    fg_color = lilac
     
     @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
     .each do |pos|
-      bg_color = ([(0.5*255).to_i]*3 + [255])
-      fg_color = lilac
-      
       @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
         bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
         fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
@@ -479,6 +478,8 @@ class Window < RubyOF::Window
     # hmmm drawing a vertical bar is harder, because there's no iterators in this direction...
     count = 4
     anchor = CP::Vec2.new(20,15) # bottom left position
+    bg_color = ([(0.5*255).to_i]*3 + [255])
+    fg_color = pale_yellow
     @display.colors.each_with_index do |bg_c, fg_c, pos|
       if pos.x == (anchor.x+0) and ((anchor.y-count)..(anchor.y)).include?(pos.y)
         @display.print_string(pos, 'x')
@@ -490,6 +491,12 @@ class Window < RubyOF::Window
           @display.print_string(pos, @vbar['8/8'])
         elsif pos.y == (anchor.y-count)
           @display.print_string(pos, @vbar['3/8'])
+        end
+        
+        if ((anchor.y-count)..(anchor.y)).include? pos.y
+          # full range to set the colors
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
         end
       end
     end
