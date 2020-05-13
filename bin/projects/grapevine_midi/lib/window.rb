@@ -482,48 +482,26 @@ class Window < RubyOF::Window
     anchor = CP::Vec2.new(20,15) # bottom left position
     bg_color = ([(0.5*255).to_i]*3 + [255])
     fg_color = pale_yellow
-    @display.each_index do |pos|
-      if pos.x == (anchor.x+0) and ((anchor.y-count)..(anchor.y)).include?(pos.y)
-        @display.print_string(pos, 'x')
+    
+    @display.each_index
+    .select{   |pos| pos.x == anchor.x+0  }
+    .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
+    .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
+    .each_with_index do |pos, i|
+      @display.print_string(pos + CP::Vec2.new(0,0), 'x')
+      
+      if i == 3
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
+      else
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
       end
       
-      # remember: y+ down, so top position has the lowest y value
-      if pos.x == (anchor.x+1)
-        if ((anchor.y-count+1)..(anchor.y)).include? pos.y
-          @display.print_string(pos, @vbar['8/8'])
-        elsif pos.y == (anchor.y-count)
-          @display.print_string(pos, @vbar['3/8'])
-        end
-        
-        if ((anchor.y-count)..(anchor.y)).include? pos.y
-          # full range to set the colors
-          @display.colors.pixel pos do |bg_c, fg_c|
-            bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-            fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-          end
-        end
+      
+      @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
       end
     end
-    
-    # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
-    # .each do |pos|
-    #   bg_color = ([(0.5*255).to_i]*3 + [255])
-    #   fg_color = lilac
-      
-    #   @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #   end
-      
-    #   @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #   end
-    # end
-    
-    # @display.print_string(
-    #   CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
-    # )
     
     
     
