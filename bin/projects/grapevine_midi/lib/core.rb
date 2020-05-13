@@ -6,11 +6,8 @@ require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
 require LIB_DIR/'char_mapped_display.rb'
 
-require LIB_DIR/'looper_pedal.rb'
-
-
 # stuff to live load ('load' allows for reloading stuff)
-# load 'file/path/here'
+load LIB_DIR/'looper_pedal.rb'
 
 # class definition
 
@@ -26,60 +23,11 @@ class Core
   
   
   def setup
-    @input_handler = InputHandler.new
-    
-    # [
-    #   ['x', 2, 72,     64, 0],
-    #   ['d', 2, 72+7,   64, 0],
-    #   ['h', 3, 72+2+7, 64, 0],
-    #   ['c', 3, 72+3+7, 64, 0],
-    #   ['n', 3, 72+7,   64, 0]
-    # ].each do |char, channel, note, on_velocity, off_velocity|
-    #   btn_id = char.codepoints.first
-      
-    #   @input_handler.register_callback(btn_id) do |btn|
-    #     btn.on_press do
-    #       puts "press #{char}"
-          
-    #       @w.cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
-    #     end
-        
-    #     btn.on_release do
-    #       puts "release #{char}"
-          
-    #       @w.cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
-    #     end
-        
-    #     btn.while_idle do
-          
-    #     end
-        
-    #     btn.while_active do
-          
-    #     end
-    #   end
-    # end
-    
+    @first_draw = true
     
     
     @midi_msg_memory = SequenceMemory.new
-    
-    
-    
-    
-    
-    @looper_pedal = LooperPedal.new
-    @looper_pedal.setup
-    
-    btn_id = 'x'.codepoints.first
-    @input_handler.register_callback(btn_id, &@looper_pedal.button_handler)
-    
-    
-    
-    
-    
-    
-    @first_draw = true
+    @input_handler = InputHandler.new
     
     
     
@@ -125,48 +73,52 @@ class Core
       fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.1*255).to_i]*3 + [255])
     end
     
-    
-    @display.print_string(5, "hello world!")
-    .each do |pos|
-      @display.bg_colors.pixel pos do |c|
-         c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+    test_display = Proc.new do
+      @display.print_string(5, "hello world!")
+      .each do |pos|
+        @display.bg_colors.pixel pos do |c|
+           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
+        end
       end
-    end
-    
-    
-    @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
-    @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
-    .each do |pos|
-      @display.bg_colors.pixel pos do |c|
-         c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+      
+      
+      @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
+      @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
+      .each do |pos|
+        @display.bg_colors.pixel pos do |c|
+           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+        end
       end
-    end
-    
-    @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
-    @display.print_string(CP::Vec2.new(0, 18), "this should not print")
-    
-    
-    msg = "gets cut off somewhere in the middle"
-    @display.print_string(CP::Vec2.new(30, 9), msg)
-    .each do |pos|
-      @display.bg_colors.pixel pos do |c|
-        c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+      
+      @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
+      @display.print_string(CP::Vec2.new(0, 18), "this should not print")
+      
+      
+      msg = "gets cut off somewhere in the middle"
+      @display.print_string(CP::Vec2.new(30, 9), msg)
+      .each do |pos|
+        @display.bg_colors.pixel pos do |c|
+          c.r, c.g, c.b, c.a = [255, 0, 0, 255]
+        end
       end
+      # ^ Enumerator stops at end of display where the text was clipped
+      
+      
+      
+      
+      @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
+      end
+      
+      # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c|
+      #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
+      #   fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
+      # end
     end
-    # ^ Enumerator stops at end of display where the text was clipped
     
     
     
-    
-    @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c|
-      bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
-      fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
-    end
-    
-    # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c|
-    #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
-    #   fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
-    # end
     
     
     
@@ -174,18 +126,74 @@ class Core
     
     # CP::BB
     # l,b,r,t
-    bb = CP::BB.new(0,0, 18,9)
+    x = 0
+    y = 0
+    w = 18
+    h = 10
+    @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
     
     @display.colors.each_with_index do |bg_c, fg_c, pos|
-      if bb.contain_vect? pos
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0, 0, 0, 255]
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 255, 255, 255]
+      if @midi_data_bb.contain_vect? pos
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
       end
     end
     
-    (0..(bb.t)).each do |i|
-      @display.print_string(CP::Vec2.new(0, i), " "*(bb.r+1))
+    (0..(@midi_data_bb.t)).each do |i|
+      @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
     end
+    
+    
+    
+    
+    # [
+    #   ['x', 2, 72,     64, 0],
+    #   ['d', 2, 72+7,   64, 0],
+    #   ['h', 3, 72+2+7, 64, 0],
+    #   ['c', 3, 72+3+7, 64, 0],
+    #   ['n', 3, 72+7,   64, 0]
+    # ].each do |char, channel, note, on_velocity, off_velocity|
+    #   btn_id = char.codepoints.first
+      
+    #   @input_handler.register_callback(btn_id) do |btn|
+    #     btn.on_press do
+    #       puts "press #{char}"
+          
+    #       @w.cpp_ptr["midiOut"].sendNoteOn(channel, note, on_velocity)
+    #     end
+        
+    #     btn.on_release do
+    #       puts "release #{char}"
+          
+    #       @w.cpp_ptr["midiOut"].sendNoteOff(channel, note, off_velocity)
+    #     end
+        
+    #     btn.while_idle do
+          
+    #     end
+        
+    #     btn.while_active do
+          
+    #     end
+    #   end
+    # end
+    
+    
+    
+    
+    
+    
+    
+    @looper_pedal = LooperPedal.new
+    @looper_pedal.setup
+    
+    btn_id = 'x'.codepoints.first
+    @input_handler.register_callback(btn_id, &@looper_pedal.button_handler)
+    
+    
+    
+    
+    
     
   end
   
@@ -231,6 +239,20 @@ class Core
     
     
     
+    
+    
+    lilac       = [0xf6, 0xbf, 0xff, 0xff]
+    pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
+    pale_green  = [0x93, 0xff, 0xbb, 0xff]
+    pale_yellow = [0xff, 0xfc, 0xac, 0xff]
+    
+    live_colorpicker = @w.cpp_ptr["colorPicker_color"]
+    
+    color_to_a = ->(c){
+      [c.r,c.g,c.b,c.a]
+    }
+    
+    
     # write all messages in buffer to the character display
     # TODO: need live coding ASAP for this
     
@@ -240,15 +262,29 @@ class Core
     # TODO: need a way to shift an existing block of text in the display buffer
     
     
+    # 
+    # show MIDI note data
+    # 
+    anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
+    
+    @display.print_string(
+      anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
+    ).each do |pos|
+      @display.fg_colors.pixel pos do |fg_c| 
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
+        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
+        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
+      end
+    end
+      
     
     @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
       
+      @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
       
-      @display.print_string(CP::Vec2.new(0,i), midi_msg[0].to_s(16))
+      @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
       
-      @display.print_string(CP::Vec2.new(3,i), midi_msg[1].to_s(16))
-      
-      @display.print_string(CP::Vec2.new(6,i), midi_msg[2].to_s(16))
+      @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
       
       
       midi_dt = midi_msg.deltatime
@@ -256,13 +292,18 @@ class Core
       midi_dt = [max_display_num, midi_dt].min
       
       msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-      @display.print_string(CP::Vec2.new(10,i), msg)
+      @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
       
       
     end
     
     
-    @display.print_string(CP::Vec2.new(46,0), "r  g  b  a ")
+    # 
+    # color picker data
+    # 
+    anchor = CP::Vec2.new(48,0)
+    
+    @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
     .each do |pos|
       @display.colors.pixel pos do |bg_c, fg_c|
         bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
@@ -272,7 +313,7 @@ class Core
     @w.cpp_ptr["colorPicker_color"].tap do |c|
       output_string = [c.r,c.g,c.b,c.a].map{|x| x.to_s(16) }.join(",")
       
-      @display.print_string(CP::Vec2.new(46,1), output_string)
+      @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
       .each do |pos|
         @display.colors.pixel pos do |bg_c, fg_c|
           bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
@@ -306,13 +347,6 @@ class Core
       '8/8' => '█'
     }
     
-    
-
-    
-    lilac       = [0xf6, 0xbf, 0xff, 0xff]
-    pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
-    pale_green  = [0x93, 0xff, 0xbb, 0xff]
-    pale_yellow = [0xff, 0xfc, 0xac, 0xff]
     
     
     

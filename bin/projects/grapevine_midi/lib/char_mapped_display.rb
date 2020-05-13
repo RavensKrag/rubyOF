@@ -314,7 +314,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   def fg_colors
-    return ColorHelper_bgOnly.new(self)
+    return ColorHelper_fgOnly.new(self)
   end
   
   def colors
