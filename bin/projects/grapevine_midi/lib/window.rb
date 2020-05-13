@@ -150,6 +150,7 @@ class Window < RubyOF::Window
         x.path = "DejaVu Sans Mono"
         x.size = 23
         x.add_alphabet :Latin
+        x.add_unicode_range :BlockElement
       end
     
     @fonts[:english] = 
@@ -218,15 +219,34 @@ class Window < RubyOF::Window
     
     
     
-    @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c, pos|
+    @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c|
       bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
       fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
     end
     
-    # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c, pos|
+    # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c|
     #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
     #   fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
     # end
+    
+    
+    
+    
+    # CP::BB
+    # l,b,r,t
+    bb = CP::BB.new(0,0, 18,9)
+    
+    @display.colors.each_with_index do |bg_c, fg_c, pos|
+      if bb.contain_vect? pos
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0, 0, 0, 255]
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 255, 255, 255]
+      end
+    end
+    
+    (0..(bb.t)).each do |i|
+      @display.print_string(CP::Vec2.new(0, i), " "*(bb.r+1))
+    end
+    
     
   end
   
@@ -260,8 +280,14 @@ class Window < RubyOF::Window
         
       # end
       
-      @looper << midi_msg
+      if @looper_mode == :record
+        @looper << midi_msg
+      end
     end
+    
+    
+    
+    
     
     
     if @looper_mode == :playback
@@ -334,6 +360,151 @@ class Window < RubyOF::Window
       
       @looper_fiber.resume()
     end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # write all messages in buffer to the character display
+    # TODO: need live coding ASAP for this
+    
+    # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
+    # (or just let them happen - it could be pretty!)
+    
+    # TODO: need a way to shift an existing block of text in the display buffer
+    
+    
+    
+    @cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+      
+      
+      @display.print_string(CP::Vec2.new(0,i), midi_msg[0].to_s(16))
+      
+      @display.print_string(CP::Vec2.new(3,i), midi_msg[1].to_s(16))
+      
+      @display.print_string(CP::Vec2.new(6,i), midi_msg[2].to_s(16))
+      
+      
+      midi_dt = midi_msg.deltatime
+        max_display_num = 99999.999
+      midi_dt = [max_display_num, midi_dt].min
+      
+      msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
+      @display.print_string(CP::Vec2.new(10,i), msg)
+      
+      
+    end
+    
+    
+    @display.print_string(CP::Vec2.new(46,0), "r  g  b  a ")
+    .each do |pos|
+      @display.colors.pixel pos do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+      end
+    end
+    @cpp_ptr["colorPicker_color"].tap do |c|
+      output_string = [c.r,c.g,c.b,c.a].map{|x| x.to_s(16) }.join(",")
+      
+      @display.print_string(CP::Vec2.new(46,1), output_string)
+      .each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+        end
+      end
+    end
+    
+    
+    
+    
+    @hbar ||= {
+      '8/8' => '█',
+      '7/8' => '▉',
+      '6/8' => '▊',
+      '5/8' => '▋',
+      '4/8' => '▌',
+      '3/8' => '▍',
+      '2/8' => '▎',
+      '1/8' => '▏'
+    }
+    
+    @vbar ||= {
+      '1/8' => '▁',
+      '2/8' => '▂',
+      '3/8' => '▃',
+      '4/8' => '▄',
+      '5/8' => '▅',
+      '6/8' => '▆',
+      '7/8' => '▇',
+      '8/8' => '█'
+    }
+    
+    
+
+    
+    lilac       = [0xf6, 0xbf, 0xff, 0xff]
+    pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
+    pale_green  = [0x93, 0xff, 0xbb, 0xff]
+    pale_yellow = [0xff, 0xfc, 0xac, 0xff]
+    
+    
+    
+    count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
+    bg_color = ([(0.5*255).to_i]*3 + [255])
+    fg_color = lilac
+    
+    @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+    .each do |pos|
+      @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+      end
+      
+      @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+      end
+    end
+    
+    @display.print_string(
+      CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
+    )
+    
+    
+    
+    # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
+    count = 4
+    anchor = CP::Vec2.new(20,15) # bottom left position
+    bg_color = ([(0.5*255).to_i]*3 + [255])
+    fg_color = pale_yellow
+    
+    @display.each_index
+    .select{   |pos| pos.x == anchor.x+0  }
+    .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
+    .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
+    .each_with_index do |pos, i|
+      @display.print_string(pos + CP::Vec2.new(0,0), 'x')
+      
+      if i == 3
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
+      else
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
+      end
+      
+      
+      @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
+        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+      end
+    end
+    
+    
+    
     
   end
   
@@ -503,8 +674,8 @@ class Window < RubyOF::Window
     
     
     # --- Save data
-    # pt = self.get_window_position()
-    # dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    pt = self.get_window_position()
+    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start

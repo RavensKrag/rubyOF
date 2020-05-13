@@ -24,8 +24,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    
-    
     # 
     # set up grids of characters and colors (foreground and background color)
     # 
@@ -41,11 +39,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
-    
-    
-    
-    
-    
     
     
     # 
@@ -99,12 +92,47 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    # TODO: need to make it so that each character can have a separate color
-    screen_print(font: @font,
-                 string: @char_grid,
-                 position: origin+CP::Vec2.new(0,line_height*1),
-                 z: 5)
     
+    shader = fgText_getShader()
+    
+    shader.begin()
+    
+    shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
+    shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
+    
+    RubyOF::CPP_Callbacks.ofShader_bindUniforms(
+      shader,
+      "origin",   @uniform__origin.x,   @uniform__origin.y,
+      "charSize", @uniform__charSize.x, @uniform__charSize.y
+    )
+    
+    # shader.setUniform2f("origin",   )
+    # shader.setUniform2f("charSize", )
+    
+    # p @uniform__charSize.to_a
+    
+    ofPushMatrix()
+    ofPushStyle()
+  begin
+    pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
+    ofTranslate(pos.x, pos.y, z)
+    
+    # ofSetColor(color)
+    
+    x,y = [0,0]
+    vflip = true
+    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+    
+    text_mesh.draw()
+  ensure
+    ofPopStyle()
+    ofPopMatrix()
+    
+    # @font.font_texture.unbind
+    # @text_colors_gpu.unbind
+    shader.end()
+  end
+  
   end
   
   
@@ -175,7 +203,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
         color = @display.getColor_bg(pos.x,pos.y)
         
-        yield color, pos
+        yield color
         
         @display.setColor_bg(pos.x,pos.y, color)
       end
@@ -217,7 +245,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
         color = @display.getColor_fg(pos.x,pos.y)
         
-        yield color, pos
+        yield color
         
         @display.setColor_fg(pos.x,pos.y, color)
       end
@@ -271,7 +299,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         bg_c = @display.getColor_bg(pos.x, pos.y)
         fg_c = @display.getColor_fg(pos.x, pos.y)
         
-        yield bg_c, fg_c, pos
+        yield bg_c, fg_c
         
         @display.setColor_bg(pos.x, pos.y, bg_c)
         @display.setColor_fg(pos.x, pos.y, fg_c)
@@ -291,6 +319,20 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   def colors
     return ColorHelper_bgANDfg.new(self)
+  end
+  
+  def each_index() # &block
+    enum = Matrix2DEnum.new(self.x_chars, self.y_chars)
+    
+    if block_given?
+      
+      enum.each do |pos|
+        yield pos
+      end
+      
+    else
+      return enum
+    end
   end
   
   
@@ -398,48 +440,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   private
   
-  def screen_print(font:, string:, position:, z:1)
-      shader = fgText_getShader()
-      
-      
-      shader.begin()
-      
-      shader.setUniformTexture("trueTypeTexture", font.font_texture,   0)
-      shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
-      
-      RubyOF::CPP_Callbacks.ofShader_bindUniforms(
-        shader,
-        "origin",   @uniform__origin.x,   @uniform__origin.y,
-        "charSize", @uniform__charSize.x, @uniform__charSize.y
-      )
-      
-      # shader.setUniform2f("origin",   )
-      # shader.setUniform2f("charSize", )
-      
-      # p @uniform__charSize.to_a
-      
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      ofTranslate(position.x, position.y, z)
-      
-      # ofSetColor(color)
-      
-      x,y = [0,0]
-      vflip = true
-      text_mesh = font.get_string_mesh(string, x,y, vflip)
-      
-      text_mesh.draw()
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-      # font.font_texture.unbind
-      # @text_colors_gpu.unbind
-      shader.end()
-    end
-    
-  end
   
   def load_shaders(*args)
     shader = fgText_getShader()

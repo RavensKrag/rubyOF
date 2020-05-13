@@ -169,6 +169,41 @@ void rbApp::setup(){
 	
 	
 	
+	// // -- More complex way to pass a pointer from C++ to Ruby
+	// //    Allows C++ code to maintain full control of memory management.
+	
+	// // This is how you can pass a pointer to a C++ type to Ruby-land.
+	// // 'Rice::Data_Object' functions basically like a C++ smart pointer,
+	// // but allows for data to be sent to Ruby.
+	// // NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
+	
+	
+	// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();
+	// // ^ NOTE: This function is of type 'const void*'
+	// //         so you must not write to this data location
+	
+	// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));
+	// // strip away the const qualifier
+	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
+	
+	// Rice::Data_Object<ofColor> rb_color_ptr(
+	// 	color_ptr,
+	// 	Rice::Data_Type< ofColor >::klass(),
+	// 	Rice::Default_Mark_Function< ofColor >::mark,
+	// 	Null_Free_Function< ofColor >::free
+	// );
+	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
+	
+	// rb_color_ptr.call("freeze");
+	// // Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
+	
+	// // https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
+	
+	
+	mSelf.call("recieve_cpp_pointer", "colorPicker_color", rb_color_ptr);
+	
+	
+	
 	
 	
 	
