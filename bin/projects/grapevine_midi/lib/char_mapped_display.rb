@@ -210,7 +210,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
         color = @display.getColor_bg(pos.x,pos.y)
         
-        yield color, pos
+        yield color
         
         @display.setColor_bg(pos.x,pos.y, color)
       end
@@ -252,7 +252,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
         color = @display.getColor_fg(pos.x,pos.y)
         
-        yield color, pos
+        yield color
         
         @display.setColor_fg(pos.x,pos.y, color)
       end
@@ -306,7 +306,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         bg_c = @display.getColor_bg(pos.x, pos.y)
         fg_c = @display.getColor_fg(pos.x, pos.y)
         
-        yield bg_c, fg_c, pos
+        yield bg_c, fg_c
         
         @display.setColor_bg(pos.x, pos.y, bg_c)
         @display.setColor_fg(pos.x, pos.y, fg_c)
