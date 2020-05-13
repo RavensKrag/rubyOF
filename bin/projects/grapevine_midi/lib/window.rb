@@ -431,11 +431,29 @@ class Window < RubyOF::Window
       '1/8' => '▏'
     }
     
+    @vbar ||= {
+      '1/8' => '▁',
+      '2/8' => '▂',
+      '3/8' => '▃',
+      '4/8' => '▄',
+      '5/8' => '▅',
+      '6/8' => '▆',
+      '7/8' => '▇',
+      '8/8' => '█'
+    }
+    
+    
+
+    
+    lilac       = [0xf6, 0xbf, 0xff, 0xff]
+    pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
+    pale_green  = [0x93, 0xff, 0xbb, 0xff]
+    pale_yellow = [0xff, 0xfc, 0xac, 0xff]
+    
+    
+    
     count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
-      lilac       = [0xf6, 0xbf, 0xff, 0xff]
-      pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
-      pale_green  = [0x93, 0xff, 0xbb, 0xff]
-      pale_yellow = [0xff, 0xfc, 0xac, 0xff]
+    
     @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
     .each do |pos|
       bg_color = ([(0.5*255).to_i]*3 + [255])
@@ -455,6 +473,48 @@ class Window < RubyOF::Window
     @display.print_string(
       CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
     )
+    
+    
+    
+    # hmmm drawing a vertical bar is harder, because there's no iterators in this direction...
+    count = 4
+    anchor = CP::Vec2.new(20,15) # bottom left position
+    @display.colors.each_with_index do |bg_c, fg_c, pos|
+      if pos.x == (anchor.x+0) and ((anchor.y-count)..(anchor.y)).include?(pos.y)
+        @display.print_string(pos, 'x')
+      end
+      
+      # remember: y+ down, so top position has the lowest y value
+      if pos.x == (anchor.x+1)
+        if ((anchor.y-count+1)..(anchor.y)).include? pos.y
+          @display.print_string(pos, @vbar['8/8'])
+        elsif pos.y == (anchor.y-count)
+          @display.print_string(pos, @vbar['3/8'])
+        end
+      end
+    end
+    
+    # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+    # .each do |pos|
+    #   bg_color = ([(0.5*255).to_i]*3 + [255])
+    #   fg_color = lilac
+      
+    #   @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #   end
+      
+    #   @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #   end
+    # end
+    
+    # @display.print_string(
+    #   CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
+    # )
+    
+    
     
     
   end
