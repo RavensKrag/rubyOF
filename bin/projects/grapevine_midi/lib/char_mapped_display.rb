@@ -24,8 +24,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    
-    
     # 
     # set up grids of characters and colors (foreground and background color)
     # 
@@ -41,11 +39,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
-    
-    
-    
-    
-    
     
     
     # 
