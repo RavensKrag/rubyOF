@@ -36,7 +36,8 @@ void main()
   
   vec2 charScaling;
   charScaling.x = charSize.z; // em_width
-  charScaling.y = charSize.x - charSize.y; // ascender_h - descender_h
+  // charScaling.y = charSize.x - charSize.y; // ascender_h - descender_h
+  charScaling.y = 37; // ascender_h - descender_h
   
   
   // charVarying = (position.xy + vec2(0, 0) ) / charScaling;

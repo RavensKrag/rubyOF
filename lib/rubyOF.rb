@@ -68,6 +68,29 @@ end
 module RubyOF
 
 
+module Graphics
+	OF_BLENDMODES = [
+		:disabled,
+		:alpha,
+		:add,
+		:multiply,
+		:screen,
+		:subtract,
+	]	
+	
+	alias :ofEnableBlendMode__cpp :ofEnableBlendMode
+	private :ofEnableBlendMode__cpp
+	def ofEnableBlendMode(mode)
+		i = OF_BLENDMODES.index(mode)
+		
+		raise ArgumentError, "Given blend mode #{mode.inspect} is not a valid blend mode. Please use one of the following: #{OF_BLENDMODES.inspect}" if i.nil?
+		
+		ofEnableBlendMode__cpp(i)
+	end
+end
+
+
+
 class Shader
 	# private :load_oneNameVertAndFrag, :load_VertFragGeom
 	

@@ -20,7 +20,7 @@ in vec2 charVarying;
 uniform sampler2DRect fontColorMap;
 
 void main(){
-  vec4 text_color = vec4(1,0,0,1);
+  // vec4 text_color = vec4(1,0,0,1);
   
   // fragColor = texture(src_tex_unit0, texCoordVarying) * text_color;
   // fragColor = texture(fontColorMap, vec2(1,1));
@@ -55,5 +55,6 @@ void main(){
       
       
     fragColor = textTextureColor * colorMap_color;
+    // fragColor = textTextureColor;
   // fragColor = text_color;
 }

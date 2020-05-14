@@ -3,6 +3,20 @@
 
 using namespace Rice;
 
+
+void ofEnableBlendMode__wrapper(int code){
+	static const ofBlendMode BLEND_MODES[6] = {
+			OF_BLENDMODE_DISABLED,
+			OF_BLENDMODE_ALPHA,
+			OF_BLENDMODE_ADD,
+			OF_BLENDMODE_MULTIPLY,
+			OF_BLENDMODE_SCREEN,
+			OF_BLENDMODE_SUBTRACT
+	};
+	
+	ofEnableBlendMode(BLEND_MODES[code]);
+}
+
 Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 {
 	// --- Bind the core types first, and then the interesting methods that use them.
@@ -123,6 +137,10 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofClear)
 		)
 		// NOTE: clear requires floats, while "ofBackground" takes int? Looks weird, maybe should report?
+		
+		
+		.define_method("ofEnableBlendMode", &ofEnableBlendMode__wrapper)
+		
 		
 		// colors
 		.define_method("ofBackground",

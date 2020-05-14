@@ -4,9 +4,9 @@
 # stuff to load just once
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
-require LIB_DIR/'char_mapped_display.rb'
 
 # stuff to live load ('load' allows for reloading stuff)
+load LIB_DIR/'char_mapped_display.rb'
 load LIB_DIR/'looper_pedal.rb'
 
 # class definition
@@ -36,10 +36,35 @@ class Core
     @fonts[:monospace] = 
       RubyOF::TrueTypeFont.dsl_load do |x|
         x.path = "DejaVu Sans Mono"
-        x.size = 23
+        x.size = 24
+        #  6 is ok = 9.3125    5/16
+        #  9 is ok = 13.96875  33/64
+        # 12 is ok = 18.625    5/8
+        # 15 is ok = 23.28125  1/64
+        # 18 is ok = 27.9375   7/16
+        # 24 is ok = 37.25     1/4
+        # 33 is ok = 51.21875  7/32
+        # 36 is ok = 55.875    7/8
+        # 42 is ok = 65.1875   3/16
+        # 45 is ok = 69.84375  33/64
+        # 48 is ok = 74.5               24*2
+        # 96 is ok = 149.0 (EXACTLY)    24*4
+        
+        
         x.add_alphabet :Latin
         x.add_unicode_range :BlockElement
       end
+    
+    @fonts[:monospace].tap do |f|
+      # f.line_height = f.ascender_height - f.descender_height
+      f.line_height = 39
+      # f.line_height = f.ascender_height.ceil - f.descender_height.floor
+      # f.line_height = (f.ascender_height - f.descender_height).ceil
+      # f.line_height = (f.ascender_height - f.descender_height).floor
+    end
+    
+    
+    
     
     @fonts[:english] = 
       RubyOF::TrueTypeFont.dsl_load do |x|
@@ -69,8 +94,8 @@ class Core
     
     # clear out the garbage bg + test pattern fg
     @display.colors.each_with_index do |bg_c, fg_c, pos|
-      bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.5*255).to_i]*3 + [255])
-      fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.1*255).to_i]*3 + [255])
+      bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.0*255).to_i]*3 + [255])
+      fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(1.0*255).to_i]*3 + [255])
     end
     
     test_display = Proc.new do
@@ -199,8 +224,17 @@ class Core
     @display.autoUpdateColor_fg(false)
     
     
+    p @fonts[:monospace].line_height
+    p @display.instance_variable_get(:@ascender_height)
+    p @display.instance_variable_get(:@descender_height)
+    p @display.instance_variable_get(:@em_width)
     
-    
+    @fonts[:monospace].tap do |f|
+      puts "computed line height: #{f.ascender_height - f.descender_height }"
+      puts "computed em height: #{f.string_bb('m', 0,0, true).height }"
+      puts "computed ex height: #{f.string_bb('x', 0,0, true).height }"
+      puts "computed caps height?: #{f.string_bb('T', 0,0, true).height }"
+    end
   end
   
   def update
@@ -297,71 +331,92 @@ class Core
       anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
     ).each do |pos|
       @display.fg_colors.pixel pos do |fg_c| 
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
+        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
         # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
         # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
       end
     end
     
     
-    @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+    # @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
       
-      # midi bytes
-      @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
+    #   # midi bytes
+    #   @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
       
-      @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
+    #   @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
       
-      @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
-      
-      
-      # deltatime
-      midi_dt = midi_msg.deltatime
-        max_display_num = 99999.999
-      midi_dt = [max_display_num, midi_dt].min
-      
-      msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-      @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+    #   @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
       
       
+    #   # deltatime
+    #   midi_dt = midi_msg.deltatime
+    #     max_display_num = 99999.999
+    #   midi_dt = [max_display_num, midi_dt].min
       
-      # note value (as bar graph)
-      
-      count = 16
-        # 128 midi notes, so 16 chars of 8 increments each
-        # will cover it at 1 fraction per note
-      value = 15
-      range = 0..127
-      bg_color = ([(0.5*255).to_i]*3 + [255])
-      fg_color = lilac
-      
-      full_bars = midi_msg.pitch / 8
-      fractions = midi_msg.pitch % 8
-      
-      bar_graph  = @hbar['8/8']*full_bars
-      bar_graph ||= '' # bar graph can be nil if full_bars == 0
-      bar_graph += @hbar["#{fractions}/8"]
-      
-      @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
-      .each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-        end
-      end
-      
-      @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
+    #   msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
+    #   @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
       
       
-      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
       
-      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
+    #   # note value (as bar graph)
       
-      # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
+    #   count = 16
+    #     # 128 midi notes, so 16 chars of 8 increments each
+    #     # will cover it at 1 fraction per note
+    #   value = 15
+    #   range = 0..127
+    #   bg_color = ([(0.5*255).to_i]*3 + [255])
+    #   fg_color = lilac
+      
+    #   full_bars = midi_msg.pitch / 8
+    #   fractions = midi_msg.pitch % 8
+      
+    #   bar_graph  = @hbar['8/8']*full_bars
+    #   bar_graph ||= '' # bar graph can be nil if full_bars == 0
+    #   bar_graph += @hbar["#{fractions}/8"]
+      
+    #   @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+    #   .each do |pos|
+    #     @display.colors.pixel pos do |bg_c, fg_c|
+    #       bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #       fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #     end
+    #   end
+      
+    #   @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
       
       
+    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
+      
+    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
+      
+    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
+      
+      
+    # end
+    
+    
+    # line height test pattern 1 
+    10.times do |i|
+      @display.print_string(
+          anchor+CP::Vec2.new(0,i+1),
+          "Handglovery 0123456789ABCEFG " + @hbar['8/8']*i+@hbar['3/8']
+        )
     end
     
     @display.print_string(CP::Vec2.new(41,6), ((0..127).size/16 / 8).to_s)
+    
+    
+    # # line height test pattern 2
+    # 10.times do |i|
+    #   @display.print_string(
+    #       anchor+CP::Vec2.new(0,i*2),
+    #       (@vbar['8/8']*5)
+    #     )
+    # end
+    
+    
+    
     
     
     # 
@@ -459,6 +514,7 @@ class Core
   include RubyOF::Graphics
   def draw
     ofBackground(200, 200, 200, 255)
+    ofEnableBlendMode(:alpha)
     
     
     if @first_draw
@@ -493,7 +549,7 @@ class Core
     
     
     
-    # @display.reload_shader
+    @display.reload_shader
     
     z = 5
     @display.draw(@origin, z)
@@ -545,11 +601,12 @@ class Core
     # out.y = (out.y / @display.char_height_pxs).to_i
     
     # puts out
+    @mouse = mouse_to_char_display_pos(x,y)
   end
   
   def mouse_dragged(x,y, button)
     # p [:dragged, x,y, button]
-    
+    @mouse = mouse_to_char_display_pos(x,y)
   end
   
   def mouse_released(x,y, button)
@@ -575,6 +632,10 @@ class Core
   private
   
   def mouse_to_char_display_pos(x,y)
+    @mouse__screenSpace      = CP::Vec2.new(0,0)
+    @mouse__charDisplaySpace = CP::Vec2.new(0,0)
+    
+    
     offset = CP::Vec2.new(0,10)
     
     out = ( CP::Vec2.new(x,y) - @origin - offset )
