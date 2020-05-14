@@ -1479,8 +1479,8 @@
 						"selection":
 						[
 							[
-								818,
-								818
+								554,
+								562
 							]
 						],
 						"settings":
@@ -1490,27 +1490,12 @@
 							{
 								"close":
 								{
-									"1":
-									[
-										976,
-										977
-									]
 								},
 								"icon":
 								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/curly_bracket.png",
-										"region.purplish"
-									]
 								},
 								"open":
 								{
-									"1":
-									[
-										577,
-										578
-									]
 								},
 								"unmatched":
 								{
@@ -1578,10 +1563,10 @@
 							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 672.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1705,7 +1690,7 @@
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1841,8 +1826,8 @@
 						"selection":
 						[
 							[
-								32,
-								32
+								301,
+								301
 							]
 						],
 						"settings":
@@ -1927,7 +1912,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 192.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -2050,7 +2035,7 @@
 						"translation.y": 576.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -2720,7 +2705,7 @@
 		],
 		"width": 492.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},

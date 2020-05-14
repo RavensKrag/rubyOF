@@ -30,12 +30,16 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     x,y = [0,0]
     vflip = true
-    char_box__em = @font.string_bb("m", x,y, vflip);
-    ascender_height  = @font.ascender_height
-    descender_height = @font.descender_height
     
-    @char_width_pxs  = char_box__em.width
-    @char_height_pxs = ascender_height - descender_height
+    # OPTIMIZE: cache these values as long as @font remains the same
+    @em_width = @font.string_bb("m", x,y, vflip).width;
+    @ascender_height  = @font.ascender_height
+    @descender_height = @font.descender_height
+    
+    
+    
+    @char_width_pxs  = @em_width
+    @char_height_pxs = @ascender_height - @descender_height
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
@@ -57,29 +61,22 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   def draw(origin, z)
     @uniform__origin = origin
-    @uniform__charSize = CP::Vec2.new(@char_width_pxs, @char_height_pxs)
     
-    
-    line_height = 38
+    line_height = @char_height_pxs
     
     x,y = [0,0]
     vflip = true
     position = origin + CP::Vec2.new(0,line_height*1)
     
-    
-    
-    char_box__em = @font.string_bb("m", x,y, vflip);
-    ascender_height  = @font.ascender_height
-    descender_height = @font.descender_height
-    
-    
-    
       ofPushMatrix()
       ofPushStyle()
     begin
-      ofTranslate(position.x, position.y - ascender_height, z)
+      ofTranslate(position.x, position.y - @ascender_height, z)
+      # ^ ascender height is the missing offset needed in the shader!
+      #   Need to bind that and pass it in.
+      #   Maybe can reduce some code duplication after that?
       
-      ofScale(@char_width_pxs, @char_height_pxs, 1)
+      ofScale(@em_width, @char_height_pxs, 1)
       
       
       bgMesh_draw()
@@ -103,7 +100,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     RubyOF::CPP_Callbacks.ofShader_bindUniforms(
       shader,
       "origin",   @uniform__origin.x,   @uniform__origin.y,
-      "charSize", @uniform__charSize.x, @uniform__charSize.y
+      "charSize", @ascender_height, @descender_height, @em_width
     )
     
     # shader.setUniform2f("origin",   )
@@ -184,7 +181,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # index is a CP::Vec2 encoding position
     def each_with_index() # &block
-      @display.autoUpdateColor_bg(false)
+      # @display.autoUpdateColor_bg(false)
       
       Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
         color = @display.getColor_bg(pos.x, pos.y)
@@ -194,8 +191,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         @display.setColor_bg(pos.x,pos.y, color)
       end
       
-      @display.flushColors_bg()
-      @display.autoUpdateColor_bg(true)
+      # @display.flushColors_bg()
+      # @display.autoUpdateColor_bg(true)
     end
     
     # manipulate color at a particular pixel
@@ -226,7 +223,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # index is a CP::Vec2 encoding position
     def each_with_index() # &block
-      @display.autoUpdateColor_fg(false)
+      # @display.autoUpdateColor_fg(false)
       
       Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
         color = @display.getColor_fg(pos.x, pos.y)
@@ -236,8 +233,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         @display.setColor_fg(pos.x,pos.y, color)
       end
       
-      @display.flushColors_fg()
-      @display.autoUpdateColor_fg(true)
+      # @display.flushColors_fg()
+      # @display.autoUpdateColor_fg(true)
     end
     
     # manipulate color at a particular pixel
@@ -269,8 +266,8 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     # index is a CP::Vec2 encoding position
     def each_with_index() # &block
-      @display.autoUpdateColor_bg(false)
-      @display.autoUpdateColor_fg(false)
+      # @display.autoUpdateColor_bg(false)
+      # @display.autoUpdateColor_fg(false)
       
       
       Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
@@ -285,11 +282,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       end
       
       
-      @display.flushColors_bg()
-      @display.autoUpdateColor_bg(true)
+      # @display.flushColors_bg()
+      # @display.autoUpdateColor_bg(true)
       
-      @display.flushColors_fg()
-      @display.autoUpdateColor_fg(true)
+      # @display.flushColors_fg()
+      # @display.autoUpdateColor_fg(true)
     end
     
     # manipulate color at a particular pixel

@@ -24,7 +24,7 @@ out vec4 normalVarying;
 out vec2 charVarying;
 
 uniform vec2 origin;
-uniform vec2 charSize;
+uniform vec3 charSize;
 
 void main()
 {
@@ -32,10 +32,17 @@ void main()
   texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
   gl_Position = modelViewProjectionMatrix * position;
   
-  // charVarying = position.xy;
-  	  // charVarying = (position.xy ) / charSize;
-  	  
-		  // charVarying = ((position.xy + vec2(0, 18) + vec2(0, 10) )/ vec2(18, 35.7));
-		  
-		  charVarying = (position.xy + vec2(0, charSize.y+1) ) / charSize;
+  
+  
+  vec2 charScaling;
+  charScaling.x = charSize.z; // em_width
+  charScaling.y = charSize.x - charSize.y; // ascender_h - descender_h
+  
+  
+  // charVarying = (position.xy + vec2(0, 0) ) / charScaling;
+  
+  // charVarying = (position.xy + vec2(0, 28.46+7.23-7)) / vec2(18,28.46+7.23);
+  // // the base grid is already offset by the ascender, so you only need to compensate by the descender in the shader
+  
+  charVarying = (position.xy + vec2(0, charScaling.y+charSize.y+0.5))/charScaling;
 }

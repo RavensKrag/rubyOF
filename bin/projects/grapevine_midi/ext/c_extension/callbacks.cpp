@@ -81,10 +81,10 @@ bool ofShader_loadShaders(ofShader & shader, Rice::Array args){
 // TODO: eventually want to bind uniforms through the ofShader member function, this is just a hold-over
 void ofShader_bindUniforms(ofShader & shader, 
 	std::string name1, float p1x, float p1y,
-	std::string name2, float p2x, float p2y )
+	std::string name2, float p2_1, float p2_2, float p2_3)
 {
 	shader.setUniform2f(name1, glm::vec2(p1x, p1y));
-	shader.setUniform2f(name2, glm::vec2(p2x, p2y));
+	shader.setUniform3f(name2, glm::vec3(p2_1, p2_2, p2_3));
 }
 
 
