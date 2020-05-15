@@ -108,11 +108,27 @@ class Core
     
     
     
+    @colors = {
+      :lilac       => [0xf6, 0xbf, 0xff, 0xff],
+      :pale_blue   => [0xa2, 0xf5, 0xff, 0xff],
+      :pale_green  => [0x93, 0xff, 0xbb, 0xff],
+      :pale_yellow => [0xff, 0xfc, 0xac, 0xff],
+    }
+    
+    
+    
     
     
     
     
     @debug = Hash.new # contains debug flags
+    
+    # @debug[:bar_graph_tests] = true
+    
+    
+    
+    
+    
     
     # 
     # text display alignment variables
@@ -313,6 +329,72 @@ class Core
     end
     
     
+    if @debug[:bar_graph_tests]
+    
+      # 
+      # bar graph tests
+      # 
+      
+      count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
+      bg_color = ([(0.5*255).to_i]*3 + [255])
+      fg_color = @colors[:lilac]
+      
+      @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+      .each do |pos|
+        @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+        end
+        
+        @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+        end
+      end
+      
+      @display.print_string(
+        CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
+      )
+      
+      
+      # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
+      
+        # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
+        
+        # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
+      
+      # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
+      count = 4
+      anchor = CP::Vec2.new(20,15) # bottom left position
+      bg_color = ([(0.5*255).to_i]*3 + [255])
+      fg_color = @colors[:pale_yellow]
+      
+      @display.each_index
+      .select{   |pos| pos.x == anchor.x+0  }
+      .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
+      .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
+      .each_with_index do |pos, i|
+        @display.print_string(pos + CP::Vec2.new(0,0), 'x')
+        
+        if i == count-1
+          @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
+        else
+          @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
+        end
+        
+        
+        @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+        end
+      end
+    end
+    
+    
+    
+    
+    
+    
     
     # run the "normal" stuff only when all of the debug modes are disabled
     if @debug.keys.empty?
@@ -452,16 +534,7 @@ class Core
     
     
     
-    lilac       = [0xf6, 0xbf, 0xff, 0xff]
-    pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
-    pale_green  = [0x93, 0xff, 0xbb, 0xff]
-    pale_yellow = [0xff, 0xfc, 0xac, 0xff]
-    
     live_colorpicker = @w.cpp_ptr["colorPicker_color"]
-    
-    color_to_a = ->(c){
-      [c.r,c.g,c.b,c.a]
-    }
     
     if @debug.keys.empty?
       
@@ -485,10 +558,10 @@ class Core
       ).each do |pos|
         @display.colors.pixel pos do |bg_c, fg_c| 
           # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
-          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
-          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
+          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = @colors[:pale_green]
+          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = live_colorpicker.to_a
           
-          # bg_c.r, bg_c.g, bg_c.b, bg_c.a = color_to_a[live_colorpicker]
+          # bg_c.r, bg_c.g, bg_c.b, bg_c.a = live_colorpicker.to_a
           bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xc4, 0xcf, 0xff, 0xff]
         end
       end
@@ -521,7 +594,7 @@ class Core
         value = 15
         range = 0..127
         bg_color = ([(0.5*255).to_i]*3 + [255])
-        fg_color = lilac
+        fg_color = @colors[:lilac]
         
         full_bars = midi_msg.pitch / 8
         fractions = midi_msg.pitch % 8
@@ -610,66 +683,6 @@ class Core
     
     
     
-    
-    
-    
-    # # 
-    # # bar graph tests
-    # # 
-    
-    # count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
-    # bg_color = ([(0.5*255).to_i]*3 + [255])
-    # fg_color = lilac
-    
-    # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
-    # .each do |pos|
-    #   @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #   end
-      
-    #   @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #   end
-    # end
-    
-    # @display.print_string(
-    #   CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
-    # )
-    
-    
-    # # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
-    
-    #   # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
-      
-    #   # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
-    
-    # # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
-    # count = 4
-    # anchor = CP::Vec2.new(20,15) # bottom left position
-    # bg_color = ([(0.5*255).to_i]*3 + [255])
-    # fg_color = pale_yellow
-    
-    # @display.each_index
-    # .select{   |pos| pos.x == anchor.x+0  }
-    # .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
-    # .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
-    # .each_with_index do |pos, i|
-    #   @display.print_string(pos + CP::Vec2.new(0,0), 'x')
-      
-    #   if i == count-1
-    #     @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
-    #   else
-    #     @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
-    #   end
-      
-      
-    #   @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #   end
-    # end
     
     
     @display.flushColors_bg()
