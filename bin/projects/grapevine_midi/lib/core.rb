@@ -54,10 +54,32 @@ class Core
     #     end
     
     
+    @fonts[:monospace] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        x.path = "DejaVu Sans Mono"
+        x.size = 24
+        #  6 is ok = 9.3125    5/16
+        #  9 is ok = 13.96875  33/64
+        # 12 is ok = 18.625    5/8
+        # 15 is ok = 23.28125  1/64
+        # 18 is ok = 27.9375   7/16
+        # 24 is ok = 37.25     1/4
+        # 33 is ok = 51.21875  7/32
+        # 36 is ok = 55.875    7/8
+        # 42 is ok = 65.1875   3/16
+        # 45 is ok = 69.84375  33/64
+        # 48 is ok = 74.5               24*2
+        # 96 is ok = 149.0 (EXACTLY)    24*4
+        
+        
+        x.add_alphabet :Latin
+        x.add_unicode_range :BlockElement
+      end
     
     
-    
-    
+    # 
+    # useful unicode characters
+    # 
     
     @hbar ||= {
       '8/8' => '█',
@@ -95,42 +117,20 @@ class Core
     # text display alignment variables
     # 
     
-    descender_height = 7
+    descender_height = @fonts[:monospace].descender_height.floor
     @line_height = 39
     @char_width_pxs = 19
-    @bg_offset = CP::Vec2.new(0,-@line_height+descender_height)
+    @bg_offset = CP::Vec2.new(0,-@line_height-descender_height)
     @bg_scale  = CP::Vec2.new(@char_width_pxs,@line_height)
     
     # @debug[:display_clipping] = true
     # @debug[:align_display_bg] = true
-    @debug[:align_display_fg] = true
+    # @debug[:align_display_fg] = true
     
     
     # 
     # configure monospace font used in text display (and elsewhere)
     # 
-    
-    @fonts[:monospace] = 
-      RubyOF::TrueTypeFont.dsl_load do |x|
-        x.path = "DejaVu Sans Mono"
-        x.size = 24
-        #  6 is ok = 9.3125    5/16
-        #  9 is ok = 13.96875  33/64
-        # 12 is ok = 18.625    5/8
-        # 15 is ok = 23.28125  1/64
-        # 18 is ok = 27.9375   7/16
-        # 24 is ok = 37.25     1/4
-        # 33 is ok = 51.21875  7/32
-        # 36 is ok = 55.875    7/8
-        # 42 is ok = 65.1875   3/16
-        # 45 is ok = 69.84375  33/64
-        # 48 is ok = 74.5               24*2
-        # 96 is ok = 149.0 (EXACTLY)    24*4
-        
-        
-        x.add_alphabet :Latin
-        x.add_unicode_range :BlockElement
-      end
     
     @fonts[:monospace].tap do |f|
       f.line_height = @line_height
@@ -139,6 +139,7 @@ class Core
       # f.line_height = (f.ascender_height - f.descender_height).ceil
       # f.line_height = (f.ascender_height - f.descender_height).floor
     end
+    
     
     
     
@@ -310,26 +311,32 @@ class Core
     
     
     
-    # # clear the area where midi message data will be drawn
+    # run the "normal" stuff only when all of the debug modes are disabled
+    if @debug.keys.empty?
+      
+      # clear the area where midi message data will be drawn
+      
+      # CP::BB
+      # l,b,r,t
+      x = 0
+      y = 0
+      w = 36
+      h = 11
+      @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
+      
+      @display.colors.each_with_index do |bg_c, fg_c, pos|
+        if @midi_data_bb.contain_vect? pos
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+        end
+      end
+      
+      (0..(@midi_data_bb.t)).each do |i|
+        @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
+      end
+      
+    end
     
-    # # CP::BB
-    # # l,b,r,t
-    # x = 0
-    # y = 0
-    # w = 36
-    # h = 11
-    # @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
-    
-    # @display.colors.each_with_index do |bg_c, fg_c, pos|
-    #   if @midi_data_bb.contain_vect? pos
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
-    #   end
-    # end
-    
-    # (0..(@midi_data_bb.t)).each do |i|
-    #   @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
-    # end
     
     
     
@@ -383,12 +390,12 @@ class Core
     
     
     
-    p @fonts[:monospace].line_height
-    p @display.instance_variable_get(:@ascender_height)
-    p @display.instance_variable_get(:@descender_height)
-    p @display.instance_variable_get(:@em_width)
     
     @fonts[:monospace].tap do |f|
+      puts "font line height: #{f.line_height}"
+      puts "font  ascender height: #{f.ascender_height}"
+      puts "font descender height: #{f.descender_height}"
+      p @display.instance_variable_get(:@em_width)
       puts "computed line height: #{f.ascender_height - f.descender_height }"
       puts "computed em height: #{f.string_bb('m', 0,0, true).height }"
       puts "computed ex height: #{f.string_bb('x', 0,0, true).height }"
@@ -453,116 +460,121 @@ class Core
       [c.r,c.g,c.b,c.a]
     }
     
-    
-    # write all messages in buffer to the character display
-    # TODO: need live coding ASAP for this
-    
-    # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
-    # (or just let them happen - it could be pretty!)
-    
-    # TODO: need a way to shift an existing block of text in the display buffer
-    
-    
-    # # 
-    # # show MIDI note data
-    # # 
-    # anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
-    
-    # @display.print_string(
-    #   anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
-    # ).each do |pos|
-    #   @display.fg_colors.pixel pos do |fg_c| 
-    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
-    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
-    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
-    #   end
-    # end
-    
-    
-    # @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+    if @debug.keys.empty?
       
-    #   # midi bytes
-    #   @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
+      # write all messages in buffer to the character display
+      # TODO: need live coding ASAP for this
       
-    #   @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
+      # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
+      # (or just let them happen - it could be pretty!)
       
-    #   @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+      # TODO: need a way to shift an existing block of text in the display buffer
       
       
-    #   # deltatime
-    #   midi_dt = midi_msg.deltatime
-    #     max_display_num = 99999.999
-    #   midi_dt = [max_display_num, midi_dt].min
+      # 
+      # show MIDI note data
+      # 
+      anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
       
-    #   msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-    #   @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+      # print header
+      @display.print_string(
+        anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
+      ).each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c| 
+          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
+          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
+          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
+          
+          # bg_c.r, bg_c.g, bg_c.b, bg_c.a = color_to_a[live_colorpicker]
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xc4, 0xcf, 0xff, 0xff]
+        end
+      end
+      
+      # dump data on all messages in the queue
+      @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+        
+        # midi bytes
+        @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
+        
+        @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
+        
+        @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+        
+        
+        # deltatime
+        midi_dt = midi_msg.deltatime
+          max_display_num = 99999.999
+        midi_dt = [max_display_num, midi_dt].min
+        
+        msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
+        @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+        
+        
+        
+        # note value (as bar graph)
+        count = 16
+          # 128 midi notes, so 16 chars of 8 increments each
+          # will cover it at 1 fraction per note
+        value = 15
+        range = 0..127
+        bg_color = ([(0.5*255).to_i]*3 + [255])
+        fg_color = lilac
+        
+        full_bars = midi_msg.pitch / 8
+        fractions = midi_msg.pitch % 8
+        
+        bar_graph  = @hbar['8/8']*full_bars
+        bar_graph ||= '' # bar graph can be nil if full_bars == 0
+        bar_graph += @hbar["#{fractions}/8"]
+        
+        @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+        .each do |pos|
+          @display.colors.pixel pos do |bg_c, fg_c|
+            bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+            fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+          end
+        end
+        
+        @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
+        
+        
+        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
+        
+        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
+        
+        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
+        
+        
+      end
       
       
       
-    #   # note value (as bar graph)
-      
-    #   count = 16
-    #     # 128 midi notes, so 16 chars of 8 increments each
-    #     # will cover it at 1 fraction per note
-    #   value = 15
-    #   range = 0..127
-    #   bg_color = ([(0.5*255).to_i]*3 + [255])
-    #   fg_color = lilac
-      
-    #   full_bars = midi_msg.pitch / 8
-    #   fractions = midi_msg.pitch % 8
-      
-    #   bar_graph  = @hbar['8/8']*full_bars
-    #   bar_graph ||= '' # bar graph can be nil if full_bars == 0
-    #   bar_graph += @hbar["#{fractions}/8"]
-      
-    #   @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
-    #   .each do |pos|
-    #     @display.colors.pixel pos do |bg_c, fg_c|
-    #       bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-    #       fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-    #     end
-    #   end
-      
-    #   @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
       
       
-    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
+      # 
+      # color picker data
+      # 
+      anchor = CP::Vec2.new(48,0)
       
-    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
-      
-    #   # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
-      
-      
-    # end
-    
-    
-    
-    
-    
-    # # 
-    # # color picker data
-    # # 
-    # anchor = CP::Vec2.new(48,0)
-    
-    # @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
-    # .each do |pos|
-    #   @display.colors.pixel pos do |bg_c, fg_c|
-    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
-    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-    #   end
-    # end
-    # @w.cpp_ptr["colorPicker_color"].tap do |c|
-    #   output_string = [c.r,c.g,c.b,c.a].map{|x| x.to_s(16) }.join(",")
-      
-    #   @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
-    #   .each do |pos|
-    #     @display.colors.pixel pos do |bg_c, fg_c|
-    #       bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
-    #       fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-    #     end
-    #   end
-    # end
+      @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
+      .each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+        end
+      end
+      @w.cpp_ptr["colorPicker_color"].tap do |c|
+        output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
+        
+        @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
+        .each do |pos|
+          @display.colors.pixel pos do |bg_c, fg_c|
+            bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
+            fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+          end
+        end
+      end
+    end
     
     
     
