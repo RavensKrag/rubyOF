@@ -91,6 +91,12 @@ end
 
 
 
+class Color
+	def to_a
+		return [self.r,self.g,self.b,self.a]
+	end
+end
+	
 class Shader
 	# private :load_oneNameVertAndFrag, :load_VertFragGeom
 	
