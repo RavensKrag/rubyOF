@@ -164,6 +164,7 @@ class Core
     
     
     @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
+    @display_origin_px = CP::Vec2.new(370,500)
     
     @display.autoUpdateColor_bg(false)
     @display.autoUpdateColor_fg(false)
@@ -404,8 +405,8 @@ class Core
       # CP::BB
       # l,b,r,t
       x = 0
-      y = 0
-      w = 36
+      y = 1
+      w = 50
       h = 11
       @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
       
@@ -416,7 +417,7 @@ class Core
         end
       end
       
-      (0..(@midi_data_bb.t)).each do |i|
+      ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
         @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
       end
       
@@ -554,7 +555,7 @@ class Core
       
       # print header
       @display.print_string(
-        anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
+        anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
       ).each do |pos|
         @display.colors.pixel pos do |bg_c, fg_c| 
           # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
@@ -615,8 +616,13 @@ class Core
         
         
         # signal name
+        @display.print_string(anchor+CP::Vec2.new(40,i+1), "test")
+        # ^ TODO: wrap the C++ interface that lets you read the status
+        # ('status' is a member variable, of a custom enum type)
         
-        # @display.print_string(anchor+CP::Vec2.new(26,i+1), "test")
+        
+        # channel
+        @display.print_string(anchor+CP::Vec2.new(46,i+1), "ch#{midi_msg.channel}")
         
       end
       
@@ -713,7 +719,6 @@ class Core
     # NOTE: need live coding before I can fiddle with graphics code
     # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
     
-    @origin ||= CP::Vec2.new(370,500)
     # line_height = 38
     
     
@@ -748,7 +753,7 @@ class Core
     # 
     @display.reload_shader
     
-    @display.draw(@origin, @bg_offset, @bg_scale)
+    @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     
     
     
@@ -766,7 +771,7 @@ class Core
       60.times.each do |i|
         screen_print(font: @fonts[:monospace], 
                      string: "F", color: c,
-                     position: @origin+CP::Vec2.new(i*@char_width_pxs,-10))
+                     position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
       end
       
       c1 = ([(0.5*255).to_i]*3 + [255]) 
@@ -814,14 +819,6 @@ class Core
   def mouse_pressed(x,y, button)
     # p [:pressed, x,y, button]
     
-    # offset = CP::Vec2.new(0,10) # probably related to font ascender height
-    
-    # out = ( CP::Vec2.new(x,y) - @origin - offset )
-    
-    # out.x = (out.x / @display.char_width_pxs).to_i
-    # out.y = (out.y / @display.char_height_pxs).to_i
-    
-    # puts out
     @mouse = mouse_to_char_display_pos(x,y)
   end
   
@@ -854,7 +851,7 @@ class Core
   private
   
   def mouse_to_char_display_pos(x,y)
-    out = ( CP::Vec2.new(x,y) - @origin - @bg_offset )
+    out = ( CP::Vec2.new(x,y) - @display_origin_px - @bg_offset )
     
     out.x = (out.x / @char_width_pxs).to_i
     out.y = (out.y / @line_height).to_i
