@@ -32,18 +32,13 @@ void main()
   texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
   gl_Position = modelViewProjectionMatrix * position;
   
+  float line_height = 39;
+  float char_width = 19;
+  float descender_height = 7;
   
-  
-  vec2 charScaling;
-  charScaling.x = charSize.z; // em_width
-  // charScaling.y = charSize.x - charSize.y; // ascender_h - descender_h
-  charScaling.y = 37; // ascender_h - descender_h
-  
-  
-  // charVarying = (position.xy + vec2(0, 0) ) / charScaling;
   
   // charVarying = (position.xy + vec2(0, 28.46+7.23-7)) / vec2(18,28.46+7.23);
   // // the base grid is already offset by the ascender, so you only need to compensate by the descender in the shader
   
-  charVarying = (position.xy + vec2(0, charScaling.y+charSize.y+0.5))/charScaling;
+  charVarying = (position.xy + vec2(0,39-7.5-0.5))/vec2(19,39);
 }

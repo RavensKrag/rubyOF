@@ -33,6 +33,83 @@ class Core
     
     @fonts = Hash.new
     
+    @fonts[:english] = 
+      RubyOF::TrueTypeFont.dsl_load do |x|
+        # TakaoPGothic
+        x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
+        x.size = 23
+        x.add_alphabet :Latin
+      end
+     
+    # @fonts[:japanese] = 
+    #     RubyOF::TrueTypeFont.dsl_load do |x|
+    #       # TakaoPGothic
+    #       # ^ not installed on Ubunut any more, idk why
+    #       # try the package "fonts-takao" or "ttf-takao" as mentioned here:
+    #       # https://launchpad.net/takao-fonts
+    #       x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
+    #       x.size = 40
+    #       x.add_alphabet :Latin
+    #       x.add_alphabet :Japanese
+    #     end
+    
+    
+    
+    
+    
+    
+    
+    @hbar ||= {
+      '8/8' => '█',
+      '7/8' => '▉',
+      '6/8' => '▊',
+      '5/8' => '▋',
+      '4/8' => '▌',
+      '3/8' => '▍',
+      '2/8' => '▎',
+      '1/8' => '▏',
+      '0/8' => ''
+    }
+    
+    @vbar ||= {
+      '0/8' => '',
+      '1/8' => '▁',
+      '2/8' => '▂',
+      '3/8' => '▃',
+      '4/8' => '▄',
+      '5/8' => '▅',
+      '6/8' => '▆',
+      '7/8' => '▇',
+      '8/8' => '█'
+    }
+    
+    
+    
+    
+    
+    
+    
+    @debug = Hash.new # contains debug flags
+    
+    # 
+    # text display alignment variables
+    # 
+    
+    descender_height = 7
+    @line_height = 39
+    @char_width_pxs = 19
+    @bg_offset = CP::Vec2.new(0,-@line_height+descender_height)
+    @bg_scale  = CP::Vec2.new(@char_width_pxs,@line_height)
+    
+    # @debug[:display_clipping] = true
+    # @debug[:align_display_bg] = true
+    @debug[:align_display_fg] = true
+    
+    
+    # 
+    # configure monospace font used in text display (and elsewhere)
+    # 
+    
     @fonts[:monospace] = 
       RubyOF::TrueTypeFont.dsl_load do |x|
         x.path = "DejaVu Sans Mono"
@@ -56,8 +133,8 @@ class Core
       end
     
     @fonts[:monospace].tap do |f|
+      f.line_height = @line_height
       # f.line_height = f.ascender_height - f.descender_height
-      f.line_height = 39
       # f.line_height = f.ascender_height.ceil - f.descender_height.floor
       # f.line_height = (f.ascender_height - f.descender_height).ceil
       # f.line_height = (f.ascender_height - f.descender_height).floor
@@ -66,31 +143,12 @@ class Core
     
     
     
-    @fonts[:english] = 
-      RubyOF::TrueTypeFont.dsl_load do |x|
-        # TakaoPGothic
-        x.path = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
-        x.size = 23
-        x.add_alphabet :Latin
-      end
-     
-    # @fonts[:japanese] = 
-    #     RubyOF::TrueTypeFont.dsl_load do |x|
-    #       # TakaoPGothic
-    #       # ^ not installed on Ubunut any more, idk why
-    #       # try the package "fonts-takao" or "ttf-takao" as mentioned here:
-    #       # https://launchpad.net/takao-fonts
-    #       x.path = "Noto Sans CJK JP Regular" # comes with Ubuntu
-    #       x.size = 40
-    #       x.add_alphabet :Latin
-    #       x.add_alphabet :Japanese
-    #     end
-    
     
     
     @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
-    # @display.autoUpdateColor_bg(false)
-    # @display.autoUpdateColor_fg(false)
+    
+    @display.autoUpdateColor_bg(false)
+    @display.autoUpdateColor_fg(false)
     
     # clear out the garbage bg + test pattern fg
     @display.colors.each_with_index do |bg_c, fg_c, pos|
@@ -98,7 +156,8 @@ class Core
       fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(1.0*255).to_i]*3 + [255])
     end
     
-    test_display = Proc.new do
+    
+    if @debug[:display_clipping]
       @display.print_string(5, "hello world!")
       .each do |pos|
         @display.bg_colors.pixel pos do |c|
@@ -143,30 +202,134 @@ class Core
     end
     
     
-    
-    
-    
-    
-    # clear the area where midi message data will be drawn
-    
-    # CP::BB
-    # l,b,r,t
-    x = 0
-    y = 0
-    w = 36
-    h = 11
-    @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
-    
-    @display.colors.each_with_index do |bg_c, fg_c, pos|
-      if @midi_data_bb.contain_vect? pos
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+    if @debug[:align_display_fg]
+      corners = [
+        CP::Vec2.new(0,0),
+        CP::Vec2.new(1,0),
+        CP::Vec2.new(1,1),
+        CP::Vec2.new(0,1),
+        CP::Vec2.new(@display.x_chars, @display.y_chars),
+        CP::Vec2.new(0,                @display.y_chars),
+        CP::Vec2.new(@display.x_chars, 0               )
+      ]
+      
+      @display.colors.each_with_index do |bg_c, fg_c, pos|
+        if pos.x == 0
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 0, 255]
+        end
+        
+        if pos.x == @display.x_chars-1
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 0, 255]
+        end
+        
+        
+        
+        if pos.y == 0
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 255, 255]
+        end
+        
+        if pos.y == @display.y_chars-1
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 255, 255]
+        end
+        
       end
+      
+      
+      
+      
+      # 
+      # line height test pattern 1
+      # > same text repeated on many lines + horiz bar graphs of varying length
+      # 
+      
+      # clear background using BB
+      
+      # CP::BB
+      # l,b,r,t
+      x = 2
+      y = 2
+      w = 40
+      h = 11
+      bb1 = CP::BB.new(x,y, x+w,y+h)
+      
+      @display.colors.each_with_index do |bg_c, fg_c, pos|
+        if bb1.contain_vect? pos
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+        end
+      end
+      
+      ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
+        @display.print_string(CP::Vec2.new(bb1.l, i), " "*(bb1.r-bb1.l+1))
+      end
+      
+      # draw text lines and horizontal bar charts
+      10.times do |i|
+        @display.print_string(
+          CP::Vec2.new(bb1.l+1,bb1.b+i+1),
+          "Handglovery 0123456789ABCEFG " + @hbar['8/8']*i+@hbar['3/8']
+        )
+      end
+      
+      
+      
+      # 
+      # line height test pattern 2
+      # > alternating dark bar / no dark bar across multiple rows
+      # 
+      
+      # clear the background using bb
+      
+      bb2 = CP::BB.new(50,0, 54,16)
+      
+      @display.colors.each_with_index do |bg_c, fg_c, pos|
+        if bb2.contain_vect? pos
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+        end
+      end
+      
+      (0..(bb2.t)).each do |i|
+        @display.print_string(CP::Vec2.new(bb2.l, i), " "*(bb2.r-bb2.l+1))
+      end
+      
+      # line height test pattern 2
+      10.times do |i|
+        @display.print_string(
+            CP::Vec2.new(50,i*2),
+            (@vbar['8/8']*5)
+          )
+      end
+      
+    
+      
+      
+      
+      @display.flushColors_fg
     end
     
-    (0..(@midi_data_bb.t)).each do |i|
-      @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
-    end
+    
+    
+    # # clear the area where midi message data will be drawn
+    
+    # # CP::BB
+    # # l,b,r,t
+    # x = 0
+    # y = 0
+    # w = 36
+    # h = 11
+    # @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
+    
+    # @display.colors.each_with_index do |bg_c, fg_c, pos|
+    #   if @midi_data_bb.contain_vect? pos
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+    #   end
+    # end
+    
+    # (0..(@midi_data_bb.t)).each do |i|
+    #   @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
+    # end
     
     
     
@@ -220,10 +383,6 @@ class Core
     
     
     
-    @display.autoUpdateColor_bg(false)
-    @display.autoUpdateColor_fg(false)
-    
-    
     p @fonts[:monospace].line_height
     p @display.instance_variable_get(:@ascender_height)
     p @display.instance_variable_get(:@descender_height)
@@ -235,6 +394,12 @@ class Core
       puts "computed ex height: #{f.string_bb('x', 0,0, true).height }"
       puts "computed caps height?: #{f.string_bb('T', 0,0, true).height }"
     end
+    
+    
+    
+    
+    @display.flushColors_bg
+    @display.flushColors_fg
   end
   
   def update
@@ -277,30 +442,6 @@ class Core
     
     
     
-    @hbar ||= {
-      '8/8' => '█',
-      '7/8' => '▉',
-      '6/8' => '▊',
-      '5/8' => '▋',
-      '4/8' => '▌',
-      '3/8' => '▍',
-      '2/8' => '▎',
-      '1/8' => '▏',
-      '0/8' => ''
-    }
-    
-    @vbar ||= {
-      '0/8' => '',
-      '1/8' => '▁',
-      '2/8' => '▂',
-      '3/8' => '▃',
-      '4/8' => '▄',
-      '5/8' => '▅',
-      '6/8' => '▆',
-      '7/8' => '▇',
-      '8/8' => '█'
-    }
-    
     lilac       = [0xf6, 0xbf, 0xff, 0xff]
     pale_blue   = [0xa2, 0xf5, 0xff, 0xff]
     pale_green  = [0x93, 0xff, 0xbb, 0xff]
@@ -322,20 +463,20 @@ class Core
     # TODO: need a way to shift an existing block of text in the display buffer
     
     
-    # 
-    # show MIDI note data
-    # 
-    anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
+    # # 
+    # # show MIDI note data
+    # # 
+    # anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
     
-    @display.print_string(
-      anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
-    ).each do |pos|
-      @display.fg_colors.pixel pos do |fg_c| 
-        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
-        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
-        # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
-      end
-    end
+    # @display.print_string(
+    #   anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime"
+    # ).each do |pos|
+    #   @display.fg_colors.pixel pos do |fg_c| 
+    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
+    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = pale_green
+    #     # fg_c.r, fg_c.g, fg_c.b, fg_c.a = color_to_a[live_colorpicker]
+    #   end
+    # end
     
     
     # @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
@@ -396,115 +537,95 @@ class Core
     # end
     
     
-    # line height test pattern 1 
-    10.times do |i|
-      @display.print_string(
-          anchor+CP::Vec2.new(0,i+1),
-          "Handglovery 0123456789ABCEFG " + @hbar['8/8']*i+@hbar['3/8']
-        )
-    end
-    
-    @display.print_string(CP::Vec2.new(41,6), ((0..127).size/16 / 8).to_s)
     
     
-    # # line height test pattern 2
-    # 10.times do |i|
-    #   @display.print_string(
-    #       anchor+CP::Vec2.new(0,i*2),
-    #       (@vbar['8/8']*5)
-    #     )
+    
+    # # 
+    # # color picker data
+    # # 
+    # anchor = CP::Vec2.new(48,0)
+    
+    # @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
+    # .each do |pos|
+    #   @display.colors.pixel pos do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+    #   end
+    # end
+    # @w.cpp_ptr["colorPicker_color"].tap do |c|
+    #   output_string = [c.r,c.g,c.b,c.a].map{|x| x.to_s(16) }.join(",")
+      
+    #   @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
+    #   .each do |pos|
+    #     @display.colors.pixel pos do |bg_c, fg_c|
+    #       bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
+    #       fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
+    #     end
+    #   end
     # end
     
     
     
     
     
-    # 
-    # color picker data
-    # 
-    anchor = CP::Vec2.new(48,0)
     
-    @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
-    .each do |pos|
-      @display.colors.pixel pos do |bg_c, fg_c|
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-      end
-    end
-    @w.cpp_ptr["colorPicker_color"].tap do |c|
-      output_string = [c.r,c.g,c.b,c.a].map{|x| x.to_s(16) }.join(",")
+    # # 
+    # # bar graph tests
+    # # 
+    
+    # count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
+    # bg_color = ([(0.5*255).to_i]*3 + [255])
+    # fg_color = lilac
+    
+    # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+    # .each do |pos|
+    #   @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #   end
       
-      @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
-      .each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-        end
-      end
-    end
+    #   @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #   end
+    # end
+    
+    # @display.print_string(
+    #   CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
+    # )
     
     
+    # # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
     
-    
-    
-    
-    # 
-    # bar graph tests
-    # 
-    
-    count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
-    bg_color = ([(0.5*255).to_i]*3 + [255])
-    fg_color = lilac
-    
-    @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
-    .each do |pos|
-      @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-      end
+    #   # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
       
-      @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-      end
-    end
+    #   # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
     
-    @display.print_string(
-      CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
-    )
+    # # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
+    # count = 4
+    # anchor = CP::Vec2.new(20,15) # bottom left position
+    # bg_color = ([(0.5*255).to_i]*3 + [255])
+    # fg_color = pale_yellow
     
-    
-    # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
-    
-      # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
+    # @display.each_index
+    # .select{   |pos| pos.x == anchor.x+0  }
+    # .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
+    # .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
+    # .each_with_index do |pos, i|
+    #   @display.print_string(pos + CP::Vec2.new(0,0), 'x')
       
-      # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
-    
-    # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
-    count = 4
-    anchor = CP::Vec2.new(20,15) # bottom left position
-    bg_color = ([(0.5*255).to_i]*3 + [255])
-    fg_color = pale_yellow
-    
-    @display.each_index
-    .select{   |pos| pos.x == anchor.x+0  }
-    .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
-    .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
-    .each_with_index do |pos, i|
-      @display.print_string(pos + CP::Vec2.new(0,0), 'x')
-      
-      if i == count-1
-        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
-      else
-        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
-      end
+    #   if i == count-1
+    #     @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
+    #   else
+    #     @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
+    #   end
       
       
-      @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-      end
-    end
+    #   @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
+    #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+    #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+    #   end
+    # end
     
     
     @display.flushColors_bg()
@@ -549,13 +670,6 @@ class Core
     
     
     
-    @display.reload_shader
-    
-    z = 5
-    @display.draw(@origin, z)
-    
-    
-    
     # RubyOF::CPP_Callbacks.render_material_editor(
     #   @w.cpp_ptr["materialEditor_mesh"],
     #   @w.cpp_ptr["materialEditor_shader"], "material_editor",
@@ -565,6 +679,56 @@ class Core
       
     #   20, 500, 300, 300 # x,y,w,h
     # )
+    
+    
+    
+    
+    
+    
+    
+    # 
+    # render text display
+    # 
+    @display.reload_shader
+    
+    @display.draw(@origin, @bg_offset, @bg_scale)
+    
+    
+    
+    # 
+    # text display background alignment test
+    # 
+    if @debug[:align_display_bg]
+      
+      # (alternate colored bg lines, dark and light, helps find scaling)
+      # (a row of the character "F" helps configure character width)
+      c = RubyOF::Color.new.tap do |c|
+        c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
+      end
+      
+      60.times.each do |i|
+        screen_print(font: @fonts[:monospace], 
+                     string: "F", color: c,
+                     position: @origin+CP::Vec2.new(i*@char_width_pxs,-10))
+      end
+      
+      c1 = ([(0.5*255).to_i]*3 + [255]) 
+      c2 = ([(0.7*255).to_i]*3 + [255]) 
+      @display.bg_colors.each_with_index do |bg_c, pos|
+        if pos.y % 2 == 0
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = c1
+        else
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = c2
+        end
+      end
+      
+      
+      # 
+      # text display color alignment test
+      # 
+    
+    end
+    
     
   end
   
@@ -607,6 +771,7 @@ class Core
   def mouse_dragged(x,y, button)
     # p [:dragged, x,y, button]
     @mouse = mouse_to_char_display_pos(x,y)
+    puts @mouse
   end
   
   def mouse_released(x,y, button)
@@ -636,26 +801,24 @@ class Core
     @mouse__charDisplaySpace = CP::Vec2.new(0,0)
     
     
-    offset = CP::Vec2.new(0,10)
+    out = ( CP::Vec2.new(x,y) - @origin - @bg_offset )
     
-    out = ( CP::Vec2.new(x,y) - @origin - offset )
-    
-    out.x = (out.x / @display.char_width_pxs).to_i
-    out.y = (out.y / @display.char_height_pxs).to_i
+    out.x = (out.x / @char_width_pxs).to_i
+    out.y = (out.y / @line_height).to_i
     
     return out
   end
   
   
   
-  def screen_print(font:, string:, position:, z:1, color: @text_fg_color)
+  def screen_print(font:, string:, position:, color: )
     
       font.font_texture.bind
     
       ofPushMatrix()
       ofPushStyle()
     begin
-      ofTranslate(position.x, position.y, z)
+      ofTranslate(position.x, position.y, 0)
       
       ofSetColor(color)
       
@@ -676,3 +839,4 @@ class Core
   
   
 end
+
