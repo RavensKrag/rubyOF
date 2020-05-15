@@ -24,6 +24,7 @@ class Core
   
   def setup
     @first_draw = true
+    @mouse = CP::Vec2.new(0,0)
     
     
     @midi_msg_memory = SequenceMemory.new
@@ -253,8 +254,10 @@ class Core
       h = 11
       bb1 = CP::BB.new(x,y, x+w,y+h)
       
-      @display.colors.each_with_index do |bg_c, fg_c, pos|
-        if bb1.contain_vect? pos
+      @display.each_index
+      .select{ |pos|  bb1.contain_vect? pos  }
+      .each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c|
           bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
           fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
         end
@@ -538,12 +541,9 @@ class Core
         @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
         
         
-        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch / 8).to_s)
+        # signal name
         
-        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (midi_msg.pitch % 8).to_s)
-        
-        # @display.print_string(anchor+CP::Vec2.new(20,i+1), (@hbar["0/8"]).to_s)
-        
+        # @display.print_string(anchor+CP::Vec2.new(26,i+1), "test")
         
       end
       
@@ -573,7 +573,39 @@ class Core
             fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
           end
         end
+        
       end
+      
+      
+      
+      # 
+      # mouse data
+      # 
+      
+      
+      bb = CP::BB.new(40,13, 58,15)
+      
+      
+      @display.each_index
+      .select{ |pos|  bb.contain_vect? pos  }
+      .each do |pos|
+        @display.colors.pixel pos do |bg_c, fg_c|
+          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
+          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
+        end
+      end
+      
+      ((bb.b.to_i)..(bb.t.to_i)).each do |y|
+        @display.print_string(CP::Vec2.new(bb.l, y), " "*(bb.r-bb.l+1))
+      end
+      
+      anchor = CP::Vec2.new(bb.l, bb.b)
+      
+      @display.print_string(anchor+CP::Vec2.new(1,1), "mouse @ ")
+      @display.print_string(anchor+CP::Vec2.new(9,1),
+        "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
+      )
+      
     end
     
     
@@ -783,7 +815,7 @@ class Core
   def mouse_dragged(x,y, button)
     # p [:dragged, x,y, button]
     @mouse = mouse_to_char_display_pos(x,y)
-    puts @mouse
+    # puts @mouse
   end
   
   def mouse_released(x,y, button)
@@ -809,10 +841,6 @@ class Core
   private
   
   def mouse_to_char_display_pos(x,y)
-    @mouse__screenSpace      = CP::Vec2.new(0,0)
-    @mouse__charDisplaySpace = CP::Vec2.new(0,0)
-    
-    
     out = ( CP::Vec2.new(x,y) - @origin - @bg_offset )
     
     out.x = (out.x / @char_width_pxs).to_i
