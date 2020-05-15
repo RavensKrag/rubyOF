@@ -494,7 +494,7 @@ void Init_rubyOF_project()
 	rb_c_ofxMidiMessage
 		.define_constructor(Constructor<ofxMidiMessage>())
 		
-		// .define_method("status",    &ofxMidiMessage__get_status)
+		.define_method("getStatus", &ofxMidiMessage__get_status)
 		
 		.define_method("channel",   &ofxMidiMessage__get_channel)
 		.define_method("pitch",     &ofxMidiMessage__get_pitch)
@@ -505,22 +505,6 @@ void Init_rubyOF_project()
 		
 		.define_method("portNum",   &ofxMidiMessage__get_portNum)
 		.define_method("portName",  &ofxMidiMessage__get_portName)
-		
-		
-		
-		// .define_method("status=",    &ofxMidiMessage__set_status)
-		
-		.define_method("channel=",   &ofxMidiMessage__set_channel)
-		.define_method("pitch=",     &ofxMidiMessage__set_pitch)
-		.define_method("velocity=",  &ofxMidiMessage__set_velocity)
-		.define_method("value=",     &ofxMidiMessage__set_value)
-		
-		.define_method("deltatime=", &ofxMidiMessage__set_deltatime)
-		
-		.define_method("portNum=",   &ofxMidiMessage__set_portNum)
-		.define_method("portName=",  &ofxMidiMessage__set_portName)
-		
-		
 		
 		.define_method("get_num_bytes",  &ofxMidiMessage__get_num_bytes)
 		.define_method("get_byte",       &ofxMidiMessage__get_byte)
@@ -568,9 +552,49 @@ void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value){
 // ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.h
 // 
 
-// unsigned char ofxMidiMessage__get_status(ofxMidiMessage self){
+int ofxMidiMessage__get_status(ofxMidiMessage self){
+	// do not need to explictly state array size
+	// src: https://stackoverflow.com/questions/32918448/is-it-bad-to-not-define-a-static-array-size-in-a-class-but-rather-to-let-it-au
+	static const MidiStatus STATUS_IDS[] = {
+		MIDI_UNKNOWN,
+		
+		// channel voice messages
+		MIDI_NOTE_OFF           ,
+		MIDI_NOTE_ON            ,
+		MIDI_CONTROL_CHANGE     ,
+		MIDI_PROGRAM_CHANGE     ,
+		MIDI_PITCH_BEND         ,
+		MIDI_AFTERTOUCH         ,
+		MIDI_POLY_AFTERTOUCH    ,
+		
+		// system messages
+		MIDI_SYSEX              ,
+		MIDI_TIME_CODE          ,
+		MIDI_SONG_POS_POINTER   ,
+		MIDI_SONG_SELECT        ,
+		MIDI_TUNE_REQUEST       ,
+		MIDI_SYSEX_END          ,
+		MIDI_TIME_CLOCK         ,
+		MIDI_START              ,
+		MIDI_CONTINUE           ,
+		MIDI_STOP               ,
+		MIDI_ACTIVE_SENSING     ,
+		MIDI_SYSTEM_RESET       
+	};
 	
-// }
+	
+	MidiStatus status = self.status;
+	
+	int ary_size = sizeof(STATUS_IDS)/sizeof(STATUS_IDS[0]);
+	for(int i=0; i < ary_size; i++){
+		if(status == STATUS_IDS[i]){
+			return i;
+		}
+	}
+	
+	
+	return -1; // return -1 on error
+}
 
 int ofxMidiMessage__get_channel(ofxMidiMessage self){
 	return self.channel;
@@ -595,37 +619,6 @@ int ofxMidiMessage__get_portNum(ofxMidiMessage self){
 std::string ofxMidiMessage__get_portName(ofxMidiMessage self){
 	return self.portName;
 }
-
-
-
-// void ofxMidiMessage__set_status(){
-	
-// }
-
-void ofxMidiMessage__set_channel(ofxMidiMessage self, int ch){
-	self.channel = ch;
-}
-void ofxMidiMessage__set_pitch(ofxMidiMessage self, int pitch){
-	self.pitch = pitch;
-}
-void ofxMidiMessage__set_velocity(ofxMidiMessage self, int vel){
-	self.velocity = vel;
-}
-void ofxMidiMessage__set_value(ofxMidiMessage self, int val){
-	self.value = val;
-}
-
-void ofxMidiMessage__set_deltatime(ofxMidiMessage self, double dt){
-	self.deltatime = dt;
-}
-
-void ofxMidiMessage__set_portNum(ofxMidiMessage self, int port){
-	self.portNum = port;
-}
-void ofxMidiMessage__set_portName(ofxMidiMessage self, std::string port){
-	self.portName = port;
-}
-
 
 
 int ofxMidiMessage__get_num_bytes(ofxMidiMessage self){

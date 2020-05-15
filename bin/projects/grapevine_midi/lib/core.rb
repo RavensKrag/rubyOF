@@ -616,13 +616,33 @@ class Core
         
         
         # signal name
-        @display.print_string(anchor+CP::Vec2.new(40,i+1), "test")
-        # ^ TODO: wrap the C++ interface that lets you read the status
-        # ('status' is a member variable, of a custom enum type)
+        status_string =
+          case midi_msg.status
+          when :note_on
+            "on"
+          when :note_off
+            "off"
+          when :control_change
+            "CC" # <-- no pitch or velocity data, control and value instead
+          else
+            "???"
+          end
+        status_string = status_string.ljust(3)
+          # ^ justify to max length of any one string 
+          #   so that you don't get ghosting of old characters
+        
+        midi_msg.status
+        @display.print_string(
+          anchor+CP::Vec2.new(38,i+1),
+          status_string
+        )
         
         
         # channel
-        @display.print_string(anchor+CP::Vec2.new(46,i+1), "ch#{midi_msg.channel}")
+        @display.print_string(
+          anchor+CP::Vec2.new(44,i+1),
+          "ch#{midi_msg.channel.to_s.ljust(2)}" # there are 16 possible midi channels
+        )
         
       end
       
