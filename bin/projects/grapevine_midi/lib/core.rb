@@ -202,10 +202,12 @@ class Core
       @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
       @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
       
-      # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c|
-      #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
-      #   fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
-      # end
+      
+      # pos = CP::Vec2.new(50,50)
+      # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+      # @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+      # # ^ Attempting to access indicies that are out of range throws exception
+      
     end
     
     
@@ -227,7 +229,7 @@ class Core
       end
       
       @display.each_position
-      .select{ |pos| pos.y == 0 or pos.x == @display.y_chars-1  }
+      .select{ |pos| pos.y == 0 or pos.y == @display.y_chars-1  }
       .each do |pos|
         @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
       end

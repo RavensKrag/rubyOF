@@ -238,25 +238,32 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   private :getBgColorPixels, :getFgColorPixels
   
   class ColorHelper
-    def initialize(pixels)
+    include EnumHelper
+    
+    def initialize(display, pixels)
+      @display = display
       @pixels = pixels
     end
     
     def [](pos)
-      return @pixels.getColor_xy(pos.x, pos.y)
+      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+        return @pixels.getColor_xy(pos.x, pos.y)
+      end
     end
     
     def []=(pos, color)
-      return @pixels.setColor_xy(pos.x, pos.y, color)
+      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+        return @pixels.setColor_xy(pos.x, pos.y, color)
+      end
     end
   end
   
   def background
-    return ColorHelper.new(getBgColorPixels())
+    return ColorHelper.new(self, getBgColorPixels())
   end
   
   def foreground
-    return ColorHelper.new(getFgColorPixels())
+    return ColorHelper.new(self, getFgColorPixels())
   end
   
   # @display.each_position do |pos|
