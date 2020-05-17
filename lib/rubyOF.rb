@@ -118,6 +118,18 @@ class Color
 			# Thus, the array provided will always be an in/out parameter.
 			self.rgba(color_array + [255])
 		end
+		
+		def hex(hex)
+			color = self.new
+			color.set_hex(hex, 255)
+			return color
+		end
+		
+		def hex_alpha(hex, alpha)
+			color = self.new
+			color.set_hex(hex, alpha)
+			return color
+		end
 	end
 end
 	

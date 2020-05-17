@@ -255,8 +255,8 @@ class Core
       @display.each_position
       .select{ |pos|  bb1.contain_vect? pos  }
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
-        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
+        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
       end
       
       ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
@@ -285,8 +285,8 @@ class Core
       @display.each_position
       .select{ |pos| bb2.contain_vect? pos }
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
-        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
+        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
       end
       
       (0..(bb2.t)).each do |i|
@@ -384,8 +384,8 @@ class Core
       @display.each_position
       .select{ |pos| @midi_data_bb.contain_vect? pos }
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
-        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
+        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
       end
       
       
@@ -612,12 +612,12 @@ class Core
       @display.print_string(
         anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
       ).each do |pos|
-        # @display.foreground[pos] = RubyOF::Color.rgba([0xf6,0xff,0xf6, 255])
+        # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
         # @display.foreground[pos] = RubyOF::Color.rgba( @colors[:pale_green] )
         # @display.foreground[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
         
         # @display.background[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
-        @display.background[pos] = RubyOF::Color.rgba([0xc4, 0xcf, 0xff, 0xff])
+        @display.background[pos] = RubyOF::Color.hex( 0xc4cfff )
       end
       
       # dump data on all messages in the queue
@@ -776,8 +776,8 @@ class Core
       @display.each_position
       .select{ |pos|  bb.contain_vect? pos  }
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
-        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
+        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
       end
       
       ((bb.b.to_i)..(bb.t.to_i)).each do |y|
