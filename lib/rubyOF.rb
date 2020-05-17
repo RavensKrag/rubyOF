@@ -113,8 +113,10 @@ class Color
 		def rgb(color_array)
 			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an integer, with a maximum of 255 per channel)" unless color_array.size == 3
 			
-			color_array << 255
-			self.rgba(color_array)
+			# Must add, can't push because arrays in Ruby are objects
+			# and all objects in Ruby are reference types.
+			# Thus, the array provided will always be an in/out parameter.
+			self.rgba(color_array + [255])
 		end
 	end
 end

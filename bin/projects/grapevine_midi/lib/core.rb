@@ -355,8 +355,8 @@ class Core
         
         
         offset = CP::Vec2.new(1,0)
-        @display.background[pos+offset] = RubyOF::Color.rgb( bg_color )
-        @display.foreground[pos+offset] = RubyOF::Color.rgb( fg_color )
+        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
+        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
       end
     end
     
@@ -882,9 +882,10 @@ class Core
       c1 = [(0.5*255).to_i]*3
       c2 = [(0.7*255).to_i]*3
       
-      stripe1, stripe2 = @display.each_position.chunk{ |pos| pos.y % 2 }
-      stripe1.each{ |pos|  @display.background[pos] = RubyOF::Color.rgb( c1 ) }
-      stripe1.each{ |pos|  @display.background[pos] = RubyOF::Color.rgb( c2 ) }
+      assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
+      
+      assoc[0].each{ |pos| @display.background[pos] = RubyOF::Color.rgb( c1 ) }
+      assoc[1].each{ |pos| @display.background[pos] = RubyOF::Color.rgb( c2 ) }
       
       
       
