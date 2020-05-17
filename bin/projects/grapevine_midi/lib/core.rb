@@ -4,6 +4,7 @@
 # stuff to load just once
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
+require LIB_DIR/'live_code_GLSL.rb'
 
 # stuff to live load ('load' allows for reloading stuff)
 load LIB_DIR/'char_mapped_display.rb'
@@ -16,11 +17,6 @@ class Core
   def initialize(window)
     @w = window
   end
-  
-  def on_reload
-    setup()
-  end
-  
   
   def setup
     @first_draw = true
@@ -466,7 +462,6 @@ class Core
     
     
     @looper_pedal = LooperPedal.new
-    @looper_pedal.setup
     
     btn_id = 'x'.codepoints.first
     @input_handler.register_callback(btn_id, &@looper_pedal.button_handler)
@@ -495,7 +490,91 @@ class Core
     @display.flushColors_fg
   end
   
+  
+  def on_reload
+    setup()
+    @looper_pedal.setup
+    
+  end
+  
+  
+  
   def update
+    # liveGLSL.foo "char_display" do |path_to_shader|
+      # @display.reload_shader
+    # end
+    
+    
+    # prototype possible smarter live-loading system for GLSL shaders
+    
+    shader_name = "char_display"
+    files = [
+      PROJECT_DIR/"bin/data/#{shader_name}.vert",
+      PROJECT_DIR/"bin/data/#{shader_name}.frag"
+    ]
+    
+    @shaderIsCorrect ||= nil
+    
+    if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp } 
+      loaded_correctly = @display.reload_shader
+      
+      
+      
+      puts "load code: #{loaded_correctly}"
+      # ^ apparently the boolean is still true when the shader is loaded with an error???
+      
+      puts "loaded? : #{@display.shader_loaded?}"
+      # ^ this doesn't work either
+      
+      
+      # This is a long-standing issue, open since 2015:
+      
+      # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
+      # https://github.com/openframeworks/openFrameworks/pull/3734
+      
+      # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
+      
+      
+      if loaded_correctly
+        case @shaderIsCorrect
+        when true
+          # good -> good
+          puts "GLSL: still good"
+        when false
+          # bad -> good
+          puts "GLSL: fixed!"
+        when nil
+          # nothing -> good
+          puts "GLSL: shader loaded"
+        end
+        
+        @shaderIsCorrect = true
+      else
+        case @shaderIsCorrect
+        when true
+          # good -> bad
+          puts "GLSL: something broke"
+        when false
+          # bad -> bad
+          puts "GLSL: still broken..."
+        when nil
+          # nothing -> bad
+          puts "GLSL: could not load shader"
+        end
+        
+        @shaderIsCorrect = false;
+      end
+        
+      
+      @shader_timestamp = Time.now
+    end
+    
+    
+    
+    
+    
+    
+    
     @input_handler.update
     
     
@@ -572,9 +651,7 @@ class Core
         
         # midi bytes
         @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
-        
         @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
-        
         @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
         
         
@@ -616,6 +693,7 @@ class Core
         
         
         # signal name
+        # (on, off, CC, etc)
         status_string =
           case midi_msg.status
           when :note_on
@@ -641,7 +719,9 @@ class Core
         # channel
         @display.print_string(
           anchor+CP::Vec2.new(44,i+1),
-          "ch#{midi_msg.channel.to_s.ljust(2)}" # there are 16 possible midi channels
+          "ch#{midi_msg.channel.to_s.ljust(2)}"
+          # ^ there are 16 possible midi channels
+          #   thus, worse case the channel name has 2 digits in it
         )
         
       end
@@ -711,6 +791,8 @@ class Core
     
     
     
+    
+    
     @display.flushColors_bg()
     @display.flushColors_fg()
   end
@@ -771,7 +853,6 @@ class Core
     # 
     # render text display
     # 
-    @display.reload_shader
     
     @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     

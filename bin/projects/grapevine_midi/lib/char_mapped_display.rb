@@ -49,15 +49,45 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     # set up information needed for text coloring shader
     # 
     
-    load_shaders("char_display")
+    
+    @shader_name = "char_display" 
+    load_shaders(@shader_name)
     
     
   end
   
   def reload_shader
-    load_shaders("char_display")
+    load_shaders(@shader_name)
   end
   
+  def shader_loaded?
+    shader = fgText_getShader()
+    shader.isLoaded()
+  end
+  
+  # def update
+  #   @glsl_live_loader ||= 
+  #   LiveCode_GLSL.new do
+  #     shader = fgText_getShader()
+  #     load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
+  #     # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
+      
+  #     if load_flag
+  #       # puts "Ruby: shader loaded"
+  #     else
+  #       puts "ERROR: couldn't load shaders '#{args.inspect}'"
+  #     end
+      
+  #   end
+    
+  #   @glsl_live_loader.update
+  #   # watch a particular filepath for changes to GLSL shaders
+  #   # if either of the two files involved is updated, then reload the shaders
+    
+  #   load_shaders()
+    
+    
+  # end
   
   # NOTE: do not move on z! that's not gonna give you the z-indexing you want! that's just a big headache!!! (makes everything weirdly blurry and in a weird position)
   def draw(origin, bg_offset, bg_scale)
@@ -87,66 +117,66 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    shader = fgText_getShader()
-    
-    shader.begin()
-    
-    shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
-    shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
-    
-    RubyOF::CPP_Callbacks.ofShader_bindUniforms(
-      shader,
-      "origin",   origin.x, origin.y,
-      "charSize", @ascender_height, @descender_height, @em_width
-    )
-    
-    # shader.setUniform2f("origin",   )
-    # shader.setUniform2f("charSize", )
-    
-    
-    ofPushMatrix()
-    ofPushStyle()
-  begin
-    # pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
-    # ofTranslate(origin.x, origin.y, z)
-    
-    # x,y = [0,0]
-    # vflip = true
-    # # TODO: convert @char_grid to array of strings (less garbage?)
-    # @char_grid.each_line.each_with_index do |line, i|
-    #   pos = origin+CP::Vec2.new(0,i*@line_height)
-    #   # @font.draw_string(line, pos.x, pos.y)
-    #   # ^ if you render with draw_string, there's no weird line height errors
-    #   #   but there are erros with drawing from mesh (position slightly off)
-    #   #   is this a texture filtering error or similar? not sure, but may want to just use draw_string. how does the shader have to change? can I still use a shader?
+      shader = fgText_getShader()
       
-    #   ofEnableBlendMode :alpha
-    #   ofPushMatrix()
-    #   ofTranslate(pos.x, pos.y, 0)
-    #   @font.font_texture.bind
-    #   text_mesh = @font.get_string_mesh(line, x,y, vflip)
-    #   text_mesh.draw()
-    #   @font.font_texture.unbind
-    #   ofPopMatrix()
-    # end
-    
-    
-    
-    ofEnableBlendMode :alpha
-    ofPushMatrix()
-    ofTranslate(origin.x, origin.y, 0)
-    @font.font_texture.bind
-    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
-    text_mesh.draw()
-    @font.font_texture.unbind
-    ofPopMatrix()
-    
-  ensure
-    ofPopStyle()
-    ofPopMatrix()
-    
-    shader.end()
-  end
+      shader.begin()
+      
+      shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
+      shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
+      
+      RubyOF::CPP_Callbacks.ofShader_bindUniforms(
+        shader,
+        "origin",   origin.x, origin.y,
+        "charSize", @ascender_height, @descender_height, @em_width
+      )
+      
+      # shader.setUniform2f("origin",   )
+      # shader.setUniform2f("charSize", )
+      
+      
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      # pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
+      # ofTranslate(origin.x, origin.y, z)
+      
+      # x,y = [0,0]
+      # vflip = true
+      # # TODO: convert @char_grid to array of strings (less garbage?)
+      # @char_grid.each_line.each_with_index do |line, i|
+      #   pos = origin+CP::Vec2.new(0,i*@line_height)
+      #   # @font.draw_string(line, pos.x, pos.y)
+      #   # ^ if you render with draw_string, there's no weird line height errors
+      #   #   but there are erros with drawing from mesh (position slightly off)
+      #   #   is this a texture filtering error or similar? not sure, but may want to just use draw_string. how does the shader have to change? can I still use a shader?
+        
+      #   ofEnableBlendMode :alpha
+      #   ofPushMatrix()
+      #   ofTranslate(pos.x, pos.y, 0)
+      #   @font.font_texture.bind
+      #   text_mesh = @font.get_string_mesh(line, x,y, vflip)
+      #   text_mesh.draw()
+      #   @font.font_texture.unbind
+      #   ofPopMatrix()
+      # end
+      
+      
+      
+      ofEnableBlendMode :alpha
+      ofPushMatrix()
+      ofTranslate(origin.x, origin.y, 0)
+      @font.font_texture.bind
+      text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+      text_mesh.draw()
+      @font.font_texture.unbind
+      ofPopMatrix()
+      
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      shader.end()
+    end
   
   end
   
@@ -461,11 +491,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
     # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
     
-    if load_flag
-      # puts "Ruby: shader loaded"
-    else
-      puts "ERROR: couldn't load shaders '#{args.inspect}'"
-    end
+    # if load_flag
+    #   # puts "Ruby: shader loaded"
+    # else
+    #   puts "ERROR: couldn't load shaders '#{args.inspect}'"
+    # end
   end
   
   
