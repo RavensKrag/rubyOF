@@ -105,10 +105,10 @@ class Core
     
     
     @colors = {
-      :lilac       => [0xf6, 0xbf, 0xff, 0xff],
-      :pale_blue   => [0xa2, 0xf5, 0xff, 0xff],
-      :pale_green  => [0x93, 0xff, 0xbb, 0xff],
-      :pale_yellow => [0xff, 0xfc, 0xac, 0xff],
+      :lilac       => RubyOF::Color.hex_alpha( 0xf6bfff, 0xff ),
+      :pale_blue   => RubyOF::Color.hex_alpha( 0xa2f5ff, 0xff ),
+      :pale_green  => RubyOF::Color.hex_alpha( 0x93ffbb, 0xff ),
+      :pale_yellow => RubyOF::Color.hex_alpha( 0xfffcac, 0xff ),
     }
     
     
@@ -316,18 +316,18 @@ class Core
       # 
       
       count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
-      bg_color = ([(0.5*255).to_i]*3 + [255])
+      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
       fg_color = @colors[:lilac]
       
       @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
       .each do |pos|
         offset = CP::Vec2.new(0,0)
-        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
-        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
+        @display.background[pos+offset] = bg_color
+        @display.foreground[pos+offset] = fg_color
         
         offset = CP::Vec2.new(0,1)
-        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
-        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
+        @display.background[pos+offset] = bg_color
+        @display.foreground[pos+offset] = fg_color
       end
       
       @display.print_string(
@@ -338,7 +338,7 @@ class Core
       # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
       count = 4
       anchor = CP::Vec2.new(20,15) # bottom left position
-      bg_color = ([(0.5*255).to_i]*3 + [255])
+      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
       fg_color = @colors[:pale_yellow]
       
       @display.each_position
@@ -357,8 +357,8 @@ class Core
         
         
         offset = CP::Vec2.new(1,0)
-        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
-        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
+        @display.background[pos+offset] = bg_color
+        @display.foreground[pos+offset] = fg_color
       end
     end
     
@@ -613,10 +613,10 @@ class Core
         anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
       ).each do |pos|
         # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
-        # @display.foreground[pos] = RubyOF::Color.rgba( @colors[:pale_green] )
-        # @display.foreground[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
+        # @display.foreground[pos] = @colors[:pale_green]
+        # @display.foreground[pos] = live_colorpicker
         
-        # @display.background[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
+        # @display.background[pos] = live_colorpicker
         @display.background[pos] = RubyOF::Color.hex( 0xc4cfff )
       end
       
@@ -645,7 +645,7 @@ class Core
           # will cover it at 1 fraction per note
         value = 15
         range = 0..127
-        bg_color = ([(0.5*255).to_i]*3 + [255])
+        bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
         fg_color = @colors[:lilac]
         
         full_bars = midi_msg.pitch / 8
@@ -666,8 +666,8 @@ class Core
           bar_graph.ljust(count)
         )
         .each do |pos|
-          @display.background[pos] = RubyOF::Color.rgba(bg_color)
-          @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
+          @display.background[pos] = bg_color
+          @display.foreground[pos] = fg_color
         end
         
         # ^ it's just this thrashing of colors that kills performance!
@@ -720,7 +720,7 @@ class Core
         
       end
       
-      # bg_color = ([(0.5*255).to_i]*3 + [255])
+      # bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
       # fg_color = @colors[:lilac]
       
       # # l,b,r,t
@@ -732,8 +732,8 @@ class Core
       # @display.each_position
       # .select{ |pos|  bb.contain_vect? pos  }
       # .each do |pos|
-      #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
-      #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
+      #   @display.background[pos] = bg_color
+      #   @display.foreground[pos] = fg_color
       # end
       
       # .each do |pos|
@@ -881,13 +881,13 @@ class Core
                      position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
       end
       
-      c1 = [(0.5*255).to_i]*3
-      c2 = [(0.7*255).to_i]*3
+      c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+      c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
       
       assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
       
-      assoc[0].each{ |pos| @display.background[pos] = RubyOF::Color.rgb( c1 ) }
-      assoc[1].each{ |pos| @display.background[pos] = RubyOF::Color.rgb( c2 ) }
+      assoc[0].each{ |pos| @display.background[pos] = c1 }
+      assoc[1].each{ |pos| @display.background[pos] = c2 }
       
       
       
