@@ -16,6 +16,43 @@ class MidiOut
 end
 
 class MidiMessage
+  MidiStatusCodes = [
+    :unknown,
+    
+    # channel voice messages
+    :note_off           ,
+    :note_on            ,
+    :control_change     ,
+    :program_change     ,
+    :pitch_bend         ,
+    :aftertouch         ,
+    :poly_aftertouch    ,
+    
+    # system messages
+    :sysex              ,
+    :time_code          ,
+    :song_pos_pointer   ,
+    :song_select        ,
+    :tune_request       ,
+    :sysex_end          ,
+    :time_clock         ,
+    :start              ,
+    :continue           ,
+    :stop               ,
+    :active_sensing     ,
+    :system_reset       
+  ];
+  
+  private :getStatus
+  def status
+    # C++ code accesses struct and converts enum to int
+    # this Ruby code converts that int into a Symbol
+    i = getStatus()
+    return MidiStatusCodes[i]
+  end
+  
+  
+  
   def ==(other)
     if other.is_a? self.class
       # TODO: implement this comparison

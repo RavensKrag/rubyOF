@@ -30,12 +30,16 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     x,y = [0,0]
     vflip = true
-    char_box__em = @font.string_bb("m", x,y, vflip);
-    ascender_height  = @font.ascender_height
-    descender_height = @font.descender_height
     
-    @char_width_pxs  = char_box__em.width
-    @char_height_pxs = ascender_height - descender_height
+    # OPTIMIZE: cache these values as long as @font remains the same
+    @em_width = @font.string_bb("m", x,y, vflip).width;
+    @ascender_height  = @font.ascender_height
+    @descender_height = @font.descender_height
+    
+    
+    
+    @char_width_pxs  = @em_width
+    @line_height = font.line_height
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
@@ -45,41 +49,61 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     # set up information needed for text coloring shader
     # 
     
-    load_shaders("char_display")
+    
+    @shader_name = "char_display" 
+    load_shaders(@shader_name)
     
     
   end
   
   def reload_shader
-    load_shaders("char_display")
+    load_shaders(@shader_name)
   end
   
+  def shader_loaded?
+    shader = fgText_getShader()
+    shader.isLoaded()
+  end
   
-  def draw(origin, z)
-    @uniform__origin = origin
-    @uniform__charSize = CP::Vec2.new(@char_width_pxs, @char_height_pxs)
+  # def update
+  #   @glsl_live_loader ||= 
+  #   LiveCode_GLSL.new do
+  #     shader = fgText_getShader()
+  #     load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
+  #     # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
+      
+  #     if load_flag
+  #       # puts "Ruby: shader loaded"
+  #     else
+  #       puts "ERROR: couldn't load shaders '#{args.inspect}'"
+  #     end
+      
+  #   end
+    
+  #   @glsl_live_loader.update
+  #   # watch a particular filepath for changes to GLSL shaders
+  #   # if either of the two files involved is updated, then reload the shaders
+    
+  #   load_shaders()
     
     
-    line_height = 38
-    
+  # end
+  
+  # NOTE: do not move on z! that's not gonna give you the z-indexing you want! that's just a big headache!!! (makes everything weirdly blurry and in a weird position)
+  def draw(origin, bg_offset, bg_scale)
     x,y = [0,0]
     vflip = true
-    position = origin + CP::Vec2.new(0,line_height*1)
-    
-    
-    
-    char_box__em = @font.string_bb("m", x,y, vflip);
-    ascender_height  = @font.ascender_height
-    descender_height = @font.descender_height
-    
-    
+    position = origin + bg_offset
     
       ofPushMatrix()
       ofPushStyle()
     begin
-      ofTranslate(position.x, position.y - ascender_height, z)
+      ofTranslate(position.x, position.y, 0)
+      # ^ ascender height is the missing offset needed in the shader!
+      #   Need to bind that and pass it in.
+      #   Maybe can reduce some code duplication after that?
       
-      ofScale(@char_width_pxs, @char_height_pxs, 1)
+      ofScale(bg_scale.x, bg_scale.y, 1)
       
       
       bgMesh_draw()
@@ -93,45 +117,66 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     
-    shader = fgText_getShader()
-    
-    shader.begin()
-    
-    shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
-    shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
-    
-    RubyOF::CPP_Callbacks.ofShader_bindUniforms(
-      shader,
-      "origin",   @uniform__origin.x,   @uniform__origin.y,
-      "charSize", @uniform__charSize.x, @uniform__charSize.y
-    )
-    
-    # shader.setUniform2f("origin",   )
-    # shader.setUniform2f("charSize", )
-    
-    # p @uniform__charSize.to_a
-    
-    ofPushMatrix()
-    ofPushStyle()
-  begin
-    pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
-    ofTranslate(pos.x, pos.y, z)
-    
-    # ofSetColor(color)
-    
-    x,y = [0,0]
-    vflip = true
-    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
-    
-    text_mesh.draw()
-  ensure
-    ofPopStyle()
-    ofPopMatrix()
-    
-    # @font.font_texture.unbind
-    # @text_colors_gpu.unbind
-    shader.end()
-  end
+      shader = fgText_getShader()
+      
+      shader.begin()
+      
+      shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
+      shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
+      
+      RubyOF::CPP_Callbacks.ofShader_bindUniforms(
+        shader,
+        "origin",   origin.x, origin.y,
+        "charSize", @ascender_height, @descender_height, @em_width
+      )
+      
+      # shader.setUniform2f("origin",   )
+      # shader.setUniform2f("charSize", )
+      
+      
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      # pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
+      # ofTranslate(origin.x, origin.y, z)
+      
+      # x,y = [0,0]
+      # vflip = true
+      # # TODO: convert @char_grid to array of strings (less garbage?)
+      # @char_grid.each_line.each_with_index do |line, i|
+      #   pos = origin+CP::Vec2.new(0,i*@line_height)
+      #   # @font.draw_string(line, pos.x, pos.y)
+      #   # ^ if you render with draw_string, there's no weird line height errors
+      #   #   but there are erros with drawing from mesh (position slightly off)
+      #   #   is this a texture filtering error or similar? not sure, but may want to just use draw_string. how does the shader have to change? can I still use a shader?
+        
+      #   ofEnableBlendMode :alpha
+      #   ofPushMatrix()
+      #   ofTranslate(pos.x, pos.y, 0)
+      #   @font.font_texture.bind
+      #   text_mesh = @font.get_string_mesh(line, x,y, vflip)
+      #   text_mesh.draw()
+      #   @font.font_texture.unbind
+      #   ofPopMatrix()
+      # end
+      
+      
+      
+      ofEnableBlendMode :alpha
+      ofPushMatrix()
+      ofTranslate(origin.x, origin.y, 0)
+      @font.font_texture.bind
+      text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+      text_mesh.draw()
+      @font.font_texture.unbind
+      ofPopMatrix()
+      
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      shader.end()
+    end
   
   end
   
@@ -166,162 +211,17 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   
+  # new interface / workflow: 
+  # + get pixel positions
+  #   either all positions in the grid, or positions changed by printing text
+  # + filter position data as necessary (use Enumerable #select / #reject)
+  # + read / write to those pixel positions
+  
+  
+  
   private :fgText_getShader, :fgText_getTexture
   
-  class ColorHelper_bgOnly
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      @display.autoUpdateColor_bg(false)
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        color = @display.getColor_bg(pos.x, pos.y)
-        
-        yield color, pos
-        
-        @display.setColor_bg(pos.x,pos.y, color)
-      end
-      
-      @display.flushColors_bg()
-      @display.autoUpdateColor_bg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos)
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        color = @display.getColor_bg(pos.x,pos.y)
-        
-        yield color
-        
-        @display.setColor_bg(pos.x,pos.y, color)
-      end
-    end
-  end
-  
-  class ColorHelper_fgOnly
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      @display.autoUpdateColor_fg(false)
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        color = @display.getColor_fg(pos.x, pos.y)
-        
-        yield color, pos
-        
-        @display.setColor_fg(pos.x,pos.y, color)
-      end
-      
-      @display.flushColors_fg()
-      @display.autoUpdateColor_fg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos)
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        color = @display.getColor_fg(pos.x,pos.y)
-        
-        yield color
-        
-        @display.setColor_fg(pos.x,pos.y, color)
-      end
-    end
-  end
-  
-  
-  class ColorHelper_bgANDfg
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      @display.autoUpdateColor_bg(false)
-      @display.autoUpdateColor_fg(false)
-      
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        bg_c = @display.getColor_bg(pos.x, pos.y)
-        fg_c = @display.getColor_fg(pos.x, pos.y)
-        
-        yield bg_c, fg_c, pos
-        # colors and positions are in-out arguments
-        
-        @display.setColor_bg(pos.x, pos.y, bg_c)
-        @display.setColor_fg(pos.x, pos.y, fg_c)
-      end
-      
-      
-      @display.flushColors_bg()
-      @display.autoUpdateColor_bg(true)
-      
-      @display.flushColors_fg()
-      @display.autoUpdateColor_fg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos) # &block |RubyOF::Color, RubyOF::Color, CP::Vec2|
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        
-        bg_c = @display.getColor_bg(pos.x, pos.y)
-        fg_c = @display.getColor_fg(pos.x, pos.y)
-        
-        yield bg_c, fg_c
-        
-        @display.setColor_bg(pos.x, pos.y, bg_c)
-        @display.setColor_fg(pos.x, pos.y, fg_c)
-        
-      end
-    end
-  end
-  
-  
-  def bg_colors
-    return ColorHelper_bgOnly.new(self)
-  end
-  
-  def fg_colors
-    return ColorHelper_bgOnly.new(self)
-  end
-  
-  def colors
-    return ColorHelper_bgANDfg.new(self)
-  end
-  
-  def each_index() # &block
+  def each_position() # &block
     enum = Matrix2DEnum.new(self.x_chars, self.y_chars)
     
     if block_given?
@@ -335,31 +235,47 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
   end
   
+  private :getBgColorPixels, :getFgColorPixels
   
-  # @display.bg_colors.each do |color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
+  class ColorHelper
+    include EnumHelper
+    
+    def initialize(display, pixels)
+      @display = display
+      @pixels = pixels
+    end
+    
+    def [](pos)
+      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+        return @pixels.getColor_xy(pos.x, pos.y)
+      end
+    end
+    
+    def []=(pos, color)
+      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+        return @pixels.setColor_xy(pos.x, pos.y, color)
+      end
+    end
+  end
+  
+  def background
+    return ColorHelper.new(self, getBgColorPixels())
+  end
+  
+  def foreground
+    return ColorHelper.new(self, getFgColorPixels())
+  end
+  
+  # @display.each_position do |pos|
+  #   @display.background_color[pos] = color;
+  #   @display.foreground_color[pos] = color
+    
+  #   @display.background_color[pos]
+  #   @display.foreground_color[pos]
+    
+  #   # @display.setColor_bg(pos, color)
+  #   # @display.setColor_fg(pos, color)
   # end
-  
-  # @display.bg_colors.each_with_index do |color, pos|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.bg_colors.pixel Vec2.new(0,0) do |color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.pixel Vec2.new(0,0) do |bg_color, fg_color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.each do |bg_color, fg_color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.each_with_index do |bg_color, p1, fg_color, p2|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
   
   
   
@@ -446,11 +362,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
     # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
     
-    if load_flag
-      # puts "Ruby: shader loaded"
-    else
-      puts "ERROR: couldn't load shaders '#{args.inspect}'"
-    end
+    # if load_flag
+    #   # puts "Ruby: shader loaded"
+    # else
+    #   puts "ERROR: couldn't load shaders '#{args.inspect}'"
+    # end
   end
   
   

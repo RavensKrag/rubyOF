@@ -21,7 +21,7 @@ void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value);
 
 
 
-// unsigned char ofxMidiMessage__get_status(ofxMidiMessage self);
+int ofxMidiMessage__get_status(ofxMidiMessage self);
 
 int ofxMidiMessage__get_channel(ofxMidiMessage self);
 int ofxMidiMessage__get_pitch(ofxMidiMessage self);
@@ -34,19 +34,6 @@ int ofxMidiMessage__get_portNum(ofxMidiMessage self);
 std::string ofxMidiMessage__get_portName(ofxMidiMessage self);
 
 Rice::Array ofxMidiMessage__get_bytes(ofxMidiMessage self);
-
-// void ofxMidiMessage__set_status()
-
-void ofxMidiMessage__set_channel(ofxMidiMessage self, int ch);
-void ofxMidiMessage__set_pitch(ofxMidiMessage self, int pitch);
-void ofxMidiMessage__set_velocity(ofxMidiMessage self, int vel);
-void ofxMidiMessage__set_value(ofxMidiMessage self, int val);
-
-void ofxMidiMessage__set_deltatime(ofxMidiMessage self, double dt);
-
-void ofxMidiMessage__set_portNum(ofxMidiMessage self, int port);
-void ofxMidiMessage__set_portName(ofxMidiMessage self, std::string port);
-
 
 
 int           ofxMidiMessage__get_num_bytes(ofxMidiMessage self);

@@ -182,9 +182,18 @@ void Init_rubyOF()
 	rb_cColor
 		.define_constructor(Constructor<ofColor>())
 		
-		.define_method("set_hex",  &ofColor::setHex)
+		
+		// WARNING: set_hex does not pack alpha channel
+		//          alpha must be specified as a separate argument
+		.define_method("set_hex",  &ofColor::setHex,
+			(
+				Arg("hexColor"),
+				Arg("alpha") = 255
+			)
+		)
 		.define_method("set_hsb",  &ofColor::setHsb)
 		
+		// WARNING: get_hex does not include alpha
 		.define_method("get_hex",  &ofColor::getHex)
 		.define_method("get_hsb",  &ofColor::getHsb)
 		

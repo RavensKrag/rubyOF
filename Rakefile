@@ -869,7 +869,8 @@ namespace :ruby_deps do
 		bundle_install(GEM_ROOT)
 		
 		# project specific
-		name, path = RubyOF::Build.load_project(path_or_name)
+		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
+		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Installing dependencies for project '#{name}'"
 		bundle_install(path)
 	end
@@ -881,7 +882,8 @@ namespace :ruby_deps do
 		bundle_uninstall(GEM_ROOT)
 		
 		# project specific
-		name, path = RubyOF::Build.load_project(path_or_name)
+		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
+		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Uninstalling dependencies for project '#{name}'"
 		bundle_uninstall(path)
 	end
