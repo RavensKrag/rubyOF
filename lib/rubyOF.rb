@@ -95,6 +95,28 @@ class Color
 	def to_a
 		return [self.r,self.g,self.b,self.a]
 	end
+	
+	def rgba=(color_array)
+		raise ArgumentError, "Expected an array of size 4 that encodes rgba color data (each channel should be an integer, with a maximum of 255 per channel)" unless color_array.size == 4
+		
+		self.r,self.g,self.b,self.a = color_array
+	end
+	
+	class << self
+		def rgba(color_array)
+			color = self.new
+			color.rgba = color_array
+			
+			return color
+		end
+		
+		def rgb(color_array)
+			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an integer, with a maximum of 255 per channel)" unless color_array.size == 3
+			
+			color_array << 255
+			self.rgba(color_array)
+		end
+	end
 end
 	
 class Shader
@@ -121,7 +143,7 @@ class Shader
 end
 
 class Pixels
-	private :setColor_i, :setColor_xy
+	# private :setColor_i, :setColor_xy
 	
 	def setColor(x,y, c)
 		setColor_xy(x,y, c)

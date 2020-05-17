@@ -239,6 +239,30 @@ public:
 		return rb_cPtr;
 	}
 	
+	Rice::Data_Object<ofPixels> getBgColorPixels(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_bgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	Rice::Data_Object<ofPixels> getFgColorPixels(){
+		Rice::Data_Object<ofPixels> rb_cPtr(
+			&_fgColorPixels,
+			Rice::Data_Type< ofPixels >::klass(),
+			Rice::Default_Mark_Function< ofPixels >::mark,
+			Null_Free_Function< ofPixels >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	
+	
 	void bgMesh_draw(){
 		_bgMesh.draw();
 	}
@@ -448,6 +472,13 @@ void Init_rubyOF_project()
 		)
 		.define_method("fgText_getTexture",
 			&CharMappedDisplay::fgText_getTexture
+		)
+		
+		.define_method("getBgColorPixels",
+			&CharMappedDisplay::getBgColorPixels
+		)
+		.define_method("getFgColorPixels",
+			&CharMappedDisplay::getFgColorPixels
 		)
 		
 		

@@ -23,7 +23,7 @@ void ofShader__setUniformTexture(ofShader &shader, const string &name, const ofT
 
 
 
-ofColor ofPixels__getColor(ofPixels &pixels, size_t x, size_t y){
+ofColor ofPixels__getColor_xy(ofPixels &pixels, size_t x, size_t y){
    return pixels.getColor(x,y);
 }
 
@@ -194,7 +194,7 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       .define_method("crop",          &ofPixels::crop)
       .define_method("cropTo",        &ofPixels::cropTo)
-      .define_method("getColor",      &ofPixels__getColor)
+      .define_method("getColor_xy",   &ofPixels__getColor_xy)
       
       .define_method("setColor_i",    &ofPixels__setColor_i)
       // ^ I think set_i actually fills an entire channel?

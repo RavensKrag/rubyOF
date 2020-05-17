@@ -211,166 +211,17 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   
+  # new interface / workflow: 
+  # + get pixel positions
+  #   either all positions in the grid, or positions changed by printing text
+  # + filter position data as necessary (use Enumerable #select / #reject)
+  # + read / write to those pixel positions
+  
+  
+  
   private :fgText_getShader, :fgText_getTexture
   
-  class ColorHelper_bgOnly
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      # @display.autoUpdateColor_bg(false)
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        color = @display.getColor_bg(pos.x, pos.y)
-        
-        yield color, pos
-        
-        @display.setColor_bg(pos.x,pos.y, color)
-      end
-      
-      # @display.flushColors_bg()
-      # @display.autoUpdateColor_bg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos)
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        color = @display.getColor_bg(pos.x,pos.y)
-        
-        yield color
-        
-        @display.setColor_bg(pos.x,pos.y, color)
-      end
-    end
-  end
-  
-  class ColorHelper_fgOnly
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      # @display.autoUpdateColor_fg(false)
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        color = @display.getColor_fg(pos.x, pos.y)
-        
-        yield color, pos
-        
-        @display.setColor_fg(pos.x,pos.y, color)
-      end
-      
-      # @display.flushColors_fg()
-      # @display.autoUpdateColor_fg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos)
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        color = @display.getColor_fg(pos.x,pos.y)
-        
-        yield color
-        
-        @display.setColor_fg(pos.x,pos.y, color)
-      end
-    end
-  end
-  
-  
-  class ColorHelper_bgANDfg
-    include EnumHelper
-    
-    def initialize(display)
-      @display = display
-    end
-    
-    # iterate through every pixel in the image
-    # DO NOT RETURN Enumeration - will not work as expected
-    # (need to first build up additional indirection for pixel access)
-    def each() # &block
-      
-    end
-    
-    # index is a CP::Vec2 encoding position
-    def each_with_index() # &block
-      # @display.autoUpdateColor_bg(false)
-      # @display.autoUpdateColor_fg(false)
-      
-      
-      Matrix2DEnum.new(@display.x_chars, @display.y_chars).each do |pos|
-        bg_c = @display.getColor_bg(pos.x, pos.y)
-        fg_c = @display.getColor_fg(pos.x, pos.y)
-        
-        # bg_c = RubyOF::Color.new
-        # fg_c = RubyOF::Color.new
-        
-        
-        yield bg_c, fg_c, pos
-        # colors and positions are in-out arguments
-        
-        @display.setColor_bg(pos.x, pos.y, bg_c)
-        @display.setColor_fg(pos.x, pos.y, fg_c)
-      end
-      
-      
-      # @display.flushColors_bg()
-      # @display.autoUpdateColor_bg(true)
-      
-      # @display.flushColors_fg()
-      # @display.autoUpdateColor_fg(true)
-    end
-    
-    # manipulate color at a particular pixel
-    def pixel(pos) # &block |RubyOF::Color, RubyOF::Color, CP::Vec2|
-      gaurd_imageOutOfBounds(pos, @display.x_chars, @display.y_chars) do
-        
-        bg_c = @display.getColor_bg(pos.x, pos.y)
-        fg_c = @display.getColor_fg(pos.x, pos.y)
-        
-        yield bg_c, fg_c
-        
-        @display.setColor_bg(pos.x, pos.y, bg_c)
-        @display.setColor_fg(pos.x, pos.y, fg_c)
-        
-      end
-    end
-  end
-  
-  
-  def bg_colors
-    return ColorHelper_bgOnly.new(self)
-  end
-  
-  def fg_colors
-    return ColorHelper_fgOnly.new(self)
-  end
-  
-  def colors
-    return ColorHelper_bgANDfg.new(self)
-  end
-  
-  def each_index() # &block
+  def each_position() # &block
     enum = Matrix2DEnum.new(self.x_chars, self.y_chars)
     
     if block_given?
@@ -384,31 +235,40 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
   end
   
+  private :getBgColorPixels, :getFgColorPixels
   
-  # @display.bg_colors.each do |color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
+  class ColorHelper
+    def initialize(pixels)
+      @pixels = pixels
+    end
+    
+    def [](pos)
+      return @pixels.getColor_xy(pos.x, pos.y)
+    end
+    
+    def []=(pos, color)
+      return @pixels.setColor_xy(pos.x, pos.y, color)
+    end
+  end
+  
+  def background
+    return ColorHelper.new(getBgColorPixels())
+  end
+  
+  def foreground
+    return ColorHelper.new(getFgColorPixels())
+  end
+  
+  # @display.each_position do |pos|
+  #   @display.background_color[pos] = color;
+  #   @display.foreground_color[pos] = color
+    
+  #   @display.background_color[pos]
+  #   @display.foreground_color[pos]
+    
+  #   # @display.setColor_bg(pos, color)
+  #   # @display.setColor_fg(pos, color)
   # end
-  
-  # @display.bg_colors.each_with_index do |color, pos|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.bg_colors.pixel Vec2.new(0,0) do |color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.pixel Vec2.new(0,0) do |bg_color, fg_color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.each do |bg_color, fg_color|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
-  # @display.colors.each_with_index do |bg_color, p1, fg_color, p2|
-  #   color.r, color.g, color.b, color.a = [255, 0, 0, 255]
-  # end
-  
   
   
   

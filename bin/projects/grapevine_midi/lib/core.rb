@@ -166,27 +166,23 @@ class Core
     @display.autoUpdateColor_fg(false)
     
     # clear out the garbage bg + test pattern fg
-    @display.colors.each_with_index do |bg_c, fg_c, pos|
-      bg_c.r, bg_c.g, bg_c.b, bg_c.a = ([(0.0*255).to_i]*3 + [255])
-      fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(1.0*255).to_i]*3 + [255])
+    @display.each_position do |pos|
+      @display.background[pos] = RubyOF::Color.rgb([(0.0*255).to_i]*3)
+      @display.foreground[pos] = RubyOF::Color.rgb([(1.0*255).to_i]*3)
     end
     
     
     if @debug[:display_clipping]
       @display.print_string(5, "hello world!")
       .each do |pos|
-        @display.bg_colors.pixel pos do |c|
-           c.r, c.g, c.b, c.a = [0, 0, 255, 255]
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [0, 0, 255] )
       end
       
       
       @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
       @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
       .each do |pos|
-        @display.bg_colors.pixel pos do |c|
-           c.r, c.g, c.b, c.a = [255, 0, 0, 255]
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
       end
       
       @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
@@ -196,19 +192,15 @@ class Core
       msg = "gets cut off somewhere in the middle"
       @display.print_string(CP::Vec2.new(30, 9), msg)
       .each do |pos|
-        @display.bg_colors.pixel pos do |c|
-          c.r, c.g, c.b, c.a = [255, 0, 0, 255]
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
       end
       # ^ Enumerator stops at end of display where the text was clipped
       
       
       
-      
-      @display.colors.pixel CP::Vec2.new(10,10) do |bg_c, fg_c|
-        bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
-        fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0, 0, 255, 255]
-      end
+      pos = CP::Vec2.new(10,10)
+      @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+      @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
       
       # @display.colors.pixel CP::Vec2.new(50,50) do |bg_c, fg_c|
       #   bg_c.r, bg_c.g, bg_c.b, bg_c.a = [255, 0, 0, 255]
@@ -228,25 +220,16 @@ class Core
         CP::Vec2.new(@display.x_chars, 0               )
       ]
       
-      @display.colors.each_with_index do |bg_c, fg_c, pos|
-        if pos.x == 0
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 0, 255]
-        end
-        
-        if pos.x == @display.x_chars-1
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 0, 255]
-        end
-        
-        
-        
-        if pos.y == 0
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 255, 255]
-        end
-        
-        if pos.y == @display.y_chars-1
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [255, 0, 255, 255]
-        end
-        
+      @display.each_position
+      .select{ |pos|  pos.x == 0 or pos.x == @display.x_chars-1 }
+      .each do |pos|
+        @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+      end
+      
+      @display.each_position
+      .select{ |pos| pos.y == 0 or pos.x == @display.y_chars-1  }
+      .each do |pos|
+        @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
       end
       
       
@@ -267,13 +250,11 @@ class Core
       h = 11
       bb1 = CP::BB.new(x,y, x+w,y+h)
       
-      @display.each_index
+      @display.each_position
       .select{ |pos|  bb1.contain_vect? pos  }
       .each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
+        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
       end
       
       ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
@@ -299,11 +280,11 @@ class Core
       
       bb2 = CP::BB.new(50,0, 54,16)
       
-      @display.colors.each_with_index do |bg_c, fg_c, pos|
-        if bb2.contain_vect? pos
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
-        end
+      @display.each_position
+      .select{ |pos| bb2.contain_vect? pos }
+      .each do |pos|
+        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
+        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
       end
       
       (0..(bb2.t)).each do |i|
@@ -338,15 +319,13 @@ class Core
       
       @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
       .each do |pos|
-        @display.colors.pixel pos+CP::Vec2.new(0,0) do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-        end
+        offset = CP::Vec2.new(0,0)
+        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
+        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
         
-        @display.colors.pixel pos+CP::Vec2.new(0,1) do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-        end
+        offset = CP::Vec2.new(0,1)
+        @display.background[pos+offset] = RubyOF::Color.rgba( bg_color )
+        @display.foreground[pos+offset] = RubyOF::Color.rgba( fg_color )
       end
       
       @display.print_string(
@@ -354,19 +333,13 @@ class Core
       )
       
       
-      # TODO: improve interface - CharMappedDisplay#each_index and CharMappedDisplay#colors.pixel (and similar) need new names
-      
-        # The name #each_index is confusing, because the block var is a vec2 (2d "index") not an int (1D linear index)
-        
-        # The name #pixel is confusing because it refers to the backend data store, which is not very important. but the question is: what you do call one element of a discrete mesh that holds color data? isn't that what a pixel is? (I mean like, in the abstract sense)
-      
       # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
       count = 4
       anchor = CP::Vec2.new(20,15) # bottom left position
       bg_color = ([(0.5*255).to_i]*3 + [255])
       fg_color = @colors[:pale_yellow]
       
-      @display.each_index
+      @display.each_position
       .select{   |pos| pos.x == anchor.x+0  }
       .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
       .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
@@ -380,10 +353,10 @@ class Core
         end
         
         
-        @display.colors.pixel pos + CP::Vec2.new(1,0) do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-        end
+        
+        offset = CP::Vec2.new(1,0)
+        @display.background[pos+offset] = RubyOF::Color.rgb( bg_color )
+        @display.foreground[pos+offset] = RubyOF::Color.rgb( fg_color )
       end
     end
     
@@ -406,12 +379,13 @@ class Core
       h = 11
       @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
       
-      @display.colors.each_with_index do |bg_c, fg_c, pos|
-        if @midi_data_bb.contain_vect? pos
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
-        end
+      @display.each_position
+      .select{ |pos| @midi_data_bb.contain_vect? pos }
+      .each do |pos|
+        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
+        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
       end
+      
       
       ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
         @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
@@ -636,14 +610,12 @@ class Core
       @display.print_string(
         anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
       ).each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c| 
-          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0xf6, 0xff, 0xf6, 255]
-          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = @colors[:pale_green]
-          # fg_c.r, fg_c.g, fg_c.b, fg_c.a = live_colorpicker.to_a
-          
-          # bg_c.r, bg_c.g, bg_c.b, bg_c.a = live_colorpicker.to_a
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xc4, 0xcf, 0xff, 0xff]
-        end
+        # @display.foreground[pos] = RubyOF::Color.rgba([0xf6,0xff,0xf6, 255])
+        # @display.foreground[pos] = RubyOF::Color.rgba( @colors[:pale_green] )
+        # @display.foreground[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
+        
+        # @display.background[pos] = RubyOF::Color.rgba(live_colorpicker.to_a)
+        @display.background[pos] = RubyOF::Color.rgba([0xc4, 0xcf, 0xff, 0xff])
       end
       
       # dump data on all messages in the queue
@@ -682,11 +654,9 @@ class Core
         bar_graph += @hbar["#{fractions}/8"]
         
         # @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
-        # .each do |pos|
-        #   @display.colors.pixel pos do |bg_c, fg_c|
-        #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-        #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-        #   end
+        # .each do |pos|          
+        #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
+        #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
         # end
         
         @display.print_string(
@@ -694,10 +664,8 @@ class Core
           bar_graph.ljust(count)
         )
         .each do |pos|
-          @display.colors.pixel pos do |bg_c, fg_c|
-            bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-            fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-          end
+          @display.background[pos] = RubyOF::Color.rgba(bg_color)
+          @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
         end
         
         # ^ it's just this thrashing of colors that kills performance!
@@ -759,13 +727,11 @@ class Core
       # w = 16
       # h = 9
       # bb = CP::BB.new(x,y, x+w,y+h)
-      # @display.each_index
+      # @display.each_position
       # .select{ |pos|  bb.contain_vect? pos  }
       # .each do |pos|
-      #   @display.colors.pixel pos do |bg_c, fg_c|
-      #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
-      #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
-      #   end
+      #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
+      #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
       # end
       
       # .each do |pos|
@@ -781,20 +747,16 @@ class Core
       
       @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
       .each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0,0,0,255]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [0, 0, 0] )
+        @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
       end
       @w.cpp_ptr["colorPicker_color"].tap do |c|
         output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
         
         @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
         .each do |pos|
-          @display.colors.pixel pos do |bg_c, fg_c|
-            bg_c.r, bg_c.g, bg_c.b, bg_c.a = [c.r, c.g, c.b, c.a]
-            fg_c.r, fg_c.g, fg_c.b, fg_c.a = ([(0.5*255).to_i]*3 + [255])
-          end
+          @display.background[pos] = c
+          @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
         end
         
       end
@@ -809,13 +771,11 @@ class Core
       bb = CP::BB.new(40,13, 58,15)
       
       
-      @display.each_index
+      @display.each_position
       .select{ |pos|  bb.contain_vect? pos  }
       .each do |pos|
-        @display.colors.pixel pos do |bg_c, fg_c|
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = [0xb6, 0xb1, 0x98, 0xff]
-          fg_c.r, fg_c.g, fg_c.b, fg_c.a = [0x32, 0x31, 0x2a, 255]
-        end
+        @display.background[pos] = RubyOF::Color.rgb( [0xb6, 0xb1, 0x98] )
+        @display.foreground[pos] = RubyOF::Color.rgb( [0x32, 0x31, 0x2a] )
       end
       
       ((bb.b.to_i)..(bb.t.to_i)).each do |y|
@@ -919,15 +879,13 @@ class Core
                      position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
       end
       
-      c1 = ([(0.5*255).to_i]*3 + [255]) 
-      c2 = ([(0.7*255).to_i]*3 + [255]) 
-      @display.bg_colors.each_with_index do |bg_c, pos|
-        if pos.y % 2 == 0
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = c1
-        else
-          bg_c.r, bg_c.g, bg_c.b, bg_c.a = c2
-        end
-      end
+      c1 = [(0.5*255).to_i]*3
+      c2 = [(0.7*255).to_i]*3
+      
+      stripe1, stripe2 = @display.each_position.chunk{ |pos| pos.y % 2 }
+      stripe1.each{ |pos|  @display.background[pos] = RubyOF::Color.rgb( c1 ) }
+      stripe1.each{ |pos|  @display.background[pos] = RubyOF::Color.rgb( c2 ) }
+      
       
       
       # 
