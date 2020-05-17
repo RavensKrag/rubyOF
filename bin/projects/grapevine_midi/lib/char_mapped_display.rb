@@ -322,6 +322,10 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         bg_c = @display.getColor_bg(pos.x, pos.y)
         fg_c = @display.getColor_fg(pos.x, pos.y)
         
+        # bg_c = RubyOF::Color.new
+        # fg_c = RubyOF::Color.new
+        
+        
         yield bg_c, fg_c, pos
         # colors and positions are in-out arguments
         

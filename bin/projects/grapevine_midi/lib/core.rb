@@ -681,7 +681,18 @@ class Core
         bar_graph ||= '' # bar graph can be nil if full_bars == 0
         bar_graph += @hbar["#{fractions}/8"]
         
-        @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+        # @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+        # .each do |pos|
+        #   @display.colors.pixel pos do |bg_c, fg_c|
+        #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+        #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+        #   end
+        # end
+        
+        @display.print_string(
+          anchor+CP::Vec2.new(20,i+1),
+          bar_graph.ljust(count)
+        )
         .each do |pos|
           @display.colors.pixel pos do |bg_c, fg_c|
             bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
@@ -689,7 +700,20 @@ class Core
           end
         end
         
-        @display.print_string(anchor+CP::Vec2.new(20,i+1), bar_graph)
+        # ^ it's just this thrashing of colors that kills performance!
+        #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
+        # (it doesn't seem to be the Enumerator through the single line of the string that's slow - it seems to be the changing of colors)
+        
+        # setting the colors on the header line is about 35 colorsr
+        # setting the colors for every pitch bar is 160 colors total
+        # That increase in volume (4.5x) is what takes the latency from negligible to overwhelming. You can see this by simply trying to push the header data 10 times (the exact same data)
+          # -> you get the same lag spike
+        
+        # maybe I can go faster if I completely separate read and write interfaces? right now this ruby Enumerator interface allows for reading, writing, and mutating color data. If those things are all separated out, maybe we can go faster?
+        
+        # How does the PNG library I was using in that one gamejam work? That library seemed pretty fast (even though I never benchmarked it.) Can I copy something from that code and go super fast?
+        # (oops, it was a bmp library. well... whatever)
+        
         
         
         # signal name
@@ -726,6 +750,26 @@ class Core
         
       end
       
+      # bg_color = ([(0.5*255).to_i]*3 + [255])
+      # fg_color = @colors[:lilac]
+      
+      # # l,b,r,t
+      # x = 20
+      # y = 2
+      # w = 16
+      # h = 9
+      # bb = CP::BB.new(x,y, x+w,y+h)
+      # @display.each_index
+      # .select{ |pos|  bb.contain_vect? pos  }
+      # .each do |pos|
+      #   @display.colors.pixel pos do |bg_c, fg_c|
+      #     bg_c.r, bg_c.g, bg_c.b, bg_c.a = bg_color
+      #     fg_c.r, fg_c.g, fg_c.b, fg_c.a = fg_color
+      #   end
+      # end
+      
+      # .each do |pos|
+      # end
       
       
       
