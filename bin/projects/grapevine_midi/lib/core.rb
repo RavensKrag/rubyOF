@@ -158,8 +158,8 @@ class Core
     
     
     
-    @display = CharMappedDisplay.new(@fonts[:monospace], 20*3, 18*1)
-    @display_origin_px = CP::Vec2.new(370,500)
+    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 25)
+    @display_origin_px = CP::Vec2.new(340,140)
     
     @display.autoUpdateColor_bg(false)
     @display.autoUpdateColor_fg(false)
