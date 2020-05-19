@@ -4,7 +4,6 @@
 # stuff to load just once
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
-require LIB_DIR/'live_code_GLSL.rb'
 
 # stuff to live load ('load' allows for reloading stuff)
 load LIB_DIR/'char_mapped_display.rb'
