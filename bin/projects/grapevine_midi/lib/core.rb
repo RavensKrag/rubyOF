@@ -719,26 +719,6 @@ class Core
         
       end
       
-      # bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      # fg_color = @colors[:lilac]
-      
-      # # l,b,r,t
-      # x = 20
-      # y = 2
-      # w = 16
-      # h = 9
-      # bb = CP::BB.new(x,y, x+w,y+h)
-      # @display.each_position
-      # .select{ |pos|  bb.contain_vect? pos  }
-      # .each do |pos|
-      #   @display.background[pos] = bg_color
-      #   @display.foreground[pos] = fg_color
-      # end
-      
-      # .each do |pos|
-      # end
-      
-      
       
       
       # 
@@ -790,11 +770,47 @@ class Core
         "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
       )
       
+      
+      
+      # 
+      # timeline
+      # 
+      x = 2
+      y = 17
+      w = 40
+      h = 4
+      bb = CP::BB.new(x,y, x+w-1,y+h-1)
+      
+      bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+      fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+      
+      @display.each_position
+      .select{ |pos| bb.contain_vect? pos}
+      .each do |pos|
+        @display.background[pos] = bg_color
+        @display.foreground[pos] = fg_color
+      end
+      
+      anchor = CP::Vec2.new(x,y)
+      h.times do |i|
+        @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
+      end
+      
+      @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
+      @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
+      
+      # punch a whole in the display using transparent spaces
+      # to reveal the vertical bars BEHIND the display
+      @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
+      .each do |pos|
+        @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
+      end
+      
     end
     
     
-    
-    
+    @sprite = @hbar['8/8']*3
+    # @sprite = "hello world!"
     
     
     
@@ -852,6 +868,49 @@ class Core
     
     
     
+    # 
+    # render sprites
+    # (draw behind @display, to use that area as a mask)
+    # 
+    ofPushStyle()
+    
+    ofSetColor(RubyOF::Color.hex(0xff0000))
+    
+    # pos in char grid
+    char_pos = CP::Vec2.new(@char_width_pxs*10, @line_height*18) 
+    
+    # offset by 1/8 of a character (width of smallest block char division)
+    offset   = CP::Vec2.new(@char_width_pxs/8 * 5, 0)
+    
+    # final pixel position on screen
+    pos = @display_origin_px + CP::Vec2.new(0,-1) + char_pos + offset
+    
+    # @fonts[:monospace].draw_string(@sprite, pos.x, pos.y)
+      
+      @fonts[:monospace].draw_string(@hbar['1/8'], pos.x, pos.y)
+      
+      offset   = CP::Vec2.new(@char_width_pxs/8 * 50, 0)
+      p2 = pos + offset
+      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*2, 0)
+      p2 = pos + offset
+      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*3, 0)
+      p2 = pos + offset
+      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*4, 0)
+      p2 = pos + offset
+      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*5, 0)
+      p2 = pos + offset
+      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    
+    ofPopStyle()
+    
     
     
     
@@ -895,6 +954,7 @@ class Core
       # 
     
     end
+    
     
     
   end
