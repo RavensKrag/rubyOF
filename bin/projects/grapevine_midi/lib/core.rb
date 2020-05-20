@@ -431,15 +431,33 @@ class Core
     # end
     
     
+    
+    
+    
     @update_steps = 0
-    @draw_steps = 0
+    @draw_steps = 0 
+    
+    
+    # number of steps will vary depending on what debug modes (if any) are set
+    # let's count the number in the standard mode for now (no debug flags)
+    
+    # update     5 (5 calls to yield)
+    # draw       4 (4 calls to yield)
+    # ^ this explains the behavior I saw - the two loops are not in sync
+    
+    # if the entire loop is stepped, there is no flicker
+    # (not even in the GUI)
+    # but the elements of ofxGUI (drawn at C++ level only)
+    # will flicker if it takes more than one C++ cycle to complete rendering
+    # => program will flicker a little, but will remain responsive on "lag"
+    
     
     # OF_KEY_LEFT
     # OF_KEY_RIGHT
     @input_handler.register_callback(OF_KEY_RIGHT) do |btn|
       btn.on_press do
-        @update_steps = 1
-        @draw_steps = 1
+        @update_steps = 5
+        @draw_steps   = 4
       end
       
       btn.on_release do
@@ -502,7 +520,7 @@ class Core
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def update
+  def update    
     @update_fiber ||= Fiber.new do
       loop do
         on_update
