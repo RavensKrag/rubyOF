@@ -473,8 +473,36 @@ class Core
   end
   
   
-  
+  # methods #update and #draw are called by the C++ render loop
+  # Their only job now at the Ruby level is to set up Fibers
+  # which call the true render logic. This structure is necessary
+  # to allow for live loading - if the update / draw logic
+  # is directly inside the Fiber, there's no good way to reload it
+  # when the file reloads.
   def update
+    @update_fiber ||= Fiber.new do
+      loop do
+        on_update
+      end
+    end
+    
+    @update_fiber.resume
+  end
+  
+  
+  def draw
+    @draw_fiber ||= Fiber.new do
+      loop do
+        on_draw
+      end
+    end
+    
+    @draw_fiber.resume
+  end
+  
+  
+  
+  def on_update
     # liveGLSL.foo "char_display" do |path_to_shader|
       # @display.reload_shader
     # end
@@ -816,10 +844,12 @@ class Core
     
     @display.flushColors_bg()
     @display.flushColors_fg()
+    
+    Fiber.yield
   end
   
   include RubyOF::Graphics
-  def draw
+  def on_draw
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
@@ -956,7 +986,7 @@ class Core
     end
     
     
-    
+    Fiber.yield
   end
   
   
