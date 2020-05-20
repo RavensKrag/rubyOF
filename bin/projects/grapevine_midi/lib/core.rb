@@ -431,6 +431,29 @@ class Core
     # end
     
     
+    @update_steps = 0
+    @draw_steps = 0
+    
+    # OF_KEY_LEFT
+    # OF_KEY_RIGHT
+    @input_handler.register_callback(OF_KEY_RIGHT) do |btn|
+      btn.on_press do
+        @update_steps = 1
+        @draw_steps = 1
+      end
+      
+      btn.on_release do
+        
+      end
+      
+      btn.while_idle do
+        
+      end
+      
+      btn.while_active do
+        
+      end
+    end
     
     
     
@@ -486,7 +509,13 @@ class Core
       end
     end
     
-    @update_fiber.resume
+    if @update_steps != 0
+      @update_steps.times do 
+        @update_fiber.resume
+      end
+      
+      @update_steps = 0
+    end
   end
   
   
@@ -497,7 +526,13 @@ class Core
       end
     end
     
-    @draw_fiber.resume
+    if @draw_steps != 0
+      @draw_steps.times do
+        @draw_fiber.resume
+      end
+      
+      @draw_steps = 0
+    end
   end
   
   
@@ -747,7 +782,7 @@ class Core
         
       end
       
-      
+      Fiber.yield
       
       # 
       # color picker data
@@ -770,7 +805,7 @@ class Core
         
       end
       
-      
+      Fiber.yield
       
       # 
       # mouse data
@@ -798,7 +833,7 @@ class Core
         "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
       )
       
-      
+      Fiber.yield
       
       # 
       # timeline
@@ -834,6 +869,8 @@ class Core
         @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
       end
       
+      Fiber.yield
+      
     end
     
     
@@ -853,6 +890,7 @@ class Core
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
+    Fiber.yield
     
     if @first_draw
       # screen_size = read_screen_size("Screen 0")
@@ -941,7 +979,7 @@ class Core
     
     ofPopStyle()
     
-    
+    Fiber.yield
     
     
     # 
@@ -950,7 +988,7 @@ class Core
     
     @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     
-    
+    Fiber.yield
     
     # 
     # text display background alignment test
@@ -963,11 +1001,15 @@ class Core
         c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
       end
       
+      Fiber.yield
+      
       60.times.each do |i|
         screen_print(font: @fonts[:monospace], 
                      string: "F", color: c,
                      position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
       end
+      
+      Fiber.yield
       
       c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
       c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
@@ -977,12 +1019,12 @@ class Core
       assoc[0].each{ |pos| @display.background[pos] = c1 }
       assoc[1].each{ |pos| @display.background[pos] = c2 }
       
-      
+      Fiber.yield
       
       # 
       # text display color alignment test
       # 
-    
+      
     end
     
     
