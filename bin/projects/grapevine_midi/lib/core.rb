@@ -16,12 +16,12 @@ load LIB_DIR/'looper_pedal.rb'
 
 # convert time in milliseconds to standard time units (microseconds)
 def msec(time)
-  time * 1000
+  (time * 1000).to_i
 end
 
 # convert time in microseconds to standard time units (microseconds)
 def usec(time)
-  time
+  (time).to_i
 end
 
 
@@ -247,7 +247,9 @@ class Scheduler_v2
         # 
         # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
         
-        @time_used_this_frame += dt
+        @time_used_this_frame += time_budget_ms
+        # ^ increment by time budgeted, not time actually spent
+        #   this way gives more scheduling control to the programmer
         
         puts "time budget: #{@time_used_this_frame} / #{@total_time_per_frame} (+ #{dt} )"
         
@@ -262,7 +264,9 @@ class Scheduler_v2
         
         
         
-        Fiber.yield :end_of_loop
+        # Fiber.yield :end_of_loop
+        # # ^ this doesn't work as expected.
+        # #   hitting this line after every section
       end
     end
     
