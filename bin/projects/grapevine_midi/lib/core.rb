@@ -153,6 +153,130 @@ end
 
 # TODO: can't use block style, because that prevents local variables from passing from block to block. Try using Fiber instead, with 'checkpoints' (just initial lines, not do-end blocks) to block execution at certain points while waiting to be scheduled
 
+class Scheduler_v2
+  
+  class SchedulerHelper
+    
+    
+    
+    # block until the scheduler has enough time to run the specified section
+    # (the 'section' is just the code that follows - no block given to method)
+    # 
+    # need to measure time between calls to this function
+    def section(name:, budget:)
+      # TOP:
+      # <--- after finished, #section is called again at start of next section
+      unless @previous_time.nil?
+        now = RubyOF::Utils.ofGetElapsedTimeMicros
+        dt = now - @previous_time # TODO: account for timer looping
+        
+        Fiber.yield dt # outer calling Fiber remembers the previous name
+      end
+      
+      
+      # block until section can be scheduled
+      Fiber.yield(name, budget)
+      
+      
+      
+      @previous_time = RubyOF::Utils.ofGetElapsedTimeMicros
+      
+      # ---> section runs at this time
+      # (GOTO TOP)
+    end
+  end
+  
+  
+  
+  def initialize(outer, callback_method_name, frame_deadline_ms)
+    @callback_name = callback_method_name
+    @outer = outer
+    
+    @total_time_per_frame = frame_deadline_ms
+    @time_used_this_frame = 0
+    
+    # step through sections of the inner block
+    @f2 = Fiber.new do
+      
+      helper = SchedulerHelper.new
+      
+      loop do
+        
+        @outer.send(@callback_name, helper)
+        # ^ helper calls Fiber.yield at key points in the callback
+        
+      end
+      
+    end
+    
+    
+    # loop through all sections
+    @f1 = Fiber.new do
+      # loop through the callbacks, scheduling them
+      # in the order they were declared order, ad infinitum
+      
+      while @f2.alive? # @f2 contains an infinite loop, so should live forever
+        
+        # 
+        # schedule blocks
+        # 
+        
+        # get section name and budget, and block until you have enough time
+        section_name, time_budget_ms = @f2.resume()
+        p [ section_name, time_budget_ms ]
+        
+        loop do
+          if @time_used_this_frame + time_budget_ms < @total_time_per_frame
+            # we have the time. go ahead and run this task.
+            
+            break
+          else
+            # return control to main Fiber
+            # and 'sleep' until the next frame
+                        
+            Fiber.yield :time_limit_reached # return control to main Fiber 
+            @time_used_this_frame = 0
+          end
+        end
+        
+        dt = @f2.resume()
+        
+        # NOTE: Matz favors loop{ break if <cond> } over 
+        #       'begin <code> end while <cond>' for clarity 
+        #       (unclear that it is different from '<code> while <cond>'')
+        # 
+        # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
+        
+        @time_used_this_frame += dt
+        
+        puts "time budget: #{@time_used_this_frame} / #{@total_time_per_frame} (+ #{dt} )"
+        
+        
+        
+        # 
+        # save time data for later visualization
+        # 
+        
+        # [ section_name, time_budget_ms, [dt_0, dt_1, dt_2] ]
+        
+        
+        
+        
+        Fiber.yield :end_of_loop
+      end
+    end
+    
+  end
+  
+  def resume
+    
+    return @f1.resume()
+    # ^ either :end_of_loop or :time_limit_reached
+    
+  end
+  
+end
+
 
 
 class Core
@@ -161,6 +285,8 @@ class Core
   end
   
   def setup
+    @update_scheduler = Scheduler_v2.new(self, :on_update, msec(16.6))
+    
     @first_draw = true
     @mouse = CP::Vec2.new(0,0)
     
@@ -654,10 +780,15 @@ class Core
     setup()
     @looper_pedal.setup
     
-    @update_scheduler = nil
     @draw_scheduler = nil
   end
   
+  
+  # use a structure where Fiber does not need to be regenerated on reload
+  def update
+    signal = @update_scheduler.resume
+    puts signal
+  end
   
   # methods #update and #draw are called by the C++ render loop
   # Their only job now at the Ruby level is to set up Fibers
@@ -665,9 +796,8 @@ class Core
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def update
-  @update_scheduler ||= Scheduler.new(msec(16)) do |x|
-    x.section name: "test 1", budget: msec(16)
+  def on_update(scheduler)
+    scheduler.section name: "test 1", budget: msec(16)
       
       # liveGLSL.foo "char_display" do |path_to_shader|
         # @display.reload_shader
@@ -742,12 +872,12 @@ class Core
     
     
     
-    x.section name: "test 2 - update", budget: msec(16)
+    scheduler.section name: "test 2 - update", budget: msec(16)
       @input_handler.update
       
       
     
-    x.section name: "test 3 - manage midi deltas", budget: msec(16)
+    scheduler.section name: "test 3 - manage midi deltas", budget: msec(16)
     
       # p @w.cpp_val["midiMessageQueue"]
       
@@ -772,7 +902,7 @@ class Core
       
     
     
-    x.section name: "test 4", budget: msec(16)
+    scheduler.section name: "test 4", budget: msec(16)
     
       @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
       
@@ -784,7 +914,7 @@ class Core
     
     
     if @debug.keys.empty?
-      x.section name: "test 5a", budget: msec(16)
+      scheduler.section name: "test 5a", budget: msec(16)
         # write all messages in buffer to the character display
         # TODO: need live coding ASAP for this
         
@@ -911,7 +1041,7 @@ class Core
           
         end
       
-      x.section name: "test 5b", budget: msec(16)
+      scheduler.section name: "test 5b", budget: msec(16)
         # 
         # color picker data
         # 
@@ -933,7 +1063,7 @@ class Core
           
         end
       
-      x.section name: "test 5c", budget: msec(16)
+      scheduler.section name: "test 5c", budget: msec(16)
           
         # 
         # mouse data
@@ -961,7 +1091,7 @@ class Core
           "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
         )
       
-      x.section name: "test 5d", budget: msec(16)
+      scheduler.section name: "test 5d", budget: msec(16)
           
         # 
         # timeline
@@ -1003,7 +1133,7 @@ class Core
       
       
       
-    x.section name: "test 6", budget: msec(16)
+    scheduler.section name: "test 6", budget: msec(16)
       
       @sprite = @hbar['8/8']*3
       # @sprite = "hello world!"
@@ -1015,8 +1145,6 @@ class Core
     
       
   end
-  @update_scheduler.resume
-  end
   
   
   def draw
@@ -1026,20 +1154,21 @@ class Core
       end
     end
     
-    if @draw_steps != 0
-      @draw_steps.times do
+    
+      4.times do
         @draw_fiber.resume
       end
-      
-      @draw_steps = 0
-    end
-  end
-  
-  
-  
-  def on_update
     
+    # if @draw_steps != 0
+    #   @draw_steps.times do
+    #     @draw_fiber.resume
+    #   end
+      
+    #   @draw_steps = 0
+    # end
   end
+  
+  
   
   include RubyOF::Graphics
   def on_draw
