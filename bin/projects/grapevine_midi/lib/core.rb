@@ -12,6 +12,149 @@ load LIB_DIR/'looper_pedal.rb'
 # class definition
 
 
+
+
+# convert time in milliseconds to standard time units (microseconds)
+def msec(time)
+  time * 1000
+end
+
+# convert time in microseconds to standard time units (microseconds)
+def usec(time)
+  time
+end
+
+
+class Scheduler
+  attr_reader :time_log
+  
+  def initialize(time_per_frame, &block)
+    helper = DSL_Helper.new
+    block.call(helper)
+    
+    @schedule = Array.new  # outer: frames that have events
+    @schedule << Array.new # inner: events to fire on a particular frame
+    schedule_events(time_per_frame, helper.sections)
+    # => sets @time_per_frame, @frames_per_cycle
+    #    populates @schedule
+    
+    
+    @time_log = Array.new
+  end
+  
+  #   + give me a list of sections
+  #   + each section has a name and an estimated runtime
+  #   + I will schedule each block, in the order of declaration
+  # postcondition: I will know how many frames it will take to complete 1 cycle
+  def schedule_events(time_per_frame, sections)
+    @time_per_frame = time_per_frame # e.g. 60 fps => 16.67 ms per frame
+    
+    @total_budget = sections.reduce(0){ |total, x| total + x.budget }
+    @frames_per_cycle = @total_budget / @time_per_frame
+    
+    # ^ this scheme is straighforward, but naieve
+    #   There is often some "padding" introduced because tasks
+    #   do not fit nicely in the budget - think struct alignment
+    # (Unlike with threads, will never stop a task in the middle of execution)
+    
+    
+    time_used_this_frame = 0
+    sections.each do |x|
+      if time_used_this_frame + x.budget < @time_per_frame
+        # schedule on current frame
+        @schedule.last << x
+        
+        # advance time
+        time_used_this_frame += x.budget
+      else
+        # delay to the next frame
+        
+        # advance frame
+        @schedule << Array.new
+        
+        # schedule section
+        @schedule.last << x
+        
+        # increment time (within next frame - reset and increment)
+        time_used_this_frame = 0
+        time_used_this_frame += x.budget
+      end
+    end
+    
+    @frames_per_cycle = @schedule.length
+    @callbacks_per_cycle = @schedule.flatten.length
+  end
+  
+  
+  # TODO: consider separating callback blocks into separate array. that way, you can expose info on the different sections to outside code (for visualization, etc) without exposing the ability to execute callbacks
+    # sections:   [name, budget, callback_idx  ]
+    # callbacks:  [cb_0, cb_1, .., cb_n]
+  def resume
+    @f1 ||= Fiber.new do
+      i = 0
+      loop do
+        
+        # fire all events scheduled for the current frame
+        @schedule[i].each do |sec|
+          
+          start_time = RubyOF::Utils.ofGetElapsedTimeMillis
+          
+            sec.callback.call() # CORE LOGIC GOES HERE
+            
+          end_time = RubyOF::Utils.ofGetElapsedTimeMillis
+          dt = end_time - start_time # TODO: account for timer looping
+          
+          # TODO: store dt for later visualization
+          
+        end
+        
+        i += 1
+        i = 0 unless i < @schedule.size
+        
+        Fiber.yield
+      end
+    end
+    
+    @f1.resume
+    # NOTE: may not actually need Fiber here, but will keep it here until time travel is implemented
+  end
+  
+  
+  
+  
+  
+  class Section
+    attr_reader :name, :budget, :callback
+    
+    def initialize(name, budget, callback)
+      @name = name
+      @budget = budget
+      @callback = callback
+    end
+  end
+  
+  
+  class DSL_Helper
+    attr_reader :sections
+    
+    def initialize()
+      @sections = Array.new
+    end
+    
+    
+    # name    the name of this section. must be unique.
+    # budget  the amount of time (in milliseconds) to 
+    def section(name:, budget:, &block)
+      @sections << Section.new(name, budget, block)
+    end
+  end
+end
+
+
+# TODO: can't use block style, because that prevents local variables from passing from block to block. Try using Fiber instead, with 'checkpoints' (just initial lines, not do-end blocks) to block execution at certain points while waiting to be scheduled
+
+
+
 class Core
   def initialize(window)
     @w = window
@@ -511,6 +654,8 @@ class Core
     setup()
     @looper_pedal.setup
     
+    @update_scheduler = nil
+    @draw_scheduler = nil
   end
   
   
@@ -520,20 +665,357 @@ class Core
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def update    
-    @update_fiber ||= Fiber.new do
-      loop do
-        on_update
+  def update
+  @update_scheduler ||= Scheduler.new(msec(16)) do |x|
+    x.section name: "test 1", budget: msec(16)
+      
+      # liveGLSL.foo "char_display" do |path_to_shader|
+        # @display.reload_shader
+      # end
+      
+      
+      # prototype possible smarter live-loading system for GLSL shaders
+      
+      shader_name = "char_display"
+      files = [
+        PROJECT_DIR/"bin/data/#{shader_name}.vert",
+        PROJECT_DIR/"bin/data/#{shader_name}.frag"
+      ]
+      
+      @shaderIsCorrect ||= nil
+      
+      if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
+        loaded_correctly = @display.reload_shader
+        
+        
+        
+        puts "load code: #{loaded_correctly}"
+        # ^ apparently the boolean is still true when the shader is loaded with an error???
+        
+        puts "loaded? : #{@display.shader_loaded?}"
+        # ^ this doesn't work either
+        
+        
+        # This is a long-standing issue, open since 2015:
+        
+        # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
+        # https://github.com/openframeworks/openFrameworks/pull/3734
+        
+        # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
+        
+        
+        if loaded_correctly
+          case @shaderIsCorrect
+          when true
+            # good -> good
+            puts "GLSL: still good"
+          when false
+            # bad -> good
+            puts "GLSL: fixed!"
+          when nil
+            # nothing -> good
+            puts "GLSL: shader loaded"
+          end
+          
+          @shaderIsCorrect = true
+        else
+          case @shaderIsCorrect
+          when true
+            # good -> bad
+            puts "GLSL: something broke"
+          when false
+            # bad -> bad
+            puts "GLSL: still broken..."
+          when nil
+            # nothing -> bad
+            puts "GLSL: could not load shader"
+          end
+          
+          @shaderIsCorrect = false;
+        end
+          
+        
+        @shader_timestamp = Time.now
       end
-    end
     
-    if @update_steps != 0
-      @update_steps.times do 
-        @update_fiber.resume
+    
+    
+    
+    
+    x.section name: "test 2 - update", budget: msec(16)
+      @input_handler.update
+      
+      
+    
+    x.section name: "test 3 - manage midi deltas", budget: msec(16)
+    
+      # p @w.cpp_val["midiMessageQueue"]
+      
+      delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
+      # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
+    
+      delta.each do |midi_msg|
+        # case midi_msg[0]
+        # when 0x90 # note on
+        #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+        #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+        #   # puts "ON: #{midi_msg.to_s}"
+          
+        # when 0x80 # note off
+        #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+        #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+        #   # puts "OFF: #{midi_msg.to_s}"
+          
+        # end
+        
       end
       
-      @update_steps = 0
+    
+    
+    x.section name: "test 4", budget: msec(16)
+    
+      @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
+      
+      
+      
+      live_colorpicker = @w.cpp_ptr["colorPicker_color"]
+    
+    
+    
+    
+    if @debug.keys.empty?
+      x.section name: "test 5a", budget: msec(16)
+        # write all messages in buffer to the character display
+        # TODO: need live coding ASAP for this
+        
+        # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
+        # (or just let them happen - it could be pretty!)
+        
+        # TODO: need a way to shift an existing block of text in the display buffer
+        
+        
+        # 
+        # show MIDI note data
+        # 
+        anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
+        
+        # print header
+        @display.print_string(
+          anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
+        ).each do |pos|
+          # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
+          # @display.foreground[pos] = @colors[:pale_green]
+          # @display.foreground[pos] = live_colorpicker
+          
+          # @display.background[pos] = live_colorpicker
+          @display.background[pos] = RubyOF::Color.hex( 0xc4cfff )
+        end
+        
+        # dump data on all messages in the queue
+        @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+          
+          # midi bytes
+          @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
+          @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
+          @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+          
+          
+          # deltatime
+          midi_dt = midi_msg.deltatime
+            max_display_num = 99999.999
+          midi_dt = [max_display_num, midi_dt].min
+          
+          msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
+          @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+          
+          
+          
+          # note value (as bar graph)
+          count = 16
+            # 128 midi notes, so 16 chars of 8 increments each
+            # will cover it at 1 fraction per note
+          value = 15
+          range = 0..127
+          bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+          fg_color = @colors[:lilac]
+          
+          full_bars = midi_msg.pitch / 8
+          fractions = midi_msg.pitch % 8
+          
+          bar_graph  = @hbar['8/8']*full_bars
+          bar_graph ||= '' # bar graph can be nil if full_bars == 0
+          bar_graph += @hbar["#{fractions}/8"]
+          
+          # @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
+          # .each do |pos|          
+          #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
+          #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
+          # end
+          
+          @display.print_string(
+            anchor+CP::Vec2.new(20,i+1),
+            bar_graph.ljust(count)
+          )
+          .each do |pos|
+            @display.background[pos] = bg_color
+            @display.foreground[pos] = fg_color
+          end
+          
+          # ^ it's just this thrashing of colors that kills performance!
+          #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
+          # (it doesn't seem to be the Enumerator through the single line of the string that's slow - it seems to be the changing of colors)
+          
+          # setting the colors on the header line is about 35 colorsr
+          # setting the colors for every pitch bar is 160 colors total
+          # That increase in volume (4.5x) is what takes the latency from negligible to overwhelming. You can see this by simply trying to push the header data 10 times (the exact same data)
+            # -> you get the same lag spike
+          
+          # maybe I can go faster if I completely separate read and write interfaces? right now this ruby Enumerator interface allows for reading, writing, and mutating color data. If those things are all separated out, maybe we can go faster?
+          
+          # How does the PNG library I was using in that one gamejam work? That library seemed pretty fast (even though I never benchmarked it.) Can I copy something from that code and go super fast?
+          # (oops, it was a bmp library. well... whatever)
+          
+          
+          
+          # signal name
+          # (on, off, CC, etc)
+          status_string =
+            case midi_msg.status
+            when :note_on
+              "on"
+            when :note_off
+              "off"
+            when :control_change
+              "CC" # <-- no pitch or velocity data, control and value instead
+            else
+              "???"
+            end
+          status_string = status_string.ljust(3)
+            # ^ justify to max length of any one string 
+            #   so that you don't get ghosting of old characters
+          
+          midi_msg.status
+          @display.print_string(
+            anchor+CP::Vec2.new(38,i+1),
+            status_string
+          )
+          
+          
+          # channel
+          @display.print_string(
+            anchor+CP::Vec2.new(44,i+1),
+            "ch#{midi_msg.channel.to_s.ljust(2)}"
+            # ^ there are 16 possible midi channels
+            #   thus, worse case the channel name has 2 digits in it
+          )
+          
+        end
+      
+      x.section name: "test 5b", budget: msec(16)
+        # 
+        # color picker data
+        # 
+        anchor = CP::Vec2.new(48,0)
+        
+        @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
+        .each do |pos|
+          @display.background[pos] = RubyOF::Color.rgb( [0, 0, 0] )
+          @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+        end
+        @w.cpp_ptr["colorPicker_color"].tap do |c|
+          output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
+          
+          @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
+          .each do |pos|
+            @display.background[pos] = c
+            @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+          end
+          
+        end
+      
+      x.section name: "test 5c", budget: msec(16)
+          
+        # 
+        # mouse data
+        # 
+        
+        
+        bb = CP::BB.new(40,13, 58,15)
+        
+        
+        @display.each_position
+        .select{ |pos|  bb.contain_vect? pos  }
+        .each do |pos|
+          @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+          @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
+        end
+        
+        ((bb.b.to_i)..(bb.t.to_i)).each do |y|
+          @display.print_string(CP::Vec2.new(bb.l, y), " "*(bb.r-bb.l+1))
+        end
+        
+        anchor = CP::Vec2.new(bb.l, bb.b)
+        
+        @display.print_string(anchor+CP::Vec2.new(1,1), "mouse @ ")
+        @display.print_string(anchor+CP::Vec2.new(9,1),
+          "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
+        )
+      
+      x.section name: "test 5d", budget: msec(16)
+          
+        # 
+        # timeline
+        # 
+        x = 2
+        y = 17
+        w = 40
+        h = 4
+        bb = CP::BB.new(x,y, x+w-1,y+h-1)
+        
+        bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+        fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+        
+        @display.each_position
+        .select{ |pos| bb.contain_vect? pos}
+        .each do |pos|
+          @display.background[pos] = bg_color
+          @display.foreground[pos] = fg_color
+        end
+        
+        anchor = CP::Vec2.new(x,y)
+        h.times do |i|
+          @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
+        end
+        
+        @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
+        @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
+        
+        # punch a whole in the display using transparent spaces
+        # to reveal the vertical bars BEHIND the display
+        @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
+        .each do |pos|
+          @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
+        end
+        
     end
+      
+      
+      
+      
+      
+    x.section name: "test 6", budget: msec(16)
+      
+      @sprite = @hbar['8/8']*3
+      # @sprite = "hello world!"
+      
+      
+      
+      @display.flushColors_bg()
+      @display.flushColors_fg()
+    
+      
+  end
+  @update_scheduler.resume
   end
   
   
@@ -556,351 +1038,7 @@ class Core
   
   
   def on_update
-    # liveGLSL.foo "char_display" do |path_to_shader|
-      # @display.reload_shader
-    # end
     
-    
-    # prototype possible smarter live-loading system for GLSL shaders
-    
-    shader_name = "char_display"
-    files = [
-      PROJECT_DIR/"bin/data/#{shader_name}.vert",
-      PROJECT_DIR/"bin/data/#{shader_name}.frag"
-    ]
-    
-    @shaderIsCorrect ||= nil
-    
-    if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp } 
-      loaded_correctly = @display.reload_shader
-      
-      
-      
-      puts "load code: #{loaded_correctly}"
-      # ^ apparently the boolean is still true when the shader is loaded with an error???
-      
-      puts "loaded? : #{@display.shader_loaded?}"
-      # ^ this doesn't work either
-      
-      
-      # This is a long-standing issue, open since 2015:
-      
-      # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
-      # https://github.com/openframeworks/openFrameworks/pull/3734
-      
-      # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
-      
-      
-      if loaded_correctly
-        case @shaderIsCorrect
-        when true
-          # good -> good
-          puts "GLSL: still good"
-        when false
-          # bad -> good
-          puts "GLSL: fixed!"
-        when nil
-          # nothing -> good
-          puts "GLSL: shader loaded"
-        end
-        
-        @shaderIsCorrect = true
-      else
-        case @shaderIsCorrect
-        when true
-          # good -> bad
-          puts "GLSL: something broke"
-        when false
-          # bad -> bad
-          puts "GLSL: still broken..."
-        when nil
-          # nothing -> bad
-          puts "GLSL: could not load shader"
-        end
-        
-        @shaderIsCorrect = false;
-      end
-        
-      
-      @shader_timestamp = Time.now
-    end
-    
-    
-    
-    
-    
-    
-    
-    @input_handler.update
-    
-    
-    
-    # p @w.cpp_val["midiMessageQueue"]
-    
-    delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
-    # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
-    
-    
-    
-    
-    
-    delta.each do |midi_msg|
-      # case midi_msg[0]
-      # when 0x90 # note on
-      #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
-      #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
-      #   # puts "ON: #{midi_msg.to_s}"
-        
-      # when 0x80 # note off
-      #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
-      #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
-      #   # puts "OFF: #{midi_msg.to_s}"
-        
-      # end
-      
-    end
-    
-    
-    
-    
-    @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
-    
-    
-    
-    
-    
-    
-    live_colorpicker = @w.cpp_ptr["colorPicker_color"]
-    
-    if @debug.keys.empty?
-      
-      # write all messages in buffer to the character display
-      # TODO: need live coding ASAP for this
-      
-      # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
-      # (or just let them happen - it could be pretty!)
-      
-      # TODO: need a way to shift an existing block of text in the display buffer
-      
-      
-      # 
-      # show MIDI note data
-      # 
-      anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
-      
-      # print header
-      @display.print_string(
-        anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
-      ).each do |pos|
-        # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
-        # @display.foreground[pos] = @colors[:pale_green]
-        # @display.foreground[pos] = live_colorpicker
-        
-        # @display.background[pos] = live_colorpicker
-        @display.background[pos] = RubyOF::Color.hex( 0xc4cfff )
-      end
-      
-      # dump data on all messages in the queue
-      @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
-        
-        # midi bytes
-        @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
-        @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
-        @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
-        
-        
-        # deltatime
-        midi_dt = midi_msg.deltatime
-          max_display_num = 99999.999
-        midi_dt = [max_display_num, midi_dt].min
-        
-        msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-        @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
-        
-        
-        
-        # note value (as bar graph)
-        count = 16
-          # 128 midi notes, so 16 chars of 8 increments each
-          # will cover it at 1 fraction per note
-        value = 15
-        range = 0..127
-        bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-        fg_color = @colors[:lilac]
-        
-        full_bars = midi_msg.pitch / 8
-        fractions = midi_msg.pitch % 8
-        
-        bar_graph  = @hbar['8/8']*full_bars
-        bar_graph ||= '' # bar graph can be nil if full_bars == 0
-        bar_graph += @hbar["#{fractions}/8"]
-        
-        # @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
-        # .each do |pos|          
-        #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
-        #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
-        # end
-        
-        @display.print_string(
-          anchor+CP::Vec2.new(20,i+1),
-          bar_graph.ljust(count)
-        )
-        .each do |pos|
-          @display.background[pos] = bg_color
-          @display.foreground[pos] = fg_color
-        end
-        
-        # ^ it's just this thrashing of colors that kills performance!
-        #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
-        # (it doesn't seem to be the Enumerator through the single line of the string that's slow - it seems to be the changing of colors)
-        
-        # setting the colors on the header line is about 35 colorsr
-        # setting the colors for every pitch bar is 160 colors total
-        # That increase in volume (4.5x) is what takes the latency from negligible to overwhelming. You can see this by simply trying to push the header data 10 times (the exact same data)
-          # -> you get the same lag spike
-        
-        # maybe I can go faster if I completely separate read and write interfaces? right now this ruby Enumerator interface allows for reading, writing, and mutating color data. If those things are all separated out, maybe we can go faster?
-        
-        # How does the PNG library I was using in that one gamejam work? That library seemed pretty fast (even though I never benchmarked it.) Can I copy something from that code and go super fast?
-        # (oops, it was a bmp library. well... whatever)
-        
-        
-        
-        # signal name
-        # (on, off, CC, etc)
-        status_string =
-          case midi_msg.status
-          when :note_on
-            "on"
-          when :note_off
-            "off"
-          when :control_change
-            "CC" # <-- no pitch or velocity data, control and value instead
-          else
-            "???"
-          end
-        status_string = status_string.ljust(3)
-          # ^ justify to max length of any one string 
-          #   so that you don't get ghosting of old characters
-        
-        midi_msg.status
-        @display.print_string(
-          anchor+CP::Vec2.new(38,i+1),
-          status_string
-        )
-        
-        
-        # channel
-        @display.print_string(
-          anchor+CP::Vec2.new(44,i+1),
-          "ch#{midi_msg.channel.to_s.ljust(2)}"
-          # ^ there are 16 possible midi channels
-          #   thus, worse case the channel name has 2 digits in it
-        )
-        
-      end
-      
-      Fiber.yield
-      
-      # 
-      # color picker data
-      # 
-      anchor = CP::Vec2.new(48,0)
-      
-      @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0, 0, 0] )
-        @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-      end
-      @w.cpp_ptr["colorPicker_color"].tap do |c|
-        output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
-        
-        @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
-        .each do |pos|
-          @display.background[pos] = c
-          @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-        end
-        
-      end
-      
-      Fiber.yield
-      
-      # 
-      # mouse data
-      # 
-      
-      
-      bb = CP::BB.new(40,13, 58,15)
-      
-      
-      @display.each_position
-      .select{ |pos|  bb.contain_vect? pos  }
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      end
-      
-      ((bb.b.to_i)..(bb.t.to_i)).each do |y|
-        @display.print_string(CP::Vec2.new(bb.l, y), " "*(bb.r-bb.l+1))
-      end
-      
-      anchor = CP::Vec2.new(bb.l, bb.b)
-      
-      @display.print_string(anchor+CP::Vec2.new(1,1), "mouse @ ")
-      @display.print_string(anchor+CP::Vec2.new(9,1),
-        "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
-      )
-      
-      Fiber.yield
-      
-      # 
-      # timeline
-      # 
-      x = 2
-      y = 17
-      w = 40
-      h = 4
-      bb = CP::BB.new(x,y, x+w-1,y+h-1)
-      
-      bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-      fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
-      
-      @display.each_position
-      .select{ |pos| bb.contain_vect? pos}
-      .each do |pos|
-        @display.background[pos] = bg_color
-        @display.foreground[pos] = fg_color
-      end
-      
-      anchor = CP::Vec2.new(x,y)
-      h.times do |i|
-        @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
-      end
-      
-      @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
-      @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
-      
-      # punch a whole in the display using transparent spaces
-      # to reveal the vertical bars BEHIND the display
-      @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
-      end
-      
-      Fiber.yield
-      
-    end
-    
-    
-    @sprite = @hbar['8/8']*3
-    # @sprite = "hello world!"
-    
-    
-    
-    @display.flushColors_bg()
-    @display.flushColors_fg()
-    
-    Fiber.yield
   end
   
   include RubyOF::Graphics
