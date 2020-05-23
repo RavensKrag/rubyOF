@@ -180,9 +180,9 @@ class Core
     
     
     
-    @display_origin_px = CP::Vec2.new(340,100)
+    @display_origin_px = CP::Vec2.new(340,50)
     
-    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 28,
+    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 29,
                                      @display_origin_px, @bg_offset, @bg_scale)
     
     
@@ -958,8 +958,8 @@ class Core
         
         x = anchor.x
         y = anchor.y
-        w = 45
-        h = 10
+        w = 56
+        h = 11
         bb = CP::BB.new(x,y, x+w-1,y+h-1)
         
         unless @test7_once 
@@ -1014,23 +1014,32 @@ class Core
         
         # p statistics
         
+        
         i = 0
+          @display.print_string(anchor+CP::Vec2.new( 9,i),  '--min--')
+          @display.print_string(anchor+CP::Vec2.new(16,i),  ' median')
+          @display.print_string(anchor+CP::Vec2.new(24,i),  '--max--')
+          
+          @display.print_string(anchor+CP::Vec2.new(33,i),
+                                '--------------------')
+        
+        i = 1
         statistics.each do |name, stats|
           min, med, max = stats
           
-          @display.print_string(anchor+CP::Vec2.new(0, i),  name)
+          @display.print_string(anchor+CP::Vec2.new( 1,i),  name)
           
           @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(15,i),  med.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(20,i),  max.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
           
           
           # TODO: print bar graph
-          max_bar_length = 10
+          max_bar_length = 20
           bar_graph = @hbar['8/8']*3
           
           @display.print_string(
-            anchor+CP::Vec2.new(30,i),
+            anchor+CP::Vec2.new(33,i),
             bar_graph.ljust(max_bar_length)
           )
           .each do |pos|
