@@ -177,7 +177,7 @@ class Core
     
     
     
-    @first_draw = true
+    @first_update = true
     @mouse = CP::Vec2.new(0,0)
     
     
@@ -793,6 +793,24 @@ class Core
         
         @shader_timestamp = Time.now
       end
+      
+      
+      
+      if @first_update
+        # scheduler.section name: "test 2a - first draw", budget: msec(16)
+        # screen_size = read_screen_size("Screen 0")
+        # screen_w, screen_h = screen_size["current"]
+        # puts "screen size: #{[screen_w, screen_h].inspect}"
+        
+        puts "---> callback from ruby"
+        @w.cpp_ptr["midiOut"].listOutPorts()
+        puts "<--- callback end"
+        
+        
+        @first_update = false
+      end
+      
+      
     
     
     
@@ -1101,23 +1119,6 @@ class Core
     
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
-    
-    
-    
-    if @first_draw
-      # scheduler.section name: "test 2a - first draw", budget: msec(16)
-      # screen_size = read_screen_size("Screen 0")
-      # screen_w, screen_h = screen_size["current"]
-      # puts "screen size: #{[screen_w, screen_h].inspect}"
-      
-      puts "---> callback from ruby"
-      @w.cpp_ptr["midiOut"].listOutPorts()
-      puts "<--- callback end"
-      
-      
-      @first_draw = false
-    end
-    
     
     
     # NOTE: need live coding before I can fiddle with graphics code
