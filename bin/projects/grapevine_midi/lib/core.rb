@@ -279,6 +279,10 @@ class Core
     
     # @debug[:bar_graph_tests] = true
     
+    # @debug[:display_clipping] = true
+    # @debug[:align_display_bg] = true
+    # @debug[:align_display_fg] = true
+    
     
     
     
@@ -293,10 +297,6 @@ class Core
     @char_width_pxs = 19
     @bg_offset = CP::Vec2.new(0,-@line_height-descender_height)
     @bg_scale  = CP::Vec2.new(@char_width_pxs,@line_height)
-    
-    # @debug[:display_clipping] = true
-    # @debug[:align_display_bg] = true
-    # @debug[:align_display_fg] = true
     
     
     # 
@@ -367,6 +367,43 @@ class Core
       # # ^ Attempting to access indicies that are out of range throws exception
       
     end
+    
+    
+    if @debug[:align_display_bg]
+      # (alternate colored bg lines, dark and light, helps find scaling)
+      # (a row of the character "F" helps configure character width)
+      c = RubyOF::Color.new.tap do |c|
+        c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
+      end
+      
+      
+      
+      60.times.each do |i|
+        screen_print(font: @fonts[:monospace], 
+                     string: "F", color: c,
+                     position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
+      end
+      
+      
+      
+      c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+      c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
+      
+      assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
+      
+      assoc[0].each{ |pos| @display.background[pos] = c1 }
+      assoc[1].each{ |pos| @display.background[pos] = c2 }
+      
+      
+      
+      # 
+      # text display color alignment test
+      # 
+      
+    end
+    
+    
+    
     
     
     if @debug[:align_display_fg]
@@ -519,8 +556,6 @@ class Core
         @display.foreground[pos+offset] = fg_color
       end
     end
-    
-    
     
     
     
@@ -1166,48 +1201,6 @@ class Core
     
     @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     
-    
-    # 
-    # text display background alignment test
-    # 
-    
-    
-    if @debug[:align_display_bg]
-      scheduler.section name: "test 4a", budget: msec(16)
-      
-      # (alternate colored bg lines, dark and light, helps find scaling)
-      # (a row of the character "F" helps configure character width)
-      c = RubyOF::Color.new.tap do |c|
-        c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
-      end
-      
-      
-      scheduler.section name: "test 4b", budget: msec(16)
-      
-      60.times.each do |i|
-        screen_print(font: @fonts[:monospace], 
-                     string: "F", color: c,
-                     position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
-      end
-      
-      
-      scheduler.section name: "test 4c", budget: msec(16)
-      
-      c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-      c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
-      
-      assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
-      
-      assoc[0].each{ |pos| @display.background[pos] = c1 }
-      assoc[1].each{ |pos| @display.background[pos] = c2 }
-      
-      
-      
-      # 
-      # text display color alignment test
-      # 
-      
-    end
     
     
   end
