@@ -40,13 +40,13 @@ class Scheduler
   # DEBUG = true
   DEBUG = false
   attr_reader :time_log
-  attr_accessor :log_length
+  attr_accessor :max_num_cycles, :section_count
   
   attr_reader :budgets
   
   def initialize(outer, callback_method_name, frame_deadline_ms)
     @time_log = Array.new
-    @log_length = 0 # number of sections to save
+    @max_num_cycles = 0 # how many cycles to save section time data for
     
     @budgets = Hash.new
     
@@ -56,7 +56,8 @@ class Scheduler
     @total_time_per_frame = frame_deadline_ms
     @time_used_this_frame = 0
     
-    
+    @section_count = 1
+    @first_loop_complete = false
     @helper = SchedulerHelper.new
     
     # step through sections of the inner block
@@ -69,6 +70,7 @@ class Scheduler
         
         # TODO: need to call Fiber.yield once more at the end of the method before looping in order to correctly time the final block
         
+        @first_loop_complete = true
       end
       
     end
@@ -126,14 +128,23 @@ class Scheduler
         
         # [ section_name, time_budget, [dt_0, dt_1, dt_2] ]
         @time_log << [ section_name, time_budget, dt ]
+        @budgets[section_name] = time_budget
         
-        # drop old entries if too many data points are being saved
-        if @time_log.length > @log_length
-          d_len = @time_log.length - @log_length
-          @time_log.shift(d_len)
+        
+        if @first_loop_complete
+          # drop old entries if too many data points have been saved
+          if @time_log.length == (@max_num_cycles+1)*@section_count
+            @time_log.shift(@section_count)
+          end
+          
+        else
+          @section_count += 1
+          
         end
         
-        @budgets[section_name] = time_budget
+        
+        
+        
         
         # Fiber.yield :end_of_loop
         # # ^ this doesn't work as expected.
@@ -142,6 +153,8 @@ class Scheduler
     end
     
   end
+  
+  # NOTE: The entire scheduler is refreshed when new code is live loaded
   
   def resume
     

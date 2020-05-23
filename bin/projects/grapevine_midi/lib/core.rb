@@ -692,7 +692,7 @@ class Core
       
       
     
-    scheduler.section name: "test 3", budget: msec(0.1)
+    scheduler.section name: "test 3", budget: msec(2.5)
       puts "test 3" if Scheduler::DEBUG
       
       # p @w.cpp_val["midiMessageQueue"]
@@ -946,8 +946,8 @@ class Core
       #     @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
       #   end
       
-      scheduler.section name: "test 7", budget: msec(16)
-        puts "test 7" if Scheduler::DEBUG
+      scheduler.section name: "bnchmrk", budget: msec(16)
+        puts "bencmrk" if Scheduler::DEBUG
         # 
         # display timing data
         # 
@@ -963,6 +963,7 @@ class Core
         bb = CP::BB.new(x,y, x+w-1,y+h-1)
         
         unless @test7_once 
+          @statistics = Hash.new
           
           @display.each_position
           .select{ |pos| bb.contain_vect? pos}
@@ -980,39 +981,43 @@ class Core
         end
         
         
-        num_sections = 9
-        history_size = 100
-        window_size  = 50 # must be < history size (sliding window)
+        @update_scheduler.max_num_cycles = 50
         
-        @update_scheduler.log_length = num_sections*history_size
         
         # get the data from the time log
         # reduce it down to 3 data points per section: min, median, max
         # print those numbers to the display
         clusters = 
           @update_scheduler.time_log
-          .last( num_sections*window_size )
+          .first( @update_scheduler.max_num_cycles*@update_scheduler.section_count )
           .group_by{|section_name, time_budget, dt|  section_name  }
-          
+        
         # p clusters
+          # puts "---"
+          # puts "time log size: #{@update_scheduler.time_log.size}"
+          # puts "sections: #{@update_scheduler.section_count}"
+          # clusters.each do |k,v|
+          #   puts "#{k.ljust(10)} => #{v.size}"
+          # end
+          # puts "---"
         
-        statistics = Hash.new
-          clusters.each do |name, data|
-            times = 
-              data
-              .collect{  |section_name, time_budget, dt|   dt   }
-              .sort
-            
-            # p times
-            
-            min    = times.first
-            max    = times.last
-            median = times[ times.length / 2 ]
-            
-            statistics[name] = [min, median, max]
-          end
+        clusters.each do |name, data|
+          times = 
+            data
+            .collect{  |section_name, time_budget, dt|   dt   }
+            .sort
+          
+          # p times
+          
+          min    = times.first
+          max    = times.last
+          median = times[ times.length / 2 ]
+          
+          @statistics[name] = [min, median, max]
+        end
         
-        # p statistics
+        # p @statistics
+        
         
         
         i = 0
@@ -1024,7 +1029,7 @@ class Core
                                 '-------budget-------')
         
         i = 1
-        statistics.each do |name, stats|
+        @statistics.each do |name, stats|
           min, med, max = stats
           
           @display.print_string(anchor+CP::Vec2.new( 1,i),  name)
