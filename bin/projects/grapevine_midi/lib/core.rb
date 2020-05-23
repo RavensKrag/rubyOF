@@ -946,8 +946,28 @@ class Core
       #     @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
       #   end
       
-      scheduler.section name: "bnchmrk", budget: msec(16)
-        puts "bencmrk" if Scheduler::DEBUG
+    end
+      
+      
+      
+      
+      
+    scheduler.section name: "test 6", budget: msec(5)
+      puts "test 6" if Scheduler::DEBUG
+      
+      @sprite = @hbar['8/8']*3
+      # @sprite = "hello world!"
+      
+      
+      
+      @display.flushColors_bg()
+      @display.flushColors_fg()
+    
+    
+    
+    if @debug.keys.empty?
+      scheduler.section name: "profilr", budget: msec(16)
+        puts "profilr" if Scheduler::DEBUG
         # 
         # display timing data
         # 
@@ -1105,27 +1125,8 @@ class Core
         
         # TODO: disable all the printing to console that's happening in Scheduler once this new output is complete
         
+    
     end
-      
-      
-      
-      
-      
-    scheduler.section name: "test 6", budget: msec(5)
-      puts "test 6" if Scheduler::DEBUG
-      
-      @sprite = @hbar['8/8']*3
-      # @sprite = "hello world!"
-      
-      
-      
-      @display.flushColors_bg()
-      @display.flushColors_fg()
-    
-    
-    
-    
-    
       
   end
   
