@@ -592,7 +592,7 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
-    scheduler.section name: "test 1", budget: msec(16)
+    scheduler.section name: "test 1", budget: msec(0.5)
       puts "test 1" if Scheduler::DEBUG
       
       # liveGLSL.foo "char_display" do |path_to_shader|
@@ -686,13 +686,13 @@ class Core
     
     
     
-    scheduler.section name: "test 2", budget: msec(16)
+    scheduler.section name: "test 2", budget: msec(0.2)
       puts "test 2" if Scheduler::DEBUG
       @input_handler.update
       
       
     
-    scheduler.section name: "test 3", budget: msec(16)
+    scheduler.section name: "test 3", budget: msec(0.1)
       puts "test 3" if Scheduler::DEBUG
       
       # p @w.cpp_val["midiMessageQueue"]
@@ -718,7 +718,7 @@ class Core
       
     
     
-    scheduler.section name: "test 4", budget: msec(16)
+    scheduler.section name: "test 4", budget: msec(0.2)
       puts "test 4" if Scheduler::DEBUG
       
       @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
@@ -731,7 +731,7 @@ class Core
     
     
     if @debug.keys.empty?
-      scheduler.section name: "test 5a", budget: msec(16)
+      scheduler.section name: "test 5a", budget: msec(5)
         puts "test 5a" if Scheduler::DEBUG
         # write all messages in buffer to the character display
         # TODO: need live coding ASAP for this
@@ -859,7 +859,7 @@ class Core
           
         end
       
-      scheduler.section name: "test 5b", budget: msec(16)
+      scheduler.section name: "test 5b", budget: msec(6)
         puts "test 5b" if Scheduler::DEBUG
         # 
         # color picker data
@@ -992,7 +992,7 @@ class Core
         clusters = 
           @update_scheduler.time_log
           .last( num_sections*window_size )
-          .group_by{|section_name, time_budget_ms, dt|  section_name  }
+          .group_by{|section_name, time_budget, dt|  section_name  }
           
         # p clusters
         
@@ -1000,7 +1000,7 @@ class Core
           clusters.each do |name, data|
             times = 
               data
-              .collect{  |section_name, time_budget_ms, dt|   dt   }
+              .collect{  |section_name, time_budget, dt|   dt   }
               .sort
             
             # p times
@@ -1021,7 +1021,7 @@ class Core
           @display.print_string(anchor+CP::Vec2.new(24,i),  '--max--')
           
           @display.print_string(anchor+CP::Vec2.new(33,i),
-                                '--------------------')
+                                '-------budget-------')
         
         i = 1
         statistics.each do |name, stats|
@@ -1033,14 +1033,35 @@ class Core
           @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
           @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
           
+          # TODO: show all time high as well (useful for eliminating the big rare spikes)
+          
+          
           
           # TODO: print bar graph
-          max_bar_length = 20
-          bar_graph = @hbar['8/8']*3
+          max_bar_length_chars = 20
+          subdivisions_per_bar = 8
+          max_segments = max_bar_length_chars * subdivisions_per_bar
+          
+          
+          max_time_budget = msec(16)
+          time_per_segment = max_time_budget / max_segments
+          
+          
+          time_budget = @update_scheduler.budgets[name]
+          
+          num_segments = time_budget / time_per_segment # should be int div
+          full_bars = num_segments / subdivisions_per_bar
+          fractions = num_segments % subdivisions_per_bar
+          
+          bar_graph  = @hbar['8/8']*full_bars
+          bar_graph ||= '' # bar graph can be nil if full_bars == 0
+          bar_graph += @hbar["#{fractions}/8"]
+          
+          
           
           @display.print_string(
             anchor+CP::Vec2.new(33,i),
-            bar_graph.ljust(max_bar_length)
+            bar_graph.ljust(max_bar_length_chars)
           )
           .each do |pos|
             @display.background[pos] = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
@@ -1068,7 +1089,7 @@ class Core
       
       
       
-    scheduler.section name: "test 6", budget: msec(16)
+    scheduler.section name: "test 6", budget: msec(5)
       puts "test 6" if Scheduler::DEBUG
       
       @sprite = @hbar['8/8']*3

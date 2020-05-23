@@ -42,9 +42,13 @@ class Scheduler
   attr_reader :time_log
   attr_accessor :log_length
   
+  attr_reader :budgets
+  
   def initialize(outer, callback_method_name, frame_deadline_ms)
     @time_log = Array.new
     @log_length = 0 # number of sections to save
+    
+    @budgets = Hash.new
     
     @callback_name = callback_method_name
     @outer = outer
@@ -84,12 +88,12 @@ class Scheduler
         # 
         
         # get info from section...
-        section_name, time_budget_ms = @helper.data
-        p [ section_name, time_budget_ms ] if Scheduler::DEBUG
+        section_name, time_budget = @helper.data
+        p [ section_name, time_budget ] if Scheduler::DEBUG
         
         # ...and block until you have enough time
         # (return control to main Fiber to forfeit remaining time)
-        while @time_used_this_frame + time_budget_ms >= @total_time_per_frame
+        while @time_used_this_frame + time_budget >= @total_time_per_frame
           puts "block" if Scheduler::DEBUG
           Fiber.yield :time_limit_reached # return control to main Fiber 
           @time_used_this_frame = 0
@@ -108,7 +112,7 @@ class Scheduler
         
         
         # advance the timer
-        @time_used_this_frame += time_budget_ms
+        @time_used_this_frame += time_budget
         # ^ increment by time budgeted, not time actually spent
         #   this way gives more scheduling control to the programmer
         
@@ -120,8 +124,8 @@ class Scheduler
         # save time data for later visualization
         # 
         
-        # [ section_name, time_budget_ms, [dt_0, dt_1, dt_2] ]
-        @time_log << [ section_name, time_budget_ms, dt ]
+        # [ section_name, time_budget, [dt_0, dt_1, dt_2] ]
+        @time_log << [ section_name, time_budget, dt ]
         
         # drop old entries if too many data points are being saved
         if @time_log.length > @log_length
@@ -129,6 +133,7 @@ class Scheduler
           @time_log.shift(d_len)
         end
         
+        @budgets[section_name] = time_budget
         
         # Fiber.yield :end_of_loop
         # # ^ this doesn't work as expected.
