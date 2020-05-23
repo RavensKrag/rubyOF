@@ -37,7 +37,7 @@ class Core
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
-    @update_scheduler = Scheduler_v2.new(self, :on_update, msec(16.6))
+    @update_scheduler = Scheduler.new(self, :on_update, msec(16.6))
     
     
     

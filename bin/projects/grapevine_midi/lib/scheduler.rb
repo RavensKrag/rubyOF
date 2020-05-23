@@ -1,7 +1,7 @@
 
 # TODO: can't use block style, because that prevents local variables from passing from block to block. Try using Fiber instead, with 'checkpoints' (just initial lines, not do-end blocks) to block execution at certain points while waiting to be scheduled
 
-class Scheduler_v2
+class Scheduler
   
   class SchedulerHelper
     
