@@ -24,7 +24,7 @@ out vec4 normalVarying;
 out vec2 charVarying;
 
 uniform vec2 origin;
-uniform vec3 charSize;
+// uniform vec3 charSize;
 
 void main()
 {

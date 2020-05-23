@@ -532,7 +532,7 @@
 			"file": "bin/data/char_display.vert",
 			"settings":
 			{
-				"buffer_size": 1180,
+				"buffer_size": 1183,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1490,15 +1490,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1180,
+						"buffer_size": 1183,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								815,
-								815
+								222,
+								222
 							]
 						],
 						"settings":
@@ -1508,27 +1508,12 @@
 							{
 								"close":
 								{
-									"1":
-									[
-										1178,
-										1179
-									]
 								},
 								"icon":
 								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/curly_bracket.png",
-										"region.purplish"
-									]
 								},
 								"open":
 								{
-									"1":
-									[
-										577,
-										578
-									]
 								},
 								"unmatched":
 								{
@@ -1598,7 +1583,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 480.0,
+						"translation.y": 192.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

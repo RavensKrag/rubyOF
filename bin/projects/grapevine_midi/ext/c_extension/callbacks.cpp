@@ -107,6 +107,11 @@ private:
 	ofShader  _fgColorShader; // should be the same across instances
 	// NOTE: if you're creating multiple instances of this class, probably only need 1 mesh and 1 shader (singleton?)
 	
+	ofNode _bgNode;
+	ofNode _fgNode;
+	
+	glm::vec2 _origin;
+	
 public:
 	// CharMappedDisplay(){
 		
@@ -210,6 +215,52 @@ public:
 		flushColors_bg();
 		flushColors_fg();
 	}
+	
+	
+	
+	void setup_transforms(float origin_x, float origin_y, 
+	                      float offset_x, float offset_y,
+	                      float scale_x,  float scale_y)
+	{
+		_bgNode.setPosition(origin_x+offset_x, origin_y+offset_y, 0);
+		_bgNode.setScale(scale_x, scale_y, 1);
+		
+		
+		_fgNode.setPosition(origin_x, origin_y, 0);
+		
+		_origin = glm::vec2(origin_x, origin_y);
+	}
+	
+	void draw(ofMesh &text_mesh, ofTexture &font_texture){
+		ofPushMatrix();
+		
+		// ofLoadIdentityMatrix();
+		ofMultMatrix(_bgNode.getGlobalTransformMatrix());
+		_bgMesh.draw();
+		
+		ofPopMatrix();
+		
+		
+		
+		ofPushMatrix();
+		
+		_fgColorShader.begin();
+		
+		_fgColorShader.setUniformTexture("trueTypeTexture", font_texture,    0);
+		_fgColorShader.setUniformTexture("fontColorMap",    _fgColorTexture, 1);
+		
+		_fgColorShader.setUniform2f("origin", _origin);
+		// _fgColorShader.setUniform3f("charSize", glm::vec3(p2_1, p2_2, p2_3));
+		
+		ofMultMatrix(_fgNode.getGlobalTransformMatrix());
+		text_mesh.draw();
+		
+		
+		_fgColorShader.end();
+		
+		ofPopMatrix();
+	}
+	
 	
 	
 	
@@ -445,6 +496,10 @@ void Init_rubyOF_project()
 		.define_method("bgPixels_setup", &CharMappedDisplay::bgPixels_setup)
 		.define_method("fgPixels_setup", &CharMappedDisplay::fgPixels_setup)
 		.define_method("setup",          &CharMappedDisplay::setup)
+		
+		.define_method("setup_transforms", &CharMappedDisplay::setup_transforms)
+		.define_method("cpp_draw",         &CharMappedDisplay::draw)
+		
 		
 		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
 		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)
