@@ -215,6 +215,51 @@ public:
 	
 	
 	
+	void draw(ofMesh &text_mesh, ofTexture &font_texture,
+	          float origin_x, float origin_y, 
+	          float offset_x, float offset_y,
+	          float scale_x,  float scale_y){
+		
+		ofPushMatrix();
+		ofTranslate(origin_x+offset_x, origin_y+offset_y, 0);
+		// ^ ascender height is the missing offset needed in the shader!
+		//   Need to bind that and pass it in.
+		//   Maybe can reduce some code duplication after that?
+		
+		ofScale(scale_x, scale_y, 1);
+		
+		
+		_bgMesh.draw();
+		
+		
+		ofPopMatrix();
+		
+		
+		_fgColorShader.begin();
+		
+		_fgColorShader.setUniformTexture("trueTypeTexture", font_texture,    0);
+		_fgColorShader.setUniformTexture("fontColorMap",    _fgColorTexture, 1);
+		
+		_fgColorShader.setUniform2f("origin", glm::vec2(origin_x, origin_y));
+		// _fgColorShader.setUniform3f("charSize", glm::vec3(p2_1, p2_2, p2_3));
+		
+		
+		ofPushMatrix();
+		
+			ofTranslate(origin_x, origin_y, 0);
+			text_mesh.draw();
+			
+		ofPopMatrix();
+		
+		_fgColorShader.end();
+	
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	Rice::Data_Object<ofShader> fgText_getShader(){
@@ -445,6 +490,10 @@ void Init_rubyOF_project()
 		.define_method("bgPixels_setup", &CharMappedDisplay::bgPixels_setup)
 		.define_method("fgPixels_setup", &CharMappedDisplay::fgPixels_setup)
 		.define_method("setup",          &CharMappedDisplay::setup)
+		
+		
+		.define_method("cpp_draw",       &CharMappedDisplay::draw)
+		
 		
 		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
 		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)

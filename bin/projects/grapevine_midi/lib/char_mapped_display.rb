@@ -90,94 +90,18 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # end
   
   # NOTE: do not move on z! that's not gonna give you the z-indexing you want! that's just a big headache!!! (makes everything weirdly blurry and in a weird position)
-  def draw(origin, bg_offset, bg_scale)
-    x,y = [0,0]
-    vflip = true
-    position = origin + bg_offset
-    
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      ofTranslate(position.x, position.y, 0)
-      # ^ ascender height is the missing offset needed in the shader!
-      #   Need to bind that and pass it in.
-      #   Maybe can reduce some code duplication after that?
-      
-      ofScale(bg_scale.x, bg_scale.y, 1)
-      
-      
-      bgMesh_draw()
-      
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-    end
-    
-    
-    
-    
-      shader = fgText_getShader()
-      
-      shader.begin()
-      
-      shader.setUniformTexture("trueTypeTexture", @font.font_texture,   0)
-      shader.setUniformTexture("fontColorMap",    fgText_getTexture(), 1)
-      
-      RubyOF::CPP_Callbacks.ofShader_bindUniforms(
-        shader,
-        "origin",   origin.x, origin.y,
-        "charSize", @ascender_height, @descender_height, @em_width
-      )
-      
-      # shader.setUniform2f("origin",   )
-      # shader.setUniform2f("charSize", )
-      
-      
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      # pos = origin + CP::Vec2.new(0,line_height*1) # this offset also in shader
-      # ofTranslate(origin.x, origin.y, z)
-      
-      # x,y = [0,0]
-      # vflip = true
-      # # TODO: convert @char_grid to array of strings (less garbage?)
-      # @char_grid.each_line.each_with_index do |line, i|
-      #   pos = origin+CP::Vec2.new(0,i*@line_height)
-      #   # @font.draw_string(line, pos.x, pos.y)
-      #   # ^ if you render with draw_string, there's no weird line height errors
-      #   #   but there are erros with drawing from mesh (position slightly off)
-      #   #   is this a texture filtering error or similar? not sure, but may want to just use draw_string. how does the shader have to change? can I still use a shader?
-        
-      #   ofEnableBlendMode :alpha
-      #   ofPushMatrix()
-      #   ofTranslate(pos.x, pos.y, 0)
-      #   @font.font_texture.bind
-      #   text_mesh = @font.get_string_mesh(line, x,y, vflip)
-      #   text_mesh.draw()
-      #   @font.font_texture.unbind
-      #   ofPopMatrix()
-      # end
-      
-      
-      
-      ofEnableBlendMode :alpha
-      ofPushMatrix()
-      ofTranslate(origin.x, origin.y, 0)
-      @font.font_texture.bind
-      text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
-      text_mesh.draw()
-      @font.font_texture.unbind
-      ofPopMatrix()
-      
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-      shader.end()
-    end
+  # alias :cpp_draw :draw
   
+  def draw(origin, bg_offset, bg_scale)
+      x = 0
+      y = 0
+      vflip = true
+    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+    
+    cpp_draw(text_mesh, @font.font_texture,
+             origin.x, origin.y,
+             bg_offset.x, bg_offset.y,
+             bg_scale.x, bg_scale.y)
   end
   
   
