@@ -570,6 +570,8 @@ class Core
   def on_reload
     setup()
     @looper_pedal.setup
+    
+    @test7_once = nil
   end
   
   
@@ -947,40 +949,110 @@ class Core
       scheduler.section name: "test 7", budget: msec(16)
         puts "test 7" if Scheduler::DEBUG
         # 
-        # print timing data
+        # display timing data
         # 
+        anchor = CP::Vec2.new(2,17)
+        
+        bg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+        fg_color = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
+        
+        x = anchor.x
+        y = anchor.y
+        w = 45
+        h = 10
+        bb = CP::BB.new(x,y, x+w-1,y+h-1)
+        
+        unless @test7_once 
+          
+          @display.each_position
+          .select{ |pos| bb.contain_vect? pos}
+          .each do |pos|
+            @display.background[pos] = bg_color
+            @display.foreground[pos] = fg_color
+          end
+          
+          blank_line = " "*w
+          h.times do |i|
+            @display.print_string(anchor+CP::Vec2.new(0,i), blank_line)
+          end
+          
+          @test7_once = true
+        end
+        
+        
         num_sections = 9
         history_size = 100
-        window_size  = 10 # must be < history size (sliding window)
+        window_size  = 50 # must be < history size (sliding window)
         
         @update_scheduler.log_length = num_sections*history_size
         
         # get the data from the time log
         # reduce it down to 3 data points per section: min, median, max
         # print those numbers to the display
-        out = 
-        @update_scheduler.time_log
-        .last( num_sections*window_size )
-        .each_slice( num_sections )
-        # .collect{ |section_name, time_budget_ms, dt|
-        #   dt
-        # }
+        clusters = 
+          @update_scheduler.time_log
+          .last( num_sections*window_size )
+          .group_by{|section_name, time_budget_ms, dt|  section_name  }
+          
+        # p clusters
         
-        # p out
-        
-        # .each_slice( num_sections*window_size ){  |slice|
-        #   slice.each{ |data|
-        #     section_name, time_budget_ms, dt = data
+        statistics = Hash.new
+          clusters.each do |name, data|
+            times = 
+              data
+              .collect{  |section_name, time_budget_ms, dt|   dt   }
+              .sort
             
-        #   }
-        # }
+            # p times
+            
+            min    = times.first
+            max    = times.last
+            median = times[ times.length / 2 ]
+            
+            statistics[name] = [min, median, max]
+          end
+        
+        # p statistics
+        
+        i = 0
+        statistics.each do |name, stats|
+          min, med, max = stats
+          
+          @display.print_string(anchor+CP::Vec2.new(0, i),  name)
+          
+          @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(15,i),  med.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(20,i),  max.to_s.rjust(6))
+          
+          
+          # TODO: print bar graph
+          max_bar_length = 10
+          bar_graph = @hbar['8/8']*3
+          
+          @display.print_string(
+            anchor+CP::Vec2.new(30,i),
+            bar_graph.ljust(max_bar_length)
+          )
+          .each do |pos|
+            @display.background[pos] = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
+            @display.foreground[pos] = @colors[:lilac]
+          end
+          
+          
+          
+          i += 1
+        end
+        
+        # ^ why are the sections not in the same order the sections are declared? Why is test 7 the first section?
+        
+        
+        
+        
+        
+        
         
         # TODO: disable all the printing to console that's happening in Scheduler once this new output is complete
         
-        
-    #         @display.print_string(CP::Vec2.new(2, 17+i),  section_name)
-            
-    #         @display.print_string(CP::Vec2.new(11,17+i),  dt.to_s.rjust(6))
     end
       
       
