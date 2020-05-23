@@ -4,7 +4,11 @@
 class Scheduler
   
   class SchedulerHelper
+    attr_reader :data
     
+    def initialize
+      @data = nil # at any point, can be nil or Array
+    end
     
     
     # block until the scheduler has enough time to run the specified section
@@ -12,36 +16,49 @@ class Scheduler
     # 
     # need to measure time between calls to this function
     def section(name:, budget:)
-      # TOP:
-      # <--- after finished, #section is called again at start of next section
       
+      # pass data to outside world
+      @data = [name, budget]
       
       # block until section can be scheduled
-      loop do
-        signal = Fiber.yield(name, budget)
-        break if signal == :scheduled
-      end
+      Fiber.yield(name, budget)
+      
+      # clear the data, so it doesn't linger around to the next call
+      @data = nil
       
     end
   end
   
   
   
+  # NOTE: Matz favors loop{ break if <cond> } over 
+  #       'begin <code> end while <cond>' for clarity 
+  #       (unclear that it is different from '<code> while <cond>'')
+  # 
+  # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
+  
+  attr_reader :time_log
+  attr_accessor :log_length
+  
   def initialize(outer, callback_method_name, frame_deadline_ms)
+    @time_log = Array.new
+    @log_length = 0 # number of sections to save
+    
     @callback_name = callback_method_name
     @outer = outer
     
     @total_time_per_frame = frame_deadline_ms
     @time_used_this_frame = 0
     
+    
+    @helper = SchedulerHelper.new
+    
     # step through sections of the inner block
     @f2 = Fiber.new do
       
-      helper = SchedulerHelper.new
-      
       loop do
         
-        @outer.send(@callback_name, helper)
+        @outer.send(@callback_name, @helper)
         # ^ helper calls Fiber.yield at key points in the callback
         
         # TODO: need to call Fiber.yield once more at the end of the method before looping in order to correctly time the final block
@@ -56,55 +73,39 @@ class Scheduler
       # loop through the callbacks, scheduling them
       # in the order they were declared order, ad infinitum
       
+      @f2.resume() # step the Fiber forward until the first time it blocks
+      
       while @f2.alive? # @f2 contains an infinite loop, so should live forever
         
         # 
-        # schedule blocks
+        # schedule sections
         # 
         
-        # get section name and budget, and block until you have enough time
-        section_name, time_budget_ms = @f2.resume()
+        # get info from section...
+        section_name, time_budget_ms = @helper.data
         p [ section_name, time_budget_ms ]
         
-        loop do
-          if @time_used_this_frame + time_budget_ms < @total_time_per_frame
-            # we have the time. go ahead and run this task.
-            
-            break
-          else
-            # return control to main Fiber
-            # and 'sleep' until the next frame
-            
-            puts "block"
-            Fiber.yield :time_limit_reached # return control to main Fiber 
-            @time_used_this_frame = 0
-          end
+        # ...and block until you have enough time
+        # (return control to main Fiber to forfeit remaining time)
+        while @time_used_this_frame + time_budget_ms >= @total_time_per_frame
+          puts "block"
+          Fiber.yield :time_limit_reached # return control to main Fiber 
+          @time_used_this_frame = 0
         end
         
-        # NOTE: Matz favors loop{ break if <cond> } over 
-        #       'begin <code> end while <cond>' for clarity 
-        #       (unclear that it is different from '<code> while <cond>'')
-        # 
-        # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
-        
-        
-        
-        
+        # If there's enough time left this frame,
+        # then unblock Fiber @f2 and execute the section
         puts "running update #{section_name}"
         
         timer_start = RubyOF::Utils.ofGetElapsedTimeMicros
         
-          out = @f2.resume(:scheduled)
-          puts "fiber return: #{out}"
-          # (why do we need to wake the Fiber twice?)
-            # Once to get the info, once to actually run
-            # maybe we should use a Fiber local var to pass the info instead?
+          @f2.resume()
         
         timer_end = RubyOF::Utils.ofGetElapsedTimeMicros
         dt = timer_end - timer_start # TODO: account for timer looping
         
         
-        
+        # advance the timer
         @time_used_this_frame += time_budget_ms
         # ^ increment by time budgeted, not time actually spent
         #   this way gives more scheduling control to the programmer
@@ -118,8 +119,13 @@ class Scheduler
         # 
         
         # [ section_name, time_budget_ms, [dt_0, dt_1, dt_2] ]
+        @time_log << [ section_name, time_budget_ms, dt ]
         
-        
+        # drop old entries if too many data points are being saved
+        if @time_log.length > @log_length
+          d_len = @time_log.length - @log_length
+          @time_log.shift(d_len)
+        end
         
         
         # Fiber.yield :end_of_loop
