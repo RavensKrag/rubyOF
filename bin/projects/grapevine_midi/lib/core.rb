@@ -173,7 +173,6 @@ class Core
   end
   
   def setup
-    
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
@@ -320,9 +319,11 @@ class Core
     
     
     
-    
-    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 25)
     @display_origin_px = CP::Vec2.new(340,140)
+    
+    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 25,
+                                     @display_origin_px, @bg_offset, @bg_scale)
+    
     
     @display.autoUpdateColor_bg(false)
     @display.autoUpdateColor_fg(false)
@@ -828,7 +829,7 @@ class Core
       
       
     
-    scheduler.section name: "test 3 - manage midi deltas", budget: msec(16)
+    scheduler.section name: "test 3 - manage midi deltas", budget: msec(016)
       puts "test 3"
       
       # p @w.cpp_val["midiMessageQueue"]
@@ -1109,20 +1110,27 @@ class Core
     # draw_start = Time.now
     draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
     
+    
     on_draw()
     
     # draw_end = Time.now
+    
+    
     draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
     dt = draw_end - draw_start
     puts "draw duration: #{dt}"
     @draw_durations ||= Array.new
     @draw_durations << dt
+    
+    
   end
   
   
   
   include RubyOF::Graphics
   def on_draw
+    
+    
     
     # NOTE: need live coding before I can fiddle with graphics code
     # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
@@ -1205,9 +1213,7 @@ class Core
     # render text display
     # 
     
-    @display.draw(@display_origin_px, @bg_offset, @bg_scale)
-    
-    
+    @display.draw()
     
   end
   

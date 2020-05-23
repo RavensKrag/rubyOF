@@ -10,7 +10,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   attr_reader :x_chars, :y_chars
   
   
-  def initialize(font, x_chars, y_chars)
+  def initialize(font, x_chars, y_chars, origin, bg_offset, bg_scale)
     super()
     
     setup(x_chars, y_chars)
@@ -54,6 +54,9 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     load_shaders(@shader_name)
     
     
+    setup_transforms(origin.x, origin.y,
+                     bg_offset.x, bg_offset.y,
+                     bg_scale.x, bg_scale.y)
   end
   
   def reload_shader
@@ -92,16 +95,13 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # NOTE: do not move on z! that's not gonna give you the z-indexing you want! that's just a big headache!!! (makes everything weirdly blurry and in a weird position)
   # alias :cpp_draw :draw
   
-  def draw(origin, bg_offset, bg_scale)
+  def draw()
       x = 0
       y = 0
       vflip = true
     text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
     
-    cpp_draw(text_mesh, @font.font_texture,
-             origin.x, origin.y,
-             bg_offset.x, bg_offset.y,
-             bg_scale.x, bg_scale.y)
+    cpp_draw(text_mesh, @font.font_texture)
   end
   
   

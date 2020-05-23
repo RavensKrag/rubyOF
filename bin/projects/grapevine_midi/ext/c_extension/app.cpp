@@ -31,7 +31,7 @@ rbApp::~rbApp(){
 
 void rbApp::setup(){
 	ofSetDataPathRoot(DATA_PATH);
-	ofSetBackgroundAuto(false);  
+	// ofSetBackgroundAuto(false);  
 	
 	
 	mUI_InputCapture = false;
