@@ -25,132 +25,6 @@ def usec(time)
 end
 
 
-class Scheduler
-  attr_reader :time_log
-  
-  def initialize(time_per_frame, &block)
-    helper = DSL_Helper.new
-    block.call(helper)
-    
-    @schedule = Array.new  # outer: frames that have events
-    @schedule << Array.new # inner: events to fire on a particular frame
-    schedule_events(time_per_frame, helper.sections)
-    # => sets @time_per_frame, @frames_per_cycle
-    #    populates @schedule
-    
-    
-    @time_log = Array.new
-  end
-  
-  #   + give me a list of sections
-  #   + each section has a name and an estimated runtime
-  #   + I will schedule each block, in the order of declaration
-  # postcondition: I will know how many frames it will take to complete 1 cycle
-  def schedule_events(time_per_frame, sections)
-    @time_per_frame = time_per_frame # e.g. 60 fps => 16.67 ms per frame
-    
-    @total_budget = sections.reduce(0){ |total, x| total + x.budget }
-    @frames_per_cycle = @total_budget / @time_per_frame
-    
-    # ^ this scheme is straighforward, but naieve
-    #   There is often some "padding" introduced because tasks
-    #   do not fit nicely in the budget - think struct alignment
-    # (Unlike with threads, will never stop a task in the middle of execution)
-    
-    
-    time_used_this_frame = 0
-    sections.each do |x|
-      if time_used_this_frame + x.budget < @time_per_frame
-        # schedule on current frame
-        @schedule.last << x
-        
-        # advance time
-        time_used_this_frame += x.budget
-      else
-        # delay to the next frame
-        
-        # advance frame
-        @schedule << Array.new
-        
-        # schedule section
-        @schedule.last << x
-        
-        # increment time (within next frame - reset and increment)
-        time_used_this_frame = 0
-        time_used_this_frame += x.budget
-      end
-    end
-    
-    @frames_per_cycle = @schedule.length
-    @callbacks_per_cycle = @schedule.flatten.length
-  end
-  
-  
-  # TODO: consider separating callback blocks into separate array. that way, you can expose info on the different sections to outside code (for visualization, etc) without exposing the ability to execute callbacks
-    # sections:   [name, budget, callback_idx  ]
-    # callbacks:  [cb_0, cb_1, .., cb_n]
-  def resume
-    @f1 ||= Fiber.new do
-      i = 0
-      loop do
-        
-        # fire all events scheduled for the current frame
-        @schedule[i].each do |sec|
-          
-          start_time = RubyOF::Utils.ofGetElapsedTimeMillis
-          
-            sec.callback.call() # CORE LOGIC GOES HERE
-            
-          end_time = RubyOF::Utils.ofGetElapsedTimeMillis
-          dt = end_time - start_time # TODO: account for timer looping
-          
-          # TODO: store dt for later visualization
-          
-        end
-        
-        i += 1
-        i = 0 unless i < @schedule.size
-        
-        Fiber.yield
-      end
-    end
-    
-    @f1.resume
-    # NOTE: may not actually need Fiber here, but will keep it here until time travel is implemented
-  end
-  
-  
-  
-  
-  
-  class Section
-    attr_reader :name, :budget, :callback
-    
-    def initialize(name, budget, callback)
-      @name = name
-      @budget = budget
-      @callback = callback
-    end
-  end
-  
-  
-  class DSL_Helper
-    attr_reader :sections
-    
-    def initialize()
-      @sections = Array.new
-    end
-    
-    
-    # name    the name of this section. must be unique.
-    # budget  the amount of time (in milliseconds) to 
-    def section(name:, budget:, &block)
-      @sections << Section.new(name, budget, block)
-    end
-  end
-end
-
-
 # TODO: can't use block style, because that prevents local variables from passing from block to block. Try using Fiber instead, with 'checkpoints' (just initial lines, not do-end blocks) to block execution at certain points while waiting to be scheduled
 
 class Scheduler_v2
@@ -166,23 +40,14 @@ class Scheduler_v2
     def section(name:, budget:)
       # TOP:
       # <--- after finished, #section is called again at start of next section
-      unless @previous_time.nil?
-        now = RubyOF::Utils.ofGetElapsedTimeMicros
-        dt = now - @previous_time # TODO: account for timer looping
-        
-        Fiber.yield dt # outer calling Fiber remembers the previous name
-      end
       
       
       # block until section can be scheduled
-      Fiber.yield(name, budget)
+      loop do
+        signal = Fiber.yield(name, budget)
+        break if signal == :scheduled
+      end
       
-      
-      
-      @previous_time = RubyOF::Utils.ofGetElapsedTimeMicros
-      
-      # ---> section runs at this time
-      # (GOTO TOP)
     end
   end
   
@@ -204,6 +69,8 @@ class Scheduler_v2
         
         @outer.send(@callback_name, helper)
         # ^ helper calls Fiber.yield at key points in the callback
+        
+        # TODO: need to call Fiber.yield once more at the end of the method before looping in order to correctly time the final block
         
       end
       
@@ -233,19 +100,36 @@ class Scheduler_v2
           else
             # return control to main Fiber
             # and 'sleep' until the next frame
-                        
+            
+            puts "block"
             Fiber.yield :time_limit_reached # return control to main Fiber 
             @time_used_this_frame = 0
           end
         end
-        
-        dt = @f2.resume()
         
         # NOTE: Matz favors loop{ break if <cond> } over 
         #       'begin <code> end while <cond>' for clarity 
         #       (unclear that it is different from '<code> while <cond>'')
         # 
         # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
+        
+        
+        
+        
+        puts "running update #{section_name}"
+        
+        timer_start = RubyOF::Utils.ofGetElapsedTimeMicros
+        
+          out = @f2.resume(:scheduled)
+          puts "fiber return: #{out}"
+          # (why do we need to wake the Fiber twice?)
+            # Once to get the info, once to actually run
+            # maybe we should use a Fiber local var to pass the info instead?
+        
+        timer_end = RubyOF::Utils.ofGetElapsedTimeMicros
+        dt = timer_end - timer_start # TODO: account for timer looping
+        
+        
         
         @time_used_this_frame += time_budget_ms
         # ^ increment by time budgeted, not time actually spent
@@ -290,6 +174,8 @@ class Core
   
   def setup
     @update_scheduler = Scheduler_v2.new(self, :on_update, msec(16.6))
+    
+    
     
     @first_draw = true
     @mouse = CP::Vec2.new(0,0)
@@ -783,15 +669,15 @@ class Core
   def on_reload
     setup()
     @looper_pedal.setup
-    
-    @draw_scheduler = nil
   end
   
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    puts "--> start update"
     signal = @update_scheduler.resume
-    puts signal
+    # puts signal
+    puts "<-- end update"
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -802,6 +688,7 @@ class Core
   # when the file reloads.
   def on_update(scheduler)
     scheduler.section name: "test 1", budget: msec(16)
+      puts "test 1"
       
       # liveGLSL.foo "char_display" do |path_to_shader|
         # @display.reload_shader
@@ -877,12 +764,14 @@ class Core
     
     
     scheduler.section name: "test 2 - update", budget: msec(16)
+      puts "test 2"
       @input_handler.update
       
       
     
     scheduler.section name: "test 3 - manage midi deltas", budget: msec(16)
-    
+      puts "test 3"
+      
       # p @w.cpp_val["midiMessageQueue"]
       
       delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
@@ -907,7 +796,8 @@ class Core
     
     
     scheduler.section name: "test 4", budget: msec(16)
-    
+      puts "test 4"
+      
       @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
       
       
@@ -919,6 +809,7 @@ class Core
     
     if @debug.keys.empty?
       scheduler.section name: "test 5a", budget: msec(16)
+        puts "test 5a"
         # write all messages in buffer to the character display
         # TODO: need live coding ASAP for this
         
@@ -1046,6 +937,7 @@ class Core
         end
       
       scheduler.section name: "test 5b", budget: msec(16)
+        puts "test 5b"
         # 
         # color picker data
         # 
@@ -1068,7 +960,7 @@ class Core
         end
       
       scheduler.section name: "test 5c", budget: msec(16)
-          
+        puts "test 5c"
         # 
         # mouse data
         # 
@@ -1096,7 +988,7 @@ class Core
         )
       
       scheduler.section name: "test 5d", budget: msec(16)
-          
+        puts "test 5d"
         # 
         # timeline
         # 
@@ -1138,6 +1030,7 @@ class Core
       
       
     scheduler.section name: "test 6", budget: msec(16)
+      puts "test 6"
       
       @sprite = @hbar['8/8']*3
       # @sprite = "hello world!"
@@ -1152,36 +1045,32 @@ class Core
   
   
   def draw
-    @draw_fiber ||= Fiber.new do
-      loop do
-        on_draw
-      end
-    end
+    # draw_start = Time.now
+    draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
     
+    # @draw_scheduler ||= Scheduler_v2.new(self, :on_draw,   msec(16.6))
+    # signal = @draw_scheduler.resume
+    # puts signal
+    on_draw(nil)
     
-      4.times do
-        @draw_fiber.resume
-      end
-    
-    # if @draw_steps != 0
-    #   @draw_steps.times do
-    #     @draw_fiber.resume
-    #   end
-      
-    #   @draw_steps = 0
-    # end
+    # draw_end = Time.now
+    draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
+    puts "draw duration: #{draw_end - draw_start}"
   end
   
   
   
   include RubyOF::Graphics
-  def on_draw
+  def on_draw(scheduler)
+    # scheduler.section name: "test 1 - clear", budget: msec(16)
+    
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
-    Fiber.yield
+    
     
     if @first_draw
+      # scheduler.section name: "test 2a - first draw", budget: msec(16)
       # screen_size = read_screen_size("Screen 0")
       # screen_w, screen_h = screen_size["current"]
       # puts "screen size: #{[screen_w, screen_h].inspect}"
@@ -1223,7 +1112,7 @@ class Core
     # )
     
     
-    
+    # scheduler.section name: "test 2b - main draw sec 1", budget: msec(16)
     
     # 
     # render sprites
@@ -1268,21 +1157,23 @@ class Core
     
     ofPopStyle()
     
-    Fiber.yield
     
     
     # 
     # render text display
     # 
+    # scheduler.section name: "test 3 - draw text display", budget: msec(16)
     
     @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     
-    Fiber.yield
     
     # 
     # text display background alignment test
     # 
+    
+    
     if @debug[:align_display_bg]
+      scheduler.section name: "test 4a", budget: msec(16)
       
       # (alternate colored bg lines, dark and light, helps find scaling)
       # (a row of the character "F" helps configure character width)
@@ -1290,7 +1181,8 @@ class Core
         c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
       end
       
-      Fiber.yield
+      
+      scheduler.section name: "test 4b", budget: msec(16)
       
       60.times.each do |i|
         screen_print(font: @fonts[:monospace], 
@@ -1298,7 +1190,8 @@ class Core
                      position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
       end
       
-      Fiber.yield
+      
+      scheduler.section name: "test 4c", budget: msec(16)
       
       c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
       c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
@@ -1308,7 +1201,7 @@ class Core
       assoc[0].each{ |pos| @display.background[pos] = c1 }
       assoc[1].each{ |pos| @display.background[pos] = c2 }
       
-      Fiber.yield
+      
       
       # 
       # text display color alignment test
@@ -1317,7 +1210,6 @@ class Core
     end
     
     
-    Fiber.yield
   end
   
   
