@@ -173,6 +173,10 @@ class Core
   end
   
   def setup
+    
+    ofBackground(200, 200, 200, 255)
+    ofEnableBlendMode(:alpha)
+    
     @update_scheduler = Scheduler_v2.new(self, :on_update, msec(16.6))
     
     
@@ -709,6 +713,8 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    # puts "update thread: #{Thread.current.object_id}" 
+    
     puts "--> start update"
     signal = @update_scheduler.resume
     # puts signal
@@ -1098,28 +1104,25 @@ class Core
   
   
   def draw
+    # puts "draw thread:   #{Thread.current.object_id}" 
+    
     # draw_start = Time.now
     draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    # @draw_scheduler ||= Scheduler_v2.new(self, :on_draw,   msec(16.6))
-    # signal = @draw_scheduler.resume
-    # puts signal
-    on_draw(nil)
+    on_draw()
     
     # draw_end = Time.now
     draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
-    puts "draw duration: #{draw_end - draw_start}"
+    dt = draw_end - draw_start
+    puts "draw duration: #{dt}"
+    @draw_durations ||= Array.new
+    @draw_durations << dt
   end
   
   
   
   include RubyOF::Graphics
-  def on_draw(scheduler)
-    # scheduler.section name: "test 1 - clear", budget: msec(16)
-    
-    ofBackground(200, 200, 200, 255)
-    ofEnableBlendMode(:alpha)
-    
+  def on_draw
     
     # NOTE: need live coding before I can fiddle with graphics code
     # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
@@ -1148,57 +1151,59 @@ class Core
     # )
     
     
-    # scheduler.section name: "test 2b - main draw sec 1", budget: msec(16)
     
-    # 
-    # render sprites
-    # (draw behind @display, to use that area as a mask)
-    # 
-    ofPushStyle()
     
-    ofSetColor(RubyOF::Color.hex(0xff0000))
     
-    # pos in char grid
-    char_pos = CP::Vec2.new(@char_width_pxs*10, @line_height*18) 
     
-    # offset by 1/8 of a character (width of smallest block char division)
-    offset   = CP::Vec2.new(@char_width_pxs/8 * 5, 0)
     
-    # final pixel position on screen
-    pos = @display_origin_px + CP::Vec2.new(0,-1) + char_pos + offset
+    # # 
+    # # render sprites
+    # # (draw behind @display, to use that area as a mask)
+    # # 
+    # # ofPushStyle()
     
-    # @fonts[:monospace].draw_string(@sprite, pos.x, pos.y)
+    # # ofSetColor(RubyOF::Color.hex(0xff0000))
+    
+    # # pos in char grid
+    # char_pos = CP::Vec2.new(@char_width_pxs*10, @line_height*18) 
+    
+    # # offset by 1/8 of a character (width of smallest block char division)
+    # offset   = CP::Vec2.new(@char_width_pxs/8 * 5, 0)
+    
+    # # final pixel position on screen
+    # pos = @display_origin_px + CP::Vec2.new(0,-1) + char_pos + offset
+    
+    # # @fonts[:monospace].draw_string(@sprite, pos.x, pos.y)
       
-      @fonts[:monospace].draw_string(@hbar['1/8'], pos.x, pos.y)
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], pos.x, pos.y)
       
-      offset   = CP::Vec2.new(@char_width_pxs/8 * 50, 0)
-      p2 = pos + offset
-      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
       
-      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*2, 0)
-      p2 = pos + offset
-      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*2, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
       
-      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*3, 0)
-      p2 = pos + offset
-      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*3, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
       
-      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*4, 0)
-      p2 = pos + offset
-      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*4, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
       
-      offset   = CP::Vec2.new(@char_width_pxs/8 * 50*5, 0)
-      p2 = pos + offset
-      @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*5, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
     
-    ofPopStyle()
+    # # ofPopStyle()
     
     
     
     # 
     # render text display
     # 
-    # scheduler.section name: "test 3 - draw text display", budget: msec(16)
     
     @display.draw(@display_origin_px, @bg_offset, @bg_scale)
     
@@ -1254,7 +1259,7 @@ class Core
   
   
   def on_exit
-    
+    puts @draw_durations.join("\t")
   end
   
   
