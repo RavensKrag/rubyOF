@@ -1076,6 +1076,23 @@ class Core
         # ^ why are the sections not in the same order the sections are declared? Why is test 7 the first section?
         
         
+        i = 10
+        
+        times = @draw_durations.sort
+        
+        min = times.first
+        max = times.last
+        med = times[ times.length / 2 ]
+        
+        
+        @display.print_string(anchor+CP::Vec2.new( 1,i),  'draw')
+        
+        @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
+        @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
+        @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
+        
+        
+        
         
         
         
@@ -1122,9 +1139,16 @@ class Core
     puts "draw duration: #{dt}" if Scheduler::DEBUG
     
     
-    # @draw_durations ||= Array.new
-    # @draw_durations << dt
     
+    draw_duration_history_len = 100
+    
+    @draw_durations ||= Array.new
+    @draw_durations << dt
+    
+    if @draw_durations.length > draw_duration_history_len
+      d_len = @draw_durations.length - draw_duration_history_len
+      @draw_durations.shift(d_len)
+    end
     
   end
   
