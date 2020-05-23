@@ -37,6 +37,8 @@ class Scheduler
   # 
   # src: https://stackoverflow.com/questions/136793/is-there-a-do-while-loop-in-ruby
   
+  # DEBUG = true
+  DEBUG = false
   attr_reader :time_log
   attr_accessor :log_length
   
@@ -83,19 +85,19 @@ class Scheduler
         
         # get info from section...
         section_name, time_budget_ms = @helper.data
-        p [ section_name, time_budget_ms ]
+        p [ section_name, time_budget_ms ] if Scheduler::DEBUG
         
         # ...and block until you have enough time
         # (return control to main Fiber to forfeit remaining time)
         while @time_used_this_frame + time_budget_ms >= @total_time_per_frame
-          puts "block"
+          puts "block" if Scheduler::DEBUG
           Fiber.yield :time_limit_reached # return control to main Fiber 
           @time_used_this_frame = 0
         end
         
         # If there's enough time left this frame,
         # then unblock Fiber @f2 and execute the section
-        puts "running update #{section_name}"
+        puts "running update #{section_name}" if Scheduler::DEBUG
         
         timer_start = RubyOF::Utils.ofGetElapsedTimeMicros
         
@@ -110,7 +112,7 @@ class Scheduler
         # ^ increment by time budgeted, not time actually spent
         #   this way gives more scheduling control to the programmer
         
-        puts "time budget: #{@time_used_this_frame} / #{@total_time_per_frame} (+ #{dt} )"
+        puts "time budget: #{@time_used_this_frame} / #{@total_time_per_frame} (+ #{dt} )" if Scheduler::DEBUG
         
         
         

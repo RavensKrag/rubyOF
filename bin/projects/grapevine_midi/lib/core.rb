@@ -180,9 +180,9 @@ class Core
     
     
     
-    @display_origin_px = CP::Vec2.new(340,140)
+    @display_origin_px = CP::Vec2.new(340,100)
     
-    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 25,
+    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 28,
                                      @display_origin_px, @bg_offset, @bg_scale)
     
     
@@ -577,10 +577,10 @@ class Core
   def update
     # puts "update thread: #{Thread.current.object_id}" 
     
-    puts "--> start update"
+    puts "--> start update" if Scheduler::DEBUG
     signal = @update_scheduler.resume
     # puts signal
-    puts "<-- end update"
+    puts "<-- end update" if Scheduler::DEBUG
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -591,7 +591,7 @@ class Core
   # when the file reloads.
   def on_update(scheduler)
     scheduler.section name: "test 1", budget: msec(16)
-      puts "test 1"
+      puts "test 1" if Scheduler::DEBUG
       
       # liveGLSL.foo "char_display" do |path_to_shader|
         # @display.reload_shader
@@ -684,14 +684,14 @@ class Core
     
     
     
-    scheduler.section name: "test 2 - update", budget: msec(16)
-      puts "test 2"
+    scheduler.section name: "test 2", budget: msec(16)
+      puts "test 2" if Scheduler::DEBUG
       @input_handler.update
       
       
     
-    scheduler.section name: "test 3 - manage midi deltas", budget: msec(016)
-      puts "test 3"
+    scheduler.section name: "test 3", budget: msec(16)
+      puts "test 3" if Scheduler::DEBUG
       
       # p @w.cpp_val["midiMessageQueue"]
       
@@ -717,7 +717,7 @@ class Core
     
     
     scheduler.section name: "test 4", budget: msec(16)
-      puts "test 4"
+      puts "test 4" if Scheduler::DEBUG
       
       @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
       
@@ -730,7 +730,7 @@ class Core
     
     if @debug.keys.empty?
       scheduler.section name: "test 5a", budget: msec(16)
-        puts "test 5a"
+        puts "test 5a" if Scheduler::DEBUG
         # write all messages in buffer to the character display
         # TODO: need live coding ASAP for this
         
@@ -858,7 +858,7 @@ class Core
         end
       
       scheduler.section name: "test 5b", budget: msec(16)
-        puts "test 5b"
+        puts "test 5b" if Scheduler::DEBUG
         # 
         # color picker data
         # 
@@ -881,7 +881,7 @@ class Core
         end
       
       scheduler.section name: "test 5c", budget: msec(16)
-        puts "test 5c"
+        puts "test 5c" if Scheduler::DEBUG
         # 
         # mouse data
         # 
@@ -908,42 +908,79 @@ class Core
           "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
         )
       
-      scheduler.section name: "test 5d", budget: msec(16)
-        puts "test 5d"
+      # scheduler.section name: "test 5d", budget: msec(16)
+      #   puts "test 5d" if Scheduler::DEBUG
+      #   # 
+      #   # timeline
+      #   # 
+      #   x = 2
+      #   y = 17
+      #   w = 40
+      #   h = 4
+      #   bb = CP::BB.new(x,y, x+w-1,y+h-1)
+        
+      #   bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+      #   fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+        
+      #   @display.each_position
+      #   .select{ |pos| bb.contain_vect? pos}
+      #   .each do |pos|
+      #     @display.background[pos] = bg_color
+      #     @display.foreground[pos] = fg_color
+      #   end
+        
+      #   anchor = CP::Vec2.new(x,y)
+      #   h.times do |i|
+      #     @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
+      #   end
+        
+      #   @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
+      #   @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
+        
+      #   # punch a whole in the display using transparent spaces
+      #   # to reveal the vertical bars BEHIND the display
+      #   @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
+      #   .each do |pos|
+      #     @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
+      #   end
+      
+      scheduler.section name: "test 7", budget: msec(16)
+        puts "test 7" if Scheduler::DEBUG
         # 
-        # timeline
+        # print timing data
         # 
-        x = 2
-        y = 17
-        w = 40
-        h = 4
-        bb = CP::BB.new(x,y, x+w-1,y+h-1)
+        num_sections = 9
+        history_size = 100
+        window_size  = 10 # must be < history size (sliding window)
         
-        bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-        fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+        @update_scheduler.log_length = num_sections*history_size
         
-        @display.each_position
-        .select{ |pos| bb.contain_vect? pos}
-        .each do |pos|
-          @display.background[pos] = bg_color
-          @display.foreground[pos] = fg_color
-        end
+        # get the data from the time log
+        # reduce it down to 3 data points per section: min, median, max
+        # print those numbers to the display
+        out = 
+        @update_scheduler.time_log
+        .last( num_sections*window_size )
+        .each_slice( num_sections )
+        # .collect{ |section_name, time_budget_ms, dt|
+        #   dt
+        # }
         
-        anchor = CP::Vec2.new(x,y)
-        h.times do |i|
-          @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
-        end
+        # p out
         
-        @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
-        @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
+        # .each_slice( num_sections*window_size ){  |slice|
+        #   slice.each{ |data|
+        #     section_name, time_budget_ms, dt = data
+            
+        #   }
+        # }
         
-        # punch a whole in the display using transparent spaces
-        # to reveal the vertical bars BEHIND the display
-        @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
-        .each do |pos|
-          @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
-        end
+        # TODO: disable all the printing to console that's happening in Scheduler once this new output is complete
         
+        
+    #         @display.print_string(CP::Vec2.new(2, 17+i),  section_name)
+            
+    #         @display.print_string(CP::Vec2.new(11,17+i),  dt.to_s.rjust(6))
     end
       
       
@@ -951,7 +988,7 @@ class Core
       
       
     scheduler.section name: "test 6", budget: msec(16)
-      puts "test 6"
+      puts "test 6" if Scheduler::DEBUG
       
       @sprite = @hbar['8/8']*3
       # @sprite = "hello world!"
@@ -960,6 +997,10 @@ class Core
       
       @display.flushColors_bg()
       @display.flushColors_fg()
+    
+    
+    
+    
     
       
   end
@@ -971,17 +1012,16 @@ class Core
     # draw_start = Time.now
     draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    
-    on_draw()
+      on_draw()
     
     # draw_end = Time.now
-    
-    
     draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
     dt = draw_end - draw_start
-    puts "draw duration: #{dt}"
-    @draw_durations ||= Array.new
-    @draw_durations << dt
+    puts "draw duration: #{dt}" if Scheduler::DEBUG
+    
+    
+    # @draw_durations ||= Array.new
+    # @draw_durations << dt
     
     
   end
@@ -1126,7 +1166,7 @@ class Core
   
   
   def on_exit
-    puts @draw_durations.join("\t")
+    # puts @draw_durations.join("\t")
   end
   
   
