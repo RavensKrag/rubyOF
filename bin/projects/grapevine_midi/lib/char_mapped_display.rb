@@ -44,6 +44,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
     
+    self.remesh()
     
     # 
     # set up information needed for text coloring shader
@@ -101,12 +102,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # alias :cpp_draw :draw
   
   def draw()
-      x = 0
-      y = 0
-      vflip = true
-    text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
-    
-    cpp_draw(text_mesh, @font.font_texture)
+    cpp_draw(@text_mesh, @font.font_texture)
   end
   
   
@@ -217,6 +213,16 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # end
   
   
+  # call this once per frame from the core,
+  # similar to how you call flush just once
+  # instead of pushing color information immediately
+  def remesh
+      x = 0
+      y = 0
+      vflip = true
+    @text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+  end
+  
   
   # mind the invisible newline character at the end of every line
   # => Enumerator over the positions in the grid that were written to
@@ -276,6 +282,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       range = (char_pos)..(char_pos+str.length-1)
       @char_grid[range] = str
     end
+    
+    
+    
+    
+    
     
     
     # convert i [index in character grid] to (x,y) coordinate pair

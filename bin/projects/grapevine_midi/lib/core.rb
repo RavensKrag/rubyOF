@@ -388,7 +388,6 @@ class Core
       
       
       
-      @display.flushColors_fg
     end
     
     
@@ -1096,14 +1095,21 @@ class Core
           @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
         
         
+          @display.print_string(
+            anchor+CP::Vec2.new(33,i),
+            make_bar_graph(t: msec(1.5), t_max: msec(16),
+                           bar_length: 20)
+          )
     end
     
     
     
     
+    scheduler.section name: "cleanup", budget: msec(16)
     
     @display.flushColors_bg()
     @display.flushColors_fg()
+    @display.remesh()
     
   end
   
@@ -1286,7 +1292,6 @@ end
     # 
     
     @display.draw()
-    
   end
   
   
