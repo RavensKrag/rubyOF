@@ -932,42 +932,6 @@ class Core
           "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
         )
       
-      # scheduler.section name: "test 5d", budget: msec(16)
-      #   puts "test 5d" if Scheduler::DEBUG
-      #   # 
-      #   # timeline
-      #   # 
-      #   x = 2
-      #   y = 17
-      #   w = 40
-      #   h = 4
-      #   bb = CP::BB.new(x,y, x+w-1,y+h-1)
-        
-      #   bg_color =RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-      #   fg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
-        
-      #   @display.each_position
-      #   .select{ |pos| bb.contain_vect? pos}
-      #   .each do |pos|
-      #     @display.background[pos] = bg_color
-      #     @display.foreground[pos] = fg_color
-      #   end
-        
-      #   anchor = CP::Vec2.new(x,y)
-      #   h.times do |i|
-      #     @display.print_string(anchor+CP::Vec2.new(0,i), " "*w)
-      #   end
-        
-      #   @display.print_string(anchor+CP::Vec2.new(0,1),  "update")
-      #   @display.print_string(anchor+CP::Vec2.new(0,2),  "draw")
-        
-      #   # punch a whole in the display using transparent spaces
-      #   # to reveal the vertical bars BEHIND the display
-      #   @display.print_string(anchor+CP::Vec2.new(8,1),  " "*30)
-      #   .each do |pos|
-      #     @display.background[pos] = RubyOF::Color.hex_alpha( 0xffffff, 0 )
-      #   end
-      
     end
       
       
@@ -979,16 +943,15 @@ class Core
       
       @sprite = @hbar['8/8']*3
       # @sprite = "hello world!"
-      
-      
-      
     
     
     
-          
+    
+    
+    
+    
     if @debug.keys.empty?
-      scheduler.section name: "profilr", budget: msec(8.5)
-      # scheduler.section name: "p_1", budget: msec(16)
+      scheduler.section name: "profilr", budget: msec(5.5)
         puts "profilr" if Scheduler::DEBUG
         # 
         # display timing data
@@ -1080,7 +1043,6 @@ class Core
         
         # p @statistics
       
-      # scheduler.section name: "p_2", budget: msec(16)
         
         i = 0
           @display.print_string(anchor+CP::Vec2.new( 9,i),  '--min--')
@@ -1090,7 +1052,6 @@ class Core
           @display.print_string(anchor+CP::Vec2.new(33,i),
                                 '-------budget-------')
       
-      # scheduler.section name: "p_3", budget: msec(16)
         
         i = 1
         @statistics.each do |name, stats|
@@ -1113,55 +1074,32 @@ class Core
             anchor+CP::Vec2.new(33,i),
             bar_graph
           )
-          # .each do |pos|
-              # slow
-            # @display.background[pos] = bg_color
-            # @display.foreground[pos] = @colors[:lilac]
-            
-              # as slow or slower??? weird
-            # @display.setColor_bg(pos.x, pos.y, bg_color)
-            # @display.setColor_fg(pos.x, pos.y, @colors[:lilac])
-            
-              # faster
-            # @display.setBG(pos, bg_color)
-            # @display.setFG(pos, @colors[:lilac])
-          # end
           
           
           i += 1
         end
         
-        # ^ why are the sections not in the same order the sections are declared? Why is test 7 the first section?
-      
-      # scheduler.section name: "p_4", budget: msec(16)  
         
         i = 10
         
-        times = @draw_durations.sort
-        
-        min = times.first
-        max = times.last
-        med = times[ times.length / 2 ]
-        
-        
-        @display.print_string(anchor+CP::Vec2.new( 1,i),  'draw')
-        
-        @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
-        @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
-        @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
-        
-        
+          times = @draw_durations.sort
+          
+          min = times.first
+          max = times.last
+          med = times[ times.length / 2 ]
+          
+          
+          @display.print_string(anchor+CP::Vec2.new( 1,i),  'draw')
+          
+          @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
+          @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
         
         
-        
-        
-        
-        
-        # TODO: disable all the printing to console that's happening in Scheduler once this new output is complete
     end
     
     
-          
+    
     
     
     @display.flushColors_bg()
