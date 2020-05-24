@@ -27,6 +27,28 @@ def usec(time)
 end
 
 
+SUBDIVISIONS_PER_BAR = 8
+def make_bar_graph(bar_length:, t:, t_max:)
+  max_segments = bar_length * SUBDIVISIONS_PER_BAR
+  time_per_segment = t_max / max_segments
+  
+  
+  
+  num_segments = t / time_per_segment # should be int div
+  full_bars = num_segments / SUBDIVISIONS_PER_BAR
+  fractions = num_segments % SUBDIVISIONS_PER_BAR
+  
+  bar_graph  = @hbar['8/8']*full_bars
+  bar_graph ||= '' # bar graph can be nil if full_bars == 0
+  bar_graph += @hbar["#{fractions}/8"]
+  
+  
+  return bar_graph.ljust(bar_length)
+end
+
+
+
+
 
 class Core
   def initialize(window)
@@ -686,13 +708,13 @@ class Core
     
     
     
-    scheduler.section name: "test 2", budget: msec(0.2)
+    # scheduler.section name: "test 2", budget: msec(0.2)
       puts "test 2" if Scheduler::DEBUG
       @input_handler.update
       
       
     
-    scheduler.section name: "test 3", budget: msec(2.5)
+    # scheduler.section name: "test 3", budget: msec(2.5)
       puts "test 3" if Scheduler::DEBUG
       
       # p @w.cpp_val["midiMessageQueue"]
@@ -718,7 +740,7 @@ class Core
       
     
     
-    scheduler.section name: "test 4", budget: msec(0.2)
+    # scheduler.section name: "test 4", budget: msec(0.2)
       puts "test 4" if Scheduler::DEBUG
       
       @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
@@ -960,13 +982,13 @@ class Core
       
       
       
-      @display.flushColors_bg()
-      @display.flushColors_fg()
     
     
     
+          
     if @debug.keys.empty?
-      scheduler.section name: "profilr", budget: msec(16)
+      scheduler.section name: "profilr", budget: msec(8.5)
+      # scheduler.section name: "p_1", budget: msec(16)
         puts "profilr" if Scheduler::DEBUG
         # 
         # display timing data
@@ -997,6 +1019,26 @@ class Core
             @display.print_string(anchor+CP::Vec2.new(0,i), blank_line)
           end
           
+          
+          x = 35
+          y = 18
+          w = 20
+          h = 10
+          bar_graph_bb = CP::BB.new(x,y, x+w-1,y+h-1)
+          
+          bar_bg_color = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
+          bar_fg_color = @colors[:lilac]
+          
+          @display.each_position
+          .select{ |pos| bar_graph_bb.contain_vect? pos}
+          .each do |pos|
+            @display.background[pos] = bar_bg_color
+            @display.foreground[pos] = bar_fg_color
+          end
+          
+          
+          
+          
           @test7_once = true
         end
         
@@ -1020,7 +1062,7 @@ class Core
           #   puts "#{k.ljust(10)} => #{v.size}"
           # end
           # puts "---"
-        
+      
         clusters.each do |name, data|
           times = 
             data
@@ -1037,8 +1079,8 @@ class Core
         end
         
         # p @statistics
-        
-        
+      
+      # scheduler.section name: "p_2", budget: msec(16)
         
         i = 0
           @display.print_string(anchor+CP::Vec2.new( 9,i),  '--min--')
@@ -1047,6 +1089,8 @@ class Core
           
           @display.print_string(anchor+CP::Vec2.new(33,i),
                                 '-------budget-------')
+      
+      # scheduler.section name: "p_3", budget: msec(16)
         
         i = 1
         @statistics.each do |name, stats|
@@ -1061,45 +1105,35 @@ class Core
           # TODO: show all time high as well (useful for eliminating the big rare spikes)
           
           
-          
-          # TODO: print bar graph
-          max_bar_length_chars = 20
-          subdivisions_per_bar = 8
-          max_segments = max_bar_length_chars * subdivisions_per_bar
-          
-          
-          max_time_budget = msec(16)
-          time_per_segment = max_time_budget / max_segments
-          
-          
-          time_budget = @update_scheduler.budgets[name]
-          
-          num_segments = time_budget / time_per_segment # should be int div
-          full_bars = num_segments / subdivisions_per_bar
-          fractions = num_segments % subdivisions_per_bar
-          
-          bar_graph  = @hbar['8/8']*full_bars
-          bar_graph ||= '' # bar graph can be nil if full_bars == 0
-          bar_graph += @hbar["#{fractions}/8"]
-          
-          
+          bar_graph = 
+            make_bar_graph(t: @update_scheduler.budgets[name], t_max: msec(16),
+                           bar_length: 20)
           
           @display.print_string(
             anchor+CP::Vec2.new(33,i),
-            bar_graph.ljust(max_bar_length_chars)
+            bar_graph
           )
-          .each do |pos|
-            @display.background[pos] = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
-            @display.foreground[pos] = @colors[:lilac]
-          end
-          
+          # .each do |pos|
+              # slow
+            # @display.background[pos] = bg_color
+            # @display.foreground[pos] = @colors[:lilac]
+            
+              # as slow or slower??? weird
+            # @display.setColor_bg(pos.x, pos.y, bg_color)
+            # @display.setColor_fg(pos.x, pos.y, @colors[:lilac])
+            
+              # faster
+            # @display.setBG(pos, bg_color)
+            # @display.setFG(pos, @colors[:lilac])
+          # end
           
           
           i += 1
         end
         
         # ^ why are the sections not in the same order the sections are declared? Why is test 7 the first section?
-        
+      
+      # scheduler.section name: "p_4", budget: msec(16)  
         
         i = 10
         
@@ -1124,11 +1158,78 @@ class Core
         
         
         # TODO: disable all the printing to console that's happening in Scheduler once this new output is complete
-        
-    
     end
-      
+    
+    
+          
+    
+    
+    @display.flushColors_bg()
+    @display.flushColors_fg()
+    
   end
+  
+  
+  
+TRACER = TracePoint.new(:call, :return, :c_return) do |tp|
+  # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
+  
+  # inspect_this = 
+  #   case tp.self
+  #   when CharMappedDisplay
+  #     "CharMappedDisplay<>"
+  #   when CharMappedDisplay::ColorHelper
+  #     "CharMappedDisplay::ColorHelper<>"
+  #   else
+  #     tp.self.inspect
+  #   end
+  
+  # message = "#{event} of #{tp.defined_class}##{tp.callee_id} from #{tp.path.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")}:#{tp.lineno}"
+  
+  # # if you call `return` on any non-return events, it'll raise error
+  # if tp.event == :return || tp.event == :c_return
+  #   inspect_return = 
+  #     case tp.return_value
+  #     when CharMappedDisplay
+  #       "CharMappedDisplay<>"
+  #     when CharMappedDisplay::ColorHelper
+  #       "CharMappedDisplay::ColorHelper<>"
+  #     else
+  #       tp.return_value.inspect
+  #     end
+    
+  #   message += " => #{inspect_return}" 
+  # end
+  # puts(message)
+  
+  
+  printf "%8s %s:%-2d %10s %8s\n", tp.event, tp.path.split("/").last, tp.lineno, tp.callee_id, tp.defined_class
+
+  
+end
+
+def trace() # &block
+  TRACER.enable do
+    yield
+  end
+end
+
+
+require 'ruby-prof'
+def run_profiler() # &block
+  # PROFILER.enable do
+  #   yield
+  # end
+  
+  profile = RubyProf.profile do
+    yield
+  end
+  
+  printer = RubyProf::FlatPrinter.new(profile)
+  
+  printer.print(STDOUT, :min_percent => 2)
+end
+
   
   
   def draw

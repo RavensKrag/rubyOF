@@ -57,6 +57,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     setup_transforms(origin.x, origin.y,
                      bg_offset.x, bg_offset.y,
                      bg_scale.x, bg_scale.y)
+    
+    
+    
+    @cpp_ptr_bgColor = getBgColorPixels()
+    @cpp_ptr_fgColor = getFgColorPixels()
   end
   
   def reload_shader
@@ -183,12 +188,22 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   def background
-    return ColorHelper.new(self, getBgColorPixels())
+    return ColorHelper.new(self, @cpp_ptr_bgColor)
   end
   
   def foreground
-    return ColorHelper.new(self, getFgColorPixels())
+    return ColorHelper.new(self, @cpp_ptr_fgColor)
   end
+  
+  # def setBG(pos, color)
+  #   @cpp_ptr_bgColor.setColor_xy(pos.x, pos.y, color)
+  # end
+  
+  # def setFG(pos, color)
+  #   @cpp_ptr_fgColor.setColor_xy(pos.x, pos.y, color)
+  # end
+  
+  
   
   # @display.each_position do |pos|
   #   @display.background_color[pos] = color;

@@ -10,5 +10,6 @@ end
 eval_gemfile File.join GEM_ROOT, 'Gemfile'
 gem 'require_all'
 gem 'chipmunk'
+gem 'ruby-prof'
 
 puts '--------------------'
