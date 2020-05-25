@@ -88,6 +88,156 @@ void ofShader_bindUniforms(ofShader & shader,
 }
 
 
+// "header only" class style, at least for now
+class ofxTerminalFont : public ofTrueTypeFont {
+private:
+	class MeshifyHelper: public ofThread{
+	public:
+		void setup(ofxTerminalFont *font,
+		           std::vector<ofMesh> *meshes,
+		           std::vector<std::string> *strings,
+		           int i)
+		{
+			_font    = font;
+			_meshes  = meshes;
+			_strings = strings;
+			
+			this->i = i;
+			
+			finished = false;
+		}
+		
+		void threadedFunction(){
+			_font->meshify_line(_meshes, _strings, i);
+			finished = true;
+		}
+		
+		ofxTerminalFont *_font;
+		int i;
+		
+		std::vector<ofMesh> *_meshes;
+		std::vector<std::string> *_strings;
+		
+		bool finished;
+	};
+
+public:
+	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped) const{
+		
+		if (!isValidGlyph(c)){ // <-- public member function
+			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
+			return;
+		}
+		
+		
+		long xmin, ymin, xmax, ymax;
+		float t1, v1, t2, v2;
+		auto props = getGlyphProperties(c); // <-- protected member function
+		t1		= props.t1;
+		t2		= props.t2;
+		v2		= props.v2;
+		v1		= props.v1;
+		
+		xmin		= long(props.xmin+x);
+		ymin		= props.ymin;
+		xmax		= long(props.xmax+x);
+		ymax		= props.ymax;
+		
+		if(!vFlipped){
+		   ymin *= -1;
+		   ymax *= -1;
+		}
+		
+		ymin += y;
+		ymax += y;
+		
+		ofIndexType firstIndex = stringQuads.getVertices().size();
+		
+		stringQuads.addVertex(glm::vec3(xmin,ymin,0.f));
+		stringQuads.addVertex(glm::vec3(xmax,ymin,0.f));
+		stringQuads.addVertex(glm::vec3(xmax,ymax,0.f));
+		stringQuads.addVertex(glm::vec3(xmin,ymax,0.f));
+		
+		stringQuads.addTexCoord(glm::vec2(t1,v1));
+		stringQuads.addTexCoord(glm::vec2(t2,v1));
+		stringQuads.addTexCoord(glm::vec2(t2,v2));
+		stringQuads.addTexCoord(glm::vec2(t1,v2));
+		
+		stringQuads.addIndex(firstIndex);
+		stringQuads.addIndex(firstIndex+1);
+		stringQuads.addIndex(firstIndex+2);
+		stringQuads.addIndex(firstIndex+2);
+		stringQuads.addIndex(firstIndex+3);
+		stringQuads.addIndex(firstIndex);
+	}
+	
+	
+	void meshify_line(std::vector<ofMesh> *meshes,
+	                  std::vector<std::string> *strings,
+	                  int i)
+	{
+		
+		// size == number of lines to meshify
+		// (should be size of both mesh_ary and str_ary)
+		
+		
+		meshes->at(i).clear();
+		
+		// createStringMesh(c,x,y,vFlipped);
+		bool vFlipped = true;
+		float x, y;
+		x = 0;
+		y = 0;
+		y += getLineHeight()*i;
+		iterateString(strings->at(i),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
+			drawChar_threadsafe(meshes->at(i), c, pos.x, pos.y, vFlipped);
+		});
+		
+	}
+	
+	
+	void meshify_lines(std::vector<ofMesh> *meshes,
+	                   std::vector<std::string> *strings)
+	{
+		int size = strings->size();
+		// cout << size << endl;
+		
+		// create threads
+		std::vector<MeshifyHelper*> threads;
+		threads.reserve(size);
+		
+		// MeshifyHelper *threads = new MeshifyHelper[size];
+		
+		// start up threads
+		for(int i=0; i<size; i++){
+			threads.push_back(new MeshifyHelper());
+			// ^ just pushing pointer into vector w/ no cleanup -> MEMORY LEAK
+			
+			
+			
+			threads[i]->setup(this, meshes, strings, i);
+			threads[i]->startThread();
+		}
+		
+		// wait for threads to complete
+		for(int i=0; i<size; i++){
+			threads[i]->waitForThread();
+			delete threads[i];
+		}
+		
+		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
+		
+		// TODO: don't dynamically reallocate the meshes every time.
+		// They're always going to have the same number of verts - just move the positions around
+		
+		
+		
+		// delete threads;
+	}
+	
+};
+
+
 
 // "header only" class style, at least for now
 class CharMappedDisplay{
@@ -111,6 +261,11 @@ private:
 	ofNode _fgNode;
 	
 	glm::vec2 _origin;
+	
+	ofxTerminalFont _font;
+	
+	std::vector<std::string> _strings;
+	std::vector<ofMesh> _meshes;
 	
 public:
 	// CharMappedDisplay(){
@@ -218,6 +373,7 @@ public:
 	
 	
 	
+	
 	void setup_transforms(float origin_x, float origin_y, 
 	                      float offset_x, float offset_y,
 	                      float scale_x,  float scale_y)
@@ -231,7 +387,36 @@ public:
 		_origin = glm::vec2(origin_x, origin_y);
 	}
 	
-	void draw(ofMesh &text_mesh, ofTexture &font_texture){
+	void setup_font(ofTrueTypeFontSettings &settings){
+		_font.load(settings);
+	}
+	
+	
+	void setup_text_grid(int w, int h){
+		_strings.reserve(h);
+		
+		_meshes.reserve(h);
+		for(int i=0; i<h; i++){
+			_meshes.push_back(ofMesh());
+		}
+		
+	}
+	
+	void cpp_remesh(Rice::Array lines){
+		_strings.clear();
+		
+		for(int i=0; i<lines.size(); i++)
+		{
+			Rice::Object str = lines[i];
+			_strings.push_back(from_ruby<std::string>(str));
+		}
+		
+		_font.meshify_lines(&_meshes, &_strings);
+		
+	}
+	
+	
+	void cpp_draw(){
 		ofPushMatrix();
 		
 		// ofLoadIdentityMatrix();
@@ -246,15 +431,23 @@ public:
 		
 		_fgColorShader.begin();
 		
-		_fgColorShader.setUniformTexture("trueTypeTexture", font_texture,    0);
-		_fgColorShader.setUniformTexture("fontColorMap",    _fgColorTexture, 1);
+		_fgColorShader.setUniformTexture(
+			"trueTypeTexture", _font.getFontTexture(),    0
+		);
+		_fgColorShader.setUniformTexture(
+			"fontColorMap",    _fgColorTexture,           1
+		);
 		
 		_fgColorShader.setUniform2f("origin", _origin);
 		// _fgColorShader.setUniform3f("charSize", glm::vec3(p2_1, p2_2, p2_3));
 		
 		ofMultMatrix(_fgNode.getGlobalTransformMatrix());
-		text_mesh.draw();
 		
+		// text_mesh.draw();
+		// TODO: iterate through meshes and draw them all
+		for(int i=0; i < _meshes.size(); i++){
+			_meshes[i].draw();
+		}
 		
 		_fgColorShader.end();
 		
@@ -311,6 +504,21 @@ public:
 		
 		return rb_cPtr;
 	}
+	
+	
+	Rice::Data_Object<ofTrueTypeFont> getFont(){
+		Rice::Data_Object<ofTrueTypeFont> rb_cPtr(
+			static_cast<ofTrueTypeFont*>(&_font),
+			Rice::Data_Type< ofTrueTypeFont >::klass(),
+			Rice::Default_Mark_Function< ofTrueTypeFont >::mark,
+			Null_Free_Function< ofTrueTypeFont >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	
+	
 	
 	
 	
@@ -428,7 +636,7 @@ public:
 		_fgColorPixels.setColor(w-1,h-1, white);
 	}
 	
-	void setup( int w, int h ){
+	void setup_colors( int w, int h ){
 		_numCharsX = w;
 		_numCharsY = h;
 		// int w = 60;
@@ -492,14 +700,20 @@ void Init_rubyOF_project()
 	rb_c_ofCharMappedDisplay
 		.define_constructor(Constructor<CharMappedDisplay>())
 		
-		.define_method("bgMesh_setup",   &CharMappedDisplay::bgMesh_setup)
-		.define_method("bgPixels_setup", &CharMappedDisplay::bgPixels_setup)
-		.define_method("fgPixels_setup", &CharMappedDisplay::fgPixels_setup)
-		.define_method("setup",          &CharMappedDisplay::setup)
+		.define_method("bgMesh_setup",     &CharMappedDisplay::bgMesh_setup)
+		.define_method("bgPixels_setup",   &CharMappedDisplay::bgPixels_setup)
+		.define_method("fgPixels_setup",   &CharMappedDisplay::fgPixels_setup)
+		.define_method("setup_colors",     &CharMappedDisplay::setup_colors)
 		
 		.define_method("setup_transforms", &CharMappedDisplay::setup_transforms)
-		.define_method("cpp_draw",         &CharMappedDisplay::draw)
+		.define_method("cpp_draw",         &CharMappedDisplay::cpp_draw)
 		
+		.define_method("setup_font",      &CharMappedDisplay::setup_font)
+		.define_method("font",            &CharMappedDisplay::getFont)
+		
+		.define_method("setup_text_grid", &CharMappedDisplay::setup_text_grid)
+		
+		.define_method("cpp_remesh",      &CharMappedDisplay::cpp_remesh)
 		
 		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
 		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)

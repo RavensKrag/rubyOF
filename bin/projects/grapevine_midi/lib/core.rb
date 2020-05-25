@@ -204,8 +204,29 @@ class Core
     
     @display_origin_px = CP::Vec2.new(340,50)
     
-    @display = CharMappedDisplay.new(@fonts[:monospace], 60, 29,
-                                     @display_origin_px, @bg_offset, @bg_scale)
+    @display =
+      CharMappedDisplay.new.tap do |d|
+        font_settings =
+          RubyOF::TrueTypeFontSettings.new("DejaVu Sans Mono", 24)
+          .tap do |settings|
+            settings.add_alphabet :Latin
+            settings.add_unicode_range :BlockElement
+          end
+        
+        d.setup_font(font_settings)
+        d.font.line_height = @line_height
+        
+        
+        w,h = [60, 29]
+        d.setup_text_grid(w,h)
+        d.setup(w,h, @display_origin_px, @bg_offset, @bg_scale)
+        
+        d.remesh()
+        
+      end
+    
+    
+    
     
     
     @display.autoUpdateColor_bg(false)
@@ -1105,11 +1126,20 @@ class Core
     
     
     
-    scheduler.section name: "cleanup", budget: msec(16)
+    # scheduler.section name: "cleanup", budget: msec(16)
     
+    
+    scheduler.section name: "cleanup1", budget: msec(2.2)
     @display.flushColors_bg()
     @display.flushColors_fg()
+    
+    scheduler.section name: "cleanup2", budget: msec(11)
+                                              # ^ spikes 16,22,33 rarely
+    
+    # run_profiler do 
     @display.remesh()
+    
+    # end
     
   end
   

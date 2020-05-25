@@ -10,11 +10,12 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   attr_reader :x_chars, :y_chars
   
   
-  def initialize(font, x_chars, y_chars, origin, bg_offset, bg_scale)
+  def initialize()
     super()
-    
-    setup(x_chars, y_chars)
-    @font = font
+  end
+  
+  def setup(x_chars, y_chars, origin, bg_offset, bg_scale)
+    setup_colors(x_chars, y_chars)
     
     
     # @x_chars = getNumCharsX()
@@ -32,9 +33,10 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     vflip = true
     
     # OPTIMIZE: cache these values as long as @font remains the same
-    @em_width = @font.string_bb("m", x,y, vflip).width;
-    @ascender_height  = @font.ascender_height
-    @descender_height = @font.descender_height
+    font = self.font()
+    @em_width = self.font().string_bb("m", x,y, vflip).width;
+    @ascender_height  = font.ascender_height
+    @descender_height = font.descender_height
     
     
     
@@ -43,8 +45,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
-    
-    self.remesh()
     
     # 
     # set up information needed for text coloring shader
@@ -99,10 +99,9 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # end
   
   # NOTE: do not move on z! that's not gonna give you the z-indexing you want! that's just a big headache!!! (makes everything weirdly blurry and in a weird position)
-  # alias :cpp_draw :draw
   
   def draw()
-    cpp_draw(@text_mesh, @font.font_texture)
+    cpp_draw() # TODO: move origin point into draw
   end
   
   
@@ -216,12 +215,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # call this once per frame from the core,
   # similar to how you call flush just once
   # instead of pushing color information immediately
+  # NOTE: remesh now defined at C++ level
   def remesh
-      x = 0
-      y = 0
-      vflip = true
-    @text_mesh = @font.get_string_mesh(@char_grid, x,y, vflip)
+    cpp_remesh @char_grid.split("\n")
   end
+  
   
   
   # mind the invisible newline character at the end of every line
@@ -282,9 +280,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       range = (char_pos)..(char_pos+str.length-1)
       @char_grid[range] = str
     end
-    
-    
-    
     
     
     
