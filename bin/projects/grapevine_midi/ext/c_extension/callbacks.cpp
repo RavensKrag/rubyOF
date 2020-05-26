@@ -105,14 +105,21 @@ private:
 			this->i = i;
 			this->mesh = mesh;
 			this->str  = str;
+			
+			bFirstTime = true;
+			mesh->clear();
 		}
 		
 		virtual void run(){
 			// cout << i << endl;
-			font->meshify_line(mesh, str, i);
+			
+			font->meshify_line(mesh, str, i, bFirstTime);
+			bFirstTime = false;
 		}
 		
 	private:
+		bool bFirstTime;
+		
 		ofxTerminalFont* font;
 		ofMesh *mesh;
 		std::string *str;
@@ -120,7 +127,7 @@ private:
 	};
 
 public:
-	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped) const{
+	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
 		
 		if (!isValidGlyph(c)){ // <-- public member function
 			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
@@ -149,35 +156,50 @@ public:
 		ymin += y;
 		ymax += y;
 		
-		ofIndexType firstIndex = stringQuads.getVertices().size();
 		
-		stringQuads.addVertex(glm::vec3(xmin,ymin,0.f));
-		stringQuads.addVertex(glm::vec3(xmax,ymin,0.f));
-		stringQuads.addVertex(glm::vec3(xmax,ymax,0.f));
-		stringQuads.addVertex(glm::vec3(xmin,ymax,0.f));
-		
-		stringQuads.addTexCoord(glm::vec2(t1,v1));
-		stringQuads.addTexCoord(glm::vec2(t2,v1));
-		stringQuads.addTexCoord(glm::vec2(t2,v2));
-		stringQuads.addTexCoord(glm::vec2(t1,v2));
-		
-		stringQuads.addIndex(firstIndex);
-		stringQuads.addIndex(firstIndex+1);
-		stringQuads.addIndex(firstIndex+2);
-		stringQuads.addIndex(firstIndex+2);
-		stringQuads.addIndex(firstIndex+3);
-		stringQuads.addIndex(firstIndex);
+		if(bFirstTime){
+			ofIndexType firstIndex = stringQuads.getVertices().size();
+			
+			stringQuads.addVertex(glm::vec3(xmin,ymin,0.f));
+			stringQuads.addVertex(glm::vec3(xmax,ymin,0.f));
+			stringQuads.addVertex(glm::vec3(xmax,ymax,0.f));
+			stringQuads.addVertex(glm::vec3(xmin,ymax,0.f));
+			
+			stringQuads.addTexCoord(glm::vec2(t1,v1));
+			stringQuads.addTexCoord(glm::vec2(t2,v1));
+			stringQuads.addTexCoord(glm::vec2(t2,v2));
+			stringQuads.addTexCoord(glm::vec2(t1,v2));
+			
+			stringQuads.addIndex(firstIndex);
+			stringQuads.addIndex(firstIndex+1);
+			stringQuads.addIndex(firstIndex+2);
+			stringQuads.addIndex(firstIndex+2);
+			stringQuads.addIndex(firstIndex+3);
+			stringQuads.addIndex(firstIndex);
+		}
+		else{
+			stringQuads.setVertex(0+4*char_idx,glm::vec3(xmin,ymin,0.f));
+			stringQuads.setVertex(1+4*char_idx,glm::vec3(xmax,ymin,0.f));
+			stringQuads.setVertex(2+4*char_idx,glm::vec3(xmax,ymax,0.f));
+			stringQuads.setVertex(3+4*char_idx,glm::vec3(xmin,ymax,0.f));
+			
+			stringQuads.setTexCoord(0+4*char_idx,glm::vec2(t1,v1));
+			stringQuads.setTexCoord(1+4*char_idx,glm::vec2(t2,v1));
+			stringQuads.setTexCoord(2+4*char_idx,glm::vec2(t2,v2));
+			stringQuads.setTexCoord(3+4*char_idx,glm::vec2(t1,v2));
+		}
 	}
 	
 	
-	void meshify_line(ofMesh *mesh, std::string *str, int i)
+	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
 	{
 		
 		// size == number of lines to meshify
 		// (should be size of both mesh_ary and str_ary)
 		
-		
-		mesh->clear();
+		if(bFirstTime){
+			mesh->clear();
+		}
 		
 		// createStringMesh(c,x,y,vFlipped);
 		bool vFlipped = true;
@@ -185,15 +207,19 @@ public:
 		x = 0;
 		y = 0;
 		y += getLineHeight()*i;
+		
+		int char_idx = 0;
 		iterateString((*str),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
-			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped);
+			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped,
+				                 char_idx, bFirstTime);
+			char_idx++;
 		});
 		
 	}
 	
 	
 	void meshify_lines(std::vector<ofMesh> *meshes,
-	                   std::vector<std::string> *strings)
+	                   std::vector<std::string> *strings, bool bFirstTime)
 	{
 		int size = strings->size();
 		// cout << size << endl;
@@ -202,25 +228,30 @@ public:
 		// std::vector<MeshifyHelper*> threads;
 		// threads.reserve(size);
 		
-		// initialize workers
-		MyWorker workers[size];
+		// // initialize workers
+		// MyWorker workers[size];
+		// for(int i=0; i<size; i++){
+		// 	workers[i].setup(this, &(meshes->at(i)), &(strings->at(i)), i);
+		// }
+		
+		// Poco::Thread threads[size];
+		
+		// // start up threads
+		// for(int i=0; i<size; i++){
+		// 	threads[i].start(workers[i]);
+		// }
+		
+		// // wait for threads to complete
+		// for(int i=0; i<size; i++){
+		// 	threads[i].join();
+		// }
+		
 		for(int i=0; i<size; i++){
-			workers[i].setup(this, &(meshes->at(i)), &(strings->at(i)), i);
+			meshify_line(&(meshes->at(i)), &(strings->at(i)), i, bFirstTime);
 		}
 		
-		Poco::Thread threads[size];
 		
-		// start up threads
-		for(int i=0; i<size; i++){
-			threads[i].start(workers[i]);
-		}
-		
-		// wait for threads to complete
-		for(int i=0; i<size; i++){
-			threads[i].join();
-		}
-		
-		cout << "done!" << endl;
+		// cout << "done!" << endl;
 		
 		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
 		
@@ -263,6 +294,7 @@ private:
 	
 	std::vector<std::string> _strings;
 	std::vector<ofMesh> _meshes;
+	bool bFirstTime;
 	
 public:
 	// CharMappedDisplay(){
@@ -408,7 +440,10 @@ public:
 			_strings.push_back(from_ruby<std::string>(str));
 		}
 		
-		_font.meshify_lines(&_meshes, &_strings);
+		
+		
+		_font.meshify_lines(&_meshes, &_strings, true);
+		bFirstTime = false;
 		
 	}
 	
@@ -654,6 +689,8 @@ public:
 		
 		// _fgColorTexture.setTextureWrap(GL_REPEAT, GL_REPEAT);
 		_fgColorTexture.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+		
+		bFirstTime = true;
 	}
 	
 	
