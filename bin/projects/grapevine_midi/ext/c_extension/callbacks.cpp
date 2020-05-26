@@ -1,6 +1,9 @@
 #include "callbacks.h"
 
 #include <iostream>
+#include <Poco/Runnable.h>
+#include <Poco/Thread.h>
+
 
 using namespace Rice;
 
@@ -91,34 +94,29 @@ void ofShader_bindUniforms(ofShader & shader,
 // "header only" class style, at least for now
 class ofxTerminalFont : public ofTrueTypeFont {
 private:
-	class MeshifyHelper: public ofThread{
+	class MyWorker : public Poco::Runnable
+	{
 	public:
-		void setup(ofxTerminalFont *font,
-		           std::vector<ofMesh> *meshes,
-		           std::vector<std::string> *strings,
-		           int i)
+		MyWorker() : Poco::Runnable() {}
+		
+		void setup(ofxTerminalFont* font, ofMesh *mesh, std::string *str, int i)
 		{
-			_font    = font;
-			_meshes  = meshes;
-			_strings = strings;
-			
+			this->font = font;
 			this->i = i;
-			
-			finished = false;
+			this->mesh = mesh;
+			this->str  = str;
 		}
 		
-		void threadedFunction(){
-			_font->meshify_line(_meshes, _strings, i);
-			finished = true;
+		virtual void run(){
+			// cout << i << endl;
+			font->meshify_line(mesh, str, i);
 		}
 		
-		ofxTerminalFont *_font;
+	private:
+		ofxTerminalFont* font;
+		ofMesh *mesh;
+		std::string *str;
 		int i;
-		
-		std::vector<ofMesh> *_meshes;
-		std::vector<std::string> *_strings;
-		
-		bool finished;
 	};
 
 public:
@@ -172,16 +170,14 @@ public:
 	}
 	
 	
-	void meshify_line(std::vector<ofMesh> *meshes,
-	                  std::vector<std::string> *strings,
-	                  int i)
+	void meshify_line(ofMesh *mesh, std::string *str, int i)
 	{
 		
 		// size == number of lines to meshify
 		// (should be size of both mesh_ary and str_ary)
 		
 		
-		meshes->at(i).clear();
+		mesh->clear();
 		
 		// createStringMesh(c,x,y,vFlipped);
 		bool vFlipped = true;
@@ -189,8 +185,8 @@ public:
 		x = 0;
 		y = 0;
 		y += getLineHeight()*i;
-		iterateString(strings->at(i),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
-			drawChar_threadsafe(meshes->at(i), c, pos.x, pos.y, vFlipped);
+		iterateString((*str),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
+			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped);
 		});
 		
 	}
@@ -203,27 +199,28 @@ public:
 		// cout << size << endl;
 		
 		// create threads
-		std::vector<MeshifyHelper*> threads;
-		threads.reserve(size);
+		// std::vector<MeshifyHelper*> threads;
+		// threads.reserve(size);
 		
-		// MeshifyHelper *threads = new MeshifyHelper[size];
+		// initialize workers
+		MyWorker workers[size];
+		for(int i=0; i<size; i++){
+			workers[i].setup(this, &(meshes->at(i)), &(strings->at(i)), i);
+		}
+		
+		Poco::Thread threads[size];
 		
 		// start up threads
 		for(int i=0; i<size; i++){
-			threads.push_back(new MeshifyHelper());
-			// ^ just pushing pointer into vector w/ no cleanup -> MEMORY LEAK
-			
-			
-			
-			threads[i]->setup(this, meshes, strings, i);
-			threads[i]->startThread();
+			threads[i].start(workers[i]);
 		}
 		
 		// wait for threads to complete
 		for(int i=0; i<size; i++){
-			threads[i]->waitForThread();
-			delete threads[i];
+			threads[i].join();
 		}
+		
+		cout << "done!" << endl;
 		
 		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
 		

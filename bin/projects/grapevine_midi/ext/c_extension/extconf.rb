@@ -192,7 +192,7 @@ ld_flags = ->(){
 
 # more linker flags
 of_core_libs_dynamic_flags = 
-	of_build_variables['OF_CORE_LIBS']
+	(of_build_variables['OF_CORE_LIBS'] + ['-lPocoFoundation'])
 	.join(' ')
 
 
