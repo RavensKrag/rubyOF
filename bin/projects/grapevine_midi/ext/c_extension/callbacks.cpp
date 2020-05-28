@@ -132,11 +132,14 @@ private:
 		ofMesh *mesh;
 		std::string *str;
 		int i;
+		
 	};
 
+	const size_t TAB_WIDTH = 4; /// Number of spaces per tab
+	// ^ needed for iterateString()
 public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
-		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		// ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
 		
 		if (!isValidGlyph(c)){ // <-- public member function
 			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
@@ -200,6 +203,76 @@ public:
 	}
 	
 	
+	void iterateString_custom(const string & str, float x, float y, bool vFlipped, std::function<void(uint32_t, glm::vec2)> f) const{
+		glm::vec2 pos(x,y);
+		
+		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		
+		// 
+		// function body copied from
+		// ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp
+		// (copying is the easiest way to add the instrumentation)
+		// 
+		
+		
+		int newLineDirection		= 1;
+		if(!vFlipped){
+			// this would align multiline texts to the last line when vflip is disabled
+			//int lines = ofStringTimesInString(c,"\n");
+			//Y = lines*lineHeight;
+			newLineDirection = -1;
+		}
+
+		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
+
+		uint32_t prevC = 0;
+	    for(auto c: ofUTF8Iterator(str)){
+			try{
+				if (c == '\n') {
+					pos.y += lineHeight*newLineDirection;
+					pos.x = x ; //reset X Pos back to zero
+					prevC = 0;
+				} else if (c == '\t') {
+					if (settings.direction == OF_TTF_LEFT_TO_RIGHT){
+						f(c, pos);
+						pos.x += getGlyphProperties(' ').advance * spaceSize * TAB_WIDTH * directionX;
+					} else{
+						pos.x += getGlyphProperties(' ').advance * spaceSize * TAB_WIDTH * directionX;
+						f(c, pos);
+					}
+					prevC = c;
+	            }else if(c == ' '){
+	                pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
+	                f(c, pos);
+	                prevC = c;
+	            }else if(isValidGlyph(c)) {
+					const auto & props = getGlyphProperties(c);
+					if(prevC>0){
+						if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
+							pos.x += getKerning(prevC, c);
+						}else{
+							pos.x += getKerning(c, prevC);
+						}
+					}
+					if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
+						f(c,pos);
+						pos.x += props.advance  * directionX;
+						pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
+					}else{
+						pos.x += props.advance  * directionX;
+						pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
+					    f(c,pos);
+					}
+					prevC = c;
+	            }
+	        }catch(...){
+				break;
+			}
+	    }
+	}
+
+	
+	
 	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
 	{
 		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
@@ -219,7 +292,7 @@ public:
 		y += getLineHeight()*i;
 		
 		int char_idx = 0;
-		iterateString((*str),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
+		iterateString_custom((*str),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
 			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped,
 				                 char_idx, bFirstTime);
 			char_idx++;
