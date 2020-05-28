@@ -24,6 +24,15 @@ int cpp_callback(int x) {
 
 #include "spike_profiler.h"
 
+// #define PROFILER_ENABLED true
+
+#ifdef PROFILER_ENABLED
+	#define PROFILER_FUNC()      ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__)
+	// __PVAR__ can be any symbol that won't ever be used by other code
+#else
+	#define PROFILER_FUNC()      
+#endif
+
 
 
 
@@ -139,7 +148,7 @@ private:
 	// ^ needed for iterateString()
 public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
-		// ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		// PROFILER_FUNC();
 		
 		if (!isValidGlyph(c)){ // <-- public member function
 			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
@@ -206,7 +215,7 @@ public:
 	void iterateString_custom(const string & str, float x, float y, bool vFlipped, std::function<void(uint32_t, glm::vec2)> f) const{
 		glm::vec2 pos(x,y);
 		
-		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		PROFILER_FUNC();
 		
 		// 
 		// function body copied from
@@ -277,7 +286,7 @@ public:
 	
 	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
 	{
-		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		PROFILER_FUNC();
 		
 		// size == number of lines to meshify
 		// (should be size of both mesh_ary and str_ary)
@@ -306,7 +315,7 @@ public:
 	void meshify_lines(std::vector<ofMesh> *meshes,
 	                   std::vector<std::string> *strings, bool bFirstTime)
 	{
-		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		PROFILER_FUNC();
 		
 		int size = strings->size();
 		// cout << size << endl;
@@ -519,7 +528,7 @@ public:
 	}
 	
 	void cpp_remesh(Rice::Array lines){
-		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		PROFILER_FUNC();
 		
 		
 		_strings.clear();
