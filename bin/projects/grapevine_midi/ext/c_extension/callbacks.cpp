@@ -67,7 +67,7 @@ public:
 		
 		
 		// https://www.cprogramming.com/reference/preprocessor/__FILE__.html
-		cout << "PROFILER: function enter - " << fn << endl;
+		cout << "PROFILER: " <<  stack_counter+1 << ") enter  " << fn << endl;
 		// cout << file << ":" << line << endl;
 		
 		
@@ -101,7 +101,9 @@ public:
 			uint64_t now = ofGetElapsedTimeMicros();
 			uint64_t dt = now - start_time;
 			
-			cout << "PROFILER: dt = " << dt << endl;
+			if(dt > 20){
+				cout << "PROFILER: "<< stack_counter << ") dt = " << dt << endl;
+			}
 			
 			stack_counter--;
 		}else{
@@ -235,7 +237,7 @@ private:
 
 public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
-		// ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
 		
 		if (!isValidGlyph(c)){ // <-- public member function
 			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
