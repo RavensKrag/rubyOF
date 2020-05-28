@@ -150,10 +150,10 @@ public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
 		// PROFILER_FUNC();
 		
-		if (!isValidGlyph(c)){ // <-- public member function
-			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
-			return;
-		}
+		// if (!isValidGlyph(c)){ // <-- public member function
+		// 	//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
+		// 	return;
+		// }
 		
 		
 		long xmin, ymin, xmax, ymax;
@@ -212,53 +212,6 @@ public:
 	}
 	
 	
-	void iterateString_custom(const string & str, float x, float y, std::function<void(uint32_t, glm::vec2)> f) const{
-		glm::vec2 pos(x,y);
-		
-		PROFILER_FUNC();
-		
-		// 
-		// function body copied from
-		// ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp
-		// (copying is the easiest way to add the instrumentation)
-		// 
-		
-		
-		
-		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
-		
-		// NOTES:
-		// should be no newlines in this particular format, because we've split the "character grid" string on newline characters
-		// I think I can commit to never using tabs
-		// All characters should be valid unicode (can enforce at Ruby level if absolutely necessary) - thus, we don't really need to check again
-		// Can assume the font is monospaced - thus we should either be able to compute the kerning once and just reuse it for the entire block of text, or the kerning should always be 0.	
-		
-		uint32_t prevC = 0;
-		for(auto c: ofUTF8Iterator(str)){
-			if(c == ' '){
-				pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
-				f(c, pos);
-				prevC = c;
-			}else{
-				
-				const auto & props = getGlyphProperties(c);
-				
-				if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
-					f(c,pos);
-					pos.x += props.advance  * directionX;
-					pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
-				}else{
-					pos.x += props.advance  * directionX;
-					pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
-					f(c,pos);
-				}
-				prevC = c;
-			}
-		}
-	}
-
-	
-	
 	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
 	{
 		PROFILER_FUNC();
@@ -277,12 +230,64 @@ public:
 		y = 0;
 		y += getLineHeight()*i;
 		
+		
+		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
+		
+		// NOTES:
+		// should be no newlines in this particular format, because we've split the "character grid" string on newline characters
+		// I think I can commit to never using tabs
+		// All characters should be valid unicode (can enforce at Ruby level if absolutely necessary) - thus, we don't really need to check again
+		// Can assume the font is monospaced - thus we should either be able to compute the kerning once and just reuse it for the entire block of text, or the kerning should always be 0.	
+			// kerning should be zero, according to this post: https://groups.google.com/forum/#!topic/comp.fonts/GyBrswH2N8k
+				// John Hudson, Type Director
+				// 
+				// Tiro TypeWorks
+				// Vancouver, BC
+			// and nothing bad happens in the code when we take out kerning info!
+		
+		// optimizing under assumption of monospaced font
+		// Therefore, only need to compute these three things once:
+		long space__advance = getGlyphProperties(' ').advance;
+		
+		float space_inc  = space__advance * spaceSize * directionX;
+		
+		float letter_inc = (space__advance * directionX) + 
+		                   (space__advance * (letterSpacing - 1.f) * directionX);
+		
+		// // ASSUME: spaces and letters both advance by the same increment
+		// 	// for space:
+		// 	x += space__advance * spaceSize * directionX;
+			
+		// 	// for non-space letters:
+		// 	x += props.advance  * directionX;
+		// 	x += space__advance * (letterSpacing - 1.f) * directionX;
+		
+		// TODO: optimize further by computing space_inc and letter_inc once when font size is specifyed (when the font is loaded)
+		
 		int char_idx = 0;
-		iterateString_custom((*str),x,y, [&](uint32_t c, glm::vec2 pos){
-			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped,
-				                 char_idx, bFirstTime);
+		for(auto c: ofUTF8Iterator((*str))){
+			if(c == ' '){
+				x += space_inc;
+				
+				drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+				                    char_idx, bFirstTime);
+				
+			}else{
+				if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
+					drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+					                    char_idx, bFirstTime);
+					
+					x += letter_inc;
+				}else{
+					x += letter_inc;
+					
+					drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+					                    char_idx, bFirstTime);
+				}
+			}
+			
 			char_idx++;
-		});
+		}
 		
 	}
 	
@@ -516,7 +521,7 @@ public:
 		
 		
 		
-		_font.meshify_lines(&_meshes, &_strings, true);
+		_font.meshify_lines(&_meshes, &_strings, bFirstTime);
 		bFirstTime = false;
 		
 	}
