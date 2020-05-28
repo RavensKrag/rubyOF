@@ -222,11 +222,11 @@ public:
 			//Y = lines*lineHeight;
 			newLineDirection = -1;
 		}
-
+		
 		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
-
+		
 		uint32_t prevC = 0;
-	    for(auto c: ofUTF8Iterator(str)){
+		for(auto c: ofUTF8Iterator(str)){
 			try{
 				if (c == '\n') {
 					pos.y += lineHeight*newLineDirection;
@@ -241,12 +241,12 @@ public:
 						f(c, pos);
 					}
 					prevC = c;
-            }else if(c == ' '){
-	                pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
-	                f(c, pos);
-	                prevC = c;
-            }else if(isValidGlyph(c)) {
-            	
+				}else if(c == ' '){
+					pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
+					f(c, pos);
+					prevC = c;
+				}else if(isValidGlyph(c)) {
+					
 					const auto & props = getGlyphProperties(c);
 					
 					if(prevC>0){
@@ -263,14 +263,14 @@ public:
 					}else{
 						pos.x += props.advance  * directionX;
 						pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
-					    f(c,pos);
+						f(c,pos);
 					}
 					prevC = c;
-            }
-	        }catch(...){
+				}
+			}catch(...){
 				break;
 			}
-	    }
+		}
 	}
 
 	
