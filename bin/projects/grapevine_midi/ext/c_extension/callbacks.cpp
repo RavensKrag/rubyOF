@@ -161,6 +161,15 @@ private:
 
 	const size_t TAB_WIDTH = 4; /// Number of spaces per tab
 	// ^ needed for iterateString()
+	
+	
+	
+	size_t indexForGlyph_custom(uint32_t glyph) const{
+		PROFILER_FUNC();
+		
+		return glyphIndexMap.find(glyph)->second;
+	}
+	
 public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
 		// PROFILER_FUNC();
@@ -173,7 +182,7 @@ public:
 		
 		long xmin, ymin, xmax, ymax;
 		float t1, v1, t2, v2;
-		auto props = getGlyphProperties(c); // <-- protected member function
+		auto props = cps[indexForGlyph_custom(c)]; // <-- protected member function
 		t1		= props.t1;
 		t2		= props.t2;
 		v2		= props.v2;
@@ -353,6 +362,7 @@ public:
 		
 		// delete threads;
 	}
+	
 	
 };
 
