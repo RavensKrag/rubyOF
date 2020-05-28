@@ -241,12 +241,14 @@ public:
 						f(c, pos);
 					}
 					prevC = c;
-	            }else if(c == ' '){
+            }else if(c == ' '){
 	                pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
 	                f(c, pos);
 	                prevC = c;
-	            }else if(isValidGlyph(c)) {
+            }else if(isValidGlyph(c)) {
+            	
 					const auto & props = getGlyphProperties(c);
+					
 					if(prevC>0){
 						if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
 							pos.x += getKerning(prevC, c);
@@ -264,7 +266,7 @@ public:
 					    f(c,pos);
 					}
 					prevC = c;
-	            }
+            }
 	        }catch(...){
 				break;
 			}
