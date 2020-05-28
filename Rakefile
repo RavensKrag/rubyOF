@@ -996,7 +996,7 @@ namespace :callgrind do
 			
 			cmd = [
 				'env GALLIUM_HUD=fps,VRAM-usage',
-				"valgrind --tool=callgrind --callgrind-out-file='#{CALLGRIND_FILE}'",
+				"valgrind --tool=callgrind --instr-atstart=no --callgrind-out-file='#{CALLGRIND_FILE}'",
 				"ruby #{exe_path}"
 			].join(' ')
 			

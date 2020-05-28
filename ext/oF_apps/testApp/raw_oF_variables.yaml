@@ -350,7 +350,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
 '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1831,unix/ravensnest:/tmp/.ICE-unix/1831
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1820,unix/ravensnest:/tmp/.ICE-unix/1820
 
 '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -430,7 +430,7 @@
 
 '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-dZZF0riczsnj/agent.1582
+- 'SSH_AUTH_SOCK = /tmp/ssh-RQX4PuNNhgFX/agent.1589
 
 '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -506,7 +506,7 @@
 - 'PREPROCESS.r = f77    -F
 
 '
-- 'SSH_AGENT_PID = 1728
+- 'SSH_AGENT_PID = 1735
 
 '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -699,7 +699,7 @@
 - 'COMPILE.p = pc    -c
 
 '
-- 'XDG_SESSION_ID = 3
+- 'XDG_SESSION_ID = 4
 
 '
 - 'USER = ravenskrag
@@ -1201,7 +1201,7 @@
 - 'COMPILE.C = g++    -c
 
 '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/ce4281d1_ff83_40d5_a5a2_656ae7c9a100
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/62884957_789d_4658_ba26_08fa1a53ce2a
 
 '
 - "^F = \n"
@@ -1217,7 +1217,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp
 
 '
-- 'GNOME_TERMINAL_SERVICE = :1.478
+- 'GNOME_TERMINAL_SERVICE = :1.91
 
 '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1282,7 +1282,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/3
+- 'MAKE_TERMERR = /dev/pts/1
 
 '
 - 'OBJC = cc

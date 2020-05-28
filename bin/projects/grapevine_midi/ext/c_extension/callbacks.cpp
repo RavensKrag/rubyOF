@@ -22,15 +22,30 @@ int cpp_callback(int x) {
 }
 
 
-#include "spike_profiler.h"
-
 // #define PROFILER_ENABLED true
+#define VALGRIND_ENABLED true
+
+
+
+#include "spike_profiler.h"
 
 #ifdef PROFILER_ENABLED
 	#define PROFILER_FUNC()      ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__)
 	// __PVAR__ can be any symbol that won't ever be used by other code
 #else
 	#define PROFILER_FUNC()      
+#endif
+
+
+#include <valgrind/callgrind.h> 
+
+#ifdef VALGRIND_ENABLED
+	#define VALGRIND_ON      CALLGRIND_START_INSTRUMENTATION
+	#define VALGRIND_OFF     CALLGRIND_STOP_INSTRUMENTATION
+	// __PVAR__ can be any symbol that won't ever be used by other code
+#else
+	#define VALGRIND_ON      
+	#define VALGRIND_OFF     
 #endif
 
 
@@ -509,6 +524,7 @@ public:
 	
 	void cpp_remesh(Rice::Array lines){
 		PROFILER_FUNC();
+		VALGRIND_ON;
 		
 		
 		_strings.clear();
@@ -524,6 +540,7 @@ public:
 		_font.meshify_lines(&_meshes, &_strings, bFirstTime);
 		bFirstTime = false;
 		
+		VALGRIND_OFF;
 	}
 	
 	
