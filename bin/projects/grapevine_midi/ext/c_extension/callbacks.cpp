@@ -158,9 +158,6 @@ private:
 		int i;
 		
 	};
-
-	const size_t TAB_WIDTH = 4; /// Number of spaces per tab
-	// ^ needed for iterateString()
 	
 	
 	
