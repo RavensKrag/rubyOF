@@ -212,7 +212,7 @@ public:
 	}
 	
 	
-	void iterateString_custom(const string & str, float x, float y, bool vFlipped, std::function<void(uint32_t, glm::vec2)> f) const{
+	void iterateString_custom(const string & str, float x, float y, std::function<void(uint32_t, glm::vec2)> f) const{
 		glm::vec2 pos(x,y);
 		
 		PROFILER_FUNC();
@@ -224,60 +224,35 @@ public:
 		// 
 		
 		
-		int newLineDirection		= 1;
-		if(!vFlipped){
-			// this would align multiline texts to the last line when vflip is disabled
-			//int lines = ofStringTimesInString(c,"\n");
-			//Y = lines*lineHeight;
-			newLineDirection = -1;
-		}
 		
 		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
 		
+		// NOTES:
+		// should be no newlines in this particular format, because we've split the "character grid" string on newline characters
+		// I think I can commit to never using tabs
+		// All characters should be valid unicode (can enforce at Ruby level if absolutely necessary) - thus, we don't really need to check again
+		// Can assume the font is monospaced - thus we should either be able to compute the kerning once and just reuse it for the entire block of text, or the kerning should always be 0.	
+		
 		uint32_t prevC = 0;
 		for(auto c: ofUTF8Iterator(str)){
-			try{
-				if (c == '\n') {
-					pos.y += lineHeight*newLineDirection;
-					pos.x = x ; //reset X Pos back to zero
-					prevC = 0;
-				} else if (c == '\t') {
-					if (settings.direction == OF_TTF_LEFT_TO_RIGHT){
-						f(c, pos);
-						pos.x += getGlyphProperties(' ').advance * spaceSize * TAB_WIDTH * directionX;
-					} else{
-						pos.x += getGlyphProperties(' ').advance * spaceSize * TAB_WIDTH * directionX;
-						f(c, pos);
-					}
-					prevC = c;
-				}else if(c == ' '){
-					pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
-					f(c, pos);
-					prevC = c;
-				}else if(isValidGlyph(c)) {
-					
-					const auto & props = getGlyphProperties(c);
-					
-					if(prevC>0){
-						if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
-							pos.x += getKerning(prevC, c);
-						}else{
-							pos.x += getKerning(c, prevC);
-						}
-					}
-					if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
-						f(c,pos);
-						pos.x += props.advance  * directionX;
-						pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
-					}else{
-						pos.x += props.advance  * directionX;
-						pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
-						f(c,pos);
-					}
-					prevC = c;
+			if(c == ' '){
+				pos.x += getGlyphProperties(' ').advance * spaceSize * directionX;
+				f(c, pos);
+				prevC = c;
+			}else{
+				
+				const auto & props = getGlyphProperties(c);
+				
+				if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
+					f(c,pos);
+					pos.x += props.advance  * directionX;
+					pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
+				}else{
+					pos.x += props.advance  * directionX;
+					pos.x += getGlyphProperties(' ').advance * (letterSpacing - 1.f) * directionX;
+					f(c,pos);
 				}
-			}catch(...){
-				break;
+				prevC = c;
 			}
 		}
 	}
@@ -303,7 +278,7 @@ public:
 		y += getLineHeight()*i;
 		
 		int char_idx = 0;
-		iterateString_custom((*str),x,y,vFlipped,[&](uint32_t c, glm::vec2 pos){
+		iterateString_custom((*str),x,y, [&](uint32_t c, glm::vec2 pos){
 			drawChar_threadsafe((*mesh), c, pos.x, pos.y, vFlipped,
 				                 char_idx, bFirstTime);
 			char_idx++;
