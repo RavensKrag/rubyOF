@@ -479,7 +479,7 @@ class Core
       # CP::BB
       # l,b,r,t
       x = 0
-      y = 1
+      y = 0
       w = 50
       h = 11
       @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
@@ -935,7 +935,7 @@ class Core
         # 
         
         
-        bb = CP::BB.new(40,13, 58,15)
+        bb = CP::BB.new(40,12, 58,14)
         
         
         @display.each_position
@@ -1058,9 +1058,20 @@ class Core
           
           # p times
           
-          min    = times.first
-          max    = times.last
-          median = times[ times.length / 2 ]
+          
+          data = @statistics[name]
+          if data.nil?
+            min    = times.first
+            max    = times.last
+            median = times[ times.length / 2 ]
+          else
+            best_min, best_med, best_max = data
+            
+            min    = [times.first, best_min].min
+            max    = [times.last,  best_max].max
+            median = times[ times.length / 2 ]
+          end
+          
           
           @statistics[name] = [min, median, max]
         end
@@ -1108,9 +1119,21 @@ class Core
         
           times = @draw_durations.sort
           
-          min = times.first
-          max = times.last
-          med = times[ times.length / 2 ]
+          data = @draw_stats
+          if data.nil?
+            min = times.first
+            max = times.last
+            med = times[ times.length / 2 ]
+          else
+            best_min, best_med, best_max = data
+            
+            min = [times.first, best_min].min
+            max = [times.last,  best_max].max
+            med = times[ times.length / 2 ]
+          end
+          
+          @draw_stats = [min, med, max]
+          
           
           
           @display.print_string(anchor+CP::Vec2.new( 1,i),  'draw')
@@ -1137,8 +1160,38 @@ class Core
     @display.flushColors_bg()
     @display.flushColors_fg()
     
-    scheduler.section name: "cleanup2", budget: msec(11)
-                                              # ^ spikes 16,22,33 rarely
+    scheduler.section name: "cleanup2", budget: msec(4.0)
+                                              # ^ largest spike seen after optimization. need more data to be more confident this value.
+    
+    # (had value at 3.5 ms, but I just saw a 3999 um spike -> 4.0 ms)
+    
+    
+    # TODO: consider switching statistics: use lowest of all time, highest of all time, and average over all time points (use moving average)
+    
+    # TODO: draw min / max / avg as sprites on top of the bars (visualize)
+    
+    # TODO: update time budget on 5a and 5c
+      # (I saw large spikes for both of these. What's going on? Can we optimize these routines at all?)
+    
+    # TODO: establish stronger upper bound time budget of cleanup2
+    
+      # TODO: clean up old profiler data files
+      # (lots of temp files cluttering up my sublime text session right now...)
+      
+      # TODO: write up what I learned in a paper and close some browser tabs
+    
+    # TODO: update time budget on 'profilr' section
+    
+    # TODO: add graph showing how many frames it takes to complete a full cycle
+    
+    # TODO: make sure you can align things in time s.t. a full cycle happens in a predictable integral number of frames - don't want scheduler to just pack everything in there at the cost of understanding timings.
+    
+      # But it would be great if the system could still tolerate spikes that are way over budget? That would be great for sketching early code ideas.
+      
+      # Maybe I just want the ability to pad things out?
+    
+    
+    
     
     # custom_profiler do 
     # puts "start profiling"
