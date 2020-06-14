@@ -23,7 +23,7 @@ int cpp_callback(int x) {
 
 
 // #define PROFILER_ENABLED true
-#define VALGRIND_ENABLED true
+// #define VALGRIND_ENABLED true
 
 
 

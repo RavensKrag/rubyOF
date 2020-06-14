@@ -561,7 +561,7 @@
 			"file": ".gitignore",
 			"settings":
 			{
-				"buffer_size": 2552,
+				"buffer_size": 2585,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -637,7 +637,7 @@
 			"file": "Rakefile",
 			"settings":
 			{
-				"buffer_size": 29457,
+				"buffer_size": 32446,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -698,7 +698,7 @@
 			"file": "ext/oF_apps/testApp/oF_build_variables.yaml",
 			"settings":
 			{
-				"buffer_size": 83661,
+				"buffer_size": 83801,
 				"line_ending": "Unix"
 			}
 		},
@@ -731,7 +731,7 @@
 			"file": "ext/rubyOF/launcher.cpp",
 			"settings":
 			{
-				"buffer_size": 7747,
+				"buffer_size": 7868,
 				"line_ending": "Unix"
 			}
 		},
@@ -739,7 +739,7 @@
 			"file": "ext/rubyOF/rubyOF.cpp",
 			"settings":
 			{
-				"buffer_size": 10205,
+				"buffer_size": 10425,
 				"line_ending": "Unix"
 			}
 		},
@@ -811,7 +811,7 @@
 			"file": "bin/projects/youtube/ext/c_extension/Makefile",
 			"settings":
 			{
-				"buffer_size": 16349,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -877,8 +877,7 @@
 			"file": "ext/openFrameworks/libs/openFrameworksCompiled/project/makefileCommon/config.project.mk",
 			"settings":
 			{
-				"buffer_size": 21902,
-				"encoding": "UTF-8",
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -1479,7 +1478,7 @@
 	],
 	"find":
 	{
-		"height": 104.0
+		"height": 49.0
 	},
 	"find_in_files":
 	{
@@ -2304,15 +2303,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2552,
+						"buffer_size": 2585,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								630,
-								630
+								0,
+								0
 							]
 						],
 						"settings":
@@ -3768,15 +3767,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 29457,
+						"buffer_size": 32446,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14723,
-								14723
+								0,
+								0
 							]
 						],
 						"settings":
@@ -3860,27 +3859,12 @@
 							{
 								"close":
 								{
-									"1":
-									[
-										14978,
-										14981
-									]
 								},
 								"icon":
 								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/dot.png",
-										"region.yellowish brackethighlighter.default"
-									]
 								},
 								"open":
 								{
-									"1":
-									[
-										14609,
-										14611
-									]
 								},
 								"unmatched":
 								{
@@ -3888,61 +3872,61 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
 							],
 							"git_gutter_is_enabled": true,
 							"rainbowth.lispy": false,
@@ -4933,7 +4917,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 83661,
+						"buffer_size": 83801,
 						"regions":
 						{
 						},
@@ -5038,6 +5022,41 @@
 							},
 							"bracket_highlighter.regions":
 							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -5048,51 +5067,16 @@
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content"
 							],
 							"git_gutter_is_enabled": true,
 							"rainbowth.lispy": false,
@@ -5649,7 +5633,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7747,
+						"buffer_size": 7868,
 						"regions":
 						{
 						},
@@ -5828,15 +5812,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10205,
+						"buffer_size": 10425,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1581,
-								1584
+								0,
+								0
 							]
 						],
 						"settings":
@@ -7202,15 +7186,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16349,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16266,
-								16266
+								0,
+								0
 							]
 						],
 						"settings":
@@ -7384,7 +7368,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7857.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
@@ -8530,7 +8514,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21902,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -8697,7 +8681,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6628.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 30,

@@ -495,7 +495,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1820,unix/ravensnest:/tmp/.ICE-unix/1820
+- local/ravensnest:@/tmp/.ICE-unix/1798,unix/ravensnest:/tmp/.ICE-unix/1798
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -637,7 +637,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-RQX4PuNNhgFX/agent.1589"
+- "/tmp/ssh-oOqxNcBe34Xg/agent.1568"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj"
@@ -743,7 +743,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1735'
+- '1727'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.cpp"
@@ -1070,7 +1070,7 @@ COMPILE.p:
 - pc
 - "-c"
 XDG_SESSION_ID:
-- '4'
+- '3'
 USER:
 - ravenskrag
 ADDON_DEPENDENCIES: []
@@ -2140,7 +2140,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/62884957_789d_4658_ba26_08fa1a53ce2a"
+- "/org/gnome/Terminal/screen/b4bfebd9_eeda_4f74_b15c_740bc65d2383"
 "^F": []
 COMPILE.S:
 - cc
@@ -2159,7 +2159,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.91"
+- ":1.2540"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2372,7 +2372,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/1"
+- "/dev/pts/3"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
