@@ -800,7 +800,13 @@ public:
 };
 
 
+void callgrind_BEGIN(){
+	CALLGRIND_START_INSTRUMENTATION;
+}
 
+void callgrind_END(){
+	CALLGRIND_STOP_INSTRUMENTATION;
+}
 
 // "main" section
 extern "C"
@@ -823,6 +829,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("ofShader_bindUniforms", 
 			                     &ofShader_bindUniforms)
+		
+		
+		.define_module_function("callgrind_BEGIN", &callgrind_BEGIN)
+		.define_module_function("callgrind_END",   &callgrind_END)
 	;
 	
 	
