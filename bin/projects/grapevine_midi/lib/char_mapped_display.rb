@@ -170,15 +170,15 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
     
     def [](pos)
-      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+      # gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
         return @pixels.getColor_xy(pos.x, pos.y)
-      end
+      # end
     end
     
     def []=(pos, color)
-      gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
+      # gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
         return @pixels.setColor_xy(pos.x, pos.y, color)
-      end
+      # end
     end
   end
   
