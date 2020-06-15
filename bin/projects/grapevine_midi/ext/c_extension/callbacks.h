@@ -21,20 +21,22 @@ void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value);
 
 
 
-int ofxMidiMessage__get_status(ofxMidiMessage self);
+int ofxMidiMessage__get_status(ofxMidiMessage &self);
 
-int ofxMidiMessage__get_channel(ofxMidiMessage self);
-int ofxMidiMessage__get_pitch(ofxMidiMessage self);
-int ofxMidiMessage__get_velocity(ofxMidiMessage self);
-int ofxMidiMessage__get_value(ofxMidiMessage self);
+int ofxMidiMessage__get_channel(ofxMidiMessage &self);
+int ofxMidiMessage__get_pitch(ofxMidiMessage &self);
+int ofxMidiMessage__get_velocity(ofxMidiMessage &self);
+int ofxMidiMessage__get_value(ofxMidiMessage &self);
 
-double ofxMidiMessage__get_deltatime(ofxMidiMessage self);
+double ofxMidiMessage__get_deltatime(ofxMidiMessage &self);
 
-int ofxMidiMessage__get_portNum(ofxMidiMessage self);
-std::string ofxMidiMessage__get_portName(ofxMidiMessage self);
+int ofxMidiMessage__get_portNum(ofxMidiMessage &self);
+std::string ofxMidiMessage__get_portName(ofxMidiMessage &self);
 
-Rice::Array ofxMidiMessage__get_bytes(ofxMidiMessage self);
+Rice::Array ofxMidiMessage__get_bytes(ofxMidiMessage &self);
 
 
-int           ofxMidiMessage__get_num_bytes(ofxMidiMessage self);
-unsigned char ofxMidiMessage__get_byte(ofxMidiMessage self, int i);
+int           ofxMidiMessage__get_num_bytes(ofxMidiMessage &self);
+unsigned char ofxMidiMessage__get_byte(ofxMidiMessage &self, int i);
+
+bool ofxMidiMessage__equality(ofxMidiMessage &self, ofxMidiMessage &other);

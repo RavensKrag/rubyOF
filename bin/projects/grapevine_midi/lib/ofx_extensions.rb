@@ -52,15 +52,18 @@ class MidiMessage
   end
   
   
-  
-  def ==(other)
-    if other.is_a? self.class
-      # TODO: implement this comparison
-      self.each_byte.to_a == other.each_byte.to_a
-    else
-      return false
-    end
-  end
+  # (doing equality in c++ is not that much faster)
+  alias :== :cpp_equality
+  private :cpp_equality
+  # def ==(other)
+  #   # if other.is_a? self.class
+  #   #   # TODO: implement this comparison
+  #   #   self.each_byte.to_a == other.each_byte.to_a
+  #   # else
+  #   #   return false
+  #   # end
+  #   cpp_equality(other)
+  # end
   
   private :get_num_bytes, :get_byte
   

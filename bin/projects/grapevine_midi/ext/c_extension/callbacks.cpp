@@ -955,6 +955,8 @@ void Init_rubyOF_project()
 		
 		.define_method("get_num_bytes",  &ofxMidiMessage__get_num_bytes)
 		.define_method("get_byte",       &ofxMidiMessage__get_byte)
+		
+		.define_method("cpp_equality", &ofxMidiMessage__equality)
 	;
 	
 	
@@ -999,7 +1001,7 @@ void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value){
 // ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.h
 // 
 
-int ofxMidiMessage__get_status(ofxMidiMessage self){
+int ofxMidiMessage__get_status(ofxMidiMessage &self){
 	// do not need to explictly state array size
 	// src: https://stackoverflow.com/questions/32918448/is-it-bad-to-not-define-a-static-array-size-in-a-class-but-rather-to-let-it-au
 	static const MidiStatus STATUS_IDS[] = {
@@ -1043,35 +1045,53 @@ int ofxMidiMessage__get_status(ofxMidiMessage self){
 	return -1; // return -1 on error
 }
 
-int ofxMidiMessage__get_channel(ofxMidiMessage self){
+int ofxMidiMessage__get_channel(ofxMidiMessage &self){
 	return self.channel;
 }
-int ofxMidiMessage__get_pitch(ofxMidiMessage self){
+int ofxMidiMessage__get_pitch(ofxMidiMessage &self){
 	return self.pitch;
 }
-int ofxMidiMessage__get_velocity(ofxMidiMessage self){
+int ofxMidiMessage__get_velocity(ofxMidiMessage &self){
 	return self.velocity;
 }
-int ofxMidiMessage__get_value(ofxMidiMessage self){
+int ofxMidiMessage__get_value(ofxMidiMessage &self){
 	return self.value;
 }
 
-double ofxMidiMessage__get_deltatime(ofxMidiMessage self){
+double ofxMidiMessage__get_deltatime(ofxMidiMessage &self){
 	return self.deltatime;
 }
 
-int ofxMidiMessage__get_portNum(ofxMidiMessage self){
+int ofxMidiMessage__get_portNum(ofxMidiMessage &self){
 	return self.portNum;
 }
-std::string ofxMidiMessage__get_portName(ofxMidiMessage self){
+std::string ofxMidiMessage__get_portName(ofxMidiMessage &self){
 	return self.portName;
 }
 
 
-int ofxMidiMessage__get_num_bytes(ofxMidiMessage self){
+int ofxMidiMessage__get_num_bytes(ofxMidiMessage &self){
 	return self.bytes.size();
 }
 
-unsigned char ofxMidiMessage__get_byte(ofxMidiMessage self, int i){
+unsigned char ofxMidiMessage__get_byte(ofxMidiMessage &self, int i){
 	return self.bytes[i];
+}
+
+
+bool ofxMidiMessage__equality(ofxMidiMessage &self, ofxMidiMessage &other){
+	if(self.bytes.size() != other.bytes.size()){
+		return false;
+	}
+	else{
+		int size = self.bytes.size();
+		
+		for(int i=0; i<size; i++){
+			if(self.bytes[i] != other.bytes[i]){
+				return false;
+			}
+		}
+		
+		return true;
+	}
 }
