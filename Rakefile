@@ -1038,6 +1038,7 @@ end
 namespace :callgrind do
 	CALLGRIND_FILE = 'callgrind_RubyCpp.out'
 	
+	desc "Profile C++ code (requires instrumentation) [ save to file in project ]"
 	task :run do
 		root = Pathname.new(GEM_ROOT)
 		
@@ -1063,7 +1064,7 @@ namespace :callgrind do
 		end
 	end
 	
-	
+	desc "Visualize callgrind profiling data (load from file in project)"
 	task :view do
 		root = Pathname.new(GEM_ROOT)
 		
