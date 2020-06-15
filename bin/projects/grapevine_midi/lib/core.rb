@@ -1377,6 +1377,91 @@ def run_c_profiler
   thr.join
 end
 
+
+  
+RB_SPIKE_PROFILER = TracePoint.new(:call, :return, :c_call, :c_return) do |tp|
+  # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
+  
+  # inspect_this = 
+  #   case tp.self
+  #   when CharMappedDisplay
+  #     "CharMappedDisplay<>"
+  #   when CharMappedDisplay::ColorHelper
+  #     "CharMappedDisplay::ColorHelper<>"
+  #   else
+  #     tp.self.inspect
+  #   end
+  
+  # message = "#{event} of #{tp.defined_class}##{tp.callee_id} from #{tp.path.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")}:#{tp.lineno}"
+  
+  # # if you call `return` on any non-return events, it'll raise error
+  # if tp.event == :return || tp.event == :c_return
+  #   inspect_return = 
+  #     case tp.return_value
+  #     when CharMappedDisplay
+  #       "CharMappedDisplay<>"
+  #     when CharMappedDisplay::ColorHelper
+  #       "CharMappedDisplay::ColorHelper<>"
+  #     else
+  #       tp.return_value.inspect
+  #     end
+    
+  #   message += " => #{inspect_return}" 
+  # end
+  # puts(message)
+  
+  
+  # printf "%8s %s:%-2d %10s %8s\n", tp.event, tp.path.split("/").last, tp.lineno, tp.callee_id, tp.defined_class
+  
+  
+  $spike_profiler_i ||= 0
+  
+  # return if [StateMachine].any?{|x| tp.defined_class.is_a? x }
+  
+  
+  case tp.event
+  when :call
+    if $spike_profiler_i >=0 
+      # puts "enter"
+      file_info = "#{tp.path.split('/').last}:#{tp.lineno}"
+      method = "#{tp.defined_class}##{tp.callee_id}"
+      puts "#{file_info.rjust(30)} #{method}"
+      
+      if method == "CharMappedDisplay#draw"
+        puts "\n\n"
+      end
+    end
+    
+    
+    # puts ">> #{$spike_profiler_i}"
+    
+    # $spike_profiler_stack << RubyOF::Utils.ofGetElapsedTimeMicros
+    $spike_profiler_i += 1
+    
+  when :return
+    if $spike_profiler_i >=0 
+      # puts "return   #{tp.defined_class}##{tp.callee_id}"
+      # start_time = $spike_profiler_stack.pop
+      # now = RubyOF::Utils.ofGetElapsedTimeMicros
+      
+      # dt = now - start_time
+      # puts "#{$spike_profiler_stack.size}) #{dt}"
+    end
+    
+    $spike_profiler_i -= 1
+    
+    # puts "<< #{$spike_profiler_i}"
+  end
+  
+end
+
+def spike_profiler() # &block
+  RB_SPIKE_PROFILER.enable do
+    yield
+  end
+end
+
+
   
   
   def draw
