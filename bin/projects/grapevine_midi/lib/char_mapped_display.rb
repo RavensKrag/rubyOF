@@ -194,11 +194,15 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   def background
-    return ColorHelper.new(self, @cpp_ptr_bgColor)
+    @bg_color_helper ||= ColorHelper.new(self, @cpp_ptr_bgColor)
+    
+    return @bg_color_helper
   end
   
   def foreground
-    return ColorHelper.new(self, @cpp_ptr_fgColor)
+    @fg_color_helper ||= ColorHelper.new(self, @cpp_ptr_fgColor)
+    
+    return @fg_color_helper
   end
   
   # def setBG(pos, color)
