@@ -45,6 +45,34 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     
     
     @char_grid = ("F" * @x_chars + "\n") * @y_chars
+    # TODO: implement utf32 character grid @ c++ level in order to speed up character printing (this is the main bottleneck for printing characters to the display)
+    
+    
+    
+    
+    # 
+    # cache vectors used to iterate through character grid
+    # 
+    
+    w = self.x_chars
+    h = self.y_chars
+    
+    @char_grid_pts = Array.new(w*h)
+    
+    i = 0
+    
+    h.times do |y|
+      w.times do |x|
+        @char_grid_pts[i] = CP::Vec2.new(x,y)
+        
+        i += 1
+      end
+    end
+    
+    # NOTE: can not call #freeze on CP::Vec2 (at least not by default)
+    
+    
+    
     
     # 
     # set up information needed for text coloring shader
@@ -109,18 +137,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   
   
   
-  class Matrix2DEnum < Enumerator
-    def initialize(w,h) # &block
-      super() do |yielder|
-        w.times do |x|
-          h.times do |y|
-            yielder << CP::Vec2.new(x,y)
-          end
-        end
-      end
-    end
-  end
-  
   module EnumHelper
     def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block
       if( pos.x >= 0 && pos.x < x_size && 
@@ -146,16 +162,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   private :fgText_getShader, :fgText_getTexture
   
   def each_position() # &block
-    enum = Matrix2DEnum.new(self.x_chars, self.y_chars)
+    return enum_for(:each_position) unless block_given?
     
-    if block_given?
-      
-      enum.each do |pos|
-        yield pos
-      end
-      
-    else
-      return enum
+    
+    @char_grid_pts.each do |pt|
+      yield pt
     end
   end
   
@@ -282,15 +293,17 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
     
     
+    # pts = 
+    #   range
+    #   .map{|i| [i % (@x_chars+1), i / (@x_chars+1)]}
+    #   .map{|x,y| @char_grid_pts[x+y*@x_chars] }
     
+    # pts = range.map{|i| @char_grid_pts[i] }
     
     # convert i [index in character grid] to (x,y) coordinate pair
     return Enumerator.new do |yielder|
       range.each do |i|
-        x = i % (@x_chars+1)
-        y = i / (@x_chars+1)
-        
-        yielder << CP::Vec2.new(x,y)
+        yielder << @char_grid_pts[i]
       end
     end
     
