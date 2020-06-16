@@ -24,36 +24,41 @@ class SequenceMemory
   
   # want just the elements of new_queue that do not appear in old_queue
   def calc_diff(old_queue, new_queue)
+    # assume full overlap, and then count down from there
+    # (both queues should be the same length??)
     
-    # align segments of old_queue to the new_queue
-    # do not have to check all k-mers:
-    #   only contiguous segments from the tail end of old_queue
-    # stop when you find the first match, ie, the longest possible one
-    
-    k_mers = 
-      ((1)..(old_queue.length)).collect do |i|
-        old_queue.last(i)
-      end
-    
-    overlap_length = 0;
-    k_mers.reverse_each do |seq|
-      # puts "#{new_queue.first(seq.length)} vs #{seq}"
+    if old_queue.empty? || new_queue.length > old_queue.length
+      # we can tell how many new messages there are without having to read the messages
+      new_msg_count = new_queue.length - old_queue.length
       
-      if new_queue.first(seq.length) == seq
-        overlap_length = seq.length
-        break
+      
+      return new_queue.last(new_msg_count)
+      
+    elsif new_queue.length == old_queue.length
+      # puts "others"
+      # need to examine the contents to know if the messages are new or old
+      
+      len = old_queue.length
+      
+      ((0)..(len-1)).reverse_each do |i|
+        flag = 
+          ((i)..(len-1)).all? do |j|
+            new_queue[j+i] == old_queue[i]
+          end
+        if flag
+          new_msg_count = i 
+          return new_queue.last(new_msg_count)
+        end
       end
-    end
-    
-    
-    if overlap_length == 0
-      # no items in sequenced matched
-      # thus, data is all brand new
+      
+      # NOTE: comparisons are about 284 us each. may need to make comparisons faster in order to go faster??
+      
+      
       return new_queue
-    else
-      # 
-      return new_queue.last(new_queue.size - overlap_length)
     end
+    
+    
     
   end
 end
+
