@@ -394,14 +394,17 @@ private:
 	std::vector<ofMesh> _meshes;
 	bool bFirstTime;
 	
+	int _gridSizeX,_gridSizeY;
+	uint32_t *_textGrid;
+	
 public:
 	// CharMappedDisplay(){
 		
 	// }
 	
-	// ~CharMappedDisplay(){
-		
-	// }
+	~CharMappedDisplay(){
+		delete _textGrid;
+	}
 	
 	
 	
@@ -519,7 +522,35 @@ public:
 	}
 	
 	
+	// _textGrid is a dynamic array being used as a 2D matrix (x dim major)
+		uint32_t getGridCodepoint(int x, int y){
+			return *(_textGrid+x+y*_gridSizeX);
+		}
+		
+		void setGridCodepoint(int x, int y, uint32_t c){
+			*(_textGrid+x+y*_gridSizeX) = c;
+		}
+	
 	void setup_text_grid(int w, int h){
+		// save dimensions for later
+		_gridSizeX = w;
+		_gridSizeY = h;
+		
+		_textGrid = new uint32_t[_gridSizeX*_gridSizeY];
+		// delete _textGrid called in destructor for this class
+		
+		
+		for(int i=0; i<_gridSizeX; i++){
+			for(int j=0; j<_gridSizeY; j++){
+				setGridCodepoint(i,j, i*10 + j);
+			}
+		}
+		
+		std::cout << "block: " << getGridCodepoint(3,5) << std::endl;
+		
+		
+		
+		
 		_strings.reserve(h);
 		
 		_meshes.reserve(h);
@@ -546,6 +577,15 @@ public:
 		
 		_font.meshify_lines(&_meshes, &_strings, bFirstTime);
 		bFirstTime = false;
+		
+		VALGRIND_OFF;
+	}
+	
+	void cpp_print(Rice::Object rb_str){
+		PROFILER_FUNC();
+		VALGRIND_ON;
+		
+		
 		
 		VALGRIND_OFF;
 	}
