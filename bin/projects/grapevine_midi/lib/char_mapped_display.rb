@@ -44,8 +44,10 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     @line_height = font.line_height
     
     
-    @char_grid = ("F" * @x_chars + "\n") * @y_chars
-    # TODO: implement utf32 character grid @ c++ level in order to speed up character printing (this is the main bottleneck for printing characters to the display)
+    setup_text_grid(@x_chars, @y_chars)
+    
+    # @char_grid = ("F" * @x_chars + "\n") * @y_chars
+    # # TODO: implement utf32 character grid @ c++ level in order to speed up character printing (this is the main bottleneck for printing characters to the display)
     
     
     
@@ -187,9 +189,11 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
     
     def []=(pos, color)
+      RubyOF::CPP_Callbacks.callgrind_BEGIN()
       # gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
         return @pixels.setColor_xy(pos.x, pos.y, color)
       # end
+      RubyOF::CPP_Callbacks.callgrind_END()
     end
   end
   
@@ -232,7 +236,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # instead of pushing color information immediately
   # NOTE: remesh now defined at C++ level
   def remesh
-    cpp_remesh @char_grid.split("\n")
+    cpp_remesh()
   end
   
   
@@ -248,10 +252,16 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
       pos = char_pos
       # puts pos
       
+      x = pos.x.to_i
+      y = pos.y.to_i
       
       start_x = pos.x.to_i
       start_y = pos.y.to_i
       start_i = start_x + start_y*(@x_chars+1)
+      
+      return if start_y >= @y_chars # off the bottom
+      return if start_y < 0         # off the top
+      return if start_x < 0         # off the left edge
       
       stop_x = start_x + str.length-1
       stop_y = start_y
@@ -263,38 +273,38 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
         # range.min   range.first
         # range.max   range.last
       
-      return if start_y >= @y_chars # off the bottom
-      return if start_y < 0         # off the top
-      return if start_x < 0         # off the left edge
       
-      if start_x >= @x_chars
+      if x >= @x_chars
         # NO-OP
       else
-        if stop_x >= @x_chars 
-          # clip some of the output string, s.t. everything fits
-          
-          # range.size
-          
+        # puts str
+        # clip some of the output string, s.t. everything fits
+        # (if necessary)
+        if x+str.length-1 >= @x_chars 
           new_stop_x = @x_chars-1
           new_stop_y = stop_y
           new_stop_i = start_i + new_stop_x - start_x
           
           range = start_i..new_stop_i
           
-          @char_grid[range] = str[(0)..(range.size-1)]
+          # puts str
+          # str[(0)..(@x_chars-1 - x)]
+          str = str[(0)..(range.size)]
           
-        else
-          # display the full string
-          
-          @char_grid[range] = str
+          # TODO: test string clipping
+          # (tested old code, but not the new cpp grid)
         end
+        
+        cpp_print(x, y, str)
       end
-      
-      
+    
     when Numeric
+      raise "this is depreciated"
+      
       range = (char_pos)..(char_pos+str.length-1)
       @char_grid[range] = str
     end
+    
     
     
     # pts = 

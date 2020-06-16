@@ -220,7 +220,6 @@ class Core
         
         
         w,h = [60, 29]
-        d.setup_text_grid(w,h)
         d.setup(w,h, @display_origin_px, @bg_offset, @bg_scale)
         
         d.remesh()

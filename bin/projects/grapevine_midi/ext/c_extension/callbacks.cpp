@@ -126,38 +126,38 @@ void ofShader_bindUniforms(ofShader & shader,
 // "header only" class style, at least for now
 class ofxTerminalFont : public ofTrueTypeFont {
 private:
-	class MyWorker : public Poco::Runnable
-	{
-	public:
-		MyWorker() : Poco::Runnable() {}
+	// class MyWorker : public Poco::Runnable
+	// {
+	// public:
+	// 	MyWorker() : Poco::Runnable() {}
 		
-		void setup(ofxTerminalFont* font, ofMesh *mesh, std::string *str, int i)
-		{
-			this->font = font;
-			this->i = i;
-			this->mesh = mesh;
-			this->str  = str;
+	// 	void setup(ofxTerminalFont* font, ofMesh *mesh, std::string *str, int i)
+	// 	{
+	// 		this->font = font;
+	// 		this->i = i;
+	// 		this->mesh = mesh;
+	// 		this->str  = str;
 			
-			bFirstTime = true;
-			mesh->clear();
-		}
+	// 		bFirstTime = true;
+	// 		mesh->clear();
+	// 	}
 		
-		virtual void run(){
-			// cout << i << endl;
+	// 	virtual void run(){
+	// 		// cout << i << endl;
 			
-			font->meshify_line(mesh, str, i, bFirstTime);
-			bFirstTime = false;
-		}
+	// 		font->meshify_line(mesh, str, i, bFirstTime);
+	// 		bFirstTime = false;
+	// 	}
 		
-	private:
-		bool bFirstTime;
+	// private:
+	// 	bool bFirstTime;
 		
-		ofxTerminalFont* font;
-		ofMesh *mesh;
-		std::string *str;
-		int i;
+	// 	ofxTerminalFont* font;
+	// 	ofMesh *mesh;
+	// 	std::string *str;
+	// 	int i;
 		
-	};
+	// };
 	
 	
 	
@@ -233,12 +233,9 @@ public:
 	}
 	
 	
-	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
+	void meshify_line(ofMesh *mesh, uint32_t *line, int line_len, int i, bool bFirstTime)
 	{
 		PROFILER_FUNC();
-		
-		// size == number of lines to meshify
-		// (should be size of both mesh_ary and str_ary)
 		
 		if(bFirstTime){
 			mesh->clear();
@@ -285,8 +282,9 @@ public:
 		
 		// TODO: optimize further by computing space_inc and letter_inc once when font size is specifyed (when the font is loaded)
 		
-		int char_idx = 0;
-		for(auto c: ofUTF8Iterator((*str))){
+		for(int char_idx=0; char_idx < line_len; char_idx++){
+			uint32_t c = line[char_idx];
+			
 			if(c == ' '){
 				x += space_inc;
 				
@@ -306,60 +304,9 @@ public:
 					                    char_idx, bFirstTime);
 				}
 			}
-			
-			char_idx++;
 		}
 		
 	}
-	
-	
-	void meshify_lines(std::vector<ofMesh> *meshes,
-	                   std::vector<std::string> *strings, bool bFirstTime)
-	{
-		PROFILER_FUNC();
-		
-		int size = strings->size();
-		// cout << size << endl;
-		
-		// create threads
-		// std::vector<MeshifyHelper*> threads;
-		// threads.reserve(size);
-		
-		// // initialize workers
-		// MyWorker workers[size];
-		// for(int i=0; i<size; i++){
-		// 	workers[i].setup(this, &(meshes->at(i)), &(strings->at(i)), i);
-		// }
-		
-		// Poco::Thread threads[size];
-		
-		// // start up threads
-		// for(int i=0; i<size; i++){
-		// 	threads[i].start(workers[i]);
-		// }
-		
-		// // wait for threads to complete
-		// for(int i=0; i<size; i++){
-		// 	threads[i].join();
-		// }
-		
-		for(int i=0; i<size; i++){
-			meshify_line(&(meshes->at(i)), &(strings->at(i)), i, bFirstTime);
-		}
-		
-		
-		// cout << "done!" << endl;
-		
-		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
-		
-		// TODO: don't dynamically reallocate the meshes every time.
-		// They're always going to have the same number of verts - just move the positions around
-		
-		
-		
-		// delete threads;
-	}
-	
 	
 };
 
@@ -390,7 +337,6 @@ private:
 	
 	ofxTerminalFont _font;
 	
-	std::vector<std::string> _strings;
 	std::vector<ofMesh> _meshes;
 	bool bFirstTime;
 	
@@ -542,48 +488,77 @@ public:
 		
 		for(int i=0; i<_gridSizeX; i++){
 			for(int j=0; j<_gridSizeY; j++){
-				setGridCodepoint(i,j, i*10 + j);
+				setGridCodepoint(i,j, 'A'+i);
 			}
 		}
 		
-		std::cout << "block: " << getGridCodepoint(3,5) << std::endl;
+		// std::cout << "block: " << getGridCodepoint(3,5) << std::endl;
 		
 		
-		
-		
-		_strings.reserve(h);
-		
-		_meshes.reserve(h);
-		for(int i=0; i<h; i++){
+		_meshes.reserve(_gridSizeY);
+		for(int i=0; i<_gridSizeY; i++){
 			_meshes.push_back(ofMesh());
 		}
 		
 	}
 	
-	void cpp_remesh(Rice::Array lines){
+	
+	// TODO: consider manually inlining this inside of cpp_remesh (this function used to be inside the text class, but now that it's out here, it's a bit unnecessary...)
+	
+	// take character data from _textGrid (grid of UTF codepoints)
+	void meshify_lines(std::vector<ofMesh> *meshes,
+	                   bool bFirstTime)
+	{
+		PROFILER_FUNC();
+		
+		int size = meshes->size();
+		
+		for(int i=0; i<size; i++){
+			uint32_t *line_ptr = _textGrid+i*_gridSizeX;
+			
+			_font.meshify_line(&(meshes->at(i)), 
+				                line_ptr, _gridSizeX, i,
+				                bFirstTime);
+		}
+		
+		
+		// cout << "done!" << endl;
+		
+		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
+		
+		// TODO: don't dynamically reallocate the meshes every time.
+		// They're always going to have the same number of verts - just move the positions around
+		
+		
+		
+		// delete threads;
+	}
+	
+	void cpp_remesh(){
 		PROFILER_FUNC();
 		VALGRIND_ON;
 		
 		
-		_strings.clear();
-		
-		for(int i=0; i<lines.size(); i++)
-		{
-			Rice::Object str = lines[i];
-			_strings.push_back(from_ruby<std::string>(str));
-		}
-		
-		
-		
-		_font.meshify_lines(&_meshes, &_strings, bFirstTime);
+		meshify_lines(&_meshes, bFirstTime);
 		bFirstTime = false;
 		
 		VALGRIND_OFF;
 	}
 	
-	void cpp_print(Rice::Object rb_str){
+	// (string has already been clipped to the render field @ ruby level)
+	// (just need to dump the codepoints into the grid)
+	void cpp_print(int x, int y, Rice::Object rb_str){
 		PROFILER_FUNC();
 		VALGRIND_ON;
+		
+		
+		std::string utf8_str = from_ruby<std::string>(rb_str);
+		
+		int i=0;
+		for(uint32_t c: ofUTF8Iterator(utf8_str)){
+			setGridCodepoint(x+i,y, c);
+			i++;
+		}
 		
 		
 		
@@ -901,6 +876,7 @@ void Init_rubyOF_project()
 		.define_method("setup_text_grid", &CharMappedDisplay::setup_text_grid)
 		
 		.define_method("cpp_remesh",      &CharMappedDisplay::cpp_remesh)
+		.define_method("cpp_print",       &CharMappedDisplay::cpp_print)
 		
 		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
 		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)
