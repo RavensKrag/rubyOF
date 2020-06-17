@@ -244,82 +244,52 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   # mind the invisible newline character at the end of every line
   # => Enumerator over the positions in the grid that were written to
   #    (if no characters were written, return nil)
-  def print_string(char_pos, str)
-    range = nil
+  def print_string(pos, str)
+    x = pos.x.to_i
+    y = pos.y.to_i
     
-    case char_pos
-    when CP::Vec2
-      pos = char_pos
-      # puts pos
-      
-      x = pos.x.to_i
-      y = pos.y.to_i
-      
-      start_x = pos.x.to_i
-      start_y = pos.y.to_i
-      start_i = start_x + start_y*(@x_chars+1)
-      
-      return if start_y >= @y_chars # off the bottom
-      return if start_y < 0         # off the top
-      return if start_x < 0         # off the left edge
-      
-      stop_x = start_x + str.length-1
-      stop_y = start_y
-      stop_i = start_i + stop_x - start_x
-      
-      range = start_i..stop_i
-      # puts range
-        # range.size               (counts number of elements)
-        # range.min   range.first
-        # range.max   range.last
-      
-      
-      if x >= @x_chars
-        # NO-OP
-      else
-        # puts str
-        # clip some of the output string, s.t. everything fits
-        # (if necessary)
-        if x+str.length-1 >= @x_chars 
-          new_stop_x = @x_chars-1
-          new_stop_y = stop_y
-          new_stop_i = start_i + new_stop_x - start_x
-          
-          range = start_i..new_stop_i
-          
-          # puts str
-          # str[(0)..(@x_chars-1 - x)]
-          str = str[(0)..(range.size)]
-          
-          # TODO: test string clipping
-          # (tested old code, but not the new cpp grid)
-        end
+    return if x < 0 or y < 0
+    return if y >= @y_chars
+    
+    if x >= @x_chars
+      # NO-OP
+    else
+      # puts str
+      # clip some of the output string, s.t. everything fits
+      # (if necessary)
+      if x+str.length-1 >= @x_chars 
+        # new_stop_x = @x_chars-1
+        # new_stop_y = stop_y
+        # new_stop_i = start_i + new_stop_x - start_x
         
-        cpp_print(x, y, str)
+        # range = start_i..new_stop_i
+        
+        # puts str
+        str[(0)..(@x_chars-1 - x)]
+        # str = str[(0)..(range.size)]
+        
+        # TODO: test string clipping
+        # (tested old code, but not the new cpp grid)
       end
-    
-    when Numeric
-      raise "this is depreciated"
       
-      range = (char_pos)..(char_pos+str.length-1)
-      @char_grid[range] = str
+      cpp_print(x, y, str)
     end
     
     
     
-    # pts = 
-    #   range
-    #   .map{|i| [i % (@x_chars+1), i / (@x_chars+1)]}
-    #   .map{|x,y| @char_grid_pts[x+y*@x_chars] }
+    # # pts = 
+    # #   range
+    # #   .map{|i| [i % (@x_chars+1), i / (@x_chars+1)]}
+    # #   .map{|x,y| @char_grid_pts[x+y*@x_chars] }
     
-    # pts = range.map{|i| @char_grid_pts[i] }
+    # # pts = range.map{|i| @char_grid_pts[i] }
     
-    # convert i [index in character grid] to (x,y) coordinate pair
-    return Enumerator.new do |yielder|
-      range.each do |i|
-        yielder << @char_grid_pts[i]
-      end
-    end
+    # # convert i [index in character grid] to (x,y) coordinate pair
+    # return Enumerator.new do |yielder|
+    #   range.each do |i|
+    #     yielder << @char_grid_pts[i]
+    #   end
+    # end
     
   end
   
