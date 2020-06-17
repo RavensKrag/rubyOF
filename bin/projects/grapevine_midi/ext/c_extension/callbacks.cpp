@@ -848,6 +848,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("callgrind_BEGIN", &callgrind_BEGIN)
 		.define_module_function("callgrind_END",   &callgrind_END)
+		
+		
+		.define_module_function("SpikeProfiler_begin", &SpikeProfiler_begin)
+		.define_module_function("SpikeProfiler_end",   &SpikeProfiler_end)
 	;
 	
 	
