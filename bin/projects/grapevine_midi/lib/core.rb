@@ -207,7 +207,7 @@ class Core
     @display_origin_px = CP::Vec2.new(340,50)
     
     @display =
-      CharMappedDisplay.new.tap do |d|
+      RubyOF::Project::CharMappedDisplay.new.tap do |d|
         font_settings =
           RubyOF::TrueTypeFontSettings.new("DejaVu Sans Mono", 24)
           .tap do |settings|
@@ -228,29 +228,22 @@ class Core
     
     
     
-    
-    
-    @display.autoUpdateColor_bg(false)
-    @display.autoUpdateColor_fg(false)
-    
     # clear out the garbage bg + test pattern fg
-    @display.each_position do |pos|
-      @display.background[pos] = RubyOF::Color.rgb([(0.0*255).to_i]*3)
-      @display.foreground[pos] = RubyOF::Color.rgb([(1.0*255).to_i]*3)
-    end
+    @display.background.fill_all RubyOF::Color.rgb([(0.0*255).to_i]*3)
+    @display.foreground.fill_all RubyOF::Color.rgb([(1.0*255).to_i]*3)
     
     
     if @debug[:display_clipping]
       @display.print_string(5, "hello world!")
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+        # @display.background[pos] = RubyOF::Color.rgb( [0, 0, 255] )
       end
       
       
       @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
       @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+        # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
       end
       
       @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
@@ -260,15 +253,15 @@ class Core
       msg = "gets cut off somewhere in the middle"
       @display.print_string(CP::Vec2.new(30, 9), msg)
       .each do |pos|
-        @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+        # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
       end
       # ^ Enumerator stops at end of display where the text was clipped
       
       
       
       pos = CP::Vec2.new(10,10)
-      @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+      # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+      # @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
       
       
       # pos = CP::Vec2.new(50,50)
@@ -301,8 +294,8 @@ class Core
       
       assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
       
-      assoc[0].each{ |pos| @display.background[pos] = c1 }
-      assoc[1].each{ |pos| @display.background[pos] = c2 }
+      # assoc[0].each{ |pos| @display.background[pos] = c1 }
+      # assoc[1].each{ |pos| @display.background[pos] = c2 }
       
       
       
@@ -327,17 +320,17 @@ class Core
         CP::Vec2.new(@display.x_chars, 0               )
       ]
       
-      @display.each_position
-      .select{ |pos|  pos.x == 0 or pos.x == @display.x_chars-1 }
-      .each do |pos|
-        @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      end
+      # @display.each_position
+      # .select{ |pos|  pos.x == 0 or pos.x == @display.x_chars-1 }
+      # .each do |pos|
+        # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+      # end
       
-      @display.each_position
-      .select{ |pos| pos.y == 0 or pos.y == @display.y_chars-1  }
-      .each do |pos|
-        @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
-      end
+      # @display.each_position
+      # .select{ |pos| pos.y == 0 or pos.y == @display.y_chars-1  }
+      # .each do |pos|
+        # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
+      # end
       
       
       
@@ -357,12 +350,12 @@ class Core
       h = 11
       bb1 = CP::BB.new(x,y, x+w,y+h)
       
-      @display.each_position
-      .select{ |pos|  bb1.contain_vect? pos  }
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      end
+      # @display.each_position
+      # .select{ |pos|  bb1.contain_vect? pos  }
+      # .each do |pos|
+      #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+      #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
+      # end
       
       ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
         @display.print_string(CP::Vec2.new(bb1.l, i), " "*(bb1.r-bb1.l+1))
@@ -387,12 +380,12 @@ class Core
       
       bb2 = CP::BB.new(50,0, 54,16)
       
-      @display.each_position
-      .select{ |pos| bb2.contain_vect? pos }
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      end
+      # @display.each_position
+      # .select{ |pos| bb2.contain_vect? pos }
+      # .each do |pos|
+      #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+      #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
+      # end
       
       (0..(bb2.t)).each do |i|
         @display.print_string(CP::Vec2.new(bb2.l, i), " "*(bb2.r-bb2.l+1))
@@ -423,16 +416,16 @@ class Core
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
       fg_color = @colors[:lilac]
       
-      @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
-      .each do |pos|
-        offset = CP::Vec2.new(0,0)
-        @display.background[pos+offset] = bg_color
-        @display.foreground[pos+offset] = fg_color
+      # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+      # .each do |pos|
+      #   offset = CP::Vec2.new(0,0)
+      #   @display.background[pos+offset] = bg_color
+      #   @display.foreground[pos+offset] = fg_color
         
-        offset = CP::Vec2.new(0,1)
-        @display.background[pos+offset] = bg_color
-        @display.foreground[pos+offset] = fg_color
-      end
+      #   offset = CP::Vec2.new(0,1)
+      #   @display.background[pos+offset] = bg_color
+      #   @display.foreground[pos+offset] = fg_color
+      # end
       
       @display.print_string(
         CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
@@ -461,8 +454,8 @@ class Core
         
         
         offset = CP::Vec2.new(1,0)
-        @display.background[pos+offset] = bg_color
-        @display.foreground[pos+offset] = fg_color
+        # @display.background[pos+offset] = bg_color
+        # @display.foreground[pos+offset] = fg_color
       end
     end
     
@@ -483,12 +476,8 @@ class Core
       h = 11
       @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
       
-      @display.each_position
-      .select{ |pos| @midi_data_bb.contain_vect? pos }
-      .each do |pos|
-        @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-        @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      end
+      @display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
+      @display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
       
       
       ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
@@ -637,6 +626,9 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
+    
+    
+    
     scheduler.section name: "test 1", budget: msec(0.5)
       puts "test 1" if Scheduler::DEBUG
       
@@ -773,36 +765,51 @@ class Core
       live_colorpicker = @w.cpp_ptr["colorPicker_color"]
     
     
-    
-    
     if @debug.keys.empty?
       scheduler.section name: "test 5a", budget: msec(5)
         puts "test 5a" if Scheduler::DEBUG
         # write all messages in buffer to the character display
-        # TODO: need live coding ASAP for this
         
         # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
         # (or just let them happen - it could be pretty!)
         
         # TODO: need a way to shift an existing block of text in the display buffer
-        
-        
+      
+      
+      # RubyOF::CPP_Callbacks.callgrind_BEGIN()
+      # run_profiler do
         # 
         # show MIDI note data
         # 
         anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
         
         # print header
+        bg_color = RubyOF::Color.hex( 0xc4cfff )
+        
         @display.print_string(
           anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
-        ).each do |pos|
+        )
+        # .each do |pos|
           # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
           # @display.foreground[pos] = @colors[:pale_green]
           # @display.foreground[pos] = live_colorpicker
           
           # @display.background[pos] = live_colorpicker
-          @display.background[pos] = RubyOF::Color.hex( 0xc4cfff )
-        end
+          # @display.background[pos] = bg_color
+        # end
+        
+        bb= CP::BB.new(0,0, 50,0)
+        @display.background.fill bb, bg_color
+        # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
+        
+        
+        # (color for midi pitch bars)
+        bb = CP::BB.new(20,1, 35, 10)
+          bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+          fg_color = @colors[:lilac]
+        
+        @display.background.fill bb, bg_color
+        @display.foreground.fill bb, fg_color
         
         # dump data on all messages in the queue
         @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
@@ -839,20 +846,11 @@ class Core
           bar_graph ||= '' # bar graph can be nil if full_bars == 0
           bar_graph += @hbar["#{fractions}/8"]
           
-          # @display.print_string(anchor+CP::Vec2.new(20,i+1), " "*count)
-          # .each do |pos|          
-          #   @display.background[pos] = RubyOF::Color.rgba(bg_color)
-          #   @display.foreground[pos] = RubyOF::Color.rgba(fg_color)
-          # end
-          
           @display.print_string(
             anchor+CP::Vec2.new(20,i+1),
             bar_graph.ljust(count)
           )
-          .each do |pos|
-            @display.background[pos] = bg_color
-            @display.foreground[pos] = fg_color
-          end
+          
           
           # ^ it's just this thrashing of colors that kills performance!
           #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
@@ -903,29 +901,37 @@ class Core
           )
           
         end
+            
+    end
+      
       
       scheduler.section name: "test 5b", budget: msec(6)
         puts "test 5b" if Scheduler::DEBUG
         # 
         # color picker data
         # 
+        
+        
         anchor = CP::Vec2.new(48,0)
         
         @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
-        .each do |pos|
-          @display.background[pos] = RubyOF::Color.rgb( [0, 0, 0] )
-          @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-        end
+               
+        bb = CP::BB.new(48, 0, 58, 0)
+        @display.background.fill bb, RubyOF::Color.rgb( [0, 0, 0] )
+        @display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+        
         @w.cpp_ptr["colorPicker_color"].tap do |c|
           output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
           
           @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
-          .each do |pos|
-            @display.background[pos] = c
-            @display.foreground[pos] = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-          end
           
+          bb = CP::BB.new(48, 1, 58, 1)
+          @display.background.fill bb, c
+          @display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
         end
+      
+      
+      
       
       scheduler.section name: "test 5c", budget: msec(16)
         puts "test 5c" if Scheduler::DEBUG
@@ -933,16 +939,13 @@ class Core
         # mouse data
         # 
         
+        # run_profiler do
         
         bb = CP::BB.new(40,12, 58,14)
         
+        @display.background.fill bb, RubyOF::Color.hex( 0xb6b198 )
+        @display.foreground.fill bb, RubyOF::Color.hex( 0x32312a )
         
-        @display.each_position
-        .select{ |pos|  bb.contain_vect? pos  }
-        .each do |pos|
-          @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-          @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-        end
         
         ((bb.b.to_i)..(bb.t.to_i)).each do |y|
           @display.print_string(CP::Vec2.new(bb.l, y), " "*(bb.r-bb.l+1))
@@ -954,8 +957,9 @@ class Core
         @display.print_string(anchor+CP::Vec2.new(9,1),
           "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
         )
-      
-    end
+    
+    
+        # end
       
       
       
@@ -988,17 +992,13 @@ class Core
         y = anchor.y
         w = 56
         h = 11
-        bb = CP::BB.new(x,y, x+w-1,y+h-1)
+        # bb = CP::BB.new(x,y, x+w-1,y+h-1)
         
         unless @test7_once 
           @statistics = Hash.new
           
-          @display.each_position
-          .select{ |pos| bb.contain_vect? pos}
-          .each do |pos|
-            @display.background[pos] = bg_color
-            @display.foreground[pos] = fg_color
-          end
+          @display.background.fill bb, bg_color
+          @display.foreground.fill bb, fg_color
           
           blank_line = " "*w
           h.times do |i|
@@ -1015,12 +1015,8 @@ class Core
           bar_bg_color = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
           bar_fg_color = @colors[:lilac]
           
-          @display.each_position
-          .select{ |pos| bar_graph_bb.contain_vect? pos}
-          .each do |pos|
-            @display.background[pos] = bar_bg_color
-            @display.foreground[pos] = bar_fg_color
-          end
+          @display.background.fill bar_graph_bb, bar_bg_color
+          @display.foreground.fill bar_graph_bb, bar_fg_color
           
           
           
@@ -1204,6 +1200,9 @@ class Core
     
     scheduler.section name: "end", budget: msec(0.1)
     # puts "end"
+    
+    
+
     
   end
   
