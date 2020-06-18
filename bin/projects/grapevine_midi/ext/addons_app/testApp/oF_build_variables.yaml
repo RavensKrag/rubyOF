@@ -242,7 +242,7 @@ OF_PROJECT_ADDONS_OBJS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o"
 TMP_PROJECT_ADDONS_CFLAGS: []
 _:
-- "/usr/bin/env"
+- "/home/ravenskrag/.rvm/gems/ruby-2.5.1/bin/rake"
 QT_AUTO_SCREEN_SCALE_FACTOR:
 - '0'
 PREPROCESS.F:

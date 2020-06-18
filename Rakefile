@@ -20,6 +20,70 @@ load './rake/helper_functions.rb'
 
 
 
+# 
+# check that all environment variables are set
+# 
+
+# If the current working directory is under the GEM_ROOT/bin/projects/<PROJ_NAME_HERE> structure, you can figure out the project name by examining the path. Otherwise, the project name must be set using the environment variable RUBYOF_PROJECT
+# ex)  env RUBYOF_PROJECT="proj_name" rake build_and_run
+
+root = Pathname.new(GEM_ROOT)
+# p root
+current_dir = Pathname.new Rake.original_dir
+puts "current: #{current_dir}"
+project_basepath = 
+	current_dir.ascend.each_cons(2)
+	.select{ |here, parent|  parent == root/'bin'/'projects' }.flatten.first
+
+if project_basepath.nil? # may be nil if we are not in that part of the tree
+	# Can't determine the project name based on the working directory,
+	# so check the environment variable as a last resort:
+	
+	var_name = 'RUBYOF_PROJECT'
+	if ENV[var_name].nil?
+		msg = [
+			"-------",
+			"ERROR: Can't automatically determine project name.",
+			"",
+			"Must either run rake from within a project directory",
+			"under the '[GEM_ROOT]/bin/projects subtree'",
+			"or set environment variable '#{var_name}'",
+			"-------"
+		].join("\n") 
+		raise msg
+	else
+		# NO-OP
+		# variable is already set, so do nothing
+		
+	end
+	
+else
+	# environment variable is not set, but can be automatically determined
+	
+	# p project_basepath.basename.to_s
+	ENV['RUBYOF_PROJECT'] = project_basepath.basename.to_s
+	
+	# NOTE: must set environment variable rather than constant, otherwise other parts of the system will be unable to access it ( like bin/main.rb )
+end
+
+# p project_basepath
+
+
+# Rake changes the working directory to be the directory where the Rakefile is, so how do you get original working directory of the terminal when Rake was called?
+	# task :whereami do
+	# puts Rake.original_dir
+	# end
+	#
+	# – Jim W.
+# src: https://www.ruby-forum.com/t/q-how-can-a-rake-task-know-the-callers-directory/81868/10
+
+
+
+
+
+
+
+
 # generate depend file for gcc dependencies
 # sh "gcc -MM *.c > depend"
 
@@ -151,11 +215,6 @@ end
 require File.join(GEM_ROOT, 'build', 'build.rb')
 
 
-# check that all environment variables are set
-var_name = 'RUBYOF_PROJECT'
-if ENV[var_name].nil?
-	raise "ERROR: must set environment variable '#{var_name}'"
-end
 
 
 # --- helpers
