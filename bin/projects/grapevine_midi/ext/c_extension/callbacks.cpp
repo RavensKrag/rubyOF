@@ -1,6 +1,9 @@
 #include "callbacks.h"
 
 #include <iostream>
+#include <Poco/Runnable.h>
+#include <Poco/Thread.h>
+
 
 using namespace Rice;
 
@@ -17,6 +20,38 @@ int cpp_callback(int x) {
 	
 	return 1;
 }
+
+
+// #define PROFILER_ENABLED true
+#define VALGRIND_ENABLED true
+
+
+
+#include "spike_profiler.h"
+
+#ifdef PROFILER_ENABLED
+	#define PROFILER_FUNC()      ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__)
+	// __PVAR__ can be any symbol that won't ever be used by other code
+#else
+	#define PROFILER_FUNC()      
+#endif
+
+
+#include <valgrind/callgrind.h> 
+
+#ifdef VALGRIND_ENABLED
+	#define VALGRIND_ON      CALLGRIND_START_INSTRUMENTATION
+	#define VALGRIND_OFF     CALLGRIND_STOP_INSTRUMENTATION
+	// __PVAR__ can be any symbol that won't ever be used by other code
+#else
+	#define VALGRIND_ON      
+	#define VALGRIND_OFF     
+#endif
+
+
+
+
+
 
 
 void render_material_editor(
@@ -88,6 +123,247 @@ void ofShader_bindUniforms(ofShader & shader,
 }
 
 
+// "header only" class style, at least for now
+class ofxTerminalFont : public ofTrueTypeFont {
+private:
+	class MyWorker : public Poco::Runnable
+	{
+	public:
+		MyWorker() : Poco::Runnable() {}
+		
+		void setup(ofxTerminalFont* font, ofMesh *mesh, std::string *str, int i)
+		{
+			this->font = font;
+			this->i = i;
+			this->mesh = mesh;
+			this->str  = str;
+			
+			bFirstTime = true;
+			mesh->clear();
+		}
+		
+		virtual void run(){
+			// cout << i << endl;
+			
+			font->meshify_line(mesh, str, i, bFirstTime);
+			bFirstTime = false;
+		}
+		
+	private:
+		bool bFirstTime;
+		
+		ofxTerminalFont* font;
+		ofMesh *mesh;
+		std::string *str;
+		int i;
+		
+	};
+	
+	
+	
+	size_t indexForGlyph_custom(uint32_t glyph) const{
+		PROFILER_FUNC();
+		
+		return glyphIndexMap.find(glyph)->second;
+	}
+	
+public:
+	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
+		// PROFILER_FUNC();
+		
+		// if (!isValidGlyph(c)){ // <-- public member function
+		// 	//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
+		// 	return;
+		// }
+		
+		
+		long xmin, ymin, xmax, ymax;
+		float t1, v1, t2, v2;
+		auto props = cps[indexForGlyph_custom(c)]; // <-- protected member function
+		t1		= props.t1;
+		t2		= props.t2;
+		v2		= props.v2;
+		v1		= props.v1;
+		
+		xmin		= long(props.xmin+x);
+		ymin		= props.ymin;
+		xmax		= long(props.xmax+x);
+		ymax		= props.ymax;
+		
+		if(!vFlipped){
+		   ymin *= -1;
+		   ymax *= -1;
+		}
+		
+		ymin += y;
+		ymax += y;
+		
+		
+		if(bFirstTime){
+			ofIndexType firstIndex = stringQuads.getVertices().size();
+			
+			stringQuads.addVertex(glm::vec3(xmin,ymin,0.f));
+			stringQuads.addVertex(glm::vec3(xmax,ymin,0.f));
+			stringQuads.addVertex(glm::vec3(xmax,ymax,0.f));
+			stringQuads.addVertex(glm::vec3(xmin,ymax,0.f));
+			
+			stringQuads.addTexCoord(glm::vec2(t1,v1));
+			stringQuads.addTexCoord(glm::vec2(t2,v1));
+			stringQuads.addTexCoord(glm::vec2(t2,v2));
+			stringQuads.addTexCoord(glm::vec2(t1,v2));
+			
+			stringQuads.addIndex(firstIndex);
+			stringQuads.addIndex(firstIndex+1);
+			stringQuads.addIndex(firstIndex+2);
+			stringQuads.addIndex(firstIndex+2);
+			stringQuads.addIndex(firstIndex+3);
+			stringQuads.addIndex(firstIndex);
+		}
+		else{
+			stringQuads.setVertex(0+4*char_idx,glm::vec3(xmin,ymin,0.f));
+			stringQuads.setVertex(1+4*char_idx,glm::vec3(xmax,ymin,0.f));
+			stringQuads.setVertex(2+4*char_idx,glm::vec3(xmax,ymax,0.f));
+			stringQuads.setVertex(3+4*char_idx,glm::vec3(xmin,ymax,0.f));
+			
+			stringQuads.setTexCoord(0+4*char_idx,glm::vec2(t1,v1));
+			stringQuads.setTexCoord(1+4*char_idx,glm::vec2(t2,v1));
+			stringQuads.setTexCoord(2+4*char_idx,glm::vec2(t2,v2));
+			stringQuads.setTexCoord(3+4*char_idx,glm::vec2(t1,v2));
+		}
+	}
+	
+	
+	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
+	{
+		PROFILER_FUNC();
+		
+		// size == number of lines to meshify
+		// (should be size of both mesh_ary and str_ary)
+		
+		if(bFirstTime){
+			mesh->clear();
+		}
+		
+		// createStringMesh(c,x,y,vFlipped);
+		bool vFlipped = true;
+		float x, y;
+		x = 0;
+		y = 0;
+		y += getLineHeight()*i;
+		
+		
+		int directionX = settings.direction == OF_TTF_LEFT_TO_RIGHT?1:-1;
+		
+		// NOTES:
+		// should be no newlines in this particular format, because we've split the "character grid" string on newline characters
+		// I think I can commit to never using tabs
+		// All characters should be valid unicode (can enforce at Ruby level if absolutely necessary) - thus, we don't really need to check again
+		// Can assume the font is monospaced - thus we should either be able to compute the kerning once and just reuse it for the entire block of text, or the kerning should always be 0.	
+			// kerning should be zero, according to this post: https://groups.google.com/forum/#!topic/comp.fonts/GyBrswH2N8k
+				// John Hudson, Type Director
+				// 
+				// Tiro TypeWorks
+				// Vancouver, BC
+			// and nothing bad happens in the code when we take out kerning info!
+		
+		// optimizing under assumption of monospaced font
+		// Therefore, only need to compute these three things once:
+		long space__advance = getGlyphProperties(' ').advance;
+		
+		float space_inc  = space__advance * spaceSize * directionX;
+		
+		float letter_inc = (space__advance * directionX) + 
+		                   (space__advance * (letterSpacing - 1.f) * directionX);
+		
+		// // ASSUME: spaces and letters both advance by the same increment
+		// 	// for space:
+		// 	x += space__advance * spaceSize * directionX;
+			
+		// 	// for non-space letters:
+		// 	x += props.advance  * directionX;
+		// 	x += space__advance * (letterSpacing - 1.f) * directionX;
+		
+		// TODO: optimize further by computing space_inc and letter_inc once when font size is specifyed (when the font is loaded)
+		
+		int char_idx = 0;
+		for(auto c: ofUTF8Iterator((*str))){
+			if(c == ' '){
+				x += space_inc;
+				
+				drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+				                    char_idx, bFirstTime);
+				
+			}else{
+				if(settings.direction == OF_TTF_LEFT_TO_RIGHT){
+					drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+					                    char_idx, bFirstTime);
+					
+					x += letter_inc;
+				}else{
+					x += letter_inc;
+					
+					drawChar_threadsafe((*mesh), c, x, y, vFlipped,
+					                    char_idx, bFirstTime);
+				}
+			}
+			
+			char_idx++;
+		}
+		
+	}
+	
+	
+	void meshify_lines(std::vector<ofMesh> *meshes,
+	                   std::vector<std::string> *strings, bool bFirstTime)
+	{
+		PROFILER_FUNC();
+		
+		int size = strings->size();
+		// cout << size << endl;
+		
+		// create threads
+		// std::vector<MeshifyHelper*> threads;
+		// threads.reserve(size);
+		
+		// // initialize workers
+		// MyWorker workers[size];
+		// for(int i=0; i<size; i++){
+		// 	workers[i].setup(this, &(meshes->at(i)), &(strings->at(i)), i);
+		// }
+		
+		// Poco::Thread threads[size];
+		
+		// // start up threads
+		// for(int i=0; i<size; i++){
+		// 	threads[i].start(workers[i]);
+		// }
+		
+		// // wait for threads to complete
+		// for(int i=0; i<size; i++){
+		// 	threads[i].join();
+		// }
+		
+		for(int i=0; i<size; i++){
+			meshify_line(&(meshes->at(i)), &(strings->at(i)), i, bFirstTime);
+		}
+		
+		
+		// cout << "done!" << endl;
+		
+		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
+		
+		// TODO: don't dynamically reallocate the meshes every time.
+		// They're always going to have the same number of verts - just move the positions around
+		
+		
+		
+		// delete threads;
+	}
+	
+	
+};
+
+
 
 // "header only" class style, at least for now
 class CharMappedDisplay{
@@ -111,6 +387,12 @@ private:
 	ofNode _fgNode;
 	
 	glm::vec2 _origin;
+	
+	ofxTerminalFont _font;
+	
+	std::vector<std::string> _strings;
+	std::vector<ofMesh> _meshes;
+	bool bFirstTime;
 	
 public:
 	// CharMappedDisplay(){
@@ -218,6 +500,7 @@ public:
 	
 	
 	
+	
 	void setup_transforms(float origin_x, float origin_y, 
 	                      float offset_x, float offset_y,
 	                      float scale_x,  float scale_y)
@@ -231,7 +514,44 @@ public:
 		_origin = glm::vec2(origin_x, origin_y);
 	}
 	
-	void draw(ofMesh &text_mesh, ofTexture &font_texture){
+	void setup_font(ofTrueTypeFontSettings &settings){
+		_font.load(settings);
+	}
+	
+	
+	void setup_text_grid(int w, int h){
+		_strings.reserve(h);
+		
+		_meshes.reserve(h);
+		for(int i=0; i<h; i++){
+			_meshes.push_back(ofMesh());
+		}
+		
+	}
+	
+	void cpp_remesh(Rice::Array lines){
+		PROFILER_FUNC();
+		VALGRIND_ON;
+		
+		
+		_strings.clear();
+		
+		for(int i=0; i<lines.size(); i++)
+		{
+			Rice::Object str = lines[i];
+			_strings.push_back(from_ruby<std::string>(str));
+		}
+		
+		
+		
+		_font.meshify_lines(&_meshes, &_strings, bFirstTime);
+		bFirstTime = false;
+		
+		VALGRIND_OFF;
+	}
+	
+	
+	void cpp_draw(){
 		ofPushMatrix();
 		
 		// ofLoadIdentityMatrix();
@@ -246,15 +566,23 @@ public:
 		
 		_fgColorShader.begin();
 		
-		_fgColorShader.setUniformTexture("trueTypeTexture", font_texture,    0);
-		_fgColorShader.setUniformTexture("fontColorMap",    _fgColorTexture, 1);
+		_fgColorShader.setUniformTexture(
+			"trueTypeTexture", _font.getFontTexture(),    0
+		);
+		_fgColorShader.setUniformTexture(
+			"fontColorMap",    _fgColorTexture,           1
+		);
 		
 		_fgColorShader.setUniform2f("origin", _origin);
 		// _fgColorShader.setUniform3f("charSize", glm::vec3(p2_1, p2_2, p2_3));
 		
 		ofMultMatrix(_fgNode.getGlobalTransformMatrix());
-		text_mesh.draw();
 		
+		// text_mesh.draw();
+		// TODO: iterate through meshes and draw them all
+		for(int i=0; i < _meshes.size(); i++){
+			_meshes[i].draw();
+		}
 		
 		_fgColorShader.end();
 		
@@ -311,6 +639,21 @@ public:
 		
 		return rb_cPtr;
 	}
+	
+	
+	Rice::Data_Object<ofTrueTypeFont> getFont(){
+		Rice::Data_Object<ofTrueTypeFont> rb_cPtr(
+			static_cast<ofTrueTypeFont*>(&_font),
+			Rice::Data_Type< ofTrueTypeFont >::klass(),
+			Rice::Default_Mark_Function< ofTrueTypeFont >::mark,
+			Null_Free_Function< ofTrueTypeFont >::free
+		);
+		
+		return rb_cPtr;
+	}
+	
+	
+	
 	
 	
 	
@@ -428,7 +771,7 @@ public:
 		_fgColorPixels.setColor(w-1,h-1, white);
 	}
 	
-	void setup( int w, int h ){
+	void setup_colors( int w, int h ){
 		_numCharsX = w;
 		_numCharsY = h;
 		// int w = 60;
@@ -449,6 +792,8 @@ public:
 		
 		// _fgColorTexture.setTextureWrap(GL_REPEAT, GL_REPEAT);
 		_fgColorTexture.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+		
+		bFirstTime = true;
 	}
 	
 	
@@ -492,14 +837,20 @@ void Init_rubyOF_project()
 	rb_c_ofCharMappedDisplay
 		.define_constructor(Constructor<CharMappedDisplay>())
 		
-		.define_method("bgMesh_setup",   &CharMappedDisplay::bgMesh_setup)
-		.define_method("bgPixels_setup", &CharMappedDisplay::bgPixels_setup)
-		.define_method("fgPixels_setup", &CharMappedDisplay::fgPixels_setup)
-		.define_method("setup",          &CharMappedDisplay::setup)
+		.define_method("bgMesh_setup",     &CharMappedDisplay::bgMesh_setup)
+		.define_method("bgPixels_setup",   &CharMappedDisplay::bgPixels_setup)
+		.define_method("fgPixels_setup",   &CharMappedDisplay::fgPixels_setup)
+		.define_method("setup_colors",     &CharMappedDisplay::setup_colors)
 		
 		.define_method("setup_transforms", &CharMappedDisplay::setup_transforms)
-		.define_method("cpp_draw",         &CharMappedDisplay::draw)
+		.define_method("cpp_draw",         &CharMappedDisplay::cpp_draw)
 		
+		.define_method("setup_font",      &CharMappedDisplay::setup_font)
+		.define_method("font",            &CharMappedDisplay::getFont)
+		
+		.define_method("setup_text_grid", &CharMappedDisplay::setup_text_grid)
+		
+		.define_method("cpp_remesh",      &CharMappedDisplay::cpp_remesh)
 		
 		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
 		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)

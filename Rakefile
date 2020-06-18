@@ -976,6 +976,56 @@ task :run do
 	end
 end
 
+namespace :callgrind do
+	CALLGRIND_FILE = 'callgrind_RubyCpp.out'
+	
+	task :run do
+		root = Pathname.new(GEM_ROOT)
+		
+		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+		
+		project_name = ENV['RUBYOF_PROJECT']
+		project_dir  = root/'bin'/'projects'/project_name
+		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+		
+		Dir.chdir project_dir do
+			puts "ruby level execution"
+			
+			exe_path = "./lib/main.rb"
+			
+			
+			cmd = [
+				'env GALLIUM_HUD=fps,VRAM-usage',
+				"valgrind --tool=callgrind --instr-atstart=no --callgrind-out-file='#{CALLGRIND_FILE}'",
+				"ruby #{exe_path}"
+			].join(' ')
+			
+			Kernel.exec(cmd)
+		end
+	end
+	
+	
+	task :view do
+		root = Pathname.new(GEM_ROOT)
+		
+		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+		
+		project_name = ENV['RUBYOF_PROJECT']
+		project_dir  = root/'bin'/'projects'/project_name
+		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+		
+		Dir.chdir project_dir do
+			puts "loading callgrind file..."
+			
+			cmd = [
+				"kcachegrind '#{CALLGRIND_FILE}'"
+			].join(' ')
+			
+			Kernel.exec(cmd)
+		end
+	end
+end
+
 desc "debug project using GDB"
 task :debug do
 	unless TARGET == 'Debug'
@@ -1010,6 +1060,7 @@ task :debug do
 		Kernel.exec "gdb --args ruby #{exe_path}"
 	end
 end
+
 
 
 
