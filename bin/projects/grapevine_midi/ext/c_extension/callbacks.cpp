@@ -126,43 +126,8 @@ void ofShader_bindUniforms(ofShader & shader,
 // "header only" class style, at least for now
 class ofxTerminalFont : public ofTrueTypeFont {
 private:
-	// class MyWorker : public Poco::Runnable
-	// {
-	// public:
-	// 	MyWorker() : Poco::Runnable() {}
-		
-	// 	void setup(ofxTerminalFont* font, ofMesh *mesh, std::string *str, int i)
-	// 	{
-	// 		this->font = font;
-	// 		this->i = i;
-	// 		this->mesh = mesh;
-	// 		this->str  = str;
-			
-	// 		bFirstTime = true;
-	// 		mesh->clear();
-	// 	}
-		
-	// 	virtual void run(){
-	// 		// cout << i << endl;
-			
-	// 		font->meshify_line(mesh, str, i, bFirstTime);
-	// 		bFirstTime = false;
-	// 	}
-		
-	// private:
-	// 	bool bFirstTime;
-		
-	// 	ofxTerminalFont* font;
-	// 	ofMesh *mesh;
-	// 	std::string *str;
-	// 	int i;
-		
-	// };
-	
-	
-	
 	size_t indexForGlyph_custom(uint32_t glyph) const{
-		PROFILER_FUNC();
+		// PROFILER_FUNC();
 		
 		return glyphIndexMap.find(glyph)->second;
 	}
@@ -311,13 +276,58 @@ public:
 };
 
 
+class ImageFiller{
+private:
+	ofPixels *_pixels;
+
+public:
+	// ImageFiller();
+	// ~ImageFiller();
+	
+	
+	// this function is for C++ level code only
+	void setup(ofPixels *pixels){
+		_pixels = pixels;
+	}
+	
+	void fill_all(ofColor &color){
+		_pixels->setColor(color);
+	}
+	
+	
+	void fill_bb(int l, int b, int r, int t, ofColor &color){
+		for(int i=l; i<r+1; i++){
+			for(int j=b; j<t+1; j++){
+				_pixels->setColor(i,j, color);
+			}
+		}
+	}
+	
+	void fill_row(int y, ofColor &color){
+		for(int i=0; i<_pixels->getWidth(); i++){
+			_pixels->setColor(i,y, color);
+		}
+	}
+	
+	void fill_column(int x, ofColor &color){
+		for(int i=0; i<_pixels->getHeight(); i++){
+			_pixels->setColor(x,i, color);
+		}
+	}
+	
+	void fill_point(int x, int y, ofColor &color){
+		_pixels->setColor(x,y, color);
+	}
+	
+	ofColor getColor(int x, int y){
+		return _pixels->getColor(x,y);
+	}
+};
 
 // "header only" class style, at least for now
 class CharMappedDisplay{
 private:
 	int _numCharsX, _numCharsY;
-	bool _fgColorUpdateFlag = true;
-	bool _bgColorUpdateFlag = true;
 	
 	// TODO: initialize some more c++ values here, instead of doing them elsewhere and passing them in via the Ruby layer
 	
@@ -354,50 +364,6 @@ public:
 	
 	
 	
-	ofColor getColor_fg(int x, int y){
-		return _fgColorPixels.getColor(x,y);
-	}
-	
-	ofColor getColor_bg(int x, int y){
-		return _bgColorPixels.getColor(x,y);
-	}
-	
-	void setColor_fg(int x, int y, ofColor & c){	
-		// set local color cache
-		
-		
-		// (move colors from cache to pixels)
-		// set pixel color
-		_fgColorPixels.setColor(x,y, c);
-		
-		if(_fgColorUpdateFlag){
-			// move pixel data to texture
-			_fgColorTexture.loadData(_fgColorPixels, GL_RGBA);
-		}
-		// OPTIMIZE: similar to neopixel arduino code, can specify a bunch a pixel changes, and then push them to the GPU all at once
-		
-	}
-	
-	void setColor_bg(int x, int y, ofColor & c){
-		_bgColorPixels.setColor(x,y, c);
-		
-		if(_bgColorUpdateFlag){
-			// i = pos.x.to_i + pos.y.to_i*(@x_chars) # <-- ruby code
-			int i = x + y*_numCharsX;
-			// no need to add 1 here, because this only counts visible chars
-			// and disregaurds the invisible newline at the end of each line
-			
-			_bgMesh.setColor(0+i*4, c);
-			_bgMesh.setColor(1+i*4, c);
-			_bgMesh.setColor(2+i*4, c);
-			_bgMesh.setColor(3+i*4, c);
-			
-			// OPTIMIZE: consider using getColorsPointer() to set mulitple colors at once
-			// https://openframeworks.cc/documentation/3d/ofMesh/#show_getColorsPointer
-		}
-	}
-	
-	
 	int getNumCharsX(){
 		return _numCharsX;
 	}
@@ -405,9 +371,6 @@ public:
 	int getNumCharsY(){
 		return _numCharsY;
 	}
-	
-	
-	
 	
 	
 	
@@ -429,17 +392,6 @@ public:
 		_fgColorTexture.loadData(_fgColorPixels, GL_RGBA);
 	}
 	
-	
-	
-	// the "autoUpdate" interface style taken
-	// from arduino neopixel library by adafruit
-	void autoUpdateColor_fg(bool flag){
-		_fgColorUpdateFlag = flag;
-	}
-	
-	void autoUpdateColor_bg(bool flag){
-		_bgColorUpdateFlag = flag;
-	}
 	
 	// flush colors to output
 	void flush(){
@@ -521,17 +473,6 @@ public:
 				                bFirstTime);
 		}
 		
-		
-		// cout << "done!" << endl;
-		
-		// TODO: reduce number of threads to some small, fixed number based on the number of cores or similar. Then, distribute the work amongst those threads.
-		
-		// TODO: don't dynamically reallocate the meshes every time.
-		// They're always going to have the same number of verts - just move the positions around
-		
-		
-		
-		// delete threads;
 	}
 	
 	void cpp_remesh(){
@@ -635,24 +576,22 @@ public:
 		return rb_cPtr;
 	}
 	
-	Rice::Data_Object<ofPixels> getBgColorPixels(){
-		Rice::Data_Object<ofPixels> rb_cPtr(
-			&_bgColorPixels,
-			Rice::Data_Type< ofPixels >::klass(),
-			Rice::Default_Mark_Function< ofPixels >::mark,
-			Null_Free_Function< ofPixels >::free
-		);
+	Rice::Data_Object<ImageFiller> getForeground(){
+		ImageFiller* helper = new ImageFiller();
+		
+		helper->setup(&_fgColorPixels);
+		
+		Rice::Data_Object<ImageFiller> rb_cPtr(helper);
 		
 		return rb_cPtr;
 	}
 	
-	Rice::Data_Object<ofPixels> getFgColorPixels(){
-		Rice::Data_Object<ofPixels> rb_cPtr(
-			&_fgColorPixels,
-			Rice::Data_Type< ofPixels >::klass(),
-			Rice::Default_Mark_Function< ofPixels >::mark,
-			Null_Free_Function< ofPixels >::free
-		);
+	Rice::Data_Object<ImageFiller> getBackground(){
+		ImageFiller* helper = new ImageFiller();
+		
+		helper->setup(&_bgColorPixels);
+		
+		Rice::Data_Object<ImageFiller> rb_cPtr(helper);
 		
 		return rb_cPtr;
 	}
@@ -884,26 +823,13 @@ void Init_rubyOF_project()
 		.define_method("cpp_remesh",      &CharMappedDisplay::cpp_remesh)
 		.define_method("cpp_print",       &CharMappedDisplay::cpp_print)
 		
-		.define_method("getColor_fg",    &CharMappedDisplay::getColor_fg)
-		.define_method("getColor_bg",    &CharMappedDisplay::getColor_bg)
-		.define_method("setColor_fg",    &CharMappedDisplay::setColor_fg)
-		.define_method("setColor_bg",    &CharMappedDisplay::setColor_bg)
-		
 		.define_method("getNumCharsX",   &CharMappedDisplay::getNumCharsX)
 		.define_method("getNumCharsY",   &CharMappedDisplay::getNumCharsY)
 		
 		
 		.define_method("flushColors_bg", &CharMappedDisplay::flushColors_bg)
 		.define_method("flushColors_fg", &CharMappedDisplay::flushColors_fg)
-		.define_method("flush",
-			&CharMappedDisplay::flush
-		)
-		.define_method("autoUpdateColor_fg", 
-			&CharMappedDisplay::autoUpdateColor_fg
-		)
-		.define_method("autoUpdateColor_bg", 
-			&CharMappedDisplay::autoUpdateColor_bg
-		)
+		.define_method("flush",          &CharMappedDisplay::flush)
 		
 		.define_method("fgText_getShader",
 			&CharMappedDisplay::fgText_getShader
@@ -912,17 +838,31 @@ void Init_rubyOF_project()
 			&CharMappedDisplay::fgText_getTexture
 		)
 		
-		.define_method("getBgColorPixels",
-			&CharMappedDisplay::getBgColorPixels
-		)
-		.define_method("getFgColorPixels",
-			&CharMappedDisplay::getFgColorPixels
-		)
+		
+		.define_method("background",  &CharMappedDisplay::getBackground)
+		.define_method("foreground",  &CharMappedDisplay::getForeground)
 		
 		
 		.define_method("bgMesh_draw",
 			&CharMappedDisplay::bgMesh_draw
 		)
+	;
+	
+	
+	Data_Type<ImageFiller> rb_c_ofImageFiller =
+		define_class_under<ImageFiller>(rb_mProject, "ImageFiller");
+	
+	rb_c_ofImageFiller
+		.define_constructor(Constructor<ImageFiller>())
+		
+		
+		.define_method("fill_all",    &ImageFiller::fill_all)
+		.define_method("fill_bb",     &ImageFiller::fill_bb)
+		.define_method("fill_row",    &ImageFiller::fill_row)
+		.define_method("fill_column", &ImageFiller::fill_column)
+		.define_method("fill_point",  &ImageFiller::fill_point)
+		
+		.define_method("color",       &ImageFiller::getColor)
 	;
 	
 	

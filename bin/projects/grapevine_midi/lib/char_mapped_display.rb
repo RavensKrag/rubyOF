@@ -3,16 +3,12 @@
 # Input 'mesh' is just a ofMesh object. It does not need to have the
 # proper verticies set - those will be specified by the code here
 # (and the underlying C++ callbacks, of course)
-class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
+class RubyOF::Project::CharMappedDisplay
   include RubyOF::Graphics
   
   attr_reader :char_width_pxs, :char_height_pxs
   attr_reader :x_chars, :y_chars
   
-  
-  def initialize()
-    super()
-  end
   
   def setup(x_chars, y_chars, origin, bg_offset, bg_scale)
     setup_colors(x_chars, y_chars)
@@ -22,7 +18,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     # @y_chars = getNumCharsY()
     @x_chars = x_chars
     @y_chars = y_chars
-    
     
     
     # 
@@ -81,7 +76,7 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     # 
     
     
-    @shader_name = "char_display" 
+    @shader_name = "char_display"
     load_shaders(@shader_name)
     
     
@@ -89,10 +84,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
                      bg_offset.x, bg_offset.y,
                      bg_scale.x, bg_scale.y)
     
-    
-    
-    @cpp_ptr_bgColor = getBgColorPixels()
-    @cpp_ptr_fgColor = getFgColorPixels()
   end
   
   def reload_shader
@@ -135,24 +126,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   end
   
   
-  
-  
-  
-  
-  module EnumHelper
-    def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block
-      if( pos.x >= 0 && pos.x < x_size && 
-          pos.y >= 0 && pos.y < y_size
-      )
-        yield
-      else
-        msg = "position #{pos} is out of bounds [w,h] = [#{x_size}, #{y_size}]"
-        raise IndexError, msg
-      end
-    end
-  end
-  
-  
   # new interface / workflow: 
   # + get pixel positions
   #   either all positions in the grid, or positions changed by printing text
@@ -172,63 +145,19 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
     end
   end
   
-  private :getBgColorPixels, :getFgColorPixels
   
-  class ColorHelper
-    include EnumHelper
-    
-    def initialize(display, pixels)
-      @display = display
-      @pixels = pixels
-    end
-    
-    def [](pos)
-      # gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
-        return @pixels.getColor_xy(pos.x, pos.y)
-      # end
-    end
-    
-    def []=(pos, color)
-      RubyOF::CPP_Callbacks.callgrind_BEGIN()
-      # gaurd_imageOutOfBounds pos, @display.x_chars, @display.y_chars do
-        return @pixels.setColor_xy(pos.x, pos.y, color)
-      # end
-      RubyOF::CPP_Callbacks.callgrind_END()
+  module EnumHelper
+    def gaurd_imageOutOfBounds(pos, x_size, y_size) # &block
+      if( pos.x >= 0 && pos.x < x_size && 
+          pos.y >= 0 && pos.y < y_size
+      )
+        yield
+      else
+        msg = "position #{pos} is out of bounds [w,h] = [#{x_size}, #{y_size}]"
+        raise IndexError, msg
+      end
     end
   end
-  
-  def background
-    @bg_color_helper ||= ColorHelper.new(self, @cpp_ptr_bgColor)
-    
-    return @bg_color_helper
-  end
-  
-  def foreground
-    @fg_color_helper ||= ColorHelper.new(self, @cpp_ptr_fgColor)
-    
-    return @fg_color_helper
-  end
-  
-  # def setBG(pos, color)
-  #   @cpp_ptr_bgColor.setColor_xy(pos.x, pos.y, color)
-  # end
-  
-  # def setFG(pos, color)
-  #   @cpp_ptr_fgColor.setColor_xy(pos.x, pos.y, color)
-  # end
-  
-  
-  
-  # @display.each_position do |pos|
-  #   @display.background_color[pos] = color;
-  #   @display.foreground_color[pos] = color
-    
-  #   @display.background_color[pos]
-  #   @display.foreground_color[pos]
-    
-  #   # @display.setColor_bg(pos, color)
-  #   # @display.setColor_fg(pos, color)
-  # end
   
   
   # call this once per frame from the core,
@@ -238,7 +167,6 @@ class CharMappedDisplay < RubyOF::Project::CharMappedDisplay
   def remesh
     cpp_remesh()
   end
-  
   
   
   # mind the invisible newline character at the end of every line
