@@ -1644,6 +1644,9 @@ end
   
   def on_exit
     # puts @draw_durations.join("\t")
+    if RB_SPIKE_PROFILER.enabled?
+      RB_SPIKE_PROFILER.disable
+    end
   end
   
   
