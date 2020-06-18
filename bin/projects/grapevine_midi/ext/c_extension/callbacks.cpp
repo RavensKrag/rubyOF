@@ -22,6 +22,113 @@ int cpp_callback(int x) {
 }
 
 
+// based on "Runtime CPU Performance Spike Detection Using Manual and Compiler Automated Instrumentation" by Adisak Pochanayon, Netherrealm Studios (MK9, Batman Arkham City) [ presented @ GDC 2012 ]
+
+
+// -> PET_FUNCTION is a scoped marker 		@ 31:17 in video
+
+// WARNING: current implementation is not thread safe!
+//          !!! ONLY USE ON MAIN THREAD !!!
+
+struct ProfilerData{
+	uint64_t start_time;
+};
+
+class ProfilerHelper{
+private:
+	// private static variables initialized below class definition
+	// (would be in source, rather than in header)
+	static ProfilerData* stack_bp;
+	static int stack_counter;
+	
+		// NOTE: Although C++ char will be >= 8 bits,
+		//       sizeof(char) will always be equal to 1.
+		//       Thus, char* is definitely what you want here
+		// src: https://en.cppreference.com/w/cpp/language/sizeof
+	
+	bool pushed; // did this particular call put data on the profiler stack?
+
+public:
+	static const int MAX_STACK_HEIGHT = 32;
+	
+	ProfilerHelper(const std::string fn, const char* file, int line){
+		pushed = false; // start by assuming no profiler stack data used
+		
+		if(stack_bp == NULL){
+			cout << endl << endl << endl;
+			
+			// initialize stack
+			// stack_bp = (char*) malloc(MAX_STACK_HEIGHT*sizeof(ProfilerData));
+			// TODO: consider just allocating an array. be aware of alignment.
+			
+			stack_bp = new ProfilerData[MAX_STACK_HEIGHT];
+		}
+		// TODO: use one static block of memory instead of allocating and deacollating all the time - maybe that will reduce profiling overhead ??
+		
+		
+		// https://www.cprogramming.com/reference/preprocessor/__FILE__.html
+		cout << "PROFILER: function enter - " << fn << endl;
+		// cout << file << ":" << line << endl;
+		
+		
+		// Stack is now ready to use
+		
+		if(stack_counter < MAX_STACK_HEIGHT-1){
+			// cout << "PROFILER: push" << endl;
+			
+			stack_counter++;
+			
+			// TODO: put data on the stack
+			stack_bp[stack_counter-1] = ProfilerData();
+			stack_bp[stack_counter-1].start_time = ofGetElapsedTimeMicros();
+			
+			pushed = true;
+		}else{
+			cout << "(stack too deep - no room to push state)" << endl;
+		}
+	}
+	
+	~ProfilerHelper(){
+		// cout << "PROFILER: function exit" << endl;
+		
+		
+		if(pushed){
+			// cout << "PROFILER: pop" << endl;
+			
+			// TODO: take data off the stack
+			uint64_t start_time = stack_bp[stack_counter-1].start_time;
+			
+			uint64_t now = ofGetElapsedTimeMicros();
+			uint64_t dt = now - start_time;
+			
+			cout << "PROFILER: dt = " << dt << endl;
+			
+			stack_counter--;
+		}else{
+			cout << "(stack too deep - no state to pop)" << endl;
+		}
+		
+		
+		// NOTE: must read all data from profiler stack before end of final block
+		if(stack_counter == 0){
+			delete[] stack_bp;
+			stack_bp = NULL;
+		}
+	}
+};
+
+ProfilerData* ProfilerHelper::stack_bp = NULL;
+int ProfilerHelper::stack_counter = 0;
+
+
+
+
+
+
+
+
+
+
 void render_material_editor(
 	ofMesh & mesh, ofShader & shader, std::string & shader_filepath,
 	ofTexture & tex0, ofTexture & tex1,
@@ -128,6 +235,7 @@ private:
 
 public:
 	void drawChar_threadsafe(ofMesh &stringQuads, uint32_t c, float x, float y, bool vFlipped, int char_idx, bool bFirstTime) const{
+		// ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
 		
 		if (!isValidGlyph(c)){ // <-- public member function
 			//ofLogError("ofTrueTypeFont") << "drawChar(): char " << c + NUM_CHARACTER_TO_START << " not allocated: line " << __LINE__ << " in " << __FILE__;
@@ -193,6 +301,7 @@ public:
 	
 	void meshify_line(ofMesh *mesh, std::string *str, int i, bool bFirstTime)
 	{
+		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
 		
 		// size == number of lines to meshify
 		// (should be size of both mesh_ary and str_ary)
@@ -221,6 +330,8 @@ public:
 	void meshify_lines(std::vector<ofMesh> *meshes,
 	                   std::vector<std::string> *strings, bool bFirstTime)
 	{
+		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		
 		int size = strings->size();
 		// cout << size << endl;
 		
@@ -432,6 +543,9 @@ public:
 	}
 	
 	void cpp_remesh(Rice::Array lines){
+		ProfilerHelper __PVAR__ = ProfilerHelper(__func__, __FILE__, __LINE__);
+		
+		
 		_strings.clear();
 		
 		for(int i=0; i<lines.size(); i++)

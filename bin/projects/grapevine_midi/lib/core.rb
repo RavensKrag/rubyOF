@@ -1,6 +1,8 @@
 
 # stores the main logic and data of the program
 
+require 'open3'
+
 # stuff to load just once
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
@@ -606,6 +608,8 @@ class Core
     
     @display.flushColors_bg
     @display.flushColors_fg
+    
+    # GC.disable
   end
   
   
@@ -1136,14 +1140,63 @@ class Core
     scheduler.section name: "cleanup2", budget: msec(11)
                                               # ^ spikes 16,22,33 rarely
     
+    # custom_profiler do 
+    # puts "start profiling"
     # run_profiler do 
+    
+    # run_c_profiler do
+      
     @display.remesh()
     
     # end
     
+    scheduler.section name: "end", budget: msec(0.1)
+    # puts "end"
+    
   end
   
+CUSTOM_PROF = TracePoint.new(:c_call) do |tp|
+  # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
   
+  # inspect_this = 
+  #   case tp.self
+  #   when CharMappedDisplay
+  #     "CharMappedDisplay<>"
+  #   when CharMappedDisplay::ColorHelper
+  #     "CharMappedDisplay::ColorHelper<>"
+  #   else
+  #     tp.self.inspect
+  #   end
+  
+  # message = "#{event} of #{tp.defined_class}##{tp.callee_id} from #{tp.path.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")}:#{tp.lineno}"
+  
+  # # if you call `return` on any non-return events, it'll raise error
+  # if tp.event == :return || tp.event == :c_return
+  #   inspect_return = 
+  #     case tp.return_value
+  #     when CharMappedDisplay
+  #       "CharMappedDisplay<>"
+  #     when CharMappedDisplay::ColorHelper
+  #       "CharMappedDisplay::ColorHelper<>"
+  #     else
+  #       tp.return_value.inspect
+  #     end
+    
+  #   message += " => #{inspect_return}" 
+  # end
+  # puts(message)
+  
+  
+  printf "%8s %s:%-2d %10s %8s\n", tp.event, tp.path.split("/").last, tp.lineno, tp.callee_id, tp.defined_class
+end
+
+def custom_profiler() # &block
+  CUSTOM_PROF.enable do
+    yield
+  end
+end
+
+
   
 TRACER = TracePoint.new(:call, :return, :c_return) do |tp|
   # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
@@ -1202,6 +1255,73 @@ def run_profiler() # &block
   printer = RubyProf::FlatPrinter.new(profile)
   
   printer.print(STDOUT, :min_percent => 2)
+end
+
+# https://gist.github.com/lpar/1032297#file-timeout-rb-L37
+BUFFER_SIZE = 30
+def run_with_timeout(command, timeout, tick)
+  output = ''
+  begin
+    # Start task in another thread, which spawns a process
+    stdin, stderrout, thread = Open3.popen2e(command)
+    # Get the pid of the spawned process
+    pid = thread[:pid]
+    start = Time.now
+
+    while (Time.now - start) < timeout and thread.alive?
+      # Wait up to `tick` seconds for output/error data
+      Kernel.select([stderrout], nil, nil, tick)
+      # Try to read the data
+      begin
+        output << stderrout.read_nonblock(BUFFER_SIZE)
+      rescue IO::WaitReadable
+        # A read would block, so loop around for another select
+      rescue EOFError
+        # Command has completed, not really an error...
+        break
+      end
+    end
+    # Give Ruby time to clean up the other thread
+    sleep 1
+
+    if thread.alive?
+      # We need to kill the process, because killing the thread leaves
+      # the process alive but detached, annoyingly enough.
+      Process.kill("TERM", pid)
+    end
+  ensure
+    stdin.close if stdin
+    stderrout.close if stderrout
+  end
+  return output
+end
+
+def run_c_profiler
+  start = RubyOF::Utils.ofGetElapsedTimeMicros
+  pid = Process.pid
+  thr = Thread.new do
+    now = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # min_delay = msec(3+16*60)
+    # max_delay = msec(16+16*60)
+    # rand_delay = ((max_delay - min_delay)*rand + min_delay).to_i
+    # while now - start < rand_delay
+    #   now = RubyOF::Utils.ofGetElapsedTimeMicros
+    #   sleep(1)
+    # end
+    
+    # # puts run_with_timeout('echo #{ENV["ROOT_PASSWORD"]} | sudo -S gdb -ex "set pagination 0" -ex "thread apply all bt" -batch -p '+"#{pid}", 5, 0.1)
+    
+    Dir.chdir GEM_ROOT/'vendor'/'quickstack-0.10-7' do
+      
+    #   run_with_timeout('./quickstack -f -p '+"#{pid}", 5, 0.1)
+      puts `echo #{ENV["ROOT_PASSWORD"]} | sudo -S ./quickstack -f -p #{pid}`
+    end
+  end
+  
+  yield
+  
+  thr.join
 end
 
   
