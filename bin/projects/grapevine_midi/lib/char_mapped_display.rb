@@ -1,5 +1,17 @@
 # Abstraction of a grid of characters used as a low-fi output device.
 
+
+class RubyOF::Project::ImageFiller
+  def fill(selector, color)
+    case selector
+    when CP::BB
+      self.fill_bb(selector.l, selector.b, selector.r, selector.t, color)
+    else
+      raise "do not know how to fill based on #{selector.class}"
+    end
+  end
+end
+
 # Input 'mesh' is just a ofMesh object. It does not need to have the
 # proper verticies set - those will be specified by the code here
 # (and the underlying C++ callbacks, of course)
