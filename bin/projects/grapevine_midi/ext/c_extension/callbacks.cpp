@@ -547,12 +547,14 @@ public:
 	
 	// (string has already been clipped to the render field @ ruby level)
 	// (just need to dump the codepoints into the grid)
-	void cpp_print(int x, int y, Rice::Object rb_str){
+	void cpp_print(int x, int y, Rice::String rb_str){
 		PROFILER_FUNC();
 		VALGRIND_ON;
 		
 		
-		std::string utf8_str = from_ruby<std::string>(rb_str);
+		char const* c_str = rb_str.c_str();
+		
+		std::string utf8_str(c_str);
 		
 		int i=0;
 		for(uint32_t c: ofUTF8Iterator(utf8_str)){
