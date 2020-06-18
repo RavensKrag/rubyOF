@@ -16,6 +16,9 @@ load LIB_DIR/'looper_pedal.rb'
 # class definition
 
 
+# SPIKE_PROFILER_ON = true
+# SPIKE_PROFILER_ON = false
+
 
 
 # convert time in milliseconds to standard time units (microseconds)
@@ -202,6 +205,8 @@ class Core
     
     
     
+    
+    # NOTE: @display uses a special version of font that it keeps track of, rather than the monospace font object declared above. do I still need the code above? (maybe for sprites / other floating text?)
     
     
     @display_origin_px = CP::Vec2.new(340,50)
@@ -613,10 +618,19 @@ class Core
   def update
     # puts "update thread: #{Thread.current.object_id}" 
     
+    # if SPIKE_PROFILER_ON
+    #   RB_SPIKE_PROFILER.enable
+    # end
+    
     puts "--> start update" if Scheduler::DEBUG
     signal = @update_scheduler.resume
     # puts signal
     puts "<-- end update" if Scheduler::DEBUG
+    
+    # if SPIKE_PROFILER_ON
+    #   RB_SPIKE_PROFILER.disable
+    #   puts "\n"*7
+    # end
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -979,6 +993,10 @@ class Core
     
     if @debug.keys.empty?
       scheduler.section name: "profilr", budget: msec(5.5)
+      # RubyOF::CPP_Callbacks.SpikeProfiler_begin("section: profilr")
+      # RB_SPIKE_PROFILER.enable
+      # run_profiler do
+      
         puts "profilr" if Scheduler::DEBUG
         # 
         # display timing data
@@ -1154,6 +1172,9 @@ class Core
             make_bar_graph(t: msec(1.5), t_max: msec(16),
                            bar_length: 20)
           )
+      # end
+      # RB_SPIKE_PROFILER.disable
+      # RubyOF::CPP_Callbacks.SpikeProfiler_end()
     end
     
     
