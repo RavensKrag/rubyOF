@@ -1387,57 +1387,45 @@ def run_c_profiler
 end
 
 
-  
 RB_SPIKE_PROFILER = TracePoint.new(:call, :return, :c_call, :c_return) do |tp|
-  # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
-  
-  # inspect_this = 
-  #   case tp.self
-  #   when CharMappedDisplay
-  #     "CharMappedDisplay<>"
-  #   when CharMappedDisplay::ColorHelper
-  #     "CharMappedDisplay::ColorHelper<>"
-  #   else
-  #     tp.self.inspect
-  #   end
-  
-  # message = "#{event} of #{tp.defined_class}##{tp.callee_id} from #{tp.path.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")}:#{tp.lineno}"
-  
-  # # if you call `return` on any non-return events, it'll raise error
-  # if tp.event == :return || tp.event == :c_return
-  #   inspect_return = 
-  #     case tp.return_value
-  #     when CharMappedDisplay
-  #       "CharMappedDisplay<>"
-  #     when CharMappedDisplay::ColorHelper
-  #       "CharMappedDisplay::ColorHelper<>"
-  #     else
-  #       tp.return_value.inspect
-  #     end
-    
-  #   message += " => #{inspect_return}" 
-  # end
-  # puts(message)
-  
   
   # printf "%8s %s:%-2d %10s %8s\n", tp.event, tp.path.split("/").last, tp.lineno, tp.callee_id, tp.defined_class
   
   
   $spike_profiler_i ||= 0
+  $spike_profiler_stack ||= Array.new
   
-  # return if [StateMachine].any?{|x| tp.defined_class.is_a? x }
+  flag = !([StateMachine].any?{|x| tp.defined_class.to_s == x.to_s })
+  # (can't block Kernel - too many false positives)
+  # flag = true
   
+  # p tp.methods
+  # puts tp.binding.source_location
+  # ^ not defined in ruby 2.5 - but it is available in 2.7
+  #   (not in backports either, so that's a dead end for now)
   
   case tp.event
-  when :call
+  # when :call
+  when :call, :c_call
+    
     if $spike_profiler_i >=0 
-      # puts "enter"
-      file_info = "#{tp.path.split('/').last}:#{tp.lineno}"
-      method = "#{tp.defined_class}##{tp.callee_id}"
-      puts "#{file_info.rjust(30)} #{method}"
+      if flag
+        # # puts "enter"
+        # file_info = "#{tp.path.split('/').last}:#{tp.lineno}"
+        method = "#{tp.defined_class}##{tp.callee_id}"
+        # puts " #{$spike_profiler_stack.size}) #{method}"
+        
+        # # if method == "CharMappedDisplay#draw"
+        # #   $spike_profiler_reset = true
+        # # end
+        
+        # if method == "Array#index"
+        #   puts tp.path.split('/').last
+        #   puts caller if tp.path.split('/').last == 'char_mapped_display.rb'
+        # end
       
-      if method == "CharMappedDisplay#draw"
-        puts "\n\n"
+        # $spike_profiler_stack << RubyOF::Utils.ofGetElapsedTimeMicros
+        RubyOF::CPP_Callbacks.SpikeProfiler_begin(method)
       end
     end
     
@@ -1447,15 +1435,31 @@ RB_SPIKE_PROFILER = TracePoint.new(:call, :return, :c_call, :c_return) do |tp|
     # $spike_profiler_stack << RubyOF::Utils.ofGetElapsedTimeMicros
     $spike_profiler_i += 1
     
-  when :return
-    if $spike_profiler_i >=0 
-      # puts "return   #{tp.defined_class}##{tp.callee_id}"
-      # start_time = $spike_profiler_stack.pop
-      # now = RubyOF::Utils.ofGetElapsedTimeMicros
+  # when :return
+  when :return, :c_return
+    
+    if $spike_profiler_i > 0 
+      if flag
+        # file_info = "#{tp.path.split('/').last}:#{tp.lineno}"
+        
+        
+        # # puts "return   #{tp.defined_class}##{tp.callee_id}"
+        # start_time = $spike_profiler_stack.pop
+        # now = RubyOF::Utils.ofGetElapsedTimeMicros
+        # # puts start_time.inspect
+        
+        # dt = now - start_time
+        # puts " #{$spike_profiler_stack.size})   dt = #{dt}"
+        RubyOF::CPP_Callbacks.SpikeProfiler_end()
+      end
       
-      # dt = now - start_time
-      # puts "#{$spike_profiler_stack.size}) #{dt}"
+      
     end
+    
+    # if $spike_profiler_reset and $spike_profiler_stack.size == 0
+    #   $spike_profiler_reset = false
+    #   puts "\n"*7
+    # end
     
     $spike_profiler_i -= 1
     
