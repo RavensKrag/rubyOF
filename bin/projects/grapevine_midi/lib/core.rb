@@ -1072,7 +1072,18 @@ class Core
         end
         
         # p @statistics
-      
+        i = -1
+          sum = @statistics
+                .map{|name, stats| stats }
+                .map{|min, med, max| med }
+                .reduce(&:+)
+          @display.print_string(anchor+CP::Vec2.new(17,i),  sum.to_s.rjust(6))
+          
+          sum = @statistics
+                .map{|name, stats| stats }
+                .map{|min, med, max| max }
+                .reduce(&:+)
+          @display.print_string(anchor+CP::Vec2.new(25,i),  sum.to_s.rjust(6))
         
         i = 0
           @display.print_string(anchor+CP::Vec2.new( 9,i),  '--min--')
