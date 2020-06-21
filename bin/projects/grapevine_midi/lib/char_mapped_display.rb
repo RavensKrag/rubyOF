@@ -184,10 +184,7 @@ class RubyOF::Project::CharMappedDisplay
   # mind the invisible newline character at the end of every line
   # => Enumerator over the positions in the grid that were written to
   #    (if no characters were written, return nil)
-  def print_string(pos, str)
-    x = pos.x.to_i
-    y = pos.y.to_i
-    
+  def print_string(x,y, str)
     return if x < 0 or y < 0
     return if y >= @y_chars
     
@@ -205,8 +202,16 @@ class RubyOF::Project::CharMappedDisplay
         # range = start_i..new_stop_i
         
         # puts str
-        str[(0)..(@x_chars-1 - x)]
-        # str = str[(0)..(range.size)]
+        
+        # overhang = (x+str.length - @x_chars)
+        # if overhang > 0
+        # end
+        # temp = str.each_character.to_a
+        # str = temp.first(n).join('')
+        
+        
+        str = str[(0)..(@x_chars-1 - x)]
+        # ^ without this, text with wrap (because grid is row-major)
         
         # TODO: test string clipping
         # (tested old code, but not the new cpp grid)

@@ -32,27 +32,790 @@ def usec(time)
 end
 
 
-SUBDIVISIONS_PER_BAR = 8
-def make_bar_graph(bar_length:, t:, t_max:)
-  max_segments = bar_length * SUBDIVISIONS_PER_BAR
-  time_per_segment = t_max / max_segments
+
+
+class State
+  class << self
+    def bind_variables(window, display, colors)
+      @@window = window
+      @@display = display
+      @@colors = colors
+      
+      # 
+      # useful unicode characters
+      # 
+      
+      @@hbar = {
+        '8/8' => '█',
+        '7/8' => '▉',
+        '6/8' => '▊',
+        '5/8' => '▋',
+        '4/8' => '▌',
+        '3/8' => '▍',
+        '2/8' => '▎',
+        '1/8' => '▏',
+        '0/8' => ''
+      }
+      
+      @@vbar = {
+        '0/8' => '',
+        '1/8' => '▁',
+        '2/8' => '▂',
+        '3/8' => '▃',
+        '4/8' => '▄',
+        '5/8' => '▅',
+        '6/8' => '▆',
+        '7/8' => '▇',
+        '8/8' => '█'
+      }
+    end
+  end
   
   
-  
-  num_segments = t / time_per_segment # should be int div
-  full_bars = num_segments / SUBDIVISIONS_PER_BAR
-  fractions = num_segments % SUBDIVISIONS_PER_BAR
-  
-  bar_graph  = @hbar['8/8']*full_bars
-  bar_graph ||= '' # bar graph can be nil if full_bars == 0
-  bar_graph += @hbar["#{fractions}/8"]
-  
-  
-  return bar_graph.ljust(bar_length)
+  SUBDIVISIONS_PER_BAR = 8
+  def horiz_bar_graph(bar_length:, t:, t_max:)
+    max_segments = bar_length * SUBDIVISIONS_PER_BAR
+    time_per_segment = t_max / max_segments
+    
+    
+    
+    num_segments = t / time_per_segment # should be int div
+    full_bars = num_segments / SUBDIVISIONS_PER_BAR
+    fractions = num_segments % SUBDIVISIONS_PER_BAR
+    
+    bar_graph  = @@hbar['8/8']*full_bars
+    bar_graph ||= '' # bar graph can be nil if full_bars == 0
+    bar_graph += @@hbar["#{fractions}/8"]
+    
+    
+    return bar_graph.ljust(bar_length)
+  end
 end
 
+class BaseState < State
+  def initialize
+    # clear out the whole buffer
+    line = " "*@@display.x_chars
+    @@display.y_chars.times do |y|
+      @@display.print_string(0,y, line)
+    end
+    
+    # clear out the garbage bg + test pattern fg
+    @@display.background.fill_all RubyOF::Color.rgb([(0.0*255).to_i]*3)
+    @@display.foreground.fill_all RubyOF::Color.rgb([(1.0*255).to_i]*3)
+  end
+end
 
+class DebugDisplayClipping < State
+  def initialize
+    
+  end
+  
+  def update
+    @@display.print_string(5, 0, "hello world!")
+    # .each do |pos|
+      # @@display.background[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+    # end
+    
+    
+    @@display.print_string(55, 5, "spatial inputs~")
+    @@display.print_string(7, 5, "spatial inputs~")
+    # .each do |pos|
+      # @@display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+    # end
+    
+    @@display.print_string(0, 17-3, "bottom clip")
+    @@display.print_string(0, 18-3, "this should not print")
+    
+    
+    msg = "gets cut off somewhere in the middle"
+    @@display.print_string(30, 9, msg)
+    # .each do |pos|
+      # @@display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+    # end
+    # ^ Enumerator stops at end of display where the text was clipped
+    
+    
+    
+    # pos = CP::Vec2.new(10,10)
+    # @@display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+    # @@display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+    
+    
+    # pos = CP::Vec2.new(50,50)
+    # @@display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+    # @@display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
+    # # ^ Attempting to access indicies that are out of range throws exception
+  end
+  
+  def draw
+    
+  end
+end
 
+class DebugAlignDisplayBG < State
+  def initialize
+    
+  end
+  
+  def update
+    # (alternate colored bg lines, dark and light, helps find scaling)
+    # (a row of the character "F" helps configure character width)
+    c = RubyOF::Color.new.tap do |c|
+      c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
+    end
+    
+    
+    
+    60.times.each do |i|
+      screen_print(font: @fonts[:monospace], 
+                   string: "F", color: c,
+                   position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
+    end
+    
+    
+    
+    c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+    c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
+    
+    assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
+    
+    # assoc[0].each{ |pos| @display.background[pos] = c1 }
+    # assoc[1].each{ |pos| @display.background[pos] = c2 }
+    
+    
+    
+    # 
+    # text display color alignment test
+    # 
+    
+  end
+  
+  def draw
+    
+  end
+end
+
+class DebugAlignDisplayFG < State
+  def initialize
+    
+  end
+  
+  def update
+    
+  end
+  
+  def draw
+    corners = [
+      CP::Vec2.new(0,0),
+      CP::Vec2.new(1,0),
+      CP::Vec2.new(1,1),
+      CP::Vec2.new(0,1),
+      CP::Vec2.new(@display.x_chars, @display.y_chars),
+      CP::Vec2.new(0,                @display.y_chars),
+      CP::Vec2.new(@display.x_chars, 0               )
+    ]
+    
+    # @display.each_position
+    # .select{ |pos|  pos.x == 0 or pos.x == @display.x_chars-1 }
+    # .each do |pos|
+      # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 0] )
+    # end
+    
+    # @display.each_position
+    # .select{ |pos| pos.y == 0 or pos.y == @display.y_chars-1  }
+    # .each do |pos|
+      # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
+    # end
+    
+    
+    
+    
+    # 
+    # line height test pattern 1
+    # > same text repeated on many lines + horiz bar graphs of varying length
+    # 
+    
+    # clear background using BB
+    
+    # CP::BB
+    # l,b,r,t
+    x = 2
+    y = 2
+    w = 40
+    h = 11
+    bb1 = CP::BB.new(x,y, x+w,y+h)
+    
+    # @display.each_position
+    # .select{ |pos|  bb1.contain_vect? pos  }
+    # .each do |pos|
+    #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+    #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
+    # end
+    
+    ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
+      @display.print_string(CP::Vec2.new(bb1.l, i), " "*(bb1.r-bb1.l+1))
+    end
+    
+    # draw text lines and horizontal bar charts
+    10.times do |i|
+      @display.print_string(
+        CP::Vec2.new(bb1.l+1,bb1.b+i+1),
+        "Handglovery 0123456789ABCEFG " + @hbar['8/8']*i+@hbar['3/8']
+      )
+    end
+    
+    
+    
+    # 
+    # line height test pattern 2
+    # > alternating dark bar / no dark bar across multiple rows
+    # 
+    
+    # clear the background using bb
+    
+    bb2 = CP::BB.new(50,0, 54,16)
+    
+    # @display.each_position
+    # .select{ |pos| bb2.contain_vect? pos }
+    # .each do |pos|
+    #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
+    #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
+    # end
+    
+    (0..(bb2.t)).each do |i|
+      @display.print_string(CP::Vec2.new(bb2.l, i), " "*(bb2.r-bb2.l+1))
+    end
+    
+    # line height test pattern 2
+    10.times do |i|
+      @display.print_string(
+          CP::Vec2.new(50,i*2),
+          (@vbar['8/8']*5)
+        )
+    end
+    
+  
+    
+    
+    
+  end
+end
+
+class DebugBarGraphTests < State
+  def initialize
+    
+  end
+  
+  def update
+    # 
+    # bar graph tests
+    # 
+    
+    count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
+    bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+    fg_color = @colors[:lilac]
+    
+    # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
+    # .each do |pos|
+    #   offset = CP::Vec2.new(0,0)
+    #   @display.background[pos+offset] = bg_color
+    #   @display.foreground[pos+offset] = fg_color
+      
+    #   offset = CP::Vec2.new(0,1)
+    #   @display.background[pos+offset] = bg_color
+    #   @display.foreground[pos+offset] = fg_color
+    # end
+    
+    @display.print_string(
+      CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
+    )
+    
+    
+    # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
+    count = 4
+    anchor = CP::Vec2.new(20,15) # bottom left position
+    bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+    fg_color = @colors[:pale_yellow]
+    
+    @display.each_position
+    .select{   |pos| pos.x == anchor.x+0  }
+    .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
+    .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
+    .each_with_index do |pos, i|
+      @display.print_string(pos + CP::Vec2.new(0,0), 'x')
+      
+      if i == count-1
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
+      else
+        @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
+      end
+      
+      
+      
+      offset = CP::Vec2.new(1,0)
+      # @display.background[pos+offset] = bg_color
+      # @display.foreground[pos+offset] = fg_color
+    end
+  end
+  
+  def draw
+    
+  end
+end
+
+class MidiState < State
+  def initialize
+    # clear the area where midi message data will be drawn
+    
+    # CP::BB
+    # l,b,r,t
+    x = 0
+    y = 0
+    w = 50
+    h = 11
+    @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
+    
+    @display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
+    @display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
+    
+    
+    ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
+      @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
+    end
+  end
+  
+  def update
+    
+    if @first_update
+      # scheduler.section name: "test 2a - first draw", budget: msec(16)
+      # screen_size = read_screen_size("Screen 0")
+      # screen_w, screen_h = screen_size["current"]
+      # puts "screen size: #{[screen_w, screen_h].inspect}"
+      
+      puts "---> callback from ruby"
+      @w.cpp_ptr["midiOut"].listOutPorts()
+      puts "<--- callback end"
+      
+      
+      @first_update = false
+    end
+    
+    
+    # write all messages in buffer to the character display
+      
+    # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
+    # (or just let them happen - it could be pretty!)
+    
+    # TODO: need a way to shift an existing block of text in the display buffer
+    
+    
+    # 
+    # show MIDI note data
+    # 
+    anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
+    
+    # print header
+    bg_color = RubyOF::Color.hex( 0xc4cfff )
+    
+    @display.print_string(
+      anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
+    )
+    # .each do |pos|
+      # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
+      # @display.foreground[pos] = @colors[:pale_green]
+      # @display.foreground[pos] = live_colorpicker
+      
+      # @display.background[pos] = live_colorpicker
+      # @display.background[pos] = bg_color
+    # end
+    
+    bb= CP::BB.new(0,0, 50,0)
+    @display.background.fill bb, bg_color
+    # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
+    
+    
+    # (color for midi pitch bars)
+    bb = CP::BB.new(20,1, 35, 10)
+      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+      fg_color = @colors[:lilac]
+    
+    @display.background.fill bb, bg_color
+    @display.foreground.fill bb, fg_color
+    
+    # dump data on all messages in the queue
+    @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+      
+      # midi bytes
+      @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
+      @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
+      @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+      
+      
+      # deltatime
+      midi_dt = midi_msg.deltatime
+        max_display_num = 99999.999
+      midi_dt = [max_display_num, midi_dt].min
+      
+      msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
+      @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+      
+      
+      
+      # note value (as bar graph)
+      count = 16
+        # 128 midi notes, so 16 chars of 8 increments each
+        # will cover it at 1 fraction per note
+      value = 15
+      range = 0..127
+      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
+      fg_color = @colors[:lilac]
+      
+      full_bars = midi_msg.pitch / 8
+      fractions = midi_msg.pitch % 8
+      
+      bar_graph  = @hbar['8/8']*full_bars
+      bar_graph ||= '' # bar graph can be nil if full_bars == 0
+      bar_graph += @hbar["#{fractions}/8"]
+      
+      @display.print_string(
+        anchor+CP::Vec2.new(20,i+1),
+        bar_graph.ljust(count)
+      )
+      
+      
+      # ^ it's just this thrashing of colors that kills performance!
+      #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
+      # (it doesn't seem to be the Enumerator through the single line of the string that's slow - it seems to be the changing of colors)
+      
+      # setting the colors on the header line is about 35 colorsr
+      # setting the colors for every pitch bar is 160 colors total
+      # That increase in volume (4.5x) is what takes the latency from negligible to overwhelming. You can see this by simply trying to push the header data 10 times (the exact same data)
+        # -> you get the same lag spike
+      
+      # maybe I can go faster if I completely separate read and write interfaces? right now this ruby Enumerator interface allows for reading, writing, and mutating color data. If those things are all separated out, maybe we can go faster?
+      
+      # How does the PNG library I was using in that one gamejam work? That library seemed pretty fast (even though I never benchmarked it.) Can I copy something from that code and go super fast?
+      # (oops, it was a bmp library. well... whatever)
+      
+      
+      
+      # signal name
+      # (on, off, CC, etc)
+      status_string =
+        case midi_msg.status
+        when :note_on
+          "on"
+        when :note_off
+          "off"
+        when :control_change
+          "CC" # <-- no pitch or velocity data, control and value instead
+        else
+          "???"
+        end
+      status_string = status_string.ljust(3)
+        # ^ justify to max length of any one string 
+        #   so that you don't get ghosting of old characters
+      
+      midi_msg.status
+      @display.print_string(
+        anchor+CP::Vec2.new(38,i+1),
+        status_string
+      )
+      
+      
+      # channel
+      @display.print_string(
+        anchor+CP::Vec2.new(44,i+1),
+        "ch#{midi_msg.channel.to_s.ljust(2)}"
+        # ^ there are 16 possible midi channels
+        #   thus, worse case the channel name has 2 digits in it
+      )
+      
+    end
+    
+  end
+  
+  def draw
+    
+  end
+end
+
+class ProfilerState < State
+  def initialize(update_scheduler, draw_durations)
+    @update_scheduler = update_scheduler
+    @draw_durations = draw_durations
+    
+    @anchor = CP::Vec2.new(2,17)
+    
+    
+    bg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
+    fg_color = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
+    
+    x = @anchor.x
+    y = @anchor.y
+    w = 56
+    h = 11
+    bb = CP::BB.new(x,y, x+w-1,y+h-1)
+    
+    
+    
+    @statistics = Hash.new
+    
+    @@display.background.fill bb, bg_color
+    @@display.foreground.fill bb, fg_color
+    
+    blank_line = " "*w
+    h.times do |i|
+      @@display.print_string(@anchor.x, i, blank_line)
+    end
+    
+    
+    
+    
+    x = 35
+    y = 18
+    w = 20
+    h = 10
+    bar_graph_bb = CP::BB.new(x,y, x+w-1,y+h-1)
+    
+    bar_bg_color = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
+    bar_fg_color = @@colors[:lilac]
+    
+    @@display.background.fill bar_graph_bb, bar_bg_color
+    @@display.foreground.fill bar_graph_bb, bar_fg_color
+  end
+  
+  def update
+  # RubyOF::CPP_Callbacks.SpikeProfiler_begin("section: profilr")
+  # RB_SPIKE_PROFILER.enable
+  # run_profiler do
+  
+    # 
+    # display timing data
+    # 
+    
+    @update_scheduler.max_num_cycles = 50
+    
+    
+    # get the data from the time log
+    # reduce it down to 3 data points per section: min, median, max
+    # print those numbers to the display
+    clusters = 
+      @update_scheduler.time_log
+      .first( @update_scheduler.max_num_cycles*@update_scheduler.section_count )
+      .group_by{|section_name, time_budget, dt|  section_name  }
+    
+    # p clusters
+      # puts "---"
+      # puts "time log size: #{@update_scheduler.time_log.size}"
+      # puts "sections: #{@update_scheduler.section_count}"
+      # clusters.each do |k,v|
+      #   puts "#{k.ljust(10)} => #{v.size}"
+      # end
+      # puts "---"
+    
+    clusters.each do |name, data|
+      times = 
+        data
+        .collect{  |section_name, time_budget, dt|   dt   }
+        .sort
+      
+      # p times
+      
+      
+      
+      data = @statistics[name]
+      if data.nil?
+        min    = times.first
+        max    = times.last
+        median = times[ times.length / 2 ]
+      else
+        best_min, best_med, best_max = data
+        
+        min    = [times.first, best_min].min
+        max    = [times.last,  best_max].max
+        median = times[ times.length / 2 ]
+      end
+      
+      
+      @statistics[name] = [min, median, max]
+    end
+    
+    # p @statistics
+    i = -1
+      sum = @statistics
+            .map{|name, stats| stats }
+            .map{|min, med, max| med }
+            .reduce(&:+)
+      @@display.print_string(@anchor.x+17, @anchor.y+i,  sum.to_s.rjust(6))
+      
+      sum = @statistics
+            .map{|name, stats| stats }
+            .map{|min, med, max| max }
+            .reduce(&:+)
+      @@display.print_string(@anchor.x+25, @anchor.y+i,  sum.to_s.rjust(6))
+      
+      sum = @update_scheduler.budgets.each_value
+            .reduce(&:+)
+      @@display.print_string(@anchor.x+34, @anchor.y+i,  sum.to_s.rjust(6))
+    
+    
+    i = 0
+      @@display.print_string(@anchor.x+ 9, @anchor.y+i,  '--min--')
+      @@display.print_string(@anchor.x+16, @anchor.y+i,  ' median')
+      @@display.print_string(@anchor.x+24, @anchor.y+i,  '--max--')
+      
+      @@display.print_string(@anchor.x+33, @anchor.y+i,
+                            '-------budget-------')
+  
+    
+    i = 1
+    @statistics.each do |name, stats|
+      min, med, max = stats
+      
+      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  name)
+      
+      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
+      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
+      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+      
+      # TODO: show all time high as well (useful for eliminating the big rare spikes)
+      
+      
+      bar_graph = 
+        horiz_bar_graph(t: @update_scheduler.budgets[name], t_max: msec(16),
+                       bar_length: 20)
+      
+      @@display.print_string(@anchor.x+33, @anchor.y+i, bar_graph)
+      
+      
+      i += 1
+    end
+    
+    
+    # i = 10
+    # puts i # i >= 10
+      if @draw_durations.empty?
+        
+        min = 0
+        max = 0
+        med = 0
+        
+      else
+        
+        times = @draw_durations.sort
+        # p times
+        
+        data = @draw_stats
+        if data.nil?
+          min = times.first
+          max = times.last
+          med = times[ times.length / 2 ]
+        else
+          # p data
+          best_min, best_med, best_max = data
+          
+          min = [times.first, best_min].min
+          max = [times.last,  best_max].max
+          med = times[ times.length / 2 ]
+        end
+        
+        @draw_stats = [min, med, max]
+      end
+      
+      
+      
+      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  'draw')
+      
+      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
+      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
+      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+    
+    
+      @@display.print_string(
+        @anchor.x+33, @anchor.y+i,
+        horiz_bar_graph(t: msec(1.5), t_max: msec(16),
+                       bar_length: 20)
+      )
+  # end
+  # RB_SPIKE_PROFILER.disable
+  # RubyOF::CPP_Callbacks.SpikeProfiler_end()
+  end
+end
+
+class ColorPickerState < State
+  def initialize
+    @anchor = CP::Vec2.new(48,0)
+    @bg_color = RubyOF::Color.rgb( [0, 0, 0] )
+    @fg_color = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+  end
+  
+  def update
+    pos = @anchor + CP::Vec2.new(0,0)
+    @@display.print_string(pos.x, pos.y, "r  g  b  a ")
+    
+    bb = CP::BB.new(48, 0, 58, 0)
+    @@display.background.fill bb, @bg_color
+    @@display.foreground.fill bb, @fg_color
+    
+    @@window.cpp_ptr["colorPicker_color"].tap do |c|
+      output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
+      
+      pos = @anchor + CP::Vec2.new(0,1)
+      @@display.print_string(pos.x, pos.y, output_string)
+      
+      bb = CP::BB.new(48, 1, 58, 1)
+      @@display.background.fill bb, c
+      @@display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
+    end
+  end
+end
+
+class MousePositionState < State
+  def initialize(mouse)
+    @mouse = mouse
+    
+    @bb = CP::BB.new(40,12, 58,14)
+    @anchor = CP::Vec2.new(@bb.l, @bb.b)
+  end
+  
+  def update
+  # run_profiler do
+  
+    @@display.background.fill @bb, RubyOF::Color.hex( 0xb6b198 )
+    @@display.foreground.fill @bb, RubyOF::Color.hex( 0x32312a )
+    
+    
+    ((@bb.b.to_i)..(@bb.t.to_i)).each do |y|
+      @@display.print_string(@bb.l, y, " "*(@bb.r-@bb.l+1))
+    end
+    
+    
+    pos = @anchor+CP::Vec2.new(1,1)
+    @@display.print_string(pos.x, pos.y, "mouse @ ")
+    
+    pos = @anchor+CP::Vec2.new(9,1)
+    @@display.print_string(pos.x, pos.y,
+      "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
+    )
+    # ^ @mouse coordinates are stored as float, but displayd as int
+    #  (this enables easy out-of-bounds detection)
+    #  (as it removes rounding error for numbers between 0 and -1)
+    
+    
+    if(@mouse.x < 0 || @mouse.x >= @@display.x_chars ||
+       @mouse.y < 0 || @mouse.y >= @@display.y_chars
+    )
+      pos = @anchor+CP::Vec2.new(3,2)
+      @@display.print_string(pos.x, pos.y,
+        "out-of-bounds"
+      )
+    end
+
+  # end
+  end
+end
 
 
 class Core
@@ -65,7 +828,7 @@ class Core
     ofEnableBlendMode(:alpha)
     
     @update_scheduler = Scheduler.new(self, :on_update, msec(16.6))
-    
+    @draw_durations = Array.new # stores profiler data for #draw
     
     
     @first_update = true
@@ -123,35 +886,6 @@ class Core
       end
     
     
-    # 
-    # useful unicode characters
-    # 
-    
-    @hbar ||= {
-      '8/8' => '█',
-      '7/8' => '▉',
-      '6/8' => '▊',
-      '5/8' => '▋',
-      '4/8' => '▌',
-      '3/8' => '▍',
-      '2/8' => '▎',
-      '1/8' => '▏',
-      '0/8' => ''
-    }
-    
-    @vbar ||= {
-      '0/8' => '',
-      '1/8' => '▁',
-      '2/8' => '▂',
-      '3/8' => '▃',
-      '4/8' => '▄',
-      '5/8' => '▅',
-      '6/8' => '▆',
-      '7/8' => '▇',
-      '8/8' => '█'
-    }
-    
-    
     
     @colors = {
       :lilac       => RubyOF::Color.hex_alpha( 0xf6bfff, 0xff ),
@@ -162,17 +896,6 @@ class Core
     
     
     
-    
-    
-    
-    
-    @debug = Hash.new # contains debug flags
-    
-    # @debug[:bar_graph_tests] = true
-    
-    # @debug[:display_clipping] = true
-    # @debug[:align_display_bg] = true
-    # @debug[:align_display_fg] = true
     
     
     
@@ -233,264 +956,20 @@ class Core
     
     
     
-    # clear out the garbage bg + test pattern fg
-    @display.background.fill_all RubyOF::Color.rgb([(0.0*255).to_i]*3)
-    @display.foreground.fill_all RubyOF::Color.rgb([(1.0*255).to_i]*3)
     
     
-    if @debug[:display_clipping]
-      @display.print_string(5, "hello world!")
-      .each do |pos|
-        # @display.background[pos] = RubyOF::Color.rgb( [0, 0, 255] )
-      end
-      
-      
-      @display.print_string(CP::Vec2.new(55, 5), "spatial inputs~")
-      @display.print_string(CP::Vec2.new(7, 5), "spatial inputs~")
-      .each do |pos|
-        # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      end
-      
-      @display.print_string(CP::Vec2.new(0, 17), "bottom clip")
-      @display.print_string(CP::Vec2.new(0, 18), "this should not print")
-      
-      
-      msg = "gets cut off somewhere in the middle"
-      @display.print_string(CP::Vec2.new(30, 9), msg)
-      .each do |pos|
-        # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      end
-      # ^ Enumerator stops at end of display where the text was clipped
-      
-      
-      
-      pos = CP::Vec2.new(10,10)
-      # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      # @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
-      
-      
-      # pos = CP::Vec2.new(50,50)
-      # @display.background[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      # @display.foreground[pos] = RubyOF::Color.rgb( [0, 0, 255] )
-      # # ^ Attempting to access indicies that are out of range throws exception
-      
-    end
+    State.bind_variables(@w, @display, @colors)
+    
+    @main_modes = Array.new
+    @main_modes[0] = BaseState.new
     
     
-    if @debug[:align_display_bg]
-      # (alternate colored bg lines, dark and light, helps find scaling)
-      # (a row of the character "F" helps configure character width)
-      c = RubyOF::Color.new.tap do |c|
-        c.r, c.g, c.b, c.a = ([(0.0*255).to_i]*3 + [255])
-      end
-      
-      
-      
-      60.times.each do |i|
-        screen_print(font: @fonts[:monospace], 
-                     string: "F", color: c,
-                     position: @display_origin_px+CP::Vec2.new(i*@char_width_pxs,-10))
-      end
-      
-      
-      
-      c1 = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-      c2 = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
-      
-      assoc = @display.each_position.group_by{ |pos| pos.y.to_i % 2 }
-      
-      # assoc[0].each{ |pos| @display.background[pos] = c1 }
-      # assoc[1].each{ |pos| @display.background[pos] = c2 }
-      
-      
-      
-      # 
-      # text display color alignment test
-      # 
-      
-    end
-    
-    
-    
-    
-    
-    if @debug[:align_display_fg]
-      corners = [
-        CP::Vec2.new(0,0),
-        CP::Vec2.new(1,0),
-        CP::Vec2.new(1,1),
-        CP::Vec2.new(0,1),
-        CP::Vec2.new(@display.x_chars, @display.y_chars),
-        CP::Vec2.new(0,                @display.y_chars),
-        CP::Vec2.new(@display.x_chars, 0               )
-      ]
-      
-      # @display.each_position
-      # .select{ |pos|  pos.x == 0 or pos.x == @display.x_chars-1 }
-      # .each do |pos|
-        # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 0] )
-      # end
-      
-      # @display.each_position
-      # .select{ |pos| pos.y == 0 or pos.y == @display.y_chars-1  }
-      # .each do |pos|
-        # @display.foreground[pos] = RubyOF::Color.rgb( [255, 0, 255] )
-      # end
-      
-      
-      
-      
-      # 
-      # line height test pattern 1
-      # > same text repeated on many lines + horiz bar graphs of varying length
-      # 
-      
-      # clear background using BB
-      
-      # CP::BB
-      # l,b,r,t
-      x = 2
-      y = 2
-      w = 40
-      h = 11
-      bb1 = CP::BB.new(x,y, x+w,y+h)
-      
-      # @display.each_position
-      # .select{ |pos|  bb1.contain_vect? pos  }
-      # .each do |pos|
-      #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-      #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      # end
-      
-      ((bb1.b.to_i)..(bb1.t.to_i)).each do |i|
-        @display.print_string(CP::Vec2.new(bb1.l, i), " "*(bb1.r-bb1.l+1))
-      end
-      
-      # draw text lines and horizontal bar charts
-      10.times do |i|
-        @display.print_string(
-          CP::Vec2.new(bb1.l+1,bb1.b+i+1),
-          "Handglovery 0123456789ABCEFG " + @hbar['8/8']*i+@hbar['3/8']
-        )
-      end
-      
-      
-      
-      # 
-      # line height test pattern 2
-      # > alternating dark bar / no dark bar across multiple rows
-      # 
-      
-      # clear the background using bb
-      
-      bb2 = CP::BB.new(50,0, 54,16)
-      
-      # @display.each_position
-      # .select{ |pos| bb2.contain_vect? pos }
-      # .each do |pos|
-      #   @display.background[pos] = RubyOF::Color.hex( 0xb6b198 )
-      #   @display.foreground[pos] = RubyOF::Color.hex( 0x32312a )
-      # end
-      
-      (0..(bb2.t)).each do |i|
-        @display.print_string(CP::Vec2.new(bb2.l, i), " "*(bb2.r-bb2.l+1))
-      end
-      
-      # line height test pattern 2
-      10.times do |i|
-        @display.print_string(
-            CP::Vec2.new(50,i*2),
-            (@vbar['8/8']*5)
-          )
-      end
-      
-    
-      
-      
-      
-    end
-    
-    
-    if @debug[:bar_graph_tests]
-    
-      # 
-      # bar graph tests
-      # 
-      
-      count = 16 # 128 midi notes, so 16 chars of 8 increments each will cover it
-      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:lilac]
-      
-      # @display.print_string(CP::Vec2.new(27,14+0), 'x'*count)
-      # .each do |pos|
-      #   offset = CP::Vec2.new(0,0)
-      #   @display.background[pos+offset] = bg_color
-      #   @display.foreground[pos+offset] = fg_color
-        
-      #   offset = CP::Vec2.new(0,1)
-      #   @display.background[pos+offset] = bg_color
-      #   @display.foreground[pos+offset] = fg_color
-      # end
-      
-      @display.print_string(
-        CP::Vec2.new(27,14+1), @hbar['8/8']*(count-1)+@hbar['1/8']
-      )
-      
-      
-      # hmmm drawing a vertical bar is harder, because there's no Enumerators in this direction...
-      count = 4
-      anchor = CP::Vec2.new(20,15) # bottom left position
-      bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:pale_yellow]
-      
-      @display.each_position
-      .select{   |pos| pos.x == anchor.x+0  }
-      .select{   |pos| ((anchor.y-(count-1))..(anchor.y)).include? pos.y }
-      .sort_by{  |pos| -pos.y } # y+ down, so top position has the lowest y value
-      .each_with_index do |pos, i|
-        @display.print_string(pos + CP::Vec2.new(0,0), 'x')
-        
-        if i == count-1
-          @display.print_string(pos + CP::Vec2.new(1,0), @vbar['3/8'])
-        else
-          @display.print_string(pos + CP::Vec2.new(1,0), @vbar['8/8'])
-        end
-        
-        
-        
-        offset = CP::Vec2.new(1,0)
-        # @display.background[pos+offset] = bg_color
-        # @display.foreground[pos+offset] = fg_color
-      end
-    end
-    
-    
+    @debugging = true
+    @debug_mode = nil
     
     
     
     # run the "normal" stuff only when all of the debug modes are disabled
-    if @debug.keys.empty?
-      
-      # clear the area where midi message data will be drawn
-      
-      # CP::BB
-      # l,b,r,t
-      x = 0
-      y = 0
-      w = 50
-      h = 11
-      @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
-      
-      @display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
-      @display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
-      
-      
-      ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
-        @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
-      end
-      
-    end
-    
     
     
     
@@ -609,8 +1088,6 @@ class Core
   def on_reload
     setup()
     @looper_pedal.setup
-    
-    @test7_once = nil
   end
   
   
@@ -640,11 +1117,8 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
-    
-    
-    
-    scheduler.section name: "test 1", budget: msec(0.5)
-      puts "test 1" if Scheduler::DEBUG
+    scheduler.section name: "shaders", budget: msec(1.5)
+      puts "shaders" if Scheduler::DEBUG
       
       # liveGLSL.foo "char_display" do |path_to_shader|
         # @display.reload_shader
@@ -714,468 +1188,110 @@ class Core
         
         @shader_timestamp = Time.now
       end
+    
+    
+    if @debugging
+      
+      scheduler.section name: "debug setup", budget: msec(0.5)
+      @debug_mode ||= DebugDisplayClipping.new
+      
+      scheduler.section name: "debug run", budget: msec(1.0)
+      
+      @debug_mode.update
       
       
+      scheduler.section name: "profilr init", budget: msec(1)
+      puts "profilr" if Scheduler::DEBUG
       
-      if @first_update
-        # scheduler.section name: "test 2a - first draw", budget: msec(16)
-        # screen_size = read_screen_size("Screen 0")
-        # screen_w, screen_h = screen_size["current"]
-        # puts "screen size: #{[screen_w, screen_h].inspect}"
+      @main_modes[1] ||= ProfilerState.new(@update_scheduler, @draw_durations)
+      
+      
+      scheduler.section name: "profilr run", budget: msec(4)
+      
+      @main_modes[1].update
+      
+    else
+      # # scheduler.section name: "test 2", budget: msec(0.2)
+      #   puts "test 2" if Scheduler::DEBUG
+      #   @input_handler.update
         
-        puts "---> callback from ruby"
-        @w.cpp_ptr["midiOut"].listOutPorts()
-        puts "<--- callback end"
         
+      
+      # # scheduler.section name: "test 3", budget: msec(2.5)
+      #   puts "test 3" if Scheduler::DEBUG
         
-        @first_update = false
-      end
+      #   # p @w.cpp_val["midiMessageQueue"]
+        
+      #   delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
+      #   # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
       
-      
-    
-    
-    
-    
-    
-    # scheduler.section name: "test 2", budget: msec(0.2)
-      puts "test 2" if Scheduler::DEBUG
-      @input_handler.update
-      
-      
-    
-    # scheduler.section name: "test 3", budget: msec(2.5)
-      puts "test 3" if Scheduler::DEBUG
-      
-      # p @w.cpp_val["midiMessageQueue"]
-      
-      delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
-      # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
-    
-      delta.each do |midi_msg|
-        # case midi_msg[0]
-        # when 0x90 # note on
-        #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
-        #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
-        #   # puts "ON: #{midi_msg.to_s}"
+      #   delta.each do |midi_msg|
+      #     # case midi_msg[0]
+      #     # when 0x90 # note on
+      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+      #     #   # puts "ON: #{midi_msg.to_s}"
+            
+      #     # when 0x80 # note off
+      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+      #     #   # puts "OFF: #{midi_msg.to_s}"
+            
+      #     # end
           
-        # when 0x80 # note off
-        #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
-        #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
-        #   # puts "OFF: #{midi_msg.to_s}"
-          
-        # end
+      #   end
         
-      end
-      
-    
-    
-    # scheduler.section name: "test 4", budget: msec(0.2)
-      puts "test 4" if Scheduler::DEBUG
-      
-      @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
       
       
+      # # scheduler.section name: "test 4", budget: msec(0.2)
+      #   puts "test 4" if Scheduler::DEBUG
+        
+      #   @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
+        
+        
+        
+      #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
       
-      live_colorpicker = @w.cpp_ptr["colorPicker_color"]
-    
-    
-    if @debug.keys.empty?
+      
       scheduler.section name: "test 5a", budget: msec(5)
         puts "test 5a" if Scheduler::DEBUG
-        # write all messages in buffer to the character display
-        
-        # TODO: clear an entire zone of characters with "F" because if code crashes (in live load mode) in this section, weird glitches could happen
-        # (or just let them happen - it could be pretty!)
-        
-        # TODO: need a way to shift an existing block of text in the display buffer
-      
-      
-      # RubyOF::CPP_Callbacks.callgrind_BEGIN()
-      # run_profiler do
-        # 
-        # show MIDI note data
-        # 
-        anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
-        
-        # print header
-        bg_color = RubyOF::Color.hex( 0xc4cfff )
-        
-        @display.print_string(
-          anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
-        )
-        # .each do |pos|
-          # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
-          # @display.foreground[pos] = @colors[:pale_green]
-          # @display.foreground[pos] = live_colorpicker
+      # if @debug.keys.empty?
           
-          # @display.background[pos] = live_colorpicker
-          # @display.background[pos] = bg_color
-        # end
-        
-        bb= CP::BB.new(0,0, 50,0)
-        @display.background.fill bb, bg_color
-        # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
-        
-        
-        # (color for midi pitch bars)
-        bb = CP::BB.new(20,1, 35, 10)
-          bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-          fg_color = @colors[:lilac]
-        
-        @display.background.fill bb, bg_color
-        @display.foreground.fill bb, fg_color
-        
-        # dump data on all messages in the queue
-        @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
-          
-          # midi bytes
-          @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
-          @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
-          @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
-          
-          
-          # deltatime
-          midi_dt = midi_msg.deltatime
-            max_display_num = 99999.999
-          midi_dt = [max_display_num, midi_dt].min
-          
-          msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-          @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
-          
-          
-          
-          # note value (as bar graph)
-          count = 16
-            # 128 midi notes, so 16 chars of 8 increments each
-            # will cover it at 1 fraction per note
-          value = 15
-          range = 0..127
-          bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-          fg_color = @colors[:lilac]
-          
-          full_bars = midi_msg.pitch / 8
-          fractions = midi_msg.pitch % 8
-          
-          bar_graph  = @hbar['8/8']*full_bars
-          bar_graph ||= '' # bar graph can be nil if full_bars == 0
-          bar_graph += @hbar["#{fractions}/8"]
-          
-          @display.print_string(
-            anchor+CP::Vec2.new(20,i+1),
-            bar_graph.ljust(count)
-          )
-          
-          
-          # ^ it's just this thrashing of colors that kills performance!
-          #   Could set these colors once on init, because they're not acutally changing, but I'm curious as to why this operation is just so dang slow
-          # (it doesn't seem to be the Enumerator through the single line of the string that's slow - it seems to be the changing of colors)
-          
-          # setting the colors on the header line is about 35 colorsr
-          # setting the colors for every pitch bar is 160 colors total
-          # That increase in volume (4.5x) is what takes the latency from negligible to overwhelming. You can see this by simply trying to push the header data 10 times (the exact same data)
-            # -> you get the same lag spike
-          
-          # maybe I can go faster if I completely separate read and write interfaces? right now this ruby Enumerator interface allows for reading, writing, and mutating color data. If those things are all separated out, maybe we can go faster?
-          
-          # How does the PNG library I was using in that one gamejam work? That library seemed pretty fast (even though I never benchmarked it.) Can I copy something from that code and go super fast?
-          # (oops, it was a bmp library. well... whatever)
-          
-          
-          
-          # signal name
-          # (on, off, CC, etc)
-          status_string =
-            case midi_msg.status
-            when :note_on
-              "on"
-            when :note_off
-              "off"
-            when :control_change
-              "CC" # <-- no pitch or velocity data, control and value instead
-            else
-              "???"
-            end
-          status_string = status_string.ljust(3)
-            # ^ justify to max length of any one string 
-            #   so that you don't get ghosting of old characters
-          
-          midi_msg.status
-          @display.print_string(
-            anchor+CP::Vec2.new(38,i+1),
-            status_string
-          )
-          
-          
-          # channel
-          @display.print_string(
-            anchor+CP::Vec2.new(44,i+1),
-            "ch#{midi_msg.channel.to_s.ljust(2)}"
-            # ^ there are 16 possible midi channels
-            #   thus, worse case the channel name has 2 digits in it
-          )
-          
-        end
-            
-    end
-      
-      
-      scheduler.section name: "test 5b", budget: msec(6)
-        puts "test 5b" if Scheduler::DEBUG
-        # 
-        # color picker data
-        # 
-        
-        
-        anchor = CP::Vec2.new(48,0)
-        
-        @display.print_string(anchor + CP::Vec2.new(0,0), "r  g  b  a ")
-               
-        bb = CP::BB.new(48, 0, 58, 0)
-        @display.background.fill bb, RubyOF::Color.rgb( [0, 0, 0] )
-        @display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-        
-        @w.cpp_ptr["colorPicker_color"].tap do |c|
-          output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
-          
-          @display.print_string(anchor + CP::Vec2.new(0,1), output_string)
-          
-          bb = CP::BB.new(48, 1, 58, 1)
-          @display.background.fill bb, c
-          @display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
-        end
-      
-      
-      
-      
-      scheduler.section name: "test 5c", budget: msec(16)
-        puts "test 5c" if Scheduler::DEBUG
-        # 
-        # mouse data
-        # 
-        
-        # run_profiler do
-        
-        bb = CP::BB.new(40,12, 58,14)
-        
-        @display.background.fill bb, RubyOF::Color.hex( 0xb6b198 )
-        @display.foreground.fill bb, RubyOF::Color.hex( 0x32312a )
-        
-        
-        ((bb.b.to_i)..(bb.t.to_i)).each do |y|
-          @display.print_string(CP::Vec2.new(bb.l, y), " "*(bb.r-bb.l+1))
-        end
-        
-        anchor = CP::Vec2.new(bb.l, bb.b)
-        
-        @display.print_string(anchor+CP::Vec2.new(1,1), "mouse @ ")
-        @display.print_string(anchor+CP::Vec2.new(9,1),
-          "[" + @mouse.to_a.map{|x| x.to_i.to_s.rjust(2) }.join(', ') + "]"
-        )
-    
-    
-        # end
-      
-      
-      
-      
-      
-    scheduler.section name: "test 6", budget: msec(5)
-      puts "test 6" if Scheduler::DEBUG
-      
-      @sprite = @hbar['8/8']*3
-      # @sprite = "hello world!"
-    
-    
-    
-    
-    
-    
-    
-    if @debug.keys.empty?
-      scheduler.section name: "profilr", budget: msec(5.5)
-      # RubyOF::CPP_Callbacks.SpikeProfiler_begin("section: profilr")
-      # RB_SPIKE_PROFILER.enable
-      # run_profiler do
-      
-        puts "profilr" if Scheduler::DEBUG
-        # 
-        # display timing data
-        # 
-        anchor = CP::Vec2.new(2,17)
-        
-        bg_color = RubyOF::Color.rgb( [(0.2*255).to_i]*3 )
-        fg_color = RubyOF::Color.rgb( [(0.7*255).to_i]*3 )
-        
-        x = anchor.x
-        y = anchor.y
-        w = 56
-        h = 11
-        # bb = CP::BB.new(x,y, x+w-1,y+h-1)
-        
-        unless @test7_once 
-          @statistics = Hash.new
-          
-          @display.background.fill bb, bg_color
-          @display.foreground.fill bb, fg_color
-          
-          blank_line = " "*w
-          h.times do |i|
-            @display.print_string(anchor+CP::Vec2.new(0,i), blank_line)
-          end
-          
-          
-          x = 35
-          y = 18
-          w = 20
-          h = 10
-          bar_graph_bb = CP::BB.new(x,y, x+w-1,y+h-1)
-          
-          bar_bg_color = RubyOF::Color.rgb( [(0.4*255).to_i]*3 )
-          bar_fg_color = @colors[:lilac]
-          
-          @display.background.fill bar_graph_bb, bar_bg_color
-          @display.foreground.fill bar_graph_bb, bar_fg_color
-          
-          
-          
-          
-          @test7_once = true
-        end
-        
-        
-        @update_scheduler.max_num_cycles = 50
-        
-        
-        # get the data from the time log
-        # reduce it down to 3 data points per section: min, median, max
-        # print those numbers to the display
-        clusters = 
-          @update_scheduler.time_log
-          .first( @update_scheduler.max_num_cycles*@update_scheduler.section_count )
-          .group_by{|section_name, time_budget, dt|  section_name  }
-        
-        # p clusters
-          # puts "---"
-          # puts "time log size: #{@update_scheduler.time_log.size}"
-          # puts "sections: #{@update_scheduler.section_count}"
-          # clusters.each do |k,v|
-          #   puts "#{k.ljust(10)} => #{v.size}"
-          # end
-          # puts "---"
-      
-        clusters.each do |name, data|
-          times = 
-            data
-            .collect{  |section_name, time_budget, dt|   dt   }
-            .sort
-          
-          # p times
-          
-          
-          data = @statistics[name]
-          if data.nil?
-            min    = times.first
-            max    = times.last
-            median = times[ times.length / 2 ]
-          else
-            best_min, best_med, best_max = data
-            
-            min    = [times.first, best_min].min
-            max    = [times.last,  best_max].max
-            median = times[ times.length / 2 ]
-          end
-          
-          
-          @statistics[name] = [min, median, max]
-        end
-        
-        # p @statistics
-        i = -1
-          sum = @statistics
-                .map{|name, stats| stats }
-                .map{|min, med, max| med }
-                .reduce(&:+)
-          @display.print_string(anchor+CP::Vec2.new(17,i),  sum.to_s.rjust(6))
-          
-          sum = @statistics
-                .map{|name, stats| stats }
-                .map{|min, med, max| max }
-                .reduce(&:+)
-          @display.print_string(anchor+CP::Vec2.new(25,i),  sum.to_s.rjust(6))
-        
-        i = 0
-          @display.print_string(anchor+CP::Vec2.new( 9,i),  '--min--')
-          @display.print_string(anchor+CP::Vec2.new(16,i),  ' median')
-          @display.print_string(anchor+CP::Vec2.new(24,i),  '--max--')
-          
-          @display.print_string(anchor+CP::Vec2.new(33,i),
-                                '-------budget-------')
-      
-        
-        i = 1
-        @statistics.each do |name, stats|
-          min, med, max = stats
-          
-          @display.print_string(anchor+CP::Vec2.new( 1,i),  name)
-          
-          @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
-          
-          # TODO: show all time high as well (useful for eliminating the big rare spikes)
-          
-          
-          bar_graph = 
-            make_bar_graph(t: @update_scheduler.budgets[name], t_max: msec(16),
-                           bar_length: 20)
-          
-          @display.print_string(
-            anchor+CP::Vec2.new(33,i),
-            bar_graph
-          )
-          
-          
-          i += 1
-        end
-        
-        
-        i = 10
-        
-          times = @draw_durations.sort
-          
-          data = @draw_stats
-          if data.nil?
-            min = times.first
-            max = times.last
-            med = times[ times.length / 2 ]
-          else
-            best_min, best_med, best_max = data
-            
-            min = [times.first, best_min].min
-            max = [times.last,  best_max].max
-            med = times[ times.length / 2 ]
-          end
-          
-          @draw_stats = [min, med, max]
-          
-          
-          
-          @display.print_string(anchor+CP::Vec2.new( 1,i),  'draw')
-          
-          @display.print_string(anchor+CP::Vec2.new(10,i),  min.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(17,i),  med.to_s.rjust(6))
-          @display.print_string(anchor+CP::Vec2.new(25,i),  max.to_s.rjust(6))
-        
-        
-          @display.print_string(
-            anchor+CP::Vec2.new(33,i),
-            make_bar_graph(t: msec(1.5), t_max: msec(16),
-                           bar_length: 20)
-          )
       # end
-      # RB_SPIKE_PROFILER.disable
-      # RubyOF::CPP_Callbacks.SpikeProfiler_end()
+        
+      
+      
+        
+        
+      scheduler.section name: "test 6", budget: msec(5)
+        puts "test 6" if Scheduler::DEBUG
+        
+        @sprite = @hbar['8/8']*3
+        # @sprite = "hello world!"
+      
+      
     end
+    
+    
+    
+    scheduler.section name: "color", budget: msec(1)
+      puts "color" if Scheduler::DEBUG
+      # 
+      # color picker data
+      # 
+      
+      @main_modes[10] ||= ColorPickerState.new
+      @main_modes[10].update
+    
+    
+    scheduler.section name: "mouse", budget: msec(1)
+      puts "mouse" if Scheduler::DEBUG
+      # 
+      # mouse data
+      # 
+      
+      @main_modes[11] ||= MousePositionState.new(@mouse)
+      @main_modes[11].update
     
     
     
@@ -1183,14 +1299,30 @@ class Core
     # scheduler.section name: "cleanup", budget: msec(16)
     
     
-    scheduler.section name: "cleanup1", budget: msec(2.2)
+    scheduler.section name: "cleanup1", budget: msec(1.0)
+    
     @display.flushColors_bg()
     @display.flushColors_fg()
     
-    scheduler.section name: "cleanup2", budget: msec(4.0)
-                                              # ^ largest spike seen after optimization. need more data to be more confident this value.
+    
     
     # (had value at 3.5 ms, but I just saw a 3999 um spike -> 4.0 ms)
+    scheduler.section name: "cleanup2", budget: msec(1.0)
+                                              # ^ largest spike seen after optimization. need more data to be more confident this value.
+    # custom_profiler do 
+    # puts "start profiling"
+    # run_profiler do 
+    
+    # run_c_profiler do
+      
+    @display.remesh()
+    
+    # end
+    
+    # --- end of "cleanup 2" ---
+    
+    
+    
     
     
     # TODO: consider switching statistics: use lowest of all time, highest of all time, and average over all time points (use moving average)
@@ -1220,17 +1352,21 @@ class Core
     
     
     
-    # custom_profiler do 
-    # puts "start profiling"
-    # run_profiler do 
-    
-    # run_c_profiler do
-      
-    @display.remesh()
-    
-    # end
     
     scheduler.section name: "end", budget: msec(0.1)
+    # ^ this section does literally nothing,
+    #   but if I set the budget to 1000 us, it can take as much as 925 us
+    #   with budget at 100 us, it seems to cap at 162 um
+    #   thus, it appears that the max time used depends on the budget given
+    #   why is that?
+    #   what about the scheduling algorithm produces this behavior?
+    # 
+    # nope, just saw a max of 826 us with a budget of 0.1 us
+    # (not sure when I saved - have to try this again...)
+    # 
+    # currently seeing max of 697 us with a budget of 100 us
+    # I think that the time consumed can go over budget, even when total budget < 16.6 ms - which is what I expected the code to do
+    
     # puts "end"
     
     
@@ -1238,6 +1374,232 @@ class Core
     
   end
   
+  
+  
+  
+  
+  def draw
+    # puts "draw thread:   #{Thread.current.object_id}" 
+    
+    # draw_start = Time.now
+    draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+      on_draw()
+    
+    # draw_end = Time.now
+    draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
+    dt = draw_end - draw_start
+    puts "draw duration: #{dt}" if Scheduler::DEBUG
+    
+    
+    
+    draw_duration_history_len = 100
+    
+    
+    @draw_durations << dt
+    
+    if @draw_durations.length > draw_duration_history_len
+      d_len = @draw_durations.length - draw_duration_history_len
+      @draw_durations.shift(d_len)
+    end
+    
+  end
+  
+  
+  
+  include RubyOF::Graphics
+  def on_draw
+    
+    
+    
+    # NOTE: need live coding before I can fiddle with graphics code
+    # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
+    
+    # line_height = 38
+    
+    
+    # screen_print(font: @fonts[:monospace], color: @text_fg_color,
+    #              string: "hello world!",
+    #              position: origin+CP::Vec2.new(0,line_height*0))
+    
+    # ^ if you bind the font texture here before drawing the rectangular mesh below, then the mesh will be invisible. not sure why. likely some bug is happening with textures?
+    
+    
+    
+    
+    
+    # RubyOF::CPP_Callbacks.render_material_editor(
+    #   @w.cpp_ptr["materialEditor_mesh"],
+    #   @w.cpp_ptr["materialEditor_shader"], "material_editor",
+      
+    #   @fonts[:monospace].font_texture,
+    #   @w.cpp_ptr["display_fg_texture"], # <-- no longer available
+      
+    #   20, 500, 300, 300 # x,y,w,h
+    # )
+    
+    
+    
+    
+    
+    
+    
+    # # 
+    # # render sprites
+    # # (draw behind @display, to use that area as a mask)
+    # # 
+    # # ofPushStyle()
+    
+    # # ofSetColor(RubyOF::Color.hex(0xff0000))
+    
+    # # pos in char grid
+    # char_pos = CP::Vec2.new(@char_width_pxs*10, @line_height*18) 
+    
+    # # offset by 1/8 of a character (width of smallest block char division)
+    # offset   = CP::Vec2.new(@char_width_pxs/8 * 5, 0)
+    
+    # # final pixel position on screen
+    # pos = @display_origin_px + CP::Vec2.new(0,-1) + char_pos + offset
+    
+    # # @fonts[:monospace].draw_string(@sprite, pos.x, pos.y)
+      
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], pos.x, pos.y)
+      
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*2, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*3, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*4, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+      
+    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*5, 0)
+    #   p2 = pos + offset
+    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
+    
+    # # ofPopStyle()
+    
+    
+    
+    # 
+    # render text display
+    # 
+    
+    @display.draw()
+  end
+  
+  
+  
+  
+  
+  def key_pressed(key)
+    @input_handler.key_pressed(key)
+  end
+  
+  def key_released(key)
+    @input_handler.key_released(key)
+  end
+  
+  
+  
+  # 
+  # mouse prints position in character grid to STDOUT
+  # 
+  
+  def mouse_moved(x,y)
+    # p "mouse position: #{[x,y]}.inspect"
+  end
+  
+  def mouse_pressed(x,y, button)
+    # p [:pressed, x,y, button]
+    
+    mouse_to_char_display_pos(@mouse, x,y)
+  end
+  
+  def mouse_dragged(x,y, button)
+    # p [:dragged, x,y, button]
+    mouse_to_char_display_pos(@mouse, x,y)
+    # puts @mouse
+  end
+  
+  def mouse_released(x,y, button)
+    # p [:released, x,y, button]
+  end
+  
+  
+  
+  # this is for drag-and-drop, not for mouse dragging
+  def drag_event(files, position)
+    p [files, position]
+    
+  end
+  
+  
+  def on_exit
+    # puts @draw_durations.join("\t")
+    if RB_SPIKE_PROFILER.enabled?
+      RB_SPIKE_PROFILER.disable
+    end
+  end
+  
+  
+  
+  
+  private
+  
+  def mouse_to_char_display_pos(pos, x,y)
+    pos.x = x
+    pos.y = y
+    
+    tmp = ( pos - @display_origin_px - @bg_offset )
+    
+    pos.x = (tmp.x / @char_width_pxs)
+    pos.y = (tmp.y / @line_height)
+  end
+  
+  
+  
+  def screen_print(font:, string:, position:, color: )
+    
+      font.font_texture.bind
+    
+      ofPushMatrix()
+      ofPushStyle()
+    begin
+      ofTranslate(position.x, position.y, 0)
+      
+      ofSetColor(color)
+      
+      # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
+      
+      x,y = [0,0]
+      vflip = true
+      text_mesh = font.get_string_mesh(string, x,y, vflip)
+      text_mesh.draw()
+    ensure
+      ofPopStyle()
+      ofPopMatrix()
+      
+      font.font_texture.unbind
+    end
+    
+  end
+  
+  
+end
+
+
+
+
+
 CUSTOM_PROF = TracePoint.new(:c_call) do |tp|
   # event = tp.event.to_s.sub(/(.+(call|return))/, '\2').rjust(6, " ")
   
@@ -1272,6 +1634,8 @@ CUSTOM_PROF = TracePoint.new(:c_call) do |tp|
   
   printf "%8s %s:%-2d %10s %8s\n", tp.event, tp.path.split("/").last, tp.lineno, tp.callee_id, tp.defined_class
 end
+
+
 
 def custom_profiler() # &block
   CUSTOM_PROF.enable do
@@ -1498,220 +1862,3 @@ end
 
   
   
-  def draw
-    # puts "draw thread:   #{Thread.current.object_id}" 
-    
-    # draw_start = Time.now
-    draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-      on_draw()
-    
-    # draw_end = Time.now
-    draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = draw_end - draw_start
-    puts "draw duration: #{dt}" if Scheduler::DEBUG
-    
-    
-    
-    draw_duration_history_len = 100
-    
-    @draw_durations ||= Array.new
-    @draw_durations << dt
-    
-    if @draw_durations.length > draw_duration_history_len
-      d_len = @draw_durations.length - draw_duration_history_len
-      @draw_durations.shift(d_len)
-    end
-    
-  end
-  
-  
-  
-  include RubyOF::Graphics
-  def on_draw
-    
-    
-    
-    # NOTE: need live coding before I can fiddle with graphics code
-    # don't need time scrubbing quite yet, just need to be able to change parameters at runtime
-    
-    # line_height = 38
-    
-    
-    # screen_print(font: @fonts[:monospace], color: @text_fg_color,
-    #              string: "hello world!",
-    #              position: origin+CP::Vec2.new(0,line_height*0))
-    
-    # ^ if you bind the font texture here before drawing the rectangular mesh below, then the mesh will be invisible. not sure why. likely some bug is happening with textures?
-    
-    
-    
-    
-    
-    # RubyOF::CPP_Callbacks.render_material_editor(
-    #   @w.cpp_ptr["materialEditor_mesh"],
-    #   @w.cpp_ptr["materialEditor_shader"], "material_editor",
-      
-    #   @fonts[:monospace].font_texture,
-    #   @w.cpp_ptr["display_fg_texture"], # <-- no longer available
-      
-    #   20, 500, 300, 300 # x,y,w,h
-    # )
-    
-    
-    
-    
-    
-    
-    
-    # # 
-    # # render sprites
-    # # (draw behind @display, to use that area as a mask)
-    # # 
-    # # ofPushStyle()
-    
-    # # ofSetColor(RubyOF::Color.hex(0xff0000))
-    
-    # # pos in char grid
-    # char_pos = CP::Vec2.new(@char_width_pxs*10, @line_height*18) 
-    
-    # # offset by 1/8 of a character (width of smallest block char division)
-    # offset   = CP::Vec2.new(@char_width_pxs/8 * 5, 0)
-    
-    # # final pixel position on screen
-    # pos = @display_origin_px + CP::Vec2.new(0,-1) + char_pos + offset
-    
-    # # @fonts[:monospace].draw_string(@sprite, pos.x, pos.y)
-      
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], pos.x, pos.y)
-      
-    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50, 0)
-    #   p2 = pos + offset
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
-      
-    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*2, 0)
-    #   p2 = pos + offset
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
-      
-    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*3, 0)
-    #   p2 = pos + offset
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
-      
-    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*4, 0)
-    #   p2 = pos + offset
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
-      
-    #   offset   = CP::Vec2.new(@char_width_pxs/8 * 50*5, 0)
-    #   p2 = pos + offset
-    #   @fonts[:monospace].draw_string(@hbar['1/8'], p2.x, p2.y)
-    
-    # # ofPopStyle()
-    
-    
-    
-    # 
-    # render text display
-    # 
-    
-    @display.draw()
-  end
-  
-  
-  
-  
-  
-  def key_pressed(key)
-    @input_handler.key_pressed(key)
-  end
-  
-  def key_released(key)
-    @input_handler.key_released(key)
-  end
-  
-  
-  
-  # 
-  # mouse prints position in character grid to STDOUT
-  # 
-  
-  def mouse_moved(x,y)
-    # p "mouse position: #{[x,y]}.inspect"
-  end
-  
-  def mouse_pressed(x,y, button)
-    # p [:pressed, x,y, button]
-    
-    @mouse = mouse_to_char_display_pos(x,y)
-  end
-  
-  def mouse_dragged(x,y, button)
-    # p [:dragged, x,y, button]
-    @mouse = mouse_to_char_display_pos(x,y)
-    # puts @mouse
-  end
-  
-  def mouse_released(x,y, button)
-    # p [:released, x,y, button]
-  end
-  
-  
-  
-  # this is for drag-and-drop, not for mouse dragging
-  def drag_event(files, position)
-    p [files, position]
-    
-  end
-  
-  
-  def on_exit
-    # puts @draw_durations.join("\t")
-    if RB_SPIKE_PROFILER.enabled?
-      RB_SPIKE_PROFILER.disable
-    end
-  end
-  
-  
-  
-  
-  private
-  
-  def mouse_to_char_display_pos(x,y)
-    out = ( CP::Vec2.new(x,y) - @display_origin_px - @bg_offset )
-    
-    out.x = (out.x / @char_width_pxs).to_i
-    out.y = (out.y / @line_height).to_i
-    
-    return out
-  end
-  
-  
-  
-  def screen_print(font:, string:, position:, color: )
-    
-      font.font_texture.bind
-    
-      ofPushMatrix()
-      ofPushStyle()
-    begin
-      ofTranslate(position.x, position.y, 0)
-      
-      ofSetColor(color)
-      
-      # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
-      
-      x,y = [0,0]
-      vflip = true
-      text_mesh = font.get_string_mesh(string, x,y, vflip)
-      text_mesh.draw()
-    ensure
-      ofPopStyle()
-      ofPopMatrix()
-      
-      font.font_texture.unbind
-    end
-    
-  end
-  
-  
-end
-
