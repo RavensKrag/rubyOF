@@ -38,27 +38,13 @@ void rbApp::setup(){
 	
 	// ========================================
 	// ========== add new stuff here ==========
-	mDatGui = new ofxDatGui(0, 50);
+	// mDatGui = new ofxDatGui(0, 300);
 	
 	// --- Track seconds / frame over time to see performance.
 	//     Need a graph, not a single data point, and seconds rather than Hz
 	
 	// initialize timestamp for time plot
 	timestamp_us = 0;
-	
-	// initialize the time plot itself
-	float min = 0;
-	float max = 100000;
-	mPlotter = mDatGui->addValuePlotter("micros / frame", min, max);
-	
-	
-	// -- add actcual FPS widget
-	float framerate_monitor_refresh = 1.0f;
-	mDatGui->addFRM(framerate_monitor_refresh);
-	
-	
-	
-	
 	
 	
 	
@@ -312,16 +298,12 @@ void rbApp::update(){
 	// --- Track seconds / frame over time to see performance.
 	//     Need a graph, not a single data point, and seconds rather than Hz
 	
-	// get the current time in microseconds
-	// (time the app has been running)
-	uint64_t now = ofGetElapsedTimeMicros();
+	mFrameCounter_update = 0;
+	mFrameCounter_draw   = 0;
 	
-	// update the time display based on the current time
-	uint64_t microseconds = now - timestamp_us;
-	mPlotter->setValue(microseconds);
 	
-	// save the new time
-	timestamp_us = now;
+	uint64_t dt, timer_start, timer_end;
+	timer_start = ofGetElapsedTimeMicros();
 	
 	
 	
@@ -350,9 +332,25 @@ void rbApp::update(){
 	// ========================================
 	
 	mSelf.call("update");
+	
+	
+	
+	
+	timer_end = ofGetElapsedTimeMicros();
+	dt = timer_end - timer_start;
+	
+	// mPlotter_update_time->setValue(dt);
+	
+	mFrameCounter_update = dt;
+	
+	
+	// mDatGui->update();
 }
 
 void rbApp::draw(){
+	uint64_t dt, timer_start, timer_end;
+	timer_start = ofGetElapsedTimeMicros();
+	
 	// ========================================
 	// ========== add new stuff here ==========
 	
@@ -374,6 +372,73 @@ void rbApp::draw(){
 	
 	// ========================================
 	// ========================================
+	
+	
+	
+	timer_end = ofGetElapsedTimeMicros();
+	dt = timer_end - timer_start;
+	
+	// mPlotter_draw_time->setValue(dt);
+	
+	
+	mFrameCounter_draw = dt;
+	
+	// mPlotter_total_time->setValue(mFrameCounter);
+	
+	
+	
+	im_gui.begin();
+	ImGui::SetWindowFontScale(2.0);
+	
+	{
+		ImGui::Text("Hello, world!");
+		
+		ImGui::Text("time per phase (ms)");
+		
+		static bool animate = true;
+		ImGui::Checkbox("Animate", &animate);
+		
+		
+		
+		const int HIST_SAMPLES = 120;
+		
+		float hist_min, hist_max;
+		hist_min = 0;
+		hist_max = 20;
+		
+		static float v1[HIST_SAMPLES];
+		static float v2[HIST_SAMPLES];
+		static float v3[HIST_SAMPLES];
+		
+		if(animate){
+			// shift over old data
+			for(int i=1; i<HIST_SAMPLES; i++){
+				v1[i-1] = v1[i];
+				v2[i-1] = v2[i];
+			}
+			
+			// add new data
+			v1[HIST_SAMPLES-1] = (float) mFrameCounter_update / 1000;
+			v2[HIST_SAMPLES-1] = (float) mFrameCounter_draw / 1000;
+			
+			// sum update and draw sections
+			for(int i=0; i<HIST_SAMPLES; i++){
+				v3[i] = v1[i] + v2[i];
+			}
+		}
+		
+		
+		// void ImGui::PlotHistogram(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
+		ImGui::PlotHistogram("", v1, HIST_SAMPLES, 0, "update",
+			                  hist_min, hist_max, ImVec2(300, 100));
+		ImGui::PlotHistogram("", v2, HIST_SAMPLES, 0, "draw",
+			                  hist_min, hist_max, ImVec2(300, 100));
+		ImGui::PlotHistogram("", v3, HIST_SAMPLES, 0, "total",
+			                  hist_min, hist_max, ImVec2(300, 100));
+	}
+	
+	
+	im_gui.end();
 }
 
 void rbApp::exit(){
@@ -384,7 +449,7 @@ void rbApp::exit(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	delete mDatGui;
+	// delete mDatGui;
 	
 	
 	// clean up
@@ -572,4 +637,5 @@ void rbApp::gotMessage(ofMessage msg){
 	
 	// mSelf.call("got_message", msg);
 }
+
 
