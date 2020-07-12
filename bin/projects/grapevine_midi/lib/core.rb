@@ -560,8 +560,6 @@ class ProfilerState < State
     
     
     
-    @statistics = Hash.new
-    
     @@display.background.fill bb, bg_color
     @@display.foreground.fill bb, fg_color
     
@@ -586,7 +584,7 @@ class ProfilerState < State
     @@display.foreground.fill bar_graph_bb, bar_fg_color
   end
   
-  def update
+  def update(whole_iter_dt)
   # RubyOF::CPP_Callbacks.SpikeProfiler_begin("section: profilr")
   # RB_SPIKE_PROFILER.enable
   # run_profiler do
@@ -594,150 +592,150 @@ class ProfilerState < State
     # 
     # display timing data
     # 
+    # puts @update_scheduler.time_log.size
     
-    @update_scheduler.max_num_cycles = 50
+    
+    # @statistics ||= Hash.new
+    @statistics ||= Array.new
     
     
-    # get the data from the time log
-    # reduce it down to 3 data points per section: min, median, max
-    # print those numbers to the display
-    clusters = 
-      @update_scheduler.time_log
-      .first( @update_scheduler.max_num_cycles*@update_scheduler.section_count )
-      .group_by{|section_name, time_budget, dt|  section_name  }
     
-    # p clusters
-      # puts "---"
-      # puts "time log size: #{@update_scheduler.time_log.size}"
-      # puts "sections: #{@update_scheduler.section_count}"
-      # clusters.each do |k,v|
-      #   puts "#{k.ljust(10)} => #{v.size}"
-      # end
-      # puts "---"
     
-    clusters.each do |name, data|
-      times = 
-        data
-        .collect{  |section_name, time_budget, dt|   dt   }
-        .sort
+    # 
+    # update statistics based on latest data
+    # 
+    
+    @update_scheduler.performance_log&.compact&.tap do |log|
+      n = @update_scheduler.sample_count
       
-      # p times
+      # puts "log size: #{log.size}"
       
-      
-      
-      data = @statistics[name]
-      if data.nil?
-        min    = times.first
-        max    = times.last
-        median = times[ times.length / 2 ]
-      else
-        best_min, best_med, best_max = data
+      log.each_with_index do |data, i|
+        section_name, time_budget, dt = data
+        # update min, max, and average for each section
         
-        min    = [times.first, best_min].min
-        max    = [times.last,  best_max].max
-        median = times[ times.length / 2 ]
-      end
-      
-      
-      @statistics[name] = [min, median, max]
-    end
-    
-    # p @statistics
-    i = -1
-      sum = @statistics
-            .map{|name, stats| stats }
-            .map{|min, med, max| med }
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  sum.to_s.rjust(6))
-      
-      sum = @statistics
-            .map{|name, stats| stats }
-            .map{|min, med, max| max }
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  sum.to_s.rjust(6))
-      
-      sum = @update_scheduler.budgets.each_value
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+34, @anchor.y+i,  sum.to_s.rjust(6))
-    
-    
-    i = 0
-      @@display.print_string(@anchor.x+ 9, @anchor.y+i,  '--min--')
-      @@display.print_string(@anchor.x+16, @anchor.y+i,  ' median')
-      @@display.print_string(@anchor.x+24, @anchor.y+i,  '--max--')
-      
-      @@display.print_string(@anchor.x+33, @anchor.y+i,
-                            '-------budget-------')
-  
-    
-    i = 1
-    @statistics.each do |name, stats|
-      min, med, max = stats
-      
-      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  name)
-      
-      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
-      
-      # TODO: show all time high as well (useful for eliminating the big rare spikes)
-      
-      
-      bar_graph = 
-        horiz_bar_graph(t: @update_scheduler.budgets[name], t_max: msec(16),
-                       bar_length: 20)
-      
-      @@display.print_string(@anchor.x+33, @anchor.y+i, bar_graph)
-      
-      
-      i += 1
-    end
-    
-    
-    # i = 10
-    # puts i # i >= 10
-      if @draw_durations.empty?
-        
-        min = 0
-        max = 0
-        med = 0
-        
-      else
-        
-        times = @draw_durations.sort
-        # p times
-        
-        data = @draw_stats
-        if data.nil?
-          min = times.first
-          max = times.last
-          med = times[ times.length / 2 ]
+        if @statistics[i].nil?
+          min = dt
+          max = dt
+          avg = dt
         else
-          # p data
-          best_min, best_med, best_max = data
+          min, max, avg = @statistics[i]
           
-          min = [times.first, best_min].min
-          max = [times.last,  best_max].max
-          med = times[ times.length / 2 ]
+          min = [min, dt].min
+          max = [max, dt].max
+          avg = (dt + avg*n) / (n+1)
         end
+        @statistics[i] = [min, max, avg]
         
-        @draw_stats = [min, med, max]
+      end
+      
+      # p @statistics
+      
+      # plot data to the character display
+      # 
+      
+      x_offsets = [1, 10, 17, 25, 34]
+      
+      # titles
+      i = 0
+      [nil, '--min--', '--avg--', '--max--', '-------budget-------']
+      .zip(x_offsets) do |title, x_offset|
+        next if title.nil?
+        
+        @@display.print_string(@anchor.x+x_offset-1, @anchor.y+i, title)
       end
       
       
+      # data rows
+        # @statistics.each_with_index do |i, data|
+        # min, max, avg = data.map{ |x| x.to_s.rjust(6) }
+      @statistics.each_with_index do |data, i|
+        
+        min, max, avg = data.map{ |x| x.to_s.rjust(6) }
+        sec_name, time_budget, dt = @update_scheduler.performance_log[i]
+        
+        
+        @@display.print_string(@anchor.x+x_offsets[0], @anchor.y+i+1, sec_name)
+        @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i+1, min)
+        @@display.print_string(@anchor.x+x_offsets[2], @anchor.y+i+1, avg)
+        @@display.print_string(@anchor.x+x_offsets[3], @anchor.y+i+1, max)
+        
+        
+        bar_graph = 
+          horiz_bar_graph(t: time_budget, t_max: msec(16),
+                          bar_length: 20)
+        
+        @@display.print_string(@anchor.x+33, @anchor.y+i+1, bar_graph)
+        
+      end
       
-      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  'draw')
+      # sum of all sections (sum of min, sum of max, sum of average, etc)
+      i = -1
       
-      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+      min, max, avg = 
+        @statistics.transpose
+        .collect{ |vals| vals.reduce(&:+) }  # sum up each column
+        .collect{ |x|    x.to_s.rjust(6)  }  # convert numbers to strings
+      
+      @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i, min)
+      @@display.print_string(@anchor.x+x_offsets[2], @anchor.y+i, avg)
+      @@display.print_string(@anchor.x+x_offsets[3], @anchor.y+i, max)
+      
+      
+      
+      if @max_whole_iter_dt.nil?
+        @whole_iter_counter = 1
+        @max_whole_iter_dt = whole_iter_dt
+      else
+        dt  = @max_whole_iter_dt
+        n   = @whole_iter_counter
+        avg = @max_whole_iter_dt
+        
+        avg = (dt + avg*n) / (n+1)
+        
+        @max_whole_iter_dt = avg
+      end
+      dt = @max_whole_iter_dt.to_s
+      
+      @@display.print_string(@anchor.x+x_offsets[4], @anchor.y+i, dt)
+      
+      @whole_iter_counter += 1
+      
+      
+      # compare with timings for entire #draw and #update phases, as well as combined #draw + #update
+        # (measure each callback, rather than summing)
+        # (ideally, the values would be the same as summing, but at the very least there is some overhead we are not measuring)
+      
+      
+      # TODO: time entire #draw phase
+      # TODO: time entire #update phase
+      # TODO: separate logging of time into a separate class (* not Scheduler) to make it easier to measure both #update and #draw
+      
+      
+      
+      
+      
+      # i = 10
+      # puts i # i >= 10
+        
+        
+        # @@display.print_string(@anchor.x+ 1, @anchor.y+i,  'draw')
+        
+        # @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
+        # @@display.print_string(@anchor.x+17, @anchor.y+i,  avg.to_s.rjust(6))
+        # @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+      
+      
+        # @@display.print_string(
+        #   @anchor.x+33, @anchor.y+i,
+        #   horiz_bar_graph(t: msec(1.5), t_max: msec(16),
+        #                  bar_length: 20)
+        # )
+      
+    end
     
     
-      @@display.print_string(
-        @anchor.x+33, @anchor.y+i,
-        horiz_bar_graph(t: msec(1.5), t_max: msec(16),
-                       bar_length: 20)
-      )
+    # 
   # end
   # RB_SPIKE_PROFILER.disable
   # RubyOF::CPP_Callbacks.SpikeProfiler_end()
@@ -827,7 +825,7 @@ class Core
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
-    @update_scheduler = Scheduler.new(self, :on_update, msec(16.6))
+    @update_scheduler = Scheduler.new(self, :on_update, msec(16-4))
     @draw_durations = Array.new # stores profiler data for #draw
     
     
@@ -1093,16 +1091,19 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     # puts "update thread: #{Thread.current.object_id}" 
     
     # if SPIKE_PROFILER_ON
     #   RB_SPIKE_PROFILER.enable
     # end
     
-    puts "--> start update" if Scheduler::DEBUG
+    puts "--> start update"
     signal = @update_scheduler.resume
     # puts signal
-    puts "<-- end update" if Scheduler::DEBUG
+    puts "<-- end update"
     
     # if SPIKE_PROFILER_ON
     #   RB_SPIKE_PROFILER.disable
@@ -1208,7 +1209,7 @@ class Core
       
       scheduler.section name: "profilr run", budget: msec(4)
       
-      @main_modes[1].update
+      @main_modes[1].update(@whole_iter_dt)
       
     else
       # # scheduler.section name: "test 2", budget: msec(0.2)
@@ -1379,6 +1380,8 @@ class Core
   
   
   def draw
+    # puts ">>>>>>>> draw #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    
     # puts "draw thread:   #{Thread.current.object_id}" 
     
     # draw_start = Time.now
@@ -1397,12 +1400,20 @@ class Core
     
     
     @draw_durations << dt
+    puts "draw duration: #{dt}"
     
     if @draw_durations.length > draw_duration_history_len
       d_len = @draw_durations.length - draw_duration_history_len
       @draw_durations.shift(d_len)
     end
     
+    
+    
+    
+    if @start_time
+      end_time = RubyOF::Utils.ofGetElapsedTimeMicros
+      @whole_iter_dt = end_time - @start_time
+    end
   end
   
   
