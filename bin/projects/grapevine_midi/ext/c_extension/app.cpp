@@ -404,7 +404,7 @@ void rbApp::draw(){
 		
 		float hist_min, hist_max;
 		hist_min = 0;
-		hist_max = 20;
+		hist_max = 16;
 		
 		static float v1[HIST_SAMPLES];
 		static float v2[HIST_SAMPLES];
