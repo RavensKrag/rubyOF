@@ -1284,28 +1284,14 @@ class Core
     
     
     
-    # scheduler.section name: "cleanup", budget: msec(16)
+    scheduler.section name: "cleanup", budget: msec(1.0)
     
-    
-    scheduler.section name: "cleanup1", budget: msec(1.0)
-    
-    @display.flushColors_bg()
-    @display.flushColors_fg()
-    
-    
-    # (had value at 3.5 ms, but I just saw a 3999 um spike -> 4.0 ms)
-    scheduler.section name: "cleanup2", budget: msec(1.0)
-                                              # ^ largest spike seen after optimization. need more data to be more confident this value.
-    # custom_profiler do 
-    # puts "start profiling"
-    # run_profiler do 
-    
-    # run_c_profiler do
+      # @display.flushColors_bg()
+      # @display.flushColors_fg()
+      @display.flush
       
-    @display.remesh()
-    
-    # end
-    
+      @display.remesh()
+      
     # --- end of "cleanup 2" ---
     
     
