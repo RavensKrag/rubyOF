@@ -1208,13 +1208,13 @@ class Core
       @debug_mode.update
       
       
-      scheduler.section name: "profilr init", budget: msec(1)
-      puts "profilr" if Scheduler::DEBUG
+      scheduler.section name: "profiler init", budget: msec(1)
+      puts "profiler" if Scheduler::DEBUG
       
       @main_modes[1] ||= ProfilerState.new(@update_scheduler, @draw_durations)
       
       
-      scheduler.section name: "profilr run", budget: msec(4)
+      scheduler.section name: "profiler run", budget: msec(4)
       
       @main_modes[1].update(@whole_iter_dt)
       
