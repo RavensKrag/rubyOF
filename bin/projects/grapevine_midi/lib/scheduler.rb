@@ -101,7 +101,7 @@ class Scheduler
         
         # If there's enough time left this frame,
         # then unblock Fiber @f2 and execute the section
-        puts "running update #{section_name}"
+        # puts "running update #{section_name}"
         
         timer_start = RubyOF::Utils.ofGetElapsedTimeMicros
         
@@ -152,7 +152,7 @@ class Scheduler
           @first_loop_complete = true
           
           
-          puts "total time: #{@time_used_this_frame}"
+          # puts "total time: #{@time_used_this_frame}"
           @total_time = @time_used_this_frame
           
           Fiber.yield :time_limit_reached # return control to main Fiber
