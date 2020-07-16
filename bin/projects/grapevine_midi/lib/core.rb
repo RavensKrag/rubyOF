@@ -368,10 +368,12 @@ class MidiState < State
   def initialize
     # clear the area where midi message data will be drawn
     
+    @anchor = CP::Vec2.new(2,0)
+    
     # CP::BB
     # l,b,r,t
-    x = 0
-    y = 0
+    x = @anchor.x
+    y = @anchor.y
     w = 50
     h = 11
     @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
@@ -383,10 +385,12 @@ class MidiState < State
     ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
       @@display.print_string(0,i, " "*(@midi_data_bb.r+1))
     end
+    
+    
+    @first_update = true
   end
   
-  def update(midiMessageQueue)
-    
+  def update(midiOut, midiMessageQueue)
     if @first_update
       # scheduler.section name: "test 2a - first draw", budget: msec(16)
       # screen_size = read_screen_size("Screen 0")
@@ -394,7 +398,7 @@ class MidiState < State
       # puts "screen size: #{[screen_w, screen_h].inspect}"
       
       puts "---> callback from ruby"
-      @w.cpp_ptr["midiOut"].listOutPorts()
+      midiOut.listOutPorts()
       puts "<--- callback end"
       
       
@@ -413,13 +417,12 @@ class MidiState < State
     # 
     # show MIDI note data
     # 
-    anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
     
     # print header
     bg_color = RubyOF::Color.hex( 0xc4cfff )
     
     @@display.print_string(
-      anchor.x, anchor.y, "b1 b2 b3  deltatime      pitch      "
+      @anchor.x, @anchor.y, "b1 b2 b3  deltatime      pitch      "
     )
     # .each do |pos|
       # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
@@ -430,13 +433,21 @@ class MidiState < State
       # @display.background[pos] = bg_color
     # end
     
-    bb = CP::BB.new(0,0, 50,0)
+    x = @anchor.x+0
+    y = @anchor.y+0
+    w = 50
+    h = 1
+    bb = CP::BB.new(x,y, x+w,y+h-1)
     @@display.background.fill bb, bg_color
     # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
     
     
     # (color for midi pitch bars)
-    bb = CP::BB.new(20,1, 35, 10)
+    x = @anchor.x+20
+    y = @anchor.y+1
+    w = 15
+    h = 9
+    bb = CP::BB.new(x,y, x+w,y+h)
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
       fg_color = @@colors[:lilac]
     
@@ -444,12 +455,12 @@ class MidiState < State
     @@display.foreground.fill bb, fg_color
     
     # dump data on all messages in the queue
-    midiMessageQueue.first(10).each_with_index do |midi_msg, i|
+    midiMessageQueue.each_with_index do |midi_msg, i|
       
       # midi bytes
-      @@display.print_string(anchor.x+0, anchor.y+i+1, midi_msg[0].to_s(16))
-      @@display.print_string(anchor.x+3, anchor.y+i+1, midi_msg[1].to_s(16))
-      @@display.print_string(anchor.x+6, anchor.y+i+1, midi_msg[2].to_s(16))
+      @@display.print_string(@anchor.x+0, @anchor.y+i+1, midi_msg[0].to_s(16))
+      @@display.print_string(@anchor.x+3, @anchor.y+i+1, midi_msg[1].to_s(16))
+      @@display.print_string(@anchor.x+6, @anchor.y+i+1, midi_msg[2].to_s(16))
       
       
       # deltatime
@@ -458,7 +469,7 @@ class MidiState < State
       midi_dt = [max_display_num, midi_dt].min
       
       msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-      @@display.print_string(anchor.x+10, anchor.y+i+1, msg)
+      @@display.print_string(@anchor.x+10, @anchor.y+i+1, msg)
       
       
       
@@ -479,7 +490,7 @@ class MidiState < State
       bar_graph += @@hbar["#{fractions}/8"]
       
       @@display.print_string(
-        anchor.x+20, anchor.y+i+1,
+        @anchor.x+20, @anchor.y+i+1,
         bar_graph.ljust(count)
       )
       
@@ -519,14 +530,14 @@ class MidiState < State
       
       midi_msg.status
       @@display.print_string(
-        anchor.x+38, anchor.y+i+1,
+        @anchor.x+38, @anchor.y+i+1,
         status_string
       )
       
       
       # channel
       @@display.print_string(
-        anchor.x+44, anchor.y+i+1,
+        @anchor.x+44, @anchor.y+i+1,
         "ch#{midi_msg.channel.to_s.ljust(2)}"
         # ^ there are 16 possible midi channels
         #   thus, worse case the channel name has 2 digits in it
@@ -740,7 +751,7 @@ end
 
 class ColorPickerState < State
   def initialize
-    @anchor = CP::Vec2.new(48,0)
+    @anchor = CP::Vec2.new(63,9)
     @bg_color = RubyOF::Color.rgb( [0, 0, 0] )
     @fg_color = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
   end
@@ -749,17 +760,17 @@ class ColorPickerState < State
     pos = @anchor + CP::Vec2.new(0,0)
     @@display.print_string(pos.x, pos.y, "r  g  b  a ")
     
-    bb = CP::BB.new(48, 0, 58, 0)
-    @@display.background.fill bb, @bg_color
-    @@display.foreground.fill bb, @fg_color
-    
     @@window.cpp_ptr["colorPicker_color"].tap do |c|
       output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
       
       pos = @anchor + CP::Vec2.new(0,1)
       @@display.print_string(pos.x, pos.y, output_string)
       
-      bb = CP::BB.new(48, 1, 58, 1)
+      x = @anchor.x-2
+      y = @anchor.y+1
+      w = 15
+      h = 1
+      bb = CP::BB.new(x,y, x+w-1,y+h-1)
       @@display.background.fill bb, c
       @@display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
     end
@@ -1286,7 +1297,9 @@ class Core
     
     scheduler.section name: "midi", budget: msec(8)
       @main_modes[12] ||= MidiState.new
-      @main_modes[12].update(@w.cpp_val["midiMessageQueue"])
+      
+      @main_modes[12].update(@w.cpp_ptr["midiOut"],
+                             @w.cpp_val["midiMessageQueue"])
     
     
     scheduler.section name: "cleanup", budget: msec(1.0)
