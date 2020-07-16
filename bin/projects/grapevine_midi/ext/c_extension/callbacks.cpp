@@ -332,6 +332,8 @@ private:
 	// TODO: initialize some more c++ values here, instead of doing them elsewhere and passing them in via the Ruby layer
 	
 	ofPixels  _bgColorPixels;
+	ofTexture _bgColorTexture;
+	ofShader  _bgColorShader;
 	ofMesh    _bgMesh;        // likely the same across instances
 	
 	
@@ -375,17 +377,7 @@ public:
 	
 	
 	void flushColors_bg(){
-		for(int x=0; x < _numCharsX; x++){
-			for(int y=0; y < _numCharsY; y++){
-				ofColor c = _bgColorPixels.getColor(x,y);
-				int i = x + y*_numCharsX;
-				
-				_bgMesh.setColor(0+i*4, c);
-				_bgMesh.setColor(1+i*4, c);
-				_bgMesh.setColor(2+i*4, c);
-				_bgMesh.setColor(3+i*4, c);
-			}
-		}
+		_bgColorTexture.loadData(_bgColorPixels, GL_RGBA);
 	}
 	
 	void flushColors_fg(){
@@ -514,7 +506,15 @@ public:
 		
 		// ofLoadIdentityMatrix();
 		ofMultMatrix(_bgNode.getGlobalTransformMatrix());
+		
+		_bgColorShader.begin();
+		_bgColorShader.setUniformTexture(
+			"bgColorMap",      _bgColorTexture,           1
+		);
+		
 		_bgMesh.draw();
+		
+		_bgColorShader.end();
 		
 		ofPopMatrix();
 		
@@ -552,7 +552,16 @@ public:
 	
 	
 	
-	
+	Rice::Data_Object<ofShader> bgText_getShader(){
+		Rice::Data_Object<ofShader> rb_cPtr(
+			&_bgColorShader,
+			Rice::Data_Type< ofShader >::klass(),
+			Rice::Default_Mark_Function< ofShader >::mark,
+			Null_Free_Function< ofShader >::free
+		);
+		
+		return rb_cPtr;
+	}
 	
 	Rice::Data_Object<ofShader> fgText_getShader(){
 		Rice::Data_Object<ofShader> rb_cPtr(
@@ -629,16 +638,16 @@ public:
 			for(int i=0; i < w; i++){
 				
 				_bgMesh.addVertex(glm::vec3((i+0), (j+0), 0));
-				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				_bgMesh.addTexCoord(glm::vec3(i,j, 0));
 				
 				_bgMesh.addVertex(glm::vec3((i+1), (j+0), 0));
-				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				_bgMesh.addTexCoord(glm::vec3(i,j, 0));
 				
 				_bgMesh.addVertex(glm::vec3((i+0), (j+1), 0));
-				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				_bgMesh.addTexCoord(glm::vec3(i,j, 0));
 				
 				_bgMesh.addVertex(glm::vec3((i+1), (j+1), 0));
-				_bgMesh.addColor(ofFloatColor(1,((float) i)/w,0));
+				_bgMesh.addTexCoord(glm::vec3(i,j, 0));
 				
 				// ofColor will auto convert to ofFloatColor as necessary
 				// https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
@@ -830,6 +839,11 @@ void Init_rubyOF_project()
 		.define_method("flushColors_bg", &CharMappedDisplay::flushColors_bg)
 		.define_method("flushColors_fg", &CharMappedDisplay::flushColors_fg)
 		.define_method("flush",          &CharMappedDisplay::flush)
+		
+		
+		.define_method("bgText_getShader",
+			&CharMappedDisplay::bgText_getShader
+		)
 		
 		.define_method("fgText_getShader",
 			&CharMappedDisplay::fgText_getShader

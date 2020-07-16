@@ -634,11 +634,11 @@ class ProfilerState < State
       # plot data to the character display
       # 
       
-      x_offsets = [1, 10, 17, 25, 34]
+      x_offsets = [1, 17]
       
       # titles
       i = 0
-      [nil, '--min--', '--avg--', '--max--', '-------budget-------']
+      [nil, '--avg--']
       .zip(x_offsets) do |title, x_offset|
         next if title.nil?
         
@@ -656,30 +656,26 @@ class ProfilerState < State
         
         
         @@display.print_string(@anchor.x+x_offsets[0], @anchor.y+i+1, sec_name)
-        @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i+1, min)
-        @@display.print_string(@anchor.x+x_offsets[2], @anchor.y+i+1, avg)
-        @@display.print_string(@anchor.x+x_offsets[3], @anchor.y+i+1, max)
+        @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i+1, avg)
         
         
-        bar_graph = 
-          horiz_bar_graph(t: time_budget, t_max: msec(16),
-                          bar_length: 20)
+        # bar_graph = 
+        #   horiz_bar_graph(t: time_budget, t_max: msec(16),
+        #                   bar_length: 20)
         
-        @@display.print_string(@anchor.x+33, @anchor.y+i+1, bar_graph)
+        # @@display.print_string(@anchor.x+33, @anchor.y+i+1, bar_graph)
         
       end
       
       # sum of all sections (sum of min, sum of max, sum of average, etc)
       i = -1
       
-      min, max, avg = 
+      sum_min, sum_max, sum_avg = 
         @statistics.transpose
         .collect{ |vals| vals.reduce(&:+) }  # sum up each column
         .collect{ |x|    x.to_s.rjust(6)  }  # convert numbers to strings
       
-      @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i, min)
-      @@display.print_string(@anchor.x+x_offsets[2], @anchor.y+i, avg)
-      @@display.print_string(@anchor.x+x_offsets[3], @anchor.y+i, max)
+      @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i, sum_avg)
       
       
       
@@ -697,7 +693,7 @@ class ProfilerState < State
       end
       dt = @max_whole_iter_dt.to_s
       
-      @@display.print_string(@anchor.x+x_offsets[4], @anchor.y+i, dt)
+      @@display.print_string(@anchor.x+30, @anchor.y+i, dt)
       
       @whole_iter_counter += 1
       
@@ -945,7 +941,7 @@ class Core
         d.font.line_height = @line_height
         
         
-        w,h = [60, 29]
+        w,h = [78, 29]
         d.setup(w,h, @display_origin_px, @bg_offset, @bg_scale)
         
         d.remesh()
@@ -1100,10 +1096,10 @@ class Core
     #   RB_SPIKE_PROFILER.enable
     # end
     
-    puts "--> start update"
+    # puts "--> start update"
     signal = @update_scheduler.resume
     # puts signal
-    puts "<-- end update"
+    # puts "<-- end update"
     
     # if SPIKE_PROFILER_ON
     #   RB_SPIKE_PROFILER.disable
@@ -1128,24 +1124,32 @@ class Core
       
       # prototype possible smarter live-loading system for GLSL shaders
       
-      shader_name = "char_display"
+      
+      bg_shader_name = "char_display_bg"
+      fg_shader_name = "char_display"
+      
       files = [
-        PROJECT_DIR/"bin/data/#{shader_name}.vert",
-        PROJECT_DIR/"bin/data/#{shader_name}.frag"
+        PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
+        PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
+        PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
+        PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
       ]
       
       @shaderIsCorrect ||= nil
       
       if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
-        loaded_correctly = @display.reload_shader
+        loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
         
         
         
-        puts "load code: #{loaded_correctly}"
+        puts "load code: #{loaded}"
         # ^ apparently the boolean is still true when the shader is loaded with an error???
         
-        puts "loaded? : #{@display.shader_loaded?}"
+        puts "loaded? : #{@display.fg_shader_loaded?}"
         # ^ this doesn't work either
+        
+        # puts "loaded? : #{@display.bg_shader_loaded?}"
+        
         
         
         # This is a long-standing issue, open since 2015:
@@ -1156,7 +1160,7 @@ class Core
         # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
         
         
-        if loaded_correctly
+        if loaded
           case @shaderIsCorrect
           when true
             # good -> good
@@ -1211,68 +1215,48 @@ class Core
       
       @main_modes[1].update(@whole_iter_dt)
       
-    else
-      # # scheduler.section name: "test 2", budget: msec(0.2)
-      #   puts "test 2" if Scheduler::DEBUG
-      #   @input_handler.update
-        
-        
-      
-      # # scheduler.section name: "test 3", budget: msec(2.5)
-      #   puts "test 3" if Scheduler::DEBUG
-        
-      #   # p @w.cpp_val["midiMessageQueue"]
-        
-      #   delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
-      #   # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
-      
-      #   delta.each do |midi_msg|
-      #     # case midi_msg[0]
-      #     # when 0x90 # note on
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
-      #     #   # puts "ON: #{midi_msg.to_s}"
-            
-      #     # when 0x80 # note off
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
-      #     #   # puts "OFF: #{midi_msg.to_s}"
-            
-      #     # end
-          
-      #   end
-        
-      
-      
-      # # scheduler.section name: "test 4", budget: msec(0.2)
-      #   puts "test 4" if Scheduler::DEBUG
-        
-      #   @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
-        
-        
-        
-      #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
-      
-      
-      scheduler.section name: "test 5a", budget: msec(5)
-        puts "test 5a" if Scheduler::DEBUG
-      # if @debug.keys.empty?
-          
-      # end
-        
-      
-      
-        
-        
-      scheduler.section name: "test 6", budget: msec(5)
-        puts "test 6" if Scheduler::DEBUG
-        
-        @sprite = @hbar['8/8']*3
-        # @sprite = "hello world!"
-      
-      
     end
     
+    # # scheduler.section name: "test 2", budget: msec(0.2)
+    #   puts "test 2" if Scheduler::DEBUG
+    #   @input_handler.update
+      
+      
+    
+    # # scheduler.section name: "test 3", budget: msec(2.5)
+    #   puts "test 3" if Scheduler::DEBUG
+      
+    #   # p @w.cpp_val["midiMessageQueue"]
+      
+    #   delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
+    #   # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
+    
+    #   delta.each do |midi_msg|
+    #     # case midi_msg[0]
+    #     # when 0x90 # note on
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+    #     #   # puts "ON: #{midi_msg.to_s}"
+          
+    #     # when 0x80 # note off
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+    #     #   # puts "OFF: #{midi_msg.to_s}"
+          
+    #     # end
+        
+    #   end
+      
+    
+    
+    # # scheduler.section name: "test 4", budget: msec(0.2)
+    #   puts "test 4" if Scheduler::DEBUG
+      
+    #   @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
+      
+      
+      
+    #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
     
     
     scheduler.section name: "color", budget: msec(1)
@@ -1304,7 +1288,6 @@ class Core
     
     @display.flushColors_bg()
     @display.flushColors_fg()
-    
     
     
     # (had value at 3.5 ms, but I just saw a 3999 um spike -> 4.0 ms)
@@ -1400,7 +1383,7 @@ class Core
     
     
     @draw_durations << dt
-    puts "draw duration: #{dt}"
+    # puts "draw duration: #{dt}"
     
     if @draw_durations.length > draw_duration_history_len
       d_len = @draw_durations.length - draw_duration_history_len
