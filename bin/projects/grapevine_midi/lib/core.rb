@@ -1080,6 +1080,8 @@ class Core
   
   
   def on_reload
+    @shader_files = nil
+    @shaderIsCorrect = nil
     setup()
     @looper_pedal.setup
   end
@@ -1128,16 +1130,17 @@ class Core
       bg_shader_name = "char_display_bg"
       fg_shader_name = "char_display"
       
-      files = [
+      @shader_files ||= [
         PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
         PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
         PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
         PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
       ]
       
-      @shaderIsCorrect ||= nil
+      @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
       
-      if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
+      # load shader if it has never been loaded before, or if the files have been updated
+      if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
         loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
         
         
