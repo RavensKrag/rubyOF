@@ -376,16 +376,16 @@ class MidiState < State
     h = 11
     @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
     
-    @display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
-    @display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
+    @@display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
+    @@display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
     
     
     ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
-      @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
+      @@display.print_string(0,i, " "*(@midi_data_bb.r+1))
     end
   end
   
-  def update
+  def update(midiMessageQueue)
     
     if @first_update
       # scheduler.section name: "test 2a - first draw", budget: msec(16)
@@ -418,8 +418,8 @@ class MidiState < State
     # print header
     bg_color = RubyOF::Color.hex( 0xc4cfff )
     
-    @display.print_string(
-      anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
+    @@display.print_string(
+      anchor.x, anchor.y, "b1 b2 b3  deltatime      pitch      "
     )
     # .each do |pos|
       # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
@@ -430,26 +430,26 @@ class MidiState < State
       # @display.background[pos] = bg_color
     # end
     
-    bb= CP::BB.new(0,0, 50,0)
-    @display.background.fill bb, bg_color
+    bb = CP::BB.new(0,0, 50,0)
+    @@display.background.fill bb, bg_color
     # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
     
     
     # (color for midi pitch bars)
     bb = CP::BB.new(20,1, 35, 10)
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:lilac]
+      fg_color = @@colors[:lilac]
     
-    @display.background.fill bb, bg_color
-    @display.foreground.fill bb, fg_color
+    @@display.background.fill bb, bg_color
+    @@display.foreground.fill bb, fg_color
     
     # dump data on all messages in the queue
-    @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+    midiMessageQueue.first(10).each_with_index do |midi_msg, i|
       
       # midi bytes
-      @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
-      @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
-      @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+      @@display.print_string(anchor.x+0, anchor.y+i+1, midi_msg[0].to_s(16))
+      @@display.print_string(anchor.x+3, anchor.y+i+1, midi_msg[1].to_s(16))
+      @@display.print_string(anchor.x+6, anchor.y+i+1, midi_msg[2].to_s(16))
       
       
       # deltatime
@@ -458,7 +458,7 @@ class MidiState < State
       midi_dt = [max_display_num, midi_dt].min
       
       msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-      @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+      @@display.print_string(anchor.x+10, anchor.y+i+1, msg)
       
       
       
@@ -469,17 +469,17 @@ class MidiState < State
       value = 15
       range = 0..127
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:lilac]
+      fg_color = @@colors[:lilac]
       
       full_bars = midi_msg.pitch / 8
       fractions = midi_msg.pitch % 8
       
-      bar_graph  = @hbar['8/8']*full_bars
+      bar_graph  = @@hbar['8/8']*full_bars
       bar_graph ||= '' # bar graph can be nil if full_bars == 0
-      bar_graph += @hbar["#{fractions}/8"]
+      bar_graph += @@hbar["#{fractions}/8"]
       
-      @display.print_string(
-        anchor+CP::Vec2.new(20,i+1),
+      @@display.print_string(
+        anchor.x+20, anchor.y+i+1,
         bar_graph.ljust(count)
       )
       
@@ -518,15 +518,15 @@ class MidiState < State
         #   so that you don't get ghosting of old characters
       
       midi_msg.status
-      @display.print_string(
-        anchor+CP::Vec2.new(38,i+1),
+      @@display.print_string(
+        anchor.x+38, anchor.y+i+1,
         status_string
       )
       
       
       # channel
-      @display.print_string(
-        anchor+CP::Vec2.new(44,i+1),
+      @@display.print_string(
+        anchor.x+44, anchor.y+i+1,
         "ch#{midi_msg.channel.to_s.ljust(2)}"
         # ^ there are 16 possible midi channels
         #   thus, worse case the channel name has 2 digits in it
@@ -1200,12 +1200,12 @@ class Core
     
     if @debugging
       
-      scheduler.section name: "debug setup", budget: msec(0.5)
-      @debug_mode ||= DebugDisplayClipping.new
+      # scheduler.section name: "debug setup", budget: msec(0.5)
+      # @debug_mode ||= DebugDisplayClipping.new
       
-      scheduler.section name: "debug run", budget: msec(1.0)
+      # scheduler.section name: "debug run", budget: msec(1.0)
       
-      @debug_mode.update
+      # @debug_mode.update
       
       
       scheduler.section name: "profiler init", budget: msec(1)
@@ -1262,6 +1262,7 @@ class Core
     #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
     
     
+    
     scheduler.section name: "color", budget: msec(1)
       puts "color" if Scheduler::DEBUG
       # 
@@ -1282,6 +1283,10 @@ class Core
       @main_modes[11].update
     
     
+    
+    scheduler.section name: "midi", budget: msec(8)
+      @main_modes[12] ||= MidiState.new
+      @main_modes[12].update(@w.cpp_val["midiMessageQueue"])
     
     
     scheduler.section name: "cleanup", budget: msec(1.0)
