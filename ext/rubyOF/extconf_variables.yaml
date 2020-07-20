@@ -110,7 +110,7 @@
   - !ruby/regexp /\.l[ao]\z/
   - !ruby/regexp /\.o\z/
   "$defs": []
-  "$CPPFLAGS": " $(DEFS) $(cppflags)  -I/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib/include
+  "$CPPFLAGS": " $(DEFS) $(cppflags)  -I/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.2.0/ruby/lib/include
     -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/orc-0.4
     -I/usr/include/gstreamer-1.0 -I/usr/include/AL -I/usr/include/x86_64-linux-gnu
     -I/usr/include/rtaudio -I/usr/include/alsa -I/usr/include/libdrm -I/usr/include/gtk-3.0
@@ -146,7 +146,7 @@
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/utils
     -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
     -I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
-  "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib/lib
+  "$LDFLAGS": "-L. -fstack-protector -rdynamic -Wl,-export-dynamic  -L/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.2.0/ruby/lib/lib
     -lrice /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
     \  -Wl,-rpath=.:.bin/lib:/home/ravenskrag/Desktop/gem_structure/bin/lib -Wl,--as-needed
     -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
@@ -177,7 +177,7 @@
   "$-a": false
   "$RICE_CPPFLAGS": ''
   "$CXX": g++
-  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.1.3/ruby/lib"
+  "$RICE_PREFIX": "/home/ravenskrag/.rvm/gems/ruby-2.5.1/gems/rice-2.2.0/ruby/lib"
   "$RICE_LDFLAGS": ''
   "$DEFLIBPATH":
   - "."

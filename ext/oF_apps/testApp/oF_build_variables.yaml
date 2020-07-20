@@ -142,6 +142,8 @@ XDG_SESSION_TYPE:
 - x11
 CWEAVE:
 - cweave
+KCRASH_AUTO_RESTARTED:
+- '1'
 PROJECT_CFLAGS:
 - "-fPIC"
 - "-fdiagnostics-color=always"
@@ -313,7 +315,7 @@ LINK.cc:
 PAM_KWALLET5_LOGIN:
 - "/run/user/1000/kwallet5.socket"
 XDG_SESSION_PATH:
-- "/org/freedesktop/DisplayManager/Session1"
+- "/org/freedesktop/DisplayManager/Session9"
 MAKE_HOST:
 - x86_64-pc-linux-gnu
 PATH:
@@ -383,11 +385,11 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1798,unix/ravensnest:/tmp/.ICE-unix/1798
+- local/ravensnest:@/tmp/.ICE-unix/25572,unix/ravensnest:/tmp/.ICE-unix/25572
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
-COMPILE.mod:
-- m2c
+rvm_stored_umask:
+- '0002'
 XDG_RUNTIME_DIR:
 - "/run/user/1000"
 FIND:
@@ -473,7 +475,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-oOqxNcBe34Xg/agent.1568"
+- "/tmp/ssh-mPQ8utOreIDZ/agent.25319"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -567,7 +569,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1727'
+- '25470'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -773,7 +775,7 @@ COMPILE.p:
 - pc
 - "-c"
 XDG_SESSION_ID:
-- '3'
+- '97'
 USER:
 - ravenskrag
 FC:
@@ -812,8 +814,9 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-OLDPWD:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects"
+COMPILE.cc:
+- g++
+- "-c"
 REQUESTED_PROJECT_ADDONS: []
 OF_PROJECT_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
@@ -831,6 +834,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_CORE_THIRDPARTY_STATIC_LIBS
 - XDG_SESSION_TYPE
 - CWEAVE
+- KCRASH_AUTO_RESTARTED
 - PROJECT_CFLAGS
 - "?D"
 - rvm_path
@@ -902,7 +906,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - XCURSOR_THEME
 - SESSION_MANAGER
 - OF_LIBS_OF_COMPILED_PATH
-- COMPILE.mod
+- rvm_stored_umask
 - XDG_RUNTIME_DIR
 - FIND
 - CFLAGS
@@ -1011,7 +1015,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- OLDPWD
+- COMPILE.cc
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
 - ".VARIABLES"
@@ -1037,6 +1041,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - COMPILE.r
 - OBJS_WITH_PREFIX
 - OF_PROJECT_SOURCE_PATHS
+- rvm_user_install_flag
 - "+F"
 - M2C
 - PLATFORM_HEADER_SEARCH_PATHS
@@ -1052,11 +1057,11 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - TEXTDOMAINDIR
 - GCC_MINOR_GTEQ_7
 - MAKEFILES
+- OF_PROJECT_DEFINES_CFLAGS
 - OF_PROJECT_DEPENDENCY_FILES
 - _system_type
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -1069,6 +1074,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_CORE_INCLUDES_CFLAGS
 - OF_PROJECT_RESOURCES
 - COMPILE.C
+- COMPILE.mod
 - GNOME_TERMINAL_SCREEN
 - "^F"
 - COMPILE.S
@@ -1084,7 +1090,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - _system_arch
 - COMPILE.s
 - ".INCLUDE_DIRS"
-- OF_PROJECT_DEFINES_CFLAGS
+- rvm_loaded_flag
 - CORE_PKG_CONFIG_LIBRARIES
 - ".RECIPEPREFIX"
 - MAKEINFO
@@ -1180,6 +1186,8 @@ OBJS_WITH_PREFIX:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/main.o
 OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
+rvm_user_install_flag:
+- '1'
 "+F": []
 M2C:
 - m2c
@@ -1213,6 +1221,7 @@ TEXTDOMAINDIR:
 GCC_MINOR_GTEQ_7:
 - '1'
 MAKEFILES: []
+OF_PROJECT_DEFINES_CFLAGS: []
 OF_PROJECT_DEPENDENCY_FILES:
 - obj/linux64/Debug/src/ofApp.d
 - obj/linux64/Debug/src/main.d
@@ -1444,9 +1453,6 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
-COMPILE.cc:
-- g++
-- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
@@ -1542,8 +1548,10 @@ OF_PROJECT_RESOURCES: []
 COMPILE.C:
 - g++
 - "-c"
+COMPILE.mod:
+- m2c
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/b4bfebd9_eeda_4f74_b15c_740bc65d2383"
+- "/org/gnome/Terminal/screen/e70a8542_0336_4812_8eff_1adedd6829fb"
 "^F": []
 COMPILE.S:
 - cc
@@ -1562,7 +1570,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.2540"
+- ":1.610"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -1683,7 +1691,8 @@ COMPILE.s:
 - "/usr/include"
 - "/usr/local/include"
 - "/usr/include"
-OF_PROJECT_DEFINES_CFLAGS: []
+rvm_loaded_flag:
+- '1'
 CORE_PKG_CONFIG_LIBRARIES:
 - cairo
 - zlib
@@ -1710,7 +1719,7 @@ CORE_PKG_CONFIG_LIBRARIES:
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/3"
+- "/dev/pts/2"
 OBJC:
 - cc
 LINK.f:
@@ -1761,9 +1770,11 @@ ALL_INSTALLED_ADDONS:
 - ofxAssimpModelLoader
 - ofxPoco
 - ofxAndroid
-- ofxDatGui
+- ofxSparklines
+- ofxMathUtils
 - ofxiOS
 - ofxImGui
+- ofxDatGui
 OF_CORE_BASE_CXXFLAGS: []
 PLATFORM_LIB_SUBPATH:
 - linux64

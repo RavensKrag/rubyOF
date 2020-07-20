@@ -60,11 +60,11 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		// However, I don't think non-standard sizes can be used
 		// because Rice binds ofColor and not the arbitrary size type.
 		
-		ofxDatGui* mDatGui;
+		// ofxDatGui* mDatGui;
 		
-		ofxDatGuiValuePlotter* mPlotter;
-		ofxDatGuiLabel*         mLabel1;
-		ofxDatGuiLabel*         mLabel2;
+		// ofxDatGuiValuePlotter* mPlotter;
+		// ofxDatGuiLabel*         mLabel1;
+		// ofxDatGuiLabel*         mLabel2;
 		
 		
 		ofxImGui::Gui im_gui;
@@ -82,4 +82,12 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		
 		ofShader _materialEditor_shader;
 		ofMesh   _materialEditor_mesh;
+		
+		
+		
+		uint64_t mFrameCounter_update, mFrameCounter_draw;
+		
+		// ofxDatGuiValuePlotter* mPlotter_draw_time;
+		// ofxDatGuiValuePlotter* mPlotter_update_time;
+		// ofxDatGuiValuePlotter* mPlotter_total_time;
 };

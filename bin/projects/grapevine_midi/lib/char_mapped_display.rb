@@ -87,10 +87,8 @@ class RubyOF::Project::CharMappedDisplay
     # set up information needed for text coloring shader
     # 
     
-    
-    @shader_name = "char_display"
-    load_shaders(@shader_name)
-    
+    # load_shaders(bg_shader_name, fg_shader_name)
+    # NOTE: shaders not loaded yet. code to do that is #load_shaders, called in Core.rb#on_update(scheduler)
     
     setup_transforms(origin.x, origin.y,
                      bg_offset.x, bg_offset.y,
@@ -98,14 +96,31 @@ class RubyOF::Project::CharMappedDisplay
     
   end
   
-  def reload_shader
-    load_shaders(@shader_name)
+  def load_shaders(bg_shader_name, fg_shader_name)
+    fgFlag = nil
+    bgFlag = nil
+    
+    fgText_getShader().tap do |s|
+      fgFlag = RubyOF::CPP_Callbacks.ofShader_loadShaders(s, [fg_shader_name])
+    end
+    
+    bgText_getShader().tap do |s|
+      bgFlag = RubyOF::CPP_Callbacks.ofShader_loadShaders(s, [bg_shader_name])
+    end
+    
+    return bgFlag && fgFlag
   end
   
-  def shader_loaded?
+  def fg_shader_loaded?
     shader = fgText_getShader()
     shader.isLoaded()
   end
+  
+  def bg_shader_loaded?
+    shader = bgText_getShader()
+    shader.isLoaded()
+  end
+  
   
   # def update
   #   @glsl_live_loader ||= 
@@ -145,7 +160,7 @@ class RubyOF::Project::CharMappedDisplay
   # + read / write to those pixel positions
   
   
-  
+  private :bgText_getShader
   private :fgText_getShader, :fgText_getTexture
   
   def each_position() # &block
@@ -244,17 +259,17 @@ class RubyOF::Project::CharMappedDisplay
   private
   
   
-  def load_shaders(*args)
-    shader = fgText_getShader()
-    load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
-    # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
+  # def load_shaders(*args)
+  #   shader = fgText_getShader()
+  #   load_flag = RubyOF::CPP_Callbacks.ofShader_loadShaders(shader, args)
+  #   # ^ have to use this callback and not RubyOF::Shader#load() in order to load from the proper directory
     
-    # if load_flag
-    #   # puts "Ruby: shader loaded"
-    # else
-    #   puts "ERROR: couldn't load shaders '#{args.inspect}'"
-    # end
-  end
+  #   # if load_flag
+  #   #   # puts "Ruby: shader loaded"
+  #   # else
+  #   #   puts "ERROR: couldn't load shaders '#{args.inspect}'"
+  #   # end
+  # end
   
   
 end

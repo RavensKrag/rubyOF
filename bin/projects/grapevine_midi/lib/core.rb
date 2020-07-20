@@ -368,25 +368,29 @@ class MidiState < State
   def initialize
     # clear the area where midi message data will be drawn
     
+    @anchor = CP::Vec2.new(2,0)
+    
     # CP::BB
     # l,b,r,t
-    x = 0
-    y = 0
+    x = @anchor.x
+    y = @anchor.y
     w = 50
     h = 11
     @midi_data_bb = CP::BB.new(x,y, x+w,y+h)
     
-    @display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
-    @display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
+    @@display.background.fill @midi_data_bb, RubyOF::Color.hex( 0xb6b198 )
+    @@display.foreground.fill @midi_data_bb, RubyOF::Color.hex( 0x32312a )
     
     
     ((@midi_data_bb.b.to_i)..(@midi_data_bb.t.to_i)).each do |i|
-      @display.print_string(CP::Vec2.new(0, i), " "*(@midi_data_bb.r+1))
+      @@display.print_string(0,i, " "*(@midi_data_bb.r+1))
     end
+    
+    
+    @first_update = true
   end
   
-  def update
-    
+  def update(midiOut, midiMessageQueue)
     if @first_update
       # scheduler.section name: "test 2a - first draw", budget: msec(16)
       # screen_size = read_screen_size("Screen 0")
@@ -394,7 +398,7 @@ class MidiState < State
       # puts "screen size: #{[screen_w, screen_h].inspect}"
       
       puts "---> callback from ruby"
-      @w.cpp_ptr["midiOut"].listOutPorts()
+      midiOut.listOutPorts()
       puts "<--- callback end"
       
       
@@ -413,13 +417,12 @@ class MidiState < State
     # 
     # show MIDI note data
     # 
-    anchor = CP::Vec2.new(@midi_data_bb.l, @midi_data_bb.b)
     
     # print header
     bg_color = RubyOF::Color.hex( 0xc4cfff )
     
-    @display.print_string(
-      anchor+CP::Vec2.new(0,0), "b1 b2 b3  deltatime      pitch      "
+    @@display.print_string(
+      @anchor.x, @anchor.y, "b1 b2 b3  deltatime      pitch      "
     )
     # .each do |pos|
       # @display.foreground[pos] = RubyOF::Color.hex( 0xf6fff6 )
@@ -430,26 +433,34 @@ class MidiState < State
       # @display.background[pos] = bg_color
     # end
     
-    bb= CP::BB.new(0,0, 50,0)
-    @display.background.fill bb, bg_color
+    x = @anchor.x+0
+    y = @anchor.y+0
+    w = 50
+    h = 1
+    bb = CP::BB.new(x,y, x+w,y+h-1)
+    @@display.background.fill bb, bg_color
     # @display.foreground.fill bb, RubyOF::Color.hex( 0xf6fff6 )
     
     
     # (color for midi pitch bars)
-    bb = CP::BB.new(20,1, 35, 10)
+    x = @anchor.x+20
+    y = @anchor.y+1
+    w = 15
+    h = 9
+    bb = CP::BB.new(x,y, x+w,y+h)
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:lilac]
+      fg_color = @@colors[:lilac]
     
-    @display.background.fill bb, bg_color
-    @display.foreground.fill bb, fg_color
+    @@display.background.fill bb, bg_color
+    @@display.foreground.fill bb, fg_color
     
     # dump data on all messages in the queue
-    @w.cpp_val["midiMessageQueue"].each_with_index do |midi_msg, i|
+    midiMessageQueue.each_with_index do |midi_msg, i|
       
       # midi bytes
-      @display.print_string(anchor+CP::Vec2.new(0,i+1), midi_msg[0].to_s(16))
-      @display.print_string(anchor+CP::Vec2.new(3,i+1), midi_msg[1].to_s(16))
-      @display.print_string(anchor+CP::Vec2.new(6,i+1), midi_msg[2].to_s(16))
+      @@display.print_string(@anchor.x+0, @anchor.y+i+1, midi_msg[0].to_s(16))
+      @@display.print_string(@anchor.x+3, @anchor.y+i+1, midi_msg[1].to_s(16))
+      @@display.print_string(@anchor.x+6, @anchor.y+i+1, midi_msg[2].to_s(16))
       
       
       # deltatime
@@ -458,7 +469,7 @@ class MidiState < State
       midi_dt = [max_display_num, midi_dt].min
       
       msg = ("%.3f" % midi_dt).rjust(max_display_num.to_s.length)
-      @display.print_string(anchor+CP::Vec2.new(10,i+1), msg)
+      @@display.print_string(@anchor.x+10, @anchor.y+i+1, msg)
       
       
       
@@ -469,17 +480,17 @@ class MidiState < State
       value = 15
       range = 0..127
       bg_color = RubyOF::Color.rgba( [(0.5*255).to_i]*3 + [255] )
-      fg_color = @colors[:lilac]
+      fg_color = @@colors[:lilac]
       
       full_bars = midi_msg.pitch / 8
       fractions = midi_msg.pitch % 8
       
-      bar_graph  = @hbar['8/8']*full_bars
+      bar_graph  = @@hbar['8/8']*full_bars
       bar_graph ||= '' # bar graph can be nil if full_bars == 0
-      bar_graph += @hbar["#{fractions}/8"]
+      bar_graph += @@hbar["#{fractions}/8"]
       
-      @display.print_string(
-        anchor+CP::Vec2.new(20,i+1),
+      @@display.print_string(
+        @anchor.x+20, @anchor.y+i+1,
         bar_graph.ljust(count)
       )
       
@@ -518,15 +529,15 @@ class MidiState < State
         #   so that you don't get ghosting of old characters
       
       midi_msg.status
-      @display.print_string(
-        anchor+CP::Vec2.new(38,i+1),
+      @@display.print_string(
+        @anchor.x+38, @anchor.y+i+1,
         status_string
       )
       
       
       # channel
-      @display.print_string(
-        anchor+CP::Vec2.new(44,i+1),
+      @@display.print_string(
+        @anchor.x+44, @anchor.y+i+1,
         "ch#{midi_msg.channel.to_s.ljust(2)}"
         # ^ there are 16 possible midi channels
         #   thus, worse case the channel name has 2 digits in it
@@ -560,8 +571,6 @@ class ProfilerState < State
     
     
     
-    @statistics = Hash.new
-    
     @@display.background.fill bb, bg_color
     @@display.foreground.fill bb, fg_color
     
@@ -586,7 +595,7 @@ class ProfilerState < State
     @@display.foreground.fill bar_graph_bb, bar_fg_color
   end
   
-  def update
+  def update(whole_iter_dt)
   # RubyOF::CPP_Callbacks.SpikeProfiler_begin("section: profilr")
   # RB_SPIKE_PROFILER.enable
   # run_profiler do
@@ -594,150 +603,146 @@ class ProfilerState < State
     # 
     # display timing data
     # 
+    # puts @update_scheduler.time_log.size
     
-    @update_scheduler.max_num_cycles = 50
+    
+    # @statistics ||= Hash.new
+    @statistics ||= Array.new
     
     
-    # get the data from the time log
-    # reduce it down to 3 data points per section: min, median, max
-    # print those numbers to the display
-    clusters = 
-      @update_scheduler.time_log
-      .first( @update_scheduler.max_num_cycles*@update_scheduler.section_count )
-      .group_by{|section_name, time_budget, dt|  section_name  }
     
-    # p clusters
-      # puts "---"
-      # puts "time log size: #{@update_scheduler.time_log.size}"
-      # puts "sections: #{@update_scheduler.section_count}"
-      # clusters.each do |k,v|
-      #   puts "#{k.ljust(10)} => #{v.size}"
-      # end
-      # puts "---"
     
-    clusters.each do |name, data|
-      times = 
-        data
-        .collect{  |section_name, time_budget, dt|   dt   }
-        .sort
+    # 
+    # update statistics based on latest data
+    # 
+    
+    @update_scheduler.performance_log&.compact&.tap do |log|
+      n = @update_scheduler.sample_count
       
-      # p times
+      # puts "log size: #{log.size}"
       
-      
-      
-      data = @statistics[name]
-      if data.nil?
-        min    = times.first
-        max    = times.last
-        median = times[ times.length / 2 ]
-      else
-        best_min, best_med, best_max = data
+      log.each_with_index do |data, i|
+        section_name, time_budget, dt = data
+        # update min, max, and average for each section
         
-        min    = [times.first, best_min].min
-        max    = [times.last,  best_max].max
-        median = times[ times.length / 2 ]
-      end
-      
-      
-      @statistics[name] = [min, median, max]
-    end
-    
-    # p @statistics
-    i = -1
-      sum = @statistics
-            .map{|name, stats| stats }
-            .map{|min, med, max| med }
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  sum.to_s.rjust(6))
-      
-      sum = @statistics
-            .map{|name, stats| stats }
-            .map{|min, med, max| max }
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  sum.to_s.rjust(6))
-      
-      sum = @update_scheduler.budgets.each_value
-            .reduce(&:+)
-      @@display.print_string(@anchor.x+34, @anchor.y+i,  sum.to_s.rjust(6))
-    
-    
-    i = 0
-      @@display.print_string(@anchor.x+ 9, @anchor.y+i,  '--min--')
-      @@display.print_string(@anchor.x+16, @anchor.y+i,  ' median')
-      @@display.print_string(@anchor.x+24, @anchor.y+i,  '--max--')
-      
-      @@display.print_string(@anchor.x+33, @anchor.y+i,
-                            '-------budget-------')
-  
-    
-    i = 1
-    @statistics.each do |name, stats|
-      min, med, max = stats
-      
-      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  name)
-      
-      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
-      
-      # TODO: show all time high as well (useful for eliminating the big rare spikes)
-      
-      
-      bar_graph = 
-        horiz_bar_graph(t: @update_scheduler.budgets[name], t_max: msec(16),
-                       bar_length: 20)
-      
-      @@display.print_string(@anchor.x+33, @anchor.y+i, bar_graph)
-      
-      
-      i += 1
-    end
-    
-    
-    # i = 10
-    # puts i # i >= 10
-      if @draw_durations.empty?
-        
-        min = 0
-        max = 0
-        med = 0
-        
-      else
-        
-        times = @draw_durations.sort
-        # p times
-        
-        data = @draw_stats
-        if data.nil?
-          min = times.first
-          max = times.last
-          med = times[ times.length / 2 ]
+        if @statistics[i].nil?
+          min = dt
+          max = dt
+          avg = dt
         else
-          # p data
-          best_min, best_med, best_max = data
+          min, max, avg = @statistics[i]
           
-          min = [times.first, best_min].min
-          max = [times.last,  best_max].max
-          med = times[ times.length / 2 ]
+          min = [min, dt].min
+          max = [max, dt].max
+          avg = (dt + avg*n) / (n+1)
         end
+        @statistics[i] = [min, max, avg]
         
-        @draw_stats = [min, med, max]
+      end
+      
+      # p @statistics
+      
+      # plot data to the character display
+      # 
+      
+      x_offsets = [1, 17]
+      
+      # titles
+      i = 0
+      [nil, '--avg--']
+      .zip(x_offsets) do |title, x_offset|
+        next if title.nil?
+        
+        @@display.print_string(@anchor.x+x_offset-1, @anchor.y+i, title)
       end
       
       
+      # data rows
+        # @statistics.each_with_index do |i, data|
+        # min, max, avg = data.map{ |x| x.to_s.rjust(6) }
+      @statistics.each_with_index do |data, i|
+        
+        min, max, avg = data.map{ |x| x.to_s.rjust(6) }
+        sec_name, time_budget, dt = @update_scheduler.performance_log[i]
+        
+        
+        @@display.print_string(@anchor.x+x_offsets[0], @anchor.y+i+1, sec_name)
+        @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i+1, avg)
+        
+        
+        # bar_graph = 
+        #   horiz_bar_graph(t: time_budget, t_max: msec(16),
+        #                   bar_length: 20)
+        
+        # @@display.print_string(@anchor.x+33, @anchor.y+i+1, bar_graph)
+        
+      end
       
-      @@display.print_string(@anchor.x+ 1, @anchor.y+i,  'draw')
+      # sum of all sections (sum of min, sum of max, sum of average, etc)
+      i = -1
       
-      @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
-      @@display.print_string(@anchor.x+17, @anchor.y+i,  med.to_s.rjust(6))
-      @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+      sum_min, sum_max, sum_avg = 
+        @statistics.transpose
+        .collect{ |vals| vals.reduce(&:+) }  # sum up each column
+        .collect{ |x|    x.to_s.rjust(6)  }  # convert numbers to strings
+      
+      @@display.print_string(@anchor.x+x_offsets[1], @anchor.y+i, sum_avg)
+      
+      
+      
+      if @max_whole_iter_dt.nil?
+        @whole_iter_counter = 1
+        @max_whole_iter_dt = whole_iter_dt
+      else
+        dt  = @max_whole_iter_dt
+        n   = @whole_iter_counter
+        avg = @max_whole_iter_dt
+        
+        avg = (dt + avg*n) / (n+1)
+        
+        @max_whole_iter_dt = avg
+      end
+      dt = @max_whole_iter_dt.to_s
+      
+      @@display.print_string(@anchor.x+30, @anchor.y+i, dt)
+      
+      @whole_iter_counter += 1
+      
+      
+      # compare with timings for entire #draw and #update phases, as well as combined #draw + #update
+        # (measure each callback, rather than summing)
+        # (ideally, the values would be the same as summing, but at the very least there is some overhead we are not measuring)
+      
+      
+      # TODO: time entire #draw phase
+      # TODO: time entire #update phase
+      # TODO: separate logging of time into a separate class (* not Scheduler) to make it easier to measure both #update and #draw
+      
+      
+      
+      
+      
+      # i = 10
+      # puts i # i >= 10
+        
+        
+        # @@display.print_string(@anchor.x+ 1, @anchor.y+i,  'draw')
+        
+        # @@display.print_string(@anchor.x+10, @anchor.y+i,  min.to_s.rjust(6))
+        # @@display.print_string(@anchor.x+17, @anchor.y+i,  avg.to_s.rjust(6))
+        # @@display.print_string(@anchor.x+25, @anchor.y+i,  max.to_s.rjust(6))
+      
+      
+        # @@display.print_string(
+        #   @anchor.x+33, @anchor.y+i,
+        #   horiz_bar_graph(t: msec(1.5), t_max: msec(16),
+        #                  bar_length: 20)
+        # )
+      
+    end
     
     
-      @@display.print_string(
-        @anchor.x+33, @anchor.y+i,
-        horiz_bar_graph(t: msec(1.5), t_max: msec(16),
-                       bar_length: 20)
-      )
+    # 
   # end
   # RB_SPIKE_PROFILER.disable
   # RubyOF::CPP_Callbacks.SpikeProfiler_end()
@@ -746,7 +751,7 @@ end
 
 class ColorPickerState < State
   def initialize
-    @anchor = CP::Vec2.new(48,0)
+    @anchor = CP::Vec2.new(63,9)
     @bg_color = RubyOF::Color.rgb( [0, 0, 0] )
     @fg_color = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
   end
@@ -755,17 +760,17 @@ class ColorPickerState < State
     pos = @anchor + CP::Vec2.new(0,0)
     @@display.print_string(pos.x, pos.y, "r  g  b  a ")
     
-    bb = CP::BB.new(48, 0, 58, 0)
-    @@display.background.fill bb, @bg_color
-    @@display.foreground.fill bb, @fg_color
-    
     @@window.cpp_ptr["colorPicker_color"].tap do |c|
       output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
       
       pos = @anchor + CP::Vec2.new(0,1)
       @@display.print_string(pos.x, pos.y, output_string)
       
-      bb = CP::BB.new(48, 1, 58, 1)
+      x = @anchor.x-2
+      y = @anchor.y+1
+      w = 15
+      h = 1
+      bb = CP::BB.new(x,y, x+w-1,y+h-1)
       @@display.background.fill bb, c
       @@display.foreground.fill bb, RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
     end
@@ -827,7 +832,7 @@ class Core
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
-    @update_scheduler = Scheduler.new(self, :on_update, msec(16.6))
+    @update_scheduler = Scheduler.new(self, :on_update, msec(16-4))
     @draw_durations = Array.new # stores profiler data for #draw
     
     
@@ -947,7 +952,7 @@ class Core
         d.font.line_height = @line_height
         
         
-        w,h = [60, 29]
+        w,h = [78, 29]
         d.setup(w,h, @display_origin_px, @bg_offset, @bg_scale)
         
         d.remesh()
@@ -1086,6 +1091,8 @@ class Core
   
   
   def on_reload
+    @shader_files = nil
+    @shaderIsCorrect = nil
     setup()
     @looper_pedal.setup
   end
@@ -1093,16 +1100,19 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     # puts "update thread: #{Thread.current.object_id}" 
     
     # if SPIKE_PROFILER_ON
     #   RB_SPIKE_PROFILER.enable
     # end
     
-    puts "--> start update" if Scheduler::DEBUG
+    # puts "--> start update"
     signal = @update_scheduler.resume
     # puts signal
-    puts "<-- end update" if Scheduler::DEBUG
+    # puts "<-- end update"
     
     # if SPIKE_PROFILER_ON
     #   RB_SPIKE_PROFILER.disable
@@ -1127,24 +1137,33 @@ class Core
       
       # prototype possible smarter live-loading system for GLSL shaders
       
-      shader_name = "char_display"
-      files = [
-        PROJECT_DIR/"bin/data/#{shader_name}.vert",
-        PROJECT_DIR/"bin/data/#{shader_name}.frag"
+      
+      bg_shader_name = "char_display_bg"
+      fg_shader_name = "char_display"
+      
+      @shader_files ||= [
+        PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
+        PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
+        PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
+        PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
       ]
       
-      @shaderIsCorrect ||= nil
+      @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
       
-      if files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
-        loaded_correctly = @display.reload_shader
+      # load shader if it has never been loaded before, or if the files have been updated
+      if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
+        loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
         
         
         
-        puts "load code: #{loaded_correctly}"
+        puts "load code: #{loaded}"
         # ^ apparently the boolean is still true when the shader is loaded with an error???
         
-        puts "loaded? : #{@display.shader_loaded?}"
+        puts "loaded? : #{@display.fg_shader_loaded?}"
         # ^ this doesn't work either
+        
+        # puts "loaded? : #{@display.bg_shader_loaded?}"
+        
         
         
         # This is a long-standing issue, open since 2015:
@@ -1155,7 +1174,7 @@ class Core
         # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
         
         
-        if loaded_correctly
+        if loaded
           case @shaderIsCorrect
           when true
             # good -> good
@@ -1192,85 +1211,66 @@ class Core
     
     if @debugging
       
-      scheduler.section name: "debug setup", budget: msec(0.5)
-      @debug_mode ||= DebugDisplayClipping.new
+      # scheduler.section name: "debug setup", budget: msec(0.5)
+      # @debug_mode ||= DebugDisplayClipping.new
       
-      scheduler.section name: "debug run", budget: msec(1.0)
+      # scheduler.section name: "debug run", budget: msec(1.0)
       
-      @debug_mode.update
+      # @debug_mode.update
       
       
-      scheduler.section name: "profilr init", budget: msec(1)
-      puts "profilr" if Scheduler::DEBUG
+      scheduler.section name: "profiler init", budget: msec(1)
+      puts "profiler" if Scheduler::DEBUG
       
       @main_modes[1] ||= ProfilerState.new(@update_scheduler, @draw_durations)
       
       
-      scheduler.section name: "profilr run", budget: msec(4)
+      scheduler.section name: "profiler run", budget: msec(4)
       
-      @main_modes[1].update
-      
-    else
-      # # scheduler.section name: "test 2", budget: msec(0.2)
-      #   puts "test 2" if Scheduler::DEBUG
-      #   @input_handler.update
-        
-        
-      
-      # # scheduler.section name: "test 3", budget: msec(2.5)
-      #   puts "test 3" if Scheduler::DEBUG
-        
-      #   # p @w.cpp_val["midiMessageQueue"]
-        
-      #   delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
-      #   # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
-      
-      #   delta.each do |midi_msg|
-      #     # case midi_msg[0]
-      #     # when 0x90 # note on
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
-      #     #   # puts "ON: #{midi_msg.to_s}"
-            
-      #     # when 0x80 # note off
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
-      #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
-      #     #   # puts "OFF: #{midi_msg.to_s}"
-            
-      #     # end
-          
-      #   end
-        
-      
-      
-      # # scheduler.section name: "test 4", budget: msec(0.2)
-      #   puts "test 4" if Scheduler::DEBUG
-        
-      #   @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
-        
-        
-        
-      #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
-      
-      
-      scheduler.section name: "test 5a", budget: msec(5)
-        puts "test 5a" if Scheduler::DEBUG
-      # if @debug.keys.empty?
-          
-      # end
-        
-      
-      
-        
-        
-      scheduler.section name: "test 6", budget: msec(5)
-        puts "test 6" if Scheduler::DEBUG
-        
-        @sprite = @hbar['8/8']*3
-        # @sprite = "hello world!"
-      
+      @main_modes[1].update(@whole_iter_dt)
       
     end
+    
+    # # scheduler.section name: "test 2", budget: msec(0.2)
+    #   puts "test 2" if Scheduler::DEBUG
+    #   @input_handler.update
+      
+      
+    
+    # # scheduler.section name: "test 3", budget: msec(2.5)
+    #   puts "test 3" if Scheduler::DEBUG
+      
+    #   # p @w.cpp_val["midiMessageQueue"]
+      
+    #   delta = @midi_msg_memory.delta_from_sample(@w.cpp_val["midiMessageQueue"])
+    #   # print "diff size: #{diff.size}  "; p diff.map{|x| x.to_s }
+    
+    #   delta.each do |midi_msg|
+    #     # case midi_msg[0]
+    #     # when 0x90 # note on
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+4, midi_msg.velocity)
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOn( 3, midi_msg.pitch+7, midi_msg.velocity)
+    #     #   # puts "ON: #{midi_msg.to_s}"
+          
+    #     # when 0x80 # note off
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+4, midi_msg.velocity)
+    #     #   @w.cpp_ptr["midiOut"].sendNoteOff(3, midi_msg.pitch+7, midi_msg.velocity)
+    #     #   # puts "OFF: #{midi_msg.to_s}"
+          
+    #     # end
+        
+    #   end
+      
+    
+    
+    # # scheduler.section name: "test 4", budget: msec(0.2)
+    #   puts "test 4" if Scheduler::DEBUG
+      
+    #   @looper_pedal.update(delta, @w.cpp_ptr["midiOut"])
+      
+      
+      
+    #   live_colorpicker = @w.cpp_ptr["colorPicker_color"]
     
     
     
@@ -1295,30 +1295,21 @@ class Core
     
     
     
-    
-    # scheduler.section name: "cleanup", budget: msec(16)
-    
-    
-    scheduler.section name: "cleanup1", budget: msec(1.0)
-    
-    @display.flushColors_bg()
-    @display.flushColors_fg()
-    
-    
-    
-    # (had value at 3.5 ms, but I just saw a 3999 um spike -> 4.0 ms)
-    scheduler.section name: "cleanup2", budget: msec(1.0)
-                                              # ^ largest spike seen after optimization. need more data to be more confident this value.
-    # custom_profiler do 
-    # puts "start profiling"
-    # run_profiler do 
-    
-    # run_c_profiler do
+    scheduler.section name: "midi", budget: msec(8)
+      @main_modes[12] ||= MidiState.new
       
-    @display.remesh()
+      @main_modes[12].update(@w.cpp_ptr["midiOut"],
+                             @w.cpp_val["midiMessageQueue"])
     
-    # end
     
+    scheduler.section name: "cleanup", budget: msec(1.0)
+    
+      # @display.flushColors_bg()
+      # @display.flushColors_fg()
+      @display.flush
+      
+      @display.remesh()
+      
     # --- end of "cleanup 2" ---
     
     
@@ -1379,6 +1370,8 @@ class Core
   
   
   def draw
+    # puts ">>>>>>>> draw #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    
     # puts "draw thread:   #{Thread.current.object_id}" 
     
     # draw_start = Time.now
@@ -1397,12 +1390,20 @@ class Core
     
     
     @draw_durations << dt
+    # puts "draw duration: #{dt}"
     
     if @draw_durations.length > draw_duration_history_len
       d_len = @draw_durations.length - draw_duration_history_len
       @draw_durations.shift(d_len)
     end
     
+    
+    
+    
+    if @start_time
+      end_time = RubyOF::Utils.ofGetElapsedTimeMicros
+      @whole_iter_dt = end_time - @start_time
+    end
   end
   
   

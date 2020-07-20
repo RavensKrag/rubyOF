@@ -39,22 +39,20 @@ class Scheduler
   
   # DEBUG = true
   DEBUG = false
-  attr_reader :time_log
-  attr_accessor :max_num_cycles, :section_count
   
-  attr_reader :budgets
+  attr_accessor :section_count
+  attr_reader :total_time
   
-  def initialize(outer, callback_method_name, frame_deadline_ms)
-    @time_log = Array.new
-    @max_num_cycles = 0 # how many cycles to save section time data for
-    
-    @budgets = Hash.new
-    
+  
+  MAX_NUM_SECTIONS = 32
+  
+  def initialize(outer, callback_method_name, frame_deadline_us)
     @callback_name = callback_method_name
     @outer = outer
     
-    @total_time_per_frame = frame_deadline_ms
+    @total_time_per_frame = frame_deadline_us
     @time_used_this_frame = 0
+    @total_time = 0 # visualize 'time_used_this_frame, from the previous iteration'
     
     @section_count = 1
     @first_loop_complete = false
@@ -70,7 +68,6 @@ class Scheduler
         
         # TODO: need to call Fiber.yield once more at the end of the method before looping in order to correctly time the final block
         
-        @first_loop_complete = true
       end
       
     end
@@ -81,6 +78,7 @@ class Scheduler
       # loop through the callbacks, scheduling them
       # in the order they were declared order, ad infinitum
       
+      @i = 0
       @f2.resume() # step the Fiber forward until the first time it blocks
       
       while @f2.alive? # @f2 contains an infinite loop, so should live forever
@@ -95,15 +93,15 @@ class Scheduler
         
         # ...and block until you have enough time
         # (return control to main Fiber to forfeit remaining time)
-        while @time_used_this_frame + time_budget >= @total_time_per_frame
-          puts "block" if Scheduler::DEBUG
+        if @time_used_this_frame + time_budget >= @total_time_per_frame
+          puts "block"
           Fiber.yield :time_limit_reached # return control to main Fiber 
           @time_used_this_frame = 0
         end
         
         # If there's enough time left this frame,
         # then unblock Fiber @f2 and execute the section
-        puts "running update #{section_name}" if Scheduler::DEBUG
+        # puts "running update #{section_name}"
         
         timer_start = RubyOF::Utils.ofGetElapsedTimeMicros
         
@@ -114,34 +112,54 @@ class Scheduler
         
         
         # advance the timer
-        @time_used_this_frame += time_budget
+        @time_used_this_frame += dt
         # ^ increment by time budgeted, not time actually spent
         #   this way gives more scheduling control to the programmer
         
-        puts "time budget: #{@time_used_this_frame} / #{@total_time_per_frame} (+ #{dt} )" if Scheduler::DEBUG
+        puts "time budget: #{(@time_used_this_frame.to_f / @total_time_per_frame).round(3)} (+ #{dt} us )" if Scheduler::DEBUG
         
         
         
         # 
         # save time data for later visualization
         # 
+        save_time_data(@i, section_name, time_budget, dt)
+        @i += 1
         
-        # [ section_name, time_budget, [dt_0, dt_1, dt_2] ]
-        @time_log << [ section_name, time_budget, dt ]
-        @budgets[section_name] = time_budget
-        
-        
-        if @first_loop_complete
-          # drop old entries if too many data points have been saved
-          if @time_log.length == (@max_num_cycles+1)*@section_count
-            @time_log.shift(@section_count)
-          end
-          
-        else
+        # 
+        # on the first iteration of the loop,
+        # count up the number of sections
+        # 
+        unless @first_loop_complete
           @section_count += 1
-          
         end
         
+        # 
+        # enforce limit on number of sections
+        # 
+        
+        if @section_count > MAX_NUM_SECTIONS
+          raise "ERROR: too many sections declared for scheduler. Maximum is #{MAX_NUM_SECTIONS}, as defined in #{__FILE__}"
+        end
+        
+        
+        # 
+        # if you're executed all sections, wait until
+        # the next frame to run additional updates
+        # (want to limit the number of possible interleavings)
+        # 
+        if section_name == "end"
+          @first_loop_complete = true
+          
+          
+          # puts "total time: #{@time_used_this_frame}"
+          @total_time = @time_used_this_frame
+          
+          Fiber.yield :time_limit_reached # return control to main Fiber
+          @time_used_this_frame = 0
+          
+          @i = 0
+        end
         
         
         
@@ -160,6 +178,46 @@ class Scheduler
     
     return @f1.resume()
     # ^ either :end_of_loop or :time_limit_reached
+    
+  end
+  
+  
+  
+  
+  
+  
+  def performance_log
+    return @log_old
+  end
+  
+  attr_reader :time_log
+  attr_reader :budgets
+  attr_reader :sample_count
+  
+  private
+  
+  def save_time_data(i, section_name, time_budget, dt)
+    @log_new ||= Array.new(MAX_NUM_SECTIONS)
+    @sample_count ||= 1
+    
+    
+    # save double-buffered data
+    # 
+    # current buffer for the frame being executed
+    # and previous buffer for the previous frame.
+    # Statistics are always based on the previous frame,
+    # as that is the most recent frame for which we have full data.
+    
+    @log_new[i] = [section_name, time_budget, dt]
+    
+    
+    if section_name == "end"
+      @log_old = @log_new
+      @log_new = nil
+      
+      @sample_count += 1
+    end
+    
     
   end
   
