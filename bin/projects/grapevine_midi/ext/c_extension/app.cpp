@@ -65,6 +65,34 @@ void rbApp::setup(){
 	
 	
 	
+	// give ruby access to the midiOut object
+	
+	
+	// // NOTE: can't do this - have not bound the type ofParameter, so trying to pass the pointer like this will fail.
+	
+	
+	// Rice::Data_Object<ColorPickerInterface> rb_c_colorPicker(
+	// 	&mColorPicker_Parameter,
+	// 	Rice::Data_Type< ColorPickerInterface >::klass(),
+	// 	Rice::Default_Mark_Function< ColorPickerInterface >::mark,
+	// 	Null_Free_Function< ColorPickerInterface >::free
+	// );
+	
+	// mSelf.call("recieve_cpp_pointer", "colorPicker", rb_c_colorPicker);
+	
+	
+	// 
+	mColorPicker_Parameter = ofColor(255,0,0);
+	// ^ ofParameter overloads the = operator, so to set values
+	//   just use equals (feels really weird, I would assume
+	//   it should set the outer variable but it doesn't... but ok)
+	
+	// Need to wrap that interface in order to set the color from Ruby
+	
+	// Q: can I wrap the color picker in such a way that I can get the color? or is it stil better to pass the pointer from the c++ layer the way I currently do it?
+	
+	// (pointer to color picker sent below)
+	// TODO: re-order code, and clean up unused commented out stuff
 	
 	
 	
@@ -189,6 +217,20 @@ void rbApp::setup(){
 	
 	
 	mSelf.call("recieve_cpp_pointer", "colorPicker_color", rb_color_ptr);
+	
+	
+	
+	
+	mColorPicker_iterface.setup(&mColorPicker_Widget);
+	
+	Rice::Data_Object<ColorPickerInterface> rb_colorPicker_ptr(
+		&mColorPicker_iterface,
+		Rice::Data_Type< ColorPickerInterface >::klass(),
+		Rice::Default_Mark_Function< ColorPickerInterface >::mark,
+		Null_Free_Function< ColorPickerInterface >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "colorPicker", rb_colorPicker_ptr);
 	
 	
 	

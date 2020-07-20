@@ -4,6 +4,8 @@
 #include "ofMain.h"
 #include "ofxMidi.h"
 
+#include "ofxGui.h"
+
 // must be AFTER OpenFrameworks includes, or compiler gets confused
 // NOTE: Might be able to just run this 'include' from the main CPP file?
 //       Not quite sure if I'll ever need the rice types in the header or not.
@@ -40,3 +42,17 @@ int           ofxMidiMessage__get_num_bytes(ofxMidiMessage &self);
 unsigned char ofxMidiMessage__get_byte(ofxMidiMessage &self, int i);
 
 bool ofxMidiMessage__equality(ofxMidiMessage &self, ofxMidiMessage &other);
+
+
+// NOTE: header will be included in mulitple places, so can't declare the class here, in the kinda sloppy header-only style
+class ColorPickerInterface{
+public:
+	void setup(ofxColorPicker_<unsigned char> *colorPicker);
+	
+	void setColor(ofColor &color);
+	// ?? getColor();
+	
+private:
+	ofxColorPicker_<unsigned char>* mColorPicker;
+
+};

@@ -773,6 +773,40 @@ void callgrind_END(){
 	CALLGRIND_STOP_INSTRUMENTATION;
 }
 
+
+
+// void setColorPickerColor(ofParameter<ofColor_<unsigned char>> &colorParam, ofColor_<unsigned char> & color){
+// 	// colorParam->r = color.r;
+// 	// colorParam->g = color.g;
+// 	// colorParam->b = color.b;
+// 	// colorParam->a = color.a;
+	
+// 	// colorParam->setHex( color.getHex() )
+	
+// 	// colorParam->set(color);
+	
+// 	colorParam = color;
+// }
+
+void ColorPickerInterface::setup(ofxColorPicker_<unsigned char> *colorPicker){
+	mColorPicker = colorPicker;
+}
+
+void ColorPickerInterface::setColor(ofColor &color){
+	ofParameter<ofColor_<unsigned char>> &data = 
+	  dynamic_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
+	
+	
+	data = color;
+	// ^ ofParameter overloads the = operator, so to set values just use equals 
+	//   (feels really weird to be able to override assignment like this...)
+	
+}
+
+
+
+
+
 // "main" section
 extern "C"
 void Init_rubyOF_project()
@@ -802,6 +836,9 @@ void Init_rubyOF_project()
 		
 		.define_module_function("SpikeProfiler_begin", &SpikeProfiler_begin)
 		.define_module_function("SpikeProfiler_end",   &SpikeProfiler_end)
+		
+		
+		// .define_module_function("setColorPickerColor", &setColorPickerColor)
 	;
 	
 	
@@ -940,6 +977,29 @@ void Init_rubyOF_project()
 	
 	
 	// ofxMidiOut midiOut
+	
+	
+	
+	
+	
+	
+	Data_Type<ColorPickerInterface> rb_c_ofColorPickerInterface =
+		define_class_under<ColorPickerInterface>(rb_mProject, "ColorPicker");
+	
+	rb_c_ofColorPickerInterface
+		.define_constructor(Constructor<ColorPickerInterface>())
+		
+		.define_method("setColor",  &ColorPickerInterface::setColor)
+		// .define_method("getColor",  &ColorPickerInterface::getBackground)
+	;
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

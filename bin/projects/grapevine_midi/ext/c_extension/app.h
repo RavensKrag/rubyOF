@@ -21,6 +21,9 @@
 // #include "rice/ruby_try_catch.hpp"
 
 
+#include "callbacks.h"
+
+
 class rbApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
@@ -59,6 +62,9 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		// and thus for 'consistency' all sizes were specified.
 		// However, I don't think non-standard sizes can be used
 		// because Rice binds ofColor and not the arbitrary size type.
+		
+		ColorPickerInterface mColorPicker_iterface;
+		
 		
 		// ofxDatGui* mDatGui;
 		
