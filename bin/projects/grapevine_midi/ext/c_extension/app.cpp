@@ -68,95 +68,8 @@ void rbApp::setup(){
 	// give ruby access to the midiOut object
 	
 	
-	// // NOTE: can't do this - have not bound the type ofParameter, so trying to pass the pointer like this will fail.
 	
 	
-	// Rice::Data_Object<ColorPickerInterface> rb_c_colorPicker(
-	// 	&mColorPicker_Parameter,
-	// 	Rice::Data_Type< ColorPickerInterface >::klass(),
-	// 	Rice::Default_Mark_Function< ColorPickerInterface >::mark,
-	// 	Null_Free_Function< ColorPickerInterface >::free
-	// );
-	
-	// mSelf.call("recieve_cpp_pointer", "colorPicker", rb_c_colorPicker);
-	
-	
-	// 
-	mColorPicker_Parameter = ofColor(255,0,0);
-	// ^ ofParameter overloads the = operator, so to set values
-	//   just use equals (feels really weird, I would assume
-	//   it should set the outer variable but it doesn't... but ok)
-	
-	// Need to wrap that interface in order to set the color from Ruby
-	
-	// Q: can I wrap the color picker in such a way that I can get the color? or is it stil better to pass the pointer from the c++ layer the way I currently do it?
-	
-	// (pointer to color picker sent below)
-	// TODO: re-order code, and clean up unused commented out stuff
-	
-	
-	
-	im_gui.setup();
-	ImGui::GetIO().MouseDrawCursor = false;
-	
-	
-	
-	
-	
-	
-	// print input ports to console
-	midiIn.listInPorts();
-	
-	// // open port by number (you may need to change this)
-	// midiIn.openPort(1);
-	// //midiIn.openPort("IAC Pure Data In");	// by name
-	// //midiIn.openVirtualPort("ofxMidiIn Input"); // open a virtual port
-	midiIn.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
-	
-	// don't ignore sysex, timing, & active sense messages,
-	// these are ignored by default
-	midiIn.ignoreTypes(false, false, false);
-	
-	// add ofApp as a listener
-	midiIn.addListener(this);
-	
-	// print received messages to the console
-	midiIn.setVerbose(true);
-	
-	
-	
-	
-	
-	// print the available output ports to the console
-	midiOut.listOutPorts();
-	
-	// connect
-	// midiOut.openPort(0); // by number
-	// //midiOut.openPort("IAC Driver Pure Data In"); // by name
-	// //midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
-	midiOut.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
-	
-	
-	
-	// give ruby access to the midiOut object
-	
-	Rice::Data_Object<ofxMidiOut> rb_ofxMidiOut_ptr(
-		&midiOut,
-		Rice::Data_Type< ofxMidiOut >::klass(),
-		Rice::Default_Mark_Function< ofxMidiOut >::mark,
-		Null_Free_Function< ofxMidiOut >::free
-	);
-	
-	mSelf.call("recieve_cpp_pointer", "midiOut", rb_ofxMidiOut_ptr);
-	
-	
-	
-	
-	
-	
-	
-	// ========================================
-	// ========================================
 	
 	
 	
@@ -221,6 +134,7 @@ void rbApp::setup(){
 	
 	
 	
+	
 	mColorPicker_iterface.setup(&mColorPicker_Widget);
 	
 	Rice::Data_Object<ColorPickerInterface> rb_colorPicker_ptr(
@@ -230,7 +144,104 @@ void rbApp::setup(){
 		Null_Free_Function< ColorPickerInterface >::free
 	);
 	
-	mSelf.call("recieve_cpp_pointer", "colorPicker", rb_colorPicker_ptr);
+	mSelf.call("recieve_cpp_pointer", "color_picker", rb_colorPicker_ptr);
+	
+	
+	
+	
+	
+	
+	
+	
+	// // NOTE: can't do this - have not bound the type ofParameter, so trying to pass the pointer like this will fail.
+	
+	
+	// Rice::Data_Object<ColorPickerInterface> rb_c_colorPicker(
+	// 	&mColorPicker_Parameter,
+	// 	Rice::Data_Type< ColorPickerInterface >::klass(),
+	// 	Rice::Default_Mark_Function< ColorPickerInterface >::mark,
+	// 	Null_Free_Function< ColorPickerInterface >::free
+	// );
+	
+	// mSelf.call("recieve_cpp_pointer", "colorPicker", rb_c_colorPicker);
+	
+	
+	// // 
+	// mColorPicker_Parameter = ofColor(255,0,0);
+	// // ^ ofParameter overloads the = operator, so to set values
+	// //   just use equals (feels really weird, I would assume
+	// //   it should set the outer variable but it doesn't... but ok)
+	
+	// // Need to wrap that interface in order to set the color from Ruby
+	
+	// // Q: can I wrap the color picker in such a way that I can get the color? or is it stil better to pass the pointer from the c++ layer the way I currently do it?
+	
+	// // (pointer to color picker sent below)
+	// // TODO: re-order code, and clean up unused commented out stuff
+	
+	
+	
+	im_gui.setup();
+	ImGui::GetIO().MouseDrawCursor = false;
+	
+	
+	
+	
+	
+	
+	// print input ports to console
+	midiIn.listInPorts();
+	
+	// // open port by number (you may need to change this)
+	// midiIn.openPort(1);
+	// //midiIn.openPort("IAC Pure Data In");	// by name
+	// //midiIn.openVirtualPort("ofxMidiIn Input"); // open a virtual port
+	midiIn.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
+	
+	// don't ignore sysex, timing, & active sense messages,
+	// these are ignored by default
+	midiIn.ignoreTypes(false, false, false);
+	
+	// add ofApp as a listener
+	midiIn.addListener(this);
+	
+	// print received messages to the console
+	midiIn.setVerbose(true);
+	
+	
+	
+	
+	
+	// print the available output ports to the console
+	midiOut.listOutPorts();
+	
+	// connect
+	// midiOut.openPort(0); // by number
+	// //midiOut.openPort("IAC Driver Pure Data In"); // by name
+	// //midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
+	midiOut.openPort("Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0");
+	
+	
+	
+	// give ruby access to the midiOut object
+	
+	Rice::Data_Object<ofxMidiOut> rb_ofxMidiOut_ptr(
+		&midiOut,
+		Rice::Data_Type< ofxMidiOut >::klass(),
+		Rice::Default_Mark_Function< ofxMidiOut >::mark,
+		Null_Free_Function< ofxMidiOut >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "midiOut", rb_ofxMidiOut_ptr);
+	
+	
+	
+	
+	
+	
+	
+	// ========================================
+	// ========================================
 	
 	
 	
@@ -365,7 +376,7 @@ void rbApp::update(){
 	}
 	
 	mSelf.call("recieve_cpp_value", "midiMessageQueue", rb_midiMessageQueue);
-	
+	// ^ TODO: Rice::Array is memory that is allocated and managed by the ruby interpreter. perhaps I should have a third collection for such data? I'm thinking that cpp_value data means that it was c++ allocated but ruby managed. (which, again, does not describe this particular data, as Rice::Array is essentially a smart pointer that wraps a ruby Array)
 	
 	
 	

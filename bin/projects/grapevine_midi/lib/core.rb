@@ -1304,7 +1304,7 @@ class Core
     
     scheduler.section name: "color", budget: msec(1.0)
       
-      @w.cpp_ptr["colorPicker"].setColor(RubyOF::Color.hex( 0xb6b198 ))
+      @w.cpp_ptr["color_picker"].setColor(RubyOF::Color.hex( 0xb6b198 ))
       # ^ this code works now, but can't call it every frame, otherwise I will never be able to actually use the color picker UI
       
       # TODO: call in more appropriate manner

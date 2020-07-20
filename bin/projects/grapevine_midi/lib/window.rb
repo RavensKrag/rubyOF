@@ -17,7 +17,9 @@ require 'require_all'
 current_file = Pathname.new(__FILE__).expand_path
 LIB_DIR = current_file.parent
 
+require LIB_DIR/'of_core_extensions.rb'
 require LIB_DIR/'ofx_extensions.rb'
+require LIB_DIR/'project.rb'
 
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'
@@ -38,7 +40,7 @@ class Window < RubyOF::Window
   
   def initialize
     @cpp_ptr  = Hash.new
-    @cpp_val = Hash.new
+    @cpp_val = Hash.new # TODO: anything passed by value should have a destructor (C++ level memory needs to be cleared on ruby GC)
     
     @window_geometry_file = PROJECT_DIR/'bin'/'data'/'window_geometry.yaml'
     
