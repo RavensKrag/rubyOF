@@ -7,13 +7,9 @@ using std::endl;
 
 #include "constants/data_path.h"
 
+#include "Null_Free_Function.h"
 
 
-template<typename T>
-struct Null_Free_Function
-{
-  static void free(T * obj) { }
-};
 
 
 rbApp::rbApp(Rice::Object self)
@@ -135,10 +131,10 @@ void rbApp::setup(){
 	
 	
 	
-	mColorPicker_iterface.setup(&mColorPicker_Widget);
+	mColorPicker_iterface_ptr = new ColorPickerInterface(&mColorPicker_Widget);
 	
 	Rice::Data_Object<ColorPickerInterface> rb_colorPicker_ptr(
-		&mColorPicker_iterface,
+		mColorPicker_iterface_ptr,
 		Rice::Data_Type< ColorPickerInterface >::klass(),
 		Rice::Default_Mark_Function< ColorPickerInterface >::mark,
 		Null_Free_Function< ColorPickerInterface >::free
@@ -146,7 +142,7 @@ void rbApp::setup(){
 	
 	mSelf.call("recieve_cpp_pointer", "color_picker", rb_colorPicker_ptr);
 	
-	
+	rb_colorPicker_ptr.call("setup"); // ruby-level setup function
 	
 	
 	
@@ -501,6 +497,8 @@ void rbApp::exit(){
 	
 	// ========================================
 	// ========== add new stuff here ==========
+	
+	delete mColorPicker_iterface_ptr;
 	
 	// delete mDatGui;
 	

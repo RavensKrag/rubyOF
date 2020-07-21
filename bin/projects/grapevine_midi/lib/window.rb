@@ -19,7 +19,7 @@ LIB_DIR = current_file.parent
 
 require LIB_DIR/'of_core_extensions.rb'
 require LIB_DIR/'ofx_extensions.rb'
-require LIB_DIR/'project.rb'
+require LIB_DIR/'callbacks.rb'
 
 require LIB_DIR/'helpers.rb'
 # require_all LIB_DIR/'history'

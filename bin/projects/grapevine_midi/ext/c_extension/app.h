@@ -63,7 +63,7 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 		// However, I don't think non-standard sizes can be used
 		// because Rice binds ofColor and not the arbitrary size type.
 		
-		ColorPickerInterface mColorPicker_iterface;
+		ColorPickerInterface* mColorPicker_iterface_ptr;
 		
 		
 		// ofxDatGui* mDatGui;

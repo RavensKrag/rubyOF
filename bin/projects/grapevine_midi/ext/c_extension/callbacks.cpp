@@ -4,16 +4,9 @@
 #include <Poco/Runnable.h>
 #include <Poco/Thread.h>
 
+#include "Null_Free_Function.h"
 
 using namespace Rice;
-
-
-template<typename T>
-struct Null_Free_Function
-{
-  static void free(T * obj) { }
-};
-
 
 // define your callbacks here
 int cpp_callback(int x) {
@@ -788,19 +781,39 @@ void callgrind_END(){
 // 	colorParam = color;
 // }
 
-void ColorPickerInterface::setup(ofxColorPicker_<unsigned char> *colorPicker){
+ColorPickerInterface::ColorPickerInterface(ofxColorPicker_<unsigned char> *colorPicker){
 	mColorPicker = colorPicker;
+	
 }
 
 void ColorPickerInterface::setColor(ofColor &color){
-	ofParameter<ofColor_<unsigned char>> &data = 
-	  dynamic_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
+	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
 	
 	
 	data = color;
 	// ^ ofParameter overloads the = operator, so to set values just use equals 
 	//   (feels really weird to be able to override assignment like this...)
 	
+}
+
+
+// TODO: need to create this object once, and then just return it again and again. wrapping this multiple times is additional overhead that makes things go slow.
+Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
+	// ofParameter::get() returns reference to the underlying value,
+	// and that is wrapped Rice::Data_Object, which is like a smart pointer.
+	// This creates a ruby object that acts like C++ pointer,
+	// such that changes to this object propagate to C++ automatically.
+	// (because the exact same data is being edited)
+	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
+	
+	Rice::Data_Object<ofColor> rb_color_ptr(
+		&const_cast<ofColor_<unsigned char>&>(data.get()),
+		Rice::Data_Type< ofColor >::klass(),
+		Rice::Default_Mark_Function< ofColor >::mark,
+		Null_Free_Function< ofColor >::free
+	);
+	
+	return rb_color_ptr;
 }
 
 
@@ -987,10 +1000,11 @@ void Init_rubyOF_project()
 		define_class_under<ColorPickerInterface>(rb_mProject, "ColorPicker");
 	
 	rb_c_ofColorPickerInterface
-		.define_constructor(Constructor<ColorPickerInterface>())
+		// .define_constructor(Constructor<ColorPickerInterface>())
+		// ^ no constructor: can only be created from C++
 		
-		.define_method("setColor",  &ColorPickerInterface::setColor)
-		// .define_method("getColor",  &ColorPickerInterface::getBackground)
+		.define_method("color=",       &ColorPickerInterface::setColor)
+		.define_method("getColorPtr",  &ColorPickerInterface::getColorPtr)
 	;
 	
 	

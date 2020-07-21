@@ -756,11 +756,11 @@ class ColorPickerState < State
     @fg_color = RubyOF::Color.rgb( [(0.5*255).to_i]*3 )
   end
   
-  def update
+  def update(color_picker)
     pos = @anchor + CP::Vec2.new(0,0)
     @@display.print_string(pos.x, pos.y, "r  g  b  a ")
     
-    @@window.cpp_ptr["colorPicker_color"].tap do |c|
+    color_picker.color.tap do |c|
       output_string = c.to_a.map{|x| x.to_s(16).rjust(2, '0') }.join(",")
       
       pos = @anchor + CP::Vec2.new(0,1)
@@ -1281,7 +1281,7 @@ class Core
       # 
       
       @main_modes[10] ||= ColorPickerState.new
-      @main_modes[10].update
+      @main_modes[10].update(@w.cpp_ptr["color_picker"])
     
     
     scheduler.section name: "mouse", budget: msec(1)
@@ -1304,7 +1304,7 @@ class Core
     
     scheduler.section name: "color", budget: msec(1.0)
       
-      @w.cpp_ptr["color_picker"].setColor(RubyOF::Color.hex( 0xb6b198 ))
+      # @w.cpp_ptr["color_picker"].color = RubyOF::Color.hex( 0xb6b198 )
       # ^ this code works now, but can't call it every frame, otherwise I will never be able to actually use the color picker UI
       
       # TODO: call in more appropriate manner
