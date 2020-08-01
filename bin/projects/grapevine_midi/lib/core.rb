@@ -1296,10 +1296,84 @@ class Core
     
     
     scheduler.section name: "midi", budget: msec(8)
-      @main_modes[12] ||= MidiState.new
+      # @main_modes[12] ||= MidiState.new
       
-      @main_modes[12].update(@w.cpp_ptr["midiOut"],
-                             @w.cpp_val["midiMessageQueue"])
+      # @main_modes[12].update(@w.cpp_ptr["midiOut"],
+      #                        @w.cpp_val["midiMessageQueue"])
+      
+      bb_0 = CP::BB.new(2,0, 58,11)
+      bg_color = RubyOF::Color.hex( 0x2D2A2E )
+      @display.background.fill bb_0, bg_color
+      @display.foreground.fill bb_0, RubyOF::Color.hex( 0xFCFCFC )
+      
+      w = bb_0.r - bb_0.l + 1
+      h = bb_0.t - bb_0.b + 1
+      
+      x = bb_0.l
+      y = bb_0.b
+      @display.print_string(x,y, "#{[w,h].inspect}")
+      
+      # default background of dots
+      y += 1
+      @display.print_string(x,y+0, "."*w) # leading top empty line
+      @display.print_string(x,y+1, "."*w)
+      @display.print_string(x,y+2, "."*w)
+      @display.print_string(x,y+3, "."*w)
+      @display.print_string(x,y+4, "."*w)
+      @display.print_string(x,y+5, "."*w)
+      @display.print_string(x,y+6, "."*w)
+      @display.print_string(x,y+7, "."*w)
+      @display.print_string(x,y+8, "."*w)
+      @display.print_string(x,y+9, "."*w)
+      @display.print_string(x,y+10, "."*w) # trailing bottom empty line
+      
+      # headers
+      @display.print_string(x+ 6,y+1, 00.to_s.rjust(3, '0'))
+      @display.print_string(x+16,y+1, 10.to_s.rjust(3, '0'))
+      @display.print_string(x+26,y+1, 20.to_s.rjust(3, '0'))
+      @display.print_string(x+36,y+1, 30.to_s.rjust(3, '0'))
+      @display.print_string(x+6,y+2, "0123456789"*4)
+      
+      # alternating bg colors to distingush blocks
+      bb_1 = CP::BB.new(8,4, 17,10)
+      # @w.cpp_ptr["color_picker"].color = bg_color
+      # @display.background.fill bb_1, @w.cpp_ptr["color_picker"].color
+      @display.background.fill bb_1, RubyOF::Color.hex( 0x474248 )
+      shift = 20
+      bb_2 = CP::BB.new(bb_1.l+shift,bb_1.b, bb_1.r+shift,bb_1.t)
+      @display.background.fill bb_2, RubyOF::Color.hex( 0x474248 )
+      
+      # left side labels for each line
+      @display.print_string(x+0,y+3, "In  x|".gsub('x', 1.to_s))
+      @display.print_string(x+0,y+4, "In  x|".gsub('x', 2.to_s))
+      @display.print_string(x+0,y+5, "In  x|".gsub('x', 3.to_s))
+      @display.print_string(x+0,y+6, "In  x|".gsub('x', 4.to_s))
+      @display.print_string(x+0,y+7, "Shift|")
+      @display.print_string(x+0,y+8, "Out x|".gsub('x', 1.to_s))
+      @display.print_string(x+0,y+9, " usr |")
+      
+      # data in each line
+        # timestamp, row,  button_i
+        # int,       1..4  1..8
+      data = [ 
+        [0, 1, 1],
+        [0, 2, 6],
+        [0, 3, 3],
+        [0, 4, 4],
+        
+        [18, 1, 1],
+        [20, 2, 6],
+        [16, 3, 3],
+        [38, 4, 4],
+      ]
+      
+      # TODO: data should be taken from MIDI data instead
+      
+      data.each do |time, row, btn|
+        @display.print_string(x+6+time,y+3+row-1, btn.to_s)
+      end
+      
+    
     
     
     scheduler.section name: "color", budget: msec(1.0)
