@@ -1344,10 +1344,10 @@ class Core
       @display.background.fill bb_2, RubyOF::Color.hex( 0x474248 )
       
       # left side labels for each line
-      @display.print_string(x+0,y+3, "In  x|".gsub('x', 1.to_s))
-      @display.print_string(x+0,y+4, "In  x|".gsub('x', 2.to_s))
-      @display.print_string(x+0,y+5, "In  x|".gsub('x', 3.to_s))
-      @display.print_string(x+0,y+6, "In  x|".gsub('x', 4.to_s))
+      @display.print_string(x+0,y+3, "In  x|".gsub('x', 4.to_s))
+      @display.print_string(x+0,y+4, "In  x|".gsub('x', 3.to_s))
+      @display.print_string(x+0,y+5, "In  x|".gsub('x', 2.to_s))
+      @display.print_string(x+0,y+6, "In  x|".gsub('x', 1.to_s))
       @display.print_string(x+0,y+7, "Shift|")
       @display.print_string(x+0,y+8, "Out x|".gsub('x', 1.to_s))
       @display.print_string(x+0,y+9, " usr |")
@@ -1368,6 +1368,64 @@ class Core
       ]
       
       # TODO: data should be taken from MIDI data instead
+      
+      
+      @midi_time ||= 0
+      # data = []
+      
+      # @w.cpp_val["midiMessageQueue"].each do |midi|
+      #   # midi.pitch 
+      #   # midi.status
+      #   # midi.deltatime
+        
+      #   # if [:note_on, :note_off].any?{|x| midi.status == x} 
+      #   if midi.status == :note_on || midi.status == :note_off
+          
+      #     data << []
+      #   end
+        
+      #   # case midi.status
+      #   # when :note_on
+          
+      #   # when :note_off
+          
+      #   # else
+          
+      #   # end
+      # end
+      
+      midi = @w.cpp_val["midiMessageQueue"].last
+      data[8] = [ (midi.deltatime/16.666).to_i,  # timestamp
+                 4-((midi.pitch-56)/7),          # row / channel
+                   ((midi.pitch-56)%7+1)         # button_i
+                ]
+      # TODO: timestamp should be in absolute time
+      
+      # TODO: synth should send each string's notes on a separate channel so you don't have to assume what notes are on what string
+      
+      # TODO: flip strings in output display s.t. G string is string 1 and displays on the bottom line of the TAB
+        # ^ DONE
+      
+      
+      # TODO: shrink character size so I can fit more time on the screen at once
+      
+      # TODO: make sure shader variables for character grid display can be adjusted as the font size used with the grid changes (either pass to GPU or bake into shader code with ruby's file / string manipulation)
+      
+      # TODO: figure how to visualize note on vs note off signals
+        # (maybe put a . or similar in the line if note is still down?
+        # if there's no note at all, we can put a space. This would create
+        # "bars" through time showing note duration)
+      
+      
+      # remember to use SequenceMemory class to reconstruct full time series
+      # of midi events
+      
+      midi_queue = @w.cpp_val["midiMessageQueue"]
+      @midi_msg_memory.delta_from_sample(midi_queue)
+      
+      # puts midi.pitch
+      
+      
       
       data.each do |time, row, btn|
         @display.print_string(x+6+time,y+3+row-1, btn.to_s)
