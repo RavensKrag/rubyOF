@@ -1369,36 +1369,11 @@ class Core
       
       # TODO: data should be taken from MIDI data instead
       
-      
-      @midi_time ||= 0
-      # data = []
-      
-      # @w.cpp_val["midiMessageQueue"].each do |midi|
-      #   # midi.pitch 
-      #   # midi.status
-      #   # midi.deltatime
-        
-      #   # if [:note_on, :note_off].any?{|x| midi.status == x} 
-      #   if midi.status == :note_on || midi.status == :note_off
-          
-      #     data << []
-      #   end
-        
-      #   # case midi.status
-      #   # when :note_on
-          
-      #   # when :note_off
-          
-      #   # else
-          
-      #   # end
-      # end
-      
-      midi = @w.cpp_val["midiMessageQueue"].last
-      data[8] = [ (midi.deltatime/16.666).to_i,  # timestamp
-                 4-((midi.pitch-56)/7),          # row / channel
-                   ((midi.pitch-56)%7+1)         # button_i
-                ]
+      # midi = @w.cpp_val["midiMessageQueue"].last
+      # data[8] = [ (midi.deltatime/16.666).to_i,  # timestamp
+      #            4-((midi.pitch-56)/7),          # row / channel
+      #              ((midi.pitch-56)%7+1)         # button_i
+      #           ]
       # TODO: timestamp should be in absolute time
       
       # TODO: synth should send each string's notes on a separate channel so you don't have to assume what notes are on what string
@@ -1416,20 +1391,50 @@ class Core
         # if there's no note at all, we can put a space. This would create
         # "bars" through time showing note duration)
       
-      
-      # remember to use SequenceMemory class to reconstruct full time series
-      # of midi events
+            
+      # 
+      # use SequenceMemory class to get diffs from current midi buffer,
+      # and use diffs to construct full history of midi events,
+      # timestamped using absolute timepoints
+      # 
+      @midi_history ||= Array.new
+      @midi_time ||= 0
       
       midi_queue = @w.cpp_val["midiMessageQueue"]
-      @midi_msg_memory.delta_from_sample(midi_queue)
+      @midi_msg_memory.delta_from_sample(midi_queue)&.each do |midi|
+        # # reset if over time threshold
+        # if midi.deltatime > 5000 || (@midi_time+midi.deltatime)/16.66 > 40 # ms
+        #   @midi_history.clear
+        #   @midi_time = 0
+        # end
+        
+        # convert to absolute time
+        @midi_history << [ @midi_time, midi ]
+        @midi_time += midi.deltatime
+        
+        puts "#{midi.to_s} @ #{(@midi_time/16.66).to_i}"
+        puts @midi_history.size
+      end
+      
+      # visualize absolute time data on timeline
+      @midi_history.each do |abs_time, midi|
+        
+        time = (abs_time/(16.66)).to_i   # timestamp -> frame
+        row  = 4-((midi.pitch-56)/7)    # row / channel
+        btn  =   ((midi.pitch-56)%7+1)  # button_i
+        
+        @display.print_string(x+6+time,y+3+row-1, btn.to_s)
+      end
+      
+      
+      
+      # TODO: reset history if time between events is too long
+      # (useful for current debugging stage)
+      # (can start over from beginning of line)
+      
       
       # puts midi.pitch
       
-      
-      
-      data.each do |time, row, btn|
-        @display.print_string(x+6+time,y+3+row-1, btn.to_s)
-      end
       
     
     

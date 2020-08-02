@@ -94,7 +94,7 @@ class Scheduler
         # ...and block until you have enough time
         # (return control to main Fiber to forfeit remaining time)
         if @time_used_this_frame + time_budget >= @total_time_per_frame
-          puts "block"
+          puts "scheduler: time limit reached"
           Fiber.yield :time_limit_reached # return control to main Fiber 
           @time_used_this_frame = 0
         end
