@@ -1402,22 +1402,27 @@ class Core
       
       midi_queue = @w.cpp_val["midiMessageQueue"]
       @midi_msg_memory.delta_from_sample(midi_queue)&.each do |midi|
-        # # reset if over time threshold
-        # if midi.deltatime > 5000 || (@midi_time+midi.deltatime)/16.66 > 40 # ms
-        #   @midi_history.clear
-        #   @midi_time = 0
-        # end
+        # puts "time: #{midi.deltatime}"
+          # when RubyOF starts up, first deltatime == 0
         
         # convert to absolute time
-        @midi_history << [ @midi_time, midi ]
-        @midi_time += midi.deltatime
+        # NOTE: must add *before* saving time to buffer, otherwise errors / lag
+        @midi_time += midi.deltatime # float, ms
         
-        puts "#{midi.to_s} @ #{(@midi_time/16.66).to_i}"
-        puts @midi_history.size
+        # reset buffer if over time threshold
+        if (@midi_time)/16.66 > 40 # ms to frames
+          @midi_history.clear
+          @midi_time = 0
+        end
+        
+        # save absolute time data to buffer
+        @midi_history << [ @midi_time, midi ]
       end
       
       # visualize absolute time data on timeline
       @midi_history.each do |abs_time, midi|
+        # puts "#{midi.to_s} @ #{(abs_time/16.66).to_i}"
+        # puts @midi_history.size
         
         time = (abs_time/(16.66)).to_i   # timestamp -> frame
         row  = 4-((midi.pitch-56)/7)    # row / channel
@@ -1431,6 +1436,10 @@ class Core
       # TODO: reset history if time between events is too long
       # (useful for current debugging stage)
       # (can start over from beginning of line)
+      
+      
+      # FIXME: why does the visualization appear to lag behind by at least one message? diffs are correct, and terminal output works as expected, but the graphical display lags. why?
+      
       
       
       # puts midi.pitch
