@@ -1352,44 +1352,12 @@ class Core
       @display.print_string(x+0,y+8, "Out x|".gsub('x', 1.to_s))
       @display.print_string(x+0,y+9, " usr |")
       
-      # data in each line
-        # timestamp, row,  button_i
-        # int,       1..4  1..8
-      data = [ 
-        [0, 1, 1],
-        [0, 2, 6],
-        [0, 3, 3],
-        [0, 4, 4],
-        
-        [18, 1, 1],
-        [20, 2, 6],
-        [16, 3, 3],
-        [38, 4, 4],
-      ]
-      
-      # TODO: data should be taken from MIDI data instead
-      
-      # midi = @w.cpp_val["midiMessageQueue"].last
-      # data[8] = [ (midi.deltatime/16.666).to_i,  # timestamp
-      #            4-((midi.pitch-56)/7),          # row / channel
-      #              ((midi.pitch-56)%7+1)         # button_i
-      #           ]
-      # TODO: timestamp should be in absolute time
       
       # TODO: synth should send each string's notes on a separate channel so you don't have to assume what notes are on what string
-      
-      # TODO: flip strings in output display s.t. G string is string 1 and displays on the bottom line of the TAB
-        # ^ DONE
-      
       
       # TODO: shrink character size so I can fit more time on the screen at once
       
       # TODO: make sure shader variables for character grid display can be adjusted as the font size used with the grid changes (either pass to GPU or bake into shader code with ruby's file / string manipulation)
-      
-      # TODO: figure how to visualize note on vs note off signals
-        # (maybe put a . or similar in the line if note is still down?
-        # if there's no note at all, we can put a space. This would create
-        # "bars" through time showing note duration)
       
             
       # 
@@ -1424,9 +1392,9 @@ class Core
         # puts "#{midi.to_s} @ #{(abs_time/16.66).to_i}"
         # puts @midi_history.size
         
-        time = (abs_time/(16.66)).to_i   # timestamp -> frame
-        row  = 4-((midi.pitch-56)/7)    # row / channel
-        btn  =   ((midi.pitch-56)%7+1)  # button_i
+        time = (abs_time/(16.66)).to_i  # timestamp -> frame
+        row  = 4-((midi.pitch-56)/7)    # row / channel (1..4)
+        btn  =   ((midi.pitch-56)%7+1)  # button_i (1..8)
         
         @display.print_string(x+6+time,y+3+row-1, btn.to_s)
       end
@@ -1437,8 +1405,6 @@ class Core
       # (useful for current debugging stage)
       # (can start over from beginning of line)
       
-      
-      # FIXME: why does the visualization appear to lag behind by at least one message? diffs are correct, and terminal output works as expected, but the graphical display lags. why?
       
       
       
