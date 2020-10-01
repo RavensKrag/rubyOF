@@ -1,6 +1,7 @@
 require 'rake/testtask'
 require 'rake/clean'
 
+require 'pathname'
 require 'fileutils'
 require 'open3'
 require 'yaml' # used for config files
@@ -162,9 +163,8 @@ namespace :oF do
 	
 	desc "Clean and Rebuild oF core (ubuntu)."
 	task :rebuild do
-		run_task('base:clean')
-		run_task('base:build_dynamic')
-		run_task('base:build_static')
+		run_task('oF:clean')
+		run_task('oF:build')
 	end
 	
 	task :build => [:build_dynamic, :build_static]
@@ -373,6 +373,16 @@ namespace :core_wrapper do
 		:move_dynamic_lib       # move dynamic library into easy-to-load location
 	]
 	
+	task :run_app do
+		Dir.chdir Pathname.new(OF_SKETCH_ROOT)/'bin' do
+			begin
+				run_i "./testApp_debug"
+			rescue StandardError => e
+				puts "ERROR: Could not build #{name}."
+				exit
+			end
+		end
+	end
 	
 	# 1) build testApp using oF build system
 	task :build_app do
@@ -408,7 +418,7 @@ namespace :core_wrapper do
 	task :build_c_extension => c_extension_file
 		
 		extension_dependencies = Array.new.tap do |deps|
-			# Ruby / Rice CPP files
+			# Ruby / Rice CPP filesf
 			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
 			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
 			
@@ -842,55 +852,6 @@ end
 
 
 
-# =============
-# manage C++ dependencies
-# =============
-namespace :cpp_deps do
-	desc "Set up environment on a new machine."
-	task :setup => [
-		# 'oF:download_libs',
-		'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
-		'oF:build',
-		'core_wrapper:build_app'
-	] do
-		FileUtils.mkdir_p "bin/data"
-		FileUtils.mkdir_p DYNAMIC_LIB_PATH # bin/lib/
-		
-		# -- bin/projects/ and specifically the 'boilerplate' project should 
-		#    always be present, and so the system does not have to manually
-		#    establish those folders
-		# FileUtils.mkdir_p "bin/projects"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/bin"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/ext"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/lib"
-	end
-	
-	desc "Copy oF dynamic libs to correct location"
-	task :install do
-		puts "=== Copying OpenFrameworks dynamic libs..."
-		
-		
-		root = Pathname.new(OF_ROOT)
-		
-		src  = root/'libs'/'fmodex'/'lib'/PLATFORM/'libfmodex.so'
-		dest = DYNAMIC_LIB_PATH
-		FileUtils.copy(src, dest)
-		
-		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-		# (specified in extconf.rb)
-		# 
-		# -rpath flag specifies where to look for dynamic libraries
-		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-		
-		
-		
-		# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
-	end
-end
-# =============
-# =============
-
-
 
 # =============
 # manage ruby-level dependencies
@@ -954,13 +915,9 @@ end
 
 
 task :setup => [
-	'cpp_deps:setup',
-	'cpp_deps:install',
 	'ruby_deps:install'
 ]
 
-
-# TODO: refactor the cpp_deps namespace
 
 # + uncompress OF folder -> "openFrameworks"
 #   (make sure to rename, dropping the version number etc)
@@ -1002,6 +959,7 @@ task :full_build => [
 ]
 
 
+desc "Build core wrapper and project wrapper for given project"
 task :build => [
 	'core_wrapper:build',
 	'project_wrapper:build'
