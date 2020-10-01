@@ -12,6 +12,8 @@ gem 'bundler'
 # gem 'rake'
 gem 'rice', "~>2.1.2"
 
+gem 'chipmunk', git: 'https://github.com/RavensKrag/chipmunk', branch: 'custom'
+
 gem 'opengl', "0.10.0"
 # ^ this should be an explict dependency of the RubyOF gem or w/e
 #   not sure if there's a good mechanism for doing that or not

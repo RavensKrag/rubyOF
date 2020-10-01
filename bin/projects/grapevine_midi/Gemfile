@@ -9,7 +9,6 @@ end
 
 eval_gemfile File.join GEM_ROOT, 'Gemfile'
 gem 'require_all'
-gem 'chipmunk', git: 'https://github.com/RavensKrag/chipmunk', branch: 'custom'
 gem 'ruby-prof'
 
 
