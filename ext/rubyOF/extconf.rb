@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'mkmf-rice'
 require 'fileutils'
 require 'open3'

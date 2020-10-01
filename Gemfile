@@ -10,7 +10,7 @@ gem 'bundler'
 # NOTE: this project also requires Rake,
 # but I don't think I want to force that rake be installed via gems.
 # gem 'rake'
-gem 'rice', "~>2.1.2"
+gem 'rice', "~>2.2.0"
 
 gem 'chipmunk', git: 'https://github.com/RavensKrag/chipmunk', branch: 'custom'
 

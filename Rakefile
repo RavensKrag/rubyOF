@@ -882,26 +882,38 @@ def bundle_uninstall(path)
 	end
 end
 
-# the gemfiles are setup to chain, so installing the project will install the core dependencies as well
+
+# Even though the project specific file chains into the core dependencies file, you need to run bundler for both. This is because the extconf.rb for the OF core wrapper will only see the core Gemfile / Gemfile.lock - without running the core dependencies separately, the core wrapper will fail.
 namespace :ruby_deps do
-	
 	desc "use Bundler to install ruby dependencies"
 	task :install do
+		# core dependencies
+		puts "Bundler: Installing core dependencies"
+		bundle_install(GEM_ROOT)
+		
+		# project specific
 		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
 		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Installing dependencies for project '#{name}'"
 		bundle_install(path)
 	end
 	
-	desc "remove Bundler lock (installed gems will remain)"
-	task :uninstall do
+	desc "remove all stuff installed by Bundler for RubyOF"
+	task :clobber do
+		FileUtils.rm_r Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		
+		# core dependencies
+		puts "Bundler: Uninstalling core dependencies"
+		bundle_uninstall(GEM_ROOT)
+		
+		# project specific
 		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
 		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Uninstalling dependencies for project '#{name}'"
 		bundle_uninstall(path)
 	end
 	
-	task :reinstall => [:uninstall, :install]
+	task :reinstall => [:clobber, :install]
 end
 # =============
 # =============
@@ -1116,6 +1128,7 @@ task :clean => [
 
 task :clobber => [
 	'oF:clean',
+	'ruby_deps:clobber',
 	'core_wrapper:clobber',
 	'project_wrapper:clobber'
 ]
