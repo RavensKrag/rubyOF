@@ -863,7 +863,8 @@ def bundle_install(path)
 		# 	# sudo apt install expect
 		
 		begin
-			run_pty "bundle install"
+			bundler_install_dir = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+			run_pty "bundle install --path #{bundler_install_dir.to_s}"
 		rescue StandardError => e
 			puts "Bundler had an error."
 			exit
@@ -881,27 +882,19 @@ def bundle_uninstall(path)
 	end
 end
 
+# the gemfiles are setup to chain, so installing the project will install the core dependencies as well
 namespace :ruby_deps do
+	
 	desc "use Bundler to install ruby dependencies"
 	task :install do
-		# core dependencies
-		puts "Bundler: Installing core dependencies"
-		bundle_install(GEM_ROOT)
-		
-		# project specific
 		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
 		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Installing dependencies for project '#{name}'"
 		bundle_install(path)
 	end
 	
-	desc "remove dependencies installed by Bundler"
+	desc "remove Bundler lock (installed gems will remain)"
 	task :uninstall do
-		# core dependencies
-		puts "Bundler: Uninstalling core dependencies"
-		bundle_uninstall(GEM_ROOT)
-		
-		# project specific
 		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
 		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Uninstalling dependencies for project '#{name}'"
