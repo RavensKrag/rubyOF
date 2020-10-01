@@ -1,5 +1,7 @@
 source 'https://rubygems.org' 
 
+puts "--- gems for RubyOF core BEGIN"
+
 # ruby '2.5.1', :patchlevel => '57'
 gem 'bundler'
 
@@ -20,26 +22,5 @@ gem 'opengl', "0.10.0"
 
 
 
-gem 'json',     "~>2.1.0"
-gem 'nokogiri', "~>1.8.4" # prefer nokogiri over wrapping ofXml
-gem 'roo',      "~>2.7.1" # (for loading spreadsheets)
 
-
-# gem 'require_all'
-
-# gem 'chipmunk', '6.1.3.4'
-
-
-
-gem 'state_machine', '1.2.0'
-
-
-gem 'pry'
-gem 'pry-byebug'
-
-
-
-
-
-# gem 'DIS', "~>0.01.0"
-# gem 'object-packer', :git => 'https://github.com/RavensKrag/ObjectPacker.git', :tag => 'v0.00.6'
+puts "--- gems for RubyOF core END"
