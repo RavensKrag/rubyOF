@@ -462,12 +462,15 @@ namespace :core_wrapper do
 		end
 		
 		Dir.chdir c_extension_dir do
-			begin
-				run_i "make clean"
-			rescue StandardError => e
-				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
-				exit
+			if Pathname.new('./Makefile').exist?
+				begin
+					run_i "make clean"
+				rescue StandardError => e
+					puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+					exit
+				end
 			end
+			
 		end
 	end
 	
@@ -666,11 +669,13 @@ namespace :project_wrapper do
 		end
 		
 		Dir.chdir c_extension_dir do
-			begin
-				run_i "make clean"
-			rescue StandardError => e
-				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
-				exit
+			if Pathname.new('./Makefile').exist?
+				begin
+					run_i "make clean"
+				rescue StandardError => e
+					puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+					exit
+				end
 			end
 		end
 	end
@@ -872,13 +877,14 @@ def bundle_install(path)
 	end
 end
 
-def bundle_uninstall(path)
+def bundle_clobber(path)
 	Dir.chdir path do
-		FileUtils.rm_rf "./.bundle"      # settings directory
-		FileUtils.rm    "./Gemfile.lock" # lockfile
-		
-		# filepath = (Pathname.new(path) + 'Gemfile.lock')
-		# FileUtils.rm filepath if filepath.exist?
+		[
+			"./.bundle",      # settings directory
+			"./Gemfile.lock" # lockfile
+		].each do |subpath|
+			FileUtils.rm_rf subpath if Pathname.new(subpath).expand_path.exist?
+		end
 	end
 end
 
@@ -900,17 +906,18 @@ namespace :ruby_deps do
 	
 	desc "remove all stuff installed by Bundler for RubyOF"
 	task :clobber do
-		FileUtils.rm_r Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		path = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		FileUtils.rm_r path if path.exist?
 		
 		# core dependencies
 		puts "Bundler: Uninstalling core dependencies"
-		bundle_uninstall(GEM_ROOT)
+		bundle_clobber(GEM_ROOT)
 		
 		# project specific
 		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
 		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Uninstalling dependencies for project '#{name}'"
-		bundle_uninstall(path)
+		bundle_clobber(path)
 	end
 	
 	task :reinstall => [:clobber, :install]
@@ -1129,8 +1136,8 @@ task :clean => [
 task :clobber => [
 	'oF:clean',
 	'ruby_deps:clobber',
-	'core_wrapper:clobber',
-	'project_wrapper:clobber'
+	# 'core_wrapper:clobber',
+	# 'project_wrapper:clobber'
 ]
 
 # =============
