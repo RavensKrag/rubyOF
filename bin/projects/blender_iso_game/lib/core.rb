@@ -421,15 +421,28 @@ class Core
       p data
     end
     
+    
+    
+    
+    
     c = RubyOF::Color.hex_alpha( 0xf6bfff, 0xff )
     
     
     
-    @camera.setPosition(GLM::Vec3.new(50, 0, 0))
+    @camera.setPosition(GLM::Vec3.new(50, 50, 0))
     @camera.lookAt(GLM::Vec3.new(0, 0, 0))
+    
+    @camera.setFov(39.6)
+    @camera.setNearClip(0.1)
+    @camera.setFarClip(100)
+    # @camera.setAspectRatio()
+    
     
     
     @light.setPointLight()
+    @light.setPosition(GLM::Vec3.new(4, 1, 6))
+    
+    
     
     mesh = RubyOF::Mesh.new
     mesh.setMode(:OF_PRIMITIVE_TRIANGLE_STRIP)
