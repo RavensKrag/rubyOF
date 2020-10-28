@@ -143,8 +143,9 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	
 	
-	cout << "-- creating openFrameworks app\n";
+	cout << "-- creating openFrameworks app...\n";
 	mApp = appFactory_create(self);
+	cout << "-- app created!\n";
 	
 	// window is the drawing context
 	// app is the thing that holds all the update and render logic
