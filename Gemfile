@@ -1,5 +1,7 @@
 source 'https://rubygems.org' 
 
+puts "--- gems for RubyOF core BEGIN"
+
 # ruby '2.5.1', :patchlevel => '57'
 gem 'bundler'
 
@@ -8,7 +10,9 @@ gem 'bundler'
 # NOTE: this project also requires Rake,
 # but I don't think I want to force that rake be installed via gems.
 # gem 'rake'
-gem 'rice', "~>2.1.2"
+gem 'rice', "~>2.2.0"
+
+gem 'chipmunk', git: 'https://github.com/RavensKrag/chipmunk', branch: 'custom'
 
 gem 'opengl', "0.10.0"
 # ^ this should be an explict dependency of the RubyOF gem or w/e
@@ -20,22 +24,5 @@ gem 'opengl', "0.10.0"
 
 
 
-gem 'json',     "~>2.1.0"
-gem 'nokogiri', "~>1.8.4" # prefer nokogiri over wrapping ofXml
-gem 'roo',      "~>2.7.1" # (for loading spreadsheets)
 
-
-# gem 'require_all'
-
-# gem 'chipmunk', '6.1.3.4'
-
-
-
-gem 'state_machine', '1.2.0'
-
-
-
-
-
-# gem 'DIS', "~>0.01.0"
-# gem 'object-packer', :git => 'https://github.com/RavensKrag/ObjectPacker.git', :tag => 'v0.00.6'
+puts "--- gems for RubyOF core END"

@@ -3,6 +3,39 @@
 
 using namespace Rice;
 
+#include "rice/Array.hpp"
+
+bool shader_load(ofShader &shader, Rice::Array args){
+   if(args.size() == 1){
+      Rice::Object x = args[0];
+      std::string path = from_ruby<std::string>(x);
+      return shader.load(path);
+   }else if(args.size() == 2 || args.size() == 3){
+      return false;
+   }
+   
+   return false;
+}
+
+void ofShader__setUniformTexture(ofShader &shader, const string &name, const ofTexture &img, int textureLocation){
+   shader.setUniformTexture(name, img, textureLocation);
+}
+
+
+
+ofColor ofPixels__getColor_xy(ofPixels &pixels, size_t x, size_t y){
+   return pixels.getColor(x,y);
+}
+
+void ofPixels__setColor_xy(ofPixels &pixels, size_t x, size_t y, const ofColor &color){
+   pixels.setColor(x,y,color);
+}
+
+void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
+   pixels.setColor(i,color);
+}
+
+
 
 Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    Module rb_mGLM = define_module("GLM");
@@ -51,11 +84,11 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (const glm::vec3 & p)
          >(&ofPath::lineTo)
       )
-      .define_method("lineTo",
-         static_cast< void (ofPath::*)
-         (const glm::vec3 & p)
-         >(&ofPath::lineTo)
-      )
+      // .define_method("lineTo",
+      //    static_cast< void (ofPath::*)
+      //    (const glm::vec3 & p)
+      //    >(&ofPath::lineTo)
+      // )
       .define_method("close",
          &ofPath::close
       )
@@ -73,10 +106,116 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    //  tessellation = path.getTessellation();  // => ofVboMesh
    
    
+   
+   Data_Type<ofShader> rb_cShader = 
+      define_class_under<ofShader>(rb_mRubyOF, "Shader");
+   
+   rb_cShader
+      .define_constructor(Constructor<ofShader>())
+      .define_method("begin", &ofShader::begin)
+      .define_method("end",   &ofShader::end)
+      
+      
+      .define_method("load",  &shader_load)
+      // either 1 string if the fragment shaders have the same name
+      //    i.e. "dof.vert" and "dof.frag"
+      // or up to 3 strings if the shaders have different names
+      //    i.e ("dof.vert", "dof.frag", "dof.geom")
+      // (geometry shader is optional)
+      
+      // ^ using helper function instead of casting the funciton pointer because the default argument is boost::filesystem::path, which I don't want to bind in Rice
+      
+      .define_method("isLoaded",  &ofShader::isLoaded)
+      
+      
+      
+      
+      
+      .define_method("setUniform1i",  &ofShader::setUniform1i)
+      .define_method("setUniform2i",  &ofShader::setUniform2i)
+      .define_method("setUniform3i",  &ofShader::setUniform3i)
+      .define_method("setUniform4i",  &ofShader::setUniform4i)
+      
+      // .define_method("setUniform1f",  &ofShader::setUniform1f)
+      // .define_method("setUniform2f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2)
+      //    >(&ofShader::setUniform2f)
+      // )
+      // .define_method("setUniform3f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2, float v3)
+      //    >(&ofShader::setUniform3f)
+      // )
+      // .define_method("setUniform4f",  
+      //    static_cast< void (ofShader::*)
+      //    (const string &name, float v1, float v2, float v3, float v4)
+      //    >(&ofShader::setUniform4f)
+      // )
+      
+      
+      .define_method("setUniformTexture", &ofShader__setUniformTexture)
+      // (the textureLocation is just the slot number)
+      
+      
+      // .define_method("load_oneNameVertAndFrag",
+      //    static_cast< bool (ofShader::*)
+      //    (const filesystem::path &shaderName)
+      //    >(&ofShader::load)
+      // )
+      
+      // .define_method("load_VertFragGeom",
+      //    static_cast< bool (ofShader::*)
+      //    (const filesystem::path &vertName, const filesystem::path &fragName, const filesystem::path &geomName)
+      //    >(&ofShader::load),
+      //    (
+      //       Arg("vert_shader"),
+      //       Arg("frag_shader"),
+      //       Arg("geom_shader") = ""
+      //    )
+      // )
+   ;
+   
+   
+   Data_Type<ofPixels> rb_cPixels = 
+      define_class_under<ofPixels>(rb_mRubyOF, "Pixels");
+   
+   rb_cPixels
+      .define_constructor(Constructor<ofPixels>())
+      .define_method("allocate",
+         static_cast< void (ofPixels::*)
+         (size_t w, size_t h, ofPixelFormat pixelFormat)
+         >(&ofPixels::allocate),
+         (
+            Arg("width"),
+            Arg("height"),
+            Arg("pixelFormat") = OF_PIXELS_RGBA
+         )
+      )
+      .define_method("crop",          &ofPixels::crop)
+      .define_method("cropTo",        &ofPixels::cropTo)
+      .define_method("getColor_xy",   &ofPixels__getColor_xy)
+      
+      .define_method("setColor_i",    &ofPixels__setColor_i)
+      // ^ I think set_i actually fills an entire channel?
+      //   see ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp:837-840
+      
+      .define_method("setColor_xy",   &ofPixels__setColor_xy)
+      .define_method("getPixelIndex", &ofPixels::getPixelIndex)
+      .define_method("getTotalBytes", &ofPixels::getTotalBytes)
+      
+      .define_method("size",          &ofPixels::size) // total num pixels
+      .define_method("width",          &ofPixels::getWidth)
+      .define_method("height",          &ofPixels::getHeight)
+   ;
+   
+   
+   
    Data_Type<ofTexture> rb_cTexture = 
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
    
    rb_cTexture
+      .define_constructor(Constructor<ofTexture>())
       .define_method("bind",
          static_cast< void (ofTexture::*)
          (int) const
@@ -93,6 +232,16 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
 				Arg("textureLocation") = 0
 			)
       )
+      .define_method("readToPixels",
+         static_cast< void (ofTexture::*)
+         (ofPixels &pixels) const
+         >(&ofTexture::readToPixels)
+      )
+      .define_method("loadData",
+         static_cast< void (ofTexture::*)
+         (const ofPixels &pix)
+         >(&ofTexture::loadData)
+      )
    ;
    
    
@@ -101,11 +250,27 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
 		define_class_under<ofMesh>(rb_mRubyOF, "Mesh");
    
    rb_cMesh
+      .define_constructor(Constructor<ofMesh>())
       .define_method("draw",
          static_cast< void (ofMesh::*)
          () const
          >(&ofMesh::draw)
       )
+      // .define_method("addVertex",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addVertex)
+      // )
+      // .define_method("addColor",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addColor)
+      // )
+      // .define_method("addIndex",
+      //    static_cast< void (ofMesh::*)
+      //    () const
+      //    >(&ofMesh::addIndex)
+      // )
    ;
    // mesh.addVertex(ofVec3f(20,20));
    // mesh.addColor(ofColor::red);
@@ -149,3 +314,4 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    return rb_mGLM;
 }
+

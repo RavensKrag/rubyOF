@@ -23,6 +23,14 @@ class Space
 		@cp_space.remove_body(entity.body)
 	end
 	
+	def clear
+		@entities.each do |entity|
+			@cp_space.remove_shape(entity.shape)
+			@cp_space.remove_body(entity.body)
+		end
+		@entities.clear
+	end
+	
 	def entities
 		# return frozen shallow copy
 		@entities.clone.freeze
@@ -43,7 +51,7 @@ class Space
 	def bb_query(bb, layers=CP::ALL_LAYERS, group=CP::NO_GROUP, &block)
 		# block params: |object_in_space|
 		@cp_space.bb_query(bb, layers, group) do |shape|
-			block.call(shape.obj)
+			block.call(shape.object)
 		end
 	end
 end

@@ -1,6 +1,7 @@
 require 'rake/testtask'
 require 'rake/clean'
 
+require 'pathname'
 require 'fileutils'
 require 'open3'
 require 'yaml' # used for config files
@@ -17,6 +18,70 @@ load './rake/helper_functions.rb'
 #                         OR
 #                    full path to project (if stored elsewhere)
 # =====================================
+
+
+
+# 
+# check that all environment variables are set
+# 
+
+# If the current working directory is under the GEM_ROOT/bin/projects/<PROJ_NAME_HERE> structure, you can figure out the project name by examining the path. Otherwise, the project name must be set using the environment variable RUBYOF_PROJECT
+# ex)  env RUBYOF_PROJECT="proj_name" rake build_and_run
+
+root = Pathname.new(GEM_ROOT)
+# p root
+current_dir = Pathname.new Rake.original_dir
+puts "current: #{current_dir}"
+project_basepath = 
+	current_dir.ascend.each_cons(2)
+	.select{ |here, parent|  parent == root/'bin'/'projects' }.flatten.first
+
+if project_basepath.nil? # may be nil if we are not in that part of the tree
+	# Can't determine the project name based on the working directory,
+	# so check the environment variable as a last resort:
+	
+	var_name = 'RUBYOF_PROJECT'
+	if ENV[var_name].nil?
+		msg = [
+			"-------",
+			"ERROR: Can't automatically determine project name.",
+			"",
+			"Must either run rake from within a project directory",
+			"under the '[GEM_ROOT]/bin/projects subtree'",
+			"or set environment variable '#{var_name}'",
+			"-------"
+		].join("\n") 
+		raise msg
+	else
+		# NO-OP
+		# variable is already set, so do nothing
+		
+	end
+	
+else
+	# environment variable is not set, but can be automatically determined
+	
+	# p project_basepath.basename.to_s
+	ENV['RUBYOF_PROJECT'] = project_basepath.basename.to_s
+	
+	# NOTE: must set environment variable rather than constant, otherwise other parts of the system will be unable to access it ( like bin/main.rb )
+end
+
+# p project_basepath
+
+
+# Rake changes the working directory to be the directory where the Rakefile is, so how do you get original working directory of the terminal when Rake was called?
+	# task :whereami do
+	# puts Rake.original_dir
+	# end
+	#
+	# – Jim W.
+# src: https://www.ruby-forum.com/t/q-how-can-a-rake-task-know-the-callers-directory/81868/10
+
+
+
+
+
 
 
 
@@ -98,9 +163,8 @@ namespace :oF do
 	
 	desc "Clean and Rebuild oF core (ubuntu)."
 	task :rebuild do
-		run_task('base:clean')
-		run_task('base:build_dynamic')
-		run_task('base:build_static')
+		run_task('oF:clean')
+		run_task('oF:build')
 	end
 	
 	task :build => [:build_dynamic, :build_static]
@@ -151,11 +215,6 @@ end
 require File.join(GEM_ROOT, 'build', 'build.rb')
 
 
-# check that all environment variables are set
-var_name = 'RUBYOF_PROJECT'
-if ENV[var_name].nil?
-	raise "ERROR: must set environment variable '#{var_name}'"
-end
 
 
 # --- helpers
@@ -314,8 +373,20 @@ namespace :core_wrapper do
 		:move_dynamic_lib       # move dynamic library into easy-to-load location
 	]
 	
+	desc "run OF test project (C++ only)"
+	task :run_app do
+		Dir.chdir Pathname.new(OF_SKETCH_ROOT)/'bin' do
+			begin
+				run_i "./testApp_debug"
+			rescue StandardError => e
+				puts "ERROR: Could not build #{name}."
+				exit
+			end
+		end
+	end
 	
 	# 1) build testApp using oF build system
+	desc "build OF test project (C++ only)"
 	task :build_app do
 		build_oF_app("core oF sketch", OF_SKETCH_ROOT)
 	end
@@ -349,7 +420,7 @@ namespace :core_wrapper do
 	task :build_c_extension => c_extension_file
 		
 		extension_dependencies = Array.new.tap do |deps|
-			# Ruby / Rice CPP files
+			# Ruby / Rice CPP filesf
 			deps.concat Dir.glob("ext/#{NAME}/**/*{.cpp,.h}")
 			# deps.concat Dir.glob("ext/#{NAME}/*{.rb,.c}")
 			
@@ -393,12 +464,15 @@ namespace :core_wrapper do
 		end
 		
 		Dir.chdir c_extension_dir do
-			begin
-				run_i "make clean"
-			rescue StandardError => e
-				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
-				exit
+			if Pathname.new('./Makefile').exist?
+				begin
+					run_i "make clean"
+				rescue StandardError => e
+					puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+					exit
+				end
 			end
+			
 		end
 	end
 	
@@ -597,11 +671,13 @@ namespace :project_wrapper do
 		end
 		
 		Dir.chdir c_extension_dir do
-			begin
-				run_i "make clean"
-			rescue StandardError => e
-				puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
-				exit
+			if Pathname.new('./Makefile').exist?
+				begin
+					run_i "make clean"
+				rescue StandardError => e
+					puts "ERROR: Unknown problem while cleaning C extension dir for core wrapper."
+					exit
+				end
 			end
 		end
 	end
@@ -783,55 +859,6 @@ end
 
 
 
-# =============
-# manage C++ dependencies
-# =============
-namespace :cpp_deps do
-	desc "Set up environment on a new machine."
-	task :setup => [
-		# 'oF:download_libs',
-		'oF_deps:inject', # NOTE: injecting will always force a new build of oF core
-		'oF:build',
-		'core_wrapper:build_app'
-	] do
-		FileUtils.mkdir_p "bin/data"
-		FileUtils.mkdir_p DYNAMIC_LIB_PATH # bin/lib/
-		
-		# -- bin/projects/ and specifically the 'boilerplate' project should 
-		#    always be present, and so the system does not have to manually
-		#    establish those folders
-		# FileUtils.mkdir_p "bin/projects"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/bin"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/ext"
-		# FileUtils.mkdir_p "bin/projects/boilerplate/lib"
-	end
-	
-	desc "Copy oF dynamic libs to correct location"
-	task :install do
-		puts "=== Copying OpenFrameworks dynamic libs..."
-		
-		
-		root = Pathname.new(OF_ROOT)
-		
-		src  = root/'libs'/'fmodex'/'lib'/PLATFORM/'libfmodex.so'
-		dest = DYNAMIC_LIB_PATH
-		FileUtils.copy(src, dest)
-		
-		# NOTE: DYNAMIC_LIB_PATH has been passed to -rpath
-		# (specified in extconf.rb)
-		# 
-		# -rpath flag specifies where to look for dynamic libraries
-		# (the system also has some paths that it checks for, but these are the "local dlls", basically)
-		
-		
-		
-		# TODO: consider copying the ext/oF_apps/testApp/bin/data/ directory as well
-	end
-end
-# =============
-# =============
-
-
 
 # =============
 # manage ruby-level dependencies
@@ -843,6 +870,8 @@ def bundle_install(path)
 		# 	# sudo apt install expect
 		
 		begin
+			bundler_install_dir = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+			run_pty "bundle config --local path '#{bundler_install_dir}'"
 			run_pty "bundle install"
 		rescue StandardError => e
 			puts "Bundler had an error."
@@ -851,55 +880,64 @@ def bundle_install(path)
 	end
 end
 
-def bundle_uninstall(path)
+def bundle_clobber(path)
 	Dir.chdir path do
-		FileUtils.rm_rf "./.bundle"      # settings directory
-		FileUtils.rm    "./Gemfile.lock" # lockfile
-		
-		# filepath = (Pathname.new(path) + 'Gemfile.lock')
-		# FileUtils.rm filepath if filepath.exist?
+		[
+			"./.bundle",      # settings directory
+			"./Gemfile.lock" # lockfile
+		].each do |subpath|
+			FileUtils.rm_rf subpath if Pathname.new(subpath).expand_path.exist?
+		end
 	end
 end
 
+
+# Even though the project specific file chains into the core dependencies file, you need to run bundler for both. This is because the extconf.rb for the OF core wrapper will only see the core Gemfile / Gemfile.lock - without running the core dependencies separately, the core wrapper will fail.
 namespace :ruby_deps do
 	desc "use Bundler to install ruby dependencies"
 	task :install do
+		bundler_install_dir = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		
+		FileUtils.mkdir_p bundler_install_dir
+		
+		
 		# core dependencies
 		puts "Bundler: Installing core dependencies"
 		bundle_install(GEM_ROOT)
 		
 		# project specific
-		name, path = RubyOF::Build.load_project(path_or_name)
+		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
+		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Installing dependencies for project '#{name}'"
 		bundle_install(path)
 	end
 	
-	desc "remove dependencies installed by Bundler"
-	task :uninstall do
+	desc "remove all stuff installed by Bundler for RubyOF"
+	task :clobber do
+		path = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		FileUtils.rm_r path if path.exist?
+		
 		# core dependencies
 		puts "Bundler: Uninstalling core dependencies"
-		bundle_uninstall(GEM_ROOT)
+		bundle_clobber(GEM_ROOT)
 		
 		# project specific
-		name, path = RubyOF::Build.load_project(path_or_name)
+		proj_path = Pathname.new(GEM_ROOT)/'bin'/'projects'/ENV['RUBYOF_PROJECT']
+		name, path = RubyOF::Build.load_project(proj_path)
 		puts "Bundler: Uninstalling dependencies for project '#{name}'"
-		bundle_uninstall(path)
+		bundle_clobber(path)
 	end
 	
-	task :reinstall => [:uninstall, :install]
+	task :reinstall => [:clobber, :install]
 end
 # =============
 # =============
 
 
 task :setup => [
-	'cpp_deps:setup',
-	'cpp_deps:install',
 	'ruby_deps:install'
 ]
 
-
-# TODO: refactor the cpp_deps namespace
 
 # + uncompress OF folder -> "openFrameworks"
 #   (make sure to rename, dropping the version number etc)
@@ -941,6 +979,7 @@ task :full_build => [
 ]
 
 
+desc "Build core wrapper and project wrapper for given project"
 task :build => [
 	'core_wrapper:build',
 	'project_wrapper:build'
@@ -971,6 +1010,57 @@ task :run do
 		].join(' ')
 		
 		Kernel.exec(cmd)
+	end
+end
+
+namespace :callgrind do
+	CALLGRIND_FILE = 'callgrind_RubyCpp.out'
+	
+	desc "Profile C++ code (requires instrumentation) [ save to file in project ]"
+	task :run do
+		root = Pathname.new(GEM_ROOT)
+		
+		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+		
+		project_name = ENV['RUBYOF_PROJECT']
+		project_dir  = root/'bin'/'projects'/project_name
+		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+		
+		Dir.chdir project_dir do
+			puts "ruby level execution"
+			
+			exe_path = "./lib/main.rb"
+			
+			
+			cmd = [
+				'env GALLIUM_HUD=fps,VRAM-usage',
+				"valgrind --tool=callgrind --instr-atstart=no --callgrind-out-file='#{CALLGRIND_FILE}'",
+				"ruby #{exe_path}"
+			].join(' ')
+			
+			Kernel.exec(cmd)
+		end
+	end
+	
+	desc "Visualize callgrind profiling data (load from file in project)"
+	task :view do
+		root = Pathname.new(GEM_ROOT)
+		
+		core_install_location    = root/'lib'/NAME/"#{NAME}.so"
+		
+		project_name = ENV['RUBYOF_PROJECT']
+		project_dir  = root/'bin'/'projects'/project_name
+		project_install_location = project_dir/'bin'/'lib'/"#{NAME}_project.so"
+		
+		Dir.chdir project_dir do
+			puts "loading callgrind file..."
+			
+			cmd = [
+				"kcachegrind '#{CALLGRIND_FILE}'"
+			].join(' ')
+			
+			Kernel.exec(cmd)
+		end
 	end
 end
 
@@ -1019,6 +1109,7 @@ end
 
 
 
+
 module RubyOF
 	module Build
 
@@ -1052,8 +1143,9 @@ task :clean => [
 
 task :clobber => [
 	'oF:clean',
-	'core_wrapper:clobber',
-	'project_wrapper:clobber'
+	'ruby_deps:clobber',
+	# 'core_wrapper:clobber',
+	# 'project_wrapper:clobber'
 ]
 
 # =============

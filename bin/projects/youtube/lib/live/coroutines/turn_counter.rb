@@ -21,6 +21,12 @@ class TurnCounter
 			# (This is the key to skipping certain blocks in the Fiber.)
 			if @current_turn == i
 				yield
+				# TODO: send signal to outside usig Fiber.yield when the block is actually called. want to be able to visualize when code is actually being executed, versus when there are just NO-OP blocks (ie, Main is waiting)
+				# (probably need a special marker for "finished" as well)
+				
+				# should be able to create big chunks of empty time between code and user inputs. with some GUI tool, you can cut out the empty time later as an effeciency tweak. There thus needs to be a difference between deleting the "notes" in a particular time span, and deleting the time span itself.
+				
+				# having empty time between the end of code execution and user input is useful, because you can imagine some inputs, before assigning real code to them. alternatively, you may want to transform the space with a combination of direct input, and code.
 			end
 			
 		elsif i_or_range.is_a? Range

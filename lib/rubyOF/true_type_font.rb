@@ -83,6 +83,9 @@ class TrueTypeFont
 				font_settings.add_alphabet x
 			end
 			
+			config.ranges.each do |x|
+				font_settings.add_unicode_range x
+			end
 			
 			
 			puts "loading font"
@@ -94,11 +97,13 @@ class TrueTypeFont
 	end
 	
 	class DSL_Object
+		attr_reader :ranges
 		attr_reader :alphabets
 		attr_accessor :path, :size, :antialiased
 		
 		def initialize
 			@alphabets = Array.new
+			@ranges = Array.new
 		end
 		
 		def add_alphabet(alphabet)
@@ -114,6 +119,22 @@ class TrueTypeFont
 			end
 			
 			@alphabets << alphabet
+		end
+		
+		def add_unicode_range(range)
+			range_list = RubyOF::TrueTypeFontSettings::UnicodeRanges
+			
+			unless range_list.include? range
+				message = [
+					"Unicode range '#{range}' is not one of the supported values.",
+					"Use a value from TrueTypeFontSettings::UnicodeAlphabets",
+					"Try one of these: #{range_list.inspect}"
+				].join("\n")
+				
+				raise message
+			end
+			
+			@ranges << range
 		end
 	end
 end

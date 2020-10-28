@@ -12,7 +12,7 @@ class Entity
 		          # (assigned not on init, but when Entity is added to Space)
 		
 		
-		@shape.obj = self
+		@shape.object = self
 	end
 	
 	def serialize

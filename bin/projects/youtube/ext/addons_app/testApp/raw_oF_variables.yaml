@@ -215,11 +215,6 @@
 - 'CO = co
 
 '
-- 'PARSED_ADDONS_LIBS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src
-
-'
 - 'VTE_VERSION = 5202
 
 '
@@ -370,9 +365,6 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src
 
 '
-- 'rvm_recommended_ruby = rvm install ruby-2.4.0
-
-'
 - 'addon = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui
 
 '
@@ -410,7 +402,9 @@
 - 'PAM_KWALLET5_LOGIN = /run/user/1000/kwallet5.socket
 
 '
-- 'rvm_pretty_print_flag = auto
+- 'PARSED_ADDONS_LIBS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/libs/imgui/src
 
 '
 - 'XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session1
@@ -420,7 +414,7 @@
 - 'MAKE_HOST = x86_64-pc-linux-gnu
 
 '
-- 'PATH = /home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0/bin:/home/ravenskrag/.rvm/gems/ruby-2.4.0@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.4.0/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin
+- 'PATH = /home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1/bin:/home/ravenskrag/.rvm/gems/ruby-2.5.1@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.5.1/bin:/home/ravenskrag/bin:/home/ravenskrag/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.rvm/bin
 
 '
 - 'OF_CORE_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a
@@ -456,13 +450,15 @@
 - 'XCURSOR_THEME = breeze_cursors
 
 '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1514,unix/ravensnest:/tmp/.ICE-unix/1514
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/2379,unix/ravensnest:/tmp/.ICE-unix/2379
 
 '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
 
 '
-- "COMPILE.mod = m2c   \n"
+- 'rvm_stored_umask = 0002
+
+'
 - 'XDG_RUNTIME_DIR = /run/user/1000
 
 '
@@ -580,7 +576,7 @@
 
 '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-ZqNLRKSlANRW/agent.1285
+- 'SSH_AUTH_SOCK = /tmp/ssh-64FsoWHiODiZ/agent.2117
 
 '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin
@@ -627,7 +623,7 @@
 - 'rvm_bin_path = /home/ravenskrag/.rvm/bin
 
 '
-- 'PWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube
+- 'PWD = /home/ravenskrag/Desktop/gem_structure
 
 '
 - 'ALL_OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src
@@ -676,7 +672,7 @@
 - 'PREPROCESS.r = f77    -F
 
 '
-- 'SSH_AGENT_PID = 1425
+- 'SSH_AGENT_PID = 2306
 
 '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -1008,8 +1004,8 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "rwildcard = \t\t \t\t \t\t \t \t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t
-  \t\n"
+- "rwildcard = \t\t \t\t \t\t \t \t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t
+  \t \t \t\n"
 - 'WEAVE = weave
 
 '
@@ -1037,22 +1033,22 @@
   OF_CORE_THIRDPARTY_STATIC_LIBS XDG_SESSION_TYPE CWEAVE PROJECT_CFLAGS ?D rvm_path
   PARSED_ADDONS_FILTERED_SOURCE_PATHS GCC_MAJOR_GT_4 OF_CORE_THIRDPARTY_HEADER_PATHS
   OF_PROJECT_CFLAGS @D XAUTHORITY @F MAKE_VERSION CURDIR OF_LIBS_PATH SHELL RM CO
-  PARSED_ADDONS_LIBS_SOURCE_INCLUDES VTE_VERSION OF_PROJECT_ADDONS_OBJS TMP_PROJECT_ADDONS_CFLAGS
-  _ QT_AUTO_SCREEN_SCALE_FACTOR PREPROCESS.F src_to_obj ALL_CXXFLAGS LINK.m XDG_CONFIG_DIRS
-  OUTPUT_OPTION PLATFORM_OPTIMIZATION_CFLAGS_RELEASE OF_PROJECT_LIBS COMPILE.cpp _system_version
-  HAS_SYSTEM_GTK3 MAKEFILE_LIST NODEPS TMP_PROJECT_ADDONS_LIBS PLATFORM_OPTIMIZATION_CFLAGS_DEBUG
-  OF_PROJECT_CXXFLAGS IM_CONFIG_PHASE OF_ADDONS_PATH ADDON_PKG_CONFIG_LIBRARIES PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
-  GNUMAKEFLAGS LINK.p CXXFLAGS MANDATORY_PATH XDG_DATA_DIRS CROSS_COMPILING PROJECT_ADDONS
-  OPTIMIZATION_CFLAGS OF_CORE_LIB_PATH DBUS_SESSION_BUS_ADDRESS GCC_MAJOR_EQ_4 CC
-  PROJECT_ADDONS_SOURCE_FILES PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS rvm_recommended_ruby
-  addon GCC_MINOR_GTEQ_9 PROJECT_ADDONS_LDFLAGS PLATFORM_REQUIRED_ADDONS CHECKOUT,v
-  obj_prefix unscaped_var_line OF_PROJECT_OBJS LESSOPEN RUBYOF_PROJECT OF_PROJECT_DEFINES
-  CPP OF_APPS_PATH LINK.cc PAM_KWALLET5_LOGIN rvm_pretty_print_flag XDG_SESSION_PATH
-  PARSED_ALL_PLATFORM_LIBS MAKE_HOST PATH OF_CORE_LIBS LD B_PROCESS_ADDONS ALL_OF_CORE_LIBS_PATHS
-  TEXI2DVI OF_CORE_THIRDPARTY_SHARED_LIBS GPG_AGENT_INFO XCURSOR_THEME SESSION_MANAGER
-  OF_LIBS_OF_COMPILED_PATH COMPILE.mod XDG_RUNTIME_DIR FIND CFLAGS ARFLAGS TEXTDOMAIN
-  LINK.r PARSED_ADDONS_LIBS_SOURCES PARSED_ADDONS_FILTERED_INCLUDE_PATHS LINT COMPILE.f
-  OF_CORE_SOURCE_PATHS LINT.c YACC.m ADDONS_INCLUDES_FILTER addon_path uniq TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
+  VTE_VERSION OF_PROJECT_ADDONS_OBJS TMP_PROJECT_ADDONS_CFLAGS _ QT_AUTO_SCREEN_SCALE_FACTOR
+  PREPROCESS.F src_to_obj ALL_CXXFLAGS LINK.m XDG_CONFIG_DIRS OUTPUT_OPTION PLATFORM_OPTIMIZATION_CFLAGS_RELEASE
+  OF_PROJECT_LIBS COMPILE.cpp _system_version HAS_SYSTEM_GTK3 MAKEFILE_LIST NODEPS
+  TMP_PROJECT_ADDONS_LIBS PLATFORM_OPTIMIZATION_CFLAGS_DEBUG OF_PROJECT_CXXFLAGS IM_CONFIG_PHASE
+  OF_ADDONS_PATH ADDON_PKG_CONFIG_LIBRARIES PROJECT_ADDONS_PKG_CONFIG_LIBRARIES GNUMAKEFLAGS
+  LINK.p CXXFLAGS MANDATORY_PATH XDG_DATA_DIRS CROSS_COMPILING PROJECT_ADDONS OPTIMIZATION_CFLAGS
+  OF_CORE_LIB_PATH DBUS_SESSION_BUS_ADDRESS GCC_MAJOR_EQ_4 CC PROJECT_ADDONS_SOURCE_FILES
+  PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS addon GCC_MINOR_GTEQ_9 PROJECT_ADDONS_LDFLAGS
+  PLATFORM_REQUIRED_ADDONS CHECKOUT,v obj_prefix unscaped_var_line OF_PROJECT_OBJS
+  LESSOPEN RUBYOF_PROJECT OF_PROJECT_DEFINES CPP OF_APPS_PATH LINK.cc PAM_KWALLET5_LOGIN
+  PARSED_ADDONS_LIBS_SOURCE_INCLUDES XDG_SESSION_PATH PARSED_ALL_PLATFORM_LIBS MAKE_HOST
+  PATH OF_CORE_LIBS LD B_PROCESS_ADDONS ALL_OF_CORE_LIBS_PATHS TEXI2DVI OF_CORE_THIRDPARTY_SHARED_LIBS
+  GPG_AGENT_INFO XCURSOR_THEME SESSION_MANAGER OF_LIBS_OF_COMPILED_PATH rvm_stored_umask
+  XDG_RUNTIME_DIR FIND CFLAGS ARFLAGS TEXTDOMAIN LINK.r PARSED_ADDONS_LIBS_SOURCES
+  PARSED_ADDONS_FILTERED_INCLUDE_PATHS LINT COMPILE.f OF_CORE_SOURCE_PATHS LINT.c
+  YACC.m ADDONS_INCLUDES_FILTER addon_path uniq TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES
   YACC.y PROJECT_ADDONS_OBJ_FILES VPATH _system_name AR PROJECT_ADDONS_FRAMEWORKS
   GTK2_RC_FILES .FEATURES HAS_SYSTEM_MPG123 PROCESS_NEXT TANGLE ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
   OF_CORE_LIBS_PLATFORM_LIBS_STATICS OPTIMIZATION_LDFLAGS LS_COLORS PLATFORM_STATIC_LIBRARIES
@@ -1082,16 +1078,17 @@
   COMPILE.def LEX MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH PLATFORM_CORE_EXCLUSIONS MFLAGS
   *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER LEX.l LEX.m OF_PROJECT_ADDONS_DEPS
   ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS COMPILE.r OBJS_WITH_PREFIX OF_PROJECT_SOURCE_PATHS
-  ADDON_INCLUDES +F M2C parse_addons_sources PLATFORM_HEADER_SEARCH_PATHS ALL_OF_CORE_LIBSORDER_MAKE_FILES
-  APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS CLEANTARGET QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS
-  parse_addons_libraries DEFAULTS_PATH LDFLAGS GTK_RC_FILES parse_addons_includes
-  TEXTDOMAINDIR GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS
-  TMP_PROJECT_ADDONS_INCLUDES _system_type YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-  HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2 CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS
-  LINK.C OF_CORE_INCLUDES_CFLAGS ADDON_CPPFLAGS COMPILE.C GNOME_TERMINAL_SCREEN ^F
-  COMPILE.S LINK.F rvm_prefix PROJECT_ROOT GNOME_TERMINAL_SERVICE SUFFIXES PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS
-  GS_LIB COMPILE.c ADDON_INCLUDE_CFLAGS PARSED_ADDONS_INCLUDES _system_arch ADDON_CFLAGS
-  COMPILE.s PROJECT_ADDONS_CFLAGS .INCLUDE_DIRS PARSED_ADDONS_OFX_SOURCES OF_PROJECT_DEFINES_CFLAGS
+  rvm_user_install_flag ADDON_INCLUDES +F M2C parse_addons_sources PLATFORM_HEADER_SEARCH_PATHS
+  ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS CLEANTARGET
+  QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS parse_addons_libraries DEFAULTS_PATH
+  LDFLAGS GTK_RC_FILES parse_addons_includes TEXTDOMAINDIR GCC_MINOR_GTEQ_7 MAKEFILES
+  OF_PROJECT_DEFINES_CFLAGS OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS TMP_PROJECT_ADDONS_INCLUDES
+  _system_type YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
+  CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS ADDON_CPPFLAGS
+  COMPILE.C COMPILE.mod GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT
+  GNOME_TERMINAL_SERVICE SUFFIXES PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS GS_LIB
+  COMPILE.c ADDON_INCLUDE_CFLAGS PARSED_ADDONS_INCLUDES _system_arch ADDON_CFLAGS
+  COMPILE.s PROJECT_ADDONS_CFLAGS .INCLUDE_DIRS PARSED_ADDONS_OFX_SOURCES rvm_loaded_flag
   ADDON_DATA CORE_PKG_CONFIG_LIBRARIES .RECIPEPREFIX PROJECT_ADDONS_DATA MAKEINFO
   MAKE_TERMERR OBJC PARSED_ADDONS_LIBS_INCLUDES LINK.f ADDON_LIBS TEX GST_VERSION
   PROJECT_ADDONS_LIBS LANG TERM F77FLAGS LINK.o ADDON_SOURCES ALL_INSTALLED_ADDONS
@@ -1210,6 +1207,9 @@
 - 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/src
 
 '
+- 'rvm_user_install_flag = 1
+
+'
 - 'ADDON_INCLUDES = . ./src ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
   ./obj/linux64/Debug/src . ./src ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
   ./obj/linux64/Debug/src . ./src ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug
@@ -1258,6 +1258,7 @@
 
 '
 - "MAKEFILES = \n"
+- "OF_PROJECT_DEFINES_CFLAGS = \n"
 - 'OF_PROJECT_DEPENDENCY_FILES = obj/linux64/Debug/src/ofApp.d obj/linux64/Debug/src/main.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxPanel.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.d
@@ -1580,7 +1581,8 @@
 - 'COMPILE.C = g++    -c
 
 '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/42d9e9fe_19bc_420a_9b38_7426ef0a0cc6
+- "COMPILE.mod = m2c   \n"
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/c30aa512_003f_4ccd_9b7f_37095ff1d7cd
 
 '
 - "^F = \n"
@@ -1596,7 +1598,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp
 
 '
-- 'GNOME_TERMINAL_SERVICE = :1.330
+- 'GNOME_TERMINAL_SERVICE = :1.81
 
 '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1675,7 +1677,9 @@
 - 'PARSED_ADDONS_OFX_SOURCES = ./src/ofApp.cpp ./src/main.cpp
 
 '
-- "OF_PROJECT_DEFINES_CFLAGS = \n"
+- 'rvm_loaded_flag = 1
+
+'
 - "ADDON_DATA = \n"
 - "CORE_PKG_CONFIG_LIBRARIES =   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
   gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal libcurl glfw3 rtaudio
@@ -1685,7 +1689,7 @@
 - 'MAKEINFO = makeinfo
 
 '
-- 'MAKE_TERMERR = /dev/pts/7
+- 'MAKE_TERMERR = /dev/pts/2
 
 '
 - 'OBJC = cc

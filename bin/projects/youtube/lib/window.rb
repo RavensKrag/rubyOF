@@ -35,6 +35,8 @@ current_file.parent.tap do |lib_dir|
 	require_all lib_dir/'live'/'loader'
 	require lib_dir/'live'/'coroutines'/'turn_counter'
 	require_all lib_dir/'live'/'history'
+	
+	require lib_dir/'live'/'code'/'update_fiber'
 end
 
 
@@ -43,6 +45,7 @@ class Window < RubyOF::Window
 	include HelperFunctions
 	
 	attr_reader :live, :data_dir, :camera
+	attr_reader :font_color
 	
 	PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 	def initialize
@@ -98,6 +101,7 @@ class Window < RubyOF::Window
 				"Body", # wrapped_object
 				header: (PROJECT_DIR/'lib'/'live'/'code'/'body_init.rb'),
 				body:   (PROJECT_DIR/'lib'/'live'/'code'/'body_main.rb'),
+				ui:     (PROJECT_DIR/'lib'/'live'/'code'/'user_interface.rb'),
 				save_directory: @data_dir,
 				
 				method_contract:  [

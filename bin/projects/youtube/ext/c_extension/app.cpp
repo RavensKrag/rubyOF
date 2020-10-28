@@ -88,6 +88,32 @@ void rbApp::setup(){
 	
 	
 	
+	// ofParameter::get() returns reference to value,
+	// and that is wrapped in a ruby object that acts as a "pointer" to C++ data.
+	// Like a pointer, this data only needs to be passed once for changes to propagate.
+	Rice::Data_Object<ofColor> rb_color_ptr(
+		&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),
+		Rice::Data_Type< ofColor >::klass(),
+		Rice::Default_Mark_Function< ofColor >::mark,
+		Null_Free_Function< ofColor >::free
+	);
+	// ^ This works, but is not sufficient to draw colored strings fast.
+	//   Make sure to also convert string -> mesh if you must draw many strings.
+	
+	
+	// Null_Free_Function< T > is declared at the top of this file.
+	// By creating this stubbed callback, the Ruby interpreter has
+	// no mechanism to release the memory that has been declared.
+	// In this way, memory management can be completely controlled
+	// through C++ code (which is what I want for this project).
+	
+	
+	// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
+	mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
+	
+	
+	
+	
 	
 	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
 	mSelf.call("setup");
@@ -125,28 +151,6 @@ void rbApp::setup(){
 	
 	
 	
-	// ofParameter::get() returns reference to value,
-	// and that is wrapped in a ruby object that acts as a "pointer" to C++ data.
-	// Like a pointer, this data only needs to be passed once for changes to propagate.
-	Rice::Data_Object<ofColor> rb_color_ptr(
-		&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),
-		Rice::Data_Type< ofColor >::klass(),
-		Rice::Default_Mark_Function< ofColor >::mark,
-		Null_Free_Function< ofColor >::free
-	);
-	// ^ This works, but is not sufficient to draw colored strings fast.
-	//   Make sure to also convert string -> mesh if you must draw many strings.
-	
-	
-	// Null_Free_Function< T > is declared at the top of this file.
-	// By creating this stubbed callback, the Ruby interpreter has
-	// no mechanism to release the memory that has been declared.
-	// In this way, memory management can be completely controlled
-	// through C++ code (which is what I want for this project).
-	
-	
-	// NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
-	mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
 }
 
 void rbApp::update(){

@@ -35,6 +35,26 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 		glfw_error = true;
 	}
 	
+	
+	
+	
+	// // Even if an error has been detected, still proceed with
+	// // the full initialization. This way, openFrameworks has
+	// // a chance to output it's error message.
+	// cout << "-- creating GLFW window\n";
+	// mWindow = new ofAppGLFWWindow();
+	
+	// cout << "-- configuring GLFW window\n";
+	// ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Even if an error has been detected, still proceed with
 	// the full initialization. This way, openFrameworks has
 	// a chance to output it's error message.
@@ -42,7 +62,76 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	mWindow = new ofAppGLFWWindow();
 	
 	cout << "-- configuring GLFW window\n";
-	ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
+	// ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
+		
+		shared_ptr<ofAppGLFWWindow> windowPtr (mWindow);
+		
+		ofInit();
+		auto settings = windowPtr->getSettings();
+		settings.setSize(width,height);
+		settings.windowMode = OF_WINDOW;
+		
+		settings.setGLVersion(3,2);
+		
+		// ^ simply setting the GL version seems to break mouse events? why?
+		// After extensive testing, it appears to be an interaction with imgui.
+		// I don't understand how that works... but ok.
+		
+		
+		ofGetMainLoop()->addWindow(windowPtr);
+		windowPtr->setup(settings);
+	
+	
+	
+	
+	
+	
+	// // Even if an error has been detected, still proceed with
+	// // the full initialization. This way, openFrameworks has
+	// // a chance to output it's error message.
+	// cout << "-- creating GLFW window\n";
+	// mWindow = new ofAppGLFWWindow();
+	
+	// cout << "-- configuring GLFW window\n";
+	// ofGLFWWindowSettings settings = mWindow->getSettings();
+	// 	settings.setGLVersion(3,2);
+	// 	settings.setSize(width, height);
+	// 	settings.windowMode = OF_WINDOW;
+	// ofGetMainLoop()->addWindow(shared_ptr<ofAppGLFWWindow>(mWindow)); // TODO: convert to shared pointer
+	// mWindow->setup(settings);
+	// // ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
+	
+	
+	// ofInit();
+	
+	
+	
+	// ofCreateWindow(settings) is define in the file below:
+	// ext/openFrameworks/libs/openFrameworks/app/ofAppRunner.cpp
+			// ofCreateWindow
+				// mainLoop()->createWindow(settings)
+	// ext/openFrameworks/libs/openFrameworks/app/ofMainLoop.cpp
+	// 
+	// 
+	// ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp
+	
+	
+	
+	// the correct way to set up a window is using ofCreateWindow()
+	// src: https://openframeworks.cc/documentation/application/
+	// but currently, that breaks mouse events (not sure why)
+	// Maybe this problem will fix itself when I upgrade oF to the stable version? but I really don't know.
+	
+	// want to eventually transition to using ofCreateWindow, because that will enable multi-window setups, and porting to mobile, etc... but for right now let's not do that.
+	
+	// cout << "-- creating GLFW window\n";
+	// ofGLFWWindowSettings settings;
+	// 	settings.setGLVersion(3,2);
+	// 	// settings.setSize(width, height);
+	// mWindow = ofCreateWindow(settings);
+	
+	// ofSetWindowShape(width, height);
+	
 	
 	
 	// At this point, the error message is out, and the error flag is set.
@@ -54,8 +143,9 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	
 	
-	cout << "-- creating openFrameworks app\n";
+	cout << "-- creating openFrameworks app...\n";
 	mApp = appFactory_create(self);
+	cout << "-- app created!\n";
 	
 	// window is the drawing context
 	// app is the thing that holds all the update and render logic
@@ -77,7 +167,8 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 }
 
 Launcher::~Launcher(){
-	delete mWindow;
+	// delete mWindow;
+	// ^ Don't need to delete Window any more, because we're using a smart pointer now
 	
 	// It seems like OpenFrameworks automatically deletes the App.
 	// It already needs to intercept the exit callback

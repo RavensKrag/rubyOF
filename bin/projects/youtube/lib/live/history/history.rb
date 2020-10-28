@@ -16,13 +16,12 @@ class ExecutionHistory
 	               :size, :length
 	
 	
-	def save(obj)
+	def save(i, obj)
 		# NOTE: Don't hang on to obj, and don't hang on to obj.save
 		#       References are being passed around, not deep copies.
 		
 		puts "  saving, in history"
 		state = obj.to_yaml
-		i = obj.update_counter.current_turn
 		@history[i] = state
 	end
 	
