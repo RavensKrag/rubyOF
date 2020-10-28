@@ -25,11 +25,67 @@ using namespace Rice;
 extern "C"
 void Init_rubyOF()
 {
+	std::cout << "c++: set up module: GLM\n";
+	Module rb_mGLM = define_module("GLM");
+	
+	// 
+	// vec3
+	// 
+	
+	// Vec3f is exactly the same as ofPoint. If you try to bind both,
+	// Rice gets mad, and you get a runtime error.
+	Data_Type<glm::vec3> rb_cGLM_vec3 =
+		define_class_under<glm::vec3>(rb_mGLM, "Vec3");
+	
+	rb_cGLM_vec3
+		.define_constructor(Constructor<glm::vec3, float, float, float>())
+		.define_method("get_component",   &glm_vec3_getComponent)
+		.define_method("set_component",   &glm_vec3_setComponent)
+	;
+	
+	// 
+	// vec4
+	// 
+	
+   Data_Type<glm::vec4> rb_cGLM_vec4 = 
+		define_class_under<glm::vec4>(rb_mGLM, "Vec4");
+	
+	rb_cGLM_vec4
+		.define_constructor(Constructor<glm::vec4, float, float, float, float>())
+		// .define_method("get_component",   &ofVec3f_get_component)
+		// .define_method("set_component",   &ofVec3f_set_component)
+	;
+	
+	// 
+	// mat4
+	// 
+	
+	Data_Type<glm::mat4> rb_cGLM_mat4 = 
+		define_class_under<glm::mat4>(rb_mGLM, "Mat4");
+	
+	
+	// 
+	// quaternion
+	// 
+	
+	Data_Type<glm::quat> rb_cGLM_quat = 
+		define_class_under<glm::quat>(rb_mGLM, "Quat");
+	
+	
+	
+	
+	
+	
+	
 	std::cout << "c++: set up module: RubyOF\n";
 	Module rb_mRubyOF = define_module("RubyOF");
 	
+	
 	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);    // immediate mode (slow)
-	Rice::Module rb_mGraphicsAdv  = Init_rubyOF_GraphicsAdv(rb_mRubyOF); // retained mode  (fast)
+	
+	Init_rubyOF_GraphicsAdv(rb_mRubyOF); // retained mode  (fast)
+	
+	Rice::Class rb_cMesh          = Init_rubyOF_mesh(rb_mRubyOF);
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	
@@ -38,15 +94,7 @@ void Init_rubyOF()
 	Rice::Class rb_cTexture = itp_tuple.texture;
 	Rice::Class rb_cPixels  = itp_tuple.pixels;
 	
-	// ofPoint is the same as ofVec3
-	Data_Type<ofPoint> rb_cPoint =
-		define_class_under<ofPoint>(rb_mRubyOF, "Point");
 	
-	rb_cPoint
-		.define_constructor(Constructor<ofPoint, float, float, float>())
-		.define_method("get_component",   &ofVec3f_get_component)
-		.define_method("set_component",   &ofVec3f_set_component)
-	;
 	
 	
 	// TODO: wrap the GLM vectors, and operation on those types.
@@ -264,11 +312,11 @@ void Init_rubyOF()
 	;
 }
 
-float ofVec3f_get_component(ofPoint& p, int i){
+float glm_vec3_getComponent(glm::vec3& p, int i){
 	return p[i];
 }
 
-void  ofVec3f_set_component(ofPoint& p, int i, float value){
+void  glm_vec3_setComponent(glm::vec3& p, int i, float value){
 	p[i] = value;
 }
 

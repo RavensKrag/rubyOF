@@ -37,13 +37,7 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
 
 
 
-Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
-   Module rb_mGLM = define_module("GLM");
-   
-   Data_Type<glm::vec3> rb_cGLM_vec3 = 
-		define_class_under<glm::vec3>(rb_mGLM, "vec3");
-   
-   
+void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    // https://stackoverflow.com/questions/6733934/what-does-immediate-mode-mean-in-opengl
    // http://openframeworks.cc/ofBook/chapters/advanced_graphics.html
    
@@ -311,7 +305,5 @@ Rice::Module Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
 		define_class_under<of3dPrimitive>(rb_mRubyOF, "OF_3dPrimitive");
    
    
-   
-   return rb_mGLM;
 }
 

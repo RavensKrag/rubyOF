@@ -1,7 +1,7 @@
-module RubyOF
+module GLM
 
-class Point
-	include Freezable
+class Vec3
+	include RubyOF::Freezable
 	
 	def to_s
 		format = '%.03f'

@@ -41,19 +41,6 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	
 	
 	
-	Data_Type<ofQuaternion> rb_cQuaternion = 
-		define_class_under<ofQuaternion>(rb_mRubyOF, "Quaternion");
-	
-	// Vec3f is exactly the same as ofPoint. If you try to bind both,
-	// Rice gets mad, and you get a runtime error.
-	
-	// Data_Type<ofVec3f> rb_cVec3f = 
-	// 	define_class_under<ofVec3f>(rb_mRubyOF,  "Vec3f");
-	
-	Data_Type<ofVec4f> rb_cVec4f = 
-		define_class_under<ofVec4f>(rb_mRubyOF,  "Vec4f");
-	
-	
 	
 	// --- Ok, time to bind some useful stuff.
 	Module rb_mGraphics = define_module_under(rb_mRubyOF, "Graphics");

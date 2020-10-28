@@ -19,8 +19,8 @@
 bool ofImage_load(ofImage& image, const std::string& filename);
 
 // Behaves as expected. Rice passes the C++ ofPoint correspoinding to 'self' into the function
-float ofVec3f_get_component(ofPoint& p, int i);
-void  ofVec3f_set_component(ofPoint& p, int i, float value);
+float glm_vec3_getComponent(glm::vec3& p, int i);
+void  glm_vec3_setComponent(glm::vec3& p, int i, float value);
 
 
 int  ofColor_getRed(ofColor& color);
