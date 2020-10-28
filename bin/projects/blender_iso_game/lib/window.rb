@@ -57,9 +57,9 @@ class Window < RubyOF::Window
   end
   
   def setup
-    puts "ruby: Window#setup"
-    
     super()
+    
+    puts "ruby: Window#setup (project)"
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     

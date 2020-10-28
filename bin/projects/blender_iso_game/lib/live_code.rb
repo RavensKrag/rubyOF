@@ -32,6 +32,16 @@ class LiveCode
         end
       end
       
+      def setup
+        begin
+          @inner.setup()
+          @last_time = Time.now
+        rescue StandardError => e
+          @inner.on_crash
+          raise e
+        end
+      end
+      
       def update(*args)
         # Try to load the file once, and then update the timestamp
         # (prevents busted files every tick, which would flood the logs)
@@ -40,7 +50,7 @@ class LiveCode
         # :reload_successful
         # :file_unchanged
         # :reload_failed
-        signal = attempt_reload()
+        signal = attempt_reload(first_time: @last_time.nil?)
         if signal == :reload_successful || signal == :file_unchanged
           begin
             update_signal = @inner.update(*args)
@@ -65,12 +75,12 @@ class LiveCode
       def method_missing(method, *args)
         # suspend delegation in order to suppress additional errors
       end
-      
+            
       def update(*args)
         # :reload_successful
         # :file_unchanged
         # :reload_failed
-        signal = attempt_reload()
+        signal = attempt_reload(first_time: @last_time.nil?)
         if signal == :reload_successful
           self.error_patched
           
@@ -106,13 +116,28 @@ class LiveCode
     
     
     # after_transition :on => :load_error_detected,    :do => :on_run
-    after_transition :on => :runtime_error_detected, :do => ->(){puts "LiveCode: error detected"}
-    after_transition :on => :error_patched, :do => ->(){puts "LiveCode: error patched!"}
+    after_transition :on => :runtime_error_detected, :do => :on_error_detected
+    
+    after_transition :on => :error_patched, :do => :on_error_patched
+  end
+  
+  def on_error_detected
+    puts "LiveCode: error detected"
+    @inner.on_crash
+  end
+  
+  def on_error_patched
+    puts "LiveCode: error patched!"
   end
   
   
-  def attempt_reload
+  
+  
+  
+  def attempt_reload(first_time: true)
     begin
+      return if first_time
+      
       if file_changed?
         # update the timestamp
         @last_time = Time.now
@@ -178,6 +203,7 @@ class LiveCode
   def on_reload
     @inner.on_reload
   end
+  
 end
 
 
