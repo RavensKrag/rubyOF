@@ -78,7 +78,7 @@ class Window < RubyOF::Window
   def draw
     # super()
     
-    puts "draw"
+    # puts "draw"
     @live_code.draw()
   end
   

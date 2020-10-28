@@ -944,85 +944,85 @@ class Core
   # when the file reloads.
   def on_update(scheduler)
     scheduler.section name: "shaders", budget: msec(1.5)
-      puts "shaders" if Scheduler::DEBUG
+      # puts "shaders" if Scheduler::DEBUG
       
-      # liveGLSL.foo "char_display" do |path_to_shader|
-        # @display.reload_shader
+      # # liveGLSL.foo "char_display" do |path_to_shader|
+      #   # @display.reload_shader
+      # # end
+      
+      
+      # # prototype possible smarter live-loading system for GLSL shaders
+      
+      
+      # bg_shader_name = "char_display_bg"
+      # fg_shader_name = "char_display"
+      
+      # @shader_files ||= [
+      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
+      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
+      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
+      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
+      # ]
+      
+      # @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
+      
+      # # load shader if it has never been loaded before, or if the files have been updated
+      # if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
+      #   loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
+        
+        
+        
+      #   puts "load code: #{loaded}"
+      #   # ^ apparently the boolean is still true when the shader is loaded with an error???
+        
+      #   puts "loaded? : #{@display.fg_shader_loaded?}"
+      #   # ^ this doesn't work either
+        
+      #   # puts "loaded? : #{@display.bg_shader_loaded?}"
+        
+        
+        
+      #   # This is a long-standing issue, open since 2015:
+        
+      #   # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
+      #   # https://github.com/openframeworks/openFrameworks/pull/3734
+        
+      #   # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
+        
+        
+      #   if loaded
+      #     case @shaderIsCorrect
+      #     when true
+      #       # good -> good
+      #       puts "GLSL: still good"
+      #     when false
+      #       # bad -> good
+      #       puts "GLSL: fixed!"
+      #     when nil
+      #       # nothing -> good
+      #       puts "GLSL: shader loaded"
+      #     end
+          
+      #     @shaderIsCorrect = true
+      #   else
+      #     case @shaderIsCorrect
+      #     when true
+      #       # good -> bad
+      #       puts "GLSL: something broke"
+      #     when false
+      #       # bad -> bad
+      #       puts "GLSL: still broken..."
+      #     when nil
+      #       # nothing -> bad
+      #       puts "GLSL: could not load shader"
+      #     end
+          
+      #     @shaderIsCorrect = false;
+      #   end
+          
+        
+      #   @shader_timestamp = Time.now
       # end
-      
-      
-      # prototype possible smarter live-loading system for GLSL shaders
-      
-      
-      bg_shader_name = "char_display_bg"
-      fg_shader_name = "char_display"
-      
-      @shader_files ||= [
-        PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
-        PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
-        PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
-        PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
-      ]
-      
-      @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
-      
-      # load shader if it has never been loaded before, or if the files have been updated
-      if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
-        loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
-        
-        
-        
-        puts "load code: #{loaded}"
-        # ^ apparently the boolean is still true when the shader is loaded with an error???
-        
-        puts "loaded? : #{@display.fg_shader_loaded?}"
-        # ^ this doesn't work either
-        
-        # puts "loaded? : #{@display.bg_shader_loaded?}"
-        
-        
-        
-        # This is a long-standing issue, open since 2015:
-        
-        # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
-        # https://github.com/openframeworks/openFrameworks/pull/3734
-        
-        # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
-        
-        
-        if loaded
-          case @shaderIsCorrect
-          when true
-            # good -> good
-            puts "GLSL: still good"
-          when false
-            # bad -> good
-            puts "GLSL: fixed!"
-          when nil
-            # nothing -> good
-            puts "GLSL: shader loaded"
-          end
-          
-          @shaderIsCorrect = true
-        else
-          case @shaderIsCorrect
-          when true
-            # good -> bad
-            puts "GLSL: something broke"
-          when false
-            # bad -> bad
-            puts "GLSL: still broken..."
-          when nil
-            # nothing -> bad
-            puts "GLSL: could not load shader"
-          end
-          
-          @shaderIsCorrect = false;
-        end
-          
-        
-        @shader_timestamp = Time.now
-      end
     
     
     if @debugging
@@ -1048,7 +1048,7 @@ class Core
     end
     
     scheduler.section name: "cube ", budget: msec(1.0)
-      puts "set cube mesh"
+      # puts "set cube mesh"
     
     
     scheduler.section name: "end", budget: msec(0.1)
@@ -1120,7 +1120,33 @@ class Core
     
     
     # 
-    puts "draw cube"
+    # puts "draw cube"
+    
+    fifo_dir = PROJECT_DIR/'bin'/'run'
+    FileUtils.mkdir_p(fifo_dir)
+    Dir.chdir fifo_dir do
+      begin
+      
+        fifo_name = 'blender_comm'
+        File.mkfifo(fifo_name)
+        puts "fifo opened @ #{fifo_dir}/#{fifo_name}"        
+        
+        while(true) do 
+          puts "holding fifo open.."
+        end
+        
+      ensure
+        
+        FileUtils.rm(fifo_name)
+        puts "fifo closed"
+      end
+      
+      
+    end
+    
+    
+    # File.mkfifo('')
+    
     
     # 
     # render text display
