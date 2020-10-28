@@ -3,6 +3,8 @@
 
 require 'open3'
 
+require 'io/wait'
+
 # stuff to load just once
 require LIB_DIR/'input_handler.rb'
 require LIB_DIR/'sequence_memory.rb'
@@ -122,29 +124,17 @@ class Core
     
     
     File.mkfifo(@fifo_dir/@fifo_name)
-    puts "fifo opened @ #{@fifo_dir}/#{@fifo_name}"
+    puts "fifo created @ #{@fifo_dir}/#{@fifo_name}"
     
-    # FileUtils.mkdir_p(@fifo_dir)
-    # Dir.chdir @fifo_dir do
-    #   begin
-      
-    #     File.mkfifo(@fifo_name)
-    #     puts "fifo opened @ #{@fifo_dir}/#{@fifo_name}"
-        
-    #     while(true) do 
-    #       puts "holding fifo open.."
-    #     end
-        
-    #   ensure
-        
-    #     FileUtils.rm(@fifo_name)
-    #     puts "fifo closed"
-    #   end
-      
-      
-    # end
     
-    # raise
+    # f_w = File.open(@fifo_dir/@fifo_name, "w+")
+    # f_w.puts "hello world!\n"
+    # f_w.close
+    
+    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
+    # data = f_r.gets
+    # f_r.close
+    
     
     
   end
@@ -166,7 +156,7 @@ class Core
       self.ensure()
     end
     
-    
+      
     # puts @draw_durations.join("\t")
     if RB_SPIKE_PROFILER.enabled?
       RB_SPIKE_PROFILER.disable
@@ -412,6 +402,99 @@ class Core
     
     # 
     # puts "draw cube"
+    # File.open(@fifo_dir/@fifo_name, "r") do
+      
+    # end
+    
+    
+    # (may need to open the fifo and write something to it, so we get an EOF descriptor that will be useful for implementing non-blocking IO)
+    
+    puts "<---"
+    # f = File.open(@fifo_dir/@fifo_name, "r")
+    
+    # data = f.gets
+    # unless data.nil
+    #   puts data
+    # end
+    
+    
+    
+    # 
+    # blocking read
+    # (can read data)
+    # 
+    
+    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
+    # data = f_r.gets
+    # p data
+    
+    
+    
+    # 
+    # nonblocking read
+    # https://stackoverflow.com/questions/9803019/ruby-non-blocking-line-read
+    # (doesn't work)
+    # 
+    
+    # buffer = ""
+    # begin
+    #   f_r = File.open(@fifo_dir/@fifo_name, "r+")
+      
+    #   while buffer[-1] != "\n"
+    #     buffer << f_r.read_nonblock(1)
+    #   end
+      
+    #   p buffer
+    # rescue IO::WaitReadable => e
+    #   if buffer.empty?
+    #     puts "error" 
+    #     puts e
+    #   else
+    #     p buffer
+    #   end
+    # ensure
+    #   f_r.close
+    # end
+    
+    
+    
+    # 
+    # nonblocking read,
+    # attempt 2
+    # https://www.ruby-forum.com/t/nonblocking-io-read/74621/7
+    # https://stackoverflow.com/questions/1779347/using-rubys-ready-io-method-with-gets-puts-etc
+    # https://stackoverflow.com/questions/930989/is-there-a-simple-method-for-checking-whether-a-ruby-io-instance-will-block-on-r
+    # 
+    
+    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
+    # puts f_r.nread
+    # if f_r.ready?
+      # p f_r.gets
+    # end
+    # f_r.close
+    
+    
+    
+    # 
+    # nonblocking read
+    # attempt 3
+    # building on attempt 2, but use IO#wait instead of IO#ready?
+    # 
+    
+    f_r = File.open(@fifo_dir/@fifo_name, "r+")
+    flag = f_r.wait(0.0001) # timeout in seconds
+    if flag
+      p f_r.gets
+    end
+    
+    f_r.close
+    
+    
+    
+    
+    
+    # f.close
+    puts "---"
     
     
     # 
@@ -446,12 +529,10 @@ class Core
   def mouse_pressed(x,y, button)
     # p [:pressed, x,y, button]
     
-    mouse_to_char_display_pos(@mouse, x,y)
   end
   
   def mouse_dragged(x,y, button)
     # p [:dragged, x,y, button]
-    mouse_to_char_display_pos(@mouse, x,y)
     # puts @mouse
   end
   
@@ -472,17 +553,6 @@ class Core
   
   
   private
-  
-  def mouse_to_char_display_pos(pos, x,y)
-    pos.x = x
-    pos.y = y
-    
-    tmp = ( pos - @display_origin_px - @bg_offset )
-    
-    pos.x = (tmp.x / @char_width_pxs)
-    pos.y = (tmp.y / @line_height)
-  end
-  
   
   
   def screen_print(font:, string:, position:, color: )
