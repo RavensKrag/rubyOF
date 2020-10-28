@@ -119,6 +119,11 @@ class Core
     
     
     
+    @camera = RubyOF::Camera.new
+    @light  = RubyOF::Light.new
+    
+    
+    
     @fifo_dir = PROJECT_DIR/'bin'/'run'
     @fifo_name = 'blender_comm'
     
@@ -411,13 +416,48 @@ class Core
     
     puts "<---"
     
-    p read_fifo(@fifo_dir/@fifo_name)
+    data = read_fifo(@fifo_dir/@fifo_name)
+    unless data.nil?
+      p data
+    end
+    
+    c = RubyOF::Color.hex_alpha( 0xf6bfff, 0xff )
     
     
     
+    @camera.setPosition(GLM::Vec3.new(50, 0, 0))
+    @camera.lookAt(GLM::Vec3.new(0, 0, 0))
+    
+    
+    @light.setPointLight()
+    
+    mesh = RubyOF::Mesh.new
+    mesh.setMode(:OF_PRIMITIVE_TRIANGLE_STRIP)
+    mesh.addVertex(GLM::Vec3.new( 1, -1, -1))
+    # mesh.addColor(c)
+    mesh.addVertex(GLM::Vec3.new( 1,  1, -1))
+    # mesh.addColor(c)
+    mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
+    # mesh.addColor(c)
+    
+    # p mesh.methods
+    # raise
     
     # f.close
     puts "---"
+    
+    
+    
+    @camera.begin
+    
+      @light.enable
+      
+        mesh.draw
+      
+      @light.disable
+    
+    @camera.end
+    
     
     
     # 

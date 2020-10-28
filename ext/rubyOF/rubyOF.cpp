@@ -10,7 +10,6 @@
 #include "Graphics.h"
 #include "GraphicsAdvanced.h"
 #include "Fbo.h"
-#include "Mesh.h"
 #include "TrueTypeFont.h"
 #include "image.h"
 
@@ -84,8 +83,8 @@ void Init_rubyOF()
 	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);    // immediate mode (slow)
 	
 	Init_rubyOF_GraphicsAdv(rb_mRubyOF); // retained mode  (fast)
+	// ^ Includes: Mesh bindings
 	
-	Rice::Class rb_cMesh          = Init_rubyOF_mesh(rb_mRubyOF);
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
 	

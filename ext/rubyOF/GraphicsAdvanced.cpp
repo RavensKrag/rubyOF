@@ -37,6 +37,37 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
 
 
 
+void ofMesh__setMode(ofMesh mesh, Rice::Symbol mode)
+{
+   
+   // /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h
+   ofPrimitiveMode m;
+   if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLES")){
+      m = OF_PRIMITIVE_TRIANGLES;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_STRIP")){
+      m = OF_PRIMITIVE_TRIANGLE_STRIP;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_FAN")){
+      m = OF_PRIMITIVE_TRIANGLE_FAN;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINES")){
+      m = OF_PRIMITIVE_LINES;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_STRIP")){
+      m = OF_PRIMITIVE_LINE_STRIP;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_LOOP")){
+      m = OF_PRIMITIVE_LINE_LOOP;
+   }else if(mode == Rice::Symbol("OF_PRIMITIVE_POINTS")){
+      m = OF_PRIMITIVE_POINTS;
+   }
+   
+   mesh.setMode(m);
+}
+
+
+
+
+
+
+
+
 void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    // https://stackoverflow.com/questions/6733934/what-does-immediate-mode-mean-in-opengl
    // http://openframeworks.cc/ofBook/chapters/advanced_graphics.html
@@ -239,6 +270,42 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    ;
    
    
+   
+   // ofNode
+   Data_Type<ofNode> rb_cNode = 
+      define_class_under<ofNode>(rb_mRubyOF, "Node");
+   
+   rb_cNode
+      .define_constructor(Constructor<ofNode>())
+      
+      .define_method("getPosition",   &ofNode::getPosition)
+      .define_method("setPosition",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &p)
+         >(&ofNode::setPosition)
+      )
+      
+      .define_method("getScale",      &ofNode::getScale)
+      .define_method("setScale",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &p)
+         >(&ofNode::setScale)
+      )
+      
+      .define_method("getParent",     &ofNode::getParent)
+      .define_method("setParent",     &ofNode::setParent)
+      
+      .define_method("lookAt",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &lookAtPosition)
+         >(&ofNode::lookAt)
+      )
+       // there's another variation where you can specify up vector
+       // but I don't understand the coordinate system right now so...
+   ;
+   
+   
+   
    // ofMesh
    Data_Type<ofMesh> rb_cMesh = 
 		define_class_under<ofMesh>(rb_mRubyOF, "Mesh");
@@ -250,22 +317,21 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          () const
          >(&ofMesh::draw)
       )
-      // .define_method("addVertex",
+      
+      .define_method("setMode",           ofMesh__setMode)
+      .define_method("addVertex",         &ofMesh::addVertex)
+      .define_method("addTexCoord",       &ofMesh::addTexCoord)
+      .define_method("addIndex",          &ofMesh::addIndex)
+      
+      // .define_method(
+      //    "addColor",
       //    static_cast< void (ofMesh::*)
-      //    () const
-      //    >(&ofMesh::addVertex)
-      // )
-      // .define_method("addColor",
-      //    static_cast< void (ofMesh::*)
-      //    () const
+      //    (ofColor)
       //    >(&ofMesh::addColor)
       // )
-      // .define_method("addIndex",
-      //    static_cast< void (ofMesh::*)
-      //    () const
-      //    >(&ofMesh::addIndex)
-      // )
+      // ^ expects ofColor_<float> but I have bound ofColor_<unsigned char>
    ;
+   
    // mesh.addVertex(ofVec3f(20,20));
    // mesh.addColor(ofColor::red);
    // mesh.addVertex(ofVec3f(40,20));
@@ -300,10 +366,118 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    Data_Type<ofCamera> rb_cCamera = 
 		define_class_under<ofCamera>(rb_mRubyOF, "Camera");
    
+   rb_cCamera
+      .define_constructor(Constructor<ofCamera>())
+      // near
+      // far
+      // fov
+      // aspect
+      .define_method("getNearClip",      &ofCamera::getNearClip)
+      .define_method("getFarClip",       &ofCamera::getFarClip)
+      .define_method("getFov",           &ofCamera::getFov)
+      .define_method("getAspectRatio",   &ofCamera::getAspectRatio)
+      
+      .define_method("setNearClip",      &ofCamera::setNearClip)
+      .define_method("setFarClip",       &ofCamera::setFarClip)
+      .define_method("setFov",           &ofCamera::setFov)
+      .define_method("setAspectRatio",   &ofCamera::setAspectRatio)
+      
+      
+      // need to copy over the methods from ofNode,
+      // because for Rice can't do that for you
+      .define_method("begin",
+         static_cast< void (ofCamera::*)
+         (void)
+         >(&ofCamera::begin)
+      )
+      .define_method("end",     &ofCamera::end)
+      
+      .define_method("getPosition",   &ofCamera::getPosition)
+      .define_method("setPosition",
+         static_cast< void (ofCamera::*)
+         (const glm::vec3 &p)
+         >(&ofCamera::setPosition)
+      )
+      
+      .define_method("getScale",      &ofCamera::getScale)
+      .define_method("setScale",
+         static_cast< void (ofCamera::*)
+         (const glm::vec3 &p)
+         >(&ofCamera::setScale)
+      )
+      
+      .define_method("getParent",     &ofCamera::getParent)
+      .define_method("setParent",     &ofCamera::setParent)
+      
+      .define_method("lookAt",
+         static_cast< void (ofCamera::*)
+         (const glm::vec3 &lookAtPosition)
+         >(&ofCamera::lookAt)
+      )
+       // there's another variation where you can specify up vector
+       // but I don't understand the coordinate system right now so...
+   ;
+   
+   
    // of3dPrimitive
    Data_Type<of3dPrimitive> rb_c3dPrimitive = 
 		define_class_under<of3dPrimitive>(rb_mRubyOF, "OF_3dPrimitive");
    
    
+   
+   
+   Data_Type<ofLight> rb_cLight = 
+      define_class_under<ofLight>(rb_mRubyOF, "Light");
+   
+   rb_cLight
+      .define_constructor(Constructor<ofLight>())
+      
+      .define_method("enable",        &ofLight::enable)
+      .define_method("disable",       &ofLight::disable)
+      .define_method("getIsEnabled",  &ofLight::getIsEnabled)
+      
+      
+      // point
+      // spot
+      // directional
+      // area
+      .define_method("getIsAreaLight",    &ofLight::getIsAreaLight)
+      .define_method("getIsDirectional",  &ofLight::getIsDirectional)
+      .define_method("getIsPointLight",   &ofLight::getIsPointLight)
+      .define_method("getIsSpotlight",    &ofLight::getIsSpotlight)
+      
+      .define_method("setAreaLight",      &ofLight::setAreaLight)
+      .define_method("setDirectional",    &ofLight::setDirectional)
+      .define_method("setPointLight",     &ofLight::setPointLight)
+      .define_method("setSpotlight",      &ofLight::setSpotlight)
+      
+      
+      // need to copy over the methods from ofNode,
+      // because for Rice can't do that for you
+      .define_method("getPosition",   &ofLight::getPosition)
+      .define_method("setPosition",
+         static_cast< void (ofLight::*)
+         (const glm::vec3 &p)
+         >(&ofLight::setPosition)
+      )
+      
+      .define_method("getScale",      &ofLight::getScale)
+      .define_method("setScale",
+         static_cast< void (ofLight::*)
+         (const glm::vec3 &p)
+         >(&ofLight::setScale)
+      )
+      
+      .define_method("getParent",     &ofLight::getParent)
+      .define_method("setParent",     &ofLight::setParent)
+      
+      .define_method("lookAt",
+         static_cast< void (ofLight::*)
+         (const glm::vec3 &lookAtPosition)
+         >(&ofLight::lookAt)
+      )
+       // there's another variation where you can specify up vector
+       // but I don't understand the coordinate system right now so...
+   ;
 }
 
