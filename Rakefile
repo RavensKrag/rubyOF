@@ -373,6 +373,7 @@ namespace :core_wrapper do
 		:move_dynamic_lib       # move dynamic library into easy-to-load location
 	]
 	
+	desc "run OF test project (C++ only)"
 	task :run_app do
 		Dir.chdir Pathname.new(OF_SKETCH_ROOT)/'bin' do
 			begin
@@ -385,6 +386,7 @@ namespace :core_wrapper do
 	end
 	
 	# 1) build testApp using oF build system
+	desc "build OF test project (C++ only)"
 	task :build_app do
 		build_oF_app("core oF sketch", OF_SKETCH_ROOT)
 	end
