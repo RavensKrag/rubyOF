@@ -3,6 +3,31 @@
 
 using namespace Rice;
 
+void ofMesh__setMode(ofMesh mesh, Rice::Symbol mode)
+{
+	
+	// /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h
+	ofPrimitiveMode m;
+	if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLES")){
+		m = OF_PRIMITIVE_TRIANGLES;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_STRIP")){
+		m = OF_PRIMITIVE_TRIANGLE_STRIP;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_FAN")){
+		m = OF_PRIMITIVE_TRIANGLE_FAN;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_LINES")){
+		m = OF_PRIMITIVE_LINES;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_STRIP")){
+		m = OF_PRIMITIVE_LINE_STRIP;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_LOOP")){
+		m = OF_PRIMITIVE_LINE_LOOP;
+	}else if(mode == Rice::Symbol("OF_PRIMITIVE_POINTS")){
+		m = OF_PRIMITIVE_POINTS;
+	}
+	
+	mesh.setMode(m);
+}
+
+
 Rice::Class Init_rubyOF_mesh(Rice::Module rb_mRubyOF)
 {
 	Data_Type<ofMesh> rb_cMesh = 
@@ -15,19 +40,10 @@ Rice::Class Init_rubyOF_mesh(Rice::Module rb_mRubyOF)
 	rb_cMesh
       .define_constructor(Constructor<ofMesh>())
 		
-		// // .define_method("allocate",  ofFbo_allocWRAP(&ofFbo::allocate))
-		// .define_method("allocate",  &ofFbo_allocate_from_struct)
-		
-      
-      
-		// from ofFbo.h:
-			/// \brief    Sets up the framebuffer and binds it for rendering.
-			/// \warning  This is a convenience method, and is considered unsafe 
-			///           in multi-window and/or multi-renderer scenarios.
-			///           If you use more than one renderer, use each renderer's
-			///           explicit void ofBaseGLRenderer::begin(const ofFbo & fbo, bool setupPerspective) 
-			///           method instead.
-			/// \sa       void ofBaseGLRenderer::begin(const ofFbo & fbo, bool setupPerspective)
+		.define_method("setMode",           ofMesh__setMode)
+		.define_method("addVertex",         &ofMesh::addVertex)
+		.define_method("addTexCoord",       &ofMesh::addTexCoord)
+		.define_method("addIndex",          &ofMesh::addIndex)
 		
 		
 		// .define_method("begin",
