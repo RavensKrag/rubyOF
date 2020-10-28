@@ -495,10 +495,8 @@ public:
 	
 	
 	void cpp_draw(){
-		ofPushMatrix();
-		
-		// ofLoadIdentityMatrix();
-		ofMultMatrix(_bgNode.getGlobalTransformMatrix());
+		// std::cout << "deep draw" << std::endl;
+		_bgNode.transformGL();
 		
 		_bgColorShader.begin();
 		_bgColorShader.setUniformTexture(
@@ -509,11 +507,10 @@ public:
 		
 		_bgColorShader.end();
 		
-		ofPopMatrix();
+		_bgNode.restoreTransformGL();
 		
 		
 		
-		ofPushMatrix();
 		
 		_fgColorShader.begin();
 		
@@ -527,7 +524,8 @@ public:
 		_fgColorShader.setUniform2f("origin", _origin);
 		// _fgColorShader.setUniform3f("charSize", glm::vec3(p2_1, p2_2, p2_3));
 		
-		ofMultMatrix(_fgNode.getGlobalTransformMatrix());
+		
+		_fgNode.transformGL();
 		
 		// text_mesh.draw();
 		// TODO: iterate through meshes and draw them all
@@ -537,7 +535,8 @@ public:
 		
 		_fgColorShader.end();
 		
-		ofPopMatrix();
+		_fgNode.restoreTransformGL();
+		
 	}
 	
 	

@@ -57,6 +57,8 @@ class Window < RubyOF::Window
   end
   
   def setup
+    puts "ruby: Window#setup"
+    
     super()
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
@@ -76,6 +78,7 @@ class Window < RubyOF::Window
   def draw
     # super()
     
+    puts "draw"
     @live_code.draw()
   end
   

@@ -15,7 +15,7 @@ using std::endl;
 rbApp::rbApp(Rice::Object self)
 : ofBaseApp()
 {
-	cout << "c++: constructor - window\n";
+	cout << "c++: rbApp constructor\n";
 	
 	// ofSetupOpenGL(1024,768,OF_WINDOW); // <-------- setup the GL context
 	mSelf = self;
@@ -26,6 +26,8 @@ rbApp::~rbApp(){
 }
 
 void rbApp::setup(){
+	cout << "c++: rbApp::setup\n";
+	
 	ofSetDataPathRoot(DATA_PATH);
 	// ofSetBackgroundAuto(false);  
 	
