@@ -314,14 +314,12 @@ LINK.cc:
 - "-lfmodex"
 PAM_KWALLET5_LOGIN:
 - "/run/user/1000/kwallet5.socket"
-rvm_pretty_print_flag:
-- auto
 XDG_SESSION_PATH:
 - "/org/freedesktop/DisplayManager/Session1"
 MAKE_HOST:
 - x86_64-pc-linux-gnu
 PATH:
-- "/home/ravenskrag/.rvm/gems/ruby-2.7.2/bin:/home/ravenskrag/.rvm/gems/ruby-2.7.2@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin:/home/ravenskrag/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+- "/home/ravenskrag/.rvm/gems/ruby-2.7.2/bin:/home/ravenskrag/.rvm/gems/ruby-2.7.2@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/bin"
 OF_CORE_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/tess2/lib/linux64/libtess2.a"
@@ -373,8 +371,6 @@ OF_CORE_LIBS:
 - "-lXinerama"
 LD:
 - ld
-install_flag:
-- '1'
 B_PROCESS_ADDONS:
 - 'yes'
 ALL_OF_CORE_LIBS_PATHS:
@@ -392,7 +388,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1670,unix/ravensnest:/tmp/.ICE-unix/1670
+- local/ravensnest:@/tmp/.ICE-unix/1619,unix/ravensnest:/tmp/.ICE-unix/1619
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -480,7 +476,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-y4VnY5m5rYOi/agent.1461"
+- "/tmp/ssh-BdY7X8flc4V8/agent.1416"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -553,7 +549,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1580'
+- '1529'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -877,13 +873,11 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_APPS_PATH
 - LINK.cc
 - PAM_KWALLET5_LOGIN
-- rvm_pretty_print_flag
 - XDG_SESSION_PATH
 - MAKE_HOST
 - PATH
 - OF_CORE_LIBS
 - LD
-- install_flag
 - B_PROCESS_ADDONS
 - ALL_OF_CORE_LIBS_PATHS
 - TEXI2DVI
@@ -1072,7 +1066,6 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - COMPILE.s
 - ".INCLUDE_DIRS"
 - OF_PROJECT_DEFINES_CFLAGS
-- rvm_recommended_ruby
 - CORE_PKG_CONFIG_LIBRARIES
 - ".RECIPEPREFIX"
 - MAKEINFO
@@ -1544,7 +1537,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/f7080e9d_943a_4300_b99e_0cd0a1f911f4"
+- "/org/gnome/Terminal/screen/6a139ea7_af78_44b3_b627_0c8234605d48"
 "^F": []
 COMPILE.S:
 - cc
@@ -1563,7 +1556,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.58"
+- ":1.160"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -1681,10 +1674,6 @@ COMPILE.s:
 - "/usr/local/include"
 - "/usr/include"
 OF_PROJECT_DEFINES_CFLAGS: []
-rvm_recommended_ruby:
-- rvm
-- install
-- ruby-2.53.7
 CORE_PKG_CONFIG_LIBRARIES:
 - cairo
 - zlib
@@ -1711,7 +1700,7 @@ CORE_PKG_CONFIG_LIBRARIES:
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/2"
+- "/dev/pts/3"
 OBJC:
 - cc
 LINK.f:

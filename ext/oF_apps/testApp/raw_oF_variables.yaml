@@ -311,16 +311,13 @@
 - 'PAM_KWALLET5_LOGIN = /run/user/1000/kwallet5.socket
 
   '
-- 'rvm_pretty_print_flag = auto
-
-  '
 - 'XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session1
 
   '
 - 'MAKE_HOST = x86_64-pc-linux-gnu
 
   '
-- 'PATH = /home/ravenskrag/.rvm/gems/ruby-2.7.2/bin:/home/ravenskrag/.rvm/gems/ruby-2.7.2@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin:/home/ravenskrag/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+- 'PATH = /home/ravenskrag/.rvm/gems/ruby-2.7.2/bin:/home/ravenskrag/.rvm/gems/ruby-2.7.2@global/bin:/home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/bin:/home/ravenskrag/.local/bin:/home/ravenskrag/.rvm/bin
 
   '
 - 'OF_CORE_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/kiss/lib/linux64/libkiss.a
@@ -334,9 +331,6 @@
 
   '
 - 'LD = ld
-
-  '
-- 'install_flag = 1
 
   '
 - 'B_PROCESS_ADDONS = yes
@@ -362,7 +356,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1670,unix/ravensnest:/tmp/.ICE-unix/1670
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1619,unix/ravensnest:/tmp/.ICE-unix/1619
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -439,7 +433,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-y4VnY5m5rYOi/agent.1461
+- 'SSH_AUTH_SOCK = /tmp/ssh-BdY7X8flc4V8/agent.1416
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -511,7 +505,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1580
+- 'SSH_AGENT_PID = 1529
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -766,11 +760,11 @@
   CROSS_COMPILING PROJECT_ADDONS OPTIMIZATION_CFLAGS OF_CORE_LIB_PATH DBUS_SESSION_BUS_ADDRESS
   GCC_MAJOR_EQ_4 CC XCURSOR_SIZE GCC_MINOR_GTEQ_9 QT_SCREEN_SCALE_FACTORS PLATFORM_REQUIRED_ADDONS
   CHECKOUT,v OF_PROJECT_OBJS LESSOPEN RUBYOF_PROJECT OF_PROJECT_DEFINES CPP OF_APPS_PATH
-  LINK.cc PAM_KWALLET5_LOGIN rvm_pretty_print_flag XDG_SESSION_PATH MAKE_HOST PATH
-  OF_CORE_LIBS LD install_flag B_PROCESS_ADDONS ALL_OF_CORE_LIBS_PATHS TEXI2DVI OF_CORE_THIRDPARTY_SHARED_LIBS
-  LADSPA_PATH GPG_AGENT_INFO XCURSOR_THEME SESSION_MANAGER OF_LIBS_OF_COMPILED_PATH
-  COMPILE.mod XDG_RUNTIME_DIR FIND CFLAGS ARFLAGS LINK.r LINT COMPILE.f VST_PATH OF_CORE_SOURCE_PATHS
-  LINT.c YACC.m YACC.y AR GTK2_RC_FILES .FEATURES HAS_SYSTEM_MPG123 TANGLE ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
+  LINK.cc PAM_KWALLET5_LOGIN XDG_SESSION_PATH MAKE_HOST PATH OF_CORE_LIBS LD B_PROCESS_ADDONS
+  ALL_OF_CORE_LIBS_PATHS TEXI2DVI OF_CORE_THIRDPARTY_SHARED_LIBS LADSPA_PATH GPG_AGENT_INFO
+  XCURSOR_THEME SESSION_MANAGER OF_LIBS_OF_COMPILED_PATH COMPILE.mod XDG_RUNTIME_DIR
+  FIND CFLAGS ARFLAGS LINK.r LINT COMPILE.f VST_PATH OF_CORE_SOURCE_PATHS LINT.c YACC.m
+  YACC.y AR GTK2_RC_FILES .FEATURES HAS_SYSTEM_MPG123 TANGLE ALL_OF_CORE_LIBS_PLATFORM_LIB_PATHS
   OF_CORE_LIBS_PLATFORM_LIBS_STATICS OPTIMIZATION_LDFLAGS LS_COLORS PLATFORM_STATIC_LIBRARIES
   XDG_SESSION_DESKTOP remove-dupes-func SSH_AUTH_SOCK OF_PROJECT_EXCLUSIONS GET %F
   DISPLAY PROJECT_OPTIMIZATION_CFLAGS_DEBUG COMPILE.F CTANGLE PLATFORM_CFLAGS .LIBPATTERNS
@@ -797,9 +791,9 @@
   LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES COMPILE.C GNOME_TERMINAL_SCREEN
   ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT GNOME_TERMINAL_SERVICE SUFFIXES PLATFORM_OS
   COMPILE.c ADDON_INCLUDE_CFLAGS OBJS_WITHOUT_EXTERNAL COMPILE.s .INCLUDE_DIRS OF_PROJECT_DEFINES_CFLAGS
-  rvm_recommended_ruby CORE_PKG_CONFIG_LIBRARIES .RECIPEPREFIX MAKEINFO MAKE_TERMERR
-  OBJC LINK.f TEX GST_VERSION LANG TERM F77FLAGS LINK.o ALL_INSTALLED_ADDONS OF_CORE_BASE_CXXFLAGS
-  PLATFORM_LIB_SUBPATH PROJECT_INCLUDE_CFLAGS MY_RUBY_HOME OF_CORE_BASE_CFLAGS KDE_SESSION_UID\n"
+  CORE_PKG_CONFIG_LIBRARIES .RECIPEPREFIX MAKEINFO MAKE_TERMERR OBJC LINK.f TEX GST_VERSION
+  LANG TERM F77FLAGS LINK.o ALL_INSTALLED_ADDONS OF_CORE_BASE_CXXFLAGS PLATFORM_LIB_SUBPATH
+  PROJECT_INCLUDE_CFLAGS MY_RUBY_HOME OF_CORE_BASE_CFLAGS KDE_SESSION_UID\n"
 - 'PC = pc
 
   '
@@ -1196,7 +1190,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/f7080e9d_943a_4300_b99e_0cd0a1f911f4
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/6a139ea7_af78_44b3_b627_0c8234605d48
 
   '
 - "^F = \n"
@@ -1212,7 +1206,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.58
+- 'GNOME_TERMINAL_SERVICE = :1.160
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1266,9 +1260,6 @@
 - "COMPILE.s = as  \n"
 - ".INCLUDE_DIRS = /usr/include /usr/local/include /usr/include\n"
 - "OF_PROJECT_DEFINES_CFLAGS = \n"
-- 'rvm_recommended_ruby = rvm install ruby-2.53.7
-
-  '
 - "CORE_PKG_CONFIG_LIBRARIES =   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
   gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal libcurl glfw3 rtaudio
   libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 \n"
@@ -1276,7 +1267,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/2
+- 'MAKE_TERMERR = /dev/pts/3
 
   '
 - 'OBJC = cc
