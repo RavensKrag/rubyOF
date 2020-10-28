@@ -869,7 +869,8 @@ def bundle_install(path)
 		
 		begin
 			bundler_install_dir = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
-			run_pty "bundle install --path #{bundler_install_dir.to_s}"
+			run_pty "bundle config --local path '#{bundler_install_dir}'"
+			run_pty "bundle install"
 		rescue StandardError => e
 			puts "Bundler had an error."
 			exit
@@ -893,6 +894,11 @@ end
 namespace :ruby_deps do
 	desc "use Bundler to install ruby dependencies"
 	task :install do
+		bundler_install_dir = Pathname.new(GEM_ROOT)/'vendor'/'bundle'
+		
+		FileUtils.mkdir_p bundler_install_dir
+		
+		
 		# core dependencies
 		puts "Bundler: Installing core dependencies"
 		bundle_install(GEM_ROOT)
