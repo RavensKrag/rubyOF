@@ -190,7 +190,7 @@
 - 'MAKE_VERSION = 4.2.1
 
   '
-- 'CURDIR = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp
+- 'CURDIR = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
 - 'OF_LIBS_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs
@@ -402,7 +402,7 @@
 - 'LESSOPEN = | /usr/bin/lesspipe %s
 
   '
-- 'RUBYOF_PROJECT = grapevine_midi
+- 'RUBYOF_PROJECT = blender_iso_game
 
   '
 - "OF_PROJECT_DEFINES =  \n"
@@ -606,16 +606,16 @@
 - 'SSH_AUTH_SOCK = /tmp/ssh-BdY7X8flc4V8/agent.1416
 
   '
-- 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/bin
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/.git
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/bin/%
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/%
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/.git/%
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/%.xcodeproj
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/%.xcodeproj/%
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/build
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/build/%
+- 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/.git
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin/%
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/%
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/.git/%
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/%.xcodeproj
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/%.xcodeproj/%
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/build
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/build/%
 
   '
 - 'GET = get
@@ -645,14 +645,14 @@
 - 'rvm_bin_path = /home/ravenskrag/.rvm/bin
 
   '
-- 'PWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi
+- 'PWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game
 
   '
-- 'ALL_OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src
+- 'ALL_OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src
 
   '
-- 'OBJS_WITHOUT_EXTERNAL = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.o
-  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/main.o
+- 'OBJS_WITHOUT_EXTERNAL = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.o
+  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.o
 
   '
 - 'PARSED_ADDONS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src
@@ -698,8 +698,8 @@
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
-- 'OF_PROJECT_SOURCE_FILES = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.cpp
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/main.cpp
+- 'OF_PROJECT_SOURCE_FILES = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.cpp
 
   '
 - "parse_addon = \t               \t              \t           \t                                                                                                                                                                                                                              \n"
@@ -758,8 +758,8 @@
 - 'SHARED_LIB_EXTENSION = so
 
   '
-- 'OF_PROJECT_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.o
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/main.o
+- 'OF_PROJECT_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.o
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.o
 
   '
 - "PARSED_ADDONS_SOURCE_PATHS = \n"
@@ -801,10 +801,10 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
 
   '
 - 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_MPG123
@@ -1051,7 +1051,7 @@
 - 'OF_EXAMPLES_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples
 
   '
-- 'SRC_OBJ_FILE = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
+- 'SRC_OBJ_FILE = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
 
   '
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
@@ -1071,14 +1071,14 @@
 - 'F77 = f77
 
   '
-- 'COMPILE.cc = g++    -c
+- 'OLDPWD = /home/ravenskrag/Desktop/gem_structure/bin/projects
 
   '
 - "ADDON_LIBS_EXCLUDE = \n"
 - 'REQUESTED_PROJECT_ADDONS =  ofxGui ofxDatGui ofxImGui ofxMidi
 
   '
-- 'OF_PROJECT_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src
+- 'OF_PROJECT_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src
 
   '
 - ".VARIABLES = PLATFORM_PKG_CONFIG <D RUBY_VERSION CORE_EXCLUSIONS DESKTOP_SESSION
@@ -1126,8 +1126,8 @@
   OF_ROOT FAILED_PKG TMP_PROJECT_ADDONS_FRAMEWORKS PARSED_ADDONS_LIBS_INCLUDES_PATHS
   PROJECT_ADDONS_INCLUDES rvm_version %D ADDON_FRAMEWORKS OF_EXAMPLES_PATH SRC_OBJ_FILE
   PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS rwildcard WEAVE MAKE_COMMAND LINK.cpp F77
-  COMPILE.cc ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
-  .VARIABLES addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
+  OLDPWD ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS .VARIABLES
+  addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
   PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def LEX MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH
   PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER
   LEX.l LEX.m OF_PROJECT_ADDONS_DEPS ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS
@@ -1136,7 +1136,7 @@
   CLEANTARGET QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS parse_addons_libraries
   DEFAULTS_PATH LDFLAGS PLATFORM_PKG_CONFIG_LIBRARIES parse_addons_includes .SHELLSTATUS
   GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS TMP_PROJECT_ADDONS_INCLUDES
-  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
+  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS COMPILE.cc HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
   CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES
   ADDON_CPPFLAGS COMPILE.C GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT
   GNOME_TERMINAL_SERVICE SUFFIXES PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS PLATFORM_OS
@@ -1146,7 +1146,7 @@
   LINK.f ADDON_LIBS TEX GST_VERSION PROJECT_ADDONS_LIBS LANG TERM F77FLAGS LINK.o
   ADDON_SOURCES ALL_INSTALLED_ADDONS OF_CORE_BASE_CXXFLAGS PLATFORM_LIB_SUBPATH ADDON_PATHS
   PROJECT_INCLUDE_CFLAGS MY_RUBY_HOME OF_CORE_BASE_CFLAGS KDE_SESSION_UID\n"
-- 'addon_obj_path = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp
+- 'addon_obj_path = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
 - 'PC = pc
@@ -1193,7 +1193,7 @@
   '
 - "MFLAGS = \n"
 - "*D = \n"
-- 'PROJECT_ADDONS_OBJ_PATH = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons/
+- 'PROJECT_ADDONS_OBJ_PATH = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons/
 
   '
 - "OF_CORE_LIBS_THAT_NEED_ORDER = \n"
@@ -1238,8 +1238,8 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
 
   '
 - 'ALL_OF_CORE_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types
@@ -1263,11 +1263,11 @@
 - 'COMPILE.r = f77    -c
 
   '
-- 'OBJS_WITH_PREFIX = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.o
-  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src/main.o
+- 'OBJS_WITH_PREFIX = obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.o
+  obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.o
 
   '
-- 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src
+- 'OF_PROJECT_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src
 
   '
 - 'ADDON_INCLUDES = . ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
@@ -1354,8 +1354,8 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
-  /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
+  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
 
   '
 - "ADDON_LDFLAGS = \n"
@@ -1600,6 +1600,9 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
 
   '
+- 'COMPILE.cc = g++    -c
+
+  '
 - 'HOST_ARCH = x86_64
 
   '
@@ -1659,7 +1662,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/6a139ea7_af78_44b3_b627_0c8234605d48
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/4bbb24af_ed1b_4241_80bf_2c0bc17a774f
 
   '
 - "^F = \n"
@@ -1672,7 +1675,7 @@
 - 'rvm_prefix = /home/ravenskrag
 
   '
-- 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp
+- 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
 - 'GNOME_TERMINAL_SERVICE = :1.160
@@ -1766,7 +1769,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/3
+- 'MAKE_TERMERR = /dev/pts/1
 
   '
 - 'OBJC = cc
@@ -1841,7 +1844,7 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/communication
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/events
-  -I/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/src
+  -I/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/core
