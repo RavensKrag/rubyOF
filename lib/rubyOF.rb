@@ -16,7 +16,7 @@ end
 module CP
 	class Vec2
 		def to_ofPoint
-			return RubyOF::Point.new(self.x, self.y, 0)
+			return GLM::Vec3.new(self.x, self.y, 0)
 		end
 	end
 	
@@ -44,10 +44,13 @@ base_path = lib_dir/'rubyOF'
 	'meta',
 	'freezable',
 	
+	'glm_vec2',
+	'glm_vec3',
+	'glm_vec4',
+	
 	'window',
 	'color',
 	'graphics',
-	'point',
 	'rectangle',
 	'true_type_font',
 	'image',

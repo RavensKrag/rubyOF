@@ -193,7 +193,6 @@
   - Fbo.o
   - Graphics.o
   - GraphicsAdvanced.o
-  - Mesh.o
   - TrueTypeFont.o
   - image.o
   - launcher.o
@@ -202,7 +201,6 @@
   - "./Fbo.cpp"
   - "./Graphics.cpp"
   - "./GraphicsAdvanced.cpp"
-  - "./Mesh.cpp"
   - "./TrueTypeFont.cpp"
   - "./image.cpp"
   - "./launcher.cpp"

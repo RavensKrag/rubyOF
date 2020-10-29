@@ -31,14 +31,14 @@ public:
 	void toggleFullscreen();
 
 	void setWindowTitle(std::string title);
-	void setWindowPosition(int x, int y);
+	void setWindowPosition(glm::vec2 p);
 	void setWindowShape(int w, int h);
 	
 	void setWindowIcon(const std::string path);
 	
-	ofPoint getWindowPosition();
-	ofPoint getWindowSize();
-	ofPoint getScreenSize();
+	glm::vec2 getWindowPosition();
+	glm::vec2 getWindowSize();
+	glm::vec2 getScreenSize();
 	
 	
 	void setClipboardString(const std::string& text);

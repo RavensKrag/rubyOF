@@ -296,7 +296,7 @@ LESSOPEN:
 - "/usr/bin/lesspipe"
 - "%s"
 RUBYOF_PROJECT:
-- grapevine_midi
+- blender_iso_game
 OF_PROJECT_DEFINES: []
 CPP:
 - cc
@@ -512,7 +512,7 @@ LV2_PATH:
 rvm_bin_path:
 - "/home/ravenskrag/.rvm/bin"
 PWD:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi"
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game"
 ALL_OF_PROJECT_SOURCE_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
 KDE_SESSION_VERSION:
@@ -794,9 +794,8 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-COMPILE.cc:
-- g++
-- "-c"
+OLDPWD:
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects"
 REQUESTED_PROJECT_ADDONS: []
 OF_PROJECT_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
@@ -995,7 +994,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- COMPILE.cc
+- OLDPWD
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
 - ".VARIABLES"
@@ -1039,6 +1038,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_PROJECT_DEPENDENCY_FILES
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
+- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -1443,6 +1443,9 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
+COMPILE.cc:
+- g++
+- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
@@ -1537,7 +1540,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/6a139ea7_af78_44b3_b627_0c8234605d48"
+- "/org/gnome/Terminal/screen/4bbb24af_ed1b_4241_80bf_2c0bc17a774f"
 "^F": []
 COMPILE.S:
 - cc
@@ -1700,7 +1703,7 @@ CORE_PKG_CONFIG_LIBRARIES:
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/3"
+- "/dev/pts/1"
 OBJC:
 - cc
 LINK.f:

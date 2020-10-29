@@ -226,8 +226,8 @@ void Launcher::setWindowTitle(std::string title){
 	mWindow->setWindowTitle(title);
 }
 
-void Launcher::setWindowPosition(int x, int y){
-	mWindow->setWindowPosition(x,y);
+void Launcher::setWindowPosition(glm::vec2 p){
+	mWindow->setWindowPosition(p.x,p.y);
 }
 
 void Launcher::setWindowShape(int w, int h){
@@ -239,15 +239,15 @@ void Launcher::setWindowIcon(const std::string path){
 }
 
 
-ofPoint Launcher::getWindowPosition(){
+glm::vec2 Launcher::getWindowPosition(){
 	return mWindow->getWindowPosition();
 }
 
-ofPoint Launcher::getWindowSize(){
+glm::vec2 Launcher::getWindowSize(){
 	return mWindow->getWindowSize();
 }
 
-ofPoint Launcher::getScreenSize(){
+glm::vec2 Launcher::getScreenSize(){
 	return mWindow->getScreenSize();
 }
 
@@ -259,12 +259,7 @@ std::string Launcher::getClipboardString(){
 	return mWindow->getClipboardString();
 }
 
-// TODO: bind more methdos.
-	// * allow setting of window title
 
-// ofAppGLFWWindow::setWindowTitle(string title)
-// ofPoint ofAppGLFWWindow::getWindowPosition();
-// ofPoint ofAppGLFWWindow::getScreenSize();
 // int ofAppGLFWWindow::getCurrentMonitor();
 
 

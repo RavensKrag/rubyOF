@@ -13,20 +13,20 @@ class Window
 	
 	
 	def setup
-		puts "ruby: Window#setup"
+		puts "ruby: Window#setup (RubyOF default)"
 	end
 	
 	def update
-		puts "ruby: Window#update"
+		puts "ruby: Window#update (RubyOF default)"
 	end
 	
 	def draw
-		puts "ruby: Window#draw"
+		puts "ruby: Window#draw (RubyOF default)"
 	end
 	
 	# NOTE: this method can not be called 'exit' because there is a method Kernel.exit
 	def on_exit
-		puts "ruby: exiting application..."
+		puts "ruby: exiting application... (RubyOF default)"
 	end
 	
 	
