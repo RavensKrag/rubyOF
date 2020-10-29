@@ -115,8 +115,6 @@ class RubyOF(bpy.types.RenderEngine):
         pipe = open(self.fifo_path, 'w')
         
         
-        
-        
         # Loop over all object instances in the scene.
         if first_time or depsgraph.id_type_updated('OBJECT'):
             print("obj update detected")
@@ -173,10 +171,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         space = context.space_data # SpaceView3D(Space)
         
-#        print(rv3d.view_rotation)
+        
         print(camera_direction)
-#        print(camera_origin)
-#        print(context.space_data.lens)
         # ^ note: camera objects have both lens (mm) and angle (fov degrees)
         
         print(space.clip_start)
@@ -188,8 +184,6 @@ class RubyOF(bpy.types.RenderEngine):
 #        text = text.encode('utf-8')
         pipe = open(self.fifo_path, 'w')
         
-#        pipe.write("hello world\n")
-
         
         data = [
             {
@@ -215,36 +209,6 @@ class RubyOF(bpy.types.RenderEngine):
         ]
         pipe.write(json.dumps(data) + "\n")
         pipe.close()
-        
-#        io = posix.open(fifo_path, posix.O_RDWR)
-#        print(io)
-#        
-        
-        
-#        posix.write("hello world\n")
-#        posix.close(io)
-        
-#        io = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
-#        io.close()
-#        fifo = open(fifo_path, 'w')
-        
-#        flag = fcntl.fcntl(fifo, fcntl.F_GETFL)
-#        fcntl.fcntl(fifo, fcntl.F_SETFL, flag | os.O_NONBLOCK)
-        
-#        fifo.write("hello world")
-#        fifo.close()
-#        print("FIFO closed")
-        
-        
-#        with open(fifo_path) as fifo:
-#            print("fifo opened")
-#            while True:
-#                data = fifo.read()
-#                if len(data) == 0:
-#                    print("writer closed")
-#                    break
-                
-        
         
         
         
