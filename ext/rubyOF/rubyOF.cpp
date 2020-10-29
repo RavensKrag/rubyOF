@@ -145,8 +145,8 @@ void Init_rubyOF()
 		
 		// window properties
 		.define_method("window_title=",       &Launcher::setWindowTitle)
-		.define_method("window_position",     &Launcher::getWindowPosition)
-		.define_method("window_position=",    &Launcher::setWindowPosition)
+		.define_method("position",            &Launcher::getWindowPosition)
+		.define_method("position=",           &Launcher::setWindowPosition)
 		.define_method("set_window_shape",    &Launcher::setWindowShape)
 		.define_method("window_size",         &Launcher::getWindowSize)
 		.define_method("screen_size",         &Launcher::getScreenSize)

@@ -48,7 +48,7 @@ class Window < RubyOF::Window
     x,y,w,h = *window_geometry
     
     super("grapevine communication", w,h) # half screen
-    self.window_position = GLM::Vec2.new(x, y)
+    self.position = GLM::Vec2.new(x, y)
     
     # ofSetEscapeQuitsApp false
     
@@ -120,7 +120,7 @@ class Window < RubyOF::Window
     @live_code.on_exit
     
     # --- Save data
-    pt = self.window_position()
+    pt = self.position()
     dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
