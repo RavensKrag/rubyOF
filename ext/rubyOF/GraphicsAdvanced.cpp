@@ -278,6 +278,32 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    rb_cNode
       .define_constructor(Constructor<ofNode>())
       
+      .define_method(
+         "transformGL",
+         static_cast< void (ofNode::*)
+         (ofBaseRenderer * renderer) const
+         >(&ofNode::transformGL),
+         (
+            
+            Arg("renderer")    = nullptr
+         )
+      )
+      
+      .define_method(
+         "restoreTransformGL",
+         static_cast< void (ofNode::*)
+         (ofBaseRenderer * renderer) const
+         >(&ofNode::restoreTransformGL),
+         (
+            
+            Arg("renderer")    = nullptr
+         )
+      )
+      
+      
+      
+      
+      
       .define_method("getPosition",   &ofNode::getPosition)
       .define_method("setPosition",
          static_cast< void (ofNode::*)

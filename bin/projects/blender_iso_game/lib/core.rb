@@ -414,30 +414,6 @@ class Core
     
     # puts "<---"
     
-    data = read_fifo(@fifo_dir/@fifo_name)
-    unless data.nil?
-      p data
-      
-      
-      json_obj = JSON.parse(data)
-      p json_obj
-      
-      # TODO: need to send over type info instead of just the object name, but this works for now
-      
-      json_obj.each do |obj|
-        case obj['name']
-        when 'viewport_camera'
-          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
-          quat = GLM::Quat.new(*(obj['rotation'][1..4]))
-          
-          @camera.setPosition(pos)
-          @camera.setOrientation(quat)
-        end
-      end
-      
-      
-    end
-    
     
     
     
@@ -460,6 +436,7 @@ class Core
     @light.setPosition(GLM::Vec3.new(4, 1, 6))
     
     
+    cube_node = RubyOF::Node.new
     
     mesh = RubyOF::Mesh.new
     # p mesh.methods
@@ -492,49 +469,49 @@ class Core
     mesh.addIndex(2+4*1)
     
     # left
-    # mesh.addIndex(2+4*0)
-    # mesh.addIndex(3+4*0)
-    # mesh.addIndex(3+4*1)
+    mesh.addIndex(2+4*0)
+    mesh.addIndex(3+4*0)
+    mesh.addIndex(3+4*1)
     
-    # mesh.addIndex(2+4*0)
-    # mesh.addIndex(2+4*1)
-    # mesh.addIndex(3+4*1)
+    mesh.addIndex(2+4*0)
+    mesh.addIndex(2+4*1)
+    mesh.addIndex(3+4*1)
     
-    # # top
-    # mesh.addIndex(1+4*0)
-    # mesh.addIndex(2+4*0)
-    # mesh.addIndex(3+4*0)
+    # top
+    mesh.addIndex(1+4*0)
+    mesh.addIndex(2+4*0)
+    mesh.addIndex(3+4*0)
     
-    # mesh.addIndex(3+4*0)
-    # mesh.addIndex(4+4*0)
-    # mesh.addIndex(1+4*0)
+    mesh.addIndex(3+4*0)
+    mesh.addIndex(4+4*0)
+    mesh.addIndex(1+4*0)
     
-    # # bottom
-    # mesh.addIndex(1+4*1)
-    # mesh.addIndex(2+4*1)
-    # mesh.addIndex(3+4*1)
+    # bottom
+    mesh.addIndex(1+4*1)
+    mesh.addIndex(2+4*1)
+    mesh.addIndex(3+4*1)
     
-    # mesh.addIndex(3+4*1)
-    # mesh.addIndex(4+4*1)
-    # mesh.addIndex(1+4*1)
+    mesh.addIndex(3+4*1)
+    mesh.addIndex(4+4*1)
+    mesh.addIndex(1+4*1)
     
-    # # front
-    # mesh.addIndex(4+4*1)
-    # mesh.addIndex(1+4*1)
-    # mesh.addIndex(1+4*0)
+    # front
+    mesh.addIndex(4+4*1)
+    mesh.addIndex(1+4*1)
+    mesh.addIndex(1+4*0)
     
-    # mesh.addIndex(4+4*1)
-    # mesh.addIndex(1+4*0)
-    # mesh.addIndex(2+4*0)
+    mesh.addIndex(4+4*1)
+    mesh.addIndex(1+4*0)
+    mesh.addIndex(2+4*0)
     
-    # # back
-    # mesh.addIndex(3+4*1)
-    # mesh.addIndex(2+4*1)
-    # mesh.addIndex(2+4*0)
+    # back
+    mesh.addIndex(3+4*1)
+    mesh.addIndex(2+4*1)
+    mesh.addIndex(2+4*0)
     
-    # mesh.addIndex(2+4*0)
-    # mesh.addIndex(3+4*0)
-    # mesh.addIndex(3+4*1)
+    mesh.addIndex(2+4*0)
+    mesh.addIndex(3+4*0)
+    mesh.addIndex(3+4*1)
     
     
     
@@ -543,11 +520,47 @@ class Core
     
     
     
+    
+    
+    data = read_fifo(@fifo_dir/@fifo_name)
+    unless data.nil?
+      p data
+      
+      
+      json_obj = JSON.parse(data)
+      p json_obj
+      
+      # TODO: need to send over type info instead of just the object name, but this works for now
+      
+      json_obj.each do |obj|
+        case obj['name']
+        when 'viewport_camera'
+          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+          quat = GLM::Quat.new(*(obj['rotation'][1..4]))
+          
+          @camera.setPosition(pos)
+          @camera.setOrientation(quat)
+        when 'Cube'
+          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+          cube_node.setPosition(pos)
+        end
+      end
+      
+      
+    end
+    
+    
+    
+    
+    
+    
     @camera.begin
     
       @light.enable
-      
+        
+        cube_node.transformGL()
         mesh.draw
+        cube_node.restoreTransformGL()
       
       @light.disable
     
