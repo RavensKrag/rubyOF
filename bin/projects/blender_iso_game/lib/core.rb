@@ -36,6 +36,105 @@ def usec(time)
 end
 
 
+class BlenderCube
+  attr_reader :mesh, :node
+  
+  def initialize
+    @mesh = RubyOF::Mesh.new
+    @node = RubyOF::Node.new
+  end
+  
+  def position
+    return @node.getPosition()
+  end
+  
+  def position=(pos)
+    @node.setPosition(pos)
+  end
+  
+  
+  
+  def generate_mesh
+    
+    @mesh = RubyOF::Mesh.new
+    # p mesh.methods
+    @mesh.setMode(:OF_PRIMITIVE_TRIANGLES)
+    # (ccw from bottom right)
+    # (top layer)
+    @mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
+    @mesh.addVertex(GLM::Vec3.new( 1,  1,  1))
+    @mesh.addVertex(GLM::Vec3.new(-1,  1,  1))
+    @mesh.addVertex(GLM::Vec3.new(-1, -1,  1))
+    # (bottom layer)
+    @mesh.addVertex(GLM::Vec3.new( 1, -1, -1))
+    @mesh.addVertex(GLM::Vec3.new( 1,  1, -1))
+    @mesh.addVertex(GLM::Vec3.new(-1,  1, -1))
+    @mesh.addVertex(GLM::Vec3.new(-1, -1, -1))
+    
+    
+    # raise
+    
+    # TODO: pay attention to winding
+    # (need to figure out axes first)
+    
+    # right
+    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(2+4*1)
+    
+    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(1+4*1)
+    @mesh.addIndex(2+4*1)
+    
+    # left
+    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(3+4*0)
+    @mesh.addIndex(3+4*1)
+    
+    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(2+4*1)
+    @mesh.addIndex(3+4*1)
+    
+    # top
+    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(3+4*0)
+    
+    @mesh.addIndex(3+4*0)
+    @mesh.addIndex(4+4*0)
+    @mesh.addIndex(1+4*0)
+    
+    # bottom
+    @mesh.addIndex(1+4*1)
+    @mesh.addIndex(2+4*1)
+    @mesh.addIndex(3+4*1)
+    
+    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(4+4*1)
+    @mesh.addIndex(1+4*1)
+    
+    # front
+    @mesh.addIndex(4+4*1)
+    @mesh.addIndex(1+4*1)
+    @mesh.addIndex(1+4*0)
+    
+    @mesh.addIndex(4+4*1)
+    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(2+4*0)
+    
+    # back
+    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(2+4*1)
+    @mesh.addIndex(2+4*0)
+    
+    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(3+4*0)
+    @mesh.addIndex(3+4*1)
+    
+    
+  end
+end
+
 
 
 class Core
@@ -120,6 +219,7 @@ class Core
     
     
     
+    @cube = BlenderCube.new
     
     @camera = RubyOF::Camera.new
     @light  = RubyOF::Light.new
@@ -436,84 +536,8 @@ class Core
     @light.setPosition(GLM::Vec3.new(4, 1, 6))
     
     
-    cube_node = RubyOF::Node.new
     
-    mesh = RubyOF::Mesh.new
-    # p mesh.methods
-    mesh.setMode(:OF_PRIMITIVE_TRIANGLES)
-    # (ccw from bottom right)
-    # (top layer)
-    mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
-    mesh.addVertex(GLM::Vec3.new( 1,  1,  1))
-    mesh.addVertex(GLM::Vec3.new(-1,  1,  1))
-    mesh.addVertex(GLM::Vec3.new(-1, -1,  1))
-    # (bottom layer)
-    mesh.addVertex(GLM::Vec3.new( 1, -1, -1))
-    mesh.addVertex(GLM::Vec3.new( 1,  1, -1))
-    mesh.addVertex(GLM::Vec3.new(-1,  1, -1))
-    mesh.addVertex(GLM::Vec3.new(-1, -1, -1))
-    
-    
-    # raise
-    
-    # TODO: pay attention to winding
-    # (need to figure out axes first)
-    
-    # right
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(2+4*1)
-    
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(1+4*1)
-    mesh.addIndex(2+4*1)
-    
-    # left
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(3+4*1)
-    
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(3+4*1)
-    
-    # top
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
-    
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(4+4*0)
-    mesh.addIndex(1+4*0)
-    
-    # bottom
-    mesh.addIndex(1+4*1)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(3+4*1)
-    
-    mesh.addIndex(3+4*1)
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*1)
-    
-    # front
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*1)
-    mesh.addIndex(1+4*0)
-    
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(2+4*0)
-    
-    # back
-    mesh.addIndex(3+4*1)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(2+4*0)
-    
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(3+4*1)
-    
-    
+    @cube.generate_mesh
     
     # f.close
     # puts "---"
@@ -542,7 +566,7 @@ class Core
           @camera.setOrientation(quat)
         when 'Cube'
           pos  = GLM::Vec3.new(*(obj['position'][1..3]))
-          cube_node.setPosition(pos)
+          @cube.position = pos
         end
       end
       
@@ -558,9 +582,9 @@ class Core
     
       @light.enable
         
-        cube_node.transformGL()
-        mesh.draw
-        cube_node.restoreTransformGL()
+        @cube.node.transformGL()
+        @cube.mesh.draw()
+        @cube.node.restoreTransformGL()
       
       @light.disable
     
