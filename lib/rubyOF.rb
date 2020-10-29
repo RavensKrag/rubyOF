@@ -44,7 +44,9 @@ base_path = lib_dir/'rubyOF'
 	'meta',
 	'freezable',
 	
+	'glm_vec2',
 	'glm_vec3',
+	'glm_vec4',
 	
 	'window',
 	'color',

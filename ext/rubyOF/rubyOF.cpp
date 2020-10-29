@@ -28,6 +28,19 @@ void Init_rubyOF()
 	Module rb_mGLM = define_module("GLM");
 	
 	// 
+	// vec2
+	// 
+	
+	Data_Type<glm::vec2> rb_cGLM_vec2 =
+		define_class_under<glm::vec2>(rb_mGLM, "Vec2");
+	
+	rb_cGLM_vec2
+		.define_constructor(Constructor<glm::vec2, float, float>())
+		.define_method("get_component",   &glm_vec2_getComponent)
+		.define_method("set_component",   &glm_vec2_setComponent)
+	;
+	
+	// 
 	// vec3
 	// 
 	
@@ -51,8 +64,8 @@ void Init_rubyOF()
 	
 	rb_cGLM_vec4
 		.define_constructor(Constructor<glm::vec4, float, float, float, float>())
-		// .define_method("get_component",   &ofVec3f_get_component)
-		// .define_method("set_component",   &ofVec3f_set_component)
+		.define_method("get_component",   &glm_vec4_getComponent)
+		.define_method("set_component",   &glm_vec4_getComponent)
 	;
 	
 	// 
@@ -132,8 +145,8 @@ void Init_rubyOF()
 		
 		// window properties
 		.define_method("window_title=",       &Launcher::setWindowTitle)
-		.define_method("get_window_position", &Launcher::getWindowPosition)
-		.define_method("set_window_position", &Launcher::setWindowPosition)
+		.define_method("window_position",     &Launcher::getWindowPosition)
+		.define_method("window_position=",    &Launcher::setWindowPosition)
 		.define_method("set_window_shape",    &Launcher::setWindowShape)
 		.define_method("window_size",         &Launcher::getWindowSize)
 		.define_method("screen_size",         &Launcher::getScreenSize)
@@ -311,11 +324,27 @@ void Init_rubyOF()
 	;
 }
 
+float glm_vec2_getComponent(glm::vec2& p, int i){
+	return p[i];
+}
+
+void  glm_vec2_setComponent(glm::vec2& p, int i, float value){
+	p[i] = value;
+}
+
 float glm_vec3_getComponent(glm::vec3& p, int i){
 	return p[i];
 }
 
 void  glm_vec3_setComponent(glm::vec3& p, int i, float value){
+	p[i] = value;
+}
+
+float glm_vec4_getComponent(glm::vec4& p, int i){
+	return p[i];
+}
+
+void  glm_vec4_setComponent(glm::vec4& p, int i, float value){
 	p[i] = value;
 }
 

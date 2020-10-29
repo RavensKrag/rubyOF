@@ -17,10 +17,6 @@
 #include "rice/Array.hpp"
 
 
-float glm_tvec2_float_get_component(glm::tvec2<float>& p, int i);
-void  glm_tvec2_float_set_component(glm::tvec2<float>& p, int i, float value);
-
-
 
 
 int ofxMidiMessage__get_status(ofxMidiMessage &self);
