@@ -28,6 +28,10 @@ void  glm_vec3_setComponent(glm::vec3& p, int i, float value);
 float glm_vec4_getComponent(glm::vec4& p, int i);
 void  glm_vec4_setComponent(glm::vec4& p, int i, float value);
 
+float glm_quat_getComponent(glm::quat& p, int i);
+void  glm_quat_setComponent(glm::quat& p, int i, float value);
+
+
 
 int  ofColor_getRed(ofColor& color);
 int  ofColor_getGreen(ofColor& color);

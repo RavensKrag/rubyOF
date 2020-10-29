@@ -1,6 +1,8 @@
 
 # stores the main logic and data of the program
 
+require 'json' # easiest way to transfer data between Python and Ruby
+
 require 'open3'
 
 require 'io/wait'
@@ -410,11 +412,30 @@ class Core
     
     # (may need to open the fifo and write something to it, so we get an EOF descriptor that will be useful for implementing non-blocking IO)
     
-    puts "<---"
+    # puts "<---"
     
     data = read_fifo(@fifo_dir/@fifo_name)
     unless data.nil?
       p data
+      
+      
+      json_obj = JSON.parse(data)
+      p json_obj
+      
+      # TODO: need to send over type info instead of just the object name, but this works for now
+      
+      json_obj.each do |obj|
+        case obj['name']
+        when 'viewport_camera'
+          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+          quat = GLM::Quat.new(*(obj['rotation'][1..4]))
+          
+          @camera.setPosition(pos)
+          @camera.setOrientation(quat)
+        end
+      end
+      
+      
     end
     
     
@@ -425,8 +446,8 @@ class Core
     
     
     
-    @camera.setPosition(GLM::Vec3.new(50, 50, 0))
-    @camera.lookAt(GLM::Vec3.new(0, 0, 0))
+    # @camera.setPosition(GLM::Vec3.new(50, 50, 0))
+    # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
     
     @camera.setFov(39.6)
     @camera.setNearClip(0.1)
@@ -471,54 +492,54 @@ class Core
     mesh.addIndex(2+4*1)
     
     # left
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(3+4*1)
+    # mesh.addIndex(2+4*0)
+    # mesh.addIndex(3+4*0)
+    # mesh.addIndex(3+4*1)
     
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(3+4*1)
+    # mesh.addIndex(2+4*0)
+    # mesh.addIndex(2+4*1)
+    # mesh.addIndex(3+4*1)
     
-    # top
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
+    # # top
+    # mesh.addIndex(1+4*0)
+    # mesh.addIndex(2+4*0)
+    # mesh.addIndex(3+4*0)
     
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(4+4*0)
-    mesh.addIndex(1+4*0)
+    # mesh.addIndex(3+4*0)
+    # mesh.addIndex(4+4*0)
+    # mesh.addIndex(1+4*0)
     
-    # bottom
-    mesh.addIndex(1+4*1)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(3+4*1)
+    # # bottom
+    # mesh.addIndex(1+4*1)
+    # mesh.addIndex(2+4*1)
+    # mesh.addIndex(3+4*1)
     
-    mesh.addIndex(3+4*1)
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*1)
+    # mesh.addIndex(3+4*1)
+    # mesh.addIndex(4+4*1)
+    # mesh.addIndex(1+4*1)
     
-    # front
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*1)
-    mesh.addIndex(1+4*0)
+    # # front
+    # mesh.addIndex(4+4*1)
+    # mesh.addIndex(1+4*1)
+    # mesh.addIndex(1+4*0)
     
-    mesh.addIndex(4+4*1)
-    mesh.addIndex(1+4*0)
-    mesh.addIndex(2+4*0)
+    # mesh.addIndex(4+4*1)
+    # mesh.addIndex(1+4*0)
+    # mesh.addIndex(2+4*0)
     
-    # back
-    mesh.addIndex(3+4*1)
-    mesh.addIndex(2+4*1)
-    mesh.addIndex(2+4*0)
+    # # back
+    # mesh.addIndex(3+4*1)
+    # mesh.addIndex(2+4*1)
+    # mesh.addIndex(2+4*0)
     
-    mesh.addIndex(2+4*0)
-    mesh.addIndex(3+4*0)
-    mesh.addIndex(3+4*1)
+    # mesh.addIndex(2+4*0)
+    # mesh.addIndex(3+4*0)
+    # mesh.addIndex(3+4*1)
     
     
     
     # f.close
-    puts "---"
+    # puts "---"
     
     
     

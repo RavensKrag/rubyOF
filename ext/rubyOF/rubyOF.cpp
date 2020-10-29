@@ -83,6 +83,12 @@ void Init_rubyOF()
 	Data_Type<glm::quat> rb_cGLM_quat = 
 		define_class_under<glm::quat>(rb_mGLM, "Quat");
 	
+	rb_cGLM_quat
+		.define_constructor(Constructor<glm::quat, float, float, float, float>())
+		.define_method("get_component",   &glm_quat_getComponent)
+		.define_method("set_component",   &glm_quat_getComponent)
+	;
+	
 	
 	
 	
@@ -345,6 +351,14 @@ float glm_vec4_getComponent(glm::vec4& p, int i){
 }
 
 void  glm_vec4_setComponent(glm::vec4& p, int i, float value){
+	p[i] = value;
+}
+
+float glm_quat_getComponent(glm::quat& p, int i){
+	return p[i];
+}
+
+void  glm_quat_setComponent(glm::quat& p, int i, float value){
 	p[i] = value;
 }
 

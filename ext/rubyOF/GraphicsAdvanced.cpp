@@ -300,8 +300,15 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (const glm::vec3 &lookAtPosition)
          >(&ofNode::lookAt)
       )
-       // there's another variation where you can specify up vector
-       // but I don't understand the coordinate system right now so...
+      // there's another variation where you can specify up vector
+      // but I don't understand the coordinate system right now so...
+      
+      
+      .define_method("setOrientation",
+         static_cast< void (ofLight::*)
+         (const glm::quat &q)
+         >(&ofLight::setOrientation)
+      )
    ;
    
    
@@ -414,8 +421,14 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (const glm::vec3 &lookAtPosition)
          >(&ofCamera::lookAt)
       )
-       // there's another variation where you can specify up vector
-       // but I don't understand the coordinate system right now so...
+      // there's another variation where you can specify up vector
+      // but I don't understand the coordinate system right now so...
+      
+      .define_method("setOrientation",
+         static_cast< void (ofCamera::*)
+         (const glm::quat &q)
+         >(&ofCamera::setOrientation)
+      )
    ;
    
    
@@ -476,8 +489,14 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (const glm::vec3 &lookAtPosition)
          >(&ofLight::lookAt)
       )
-       // there's another variation where you can specify up vector
-       // but I don't understand the coordinate system right now so...
+      // there's another variation where you can specify up vector
+      // but I don't understand the coordinate system right now so...
+       
+      .define_method("setOrientation",
+         static_cast< void (ofLight::*)
+         (const glm::quat &q)
+         >(&ofLight::setOrientation)
+      )
    ;
 }
 
