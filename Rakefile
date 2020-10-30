@@ -934,6 +934,33 @@ end
 # =============
 
 
+
+BLENDER_GIT_DIR = "/home/ravenskrag/Code/Source/blender-git"
+
+namespace :blender do
+	# (there are also dependencies that need to be installed. check the Blender developer wiki to figure out how to get started. strangely, you need both git (for Blender source) and svn (for dependency libs))
+	desc "Build custom build of Blender with transparent window"
+	task :build do
+		Dir.chdir "#{BLENDER_GIT_DIR}/blender" do
+			run_i "make debug"
+		end
+	end
+	
+	desc "Run custom build of Blender with transparent window"
+	task :run do
+		run_i "#{BLENDER_GIT_DIR}/build_linux_debug/bin/blender"
+	end
+end
+
+
+
+
+
+
+
+
+
+
 task :setup => [
 	'ruby_deps:install'
 ]
