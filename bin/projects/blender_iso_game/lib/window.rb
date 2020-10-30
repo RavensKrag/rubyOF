@@ -66,15 +66,11 @@ class Window < RubyOF::Window
     @core = Core.new(self)
     @live_code = LiveCode.new @core, LIB_DIR/'core.rb'
     
-    @first_time = true
+    @live_code.setup()
   end
   
   def update
     # super()
-    if @first_time
-      @live_code.setup()
-      @first_time = false
-    end
     @live_code.update()
   end
   

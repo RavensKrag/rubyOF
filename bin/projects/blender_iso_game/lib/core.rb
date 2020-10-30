@@ -148,7 +148,7 @@ class Core
     ofBackground(200, 200, 200, 255)
     ofEnableBlendMode(:alpha)
     
-    @update_scheduler = Scheduler.new(self, :on_update, msec(16-4))
+    
     @draw_durations = Array.new # stores profiler data for #draw
     
     
@@ -283,6 +283,8 @@ class Core
     @shader_files = nil
     @shaderIsCorrect = nil
     
+    @update_scheduler = nil
+    
     setup()
   end
   
@@ -300,6 +302,8 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
+    
     # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
     @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
     
