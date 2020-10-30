@@ -45,11 +45,11 @@ class BlenderCube
   end
   
   def position
-    return @node.getPosition()
+    return @node.position
   end
   
   def position=(pos)
-    @node.setPosition(pos)
+    @node.position = pos
   end
   
   
@@ -78,58 +78,58 @@ class BlenderCube
     # (need to figure out axes first)
     
     # right
-    @mesh.addIndex(1+4*0)
-    @mesh.addIndex(2+4*0)
-    @mesh.addIndex(2+4*1)
+    # @mesh.addIndex(1-1+4*0)
+    # @mesh.addIndex(2-1+4*0)
+    # @mesh.addIndex(2-1+4*1)
     
-    @mesh.addIndex(1+4*0)
-    @mesh.addIndex(1+4*1)
-    @mesh.addIndex(2+4*1)
+    # @mesh.addIndex(1-1+4*0)
+    # @mesh.addIndex(1-1+4*1)
+    # @mesh.addIndex(2-1+4*1)
     
     # left
-    @mesh.addIndex(2+4*0)
-    @mesh.addIndex(3+4*0)
-    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(2-1+4*0)
+    @mesh.addIndex(3-1+4*0)
+    @mesh.addIndex(3-1+4*1)
     
-    @mesh.addIndex(2+4*0)
-    @mesh.addIndex(2+4*1)
-    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(2-1+4*0)
+    @mesh.addIndex(2-1+4*1)
+    @mesh.addIndex(3-1+4*1)
     
     # top
-    @mesh.addIndex(1+4*0)
-    @mesh.addIndex(2+4*0)
-    @mesh.addIndex(3+4*0)
+    @mesh.addIndex(1-1+4*0)
+    @mesh.addIndex(2-1+4*0)
+    @mesh.addIndex(3-1+4*0)
     
-    @mesh.addIndex(3+4*0)
-    @mesh.addIndex(4+4*0)
-    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(3-1+4*0)
+    @mesh.addIndex(4-1+4*0)
+    @mesh.addIndex(1-1+4*0)
     
     # bottom
-    @mesh.addIndex(1+4*1)
-    @mesh.addIndex(2+4*1)
-    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(1-1+4*1)
+    @mesh.addIndex(2-1+4*1)
+    @mesh.addIndex(3-1+4*1)
     
-    @mesh.addIndex(3+4*1)
-    @mesh.addIndex(4+4*1)
-    @mesh.addIndex(1+4*1)
+    @mesh.addIndex(3-1+4*1)
+    @mesh.addIndex(4-1+4*1)
+    @mesh.addIndex(1-1+4*1)
     
     # front
-    @mesh.addIndex(4+4*1)
-    @mesh.addIndex(1+4*1)
-    @mesh.addIndex(1+4*0)
+    @mesh.addIndex(4-1+4*1)
+    @mesh.addIndex(1-1+4*1)
+    @mesh.addIndex(1-1+4*0)
     
-    @mesh.addIndex(4+4*1)
-    @mesh.addIndex(1+4*0)
-    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(4-1+4*1)
+    @mesh.addIndex(1-1+4*0)
+    @mesh.addIndex(2-1+4*0)
     
     # back
-    @mesh.addIndex(3+4*1)
-    @mesh.addIndex(2+4*1)
-    @mesh.addIndex(2+4*0)
+    @mesh.addIndex(3-1+4*1)
+    @mesh.addIndex(2-1+4*1)
+    @mesh.addIndex(2-1+4*0)
     
-    @mesh.addIndex(2+4*0)
-    @mesh.addIndex(3+4*0)
-    @mesh.addIndex(3+4*1)
+    @mesh.addIndex(2-1+4*0)
+    @mesh.addIndex(3-1+4*0)
+    @mesh.addIndex(3-1+4*1)
     
     
   end
@@ -138,6 +138,8 @@ end
 
 
 class Core
+  include HelperFunctions
+  
   def initialize(window)
     @w = window
   end
@@ -297,6 +299,24 @@ class Core
     full_fifo_path = @fifo_dir/@fifo_name
     FileUtils.rm(full_fifo_path)
     puts "fifo closed"
+  end
+  
+  def parse_blender_data(data_list)
+    data_list.each do |obj|
+      case obj['name']
+      when 'viewport_camera'
+        pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+        quat = GLM::Quat.new(*(obj['rotation'][1..4]))
+        
+        @camera.position = pos
+        @camera.orientation = quat
+        
+        @camera_changed = true
+      when 'Cube'
+        pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+        @cube.position = pos
+      end
+    end
   end
   
   
@@ -537,7 +557,7 @@ class Core
     
     
     @light.setPointLight()
-    @light.setPosition(GLM::Vec3.new(4, 1, 6))
+    @light.position = GLM::Vec3.new(4, 1, 6)
     
     
     
@@ -560,19 +580,7 @@ class Core
       
       # TODO: need to send over type info instead of just the object name, but this works for now
       
-      json_obj.each do |obj|
-        case obj['name']
-        when 'viewport_camera'
-          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
-          quat = GLM::Quat.new(*(obj['rotation'][1..4]))
-          
-          @camera.setPosition(pos)
-          @camera.setOrientation(quat)
-        when 'Cube'
-          pos  = GLM::Vec3.new(*(obj['position'][1..3]))
-          @cube.position = pos
-        end
-      end
+      parse_blender_data(json_obj)
       
       
     end

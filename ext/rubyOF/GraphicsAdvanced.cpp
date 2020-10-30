@@ -271,73 +271,6 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    
    
-   // ofNode
-   Data_Type<ofNode> rb_cNode = 
-      define_class_under<ofNode>(rb_mRubyOF, "Node");
-   
-   rb_cNode
-      .define_constructor(Constructor<ofNode>())
-      
-      .define_method(
-         "transformGL",
-         static_cast< void (ofNode::*)
-         (ofBaseRenderer * renderer) const
-         >(&ofNode::transformGL),
-         (
-            
-            Arg("renderer")    = nullptr
-         )
-      )
-      
-      .define_method(
-         "restoreTransformGL",
-         static_cast< void (ofNode::*)
-         (ofBaseRenderer * renderer) const
-         >(&ofNode::restoreTransformGL),
-         (
-            
-            Arg("renderer")    = nullptr
-         )
-      )
-      
-      
-      
-      
-      
-      .define_method("getPosition",   &ofNode::getPosition)
-      .define_method("setPosition",
-         static_cast< void (ofNode::*)
-         (const glm::vec3 &p)
-         >(&ofNode::setPosition)
-      )
-      
-      .define_method("getScale",      &ofNode::getScale)
-      .define_method("setScale",
-         static_cast< void (ofNode::*)
-         (const glm::vec3 &p)
-         >(&ofNode::setScale)
-      )
-      
-      .define_method("getParent",     &ofNode::getParent)
-      .define_method("setParent",     &ofNode::setParent)
-      
-      .define_method("lookAt",
-         static_cast< void (ofNode::*)
-         (const glm::vec3 &lookAtPosition)
-         >(&ofNode::lookAt)
-      )
-      // there's another variation where you can specify up vector
-      // but I don't understand the coordinate system right now so...
-      
-      
-      .define_method("setOrientation",
-         static_cast< void (ofLight::*)
-         (const glm::quat &q)
-         >(&ofLight::setOrientation)
-      )
-   ;
-   
-   
    
    // ofMesh
    Data_Type<ofMesh> rb_cMesh = 
@@ -388,16 +321,83 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
    ;
    
-   // ofMatrix4x4
-   // this class is bound in the standard graphics file,
-   // as it can also be used in immediate mode
+   
+   
+   
+   // ofNode
+   Data_Type<ofNode> rb_cNode = 
+      define_class_under<ofNode>(rb_mRubyOF, "Node");
+   
+   rb_cNode
+      .define_constructor(Constructor<ofNode>())
+      .define_method(
+         "transformGL",
+         static_cast< void (ofNode::*)
+         (ofBaseRenderer * renderer) const
+         >(&ofNode::transformGL),
+         (
+            
+            Arg("renderer")    = nullptr
+         )
+      )
+      
+      .define_method(
+         "restoreTransformGL",
+         static_cast< void (ofNode::*)
+         (ofBaseRenderer * renderer) const
+         >(&ofNode::restoreTransformGL),
+         (
+            
+            Arg("renderer")    = nullptr
+         )
+      )
+      
+      
+      .define_method("position",   &ofNode::getPosition)
+      .define_method("position=",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &p)
+         >(&ofNode::setPosition)
+      )
+      
+      .define_method("scale",      &ofNode::getScale)
+      .define_method("scale=",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &p)
+         >(&ofNode::setScale)
+      )
+      
+      .define_method("parent",     &ofNode::getParent)
+      .define_method("parent=",    &ofNode::setParent)
+      
+      
+      .define_method("orientation",
+         static_cast< glm::quat (ofNode::*)
+         () const
+         >(&ofNode::getOrientationQuat)
+      )
+      .define_method("orientation=",
+         static_cast< void (ofNode::*)
+         (const glm::quat &q)
+         >(&ofNode::setOrientation)
+      )
+      
+      
+      .define_method("lookAt",
+         static_cast< void (ofNode::*)
+         (const glm::vec3 &lookAtPosition)
+         >(&ofNode::lookAt)
+      )
+      // there's another variation where you can specify up vector
+      // but I don't understand the coordinate system right now so...
+   ;
    
    
    
    
    // ofCamera
    Data_Type<ofCamera> rb_cCamera = 
-		define_class_under<ofCamera>(rb_mRubyOF, "Camera");
+		define_class_under<ofCamera, ofNode>(rb_mRubyOF, "Camera");
    
    rb_cCamera
       .define_constructor(Constructor<ofCamera>())
@@ -415,46 +415,12 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setFov",           &ofCamera::setFov)
       .define_method("setAspectRatio",   &ofCamera::setAspectRatio)
       
-      
-      // need to copy over the methods from ofNode,
-      // because for Rice can't do that for you
       .define_method("begin",
          static_cast< void (ofCamera::*)
          (void)
          >(&ofCamera::begin)
       )
       .define_method("end",     &ofCamera::end)
-      
-      .define_method("getPosition",   &ofCamera::getPosition)
-      .define_method("setPosition",
-         static_cast< void (ofCamera::*)
-         (const glm::vec3 &p)
-         >(&ofCamera::setPosition)
-      )
-      
-      .define_method("getScale",      &ofCamera::getScale)
-      .define_method("setScale",
-         static_cast< void (ofCamera::*)
-         (const glm::vec3 &p)
-         >(&ofCamera::setScale)
-      )
-      
-      .define_method("getParent",     &ofCamera::getParent)
-      .define_method("setParent",     &ofCamera::setParent)
-      
-      .define_method("lookAt",
-         static_cast< void (ofCamera::*)
-         (const glm::vec3 &lookAtPosition)
-         >(&ofCamera::lookAt)
-      )
-      // there's another variation where you can specify up vector
-      // but I don't understand the coordinate system right now so...
-      
-      .define_method("setOrientation",
-         static_cast< void (ofCamera::*)
-         (const glm::quat &q)
-         >(&ofCamera::setOrientation)
-      )
    ;
    
    
@@ -466,11 +432,10 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    
    Data_Type<ofLight> rb_cLight = 
-      define_class_under<ofLight>(rb_mRubyOF, "Light");
+      define_class_under<ofLight, ofNode>(rb_mRubyOF, "Light");
    
    rb_cLight
       .define_constructor(Constructor<ofLight>())
-      
       .define_method("enable",        &ofLight::enable)
       .define_method("disable",       &ofLight::disable)
       .define_method("getIsEnabled",  &ofLight::getIsEnabled)
@@ -489,40 +454,6 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setDirectional",    &ofLight::setDirectional)
       .define_method("setPointLight",     &ofLight::setPointLight)
       .define_method("setSpotlight",      &ofLight::setSpotlight)
-      
-      
-      // need to copy over the methods from ofNode,
-      // because for Rice can't do that for you
-      .define_method("getPosition",   &ofLight::getPosition)
-      .define_method("setPosition",
-         static_cast< void (ofLight::*)
-         (const glm::vec3 &p)
-         >(&ofLight::setPosition)
-      )
-      
-      .define_method("getScale",      &ofLight::getScale)
-      .define_method("setScale",
-         static_cast< void (ofLight::*)
-         (const glm::vec3 &p)
-         >(&ofLight::setScale)
-      )
-      
-      .define_method("getParent",     &ofLight::getParent)
-      .define_method("setParent",     &ofLight::setParent)
-      
-      .define_method("lookAt",
-         static_cast< void (ofLight::*)
-         (const glm::vec3 &lookAtPosition)
-         >(&ofLight::lookAt)
-      )
-      // there's another variation where you can specify up vector
-      // but I don't understand the coordinate system right now so...
-       
-      .define_method("setOrientation",
-         static_cast< void (ofLight::*)
-         (const glm::quat &q)
-         >(&ofLight::setOrientation)
-      )
    ;
 }
 
