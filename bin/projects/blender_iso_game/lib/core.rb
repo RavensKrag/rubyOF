@@ -228,6 +228,16 @@ class Core
     
     
     
+    @camera_settings_file = PROJECT_DIR/'bin'/'data'/'viewport_camera.yaml'
+    if @camera_settings_file.exist?
+      camera_data = YAML.load_file @camera_settings_file
+      parse_blender_data(camera_data)
+      @camera_changed = false
+    end
+    
+    
+    
+    
     @fifo_dir = PROJECT_DIR/'bin'/'run'
     @fifo_name = 'blender_comm'
     
@@ -269,6 +279,26 @@ class Core
     # puts @draw_durations.join("\t")
     if RB_SPIKE_PROFILER.enabled?
       RB_SPIKE_PROFILER.disable
+    end
+    
+    if @camera_changed
+      camera_pos = @camera.position
+      camera_rot = @camera.orientation
+      
+      camera_data = [
+          {
+          'name' => 'viewport_camera',
+          'position' => [
+            'Vec3',
+            camera_pos.x, camera_pos.y, camera_pos.z
+          ],
+          'rotation' => [
+            'Quat',
+            camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
+          ]
+        }
+      ]
+      dump_yaml camera_data => @camera_settings_file
     end
     
   end
