@@ -238,24 +238,56 @@ class Core
     
     
     
+    # 
+    # Open FIFO in main thread then pass to Thread using function closure.
+    # This prevents weird race conditions.
+    # 
+    # Consider this timing diagram:
+    #   main thread         @msg_thread
+    #   -----------         -----------
+    #   setup               
+    #                       File.mkfifo(fifo_path)
+    #                       
+    #   update (ERROR)
+    #                       f_r = File.open(fifo_path, "r+")
+    #                       
+    #                       ensure: f_r#close
+    #                       ensure: FileUtils.rm(fifo_path)
+    # 
+    # ^ When the error happens in update
+    #   f_r has not yet been initialized (f_r == nil)
+    #   but the ensure block of @msg_thread will try close f_r.
+    #   This results in an exception, 
+    #   which prevents the FIFO from being properly deleted.
+    #   This will then cause an error when the program is restarted / reloaded
+    #   as a FIFO can not be created where one already exists.
+    
     @fifo_dir = PROJECT_DIR/'bin'/'run'
     @fifo_name = 'blender_comm'
     
+      fifo_path = @fifo_dir/@fifo_name
+      
+      File.mkfifo(fifo_path)
+      puts "fifo created @ #{fifo_path}"
+      
+      f_r = File.open(fifo_path, "r+")
     
-    File.mkfifo(@fifo_dir/@fifo_name)
-    puts "fifo created @ #{@fifo_dir}/#{@fifo_name}"
-    
-    
-    # f_w = File.open(@fifo_dir/@fifo_name, "w+")
-    # f_w.puts "hello world!\n"
-    # f_w.close
-    
-    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
-    # data = f_r.gets
-    # f_r.close
-    
-    
-    
+    @msg_queue = Queue.new
+    @msg_thread = Thread.new do
+      begin
+        loop do
+          data = f_r.gets # blocking IO
+          @msg_queue << data
+        end
+      ensure
+        p f_r
+        p fifo_path
+        
+        f_r.close
+        FileUtils.rm(fifo_path)
+        puts "fifo closed"
+      end
+    end
   end
   
   # run when exception is detected
@@ -326,9 +358,8 @@ class Core
   # (ex1 if triggered on exception flow, don't trigger again on exit)
   # (ex2 if you have a bad reload and then manually exit, only call ensure 1x)
   def ensure
-    full_fifo_path = @fifo_dir/@fifo_name
-    FileUtils.rm(full_fifo_path)
-    puts "fifo closed"
+     puts "core: ensure"
+    @msg_thread.kill.join
   end
   
   def parse_blender_data(data_list)
@@ -380,6 +411,7 @@ class Core
     #   RB_SPIKE_PROFILER.disable
     #   puts "\n"*7
     # end
+    
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -607,23 +639,20 @@ class Core
     
     
     
-    
-    data = read_fifo(@fifo_dir/@fifo_name)
-    unless data.nil?
-      p data
-      
+    max_reads = 5
+    [max_reads, @msg_queue.length].min.times do
+      data = @msg_queue.pop
       
       json_obj = JSON.parse(data)
       p json_obj
+      
+      # raise
       
       # TODO: need to send over type info instead of just the object name, but this works for now
       
       parse_blender_data(json_obj)
       
-      
     end
-    
-    
     
     
     
