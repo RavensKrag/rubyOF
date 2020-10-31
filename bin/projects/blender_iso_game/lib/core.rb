@@ -373,6 +373,7 @@ class Core
         
         @camera.setAspectRatio(w.to_f/h.to_f)
         
+        
       when 'viewport_camera'
         pos  = GLM::Vec3.new(*(obj['position'][1..3]))
         quat = GLM::Quat.new(*(obj['rotation'][1..4]))
@@ -382,6 +383,24 @@ class Core
         
         
         @camera_changed = true
+        
+        
+        p obj['view_perspective']
+        case obj['view_perspective']
+        when 'PERSP'
+          @camera.disableOrtho()
+          @cam_scale = nil
+          
+        when 'ORTHO'
+          @camera.enableOrtho()
+          @cam_scale = 30
+          # TODO: scale needs to change as camera is updated
+          # TODO: scale zooms as expected, but also effects pan rate (bad)
+          
+        when 'CAMERA'
+          
+          
+        end
       when 'MESH'
         pos  = GLM::Vec3.new(*(obj['position'][1..3]))
         @cube.position = pos
@@ -622,7 +641,8 @@ class Core
     
     @camera.setFov(39.6)
     @camera.setNearClip(0.1)
-    @camera.setFarClip(100)
+    @camera.setFarClip(1000)
+    
     # @camera.setAspectRatio()
     
     
@@ -656,12 +676,28 @@ class Core
     
     
     
-    
     @camera.begin
+    
+    # puts @camera.getProjectionMatrix
+    
+    # if @camera.ortho?
+    if @cam_scale # Camera#ortho? doesn't work right now, idk why
+      ofScale(@cam_scale, @cam_scale, @cam_scale)
+      puts "scaling"
+      
+      
+      # https://github.com/roymacdonald/ofxInfiniteCanvas/blob/master/src/ofxInfiniteCanvas.cpp
+      # translation = clicTranslation - clicPoint*(scale - clicScale);
+      
+      
+      # oh wait, need to use a different way to compute viewport camera position when in ortho mode. that should feed into this.
+    end
     
       @light.enable
         
         @cube.node.transformGL()
+      
+        
         @cube.mesh.draw()
         @cube.node.restoreTransformGL()
       

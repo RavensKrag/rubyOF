@@ -213,7 +213,8 @@ class RubyOF(bpy.types.RenderEngine):
                     'lens':[
                         "mm",
                         context.space_data.lens
-                    ]
+                    ],
+                    'view_perspective': rv3d.view_perspective
                 }
             ]
             
