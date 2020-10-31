@@ -111,45 +111,48 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         print("FIFO open")
-#        text = text.encode('utf-8')
-        pipe = open(self.fifo_path, 'w')
-        
-        
-        # Loop over all object instances in the scene.
-        if first_time or depsgraph.id_type_updated('OBJECT'):
-            print("obj update detected")
-            for instance in depsgraph.object_instances:
-                obj = instance.object
-#                print(instance)
-#                print(obj.type)
-                if obj.type == 'MESH':
-                    print(obj)
-                    
-                    rot = obj.rotation_quaternion
-                    pos = obj.location
-                    
-                    data = [
-                        {
-                            'name': obj.name_full,
-                            'rotation':[
-                                "Quat",
-                                rot.w,
-                                rot.x,
-                                rot.y,
-                                rot.z
-                            ],
-                            'position':[
-                                "Vec3",
-                                pos.x,
-                                pos.y,
-                                pos.z
-                            ]
-                        }
-                    ]
-                    pipe.write(json.dumps(data) + "\n")
-                    pipe.close()
-        
-        print("---")
+        try:
+            # text = text.encode('utf-8')
+            pipe = open(self.fifo_path, 'w')
+            
+            
+            # Loop over all object instances in the scene.
+            if first_time or depsgraph.id_type_updated('OBJECT'):
+                print("obj update detected")
+                for instance in depsgraph.object_instances:
+                    obj = instance.object
+                    # print(instance)
+                    # print(obj.type)
+                    if obj.type == 'MESH':
+                        print(obj)
+                        
+                        rot = obj.rotation_quaternion
+                        pos = obj.location
+                        
+                        data = [
+                            {
+                                'name': obj.name_full,
+                                'rotation':[
+                                    "Quat",
+                                    rot.w,
+                                    rot.x,
+                                    rot.y,
+                                    rot.z
+                                ],
+                                'position':[
+                                    "Vec3",
+                                    pos.x,
+                                    pos.y,
+                                    pos.z
+                                ]
+                            }
+                        ]
+                        pipe.write(json.dumps(data) + "\n")
+                        pipe.close()
+            
+            print("---")
+        except IOError as e:
+            print("broken pipe error (suppressed exception)")
         
         
 
@@ -183,35 +186,37 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         print("FIFO open")
-#        text = text.encode('utf-8')
-        pipe = open(self.fifo_path, 'w')
-        
-        rot = rv3d.view_rotation
-        data = [
-            {
-                'name': 'viewport_camera',
-                'rotation':[
-                    "Quat",
-                    rot.w,
-                    rot.x,
-                    rot.y,
-                    rot.z
-                ],
-                'position':[
-                    "Vec3",
-                    camera_origin.x,
-                    camera_origin.y,
-                    camera_origin.z
-                ],
-                'lens':[
-                    "mm",
-                    context.space_data.lens
-                ]
-            }
-        ]
-        pipe.write(json.dumps(data) + "\n")
-        pipe.close()
-        
+        try:
+            # text = text.encode('utf-8')
+            pipe = open(self.fifo_path, 'w')
+            
+            rot = rv3d.view_rotation
+            data = [
+                {
+                    'name': 'viewport_camera',
+                    'rotation':[
+                        "Quat",
+                        rot.w,
+                        rot.x,
+                        rot.y,
+                        rot.z
+                    ],
+                    'position':[
+                        "Vec3",
+                        camera_origin.x,
+                        camera_origin.y,
+                        camera_origin.z
+                    ],
+                    'lens':[
+                        "mm",
+                        context.space_data.lens
+                    ]
+                }
+            ]
+            pipe.write(json.dumps(data) + "\n")
+            pipe.close()
+        except IOError as e:
+            print("broken pipe error (suppressed exception)")
         
         
         #
@@ -229,7 +234,7 @@ class RubyOF(bpy.types.RenderEngine):
         self.bind_display_space_shader(scene)
         
         
-        a = self.context.scene.my_custom_props.alpha
+        a = context.scene.my_custom_props.alpha
         bgl.glClearColor(0*a,0*a,0*a,a)
         bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
         
