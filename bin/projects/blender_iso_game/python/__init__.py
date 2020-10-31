@@ -213,6 +213,16 @@ class RubyOF(bpy.types.RenderEngine):
                     ]
                 }
             ]
+            
+            if context.scene.my_custom_props.b_windowLink:
+                data += [
+                    {
+                        'name': 'viewport_region',
+                        'width':  region.width,
+                        'height': region.height
+                    }
+                ]
+            
             pipe.write(json.dumps(data) + "\n")
             pipe.close()
         except IOError as e:

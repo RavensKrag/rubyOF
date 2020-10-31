@@ -334,12 +334,20 @@ class Core
   def parse_blender_data(data_list)
     data_list.each do |obj|
       case obj['name']
+      when 'viewport_region'
+        w = obj['width']
+        h = obj['height']
+        @w.set_window_shape(w,h)
+        
+        @camera.setAspectRatio(w.to_f/h.to_f)
+        
       when 'viewport_camera'
         pos  = GLM::Vec3.new(*(obj['position'][1..3]))
         quat = GLM::Quat.new(*(obj['rotation'][1..4]))
         
         @camera.position = pos
         @camera.orientation = quat
+        
         
         @camera_changed = true
       when 'Cube'
