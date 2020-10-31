@@ -360,6 +360,7 @@ class Core
   def ensure
      puts "core: ensure"
     @msg_thread.kill.join
+    sleep(0.1) # just a little bit extra time to make sure the FIFO is deleted
   end
   
   def parse_blender_data(data_list)
