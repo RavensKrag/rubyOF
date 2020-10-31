@@ -42,14 +42,15 @@ class RubyOF(bpy.types.RenderEngine):
         self.draw_data = None
         self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
         
-        self.fifo = open(self.fifo_path, 'w')
-        print("FIFO open")
+        # self.fifo = open(self.fifo_path, 'w')
+        # print("FIFO open")
 
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.
     def __del__(self):
-        self.fifo.close()
-        print("FIFO closed")
+        pass
+        # self.fifo.close()
+        # print("FIFO closed")
 
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
@@ -171,8 +172,9 @@ class RubyOF(bpy.types.RenderEngine):
         rv3d = context.region_data # RegionView3D(bpy_struct)
         coord = (region.width/2.0, region.height/2.0)
         
-        camera_direction = bpy_extras.view3d_utils.region_2d_to_vector_3d(region, rv3d, coord)
-        camera_origin    = bpy_extras.view3d_utils.region_2d_to_origin_3d(region, rv3d, coord)
+        v3du = bpy_extras.view3d_utils
+        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
+        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
         
         space = context.space_data # SpaceView3D(Space)
         
