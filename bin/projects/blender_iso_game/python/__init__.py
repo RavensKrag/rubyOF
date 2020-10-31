@@ -133,6 +133,7 @@ class RubyOF(bpy.types.RenderEngine):
                         data = [
                             {
                                 'name': obj.name_full,
+                                'type': obj.type,
                                 'rotation':[
                                     "Quat",
                                     rot.w,
@@ -195,7 +196,7 @@ class RubyOF(bpy.types.RenderEngine):
             rot = rv3d.view_rotation
             data = [
                 {
-                    'name': 'viewport_camera',
+                    'type': 'viewport_camera',
                     'rotation':[
                         "Quat",
                         rot.w,
@@ -219,7 +220,7 @@ class RubyOF(bpy.types.RenderEngine):
             if context.scene.my_custom_props.b_windowLink:
                 data += [
                     {
-                        'name': 'viewport_region',
+                        'type': 'viewport_region',
                         'width':  region.width,
                         'height': region.height
                     }

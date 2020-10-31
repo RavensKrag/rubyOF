@@ -364,7 +364,7 @@ class Core
   
   def parse_blender_data(data_list)
     data_list.each do |obj|
-      case obj['name']
+      case obj['type']
       when 'viewport_region'
         w = obj['width']
         h = obj['height']
@@ -381,7 +381,7 @@ class Core
         
         
         @camera_changed = true
-      when 'Cube'
+      when 'MESH'
         pos  = GLM::Vec3.new(*(obj['position'][1..3]))
         @cube.position = pos
       end
@@ -644,9 +644,8 @@ class Core
       data = @msg_queue.pop
       
       json_obj = JSON.parse(data)
-      p json_obj
+      # p json_obj
       
-      # raise
       
       # TODO: need to send over type info instead of just the object name, but this works for now
       
