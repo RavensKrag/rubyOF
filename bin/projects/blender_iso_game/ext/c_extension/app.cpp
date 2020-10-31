@@ -47,7 +47,7 @@ void rbApp::setup(){
 	
 	
 	
-	gui.setup("", ofxPanelDefaultFilename, 1500, 0);
+	gui.setup("", ofxPanelDefaultFilename, 25, 755);
 	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
 	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
 	
