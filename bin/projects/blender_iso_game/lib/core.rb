@@ -78,22 +78,22 @@ class BlenderCube
     # (need to figure out axes first)
     
     # right
-    # @mesh.addIndex(1-1+4*0)
-    # @mesh.addIndex(2-1+4*0)
-    # @mesh.addIndex(2-1+4*1)
-    
-    # @mesh.addIndex(1-1+4*0)
-    # @mesh.addIndex(1-1+4*1)
-    # @mesh.addIndex(2-1+4*1)
-    
-    # left
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(3-1+4*1)
-    
+    @mesh.addIndex(1-1+4*0)
     @mesh.addIndex(2-1+4*0)
     @mesh.addIndex(2-1+4*1)
+    
+    @mesh.addIndex(1-1+4*0)
+    @mesh.addIndex(1-1+4*1)
+    @mesh.addIndex(2-1+4*1)
+    
+    # left
+    @mesh.addIndex(3-1+4*0)
     @mesh.addIndex(3-1+4*1)
+    @mesh.addIndex(4-1+4*1)
+    
+    @mesh.addIndex(3-1+4*0)
+    @mesh.addIndex(4-1+4*0)
+    @mesh.addIndex(4-1+4*1)
     
     # top
     @mesh.addIndex(1-1+4*0)
@@ -120,7 +120,7 @@ class BlenderCube
     
     @mesh.addIndex(4-1+4*1)
     @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(2-1+4*0)
+    @mesh.addIndex(4-1+4*0)
     
     # back
     @mesh.addIndex(3-1+4*1)
