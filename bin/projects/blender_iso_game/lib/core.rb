@@ -379,11 +379,27 @@ class Core
     data_list.each do |obj|
       case obj['type']
       when 'viewport_region'
+        
+        # 
+        # sync window size
+        # 
+        
         w = obj['width']
         h = obj['height']
         @w.set_window_shape(w,h)
         
         # @camera.aspectRatio = w.to_f/h.to_f
+        
+        
+        # 
+        # sync window position
+        # (assuming running on Linux)
+        # - trying to match pid_query with pid_hit
+        # 
+        
+        sync_blender_window_position(pid: obj['pid'])
+        
+        
         
         
       when 'viewport_camera'
@@ -432,6 +448,75 @@ class Core
         @cube.position = pos
       end
     end
+  end
+  
+  def sync_blender_window_position(pid: nil)
+    # tested on Ubuntu 20.04.1 LTS
+    # will almost certainly work on all Linux distros with X11
+    # maybe will work on OSX as well...? not sure
+    # (xwininfo and xprop should be standard on all systems with X11)
+    
+    # if @pid_query != pid
+      # @pid_query = pid
+      blender_pos = pid_to_window_pos("Blender",   pid)
+      rubyof_pos  = pid_to_window_pos("grapevine", Process.pid)
+      # puts "my pid: #{Process.pid}"
+    # end
+  end
+  
+  def pid_to_window_pos(query_title_string, query_pid)
+    puts "trying to sync window position ---"
+    
+    
+    # 
+    # find the wm id given PID
+    # 
+    
+    wm_ids = 
+      `xwininfo -root -tree | grep #{query_title_string}`.each_line
+      .collect{ |line|
+        # 0x6e00002 "Blender* [/home/...]": ("Blender" "Blender")  2544x1303+0+0  +206+95
+        line.split.first
+      }
+    
+    pids = 
+      wm_ids.collect{ |wm_id|
+        # _NET_WM_PID(CARDINAL) = 1353883
+        `xprop -id #{wm_id} | grep PID`.split.last
+      }
+      .collect{ |id_string|  id_string.to_i }
+    
+    hit_wm_id = pids.zip(wm_ids).assoc(query_pid).last
+    puts "wm_id: #{hit_wm_id}"
+    
+    
+    # 
+    # use wm id to find window geometry (size and position)
+    # 
+    
+    window_info = `xwininfo -id #{hit_wm_id}`
+    window_info = 
+      window_info.each_line.to_a
+      .map{ |line|   line.strip  }
+      .map{ |l| l == "" ? nil : l  } # replace empty lines with nil
+      .compact                       # remove all nil entries from array
+    # p window_info
+    
+    info_hash = 
+      window_info[1..-2] # skip first line (title) and last (full geometry)
+      .map{  |line|
+        line.split(':')    # colon separator
+        .map{|x| x.strip } # remove leading / trailing whitespace
+      }.to_h
+    # p info_hash
+    
+    hit_px = info_hash['Absolute upper-left X'].to_i
+    hit_py = info_hash['Absolute upper-left Y'].to_i
+    
+    
+    puts "-------"
+    
+    return CP::Vec2.new(hit_px, hit_py)
   end
   
   
