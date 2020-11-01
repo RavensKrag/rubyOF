@@ -260,7 +260,8 @@ class RubyOF(bpy.types.RenderEngine):
                         {
                             'type': 'viewport_region',
                             'width':  region.width,
-                            'height': region.height
+                            'height': region.height,
+                            'pid': os.getpid()
                         }
                     ]
                 
