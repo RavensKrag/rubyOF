@@ -458,8 +458,8 @@ class Core
     
     # if @pid_query != pid
       # @pid_query = pid
-      blender_pos = pid_to_window_pos("Blender",   pid)
-      rubyof_pos  = pid_to_window_pos("grapevine", Process.pid)
+      blender_pos = find_window_position("Blender",   pid)
+      rubyof_pos  = find_window_position("grapevine", Process.pid)
       
       
       # 
@@ -491,7 +491,7 @@ class Core
     # end
   end
   
-  def pid_to_window_pos(query_title_string, query_pid)
+  def find_window_position(query_title_string, query_pid)
     puts "trying to sync window position ---"
     
     
