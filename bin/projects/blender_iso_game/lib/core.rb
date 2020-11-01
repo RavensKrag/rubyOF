@@ -230,6 +230,7 @@ class Core
     
     @camera_settings_file = PROJECT_DIR/'bin'/'data'/'viewport_camera.yaml'
     if @camera_settings_file.exist?
+      puts "puts loading camera data"
       camera_data = YAML.load_file @camera_settings_file
       parse_blender_data(camera_data)
       @camera_changed = false
@@ -314,23 +315,34 @@ class Core
     end
     
     if @camera_changed
-      # camera_pos = @camera.position
-      # camera_rot = @camera.orientation
+      camera_pos = @camera.position
+      camera_rot = @camera.orientation
       
-      # camera_data = [
-      #     {
-      #     'name' => 'viewport_camera',
-      #     'position' => [
-      #       'Vec3',
-      #       camera_pos.x, camera_pos.y, camera_pos.z
-      #     ],
-      #     'rotation' => [
-      #       'Quat',
-      #       camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
-      #     ]
-      #   }
-      # ]
-      # dump_yaml camera_data => @camera_settings_file
+      camera_data = [
+        {
+          'type' => 'viewport_camera',
+          'position' => [
+            'Vec3',
+            camera_pos.x, camera_pos.y, camera_pos.z
+          ],
+          'rotation' => [
+            'Quat',
+            camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
+          ],
+          'fov' => [
+            'deg',
+            @camera.fov
+          ],
+          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP')
+        }
+      ]
+      
+      # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
+      # ('CAMERA' not yet supported)
+      # ('ORTHO' support currently rather poor)
+      
+      
+      dump_yaml camera_data => @camera_settings_file
     end
     
   end
@@ -371,7 +383,7 @@ class Core
         h = obj['height']
         @w.set_window_shape(w,h)
         
-        @camera.setAspectRatio(w.to_f/h.to_f)
+        # @camera.aspectRatio = w.to_f/h.to_f
         
         
       when 'viewport_camera'
@@ -386,31 +398,23 @@ class Core
         
         @camera_changed = true
         
-        mat = obj['window_matrix'].last(16)
-        p mat
         
-        fx = ->(arr, x,y){
-          return arr[x+4*y]
-        }
         
-        @camera_transform = 
-          GLM::Mat4.new(
-            GLM::Vec4.new(0,1,2,3),
-            GLM::Vec4.new(4,5,6,7),
-            GLM::Vec4.new(8,9,10,11),
-            GLM::Vec4.new(12,13,14,15),
-          )
         # p obj['aspect_ratio'][1]
-        @camera.setAspectRatio(obj['aspect_ratio'][1])
+        # @camera.setAspectRatio(obj['aspect_ratio'][1])
         # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
+        
+        # NOTE: Aspect ratio appears to do nothing, which is bizzare
+        
         
         # p obj['view_perspective']
         case obj['view_perspective']
         when 'PERSP'
+          # puts "perspective cam ON"
           @camera.disableOrtho()
           @cam_scale = nil
           
-          @camera.setFov(obj['fov'][1])
+          @camera.fov = obj['fov'][1]
           
         when 'ORTHO'
           @camera.enableOrtho()
@@ -418,7 +422,6 @@ class Core
           # TODO: scale needs to change as camera is updated
           # TODO: scale zooms as expected, but also effects pan rate (bad)
           
-          obj['perspective_matrix'].last(16)
           
         when 'CAMERA'
           
@@ -570,6 +573,7 @@ class Core
     
     scheduler.section name: "cube ", budget: msec(1.0)
       # puts "set cube mesh"
+      # raise
     
     
     scheduler.section name: "end", budget: msec(0.1)
@@ -611,7 +615,6 @@ class Core
     draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
     dt = draw_end - draw_start
     puts "draw duration: #{dt}" if Scheduler::DEBUG
-    
     
     
     draw_duration_history_len = 100
@@ -662,9 +665,9 @@ class Core
     # @camera.setPosition(GLM::Vec3.new(50, 50, 0))
     # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
     
-    # @camera.setFov(39.6)
-    @camera.setNearClip(0.1)
-    @camera.setFarClip(1000)
+    # @camera.fov = 39.6
+    @camera.nearClip = 0.1
+    @camera.farClip = 1000
     
     # @camera.setAspectRatio()
     
@@ -688,7 +691,7 @@ class Core
       data = @msg_queue.pop
       
       json_obj = JSON.parse(data)
-      # p json_obj
+      p json_obj
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
@@ -700,13 +703,6 @@ class Core
     
     
     @camera.begin
-    # ofPushMatrix();
-    # unless @camera_transform.nil?
-    #   # puts "applying camera transform"
-    #   # ofLoadMatrix(@camera_transform)
-    #   ofMultMatrix(@camera_transform)
-    # end
-    
     # puts @camera.getProjectionMatrix
     
     # if @camera.ortho?
@@ -734,7 +730,6 @@ class Core
       @light.disable
     
     @camera.end
-    # ofPopMatrix();
     
     
     

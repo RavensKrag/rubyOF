@@ -405,15 +405,15 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // far
       // fov
       // aspect
-      .define_method("getNearClip",      &ofCamera::getNearClip)
-      .define_method("getFarClip",       &ofCamera::getFarClip)
-      .define_method("getFov",           &ofCamera::getFov)
-      .define_method("getAspectRatio",   &ofCamera::getAspectRatio)
+      .define_method("nearClip",      &ofCamera::getNearClip)
+      .define_method("farClip",       &ofCamera::getFarClip)
+      .define_method("fov",           &ofCamera::getFov)
+      .define_method("aspectRatio",   &ofCamera::getAspectRatio)
       
-      .define_method("setNearClip",      &ofCamera::setNearClip)
-      .define_method("setFarClip",       &ofCamera::setFarClip)
-      .define_method("setFov",           &ofCamera::setFov)
-      .define_method("setAspectRatio",   &ofCamera::setAspectRatio)
+      .define_method("nearClip=",      &ofCamera::setNearClip)
+      .define_method("farClip=",       &ofCamera::setFarClip)
+      .define_method("fov=",           &ofCamera::setFov)
+      .define_method("aspectRatio=",   &ofCamera::setAspectRatio)
       
       .define_method("forceAspectRatio?",   &ofCamera::getForceAspectRatio)
       .define_method("forceAspectRatio=",   &ofCamera::setForceAspectRatio)
