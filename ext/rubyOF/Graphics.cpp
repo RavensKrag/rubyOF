@@ -250,10 +250,10 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			&ofLoadIdentityMatrix // ()
 		)
 		
-		// .define_method(
-		// 	"ofLoadMatrix",
-		// 	wrap_matrix_op(&ofLoadMatrix)
-		// )
+		.define_method(
+			"ofLoadMatrix",
+			wrap_matrix_op(&ofLoadMatrix)
+		)
 		.define_method(
 			"ofMultMatrix",
 			wrap_matrix_op(&ofMultMatrix)

@@ -415,6 +415,9 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setFov",           &ofCamera::setFov)
       .define_method("setAspectRatio",   &ofCamera::setAspectRatio)
       
+      .define_method("forceAspectRatio?",   &ofCamera::getForceAspectRatio)
+      .define_method("forceAspectRatio=",   &ofCamera::setForceAspectRatio)
+      
       .define_method("begin",
          static_cast< void (ofCamera::*)
          (void)

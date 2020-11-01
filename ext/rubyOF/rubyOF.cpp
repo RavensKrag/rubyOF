@@ -75,6 +75,15 @@ void Init_rubyOF()
 	Data_Type<glm::mat4> rb_cGLM_mat4 = 
 		define_class_under<glm::mat4>(rb_mGLM, "Mat4");
 	
+	rb_cGLM_mat4
+		.define_constructor(Constructor<glm::mat4, 
+										const glm::vec4&,
+										const glm::vec4&,
+										const glm::vec4&,
+										const glm::vec4&>())
+		
+	;
+	
 	
 	// 
 	// quaternion

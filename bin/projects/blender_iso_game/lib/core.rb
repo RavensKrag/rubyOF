@@ -314,23 +314,23 @@ class Core
     end
     
     if @camera_changed
-      camera_pos = @camera.position
-      camera_rot = @camera.orientation
+      # camera_pos = @camera.position
+      # camera_rot = @camera.orientation
       
-      camera_data = [
-          {
-          'name' => 'viewport_camera',
-          'position' => [
-            'Vec3',
-            camera_pos.x, camera_pos.y, camera_pos.z
-          ],
-          'rotation' => [
-            'Quat',
-            camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
-          ]
-        }
-      ]
-      dump_yaml camera_data => @camera_settings_file
+      # camera_data = [
+      #     {
+      #     'name' => 'viewport_camera',
+      #     'position' => [
+      #       'Vec3',
+      #       camera_pos.x, camera_pos.y, camera_pos.z
+      #     ],
+      #     'rotation' => [
+      #       'Quat',
+      #       camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
+      #     ]
+      #   }
+      # ]
+      # dump_yaml camera_data => @camera_settings_file
     end
     
   end
@@ -375,6 +375,8 @@ class Core
         
         
       when 'viewport_camera'
+        puts "update viewport"
+        
         pos  = GLM::Vec3.new(*(obj['position'][1..3]))
         quat = GLM::Quat.new(*(obj['rotation'][1..4]))
         
@@ -384,18 +386,39 @@ class Core
         
         @camera_changed = true
         
+        mat = obj['window_matrix'].last(16)
+        p mat
         
-        p obj['view_perspective']
+        fx = ->(arr, x,y){
+          return arr[x+4*y]
+        }
+        
+        @camera_transform = 
+          GLM::Mat4.new(
+            GLM::Vec4.new(0,1,2,3),
+            GLM::Vec4.new(4,5,6,7),
+            GLM::Vec4.new(8,9,10,11),
+            GLM::Vec4.new(12,13,14,15),
+          )
+        # p obj['aspect_ratio'][1]
+        @camera.setAspectRatio(obj['aspect_ratio'][1])
+        # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
+        
+        # p obj['view_perspective']
         case obj['view_perspective']
         when 'PERSP'
           @camera.disableOrtho()
           @cam_scale = nil
+          
+          @camera.setFov(obj['fov'][1])
           
         when 'ORTHO'
           @camera.enableOrtho()
           @cam_scale = 30
           # TODO: scale needs to change as camera is updated
           # TODO: scale zooms as expected, but also effects pan rate (bad)
+          
+          obj['perspective_matrix'].last(16)
           
         when 'CAMERA'
           
@@ -639,7 +662,7 @@ class Core
     # @camera.setPosition(GLM::Vec3.new(50, 50, 0))
     # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
     
-    @camera.setFov(39.6)
+    # @camera.setFov(39.6)
     @camera.setNearClip(0.1)
     @camera.setFarClip(1000)
     
@@ -677,25 +700,32 @@ class Core
     
     
     @camera.begin
+    # ofPushMatrix();
+    # unless @camera_transform.nil?
+    #   # puts "applying camera transform"
+    #   # ofLoadMatrix(@camera_transform)
+    #   ofMultMatrix(@camera_transform)
+    # end
     
     # puts @camera.getProjectionMatrix
     
     # if @camera.ortho?
-    if @cam_scale # Camera#ortho? doesn't work right now, idk why
-      ofScale(@cam_scale, @cam_scale, @cam_scale)
-      puts "scaling"
+    # if @cam_scale # Camera#ortho? doesn't work right now, idk why
+    #   ofScale(@cam_scale, @cam_scale, @cam_scale)
+    #   puts "scaling"
       
       
-      # https://github.com/roymacdonald/ofxInfiniteCanvas/blob/master/src/ofxInfiniteCanvas.cpp
-      # translation = clicTranslation - clicPoint*(scale - clicScale);
+    #   # https://github.com/roymacdonald/ofxInfiniteCanvas/blob/master/src/ofxInfiniteCanvas.cpp
+    #   # translation = clicTranslation - clicPoint*(scale - clicScale);
       
       
-      # oh wait, need to use a different way to compute viewport camera position when in ortho mode. that should feed into this.
-    end
+    #   # oh wait, need to use a different way to compute viewport camera position when in ortho mode. that should feed into this.
+    # end
     
       @light.enable
         
         @cube.node.transformGL()
+      # ofScale(10000,10000,10000)
       
         
         @cube.mesh.draw()
@@ -704,6 +734,7 @@ class Core
       @light.disable
     
     @camera.end
+    # ofPopMatrix();
     
     
     

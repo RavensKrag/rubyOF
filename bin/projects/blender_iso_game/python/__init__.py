@@ -14,6 +14,8 @@ import os
 import fcntl
 import posix
 
+import os.path
+
 import bpy
 import bgl
 
@@ -112,49 +114,50 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         print("FIFO open")
-        try:
-            # text = text.encode('utf-8')
-            pipe = open(self.fifo_path, 'w')
-            
-            
-            # Loop over all object instances in the scene.
-            if first_time or depsgraph.id_type_updated('OBJECT'):
-                print("obj update detected")
-                for instance in depsgraph.object_instances:
-                    obj = instance.object
-                    # print(instance)
-                    # print(obj.type)
-                    if obj.type == 'MESH':
-                        print(obj)
-                        
-                        rot = obj.rotation_quaternion
-                        pos = obj.location
-                        
-                        data = [
-                            {
-                                'name': obj.name_full,
-                                'type': obj.type,
-                                'rotation':[
-                                    "Quat",
-                                    rot.w,
-                                    rot.x,
-                                    rot.y,
-                                    rot.z
-                                ],
-                                'position':[
-                                    "Vec3",
-                                    pos.x,
-                                    pos.y,
-                                    pos.z
-                                ]
-                            }
-                        ]
-                        pipe.write(json.dumps(data) + "\n")
-                        pipe.close()
-            
-            print("---")
-        except IOError as e:
-            print("broken pipe error (suppressed exception)")
+        if os.path.exists(self.fifo_path):
+            try:
+                # text = text.encode('utf-8')
+                pipe = open(self.fifo_path, 'w')
+                
+                
+                # Loop over all object instances in the scene.
+                if first_time or depsgraph.id_type_updated('OBJECT'):
+                    print("obj update detected")
+                    for instance in depsgraph.object_instances:
+                        obj = instance.object
+                        # print(instance)
+                        # print(obj.type)
+                        if obj.type == 'MESH':
+                            print(obj)
+                            
+                            rot = obj.rotation_quaternion
+                            pos = obj.location
+                            
+                            data = [
+                                {
+                                    'name': obj.name_full,
+                                    'type': obj.type,
+                                    'rotation':[
+                                        "Quat",
+                                        rot.w,
+                                        rot.x,
+                                        rot.y,
+                                        rot.z
+                                    ],
+                                    'position':[
+                                        "Vec3",
+                                        pos.x,
+                                        pos.y,
+                                        pos.z
+                                    ]
+                                }
+                            ]
+                            pipe.write(json.dumps(data) + "\n")
+                            pipe.close()
+                
+                print("---")
+            except IOError as e:
+                print("broken pipe error (suppressed exception)")
         
         
 
@@ -189,48 +192,82 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         print("FIFO open")
-        try:
-            # text = text.encode('utf-8')
-            pipe = open(self.fifo_path, 'w')
-            
-            rot = rv3d.view_rotation
-            data = [
-                {
-                    'type': 'viewport_camera',
-                    'rotation':[
-                        "Quat",
-                        rot.w,
-                        rot.x,
-                        rot.y,
-                        rot.z
-                    ],
-                    'position':[
-                        "Vec3",
-                        camera_origin.x,
-                        camera_origin.y,
-                        camera_origin.z
-                    ],
-                    'lens':[
-                        "mm",
-                        context.space_data.lens
-                    ],
-                    'view_perspective': rv3d.view_perspective
-                }
-            ]
-            
-            if context.scene.my_custom_props.b_windowLink:
-                data += [
+        if os.path.exists(self.fifo_path):
+            try:
+                # text = text.encode('utf-8')
+                pipe = open(self.fifo_path, 'w')
+                
+                mat_p = rv3d.perspective_matrix
+                mat_w = rv3d.window_matrix
+                mat_v = rv3d.view_matrix
+                
+                rot = rv3d.view_rotation
+                data = [
                     {
-                        'type': 'viewport_region',
-                        'width':  region.width,
-                        'height': region.height
+                        'type': 'viewport_camera',
+                        'rotation':[
+                            "Quat",
+                            rot.w,
+                            rot.x,
+                            rot.y,
+                            rot.z
+                        ],
+                        'position':[
+                            "Vec3",
+                            camera_origin.x,
+                            camera_origin.y,
+                            camera_origin.z
+                        ],
+                        'lens':[
+                            "mm",
+                            context.space_data.lens
+                        ],
+                        'fov':[
+                            "deg",
+                            context.scene.my_custom_props.fov
+                        ],
+                        'aspect_ratio':[
+                            "???",
+                            context.scene.my_custom_props.aspect_ratio
+                        ],
+                        'view_perspective': rv3d.view_perspective,
+                        'perspective_matrix':[
+                            'Mat4',
+                            mat_p[0][0], mat_p[0][1], mat_p[0][2], mat_p[0][3],
+                            mat_p[1][0], mat_p[1][1], mat_p[1][2], mat_p[1][3],
+                            mat_p[2][0], mat_p[2][1], mat_p[2][2], mat_p[2][3],
+                            mat_p[3][0], mat_p[3][1], mat_p[3][2], mat_p[3][3]
+                        ],
+                        'window_matrix':[
+                            'Mat4',
+                            mat_w[0][0], mat_w[0][1], mat_w[0][2], mat_w[0][3],
+                            mat_w[1][0], mat_w[1][1], mat_w[1][2], mat_w[1][3],
+                            mat_w[2][0], mat_w[2][1], mat_w[2][2], mat_w[2][3],
+                            mat_w[3][0], mat_w[3][1], mat_w[3][2], mat_w[3][3]
+                        ],
+                        'view_matrix':[
+                            'Mat4',
+                            mat_v[0][0], mat_v[0][1], mat_v[0][2], mat_v[0][3],
+                            mat_v[1][0], mat_v[1][1], mat_v[1][2], mat_v[1][3],
+                            mat_v[2][0], mat_v[2][1], mat_v[2][2], mat_v[2][3],
+                            mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
+                        ]
                     }
                 ]
-            
-            pipe.write(json.dumps(data) + "\n")
-            pipe.close()
-        except IOError as e:
-            print("broken pipe error (suppressed exception)")
+                
+                if context.scene.my_custom_props.b_windowLink:
+                    data += [
+                        {
+                            'type': 'viewport_region',
+                            'width':  region.width,
+                            'height': region.height
+                        }
+                    ]
+                
+                pipe.write(json.dumps(data) + "\n")
+                pipe.close()
+            except IOError as e:
+                print("broken pipe error (suppressed exception)")
         
         
         #
@@ -297,6 +334,22 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         type=bpy.types.Camera,
         name="camera",
         description="Camera to be used by the RubyOF game engine")
+    
+    fov: FloatProperty(
+        name = "FOV",
+        description = "Viewport field of view",
+        default = 39.6,
+        min = 0.0001,
+        max = 100.0000
+        )
+    
+    aspect_ratio: FloatProperty(
+        name = "Aspect ratio",
+        description = "Viewport aspect ratio",
+        default = 16.0/9.0,
+        min = 0.0001,
+        max = 100.0000
+        )
 
 
 #
@@ -329,6 +382,8 @@ class RubyOF_PropertiesPanel(bpy.types.Panel):
         self.layout.prop(context.scene.my_custom_props, "alpha")
         self.layout.prop(context.scene.my_custom_props, "b_windowLink")
         self.layout.prop(context.scene.my_custom_props, "camera")
+        self.layout.prop(context.scene.my_custom_props, "fov")
+        self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
         
     
 
