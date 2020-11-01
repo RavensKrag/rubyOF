@@ -15,8 +15,8 @@ end
 # TODO: move this to another file, so if you're not using Chipmunk, that's fine.
 module CP
 	class Vec2
-		def to_ofPoint
-			return GLM::Vec3.new(self.x, self.y, 0)
+		def to_glm
+			return GLM::Vec2.new(self.x, self.y)
 		end
 	end
 	

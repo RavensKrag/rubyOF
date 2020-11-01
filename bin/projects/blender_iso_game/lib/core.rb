@@ -460,6 +460,33 @@ class Core
       # @pid_query = pid
       blender_pos = pid_to_window_pos("Blender",   pid)
       rubyof_pos  = pid_to_window_pos("grapevine", Process.pid)
+      
+      
+      # 
+      # measure the delta
+      # 
+      
+      delta = blender_pos - rubyof_pos
+      puts "delta: #{delta}"
+      
+      # measurements of manually positioned windows:
+      # dx = 0 to 3  (unsure of exact value)
+      # dy = -101    (strange number, but there it is)
+      
+      
+      # 
+      # apply the delta
+      # 
+      
+      # just need to apply inverse of the measured delta to RubyOF windows
+      delta = CP::Vec2.new(0, -101)*-1
+      @w.position = (blender_pos + delta).to_glm
+      
+      # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
+      
+      
+      
+      
       # puts "my pid: #{Process.pid}"
     # end
   end
