@@ -238,7 +238,7 @@ class CustomCamera
     
     state 'ORTHO' do
       def begin
-        invertY = true;
+        invertY = false;
         
         puts "ortho cam"
         puts @scale
@@ -276,8 +276,8 @@ class CustomCamera
             + vp.width/2,
             - vp.height/2,
             + vp.height/2,
-            0.0000001,
-            1000000000000
+            @nearClip,
+            @farClip*@scale
           );
         ofLoadMatrix(projectionMat * m5);
         
@@ -301,48 +301,12 @@ class CustomCamera
         
         
         
-        
-        
-        
-        # TODO: Bind glm::mat4(float)  <-- polymorphic constructor
-        # TODO: figure out what to call for "loadMatrix()"
-        # TODO: Bind the constants for ofSetMatrixMode (function bound, but not sure if I can use it in a practical sense b/c what are the arguments?)
-        
-        
-        
-        # ofRotateXDeg(orientation.x);
-        # ofRotateYDeg(orientation.y);
-        # ofMultMatrix((GLM.toMat4(@orientation)))
-        # ^ need the inverse of this
-        
-        # ofScale(@scale,
-        #         @scale,
-        #         @scale);
-        # ofTranslate(t);
-        
-        # this works for xz view:
-        # ofTranslate(@position.x*-@scale,
-        #             @position.y,
-        #             @position.z*-@scale)
-        
-        # ofTranslate(-@position.x*10,
-        #             -@position.y*10,
-        #             -@position.z*10)
-        
-        # ofScale(@scale,
-        #         @scale * (invertY ? -1:1),
-        #         @scale * -1);
-        
-        
-        
-        
         # @scale of about 25 works great for testing purposes with no translation
         
       end
       
       
       def end
-        # ofPopMatrix();
         ofPopView();
       end
     end

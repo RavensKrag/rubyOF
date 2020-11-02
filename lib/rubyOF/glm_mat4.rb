@@ -18,7 +18,7 @@ class Mat4
 	
 	
 	def self.new(*args)
-		puts "args override"
+		# puts "args override"
 		case args.length
 		when 1
 			# one scalar
