@@ -5,7 +5,7 @@ using namespace Rice;
 
 
 void ofEnableBlendMode__wrapper(int code){
-	static const ofBlendMode BLEND_MODES[6] = {
+	static const ofBlendMode BLEND_MODES[] = {
 			OF_BLENDMODE_DISABLED,
 			OF_BLENDMODE_ALPHA,
 			OF_BLENDMODE_ADD,

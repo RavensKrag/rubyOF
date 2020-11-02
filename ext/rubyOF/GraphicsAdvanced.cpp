@@ -37,28 +37,22 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
 
 
 
-void ofMesh__setMode(ofMesh mesh, Rice::Symbol mode)
+void ofMesh__setMode(ofMesh mesh, int code)
 {
    
    // /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h
-   ofPrimitiveMode m;
-   if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLES")){
-      m = OF_PRIMITIVE_TRIANGLES;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_STRIP")){
-      m = OF_PRIMITIVE_TRIANGLE_STRIP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_FAN")){
-      m = OF_PRIMITIVE_TRIANGLE_FAN;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINES")){
-      m = OF_PRIMITIVE_LINES;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_STRIP")){
-      m = OF_PRIMITIVE_LINE_STRIP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_LOOP")){
-      m = OF_PRIMITIVE_LINE_LOOP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_POINTS")){
-      m = OF_PRIMITIVE_POINTS;
-   }
    
-   mesh.setMode(m);
+   static const ofPrimitiveMode MESH_MODES[] = {
+      OF_PRIMITIVE_TRIANGLES,
+      OF_PRIMITIVE_TRIANGLE_STRIP,
+      OF_PRIMITIVE_TRIANGLE_FAN,
+      OF_PRIMITIVE_LINES,
+      OF_PRIMITIVE_LINE_STRIP,
+      OF_PRIMITIVE_LINE_LOOP,
+      OF_PRIMITIVE_POINTS
+   };
+   
+   mesh.setMode(MESH_MODES[code]);
 }
 
 

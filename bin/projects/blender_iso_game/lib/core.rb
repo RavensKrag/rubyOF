@@ -60,7 +60,7 @@ class BlenderCube
     
     @mesh = RubyOF::Mesh.new
     # p mesh.methods
-    @mesh.setMode(:OF_PRIMITIVE_TRIANGLES)
+    @mesh.setMode(:triangles)
     # (ccw from bottom right)
     # (top layer)
     @mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
