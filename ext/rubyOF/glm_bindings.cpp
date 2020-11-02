@@ -3,39 +3,15 @@
 
 using namespace Rice;
 
-
-float glm_vec2_getComponent(glm::vec2& p, int i){
+template <typename T>
+float glm_getComponent(T& p, int i){
    return p[i];
 }
 
-void  glm_vec2_setComponent(glm::vec2& p, int i, float value){
+template <typename T>
+void  glm_setComponent(T& p, int i, float value){
    p[i] = value;
 }
-
-float glm_vec3_getComponent(glm::vec3& p, int i){
-   return p[i];
-}
-
-void  glm_vec3_setComponent(glm::vec3& p, int i, float value){
-   p[i] = value;
-}
-
-float glm_vec4_getComponent(glm::vec4& p, int i){
-   return p[i];
-}
-
-void  glm_vec4_setComponent(glm::vec4& p, int i, float value){
-   p[i] = value;
-}
-
-float glm_quat_getComponent(glm::quat& p, int i){
-   return p[i];
-}
-
-void  glm_quat_setComponent(glm::quat& p, int i, float value){
-   p[i] = value;
-}
-
 
 glm::mat4 glm_mat4_mult__mat4(const glm::mat4 &self, const glm::mat4 &m){
    return self*m;
@@ -62,8 +38,8 @@ Module Init_GLM(){
    
    rb_cGLM_vec2
       .define_constructor(Constructor<glm::vec2, float, float>())
-      .define_method("get_component",   &glm_vec2_getComponent)
-      .define_method("set_component",   &glm_vec2_setComponent)
+      .define_method("get_component",   &glm_getComponent<glm::vec2>)
+      .define_method("set_component",   &glm_setComponent<glm::vec2>)
    ;
    
    // 
@@ -77,8 +53,8 @@ Module Init_GLM(){
    
    rb_cGLM_vec3
       .define_constructor(Constructor<glm::vec3, float, float, float>())
-      .define_method("get_component",   &glm_vec3_getComponent)
-      .define_method("set_component",   &glm_vec3_setComponent)
+      .define_method("get_component",   &glm_getComponent<glm::vec3>)
+      .define_method("set_component",   &glm_setComponent<glm::vec3>)
    ;
    
    // 
@@ -90,8 +66,8 @@ Module Init_GLM(){
    
    rb_cGLM_vec4
       .define_constructor(Constructor<glm::vec4, float, float, float, float>())
-      .define_method("get_component",   &glm_vec4_getComponent)
-      .define_method("set_component",   &glm_vec4_getComponent)
+      .define_method("get_component",   &glm_getComponent<glm::vec4>)
+      .define_method("set_component",   &glm_setComponent<glm::vec4>)
    ;
    
    // 
@@ -136,8 +112,8 @@ Module Init_GLM(){
    
    rb_cGLM_quat
       .define_constructor(Constructor<glm::quat, float, float, float, float>())
-      .define_method("get_component",   &glm_quat_getComponent)
-      .define_method("set_component",   &glm_quat_getComponent)
+      .define_method("get_component",   &glm_getComponent<glm::quat>)
+      .define_method("set_component",   &glm_setComponent<glm::quat>)
    ;
    
    
