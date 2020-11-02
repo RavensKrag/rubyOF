@@ -48,6 +48,7 @@ base_path = lib_dir/'rubyOF'
 	'glm_vec3',
 	'glm_vec4',
 	'glm_quat',
+	'glm',
 	
 	'window',
 	'color',

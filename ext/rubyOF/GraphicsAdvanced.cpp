@@ -353,14 +353,23 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       
       
-      .define_method("position",   &ofNode::getPosition)
+      .define_method("position",
+         static_cast< glm::vec3 (ofNode::*)
+         (void) const
+         >(&ofNode::getPosition)
+      )
       .define_method("position=",
          static_cast< void (ofNode::*)
          (const glm::vec3 &p)
          >(&ofNode::setPosition)
       )
       
-      .define_method("scale",      &ofNode::getScale)
+      
+      .define_method("scale",
+         static_cast< glm::vec3 (ofNode::*)
+         (void) const
+         >(&ofNode::getScale)
+      )
       .define_method("scale=",
          static_cast< void (ofNode::*)
          (const glm::vec3 &p)
@@ -405,15 +414,15 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // far
       // fov
       // aspect
-      .define_method("nearClip",      &ofCamera::getNearClip)
-      .define_method("farClip",       &ofCamera::getFarClip)
+      .define_method("near_clip",      &ofCamera::getNearClip)
+      .define_method("far_clip",       &ofCamera::getFarClip)
       .define_method("fov",           &ofCamera::getFov)
-      .define_method("aspectRatio",   &ofCamera::getAspectRatio)
+      .define_method("aspect_ratio",   &ofCamera::getAspectRatio)
       
-      .define_method("nearClip=",      &ofCamera::setNearClip)
-      .define_method("farClip=",       &ofCamera::setFarClip)
+      .define_method("near_clip=",      &ofCamera::setNearClip)
+      .define_method("far_clip=",       &ofCamera::setFarClip)
       .define_method("fov=",           &ofCamera::setFov)
-      .define_method("aspectRatio=",   &ofCamera::setAspectRatio)
+      .define_method("aspect_ratio=",   &ofCamera::setAspectRatio)
       
       .define_method("forceAspectRatio?",   &ofCamera::getForceAspectRatio)
       .define_method("forceAspectRatio=",   &ofCamera::setForceAspectRatio)

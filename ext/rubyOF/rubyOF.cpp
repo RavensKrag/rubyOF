@@ -69,6 +69,20 @@ void Init_rubyOF()
 	;
 	
 	// 
+	// mat3
+	// 
+	
+	Data_Type<glm::mat3> rb_cGLM_mat3 = 
+		define_class_under<glm::mat3>(rb_mGLM, "Mat3");
+	
+	rb_cGLM_mat3
+		.define_constructor(Constructor<glm::mat3, 
+										const glm::vec3&,
+										const glm::vec3&,
+										const glm::vec3&>())
+	;
+	
+	// 
 	// mat4
 	// 
 	
@@ -96,6 +110,60 @@ void Init_rubyOF()
 		.define_constructor(Constructor<glm::quat, float, float, float, float>())
 		.define_method("get_component",   &glm_quat_getComponent)
 		.define_method("set_component",   &glm_quat_getComponent)
+	;
+	
+	
+	// 
+	// conversions etc
+	// 
+	
+	rb_mGLM
+		// https://stackoverflow.com/questions/38145042/quaternion-to-matrix-using-glm
+		.define_singleton_method("toMat4__quat",
+         static_cast< glm::mat4 (*)
+         (const glm::quat &p)
+         >(&glm::toMat4)
+      )
+      
+      // from OpenFrameworks documentation
+      .define_singleton_method("quat_cast__mat3",
+         static_cast< glm::quat (*)
+         (const glm::mat3 &p)
+         >(&glm::quat_cast)
+      )
+      .define_singleton_method("quat_cast__mat4",
+         static_cast< glm::quat (*)
+         (const glm::mat3 &p)
+         >(&glm::quat_cast)
+      )
+      
+      
+      
+      .define_singleton_method("inverse__mat3",
+         static_cast< glm::mat3 (*)
+         (const glm::mat3 &m)
+         >(&glm::inverse)
+      )
+      
+      .define_singleton_method("inverse__mat4",
+         static_cast< glm::mat4 (*)
+         (const glm::mat4 &m)
+         >(&glm::inverse)
+      )
+      
+      .define_singleton_method("inverse__quat",
+         static_cast< glm::quat (*)
+         (const glm::quat &p)
+         >(&glm::inverse)
+      )
+      
+      
+      
+      
+      
+      // detail::tmat4x4<valType> glm::inverse 	( 	detail::tmat4x4< valType > const &  	m	) 
+      
+      // detail::tquat<T> glm::inverse 	( 	detail::tquat< T > const &  	q
 	;
 	
 	

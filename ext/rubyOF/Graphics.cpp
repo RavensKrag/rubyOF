@@ -184,6 +184,12 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofViewport)
 		)
 		.define_method(
+			"ofGetCurrentViewport",
+			static_cast< ofRectangle (*)
+			(void)
+			>(&ofGetCurrentViewport)
+		)
+		.define_method(
 			"ofSetupScreenOrtho",
 			static_cast< void (*)
 			(float width, float height, float nearDist, float farDist)
@@ -196,6 +202,7 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 				Arg("farDist")  = 1
 			)
 		)
+		
 		
 		
 		

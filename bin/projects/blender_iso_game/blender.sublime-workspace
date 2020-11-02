@@ -612,13 +612,22 @@
 			}
 		},
 		{
-			"contents": "Searching 11946 files for \"GHOST_CreateWindow\"\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_C-api.h:\n  175   * \\return A handle to the new window ( == NULL if creation failed).\n  176   */\n  177: extern GHOST_WindowHandle GHOST_CreateWindow(GHOST_SystemHandle systemhandle,\n  178                                               const char *title,\n  179                                               GHOST_TInt32 left,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_C-api.cpp:\n  152  }\n  153  \n  154: GHOST_WindowHandle GHOST_CreateWindow(GHOST_SystemHandle systemhandle,\n  155                                        const char *title,\n  156                                        GHOST_TInt32 left,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/gears/GHOST_C-Test.c:\n  440    if (shSystem) {\n  441      /* Create the main window */\n  442:     sMainWindow = GHOST_CreateWindow(shSystem,\n  443                                       title1,\n  444                                       10,\n  ...\n  455  \n  456      /* Create a secondary window */\n  457:     sSecondaryWindow = GHOST_CreateWindow(shSystem,\n  458                                            title2,\n  459                                            340,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/multitest/MultiTest.c:\n  318    GHOST_GLSettings glSettings = {0};\n  319  \n  320:   win = GHOST_CreateWindow(sys,\n  321                             \"MultiTest:Main\",\n  322                             40,\n  ...\n  575  \n  576    GHOST_GetMainDisplayDimensions(sys, &screensize[0], &screensize[1]);\n  577:   win = GHOST_CreateWindow(sys,\n  578                             \"MultiTest:Logger\",\n  579                             40,\n  ...\n  776    GHOST_WindowHandle win;\n  777  \n  778:   win = GHOST_CreateWindow(sys,\n  779                             \"MultiTest:Extra\",\n  780                             500,\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/windowmanager/intern/wm_playanim.c:\n 1109    posy = (scr_h - posy - sizey);\n 1110  \n 1111:   g_WS.ghost_window = GHOST_CreateWindow(g_WS.ghost_system,\n 1112                                           title,\n 1113                                           posx,\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/windowmanager/intern/wm_window.c:\n  604    }\n  605    else {\n  606:     ghostwin = GHOST_CreateWindow(g_system,\n  607                                    title,\n  608                                    win->posx,\n  ...\n  625  \n  626      /* Set window as drawable upon creation. Note this has already been\n  627:      * it has already been activated by GHOST_CreateWindow. */\n  628      wm_window_set_drawable(wm, win, false);\n  629  \n\n<untitled 405>:\n   11      glSettings=..., exclusive=false, is_dialog=false, parentWindow=0x0)\n   12      at /home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.cpp:372\n   13: #3  0x0000000004238270 in GHOST_CreateWindow (systemhandle=0x7ffff1449880, title=0xd5d7522 \"Blender\", \n   14      left=40, top=1200, width=1720, height=920, state=GHOST_kWindowStateMaximized, \n   15      type=GHOST_kDrawingContextTypeOpenGL, glSettings=...)\n\n11 matches across 7 files\n\n\nSearching 11946 files for \"GHOST_ISystem\"\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/CMakeLists.txt:\n   38    intern/GHOST_DisplayManager.cpp\n   39    intern/GHOST_EventManager.cpp\n   40:   intern/GHOST_ISystem.cpp\n   41:   intern/GHOST_ISystemPaths.cpp\n   42    intern/GHOST_ModifierKeys.cpp\n   43    intern/GHOST_Path-api.cpp\n   ..\n   52    GHOST_IEvent.h\n   53    GHOST_IEventConsumer.h\n   54:   GHOST_ISystem.h\n   55:   GHOST_ISystemPaths.h\n   56    GHOST_ITimerTask.h\n   57    GHOST_IWindow.h\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IContext.h:\n   31   *\n   32   * You can create a offscreen context (windowless) with the system's\n   33:  * GHOST_ISystem::createOffscreenContext method.\n   34:  * \\see GHOST_ISystem#createOffscreenContext\n   35   */\n   36  class GHOST_IContext {\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IEventConsumer.h:\n   33   * they want to receive events. The system will call the processEvent() method\n   34   * for every installed event consumer to pass events.\n   35:  * \\see GHOST_ISystem#addEventConsumer\n   36   */\n   37  class GHOST_IEventConsumer {\n   ..\n   46    /**\n   47     * This method is called by the system when it has events to dispatch.\n   48:    * \\see GHOST_ISystem#dispatchEvents\n   49     * \\param   event   The event that can be handled or ignored.\n   50     * \\return  Indication as to whether the event was handled.\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ISystem.h:\n   20  /** \\file\n   21   * \\ingroup GHOST\n   22:  * %Main interface file for C++ Api with declaration of GHOST_ISystem interface\n   23   * class.\n   24   * Contains the doxygen documentation main page.\n   ..\n   96   * - GHOST_IEvent.h\n   97   * - GHOST_IEventConsumer.h\n   98:  * - GHOST_ISystem.h\n   99   * - GHOST_ITimerTask.h\n  100   * - GHOST_IWindow.h\n  ...\n  117   */\n  118  \n  119: /** \\interface GHOST_ISystem\n  120   * Interface for classes that provide access to the operating system.\n  121   * There should be only one system class in an application.\n  ...\n  130   *     work in progress).\n  131   */\n  132: class GHOST_ISystem {\n  133   public:\n  134    /**\n  ...\n  148     * \\return A pointer to the system.\n  149     */\n  150:   static GHOST_ISystem *getSystem();\n  151  \n  152   protected:\n  ...\n  155     * Protected default constructor to force use of static createSystem member.\n  156     */\n  157:   GHOST_ISystem()\n  158    {\n  159    }\n  ...\n  163     * Protected default constructor to force use of static dispose member.\n  164     */\n  165:   virtual ~GHOST_ISystem()\n  166    {\n  167    }\n  ...\n  488  \n  489    /** The one and only system */\n  490:   static GHOST_ISystem *m_system;\n  491  \n  492  #ifdef WITH_CXX_GUARDEDALLOC\n  493:   MEM_CXX_CLASS_ALLOC_FUNCS(\"GHOST:GHOST_ISystem\")\n  494  #endif\n  495  };\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ISystemPaths.h:\n   26  #include \"GHOST_Types.h\"\n   27  \n   28: class GHOST_ISystemPaths {\n   29   public:\n   30    /**\n   ..\n   44     * \\return A pointer to the system.\n   45     */\n   46:   static GHOST_ISystemPaths *get();\n   47  \n   48   protected:\n   ..\n   51     * Protected default constructor to force use of static createSystem member.\n   52     */\n   53:   GHOST_ISystemPaths()\n   54    {\n   55    }\n   ..\n   59     * Protected default constructor to force use of static dispose member.\n   60     */\n   61:   virtual ~GHOST_ISystemPaths()\n   62    {\n   63    }\n   ..\n   91   private:\n   92    /** The one and only system paths*/\n   93:   static GHOST_ISystemPaths *m_systemPaths;\n   94  \n   95  #ifdef WITH_CXX_GUARDEDALLOC\n   96:   MEM_CXX_CLASS_ALLOC_FUNCS(\"GHOST:GHOST_ISystemPaths\")\n   97  #endif\n   98  };\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ITimerTask.h:\n   36   * Note that GHOST processes timers in the UI thread. You should ask GHOST\n   37   * process messages in order for the timer-callbacks to be called.\n   38:  * \\see GHOST_ISystem#installTimer\n   39   * \\see GHOST_TimerProcPtr\n   40   */\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IWindow.h:\n   34   * Interface for GHOST windows.\n   35   *\n   36:  * You can create a window with the system's GHOST_ISystem::createWindow\n   37   * method.\n   38:  * \\see GHOST_ISystem#createWindow\n   39   *\n   40   * There are two coordinate systems:\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_C-api.cpp:\n   30  #include \"GHOST_IEvent.h\"\n   31  #include \"GHOST_IEventConsumer.h\"\n   32: #include \"GHOST_ISystem.h\"\n   33  #include \"intern/GHOST_Debug.h\"\n   34  #ifdef WITH_XR_OPENXR\n   ..\n   40  GHOST_SystemHandle GHOST_CreateSystem(void)\n   41  {\n   42:   GHOST_ISystem::createSystem();\n   43:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n   44  \n   45    return (GHOST_SystemHandle)system;\n   ..\n   48  void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled)\n   49  {\n   50:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   51  \n   52    system->initDebug(is_debug_enabled);\n   ..\n   55  GHOST_TSuccess GHOST_DisposeSystem(GHOST_SystemHandle systemhandle)\n   56  {\n   57:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   58  \n   59    return system->disposeSystem();\n   ..\n   68                            GHOST_DialogOptions dialog_options)\n   69  {\n   70:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   71    system->showMessageBox(title, message, help_label, continue_label, link, dialog_options);\n   72  }\n   ..\n   86  GHOST_TUns64 GHOST_GetMilliSeconds(GHOST_SystemHandle systemhandle)\n   87  {\n   88:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   89  \n   90    return system->getMilliSeconds();\n   ..\n   97                                           GHOST_TUserDataPtr userdata)\n   98  {\n   99:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  100  \n  101    return (GHOST_TimerTaskHandle)system->installTimer(delay, interval, timerproc, userdata);\n  ...\n  105                                   GHOST_TimerTaskHandle timertaskhandle)\n  106  {\n  107:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  108    GHOST_ITimerTask *timertask = (GHOST_ITimerTask *)timertaskhandle;\n  109  \n  ...\n  113  GHOST_TUns8 GHOST_GetNumDisplays(GHOST_SystemHandle systemhandle)\n  114  {\n  115:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  116  \n  117    return system->getNumDisplays();\n  ...\n  122                                      GHOST_TUns32 *height)\n  123  {\n  124:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  125  \n  126    system->getMainDisplayDimensions(*width, *height);\n  ...\n  131                                     GHOST_TUns32 *height)\n  132  {\n  133:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  134  \n  135    system->getAllDisplayDimensions(*width, *height);\n  ...\n  138  GHOST_ContextHandle GHOST_CreateOpenGLContext(GHOST_SystemHandle systemhandle)\n  139  {\n  140:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  141  \n  142    return (GHOST_ContextHandle)system->createOffscreenContext();\n  ...\n  146                                            GHOST_ContextHandle contexthandle)\n  147  {\n  148:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  149    GHOST_IContext *context = (GHOST_IContext *)contexthandle;\n  150  \n  ...\n  162                                        GHOST_GLSettings glSettings)\n  163  {\n  164:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  165  \n  166    return (GHOST_WindowHandle)system->createWindow(\n  ...\n  179                                              GHOST_GLSettings glSettings)\n  180  {\n  181:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  182  \n  183    return (GHOST_WindowHandle)system->createWindow(title,\n  ...\n  217                                     GHOST_WindowHandle windowhandle)\n  218  {\n  219:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  220    GHOST_IWindow *window = (GHOST_IWindow *)windowhandle;\n  221  \n  ...\n  225  int GHOST_ValidWindow(GHOST_SystemHandle systemhandle, GHOST_WindowHandle windowhandle)\n  226  {\n  227:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  228    GHOST_IWindow *window = (GHOST_IWindow *)windowhandle;\n  229  \n  ...\n  235                                           const int stereoVisual)\n  236  {\n  237:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  238    GHOST_IWindow *window = NULL;\n  239    bool bstereoVisual;\n  ...\n  251  GHOST_TSuccess GHOST_EndFullScreen(GHOST_SystemHandle systemhandle)\n  252  {\n  253:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  254  \n  255    return system->endFullScreen();\n  ...\n  258  int GHOST_GetFullScreen(GHOST_SystemHandle systemhandle)\n  259  {\n  260:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  261  \n  262    return (int)system->getFullScreen();\n  ...\n  265  int GHOST_ProcessEvents(GHOST_SystemHandle systemhandle, int waitForEvent)\n  266  {\n  267:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  268  \n  269    return (int)system->processEvents(waitForEvent ? true : false);\n  ...\n  272  void GHOST_DispatchEvents(GHOST_SystemHandle systemhandle)\n  273  {\n  274:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  275  \n  276    system->dispatchEvents();\n  ...\n  280                                        GHOST_EventConsumerHandle consumerhandle)\n  281  {\n  282:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  283  \n  284    return system->addEventConsumer((GHOST_CallbackEventConsumer *)consumerhandle);\n  ...\n  288                                           GHOST_EventConsumerHandle consumerhandle)\n  289  {\n  290:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  291  \n  292    return system->removeEventConsumer((GHOST_CallbackEventConsumer *)consumerhandle);\n  ...\n  362                                         GHOST_TInt32 *y)\n  363  {\n  364:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  365  \n  366    return system->getCursorPosition(*x, *y);\n  ...\n  371                                         GHOST_TInt32 y)\n  372  {\n  373:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  374  \n  375    return system->setCursorPosition(x, y);\n  ...\n  402                                           int *isDown)\n  403  {\n  404:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  405    GHOST_TSuccess result;\n  406    bool isdown = false;\n  ...\n  416                                      int *isDown)\n  417  {\n  418:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  419    GHOST_TSuccess result;\n  420    bool isdown = false;\n  ...\n  429  void GHOST_setNDOFDeadZone(float deadzone)\n  430  {\n  431:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  432    system->setNDOFDeadZone(deadzone);\n  433  }\n  ...\n  713  void GHOST_SetTabletAPI(GHOST_SystemHandle systemhandle, GHOST_TTabletAPI api)\n  714  {\n  715:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  716    system->setTabletAPI(api);\n  717  }\n  ...\n  839  GHOST_TUns8 *GHOST_getClipboard(int selection)\n  840  {\n  841:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  842    return system->getClipboard(selection);\n  843  }\n  ...\n  845  void GHOST_putClipboard(GHOST_TInt8 *buffer, int selection)\n  846  {\n  847:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  848    system->putClipboard(buffer, selection);\n  849  }\n  ...\n  851  int GHOST_toggleConsole(int action)\n  852  {\n  853:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  854    return system->toggleConsole(action);\n  855  }\n  ...\n  857  int GHOST_UseNativePixels(void)\n  858  {\n  859:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  860    return system->useNativePixel();\n  861  }\n  ...\n  863  void GHOST_UseWindowFocus(int use_focus)\n  864  {\n  865:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  866    return system->useWindowFocus(use_focus);\n  867  }\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_ISystem.cpp:\n   26   */\n   27  \n   28: #include \"GHOST_ISystem.h\"\n   29  \n   30  #if defined(WITH_HEADLESS)\n   ..\n   46  #endif\n   47  \n   48: GHOST_ISystem *GHOST_ISystem::m_system = NULL;\n   49  \n   50: GHOST_TSuccess GHOST_ISystem::createSystem()\n   51  {\n   52    GHOST_TSuccess success;\n   ..\n   87  }\n   88  \n   89: GHOST_TSuccess GHOST_ISystem::disposeSystem()\n   90  {\n   91    GHOST_TSuccess success = GHOST_kSuccess;\n   ..\n  100  }\n  101  \n  102: GHOST_ISystem *GHOST_ISystem::getSystem()\n  103  {\n  104    return m_system;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_ISystemPaths.cpp:\n   28  #include <stdio.h> /* just for NULL */\n   29  \n   30: #include \"GHOST_ISystemPaths.h\"\n   31  \n   32  #ifdef WIN32\n   ..\n   40  #endif\n   41  \n   42: GHOST_ISystemPaths *GHOST_ISystemPaths::m_systemPaths = NULL;\n   43  \n   44: GHOST_TSuccess GHOST_ISystemPaths::create()\n   45  {\n   46    GHOST_TSuccess success;\n   ..\n   63  }\n   64  \n   65: GHOST_TSuccess GHOST_ISystemPaths::dispose()\n   66  {\n   67    GHOST_TSuccess success = GHOST_kSuccess;\n   ..\n   76  }\n   77  \n   78: GHOST_ISystemPaths *GHOST_ISystemPaths::get()\n   79  {\n   80    if (!m_systemPaths) {\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_Path-api.cpp:\n   24  #include <cstdio>\n   25  \n   26: #include \"GHOST_ISystemPaths.h\"\n   27  #include \"GHOST_Path-api.h\"\n   28  #include \"GHOST_Types.h\"\n   ..\n   31  GHOST_TSuccess GHOST_CreateSystemPaths(void)\n   32  {\n   33:   return GHOST_ISystemPaths::create();\n   34  }\n   35  \n   36  GHOST_TSuccess GHOST_DisposeSystemPaths(void)\n   37  {\n   38:   return GHOST_ISystemPaths::dispose();\n   39  }\n   40  \n   41  const GHOST_TUns8 *GHOST_getSystemDir(int version, const char *versionstr)\n   42  {\n   43:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   44    return systemPaths ? systemPaths->getSystemDir(version, versionstr) : NULL;\n   45  }\n   ..\n   47  const GHOST_TUns8 *GHOST_getUserDir(int version, const char *versionstr)\n   48  {\n   49:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   50    return systemPaths ? systemPaths->getUserDir(version, versionstr) : NULL; /* shouldn't be NULL */\n   51  }\n   ..\n   53  const GHOST_TUns8 *GHOST_getBinaryDir()\n   54  {\n   55:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   56    return systemPaths ? systemPaths->getBinaryDir() : NULL; /* shouldn't be NULL */\n   57  }\n   ..\n   59  void GHOST_addToSystemRecentFiles(const char *filename)\n   60  {\n   61:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   62    if (systemPaths) {\n   63      systemPaths->addToSystemRecentFiles(filename);\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_System.h:\n   25  #pragma once\n   26  \n   27: #include \"GHOST_ISystem.h\"\n   28  \n   29  #include \"GHOST_Buttons.h\"\n   ..\n   45  \n   46  /**\n   47:  * Implementation of platform independent functionality of the GHOST_ISystem\n   48   * interface.\n   49:  * GHOST_System is an abstract class because not all methods of GHOST_ISystem\n   50   * are implemented.\n   51:  * \\see GHOST_ISystem.\n   52   */\n   53: class GHOST_System : public GHOST_ISystem {\n   54   protected:\n   55    /**\n   ..\n  177  \n  178    /**\n  179:    * Inherited from GHOST_ISystem but left pure virtual\n  180     *\n  181     * virtual bool processEvents(bool waitForEvent) = 0;\n  ...\n  207  \n  208    /**\n  209:    * Inherited from GHOST_ISystem but left pure virtual\n  210     * <pre>\n  211     * GHOST_TSuccess getCursorPosition(GHOST_TInt32& x, GHOST_TInt32& y) const = 0;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemCocoa.h:\n  243  \n  244    /**\n  245:    * \\see GHOST_ISystem\n  246     */\n  247    int toggleConsole(int action)\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemPaths.h:\n   24  #pragma once\n   25  \n   26: #include \"GHOST_ISystemPaths.h\"\n   27  \n   28: class GHOST_SystemPaths : public GHOST_ISystemPaths {\n   29   protected:\n   30    /**\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemPathsUnix.h:\n   31    /**\n   32     * Constructor\n   33:    * this class should only be instantiated by GHOST_ISystem.\n   34     */\n   35    GHOST_SystemPathsUnix();\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.cpp:\n 2513  int GHOST_X11_ApplicationErrorHandler(Display *display, XErrorEvent *event)\n 2514  {\n 2515:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n 2516    if (!system->isDebugEnabled()) {\n 2517      return 0;\n ....\n 2539  int GHOST_X11_ApplicationIOErrorHandler(Display * /*display*/)\n 2540  {\n 2541:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n 2542    if (!system->isDebugEnabled()) {\n 2543      return 0;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.h:\n   78    /**\n   79     * Constructor\n   80:    * this class should only be instantiated by GHOST_ISystem.\n   81     */\n   82  \n   ..\n   91  \n   92    /**\n   93:    * \\section Interface Inherited from GHOST_ISystem\n   94     */\n   95  \n   ..\n  269  \n  270    /**\n  271:    * \\see GHOST_ISystem\n  272     */\n  273    int toggleConsole(int /*action*/)\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/gears/GHOST_Test.cpp:\n   48  #include \"GHOST_IEvent.h\"\n   49  #include \"GHOST_IEventConsumer.h\"\n   50: #include \"GHOST_ISystem.h\"\n   51  \n   52  #define LEFT_EYE 0\n   ..\n   60  static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;\n   61  static GLfloat fAngle = 0.0;\n   62: static GHOST_ISystem *fSystem = 0;\n   63  \n   64  void StereoProjection(float left,\n   ..\n  398  class Application : public GHOST_IEventConsumer {\n  399   public:\n  400:   Application(GHOST_ISystem *system);\n  401    ~Application(void);\n  402    virtual bool processEvent(GHOST_IEvent *event);\n  403  \n  404:   GHOST_ISystem *m_system;\n  405    GHOST_IWindow *m_mainWindow;\n  406    GHOST_IWindow *m_secondaryWindow;\n  ...\n  413  };\n  414  \n  415: Application::Application(GHOST_ISystem *system)\n  416      : m_system(system),\n  417        m_mainWindow(0),\n  ...\n  705  \n  706    // Create the system\n  707:   GHOST_ISystem::createSystem();\n  708:   fSystem = GHOST_ISystem::getSystem();\n  709  \n  710    if (fSystem) {\n  ...\n  727  \n  728    // Dispose the system\n  729:   GHOST_ISystem::disposeSystem();\n  730  \n  731    return 0;\n\n147 matches across 18 files\n",
+			"contents": "Searching 11946 files for \"GHOST_CreateWindow\"\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_C-api.h:\n  175   * \\return A handle to the new window ( == NULL if creation failed).\n  176   */\n  177: extern GHOST_WindowHandle GHOST_CreateWindow(GHOST_SystemHandle systemhandle,\n  178                                               const char *title,\n  179                                               GHOST_TInt32 left,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_C-api.cpp:\n  152  }\n  153  \n  154: GHOST_WindowHandle GHOST_CreateWindow(GHOST_SystemHandle systemhandle,\n  155                                        const char *title,\n  156                                        GHOST_TInt32 left,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/gears/GHOST_C-Test.c:\n  440    if (shSystem) {\n  441      /* Create the main window */\n  442:     sMainWindow = GHOST_CreateWindow(shSystem,\n  443                                       title1,\n  444                                       10,\n  ...\n  455  \n  456      /* Create a secondary window */\n  457:     sSecondaryWindow = GHOST_CreateWindow(shSystem,\n  458                                            title2,\n  459                                            340,\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/multitest/MultiTest.c:\n  318    GHOST_GLSettings glSettings = {0};\n  319  \n  320:   win = GHOST_CreateWindow(sys,\n  321                             \"MultiTest:Main\",\n  322                             40,\n  ...\n  575  \n  576    GHOST_GetMainDisplayDimensions(sys, &screensize[0], &screensize[1]);\n  577:   win = GHOST_CreateWindow(sys,\n  578                             \"MultiTest:Logger\",\n  579                             40,\n  ...\n  776    GHOST_WindowHandle win;\n  777  \n  778:   win = GHOST_CreateWindow(sys,\n  779                             \"MultiTest:Extra\",\n  780                             500,\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/windowmanager/intern/wm_playanim.c:\n 1109    posy = (scr_h - posy - sizey);\n 1110  \n 1111:   g_WS.ghost_window = GHOST_CreateWindow(g_WS.ghost_system,\n 1112                                           title,\n 1113                                           posx,\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/windowmanager/intern/wm_window.c:\n  604    }\n  605    else {\n  606:     ghostwin = GHOST_CreateWindow(g_system,\n  607                                    title,\n  608                                    win->posx,\n  ...\n  625  \n  626      /* Set window as drawable upon creation. Note this has already been\n  627:      * it has already been activated by GHOST_CreateWindow. */\n  628      wm_window_set_drawable(wm, win, false);\n  629  \n\n<untitled 405>:\n   11      glSettings=..., exclusive=false, is_dialog=false, parentWindow=0x0)\n   12      at /home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.cpp:372\n   13: #3  0x0000000004238270 in GHOST_CreateWindow (systemhandle=0x7ffff1449880, title=0xd5d7522 \"Blender\", \n   14      left=40, top=1200, width=1720, height=920, state=GHOST_kWindowStateMaximized, \n   15      type=GHOST_kDrawingContextTypeOpenGL, glSettings=...)\n\n11 matches across 7 files\n\n\nSearching 11946 files for \"GHOST_ISystem\"\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/CMakeLists.txt:\n   38    intern/GHOST_DisplayManager.cpp\n   39    intern/GHOST_EventManager.cpp\n   40:   intern/GHOST_ISystem.cpp\n   41:   intern/GHOST_ISystemPaths.cpp\n   42    intern/GHOST_ModifierKeys.cpp\n   43    intern/GHOST_Path-api.cpp\n   ..\n   52    GHOST_IEvent.h\n   53    GHOST_IEventConsumer.h\n   54:   GHOST_ISystem.h\n   55:   GHOST_ISystemPaths.h\n   56    GHOST_ITimerTask.h\n   57    GHOST_IWindow.h\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IContext.h:\n   31   *\n   32   * You can create a offscreen context (windowless) with the system's\n   33:  * GHOST_ISystem::createOffscreenContext method.\n   34:  * \\see GHOST_ISystem#createOffscreenContext\n   35   */\n   36  class GHOST_IContext {\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IEventConsumer.h:\n   33   * they want to receive events. The system will call the processEvent() method\n   34   * for every installed event consumer to pass events.\n   35:  * \\see GHOST_ISystem#addEventConsumer\n   36   */\n   37  class GHOST_IEventConsumer {\n   ..\n   46    /**\n   47     * This method is called by the system when it has events to dispatch.\n   48:    * \\see GHOST_ISystem#dispatchEvents\n   49     * \\param   event   The event that can be handled or ignored.\n   50     * \\return  Indication as to whether the event was handled.\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ISystem.h:\n   20  /** \\file\n   21   * \\ingroup GHOST\n   22:  * %Main interface file for C++ Api with declaration of GHOST_ISystem interface\n   23   * class.\n   24   * Contains the doxygen documentation main page.\n   ..\n   96   * - GHOST_IEvent.h\n   97   * - GHOST_IEventConsumer.h\n   98:  * - GHOST_ISystem.h\n   99   * - GHOST_ITimerTask.h\n  100   * - GHOST_IWindow.h\n  ...\n  117   */\n  118  \n  119: /** \\interface GHOST_ISystem\n  120   * Interface for classes that provide access to the operating system.\n  121   * There should be only one system class in an application.\n  ...\n  130   *     work in progress).\n  131   */\n  132: class GHOST_ISystem {\n  133   public:\n  134    /**\n  ...\n  148     * \\return A pointer to the system.\n  149     */\n  150:   static GHOST_ISystem *getSystem();\n  151  \n  152   protected:\n  ...\n  155     * Protected default constructor to force use of static createSystem member.\n  156     */\n  157:   GHOST_ISystem()\n  158    {\n  159    }\n  ...\n  163     * Protected default constructor to force use of static dispose member.\n  164     */\n  165:   virtual ~GHOST_ISystem()\n  166    {\n  167    }\n  ...\n  488  \n  489    /** The one and only system */\n  490:   static GHOST_ISystem *m_system;\n  491  \n  492  #ifdef WITH_CXX_GUARDEDALLOC\n  493:   MEM_CXX_CLASS_ALLOC_FUNCS(\"GHOST:GHOST_ISystem\")\n  494  #endif\n  495  };\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ISystemPaths.h:\n   26  #include \"GHOST_Types.h\"\n   27  \n   28: class GHOST_ISystemPaths {\n   29   public:\n   30    /**\n   ..\n   44     * \\return A pointer to the system.\n   45     */\n   46:   static GHOST_ISystemPaths *get();\n   47  \n   48   protected:\n   ..\n   51     * Protected default constructor to force use of static createSystem member.\n   52     */\n   53:   GHOST_ISystemPaths()\n   54    {\n   55    }\n   ..\n   59     * Protected default constructor to force use of static dispose member.\n   60     */\n   61:   virtual ~GHOST_ISystemPaths()\n   62    {\n   63    }\n   ..\n   91   private:\n   92    /** The one and only system paths*/\n   93:   static GHOST_ISystemPaths *m_systemPaths;\n   94  \n   95  #ifdef WITH_CXX_GUARDEDALLOC\n   96:   MEM_CXX_CLASS_ALLOC_FUNCS(\"GHOST:GHOST_ISystemPaths\")\n   97  #endif\n   98  };\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_ITimerTask.h:\n   36   * Note that GHOST processes timers in the UI thread. You should ask GHOST\n   37   * process messages in order for the timer-callbacks to be called.\n   38:  * \\see GHOST_ISystem#installTimer\n   39   * \\see GHOST_TimerProcPtr\n   40   */\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/GHOST_IWindow.h:\n   34   * Interface for GHOST windows.\n   35   *\n   36:  * You can create a window with the system's GHOST_ISystem::createWindow\n   37   * method.\n   38:  * \\see GHOST_ISystem#createWindow\n   39   *\n   40   * There are two coordinate systems:\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_C-api.cpp:\n   30  #include \"GHOST_IEvent.h\"\n   31  #include \"GHOST_IEventConsumer.h\"\n   32: #include \"GHOST_ISystem.h\"\n   33  #include \"intern/GHOST_Debug.h\"\n   34  #ifdef WITH_XR_OPENXR\n   ..\n   40  GHOST_SystemHandle GHOST_CreateSystem(void)\n   41  {\n   42:   GHOST_ISystem::createSystem();\n   43:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n   44  \n   45    return (GHOST_SystemHandle)system;\n   ..\n   48  void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled)\n   49  {\n   50:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   51  \n   52    system->initDebug(is_debug_enabled);\n   ..\n   55  GHOST_TSuccess GHOST_DisposeSystem(GHOST_SystemHandle systemhandle)\n   56  {\n   57:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   58  \n   59    return system->disposeSystem();\n   ..\n   68                            GHOST_DialogOptions dialog_options)\n   69  {\n   70:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   71    system->showMessageBox(title, message, help_label, continue_label, link, dialog_options);\n   72  }\n   ..\n   86  GHOST_TUns64 GHOST_GetMilliSeconds(GHOST_SystemHandle systemhandle)\n   87  {\n   88:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n   89  \n   90    return system->getMilliSeconds();\n   ..\n   97                                           GHOST_TUserDataPtr userdata)\n   98  {\n   99:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  100  \n  101    return (GHOST_TimerTaskHandle)system->installTimer(delay, interval, timerproc, userdata);\n  ...\n  105                                   GHOST_TimerTaskHandle timertaskhandle)\n  106  {\n  107:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  108    GHOST_ITimerTask *timertask = (GHOST_ITimerTask *)timertaskhandle;\n  109  \n  ...\n  113  GHOST_TUns8 GHOST_GetNumDisplays(GHOST_SystemHandle systemhandle)\n  114  {\n  115:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  116  \n  117    return system->getNumDisplays();\n  ...\n  122                                      GHOST_TUns32 *height)\n  123  {\n  124:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  125  \n  126    system->getMainDisplayDimensions(*width, *height);\n  ...\n  131                                     GHOST_TUns32 *height)\n  132  {\n  133:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  134  \n  135    system->getAllDisplayDimensions(*width, *height);\n  ...\n  138  GHOST_ContextHandle GHOST_CreateOpenGLContext(GHOST_SystemHandle systemhandle)\n  139  {\n  140:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  141  \n  142    return (GHOST_ContextHandle)system->createOffscreenContext();\n  ...\n  146                                            GHOST_ContextHandle contexthandle)\n  147  {\n  148:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  149    GHOST_IContext *context = (GHOST_IContext *)contexthandle;\n  150  \n  ...\n  162                                        GHOST_GLSettings glSettings)\n  163  {\n  164:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  165  \n  166    return (GHOST_WindowHandle)system->createWindow(\n  ...\n  179                                              GHOST_GLSettings glSettings)\n  180  {\n  181:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  182  \n  183    return (GHOST_WindowHandle)system->createWindow(title,\n  ...\n  217                                     GHOST_WindowHandle windowhandle)\n  218  {\n  219:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  220    GHOST_IWindow *window = (GHOST_IWindow *)windowhandle;\n  221  \n  ...\n  225  int GHOST_ValidWindow(GHOST_SystemHandle systemhandle, GHOST_WindowHandle windowhandle)\n  226  {\n  227:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  228    GHOST_IWindow *window = (GHOST_IWindow *)windowhandle;\n  229  \n  ...\n  235                                           const int stereoVisual)\n  236  {\n  237:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  238    GHOST_IWindow *window = NULL;\n  239    bool bstereoVisual;\n  ...\n  251  GHOST_TSuccess GHOST_EndFullScreen(GHOST_SystemHandle systemhandle)\n  252  {\n  253:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  254  \n  255    return system->endFullScreen();\n  ...\n  258  int GHOST_GetFullScreen(GHOST_SystemHandle systemhandle)\n  259  {\n  260:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  261  \n  262    return (int)system->getFullScreen();\n  ...\n  265  int GHOST_ProcessEvents(GHOST_SystemHandle systemhandle, int waitForEvent)\n  266  {\n  267:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  268  \n  269    return (int)system->processEvents(waitForEvent ? true : false);\n  ...\n  272  void GHOST_DispatchEvents(GHOST_SystemHandle systemhandle)\n  273  {\n  274:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  275  \n  276    system->dispatchEvents();\n  ...\n  280                                        GHOST_EventConsumerHandle consumerhandle)\n  281  {\n  282:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  283  \n  284    return system->addEventConsumer((GHOST_CallbackEventConsumer *)consumerhandle);\n  ...\n  288                                           GHOST_EventConsumerHandle consumerhandle)\n  289  {\n  290:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  291  \n  292    return system->removeEventConsumer((GHOST_CallbackEventConsumer *)consumerhandle);\n  ...\n  362                                         GHOST_TInt32 *y)\n  363  {\n  364:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  365  \n  366    return system->getCursorPosition(*x, *y);\n  ...\n  371                                         GHOST_TInt32 y)\n  372  {\n  373:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  374  \n  375    return system->setCursorPosition(x, y);\n  ...\n  402                                           int *isDown)\n  403  {\n  404:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  405    GHOST_TSuccess result;\n  406    bool isdown = false;\n  ...\n  416                                      int *isDown)\n  417  {\n  418:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  419    GHOST_TSuccess result;\n  420    bool isdown = false;\n  ...\n  429  void GHOST_setNDOFDeadZone(float deadzone)\n  430  {\n  431:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  432    system->setNDOFDeadZone(deadzone);\n  433  }\n  ...\n  713  void GHOST_SetTabletAPI(GHOST_SystemHandle systemhandle, GHOST_TTabletAPI api)\n  714  {\n  715:   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;\n  716    system->setTabletAPI(api);\n  717  }\n  ...\n  839  GHOST_TUns8 *GHOST_getClipboard(int selection)\n  840  {\n  841:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  842    return system->getClipboard(selection);\n  843  }\n  ...\n  845  void GHOST_putClipboard(GHOST_TInt8 *buffer, int selection)\n  846  {\n  847:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  848    system->putClipboard(buffer, selection);\n  849  }\n  ...\n  851  int GHOST_toggleConsole(int action)\n  852  {\n  853:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  854    return system->toggleConsole(action);\n  855  }\n  ...\n  857  int GHOST_UseNativePixels(void)\n  858  {\n  859:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  860    return system->useNativePixel();\n  861  }\n  ...\n  863  void GHOST_UseWindowFocus(int use_focus)\n  864  {\n  865:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n  866    return system->useWindowFocus(use_focus);\n  867  }\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_ISystem.cpp:\n   26   */\n   27  \n   28: #include \"GHOST_ISystem.h\"\n   29  \n   30  #if defined(WITH_HEADLESS)\n   ..\n   46  #endif\n   47  \n   48: GHOST_ISystem *GHOST_ISystem::m_system = NULL;\n   49  \n   50: GHOST_TSuccess GHOST_ISystem::createSystem()\n   51  {\n   52    GHOST_TSuccess success;\n   ..\n   87  }\n   88  \n   89: GHOST_TSuccess GHOST_ISystem::disposeSystem()\n   90  {\n   91    GHOST_TSuccess success = GHOST_kSuccess;\n   ..\n  100  }\n  101  \n  102: GHOST_ISystem *GHOST_ISystem::getSystem()\n  103  {\n  104    return m_system;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_ISystemPaths.cpp:\n   28  #include <stdio.h> /* just for NULL */\n   29  \n   30: #include \"GHOST_ISystemPaths.h\"\n   31  \n   32  #ifdef WIN32\n   ..\n   40  #endif\n   41  \n   42: GHOST_ISystemPaths *GHOST_ISystemPaths::m_systemPaths = NULL;\n   43  \n   44: GHOST_TSuccess GHOST_ISystemPaths::create()\n   45  {\n   46    GHOST_TSuccess success;\n   ..\n   63  }\n   64  \n   65: GHOST_TSuccess GHOST_ISystemPaths::dispose()\n   66  {\n   67    GHOST_TSuccess success = GHOST_kSuccess;\n   ..\n   76  }\n   77  \n   78: GHOST_ISystemPaths *GHOST_ISystemPaths::get()\n   79  {\n   80    if (!m_systemPaths) {\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_Path-api.cpp:\n   24  #include <cstdio>\n   25  \n   26: #include \"GHOST_ISystemPaths.h\"\n   27  #include \"GHOST_Path-api.h\"\n   28  #include \"GHOST_Types.h\"\n   ..\n   31  GHOST_TSuccess GHOST_CreateSystemPaths(void)\n   32  {\n   33:   return GHOST_ISystemPaths::create();\n   34  }\n   35  \n   36  GHOST_TSuccess GHOST_DisposeSystemPaths(void)\n   37  {\n   38:   return GHOST_ISystemPaths::dispose();\n   39  }\n   40  \n   41  const GHOST_TUns8 *GHOST_getSystemDir(int version, const char *versionstr)\n   42  {\n   43:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   44    return systemPaths ? systemPaths->getSystemDir(version, versionstr) : NULL;\n   45  }\n   ..\n   47  const GHOST_TUns8 *GHOST_getUserDir(int version, const char *versionstr)\n   48  {\n   49:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   50    return systemPaths ? systemPaths->getUserDir(version, versionstr) : NULL; /* shouldn't be NULL */\n   51  }\n   ..\n   53  const GHOST_TUns8 *GHOST_getBinaryDir()\n   54  {\n   55:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   56    return systemPaths ? systemPaths->getBinaryDir() : NULL; /* shouldn't be NULL */\n   57  }\n   ..\n   59  void GHOST_addToSystemRecentFiles(const char *filename)\n   60  {\n   61:   GHOST_ISystemPaths *systemPaths = GHOST_ISystemPaths::get();\n   62    if (systemPaths) {\n   63      systemPaths->addToSystemRecentFiles(filename);\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_System.h:\n   25  #pragma once\n   26  \n   27: #include \"GHOST_ISystem.h\"\n   28  \n   29  #include \"GHOST_Buttons.h\"\n   ..\n   45  \n   46  /**\n   47:  * Implementation of platform independent functionality of the GHOST_ISystem\n   48   * interface.\n   49:  * GHOST_System is an abstract class because not all methods of GHOST_ISystem\n   50   * are implemented.\n   51:  * \\see GHOST_ISystem.\n   52   */\n   53: class GHOST_System : public GHOST_ISystem {\n   54   protected:\n   55    /**\n   ..\n  177  \n  178    /**\n  179:    * Inherited from GHOST_ISystem but left pure virtual\n  180     *\n  181     * virtual bool processEvents(bool waitForEvent) = 0;\n  ...\n  207  \n  208    /**\n  209:    * Inherited from GHOST_ISystem but left pure virtual\n  210     * <pre>\n  211     * GHOST_TSuccess getCursorPosition(GHOST_TInt32& x, GHOST_TInt32& y) const = 0;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemCocoa.h:\n  243  \n  244    /**\n  245:    * \\see GHOST_ISystem\n  246     */\n  247    int toggleConsole(int action)\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemPaths.h:\n   24  #pragma once\n   25  \n   26: #include \"GHOST_ISystemPaths.h\"\n   27  \n   28: class GHOST_SystemPaths : public GHOST_ISystemPaths {\n   29   protected:\n   30    /**\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemPathsUnix.h:\n   31    /**\n   32     * Constructor\n   33:    * this class should only be instantiated by GHOST_ISystem.\n   34     */\n   35    GHOST_SystemPathsUnix();\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.cpp:\n 2513  int GHOST_X11_ApplicationErrorHandler(Display *display, XErrorEvent *event)\n 2514  {\n 2515:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n 2516    if (!system->isDebugEnabled()) {\n 2517      return 0;\n ....\n 2539  int GHOST_X11_ApplicationIOErrorHandler(Display * /*display*/)\n 2540  {\n 2541:   GHOST_ISystem *system = GHOST_ISystem::getSystem();\n 2542    if (!system->isDebugEnabled()) {\n 2543      return 0;\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_SystemX11.h:\n   78    /**\n   79     * Constructor\n   80:    * this class should only be instantiated by GHOST_ISystem.\n   81     */\n   82  \n   ..\n   91  \n   92    /**\n   93:    * \\section Interface Inherited from GHOST_ISystem\n   94     */\n   95  \n   ..\n  269  \n  270    /**\n  271:    * \\see GHOST_ISystem\n  272     */\n  273    int toggleConsole(int /*action*/)\n\n/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/test/gears/GHOST_Test.cpp:\n   48  #include \"GHOST_IEvent.h\"\n   49  #include \"GHOST_IEventConsumer.h\"\n   50: #include \"GHOST_ISystem.h\"\n   51  \n   52  #define LEFT_EYE 0\n   ..\n   60  static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;\n   61  static GLfloat fAngle = 0.0;\n   62: static GHOST_ISystem *fSystem = 0;\n   63  \n   64  void StereoProjection(float left,\n   ..\n  398  class Application : public GHOST_IEventConsumer {\n  399   public:\n  400:   Application(GHOST_ISystem *system);\n  401    ~Application(void);\n  402    virtual bool processEvent(GHOST_IEvent *event);\n  403  \n  404:   GHOST_ISystem *m_system;\n  405    GHOST_IWindow *m_mainWindow;\n  406    GHOST_IWindow *m_secondaryWindow;\n  ...\n  413  };\n  414  \n  415: Application::Application(GHOST_ISystem *system)\n  416      : m_system(system),\n  417        m_mainWindow(0),\n  ...\n  705  \n  706    // Create the system\n  707:   GHOST_ISystem::createSystem();\n  708:   fSystem = GHOST_ISystem::getSystem();\n  709  \n  710    if (fSystem) {\n  ...\n  727  \n  728    // Dispose the system\n  729:   GHOST_ISystem::disposeSystem();\n  730  \n  731    return 0;\n\n147 matches across 18 files\n\n\nSearching 11945 files for \"10 Centimeters\"\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/unit.c:\n  144    {\"dekameter\",  \"dekameters\",  \"dam\", NULL, \"10 Meters\",      \"DEKAMETERS\",  UN_SC_DAM, 0.0, B_UNIT_DEF_SUPPRESS},\n  145    {\"meter\",      \"meters\",      \"m\",   NULL, \"Meters\",         \"METERS\",      UN_SC_M,   0.0, B_UNIT_DEF_NONE},     /* base unit */\n  146:   {\"decimeter\",  \"decimeters\",  \"dm\",  NULL, \"10 Centimeters\", \"DECIMETERS\",  UN_SC_DM,  0.0, B_UNIT_DEF_SUPPRESS},\n  147    {\"centimeter\", \"centimeters\", \"cm\",  NULL, \"Centimeters\",    \"CENTIMETERS\", UN_SC_CM,  0.0, B_UNIT_DEF_NONE},\n  148    {\"millimeter\", \"millimeters\", \"mm\",  NULL, \"Millimeters\",    \"MILLIMETERS\", UN_SC_MM,  0.0, B_UNIT_DEF_NONE | B_UNIT_DEF_TENTH},\n  ...\n  305  static struct bUnitDef buCameraLenDef[] = {\n  306    {\"meter\",      \"meters\",      \"m\",   NULL, \"Meters\",         NULL, UN_SC_KM,  0.0, B_UNIT_DEF_NONE},     /* base unit */\n  307:   {\"decimeter\",  \"decimeters\",  \"dm\",  NULL, \"10 Centimeters\", NULL, UN_SC_HM,  0.0, B_UNIT_DEF_SUPPRESS},\n  308    {\"centimeter\", \"centimeters\", \"cm\",  NULL, \"Centimeters\",    NULL, UN_SC_DAM, 0.0, B_UNIT_DEF_SUPPRESS},\n  309    {\"millimeter\", \"millimeters\", \"mm\",  NULL, \"Millimeters\",    NULL, UN_SC_M,   0.0, B_UNIT_DEF_NONE},\n\n2 matches in 1 file\n",
 			"settings":
 			{
-				"buffer_size": 21815,
+				"buffer_size": 23139,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/unit.c",
+			"settings":
+			{
+				"buffer_size": 44912,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
 			}
 		},
 		{
@@ -1359,7 +1368,7 @@
 	],
 	"find":
 	{
-		"height": 48.0
+		"height": 104.0
 	},
 	"find_in_files":
 	{
@@ -1374,6 +1383,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"10 Centimeters",
 			"GHOST_ISystem",
 			"GHOST_CreateWindow",
 			"'RubyOF'",
@@ -1449,7 +1459,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 12,
 			"sheets":
 			[
 				{
@@ -1465,8 +1475,8 @@
 						"selection":
 						[
 							[
-								6081,
-								6081
+								6204,
+								6204
 							]
 						],
 						"settings":
@@ -1558,7 +1568,7 @@
 						"translation.y": 7068.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1678,7 +1688,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1799,7 +1809,7 @@
 						"translation.y": 4862.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1919,7 +1929,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1951,7 +1961,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -2071,7 +2081,7 @@
 						"translation.y": 11312.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -2191,7 +2201,7 @@
 						"translation.y": 10568.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -2296,7 +2306,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -2401,7 +2411,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
@@ -2521,7 +2531,7 @@
 						"translation.y": 4296.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -2641,7 +2651,7 @@
 						"translation.y": 18721.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -2649,7 +2659,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21815,
+						"buffer_size": 23139,
 						"regions":
 						{
 							"match":
@@ -3288,6 +3298,14 @@
 									[
 										21727,
 										21740
+									],
+									[
+										22266,
+										22280
+									],
+									[
+										22833,
+										22847
 									]
 								],
 								"scope": ""
@@ -3296,8 +3314,8 @@
 						"selection":
 						[
 							[
-								3279,
-								3279
+								21871,
+								21871
 							]
 						],
 						"settings":
@@ -3318,8 +3336,8 @@
 								{
 									"1":
 									[
-										2407,
-										2408
+										21671,
+										21672
 									]
 								}
 							},
@@ -3383,7 +3401,7 @@
 							],
 							"detect_indentation": false,
 							"line_numbers": false,
-							"output_tag": 2,
+							"output_tag": 3,
 							"rainbowth.lispy": false,
 							"result_base_dir": "",
 							"result_file_regex": "^([^ \t].*):$",
@@ -3392,14 +3410,119 @@
 							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2666.0,
+						"translation.y": 21208.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 12,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/unit.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 44912,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								23665,
+								23665
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 18528.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
 					"semi_transient": false,
 					"settings":
 					{
@@ -3500,11 +3623,11 @@
 						"translation.y": 26.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/intern/ghost/intern/GHOST_ISystem.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3620,11 +3743,11 @@
 						"translation.y": 1492.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"semi_transient": false,
 					"settings":
 					{
@@ -3650,11 +3773,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/intern/cycles/render/colorspace.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3770,11 +3893,11 @@
 						"translation.y": 1860.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/interface/interface_widgets.c",
 					"semi_transient": false,
 					"settings":
@@ -3890,11 +4013,11 @@
 						"translation.y": 13441.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/context.c",
 					"semi_transient": false,
 					"settings":
@@ -4010,11 +4133,11 @@
 						"translation.y": 31452.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 19,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_space.c",
 					"semi_transient": false,
 					"settings":
@@ -4130,11 +4253,11 @@
 						"translation.y": 12480.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 20,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_screen.c",
 					"semi_transient": false,
 					"settings":
@@ -4235,11 +4358,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 21,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/release/scripts/startup/bl_ui/properties_render.py",
 					"semi_transient": false,
 					"settings":
@@ -4340,11 +4463,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 22,
 					"file": "/home/ravenskrag/Code/Source/blender-git/blender/release/scripts/startup/bl_ui/properties_data_camera.py",
 					"semi_transient": false,
 					"settings":
@@ -4445,7 +4568,7 @@
 						"translation.y": 1878.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
