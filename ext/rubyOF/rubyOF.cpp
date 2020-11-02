@@ -21,6 +21,18 @@
 
 using namespace Rice;
 
+glm::mat4 glm_mat4_mult__mat4(const glm::mat4 &self, const glm::mat4 &m){
+	return self*m;
+}
+
+glm::mat4 glm_ortho__float(
+	float const& left, float const& right,
+	float const& bottom, float const& top,
+	float const& zNear, float const& zFar)
+{
+	return glm::ortho(left, right, bottom, top, zNear, zFar);
+}
+
 extern "C"
 void Init_rubyOF()
 {
@@ -96,6 +108,8 @@ void Init_rubyOF()
 										const glm::vec4&,
 										const glm::vec4&>())
 		
+		.define_method("*",  &glm_mat4_mult__mat4)
+		
 	;
 	
 	
@@ -160,10 +174,16 @@ void Init_rubyOF()
       
       
       
+      .define_singleton_method("translate",
+         static_cast< glm::mat4 (*)
+         (const glm::mat4 &m, const glm::vec3 &t)
+         >(&glm::translate)
+      )
       
-      // detail::tmat4x4<valType> glm::inverse 	( 	detail::tmat4x4< valType > const &  	m	) 
       
-      // detail::tquat<T> glm::inverse 	( 	detail::tquat< T > const &  	q
+      
+      // https://stackoverflow.com/questions/12230312/is-glmortho-actually-wrong
+      .define_singleton_method("ortho",   &glm_ortho__float)
 	;
 	
 	
