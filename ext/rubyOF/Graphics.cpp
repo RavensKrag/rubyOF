@@ -17,6 +17,19 @@ void ofEnableBlendMode__wrapper(int code){
 	ofEnableBlendMode(BLEND_MODES[code]);
 }
 
+void ofSetMatrixMode__wrapper(int code){
+	// /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h:118
+	// enum ofMatrixMode {OF_MATRIX_MODELVIEW=0, OF_MATRIX_PROJECTION, OF_MATRIX_TEXTURE};
+	
+	static const ofMatrixMode MATRIX_MODES[] = {
+			OF_MATRIX_MODELVIEW,
+			OF_MATRIX_PROJECTION,
+			OF_MATRIX_TEXTURE,
+	};
+	
+	ofSetMatrixMode(MATRIX_MODES[code]);
+}
+
 Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 {
 	// --- Bind the core types first, and then the interesting methods that use them.
@@ -269,9 +282,7 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		
 		
 		.define_method(
-			"ofSetMatrixMode",
-			&ofSetMatrixMode // (ofMatrixMode matrixMode)
-		)
+			"ofSetMatrixMode",  &ofSetMatrixMode__wrapper)
 		.define_method(
 			"ofLoadViewMatrix",
 			&ofLoadViewMatrix // (const glm::mat4 & m)

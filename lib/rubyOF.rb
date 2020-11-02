@@ -81,7 +81,7 @@ module Graphics
 		:multiply,
 		:screen,
 		:subtract,
-	]	
+	]
 	
 	alias :ofEnableBlendMode__cpp :ofEnableBlendMode
 	private :ofEnableBlendMode__cpp
@@ -91,6 +91,23 @@ module Graphics
 		raise ArgumentError, "Given blend mode #{mode.inspect} is not a valid blend mode. Please use one of the following: #{OF_BLENDMODES.inspect}" if i.nil?
 		
 		ofEnableBlendMode__cpp(i)
+	end
+	
+	
+	OF_MATRIX_MODES = [
+		:modelview,
+		:projection,
+		:texture
+	]	
+	
+	alias :ofSetMatrixMode__cpp :ofSetMatrixMode
+	private :ofSetMatrixMode__cpp
+	def ofSetMatrixMode(mode)
+		i = OF_MATRIX_MODES.index(mode)
+		
+		raise ArgumentError, "Given matrix mode #{mode.inspect} is not a valid matrix mode. Please use one of the following: #{OF_MATRIX_MODES.inspect}" if i.nil?
+		
+		ofSetMatrixMode__cpp(i)
 	end
 end
 
