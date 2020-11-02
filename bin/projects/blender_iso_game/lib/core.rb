@@ -500,7 +500,11 @@ class Core
             'deg',
             @camera.fov
           ],
-          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP')
+          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP'),
+          'ortho_scale' => [
+            '???',
+            @camera.scale
+          ]
         }
       ]
       
