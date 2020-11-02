@@ -226,6 +226,7 @@ class CustomCamera
   state_machine :state, :initial => 'PERSP' do
     state 'PERSP' do
       def begin(viewport = ofGetCurrentViewport())
+        puts "persp cam"
         @of_cam.begin
       end
       
@@ -237,7 +238,7 @@ class CustomCamera
     
     state 'ORTHO' do
       def begin
-        invertY = false;
+        invertY = true;
         
         puts "ortho cam"
         puts @scale
@@ -248,18 +249,75 @@ class CustomCamera
         
         ofPushView();
         ofViewport(vp.x, vp.y, vp.width, vp.height, invertY);
-        ofSetupScreenOrtho(vp.width, vp.height, @nearClip, @farClip);
-        ofPushMatrix();
-        ofTranslate(vp.width/2, vp.height/2, 0)
+        # setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
+        lensOffset = GLM::Vec2.new(0,0)
+        ofSetMatrixMode(:projection);
+        # projectionMat = 
+        #   GLM.translate(GLM::Mat4.new(1.0),
+        #                 GLM::Vec3.new(-lensOffset.x, -lensOffset.y, 0.0)
+        #   ) * GLM.ortho(
+        #     - vp.width/2,
+        #     + vp.width/2,
+        #     - vp.height/2,
+        #     + vp.height/2,
+        #     @nearClip,
+        #     @farClip
+        #   );
+        
+        
+        # use negative scaling to flip Blender's z axis
+        # (not sure why it ends up being the second component, but w/e)
+        m5 = GLM.scale(GLM::Mat4.new(1.0),
+                       GLM::Vec3.new(1, -1, 1))
+        
+        projectionMat = 
+          GLM.ortho(
+            - vp.width/2,
+            + vp.width/2,
+            - vp.height/2,
+            + vp.height/2,
+            0.0000001,
+            1000000000000
+          );
+        ofLoadMatrix(projectionMat * m5);
+        
+        
+        
+        ofSetMatrixMode(:modelview);
+        
+        m0 = GLM.scale(GLM::Mat4.new(1.0),
+                       GLM::Vec3.new(@scale, @scale, @scale))
+        
+        m1 = GLM.translate(GLM::Mat4.new(1.0),
+                                @position)
+        
+        m2 = GLM.toMat4(@orientation)
+        
+        cameraTransform = m1 * m2
+        
+        modelViewMat = m0 * GLM.inverse(cameraTransform)
+        # ^ maybe apply scale here?
+        ofLoadViewMatrix(modelViewMat);
+        
+        
+        
+        
+        
+        
+        # TODO: Bind glm::mat4(float)  <-- polymorphic constructor
+        # TODO: figure out what to call for "loadMatrix()"
+        # TODO: Bind the constants for ofSetMatrixMode (function bound, but not sure if I can use it in a practical sense b/c what are the arguments?)
+        
+        
         
         # ofRotateXDeg(orientation.x);
         # ofRotateYDeg(orientation.y);
-        ofMultMatrix(GLM.inverse(GLM.toMat4(@orientation)))
+        # ofMultMatrix((GLM.toMat4(@orientation)))
         # ^ need the inverse of this
         
-        ofScale(@scale,
-                @scale,
-                @scale);
+        # ofScale(@scale,
+        #         @scale,
+        #         @scale);
         # ofTranslate(t);
         
         # this works for xz view:
@@ -284,7 +342,7 @@ class CustomCamera
       
       
       def end
-        ofPopMatrix();
+        # ofPopMatrix();
         ofPopView();
       end
     end

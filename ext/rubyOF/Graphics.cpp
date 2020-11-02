@@ -61,7 +61,6 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	// global oF functions
 	// ------------------
 	
-	typedef void (*wrap_matrix_op)(const glm::mat4 & m);
 	
 	rb_mGraphics
 		// bitmap string
@@ -270,14 +269,16 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			&ofLoadIdentityMatrix // ()
 		)
 		
-		.define_method(
-			"ofLoadMatrix",
-			wrap_matrix_op(&ofLoadMatrix)
-		)
-		.define_method(
-			"ofMultMatrix",
-			wrap_matrix_op(&ofMultMatrix)
-		)
+		.define_method("ofLoadMatrix",
+         static_cast< void (*)
+         (const glm::mat4 & m)
+         >(&ofLoadMatrix)
+      )
+      .define_method("ofMultMatrix",
+         static_cast< void (*)
+         (const glm::mat4 & m)
+         >(&ofMultMatrix)
+      )
 		// NOTE: other interface is not multiplication by scalar, it's a pointer to a 4x4 matrix (assuming the first element of a nested array or something? better to just use the provided types.)
 		
 		

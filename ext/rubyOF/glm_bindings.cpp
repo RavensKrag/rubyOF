@@ -18,9 +18,9 @@ glm::mat4 glm_mat4_mult__mat4(const glm::mat4 &self, const glm::mat4 &m){
 }
 
 glm::mat4 glm_ortho__float(
-   float const& left, float const& right,
-   float const& bottom, float const& top,
-   float const& zNear, float const& zFar)
+   float const left, float const right,
+   float const bottom, float const top,
+   float const zNear, float const zFar)
 {
    return glm::ortho(left, right, bottom, top, zNear, zFar);
 }
@@ -170,9 +170,16 @@ Module Init_GLM(){
          >(&glm::translate)
       )
       
+      .define_singleton_method("scale",
+         static_cast< glm::mat4 (*)
+         (glm::mat4 const &m, glm::vec3 const &s)
+         >(&glm::scale)
+      )
+      
       
       
       // https://stackoverflow.com/questions/12230312/is-glmortho-actually-wrong
+      // (^ only here to reference that glm::ortho() can take multiple types)
       .define_singleton_method("ortho",   &glm_ortho__float)
    ;
    
