@@ -130,13 +130,20 @@ class RubyOF(bpy.types.RenderEngine):
                         if obj.type == 'MESH':
                             print(obj)
                             
-                            rot = obj.rotation_quaternion
-                            pos = obj.location
+                            pos   = obj.location
+                            rot   = obj.rotation_quaternion
+                            scale = obj.scale
                             
                             data = [
                                 {
                                     'name': obj.name_full,
                                     'type': obj.type,
+                                    'position':[
+                                        "Vec3",
+                                        pos.x,
+                                        pos.y,
+                                        pos.z
+                                    ],
                                     'rotation':[
                                         "Quat",
                                         rot.w,
@@ -144,11 +151,11 @@ class RubyOF(bpy.types.RenderEngine):
                                         rot.y,
                                         rot.z
                                     ],
-                                    'position':[
+                                    'scale':[
                                         "Vec3",
-                                        pos.x,
-                                        pos.y,
-                                        pos.z
+                                        scale.x,
+                                        scale.y,
+                                        scale.z
                                     ]
                                 }
                             ]

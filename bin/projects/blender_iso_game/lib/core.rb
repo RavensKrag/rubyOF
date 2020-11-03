@@ -39,6 +39,8 @@ end
 
 
 class BlenderCube
+  extend Forwardable
+  
   attr_reader :mesh, :node
   
   def initialize
@@ -46,13 +48,9 @@ class BlenderCube
     @node = RubyOF::Node.new
   end
   
-  def position
-    return @node.position
-  end
-  
-  def position=(pos)
-    @node.position = pos
-  end
+  def_delegators :@node, :position, :position=,
+                         :orientation, :orientation=,
+                         :scale, :scale=
   
   
   
@@ -647,8 +645,16 @@ class Core
           
         end
       when 'MESH'
-        pos  = GLM::Vec3.new(*(obj['position'][1..3]))
+        puts "mesh data"
+        p obj
+        
+        pos   = GLM::Vec3.new(*(obj['position'][1..3]))
+        quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
+        scale = GLM::Vec3.new(*(obj['scale'][1..3]))
+        
         @cube.position = pos
+        @cube.orientation = quat
+        @cube.scale = scale
       end
     end
   end
@@ -1002,7 +1008,7 @@ class Core
       data = @msg_queue.pop
       
       json_obj = JSON.parse(data)
-      p json_obj
+      # p json_obj
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
