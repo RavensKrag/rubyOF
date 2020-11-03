@@ -1,6 +1,8 @@
 
 # stores the main logic and data of the program
 
+require 'forwardable' # for def_delegators
+
 require 'json' # easiest way to transfer data between Python and Ruby
 
 require 'open3'
@@ -58,7 +60,7 @@ class BlenderCube
     
     @mesh = RubyOF::Mesh.new
     # p mesh.methods
-    @mesh.setMode(:OF_PRIMITIVE_TRIANGLES)
+    @mesh.setMode(:triangles)
     # (ccw from bottom right)
     # (top layer)
     @mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
@@ -133,6 +135,193 @@ class BlenderCube
     
     
   end
+end
+
+class CustomCamera
+  extend Forwardable
+  include RubyOF::Graphics
+  
+  def initialize
+    super()
+    
+    
+    @of_cam = RubyOF::Camera.new
+    @scale = 1
+  end
+  
+  def position=(x)
+    @of_cam.position = x
+    @position = x
+  end
+  
+  def orientation=(x)
+    @of_cam.orientation = x
+    @orientation = x
+  end
+  
+  def fov=(x)
+    @of_cam.fov = x
+    @fov = x
+  end
+  
+  def_delegators :@of_cam, :position, :orientation, :fov
+  
+  # (defaults to viewport size and that works for me)
+  
+  # def aspect_ratio=(x)
+  #   @of_cam.aspect_ratio = x
+  # end
+  
+  def near_clip=(x)
+    @of_cam.near_clip = x
+    @nearClip = x
+  end
+  
+  def far_clip=(x)
+    @of_cam.far_clip = x
+    @farClip = x
+  end
+  
+  def_delegators :@of_cam, :near_clip, 
+                           :far_clip
+  
+  
+  attr_accessor :scale # used for orthographic view only
+  
+  def ortho?
+    return self.state?('ORTHO')
+  end
+  
+  
+  # 
+  # general strategy 
+  # 
+  
+  # in perspective mode use ofCamera,
+  # but in othographic mode manually apply transforms
+  # (this is a strategy utilized by ofxInfiniteCanvas)
+  
+  
+  
+  # 
+  # parameters
+  # 
+  
+  # position
+  # rotation
+  # fov
+  # aspect ratio
+  # near clip
+  # far clip
+  
+  # ortho scale
+  # ortho?
+  
+  
+  
+  # exact behavior of #begin and #end depends on the state of the camera
+  # NOTE: may want to use a state machine here
+  
+  
+  state_machine :state, :initial => 'PERSP' do
+    state 'PERSP' do
+      def begin(viewport = ofGetCurrentViewport())
+        # puts "persp cam"
+        @of_cam.begin
+      end
+      
+      
+      def end
+        @of_cam.end
+      end
+    end
+    
+    state 'ORTHO' do
+      def begin
+        invertY = false;
+        
+        # puts "ortho cam"
+        # puts @scale
+        
+        # NOTE: @orientation is a quat, @position is a vec3
+        
+        vp = ofGetCurrentViewport();
+        
+        ofPushView();
+        ofViewport(vp.x, vp.y, vp.width, vp.height, invertY);
+        # setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
+        lensOffset = GLM::Vec2.new(0,0)
+        ofSetMatrixMode(:projection);
+        # projectionMat = 
+        #   GLM.translate(GLM::Mat4.new(1.0),
+        #                 GLM::Vec3.new(-lensOffset.x, -lensOffset.y, 0.0)
+        #   ) * GLM.ortho(
+        #     - vp.width/2,
+        #     + vp.width/2,
+        #     - vp.height/2,
+        #     + vp.height/2,
+        #     @nearClip,
+        #     @farClip
+        #   );
+        
+        
+        # use negative scaling to flip Blender's z axis
+        # (not sure why it ends up being the second component, but w/e)
+        m5 = GLM.scale(GLM::Mat4.new(1.0),
+                       GLM::Vec3.new(1, -1, 1))
+        
+        projectionMat = 
+          GLM.ortho(
+            - vp.width/2,
+            + vp.width/2,
+            - vp.height/2,
+            + vp.height/2,
+            @nearClip,
+            @farClip*@scale
+          );
+        ofLoadMatrix(projectionMat * m5);
+        
+        
+        
+        ofSetMatrixMode(:modelview);
+        
+        m0 = GLM.scale(GLM::Mat4.new(1.0),
+                       GLM::Vec3.new(@scale, @scale, @scale))
+        
+        m1 = GLM.translate(GLM::Mat4.new(1.0),
+                                @position)
+        
+        m2 = GLM.toMat4(@orientation)
+        
+        cameraTransform = m1 * m2
+        
+        modelViewMat = m0 * GLM.inverse(cameraTransform)
+        # ^ maybe apply scale here?
+        ofLoadViewMatrix(modelViewMat);
+        
+        
+        
+        # @scale of about 25 works great for testing purposes with no translation
+        
+      end
+      
+      
+      def end
+        ofPopView();
+      end
+    end
+    
+    
+    event :enable_ortho do
+      transition 'PERSP' => 'ORTHO'
+    end
+    
+    event :disable_ortho do
+      transition 'ORTHO' => 'PERSP'
+    end
+  end
+  
+  
 end
 
 
@@ -223,7 +412,7 @@ class Core
     
     @cube = BlenderCube.new
     
-    @camera = RubyOF::Camera.new
+    @camera = CustomCamera.new
     @light  = RubyOF::Light.new
     
     
@@ -333,7 +522,11 @@ class Core
             'deg',
             @camera.fov
           ],
-          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP')
+          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP'),
+          'ortho_scale' => [
+            '???',
+            @camera.scale
+          ]
         }
       ]
       
@@ -427,14 +620,13 @@ class Core
         case obj['view_perspective']
         when 'PERSP'
           # puts "perspective cam ON"
-          @camera.disableOrtho()
-          @cam_scale = nil
+          @camera.disable_ortho
           
           @camera.fov = obj['fov'][1]
           
         when 'ORTHO'
-          @camera.enableOrtho()
-          @cam_scale = 30
+          @camera.enable_ortho
+          @camera.scale = obj['ortho_scale'][1]
           # TODO: scale needs to change as camera is updated
           # TODO: scale zooms as expected, but also effects pan rate (bad)
           
@@ -778,8 +970,8 @@ class Core
     # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
     
     # @camera.fov = 39.6
-    @camera.nearClip = 0.1
-    @camera.farClip = 1000
+    @camera.near_clip = 0.1
+    @camera.far_clip = 1000
     
     # @camera.setAspectRatio()
     
@@ -813,22 +1005,9 @@ class Core
     end
     
     
-    
     @camera.begin
     # puts @camera.getProjectionMatrix
     
-    # if @camera.ortho?
-    # if @cam_scale # Camera#ortho? doesn't work right now, idk why
-    #   ofScale(@cam_scale, @cam_scale, @cam_scale)
-    #   puts "scaling"
-      
-      
-    #   # https://github.com/roymacdonald/ofxInfiniteCanvas/blob/master/src/ofxInfiniteCanvas.cpp
-    #   # translation = clicTranslation - clicPoint*(scale - clicScale);
-      
-      
-    #   # oh wait, need to use a different way to compute viewport camera position when in ortho mode. that should feed into this.
-    # end
     
       @light.enable
         
@@ -842,6 +1021,7 @@ class Core
       @light.disable
     
     @camera.end
+    # ofPopMatrix();
     
     
     

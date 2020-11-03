@@ -226,9 +226,13 @@ class RubyOF(bpy.types.RenderEngine):
                             "deg",
                             context.scene.my_custom_props.fov
                         ],
-                        'aspect_ratio':[
+                        # 'aspect_ratio':[
+                        #     "???",
+                        #     context.scene.my_custom_props.aspect_ratio
+                        # ],
+                        'ortho_scale':[
                             "???",
-                            context.scene.my_custom_props.aspect_ratio
+                            context.scene.my_custom_props.ortho_scale
                         ],
                         'view_perspective': rv3d.view_perspective,
                         'perspective_matrix':[
@@ -344,12 +348,20 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         max = 100.0000
         )
     
-    aspect_ratio: FloatProperty(
-        name = "Aspect ratio",
-        description = "Viewport aspect ratio",
-        default = 16.0/9.0,
-        min = 0.0001,
-        max = 100.0000
+    # aspect_ratio: FloatProperty(
+    #     name = "Aspect ratio",
+    #     description = "Viewport aspect ratio",
+    #     default = 16.0/9.0,
+    #     min = 0.0001,
+    #     max = 100.0000
+    #     )
+    
+    ortho_scale: FloatProperty(
+        name = "Ortho scale",
+        description = "Scale for orthographic render mode (manual override)",
+        default = 1,
+        min = 1,
+        max = 100000
         )
 
 
@@ -384,7 +396,8 @@ class RubyOF_PropertiesPanel(bpy.types.Panel):
         self.layout.prop(context.scene.my_custom_props, "b_windowLink")
         self.layout.prop(context.scene.my_custom_props, "camera")
         self.layout.prop(context.scene.my_custom_props, "fov")
-        self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
+        # self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
+        self.layout.prop(context.scene.my_custom_props, "ortho_scale")
         
     
 

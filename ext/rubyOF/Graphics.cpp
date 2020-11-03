@@ -5,7 +5,7 @@ using namespace Rice;
 
 
 void ofEnableBlendMode__wrapper(int code){
-	static const ofBlendMode BLEND_MODES[6] = {
+	static const ofBlendMode BLEND_MODES[] = {
 			OF_BLENDMODE_DISABLED,
 			OF_BLENDMODE_ALPHA,
 			OF_BLENDMODE_ADD,
@@ -15,6 +15,19 @@ void ofEnableBlendMode__wrapper(int code){
 	};
 	
 	ofEnableBlendMode(BLEND_MODES[code]);
+}
+
+void ofSetMatrixMode__wrapper(int code){
+	// /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h:118
+	// enum ofMatrixMode {OF_MATRIX_MODELVIEW=0, OF_MATRIX_PROJECTION, OF_MATRIX_TEXTURE};
+	
+	static const ofMatrixMode MATRIX_MODES[] = {
+			OF_MATRIX_MODELVIEW,
+			OF_MATRIX_PROJECTION,
+			OF_MATRIX_TEXTURE,
+	};
+	
+	ofSetMatrixMode(MATRIX_MODES[code]);
 }
 
 Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
@@ -48,7 +61,6 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 	// global oF functions
 	// ------------------
 	
-	typedef void (*wrap_matrix_op)(const glm::mat4 & m);
 	
 	rb_mGraphics
 		// bitmap string
@@ -184,6 +196,12 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofViewport)
 		)
 		.define_method(
+			"ofGetCurrentViewport",
+			static_cast< ofRectangle (*)
+			(void)
+			>(&ofGetCurrentViewport)
+		)
+		.define_method(
 			"ofSetupScreenOrtho",
 			static_cast< void (*)
 			(float width, float height, float nearDist, float farDist)
@@ -196,6 +214,7 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 				Arg("farDist")  = 1
 			)
 		)
+		
 		
 		
 		
@@ -250,21 +269,21 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			&ofLoadIdentityMatrix // ()
 		)
 		
-		.define_method(
-			"ofLoadMatrix",
-			wrap_matrix_op(&ofLoadMatrix)
-		)
-		.define_method(
-			"ofMultMatrix",
-			wrap_matrix_op(&ofMultMatrix)
-		)
+		.define_method("ofLoadMatrix",
+         static_cast< void (*)
+         (const glm::mat4 & m)
+         >(&ofLoadMatrix)
+      )
+      .define_method("ofMultMatrix",
+         static_cast< void (*)
+         (const glm::mat4 & m)
+         >(&ofMultMatrix)
+      )
 		// NOTE: other interface is not multiplication by scalar, it's a pointer to a 4x4 matrix (assuming the first element of a nested array or something? better to just use the provided types.)
 		
 		
 		.define_method(
-			"ofSetMatrixMode",
-			&ofSetMatrixMode // (ofMatrixMode matrixMode)
-		)
+			"ofSetMatrixMode",  &ofSetMatrixMode__wrapper)
 		.define_method(
 			"ofLoadViewMatrix",
 			&ofLoadViewMatrix // (const glm::mat4 & m)

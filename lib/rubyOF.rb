@@ -48,6 +48,8 @@ base_path = lib_dir/'rubyOF'
 	'glm_vec3',
 	'glm_vec4',
 	'glm_quat',
+	'glm_mat4',
+	'glm',
 	
 	'window',
 	'color',
@@ -80,7 +82,7 @@ module Graphics
 		:multiply,
 		:screen,
 		:subtract,
-	]	
+	]
 	
 	alias :ofEnableBlendMode__cpp :ofEnableBlendMode
 	private :ofEnableBlendMode__cpp
@@ -90,6 +92,47 @@ module Graphics
 		raise ArgumentError, "Given blend mode #{mode.inspect} is not a valid blend mode. Please use one of the following: #{OF_BLENDMODES.inspect}" if i.nil?
 		
 		ofEnableBlendMode__cpp(i)
+	end
+	
+	
+	OF_MATRIX_MODES = [
+		:modelview,
+		:projection,
+		:texture
+	]	
+	
+	alias :ofSetMatrixMode__cpp :ofSetMatrixMode
+	private :ofSetMatrixMode__cpp
+	def ofSetMatrixMode(mode)
+		i = OF_MATRIX_MODES.index(mode)
+		
+		raise ArgumentError, "Given matrix mode #{mode.inspect} is not a valid matrix mode. Please use one of the following: #{OF_MATRIX_MODES.inspect}" if i.nil?
+		
+		ofSetMatrixMode__cpp(i)
+	end
+end
+
+
+class Mesh
+	alias :setMode__cpp :setMode
+	private :setMode__cpp
+	
+	OF_PRIMITIVES = [
+		:triangles,
+	   :triangle_strip,
+	   :triangle_fan,
+	   :lines,
+	   :line_strip,
+	   :line_loop,
+	   :points,
+	]
+	
+	def setMode(mode)
+		i = OF_PRIMITIVES.index(mode)
+		
+		raise ArgumentError, "Given mesh mode #{mode.inspect} is not a valid mesh mode. Please use one of the following: #{OF_PRIMITIVES.inspect}" if i.nil?
+		
+		setMode__cpp(i)
 	end
 end
 

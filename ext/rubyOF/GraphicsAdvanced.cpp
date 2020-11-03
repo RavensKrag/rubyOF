@@ -37,28 +37,22 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
 
 
 
-void ofMesh__setMode(ofMesh mesh, Rice::Symbol mode)
+void ofMesh__setMode(ofMesh mesh, int code)
 {
    
    // /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h
-   ofPrimitiveMode m;
-   if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLES")){
-      m = OF_PRIMITIVE_TRIANGLES;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_STRIP")){
-      m = OF_PRIMITIVE_TRIANGLE_STRIP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_TRIANGLE_FAN")){
-      m = OF_PRIMITIVE_TRIANGLE_FAN;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINES")){
-      m = OF_PRIMITIVE_LINES;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_STRIP")){
-      m = OF_PRIMITIVE_LINE_STRIP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_LINE_LOOP")){
-      m = OF_PRIMITIVE_LINE_LOOP;
-   }else if(mode == Rice::Symbol("OF_PRIMITIVE_POINTS")){
-      m = OF_PRIMITIVE_POINTS;
-   }
    
-   mesh.setMode(m);
+   static const ofPrimitiveMode MESH_MODES[] = {
+      OF_PRIMITIVE_TRIANGLES,
+      OF_PRIMITIVE_TRIANGLE_STRIP,
+      OF_PRIMITIVE_TRIANGLE_FAN,
+      OF_PRIMITIVE_LINES,
+      OF_PRIMITIVE_LINE_STRIP,
+      OF_PRIMITIVE_LINE_LOOP,
+      OF_PRIMITIVE_POINTS
+   };
+   
+   mesh.setMode(MESH_MODES[code]);
 }
 
 
@@ -353,14 +347,23 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       
       
-      .define_method("position",   &ofNode::getPosition)
+      .define_method("position",
+         static_cast< glm::vec3 (ofNode::*)
+         (void) const
+         >(&ofNode::getPosition)
+      )
       .define_method("position=",
          static_cast< void (ofNode::*)
          (const glm::vec3 &p)
          >(&ofNode::setPosition)
       )
       
-      .define_method("scale",      &ofNode::getScale)
+      
+      .define_method("scale",
+         static_cast< glm::vec3 (ofNode::*)
+         (void) const
+         >(&ofNode::getScale)
+      )
       .define_method("scale=",
          static_cast< void (ofNode::*)
          (const glm::vec3 &p)
@@ -405,15 +408,15 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // far
       // fov
       // aspect
-      .define_method("nearClip",      &ofCamera::getNearClip)
-      .define_method("farClip",       &ofCamera::getFarClip)
+      .define_method("near_clip",      &ofCamera::getNearClip)
+      .define_method("far_clip",       &ofCamera::getFarClip)
       .define_method("fov",           &ofCamera::getFov)
-      .define_method("aspectRatio",   &ofCamera::getAspectRatio)
+      .define_method("aspect_ratio",   &ofCamera::getAspectRatio)
       
-      .define_method("nearClip=",      &ofCamera::setNearClip)
-      .define_method("farClip=",       &ofCamera::setFarClip)
+      .define_method("near_clip=",      &ofCamera::setNearClip)
+      .define_method("far_clip=",       &ofCamera::setFarClip)
       .define_method("fov=",           &ofCamera::setFov)
-      .define_method("aspectRatio=",   &ofCamera::setAspectRatio)
+      .define_method("aspect_ratio=",   &ofCamera::setAspectRatio)
       
       .define_method("forceAspectRatio?",   &ofCamera::getForceAspectRatio)
       .define_method("forceAspectRatio=",   &ofCamera::setForceAspectRatio)
