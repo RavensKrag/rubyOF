@@ -325,6 +325,7 @@ end
 
 
 class BlenderSync
+  MAX_READS = 5
   
   def initialize(window, entities)
     @window = window
@@ -389,17 +390,16 @@ class BlenderSync
     
   def update
     
-    max_reads = 5
-    [max_reads, @msg_queue.length].min.times do
+    [MAX_READS, @msg_queue.length].min.times do
       data = @msg_queue.pop
       
-      json_obj = JSON.parse(data)
-      # p json_obj
+      list = JSON.parse(data)
+      # p list
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
       
-      parse_blender_data(json_obj)
+      parse_blender_data(list)
       
     end
     
@@ -530,7 +530,7 @@ class BlenderSync
       
       # just need to apply inverse of the measured delta to RubyOF windows
       delta = CP::Vec2.new(0, -101)*-1
-      @w.position = (blender_pos + delta).to_glm
+      @window.position = (blender_pos + delta).to_glm
       
       # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
       
@@ -682,24 +682,23 @@ class Core
     
     
     
+    @entities = {
+      'viewport_camera' => CustomCamera.new,
+      
+      'Cube'  => BlenderCube.new,
+      'Light' => RubyOF::Light.new
+    }
     
-    
-    @cube = BlenderCube.new
-    
-    @camera = CustomCamera.new
-    @light  = RubyOF::Light.new
-    
+    @sync = BlenderSync.new(@w, @entities)
     
     
     @camera_settings_file = PROJECT_DIR/'bin'/'data'/'viewport_camera.yaml'
     if @camera_settings_file.exist?
       puts "puts loading camera data"
       camera_data = YAML.load_file @camera_settings_file
-      parse_blender_data(camera_data)
+      @sync.parse_blender_data(camera_data)
       @camera_changed = false
     end
-    
-    
     
     
     
@@ -797,8 +796,8 @@ class Core
   # (ex2 if you have a bad reload and then manually exit, only call ensure 1x)
   def ensure
     puts "core: ensure"
-    @msg_thread.kill.join
-    sleep(0.1) # just a little bit extra time to make sure the FIFO is deleted
+    
+    @sync.stop
   end
   
   
@@ -1034,38 +1033,39 @@ class Core
     # @camera.fov = 39.6
     
     
-    
-    
-    @light.setPointLight()
-    @light.position = GLM::Vec3.new(4, 1, 6)
+    @sync.update
     
     
     
-    @cube.generate_mesh
-    
-    # f.close
-    # puts "---"
+    @entities['Light']
     
     
+    @entities['Light'].setPointLight()
+    @entities['Light'].position = GLM::Vec3.new(4, 1, 6)
     
     
     
-    @camera.begin
-    # puts @camera.getProjectionMatrix
+    @entities['Cube'].generate_mesh
     
     
-      @light.enable
+    
+    
+    
+    
+    @entities['viewport_camera'].begin
+    # puts @entities['viewport_camera'].getProjectionMatrix
+    
+    
+      @entities['Light'].enable
         
-        @cube.node.transformGL()
-      # ofScale(10000,10000,10000)
+        @entities['Cube'].node.transformGL()
+        @entities['Cube'].mesh.draw()
+        @entities['Cube'].node.restoreTransformGL()
       
-        
-        @cube.mesh.draw()
-        @cube.node.restoreTransformGL()
-      
-      @light.disable
+      @entities['Light'].disable
     
-    @camera.end
+    
+    @entities['viewport_camera'].end
     
     
     # 
