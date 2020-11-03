@@ -226,7 +226,7 @@ class CustomCamera
   state_machine :state, :initial => 'PERSP' do
     state 'PERSP' do
       def begin(viewport = ofGetCurrentViewport())
-        puts "persp cam"
+        # puts "persp cam"
         @of_cam.begin
       end
       
@@ -240,8 +240,8 @@ class CustomCamera
       def begin
         invertY = false;
         
-        puts "ortho cam"
-        puts @scale
+        # puts "ortho cam"
+        # puts @scale
         
         # NOTE: @orientation is a quat, @position is a vec3
         
@@ -1005,24 +1005,9 @@ class Core
     end
     
     
-    # ofPushMatrix();
-    
     @camera.begin
-    if @cam_scale # Camera#ortho? doesn't work right now, idk why
-      ofScale(@cam_scale, @cam_scale, @cam_scale)
-      # puts "scaling"
-    end
     # puts @camera.getProjectionMatrix
     
-    # if @camera.ortho?
-      
-      
-    #   # https://github.com/roymacdonald/ofxInfiniteCanvas/blob/master/src/ofxInfiniteCanvas.cpp
-    #   # translation = clicTranslation - clicPoint*(scale - clicScale);
-      
-      
-    #   # oh wait, need to use a different way to compute viewport camera position when in ortho mode. that should feed into this.
-    # end
     
       @light.enable
         
