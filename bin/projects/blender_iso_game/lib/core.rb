@@ -524,8 +524,16 @@ class Core
           ],
           'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP'),
           'ortho_scale' => [
-            '???',
+            'factor',
             @camera.scale
+          ],
+          'near_clip' => [
+            'm',
+            @camera.near_clip
+          ],
+          'far_clip' => [
+            'm',
+            @camera.far_clip
           ]
         }
       ]
@@ -607,6 +615,9 @@ class Core
         
         @camera_changed = true
         
+        
+        @camera.near_clip = obj['near_clip'][1]
+        @camera.far_clip = obj['far_clip'][1]
         
         
         # p obj['aspect_ratio'][1]
@@ -966,14 +977,10 @@ class Core
     
     
     
-    # @camera.setPosition(GLM::Vec3.new(50, 50, 0))
     # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
     
     # @camera.fov = 39.6
-    @camera.near_clip = 0.1
-    @camera.far_clip = 1000
     
-    # @camera.setAspectRatio()
     
     
     
@@ -1021,8 +1028,6 @@ class Core
       @light.disable
     
     @camera.end
-    # ofPopMatrix();
-    
     
     
     # 

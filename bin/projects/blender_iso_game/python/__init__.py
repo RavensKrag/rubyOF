@@ -226,12 +226,20 @@ class RubyOF(bpy.types.RenderEngine):
                             "deg",
                             context.scene.my_custom_props.fov
                         ],
+                        'near_clip':[
+                            'm',
+                            space.clip_start
+                        ],
+                        'far_clip':[
+                            'm',
+                            space.clip_end
+                        ],
                         # 'aspect_ratio':[
                         #     "???",
                         #     context.scene.my_custom_props.aspect_ratio
                         # ],
                         'ortho_scale':[
-                            "???",
+                            "factor",
                             context.scene.my_custom_props.ortho_scale
                         ],
                         'view_perspective': rv3d.view_perspective,
