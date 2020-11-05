@@ -320,12 +320,12 @@ class CustomCamera< BlenderObject
     end
     
     
-    event :enable_ortho do
-      transition 'PERSP' => 'ORTHO'
+    event :use_orthographic_mode do
+      transition any => 'ORTHO'
     end
     
-    event :disable_ortho do
-      transition 'ORTHO' => 'PERSP'
+    event :use_perspective_mode do
+      transition any => 'PERSP'
     end
   end
   
@@ -335,13 +335,13 @@ class CustomCamera< BlenderObject
     {
         'type' => 'viewport_camera',
         'view_perspective' => self.state,
+        'rotation' => [
+          'Quat',
+          @orientation.z, @orientation.w, @orientation.x, @orientation.y
+        ],
         'position' => [
           'Vec3',
           @position.x, @position.y, @position.z
-        ],
-        'rotation' => [
-          'Quat',
-          @orientation.w, @orientation.x, @orientation.y, @orientation.z
         ],
         'fov' => [
           'deg',
@@ -502,12 +502,12 @@ class BlenderSync
             case obj['view_perspective']
             when 'PERSP'
               # puts "perspective cam ON"
-              camera.disable_ortho
+              camera.use_perspective_mode
               
               camera.fov = obj['fov'][1]
               
             when 'ORTHO'
-              camera.enable_ortho
+              camera.use_orthographic_mode
               camera.scale = obj['ortho_scale'][1]
               # TODO: scale needs to change as camera is updated
               # TODO: scale zooms as expected, but also effects pan rate (bad)
@@ -741,6 +741,55 @@ class Core
     if @camera_settings_file.exist?
       puts "puts loading camera data"
       camera_data = YAML.load_file @camera_settings_file
+      p camera_data
+      
+      # camera_data1 = YAML.load_file @camera_settings_file
+      # camera_data2 = YAML.load_file @camera_settings_file
+      
+      
+      # d1 = camera_data1[0]
+      # d2 = camera_data2[0]
+      
+      # d1['view_perspective'] = 'ORTHO' # works, kinda
+      # d2['view_perspective'] = 'PERSP' # doesn't work
+      
+      # camera_data = [
+      #   d2
+      # ]
+      
+      # components of orientation quaternion were getting scrambled
+      # - correct data, but components were in the wrong order.
+      # - why??? how???
+      
+      
+      # # YAML data original
+      # camera_data = [{"type"=>"viewport_camera", "view_perspective"=>"PERSP", "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], "fov"=>["deg", 43.009002685546875], "ortho_scale"=>["factor", 1], "near_clip"=>["m", 0.10000000149011612], "far_clip"=>["m", 1000.0]}]
+
+      # # YAML data edited
+      # camera_data = [{"type"=>"viewport_camera", 
+      #   "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], # original YAML data
+      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], # transplant from JSON
+      #   "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], 
+      #   "fov"=>["deg", 43.009002685546875], 
+      #   "near_clip"=>["m", 0.10000000149011612], 
+      #   "far_clip"=>["m", 1000.0], 
+      #   "ortho_scale"=>["factor", 1], 
+      #   "view_perspective"=>"PERSP"
+      #   }]
+      
+      
+      # # JSON data
+      # camera_data = [{"type"=>"viewport_camera", 
+      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], 
+      #   "position"=>["Vec3", 0.22299401462078094, -7.953176498413086, 2.278393268585205], 
+      #   "fov"=>["deg", 43.009002685546875], 
+      #   "near_clip"=>["m", 0.10000000149011612], 
+      #   "far_clip"=>["m", 1000.0], 
+      #   "ortho_scale"=>["factor", 69.13003540039062], 
+      #   "view_perspective"=>"PERSP"
+      #   }]
+
+      
       @sync.parse_blender_data(camera_data)
       
       @entities['viewport_camera'].dirty = false
@@ -774,7 +823,7 @@ class Core
     end
     
     @entities['viewport_camera'].tap do |camera|
-      if camera.dirty
+      # if camera.dirty
         puts "camera dump"
         entity_data_list = [
           camera.data_dump
@@ -786,7 +835,7 @@ class Core
         
         
         dump_yaml entity_data_list => @camera_settings_file
-      end
+      # end
     end
     
     
@@ -1058,6 +1107,8 @@ class Core
     
     @sync.update
     
+    
+    # p @entities
     
     
     @entities['Light']
