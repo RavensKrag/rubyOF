@@ -486,10 +486,10 @@ class BlenderSync
           @entities['viewport_camera'].tap do |camera|
             camera.dirty = true
             
-            camera.position = GLM::Vec3.new(*(obj['position'][1..3]))
+            camera.position    = GLM::Vec3.new(*(obj['position'][1..3]))
             camera.orientation = GLM::Quat.new(*(obj['rotation'][1..4]))
-            camera.near_clip = obj['near_clip'][1]
-            camera.far_clip = obj['far_clip'][1]
+            camera.near_clip   = obj['near_clip'][1]
+            camera.far_clip    = obj['far_clip'][1]
             
             # p obj['aspect_ratio'][1]
             # @camera.setAspectRatio(obj['aspect_ratio'][1])
