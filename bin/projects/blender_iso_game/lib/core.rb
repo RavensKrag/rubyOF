@@ -774,11 +774,14 @@ class Core
   
   
   def on_reload
+    puts "core: on reload"
     unless @crash_detected
+      # on a successful reload after a normal run with no errors,
+      # need to free resources from the previous normal run,
+      # because those resources will be initialized again in #setup
       self.ensure()
     end
     
-    puts "core: on reload"
     @crash_detected = false
     
     @shader_files = nil
