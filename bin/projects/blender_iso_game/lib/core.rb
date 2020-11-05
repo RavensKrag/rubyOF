@@ -337,7 +337,7 @@ class CustomCamera< BlenderObject
         'view_perspective' => self.state,
         'rotation' => [
           'Quat',
-          @orientation.z, @orientation.w, @orientation.x, @orientation.y
+          @orientation.w, @orientation.x, @orientation.y, @orientation.z
         ],
         'position' => [
           'Vec3',

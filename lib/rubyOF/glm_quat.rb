@@ -24,18 +24,35 @@ class Quat
 	private :set_component
 	
 	
-	# get / set value of a component by numerical index
-	def [](i)
-		return get_component(i)
-	end
+	# 
+	# glm::quat internal memory order is (x,y,z,w)
+	# but the constructor specifies (w,x,y,z)
+	# and glm::string_cast uses (w,x,y,z)
+	# Therefore, direct memory access should not be allowed from Ruby
+	# and all interactions with quaternions should be done through the
+	# named component interface
+	# 
+	# src: https://stackoverflow.com/questions/48348509/glmquat-why-the-order-of-x-y-z-w-components-are-mixed
 	
-	def []=(i, value)
-		return set_component(i, value.to_f)
-	end
+	
+	# 
+	# no numerical index interface for Quaternion,
+	# unlike the other vector types
+	# see above for explanation.
+	# 
+	
+	# # get / set value of a component by numerical index
+	# def [](i)
+	# 	return get_component(i)
+	# end
+	
+	# def []=(i, value)
+	# 	return set_component(i, value.to_f)
+	# end
 	
 	
 	# get / set values of component by axis name
-	%w[w x y z].each_with_index do |component, i|
+	%w[x y z w].each_with_index do |component, i|
 		# getters
 		# (same as array-style interface)
 		define_method component do
