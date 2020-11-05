@@ -38,7 +38,17 @@ def usec(time)
 end
 
 
-class BlenderCube
+class BlenderObject
+  attr_accessor :dirty
+  
+  def initialize
+    @dirty = false
+      # if true, tells system that this datablock has been updated
+      # and thus needs to be saved to disk
+  end
+end
+
+class BlenderCube < BlenderObject
   extend Forwardable
   
   attr_reader :mesh, :node
@@ -135,7 +145,7 @@ class BlenderCube
   end
 end
 
-class CustomCamera
+class CustomCamera< BlenderObject
   extend Forwardable
   include RubyOF::Graphics
   
@@ -172,12 +182,12 @@ class CustomCamera
   
   def near_clip=(x)
     @of_cam.near_clip = x
-    @nearClip = x
+    @near_clip = x
   end
   
   def far_clip=(x)
     @of_cam.far_clip = x
-    @farClip = x
+    @far_clip = x
   end
   
   def_delegators :@of_cam, :near_clip, 
@@ -258,8 +268,8 @@ class CustomCamera
         #     + vp.width/2,
         #     - vp.height/2,
         #     + vp.height/2,
-        #     @nearClip,
-        #     @farClip
+        #     @near_clip,
+        #     @far_clip
         #   );
         
         
@@ -274,8 +284,8 @@ class CustomCamera
             + vp.width/2,
             - vp.height/2,
             + vp.height/2,
-            @nearClip,
-            @farClip*@scale
+            @near_clip,
+            @far_clip*@scale
           );
         ofLoadMatrix(projectionMat * m5);
         
@@ -310,15 +320,47 @@ class CustomCamera
     end
     
     
-    event :enable_ortho do
-      transition 'PERSP' => 'ORTHO'
+    event :use_orthographic_mode do
+      transition any => 'ORTHO'
     end
     
-    event :disable_ortho do
-      transition 'ORTHO' => 'PERSP'
+    event :use_perspective_mode do
+      transition any => 'PERSP'
     end
   end
   
+  
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    {
+        'type' => 'viewport_camera',
+        'view_perspective' => self.state,
+        'rotation' => [
+          'Quat',
+          @orientation.w, @orientation.x, @orientation.y, @orientation.z
+        ],
+        'position' => [
+          'Vec3',
+          @position.x, @position.y, @position.z
+        ],
+        'fov' => [
+          'deg',
+          @fov
+        ],
+        'ortho_scale' => [
+          'factor',
+          @scale
+        ],
+        'near_clip' => [
+          'm',
+          @near_clip
+        ],
+        'far_clip' => [
+          'm',
+          @far_clip
+        ]
+    }
+  end
   
 end
 
@@ -411,12 +453,10 @@ class BlenderSync
   end
   
   
-  
+  # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(data_list)
     data_list.each do |obj|
-      case obj['type']
-      when 'viewport_region'
-        
+      if obj['type'] == 'viewport_region'        
         # 
         # sync window size
         # 
@@ -435,69 +475,69 @@ class BlenderSync
         # 
         
         sync_window_position(blender_pid: obj['pid'])
+      else
+        # adjust entity parameters
+        # (viewport camera is also considered an entity in this context)
         
-        
-        
-        
-      when 'viewport_camera'
-        puts "update viewport"
-        
-        vp_camera = @entities['viewport_camera'];
-        
-        pos  = GLM::Vec3.new(*(obj['position'][1..3]))
-        quat = GLM::Quat.new(*(obj['rotation'][1..4]))
-        
-        vp_camera.position = pos
-        vp_camera.orientation = quat
-        
-        
-        @camera_changed = true
-        
-        
-        vp_camera.near_clip = obj['near_clip'][1]
-        vp_camera.far_clip = obj['far_clip'][1]
-        
-        
-        # p obj['aspect_ratio'][1]
-        # @camera.setAspectRatio(obj['aspect_ratio'][1])
-        # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
-        
-        # NOTE: Aspect ratio appears to do nothing, which is bizzare
-        
-        
-        # p obj['view_perspective']
-        case obj['view_perspective']
-        when 'PERSP'
-          # puts "perspective cam ON"
-          vp_camera.disable_ortho
+        case obj['type']
+        when 'viewport_camera'
+          puts "update viewport"
           
-          vp_camera.fov = obj['fov'][1]
+          @entities['viewport_camera'].tap do |camera|
+            camera.dirty = true
+            
+            camera.position    = GLM::Vec3.new(*(obj['position'][1..3]))
+            camera.orientation = GLM::Quat.new(*(obj['rotation'][1..4]))
+            camera.near_clip   = obj['near_clip'][1]
+            camera.far_clip    = obj['far_clip'][1]
+            
+            # p obj['aspect_ratio'][1]
+            # @camera.setAspectRatio(obj['aspect_ratio'][1])
+            # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
+            
+            # NOTE: Aspect ratio appears to do nothing, which is bizzare
+            
+            
+            # p obj['view_perspective']
+            case obj['view_perspective']
+            when 'PERSP'
+              # puts "perspective cam ON"
+              camera.use_perspective_mode
+              
+              camera.fov = obj['fov'][1]
+              
+            when 'ORTHO'
+              camera.use_orthographic_mode
+              camera.scale = obj['ortho_scale'][1]
+              # TODO: scale needs to change as camera is updated
+              # TODO: scale zooms as expected, but also effects pan rate (bad)
+              
+              
+            when 'CAMERA'
+              
+              
+            end
+          end
+        when 'MESH'
+          puts "mesh data"
+          p obj
           
-        when 'ORTHO'
-          vp_camera.enable_ortho
-          vp_camera.scale = obj['ortho_scale'][1]
-          # TODO: scale needs to change as camera is updated
-          # TODO: scale zooms as expected, but also effects pan rate (bad)
+          pos   = GLM::Vec3.new(*(obj['position'][1..3]))
+          quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
+          scale = GLM::Vec3.new(*(obj['scale'][1..3]))
+          
+          cube = @entities['Cube']
+          
+          cube.position = pos
+          cube.orientation = quat
+          cube.scale = scale
           
           
-        when 'CAMERA'
-          
-          
+          cube.dirty = true
         end
-      when 'MESH'
-        puts "mesh data"
-        p obj
         
-        pos   = GLM::Vec3.new(*(obj['position'][1..3]))
-        quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
-        scale = GLM::Vec3.new(*(obj['scale'][1..3]))
-        
-        cube = @entities['Cube']
-        
-        cube.position = pos
-        cube.orientation = quat
-        cube.scale = scale
       end
+      
     end
   end
   
@@ -701,8 +741,58 @@ class Core
     if @camera_settings_file.exist?
       puts "puts loading camera data"
       camera_data = YAML.load_file @camera_settings_file
+      p camera_data
+      
+      # camera_data1 = YAML.load_file @camera_settings_file
+      # camera_data2 = YAML.load_file @camera_settings_file
+      
+      
+      # d1 = camera_data1[0]
+      # d2 = camera_data2[0]
+      
+      # d1['view_perspective'] = 'ORTHO' # works, kinda
+      # d2['view_perspective'] = 'PERSP' # doesn't work
+      
+      # camera_data = [
+      #   d2
+      # ]
+      
+      # components of orientation quaternion were getting scrambled
+      # - correct data, but components were in the wrong order.
+      # - why??? how???
+      
+      
+      # # YAML data original
+      # camera_data = [{"type"=>"viewport_camera", "view_perspective"=>"PERSP", "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], "fov"=>["deg", 43.009002685546875], "ortho_scale"=>["factor", 1], "near_clip"=>["m", 0.10000000149011612], "far_clip"=>["m", 1000.0]}]
+
+      # # YAML data edited
+      # camera_data = [{"type"=>"viewport_camera", 
+      #   "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], # original YAML data
+      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], # transplant from JSON
+      #   "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], 
+      #   "fov"=>["deg", 43.009002685546875], 
+      #   "near_clip"=>["m", 0.10000000149011612], 
+      #   "far_clip"=>["m", 1000.0], 
+      #   "ortho_scale"=>["factor", 1], 
+      #   "view_perspective"=>"PERSP"
+      #   }]
+      
+      
+      # # JSON data
+      # camera_data = [{"type"=>"viewport_camera", 
+      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], 
+      #   "position"=>["Vec3", 0.22299401462078094, -7.953176498413086, 2.278393268585205], 
+      #   "fov"=>["deg", 43.009002685546875], 
+      #   "near_clip"=>["m", 0.10000000149011612], 
+      #   "far_clip"=>["m", 1000.0], 
+      #   "ortho_scale"=>["factor", 69.13003540039062], 
+      #   "view_perspective"=>"PERSP"
+      #   }]
+
+      
       @sync.parse_blender_data(camera_data)
-      @camera_changed = false
+      
+      @entities['viewport_camera'].dirty = false
     end
     
     
@@ -732,48 +822,22 @@ class Core
       RB_SPIKE_PROFILER.disable
     end
     
-    if @camera_changed
-      camera_pos = @camera.position
-      camera_rot = @camera.orientation
-      
-      camera_data = [
-        {
-          'type' => 'viewport_camera',
-          'position' => [
-            'Vec3',
-            camera_pos.x, camera_pos.y, camera_pos.z
-          ],
-          'rotation' => [
-            'Quat',
-            camera_rot.w, camera_rot.x, camera_rot.y, camera_rot.z
-          ],
-          'fov' => [
-            'deg',
-            @camera.fov
-          ],
-          'view_perspective' => (@camera.ortho? ? 'ORTHO' : 'PERSP'),
-          'ortho_scale' => [
-            'factor',
-            @camera.scale
-          ],
-          'near_clip' => [
-            'm',
-            @camera.near_clip
-          ],
-          'far_clip' => [
-            'm',
-            @camera.far_clip
-          ]
-        }
-      ]
-      
-      # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-      # ('CAMERA' not yet supported)
-      # ('ORTHO' support currently rather poor)
-      
-      
-      dump_yaml camera_data => @camera_settings_file
+    @entities['viewport_camera'].tap do |camera|
+      # if camera.dirty
+        puts "camera dump"
+        entity_data_list = [
+          camera.data_dump
+        ]
+        
+        # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
+        # ('CAMERA' not yet supported)
+        # ('ORTHO' support currently rather poor)
+        
+        
+        dump_yaml entity_data_list => @camera_settings_file
+      # end
     end
+    
     
   end
   
@@ -1043,6 +1107,8 @@ class Core
     
     @sync.update
     
+    
+    # p @entities
     
     
     @entities['Light']
