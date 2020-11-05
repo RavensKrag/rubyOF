@@ -22,6 +22,7 @@ class LiveCode
       
       def method_missing(method, *args)
         begin
+          # puts "livecode - delegate: #{method}"
           return args.empty? ? @inner.send(method) : @inner.send(method, *args)
         rescue StandardError => e
           # puts "method missing error handler in LiveCode"
@@ -74,6 +75,7 @@ class LiveCode
       
       def method_missing(method, *args)
         # suspend delegation in order to suppress additional errors
+        # puts "livecode - supressing: #{method}"
       end
             
       def update(*args)
