@@ -363,29 +363,34 @@ class BlenderSync
       File.mkfifo(fifo_path)
       puts "fifo created @ #{fifo_path}"
       
-      f_r = File.open(fifo_path, "r+")
+      @f_r = File.open(fifo_path, "r+")
     
     @msg_queue = Queue.new
     @msg_thread = Thread.new do
       begin
+        puts "fifo message thread start"
         loop do
-          data = f_r.gets # blocking IO
+          data = @f_r.gets # blocking IO
           @msg_queue << data
         end
       ensure
-        p f_r
-        p fifo_path
-        
-        f_r.close
-        FileUtils.rm(fifo_path)
-        puts "fifo closed"
+        puts "fifo message thread stopped"
       end
     end
   end
   
   def stop
     @msg_thread.kill.join
-    sleep(0.1) # just a little bit extra time to make sure the FIFO is deleted
+    
+    # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
+    fifo_path = @fifo_dir/@fifo_name
+    
+    p @f_r
+    p fifo_path
+    
+    @f_r.close
+    FileUtils.rm(fifo_path)
+    puts "fifo closed"
   end
     
   def update
@@ -1050,7 +1055,7 @@ class Core
     
     @entities['Cube'].generate_mesh
     
-    
+    # raise "test error"
     
     
     
