@@ -383,7 +383,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
 #
 # Panel for properties (under Render Properties tab)
 #
-class RubyOF_PropertiesPanel(bpy.types.Panel):
+class DATA_PT_RubyOF_Properties(bpy.types.Panel):
     COMPAT_ENGINES= {"RUBYOF"}
     
     bl_idname = "RUBYOF_PT_HELLOWORLD"
@@ -446,7 +446,7 @@ def get_panels():
 
 classes = (
     RubyOF_Properties,
-    RubyOF_PropertiesPanel
+    DATA_PT_RubyOF_Properties
 )
 
 def register():
