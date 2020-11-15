@@ -127,40 +127,80 @@ class RubyOF(bpy.types.RenderEngine):
                         obj = instance.object
                         # print(instance)
                         # print(obj.type)
-                        if obj.type == 'MESH':
-                            print(obj)
-                            
-                            pos   = obj.location
-                            rot   = obj.rotation_quaternion
-                            scale = obj.scale
-                            
-                            data = [
-                                {
-                                    'name': obj.name_full,
-                                    'type': obj.type,
-                                    'position':[
-                                        "Vec3",
-                                        pos.x,
-                                        pos.y,
-                                        pos.z
-                                    ],
-                                    'rotation':[
-                                        "Quat",
-                                        rot.w,
-                                        rot.x,
-                                        rot.y,
-                                        rot.z
-                                    ],
-                                    'scale':[
-                                        "Vec3",
-                                        scale.x,
-                                        scale.y,
-                                        scale.z
-                                    ]
-                                }
+                        
+                        print(obj)
+                        
+                        pos   = obj.location
+                        rot   = obj.rotation_quaternion
+                        scale = obj.scale
+                        
+                        obj_data = {
+                            'name': obj.name_full,
+                            'type': obj.type,
+                            'position':[
+                                "Vec3",
+                                pos.x,
+                                pos.y,
+                                pos.z
+                            ],
+                            'rotation':[
+                                "Quat",
+                                rot.w,
+                                rot.x,
+                                rot.y,
+                                rot.z
+                            ],
+                            'scale':[
+                                "Vec3",
+                                scale.x,
+                                scale.y,
+                                scale.z
                             ]
-                            pipe.write(json.dumps(data) + "\n")
-                            pipe.close()
+                        }
+                        
+                        if obj.type == 'MESH':
+                            pass
+                        elif obj.type == 'LIGHT':
+                            obj_data.update({
+                                'ambient_color': [
+                                    'rgb'
+                                ],
+                                'diffuse_color': [
+                                    'rgb'
+                                ],
+                                'attenuation':[
+                                    'rgb'
+                                ]
+                                
+                            })
+                            # blender EEVEE properties:
+                                # color
+                                # power (wats)
+                                # specular
+                                # radius
+                                # shadow
+                            # OpenFrameworks properties:
+                                # setAmbientColor()
+                                # setDiffuseColor()
+                                # setSpecularColor()
+                                # setAttenuation()
+                                    # 3 args: const, linear, quadratic
+                                # setup() 
+                                # setAreaLight()
+                                # setDirectional()
+                                # setPointLight()
+                                # setSpotlight() # 2 args to set the following:
+                                    # setSpotlightCutOff()
+                                        # 0 to 90 degs, default 45
+                                    # setSpotConcentration()
+                                        # 0 to 128 exponent, default 16
+                            
+                        
+                        data = [
+                            obj_data
+                        ]
+                        pipe.write(json.dumps(data) + "\n")
+                        pipe.close()
                 
                 print("---")
             except IOError as e:
@@ -381,7 +421,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
 
 
 #
-# Panel for properties (under Render Properties tab)
+# Panel for general renderer properties (under Render Properties tab)
 #
 class DATA_PT_RubyOF_Properties(bpy.types.Panel):
     COMPAT_ENGINES= {"RUBYOF"}
@@ -415,8 +455,58 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         self.layout.prop(context.scene.my_custom_props, "ortho_scale")
         
     
+#
+# Panel for light (under "object data" tab for a light object)
+# (based on blender source code:
+#    blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_light.py
+# )
+class DataButtonsPanel:
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
 
+    @classmethod
+    def poll(cls, context):
+        engine = context.engine
+        return context.light and (engine in cls.COMPAT_ENGINES)
 
+class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
+    bl_label = "Light"
+    COMPAT_ENGINES = {'RUBYOF'}
+    
+    def draw(self, context):
+        layout = self.layout
+        light = context.light
+        
+        # Compact layout for node editor.
+        if self.bl_space_type == 'PROPERTIES':
+            layout.row().prop(light, "type", expand=True)
+            layout.use_property_split = True
+        else:
+            layout.use_property_split = True
+            layout.row().prop(light, "type")
+        
+        col = layout.column()
+        col.prop(light, "color")
+        col.prop(light, "energy")
+        col.prop(light, "specular_factor", text="Specular")
+        
+        col.separator()
+        
+        if light.type in {'POINT', 'SPOT'}:
+            col.prop(light, "shadow_soft_size", text="Radius")
+        elif light.type == 'SUN':
+            col.prop(light, "angle")
+        elif light.type == 'AREA':
+            col.prop(light, "shape")
+            
+            sub = col.column(align=True)
+            
+            if light.shape in {'SQUARE', 'DISK'}:
+                sub.prop(light, "size")
+            elif light.shape in {'RECTANGLE', 'ELLIPSE'}:
+                sub.prop(light, "size", text="Size X")
+                sub.prop(light, "size_y", text="Y")
 
 
 
@@ -434,10 +524,47 @@ def get_panels():
     exclude_panels = {
         'VIEWLAYER_PT_filter',
         'VIEWLAYER_PT_layer_passes',
+        
+        "CYCLES_RENDER_PT_light_paths",
+        "CYCLES_LIGHT_PT_light",
+        "CYCLES_LIGHT_PT_nodes",
+        "CYCLES_LIGHT_PT_preview",
+        "CYCLES_LIGHT_PT_spot",
+        "CYCLES_RENDER_PT_light_paths_caustics",
+        "CYCLES_RENDER_PT_light_paths_clamping",
+        "CYCLES_RENDER_PT_light_paths_max_bounces",
+        "CYCLES_RENDER_PT_passes_light",
+        "CYCLES_VIEW3D_PT_shading_lighting",
+        # "DATA_PT_context_light",
+        "DATA_PT_context_lightprobe",
+        # "DATA_PT_custom_props_light",
+        "DATA_PT_EEVEE_light",
+        "DATA_PT_EEVEE_light_distance",
+        "DATA_PT_light",
+        "DATA_PT_lightprobe",
+        "DATA_PT_lightprobe_display",
+        "DATA_PT_lightprobe_parallax",
+        "DATA_PT_lightprobe_visibility",
+        "NODE_CYCLES_LIGHT_PT_light",
+        "NODE_CYCLES_LIGHT_PT_spot",
+        "NODE_DATA_PT_EEVEE_light",
+        "NODE_DATA_PT_light",
+        "RENDER_PT_eevee_indirect_lighting",
+        "RENDER_PT_eevee_indirect_lighting_display",
+        "RENDER_PT_eevee_volumetric_lighting",
+        "RENDER_PT_opengl_lighting",
+        "USERPREF_PT_studiolight_light_editor",
+        "USERPREF_PT_studiolight_lights",
+        "USERPREF_PT_studiolight_matcaps",
+        "USERPREF_PT_studiolight_world",
+        "VIEW3D_PT_shading_lighting",
+        "VIEWLAYER_PT_eevee_layer_passes_light"
+        # "DATA_PT_RubyOF_light",
     }
     
     panels = []
     for panel in bpy.types.Panel.__subclasses__():
+        print(panel.__name__)
         if hasattr(panel, 'COMPAT_ENGINES') and 'BLENDER_RENDER' in panel.COMPAT_ENGINES:
             if panel.__name__ not in exclude_panels:
                 panels.append(panel)
@@ -446,7 +573,8 @@ def get_panels():
 
 classes = (
     RubyOF_Properties,
-    DATA_PT_RubyOF_Properties
+    DATA_PT_RubyOF_Properties,
+    DATA_PT_RubyOF_light
 )
 
 def register():
