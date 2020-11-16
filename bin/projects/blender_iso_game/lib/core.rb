@@ -364,6 +364,10 @@ class CustomCamera< BlenderObject
   
 end
 
+class BlenderLight < BlenderObject
+  
+end
+
 
 
 class BlenderSync
@@ -456,6 +460,7 @@ class BlenderSync
   # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(data_list)
     data_list.each do |obj|
+      # p obj
       if obj['type'] == 'viewport_region'        
         # 
         # sync window size
@@ -478,7 +483,6 @@ class BlenderSync
       else
         # adjust entity parameters
         # (viewport camera is also considered an entity in this context)
-        
         case obj['type']
         when 'viewport_camera'
           puts "update viewport"
@@ -519,8 +523,8 @@ class BlenderSync
             end
           end
         when 'MESH'
-          puts "mesh data"
-          p obj
+          # puts "mesh data"
+          # p obj
           
           pos   = GLM::Vec3.new(*(obj['position'][1..3]))
           quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
@@ -534,6 +538,38 @@ class BlenderSync
           
           
           cube.dirty = true
+        when 'LIGHT'
+          puts "light data"
+          p obj
+          
+          pos   = GLM::Vec3.new(*(obj['position'][1..3]))
+          quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
+          scale = GLM::Vec3.new(*(obj['scale'][1..3]))
+          
+          light = @entities['Light']
+          
+          light.position = pos
+          light.orientation = quat
+          light.scale = scale
+          
+          case obj['light_type']
+          when 'POINT'
+            # point light
+            light.setPointLight()
+          when 'SUN'
+            # directional light
+            light.setDirectional()
+          when 'SPOT'
+            # spotlight
+            light.setSpotlight(45.0, 0) # requires 2 args
+            # float spotCutOff=45.f, float exponent=0.f
+          end
+          
+          color_ary = obj['color'][1..3]
+          color = RubyOF::Color.rgba(color_ary + [255])
+          light.diffuse_color = color
+          light.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+          
         end
         
       end
@@ -1111,35 +1147,47 @@ class Core
     # p @entities
     
     
-    @entities['Light']
-    
-    
-    @entities['Light'].setPointLight()
-    @entities['Light'].position = GLM::Vec3.new(4, 1, 6)
-    
-    
-    
     @entities['Cube'].generate_mesh
     
     # raise "test error"
     
     
     
+    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
+    # (thus, you don't need a separate node to track the position of ofLight)
+    
+    # ofEnableDepthTest()
+    if @first_update
+      @entities['Light'].setup
+      
+      
+      @first_update = false
+    end
+    
+    ofEnableLighting()
+    @entities['Light'].enable
     
     @entities['viewport_camera'].begin
     # puts @entities['viewport_camera'].getProjectionMatrix
     
-    
-      @entities['Light'].enable
+      
+        material = RubyOF::Material.new
+        # material.ambient_color  = RubyOF::Color.hex_alpha(0x000000, 0xff)
+        material.diffuse_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+        material.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+        
+        material.begin
         
         @entities['Cube'].node.transformGL()
         @entities['Cube'].mesh.draw()
         @entities['Cube'].node.restoreTransformGL()
+        
+        material.end
       
       @entities['Light'].disable
     
-    
     @entities['viewport_camera'].end
+    ofDisableLighting()
     
     
     # 

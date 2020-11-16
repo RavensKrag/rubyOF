@@ -129,6 +129,7 @@ class RubyOF(bpy.types.RenderEngine):
                         # print(obj.type)
                         
                         print(obj)
+                        print(obj.type)
                         
                         pos   = obj.location
                         rot   = obj.rotation_quaternion
@@ -161,9 +162,20 @@ class RubyOF(bpy.types.RenderEngine):
                         if obj.type == 'MESH':
                             pass
                         elif obj.type == 'LIGHT':
+                            print(obj.color)
                             obj_data.update({
+                                'color': [
+                                    'rgb',
+                                    obj.data.color[0],
+                                    obj.data.color[1],
+                                    obj.data.color[2]
+                                ],
+                                # (there is a property on the object called "color" but that is not what you want)
+                                
+                                'light_type': obj.data.type,
+                                
                                 'ambient_color': [
-                                    'rgb'
+                                    'rgb',
                                 ],
                                 'diffuse_color': [
                                     'rgb'
@@ -173,6 +185,10 @@ class RubyOF(bpy.types.RenderEngine):
                                 ]
                                 
                             })
+                            
+                            # col.prop(light, "color")
+                            # col.prop(light, "energy")
+                            
                             # blender EEVEE properties:
                                 # color
                                 # power (wats)
@@ -200,7 +216,7 @@ class RubyOF(bpy.types.RenderEngine):
                             obj_data
                         ]
                         pipe.write(json.dumps(data) + "\n")
-                        pipe.close()
+                pipe.close()
                 
                 print("---")
             except IOError as e:

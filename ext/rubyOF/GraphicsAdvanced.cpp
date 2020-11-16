@@ -37,7 +37,7 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
 
 
 
-void ofMesh__setMode(ofMesh mesh, int code)
+void ofMesh__setMode(ofMesh &mesh, int code)
 {
    
    // /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h
@@ -56,7 +56,55 @@ void ofMesh__setMode(ofMesh mesh, int code)
 }
 
 
+// ofLight expects ofColor_<float> but openframeworks can make that conversion
 
+      // ofColor will auto convert to ofFloatColor as necessary
+      // https://forum.openframeworks.cc/t/relation-between-mesh-addvertex-and-addcolor/31314/3
+      
+//   The issue is that Rice can not make this conversion,
+//   which creates a runtime error.
+void ofLight__setDiffuseColor(ofLight& light, ofColor_<unsigned char>& c){
+   light.setDiffuseColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+void ofLight__setSpecularColor(ofLight& light, ofColor_<unsigned char>& c){
+   light.setSpecularColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
+   light.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+
+
+
+
+
+void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+   mat.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+void ofMaterial__setDiffuseColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+   mat.setDiffuseColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+
+void ofMaterial__setSpecularColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+   mat.setSpecularColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
+
+
+
+
+// template<>
+// ofColor_<float> from_ruby<ofColor_<float>>(Object x){
+//    int r = x.call("r");
+//    int g = x.call("g");
+//    int b = x.call("b");
+//    int a = x.call("a");
+   
+//    return ofColor_<float>(r,g,b,a);
+// }
 
 
 
@@ -266,6 +314,35 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    
    
+   
+   Data_Type<ofMaterial> rb_cMaterial = 
+      define_class_under<ofMaterial>(rb_mRubyOF, "Material");
+   
+   rb_cMaterial
+      .define_constructor(Constructor<ofMaterial>())
+      // setup
+      
+      .define_method("begin", &ofMaterial::begin)
+      .define_method("end",   &ofMaterial::end)
+      
+      .define_method("ambient_color=",    &ofMaterial__setAmbientColor)
+      .define_method("diffuse_color=",    &ofMaterial__setDiffuseColor)
+      .define_method("specular_color=",   &ofMaterial__setSpecularColor)
+      .define_method("emissive_color=",   &ofMaterial::setEmissiveColor)
+      .define_method("shininess=",        &ofMaterial::setShininess)
+      
+      .define_method("ambient_color",     &ofMaterial::setAmbientColor)
+      .define_method("diffuse_color",     &ofMaterial::getDiffuseColor)
+      .define_method("specular_color",    &ofMaterial::getSpecularColor)
+      .define_method("emissive_color",    &ofMaterial::getEmissiveColor)
+      .define_method("shininess",         &ofMaterial::getShininess)      
+   ;
+   
+   
+   
+   
+   
+   
    // ofMesh
    Data_Type<ofMesh> rb_cMesh = 
 		define_class_under<ofMesh>(rb_mRubyOF, "Mesh");
@@ -447,6 +524,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    rb_cLight
       .define_constructor(Constructor<ofLight>())
+      .define_method("setup",         &ofLight::setup)
       .define_method("enable",        &ofLight::enable)
       .define_method("disable",       &ofLight::disable)
       .define_method("getIsEnabled",  &ofLight::getIsEnabled)
@@ -465,6 +543,17 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setDirectional",    &ofLight::setDirectional)
       .define_method("setPointLight",     &ofLight::setPointLight)
       .define_method("setSpotlight",      &ofLight::setSpotlight)
+      
+      .define_method("getLightID",        &ofLight::getLightID)
+      
+      
+      .define_method("diffuse_color=",    &ofLight__setDiffuseColor)
+      .define_method("specular_color=",   &ofLight__setSpecularColor)
+      .define_method("ambient_color=",    &ofLight__setAmbientColor)
+      
+      // .define_method("ofSetGlobalAmbientColor",   &ofSetGlobalAmbientColor)
+      
+      .define_method("diffuse_color",     &ofLight::getDiffuseColor)
    ;
 }
 

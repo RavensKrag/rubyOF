@@ -179,6 +179,10 @@ void Init_rubyOF()
 	// typedef void (ofColor::*ofColor_draw)(float x, float y) const;
 	// typedef void (ofColor::*ofColor_draw_wh)(float x, float y, float width, float height) const;
 	
+	
+	// the default ofColor is ofColor_<unsigned char> 
+	// but the color required by Light is ofColor_<float>
+	
 	rb_cColor
 		.define_constructor(Constructor<ofColor>())
 		

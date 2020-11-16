@@ -138,7 +138,19 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		// NOTE: clear requires floats, while "ofBackground" takes int? Looks weird, maybe should report?
 		
 		
-		.define_method("ofEnableBlendMode", &ofEnableBlendMode__wrapper)
+		
+		
+		// OpenGL render modes and lighting controls
+		.define_method("ofEnableBlendMode",  &ofEnableBlendMode__wrapper)
+		.define_method("ofDisableBlendMode", &ofDisableBlendMode)
+		
+		.define_method("ofEnableDepthTest",  &ofEnableDepthTest)
+		.define_method("ofDisableDepthTest", &ofDisableDepthTest)
+		
+		.define_method("ofEnableLighting",  &ofEnableLighting)
+		.define_method("ofDisableLighting", &ofDisableLighting)
+		
+		
 		
 		
 		// colors
