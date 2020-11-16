@@ -1118,7 +1118,7 @@ class Core
         
         
         
-        @mat1 ||= RubyOF::Material.new;
+        @mat1 ||= RubyOF::Material.new
         # @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
         @mat1.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
         # // shininess is a value between 0 - 128, 128 being the most shiny //
@@ -1126,7 +1126,7 @@ class Core
         
         
         
-        @mat2 ||= RubyOF::Material.new;
+        @mat2 ||= RubyOF::Material.new
         @mat2.emissive_color = light_color
         
         
@@ -1145,34 +1145,34 @@ class Core
         # If you click on any object in blender, the values reset, but it's annoying / confusing to have to do that every time you start the app up.
       
       
-      ofEnableDepthTest();
-        @entities['Light'].position = light_pos;
+      ofEnableDepthTest()
+        @entities['Light'].position = light_pos
         
         # // enable lighting //
-        ofEnableLighting();
+        ofEnableLighting()
         # // the position of the light must be updated every frame,
         # // call enable() so that it can update itself //
-        @entities['Light'].enable();
+        @entities['Light'].enable()
         
           # // render objects in world
-          @mat1.begin();
-          ofPushMatrix();
-            ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
-          ofPopMatrix();
-          @mat1.end();
+          @mat1.begin()
+          ofPushMatrix()
+            ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+          ofPopMatrix()
+          @mat1.end()
           
           
           # // render the sphere that represents the light
-          @mat2.begin();
-          ofPushMatrix();
-            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
-          ofPopMatrix();
-          @mat2.end();
+          @mat2.begin()
+          ofPushMatrix()
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+          ofPopMatrix()
+          @mat2.end()
         
         # // turn off lighting //
-        @entities['Light'].disable();
-        ofDisableLighting();
-      ofDisableDepthTest();
+        @entities['Light'].disable()
+        ofDisableLighting()
+      ofDisableDepthTest()
     
     @entities['viewport_camera'].end
     
