@@ -527,18 +527,6 @@ void rbApp::draw(){
 			
 			ofLight pointLight;
 			
-			float rotation;
-			
-			float radius;
-			float sphereRadius;
-			int numSpheres;
-			glm::vec3 center;
-			bool bDrawWireframe;
-			
-			ofColor lightColor;
-			float colorHue;
-			ofColor materialColor;
-			
 			ofMaterial material;
 			ofMaterial material2;
 			
@@ -547,8 +535,6 @@ void rbApp::draw(){
 			// default is 20 //
 			ofSetSphereResolution(32);
 			
-			radius		= 300.f;
-			center = {0,0, 0};
 			
 			// Point lights emit light in all directions //
 			// set the diffuse color, color reflected from the light source //
@@ -561,23 +547,11 @@ void rbApp::draw(){
 			material.setShininess( 64 );
 			
 			
-			sphereRadius    = 140;
-			numSpheres      = 8;
-			rotation        = 0.f;
-			bDrawWireframe  = false;
-			
-			colorHue = ofRandom(0, 250);
-			
-			lightColor.setBrightness( 180.f );
-			lightColor.setSaturation( 150.f );
-			
-			materialColor.setBrightness(250.f);
-			materialColor.setSaturation(200);
-			
-			
-			
-			
 			material2.setEmissiveColor( ofColor(255, 255, 255) );
+			
+			
+			float sphereRadius = 140;
+			
 			
 			
 			glm::vec3 light_pos(4,-5,3);
@@ -588,56 +562,28 @@ void rbApp::draw(){
 			// the position of the light must be updated every frame,
 			// call enable() so that it can update itself //
 			pointLight.enable();
-			material.begin();
 			
-			if(bDrawWireframe) ofNoFill();
-			else ofFill();
-			
-			// render objects in world
-			ofPushMatrix();
-				ofDrawSphere(0, 0, -200, sphereRadius);
+				// render objects in world
+				material.begin();
+				ofPushMatrix();
+					ofDrawSphere(0, 0, -200, sphereRadius);
+					
+					
+					glm::vec3 cube_pos(0,0,0);
+					ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+				ofPopMatrix();
+				material.end();
 				
 				
-				glm::vec3 cube_pos(0,0,0);
-				ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
-			ofPopMatrix();
-			material.end();
+				// render the sphere that represents the light
+				material2.begin();
+				ofPushMatrix();
+					ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+				ofPopMatrix();
+				material2.end();
 			
-			// render the sphere that represents the light
-			material2.begin();
-			ofPushMatrix();
-				ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
-			ofPopMatrix();
-			material2.end();
 			// turn off lighting //
 			ofDisableLighting();
-			
-			
-			
-			
-			
-			// glm::vec3 cube_pos(0,0,0);
-			// glm::vec3 light_pos(4,-5,3);
-			
-			
-			// ofEnableLighting();
-			// pointLight.enable();
-			
-			
-			// if(bDrawWireframe) ofNoFill();
-			// else ofFill();
-			
-			
-			// material.begin();
-			// // default material does not seem to respond to light
-			// ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
-			// ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
-			// material.end();
-			
-			
-			
-			// pointLight.disable();
-			// ofDisableLighting();
 		}
 		
 		
