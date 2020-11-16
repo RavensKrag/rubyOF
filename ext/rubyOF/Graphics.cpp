@@ -113,6 +113,29 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofDrawRectRounded)
 		)
 		
+		
+		
+		// 
+		// draw 3D primitives
+		// 
+		
+		.define_method("ofDrawBox",
+			static_cast< void (*)
+			(
+				float x, float y, float z, float size
+			)
+			>(&ofDrawBox)
+		)
+		.define_method("ofDrawSphere",
+			static_cast< void (*)
+			(
+				float x, float y, float z, float radius
+			)
+			>(&ofDrawSphere)
+		)
+		
+		
+		
 		// turn filling of primative shapes on / off
 		// (used to draw outlines)
 		.define_method(
@@ -149,6 +172,10 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		
 		.define_method("ofEnableLighting",  &ofEnableLighting)
 		.define_method("ofDisableLighting", &ofDisableLighting)
+		
+		.define_method("ofGetLightingEnabled", &ofGetLightingEnabled)
+		
+		
 		
 		
 		

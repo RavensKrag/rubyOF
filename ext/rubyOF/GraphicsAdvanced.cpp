@@ -63,16 +63,30 @@ void ofMesh__setMode(ofMesh &mesh, int code)
       
 //   The issue is that Rice can not make this conversion,
 //   which creates a runtime error.
+
+// Conversion is explaned in documentation for ofColor_
+// (this is the template class, not to be confused with ofColor, 
+// which is merely a shortcut for ofColor_<unsigned char>)
+// src: https://openframeworks.cc/documentation/types/ofColor/#!show_ofColor_
 void ofLight__setDiffuseColor(ofLight& light, ofColor_<unsigned char>& c){
-   light.setDiffuseColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // light.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   light.setDiffuseColor(c2);
 }
 
 void ofLight__setSpecularColor(ofLight& light, ofColor_<unsigned char>& c){
-   light.setSpecularColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // light.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   light.setSpecularColor(c2);
 }
 
 void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
-   light.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // light.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   light.setAmbientColor(c2);
 }
 
 
@@ -80,16 +94,25 @@ void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
 
 
 void ofMaterial__setDiffuseColor(ofMaterial& mat, ofColor_<unsigned char>& c){
-   mat.setDiffuseColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setDiffuseColor(c2);
 }
 
 
 void ofMaterial__setSpecularColor(ofMaterial& mat, ofColor_<unsigned char>& c){
-   mat.setSpecularColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setSpecularColor(c2);
 }
 
 void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
-   mat.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+   // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setAmbientColor(c2);
 }
 
 
@@ -525,7 +548,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("setup",         &ofLight::setup)
       .define_method("enable",        &ofLight::enable)
       .define_method("disable",       &ofLight::disable)
-      .define_method("getIsEnabled",  &ofLight::getIsEnabled)
+      .define_method("enabled?",      &ofLight::getIsEnabled)
       
       
       // point

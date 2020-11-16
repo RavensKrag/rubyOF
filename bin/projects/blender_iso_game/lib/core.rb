@@ -52,6 +52,7 @@ class BlenderCube < BlenderObject
   extend Forwardable
   
   attr_reader :mesh, :node
+  attr_accessor :color
   
   def initialize
     @mesh = RubyOF::Mesh.new
@@ -96,23 +97,23 @@ class BlenderCube < BlenderObject
     @mesh.addIndex(1-1+4*1)
     @mesh.addIndex(2-1+4*1)
     
-    # left
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(4-1+4*1)
+    # # left
+    # @mesh.addIndex(3-1+4*0)
+    # @mesh.addIndex(3-1+4*1)
+    # @mesh.addIndex(4-1+4*1)
     
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(4-1+4*0)
-    @mesh.addIndex(4-1+4*1)
+    # @mesh.addIndex(3-1+4*0)
+    # @mesh.addIndex(4-1+4*0)
+    # @mesh.addIndex(4-1+4*1)
     
-    # top
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(3-1+4*0)
+    # # top
+    # @mesh.addIndex(1-1+4*0)
+    # @mesh.addIndex(2-1+4*0)
+    # @mesh.addIndex(3-1+4*0)
     
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(4-1+4*0)
-    @mesh.addIndex(1-1+4*0)
+    # @mesh.addIndex(3-1+4*0)
+    # @mesh.addIndex(4-1+4*0)
+    # @mesh.addIndex(1-1+4*0)
     
     # bottom
     @mesh.addIndex(1-1+4*1)
@@ -123,14 +124,14 @@ class BlenderCube < BlenderObject
     @mesh.addIndex(4-1+4*1)
     @mesh.addIndex(1-1+4*1)
     
-    # front
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(1-1+4*0)
+    # # front
+    # @mesh.addIndex(4-1+4*1)
+    # @mesh.addIndex(1-1+4*1)
+    # @mesh.addIndex(1-1+4*0)
     
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(4-1+4*0)
+    # @mesh.addIndex(4-1+4*1)
+    # @mesh.addIndex(1-1+4*0)
+    # @mesh.addIndex(4-1+4*0)
     
     # back
     @mesh.addIndex(3-1+4*1)
@@ -565,11 +566,15 @@ class BlenderSync
             # float spotCutOff=45.f, float exponent=0.f
           end
           
-          color_ary = obj['color'][1..3]
+          # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
+          color_ary = obj['color'][1..3].map{|x| (x*0xff).round }
           color = RubyOF::Color.rgba(color_ary + [255])
-          light.diffuse_color = color
-          light.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+          # light.diffuse_color  = color
+          # # light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+          # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
           
+          
+          @entities['Cube'].color = color
         end
         
       end
@@ -590,7 +595,7 @@ class BlenderSync
     # if @pid_query != pid
       # @pid_query = pid
       blender_pos = find_window_position("Blender",   blender_pid)
-      rubyof_pos  = find_window_position("grapevine", Process.pid)
+      rubyof_pos  = find_window_position("blender integration", Process.pid)
       
       
       # 
@@ -631,7 +636,7 @@ class BlenderSync
     # 
     
     wm_ids = 
-      `xwininfo -root -tree | grep #{query_title_string}`.each_line
+      `xwininfo -root -tree | grep '#{query_title_string}'`.each_line
       .collect{ |line|
         # 0x6e00002 "Blender* [/home/...]": ("Blender" "Blender")  2544x1303+0+0  +206+95
         line.split.first
@@ -691,8 +696,8 @@ class Core
   def setup
     puts "core: setup"
     
-    ofBackground(200, 200, 200, 255)
-    ofEnableBlendMode(:alpha)
+    # ofBackground(200, 200, 200, 255)
+    # ofEnableBlendMode(:alpha)
     
     
     @draw_durations = Array.new # stores profiler data for #draw
@@ -889,9 +894,6 @@ class Core
     
     @crash_detected = false
     
-    @shader_files = nil
-    @shaderIsCorrect = nil
-    
     @update_scheduler = nil
     
     setup()
@@ -941,87 +943,6 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
-    scheduler.section name: "shaders", budget: msec(1.5)
-      # puts "shaders" if Scheduler::DEBUG
-      
-      # # liveGLSL.foo "char_display" do |path_to_shader|
-      #   # @display.reload_shader
-      # # end
-      
-      
-      # # prototype possible smarter live-loading system for GLSL shaders
-      
-      
-      # bg_shader_name = "char_display_bg"
-      # fg_shader_name = "char_display"
-      
-      # @shader_files ||= [
-      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
-      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
-      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
-      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
-      # ]
-      
-      # @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
-      
-      # # load shader if it has never been loaded before, or if the files have been updated
-      # if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
-      #   loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
-        
-        
-        
-      #   puts "load code: #{loaded}"
-      #   # ^ apparently the boolean is still true when the shader is loaded with an error???
-        
-      #   puts "loaded? : #{@display.fg_shader_loaded?}"
-      #   # ^ this doesn't work either
-        
-      #   # puts "loaded? : #{@display.bg_shader_loaded?}"
-        
-        
-        
-      #   # This is a long-standing issue, open since 2015:
-        
-      #   # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
-      #   # https://github.com/openframeworks/openFrameworks/pull/3734
-        
-      #   # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
-        
-        
-      #   if loaded
-      #     case @shaderIsCorrect
-      #     when true
-      #       # good -> good
-      #       puts "GLSL: still good"
-      #     when false
-      #       # bad -> good
-      #       puts "GLSL: fixed!"
-      #     when nil
-      #       # nothing -> good
-      #       puts "GLSL: shader loaded"
-      #     end
-          
-      #     @shaderIsCorrect = true
-      #   else
-      #     case @shaderIsCorrect
-      #     when true
-      #       # good -> bad
-      #       puts "GLSL: something broke"
-      #     when false
-      #       # bad -> bad
-      #       puts "GLSL: still broken..."
-      #     when nil
-      #       # nothing -> bad
-      #       puts "GLSL: could not load shader"
-      #     end
-          
-      #     @shaderIsCorrect = false;
-      #   end
-          
-        
-      #   @shader_timestamp = Time.now
-      # end
-    
     
     if @debugging
       
@@ -1048,6 +969,10 @@ class Core
     scheduler.section name: "cube ", budget: msec(1.0)
       # puts "set cube mesh"
       # raise
+    
+    
+    scheduler.section name: "sync ", budget: msec(5.0)
+      @sync.update
     
     
     scheduler.section name: "end", budget: msec(0.1)
@@ -1141,53 +1066,128 @@ class Core
     # @camera.fov = 39.6
     
     
-    @sync.update
-    
     
     # p @entities
     
     
-    @entities['Cube'].generate_mesh
     
-    # raise "test error"
+    # @entities['Light'].diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+    # @entities['Light'].specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+    # @entities['Light'].position = GLM::Vec3.new(-4, -4, 3.4)
+    
+    @light ||= RubyOF::Light.new
+      # light ID set on first setup() which is called from Light#enable()
+    
+    # @light.setPointLight()
+    
+    light_pos = @entities['Light'].position
+    light_pos = GLM::Vec3.new(4,-5,3)
+    # @light.position = GLM::Vec3.new(10,0,0)
+    @light.position = light_pos
+    
+    # @light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+    # @light.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+    # light.ambient_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
     
     
     
-    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
-    # (thus, you don't need a separate node to track the position of ofLight)
+    ofEnableDepthTest()
+    ofEnableLighting()
+    @light.enable
+    @entities['viewport_camera'].begin
+      
+      puts "lighting enabled? #{ofGetLightingEnabled}"
+      puts "#{@light.enabled?} => #{@light.getLightID}"
+      
+      # ofSetColor(RubyOF::Color.hex_alpha(0xff0000, 0xff))
+      
+      cube_pos = @entities['Cube'].node.position
+      ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+      
+      # light_pos = @entities['Light'].position
+      ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+      
+    @entities['viewport_camera'].end
+    @light.disable
+    ofDisableLighting()
+    ofDisableDepthTest()
+    
+    
+    # based on Lewis Lepton's light tutorial
+    # https://www.youtube.com/watch?v=Amfr-MY96W8
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # @entities['Cube'].generate_mesh
+    
+    # # raise "test error"
+    
+    
+    
+    # # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
+    # # (thus, you don't need a separate node to track the position of ofLight)
+    
+    # if @first_update
+    #   # ofEnableDepthTest()
+    #   # @entities['Light'].setup
+      
+      
+    #   # @first_update = false
+    # end
     
     # ofEnableDepthTest()
-    if @first_update
-      @entities['Light'].setup
+    # # ofEnableLighting()
+    # @entities['Light'].enable
+    # @entities['viewport_camera'].begin
+    #   # puts @entities['viewport_camera'].getProjectionMatrix
       
-      
-      @first_update = false
-    end
-    
-    ofEnableLighting()
-    @entities['Light'].enable
-    
-    @entities['viewport_camera'].begin
-    # puts @entities['viewport_camera'].getProjectionMatrix
-    
-      
-        material = RubyOF::Material.new
-        # material.ambient_color  = RubyOF::Color.hex_alpha(0x000000, 0xff)
-        material.diffuse_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-        material.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+    #   # @entities['Light'].setDirectional()
+    #   # @entities['Light'].lookAt(@entities['Cube'].node.position)
         
-        material.begin
+    #     # material = RubyOF::Material.new
+    #     # # material.ambient_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+    #     # # material.diffuse_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+    #     # @entities['Cube'].color.tap do |c| 
+    #     #   unless c.nil?
+    #     #     puts c
+    #     #     # material.ambient_color = c
+    #     #     material.diffuse_color = c
+    #     #   end
+    #     # end
+    #     # material.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
         
-        @entities['Cube'].node.transformGL()
-        @entities['Cube'].mesh.draw()
-        @entities['Cube'].node.restoreTransformGL()
+    #     # # material.begin
         
-        material.end
+    #     #   @entities['Cube'].node.transformGL()
+    #     #   @entities['Cube'].mesh.draw()
+    #     #   @entities['Cube'].node.restoreTransformGL()
+        
+    #     # material.end
+        
+    #     cube_pos = @entities['Cube'].node.position
+    #     ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+        
+        
+    #     light_pos = @entities['Light'].position
+    #     ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
       
-      @entities['Light'].disable
     
-    @entities['viewport_camera'].end
-    ofDisableLighting()
+    # @entities['viewport_camera'].end
+    # @entities['Light'].disable
+    # # ofDisableLighting()
+    # ofDisableDepthTest()
     
     
     # 
@@ -1195,6 +1195,14 @@ class Core
     # 
     
     # @display.draw()
+  end
+  
+  def camera_begin
+    @entities['viewport_camera'].begin
+  end
+  
+  def camera_end
+    @entities['viewport_camera'].end
   end
   
   

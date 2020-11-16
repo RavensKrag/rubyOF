@@ -405,12 +405,140 @@ void rbApp::draw(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	
+	// ofSetGlobalAmbientColor(ofFloatColor(1.0, 1.0, 1.0));
 	
 	// ========================================
 	// ========================================
 	
-	mSelf.call("draw");
+	// mSelf.call("draw");
+	
+	
+	Rice::Object live = mSelf.call("instance_variable_get", Rice::Symbol("@live_code"));
+	live.call("camera_begin");
+	
+	
+	
+		// glm::vec3 cube_pos(0,0,0);
+		// glm::vec3 light_pos(4,-5,3);
+		
+		
+		// ofEnableLighting();
+		
+		// ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+		// ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+		
+		// ofDisableLighting();
+	
+	
+	
+	
+	
+	
+		ofLight pointLight;
+		
+		float rotation;
+		
+		float radius;
+		float sphereRadius;
+		int numSpheres;
+		glm::vec3 center;
+		bool bDrawWireframe;
+		
+		ofColor lightColor;
+		float colorHue;
+		ofColor materialColor;
+		
+		ofMaterial material;
+		
+		
+		// lets make a sphere with more resolution than the default //
+		// default is 20 //
+		ofSetSphereResolution(32);
+		
+		radius		= 300.f;
+		center = {0,0, 0};
+		
+		// Point lights emit light in all directions //
+		// set the diffuse color, color reflected from the light source //
+		pointLight.setDiffuseColor( ofColor(0.f, 255.f, 0.f));
+		
+		// specular color, the highlight/shininess color //
+		pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
+		pointLight.setPosition(center.x, center.y, 0);
+		
+		// shininess is a value between 0 - 128, 128 being the most shiny //
+		material.setShininess( 64 );
+		
+		
+		sphereRadius    = 140;
+		numSpheres      = 8;
+		rotation        = 0.f;
+		bDrawWireframe  = false;
+		
+		colorHue = ofRandom(0, 250);
+		
+		lightColor.setBrightness( 180.f );
+		lightColor.setSaturation( 150.f );
+		
+		materialColor.setBrightness(250.f);
+		materialColor.setSaturation(200);
+		
+		
+		
+		// ofSetColor(pointLight.getDiffuseColor());
+		// ofDrawSphere(pointLight.getPosition(), 20.f);
+		
+		
+		
+		ofBackground(10, 10, 10);
+		ofEnableDepthTest();
+		
+		// turn on smooth lighting //
+		ofSetSmoothLighting(true);
+		
+		// enable lighting //
+		ofEnableLighting();
+		// the position of the light must be updated every frame,
+		// call enable() so that it can update itself //
+		pointLight.enable();
+		material.begin();
+		
+		if(bDrawWireframe) ofNoFill();
+		else ofFill();
+		
+		ofPushMatrix();
+		ofTranslate(center.x, center.y, 0);
+		ofRotateDeg(rotation, 0, 0, 1);
+		for(int i = 0; i < numSpheres; i++) {
+			float angle = TWO_PI / (float)numSpheres * i;
+			float x = cos(angle) * radius;
+			float y = sin(angle) * radius;
+			ofDrawSphere(x, y, -200, sphereRadius);
+		}
+		ofPopMatrix();
+		material.end();
+		// turn off lighting //
+		ofDisableLighting();
+		
+		
+		
+		ofDisableDepthTest();
+		
+	
+	
+	
+	
+	live.call("camera_end");
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	gui.draw(); // ofxGui - for color picker
