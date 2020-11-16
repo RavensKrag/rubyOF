@@ -1082,33 +1082,34 @@ class Core
       if @first_draw
         # ofBackground(10, 10, 10, 255);
         # // turn on smooth lighting //
-        ofSetSmoothLighting(true);
+        ofSetSmoothLighting(true)
         
-        ofSetSphereResolution(32);
+        ofSetSphereResolution(32)
         
+        light_color = RubyOF::Color.rgb([255, 255, 255])
         
-        @pointLight ||= RubyOF::Light.new;
+        @pointLight ||= RubyOF::Light.new
         # ^ double guard against creating extra lights,
         #   otherwise you will get a bunch of lights when live coding
         
         # // Point lights emit light in all directions //
         # // set the diffuse color, color reflected from the light source //
-        @pointLight.diffuse_color = RubyOF::Color.rgb([255, 255, 255]);
+        @pointLight.diffuse_color = light_color
         
         # // specular color, the highlight/shininess color //
-        @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255]);
+        @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255])
         
         
         
         @mat1 ||= RubyOF::Material.new;
-        @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0]);
+        @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
         # // shininess is a value between 0 - 128, 128 being the most shiny //
-        @mat1.shininess = 64;
+        @mat1.shininess = 64
         
         
         
         @mat2 ||= RubyOF::Material.new;
-        @mat2.emissive_color = RubyOF::Color.rgb([255, 255, 255]);
+        @mat2.emissive_color = light_color
         
         
         
