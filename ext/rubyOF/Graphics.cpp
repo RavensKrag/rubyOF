@@ -135,6 +135,14 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		)
 		
 		
+		// 
+		// parameters for 3D primitives
+		// 
+		
+		.define_method("ofSetSphereResolution",  &ofSetSphereResolution)
+		
+		
+		
 		
 		// turn filling of primative shapes on / off
 		// (used to draw outlines)
@@ -174,6 +182,8 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		.define_method("ofDisableLighting", &ofDisableLighting)
 		
 		.define_method("ofGetLightingEnabled", &ofGetLightingEnabled)
+		
+		.define_method("ofSetSmoothLighting",  &ofSetSmoothLighting)
 		
 		
 		

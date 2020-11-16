@@ -115,6 +115,13 @@ void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
    mat.setAmbientColor(c2);
 }
 
+void ofMaterial__setEmissiveColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+   // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setEmissiveColor(c2);
+}
+
 
 
 // template<>
@@ -349,7 +356,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("ambient_color=",    &ofMaterial__setAmbientColor)
       .define_method("diffuse_color=",    &ofMaterial__setDiffuseColor)
       .define_method("specular_color=",   &ofMaterial__setSpecularColor)
-      .define_method("emissive_color=",   &ofMaterial::setEmissiveColor)
+      .define_method("emissive_color=",   &ofMaterial__setEmissiveColor)
       .define_method("shininess=",        &ofMaterial::setShininess)
       
       .define_method("ambient_color",     &ofMaterial::setAmbientColor)

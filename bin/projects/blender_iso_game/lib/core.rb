@@ -595,7 +595,7 @@ class BlenderSync
     # if @pid_query != pid
       # @pid_query = pid
       blender_pos = find_window_position("Blender",   blender_pid)
-      rubyof_pos  = find_window_position("blender integration", Process.pid)
+      rubyof_pos  = find_window_position("RubyOF blender integration", Process.pid)
       
       
       # 
@@ -704,6 +704,7 @@ class Core
     
     
     @first_update = true
+    @first_draw = true
     @mouse = CP::Vec2.new(0,0)
     
     
@@ -1061,66 +1062,93 @@ class Core
     
     
     
-    # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
-    
-    # @camera.fov = 39.6
     
     
-    
-    # p @entities
-    
-    
-    
-    # @entities['Light'].diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-    # @entities['Light'].specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-    # @entities['Light'].position = GLM::Vec3.new(-4, -4, 3.4)
-    
-    @light ||= RubyOF::Light.new
-      # light ID set on first setup() which is called from Light#enable()
-    
-    # @light.setPointLight()
-    
+    cube_pos = @entities['Cube'].node.position
     light_pos = @entities['Light'].position
-    light_pos = GLM::Vec3.new(4,-5,3)
-    # @light.position = GLM::Vec3.new(10,0,0)
-    @light.position = light_pos
-    
-    # @light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-    # @light.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-    # light.ambient_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
     
     
-    
-    ofEnableDepthTest()
-    ofEnableLighting()
-    @light.enable
     @entities['viewport_camera'].begin
+    
       
-      puts "lighting enabled? #{ofGetLightingEnabled}"
-      puts "#{@light.enabled?} => #{@light.getLightID}"
+      # // 
+      # // my custom code
+      # // 
       
-      # ofSetColor(RubyOF::Color.hex_alpha(0xff0000, 0xff))
       
-      cube_pos = @entities['Cube'].node.position
-      ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+      # // lets make a sphere with more resolution than the default //
+      # // default is 20 //
       
-      # light_pos = @entities['Light'].position
-      ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+      if @first_draw
+        ofBackground(10, 10, 10, 255);
+        # // turn on smooth lighting //
+        ofSetSmoothLighting(true);
+        
+        ofSetSphereResolution(32);
+        
+        
+        @pointLight ||= RubyOF::Light.new;
+        # ^ double guard against creating extra lights,
+        #   otherwise you will get a bunch of lights when live coding
+        
+        # // Point lights emit light in all directions //
+        # // set the diffuse color, color reflected from the light source //
+        @pointLight.diffuse_color = RubyOF::Color.rgb([0, 255, 0]);
+        
+        # // specular color, the highlight/shininess color //
+        @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255]);
       
+      
+      
+        @mat1 ||= RubyOF::Material.new;
+        # // shininess is a value between 0 - 128, 128 being the most shiny //
+        @mat1.shininess = 64;
+      
+      
+      
+        @mat2 ||= RubyOF::Material.new;
+        
+        @mat2.emissive_color = RubyOF::Color.rgb([255, 255, 255]);
+        
+        
+        
+        
+        @first_draw = false
+      end
+      
+      
+      
+      ofEnableDepthTest();
+        light_pos = GLM::Vec3.new(4,-5,3);
+        @pointLight.position = light_pos;
+        
+        # // enable lighting //
+        ofEnableLighting();
+        # // the position of the light must be updated every frame,
+        # // call enable() so that it can update itself //
+        @pointLight.enable();
+        
+          # // render objects in world
+          @mat1.begin();
+          ofPushMatrix();
+            cube_pos = GLM::Vec3.new(0,0,0);
+            ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+          ofPopMatrix();
+          @mat1.end();
+          
+          
+          # // render the sphere that represents the light
+          @mat2.begin();
+          ofPushMatrix();
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+          ofPopMatrix();
+          @mat2.end();
+        
+        # // turn off lighting //
+        ofDisableLighting();
+      ofDisableDepthTest();
+    
     @entities['viewport_camera'].end
-    @light.disable
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    
-    # based on Lewis Lepton's light tutorial
-    # https://www.youtube.com/watch?v=Amfr-MY96W8
-    
-    
-    
-    
-    
-    
     
     
     
