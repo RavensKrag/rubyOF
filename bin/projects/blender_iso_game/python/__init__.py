@@ -186,6 +186,26 @@ class RubyOF(bpy.types.RenderEngine):
                                 
                             })
                             
+                            
+                            
+                            if obj.data.type == 'AREA':
+                                obj_data.update({
+                                    'size_x': ['float', obj.data.size],
+                                    'size_y': ['float', obj.data.size_y]
+                                })
+                            elif obj.data.type == 'SPOT':
+                                obj_data.update({
+                                    'size': ['radians', obj.data.spot_size]
+                                })
+                            
+                            #  sub.prop(light, "size", text="Size X")
+                            # sub.prop(light, "size_y", text="Y")
+                            
+                            # col.prop(light, "spot_size", text="Size")
+                            # ^ angle of spotlight
+                            
+                            
+                            
                             # col.prop(light, "color")
                             # col.prop(light, "energy")
                             
@@ -525,6 +545,29 @@ class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
                 sub.prop(light, "size_y", text="Y")
 
 
+class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
+    bl_label = "Spot Shape"
+    bl_parent_id = "DATA_PT_RubyOF_light"
+    COMPAT_ENGINES= {"RUBYOF"}
+
+    @classmethod
+    def poll(cls, context):
+        light = context.light
+        engine = context.engine
+        return (light and light.type == 'SPOT') and (engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        light = context.light
+
+        col = layout.column()
+
+        col.prop(light, "spot_size", text="Size")
+        col.prop(light, "spot_blend", text="Blend", slider=True)
+
+        col.prop(light, "show_cone")
 
 
 
@@ -590,7 +633,8 @@ def get_panels():
 classes = (
     RubyOF_Properties,
     DATA_PT_RubyOF_Properties,
-    DATA_PT_RubyOF_light
+    DATA_PT_RubyOF_light,
+    DATA_PT_spot
 )
 
 def register():

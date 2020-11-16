@@ -549,6 +549,8 @@ class BlenderSync
           
           light = @entities['Light']
           
+          light.disable()
+          
           light.position = pos
           light.orientation = quat
           light.scale = scale
@@ -560,10 +562,19 @@ class BlenderSync
           when 'SUN'
             # directional light
             light.setDirectional()
+            
+            # (orientation is on the opposite side of the sphere, relative to what blender expects)
+            
           when 'SPOT'
             # spotlight
-            light.setSpotlight(45.0, 0) # requires 2 args
+            size_rad = obj['size'][1]
+            size_deg = size_rad / (2*Math::PI) * 360
+            light.setSpotlight(size_deg, 0) # requires 2 args
             # float spotCutOff=45.f, float exponent=0.f
+          when 'AREA'
+            width  = obj['size_x'][1]
+            height = obj['size_y'][1]
+            light.setAreaLight(width, height)
           end
           
           # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
@@ -1159,6 +1170,7 @@ class Core
           @mat2.end();
         
         # // turn off lighting //
+        @entities['Light'].disable();
         ofDisableLighting();
       ofDisableDepthTest();
     
