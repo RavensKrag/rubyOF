@@ -550,9 +550,6 @@ void rbApp::draw(){
 			material2.setEmissiveColor( ofColor(255, 255, 255) );
 			
 			
-			float sphereRadius = 140;
-			
-			
 			
 			glm::vec3 light_pos(4,-5,3);
 			pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
@@ -566,9 +563,6 @@ void rbApp::draw(){
 				// render objects in world
 				material.begin();
 				ofPushMatrix();
-					ofDrawSphere(0, 0, -200, sphereRadius);
-					
-					
 					glm::vec3 cube_pos(0,0,0);
 					ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
 				ofPopMatrix();
