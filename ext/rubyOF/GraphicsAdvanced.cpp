@@ -79,11 +79,6 @@ void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
 
 
 
-
-void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
-   mat.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
-}
-
 void ofMaterial__setDiffuseColor(ofMaterial& mat, ofColor_<unsigned char>& c){
    mat.setDiffuseColor(ofColor_<float>(c.r,c.g,c.b,c.a));
 }
@@ -93,6 +88,9 @@ void ofMaterial__setSpecularColor(ofMaterial& mat, ofColor_<unsigned char>& c){
    mat.setSpecularColor(ofColor_<float>(c.r,c.g,c.b,c.a));
 }
 
+void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+   mat.setAmbientColor(ofColor_<float>(c.r,c.g,c.b,c.a));
+}
 
 
 
