@@ -968,14 +968,13 @@ class Core
     # save 3D graphics data to file
     # 
     
-    
     # if camera.dirty
       puts "saving world to file.."
-      entity_data_list = [
-        @entities['viewport_camera'].data_dump,
-        @entities['Cube'].data_dump,
-        @entities['Light'].data_dump
-      ]
+      entity_data_list = 
+        @entities.to_a.collect{ |key, val|
+          val.data_dump
+        }
+      
       
       # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
       # ('CAMERA' not yet supported)
