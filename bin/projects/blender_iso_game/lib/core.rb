@@ -53,6 +53,7 @@ class BlenderCube < BlenderObject
   
   attr_reader :mesh, :node
   attr_accessor :color
+  attr_accessor :name
   
   def initialize
     @mesh = RubyOF::Mesh.new
@@ -143,6 +144,32 @@ class BlenderCube < BlenderObject
     @mesh.addIndex(3-1+4*1)
     
     
+  end
+  
+  
+  
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    orientation = self.orientation
+    position = self.position
+    scale = self.scale
+    
+    {
+        'type' => 'MESH',
+        'name' =>  @name,
+        'rotation' => [
+          'Quat',
+          orientation.w, orientation.x, orientation.y, orientation.z
+        ],
+        'position' => [
+          'Vec3',
+          position.x, position.y, position.z
+        ],
+        'scale' => [
+          'Vec3',
+          scale.x, scale.y, scale.z
+        ],
+    }
   end
 end
 
@@ -538,6 +565,9 @@ class BlenderSync
           cube.scale = scale
           
           
+          cube.name = obj['name']
+          
+          
           cube.dirty = true
         when 'LIGHT'
           puts "light data"
@@ -803,58 +833,13 @@ class Core
     @sync = BlenderSync.new(@w, @entities)
     
     
-    @camera_settings_file = PROJECT_DIR/'bin'/'data'/'viewport_camera.yaml'
-    if @camera_settings_file.exist?
-      puts "puts loading camera data"
-      camera_data = YAML.load_file @camera_settings_file
+    @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
+    if @world_save_file.exist?
+      puts "loading 3D graphics data..."
+      camera_data = YAML.load_file @world_save_file
+      puts "load complete!"
       p camera_data
       
-      # camera_data1 = YAML.load_file @camera_settings_file
-      # camera_data2 = YAML.load_file @camera_settings_file
-      
-      
-      # d1 = camera_data1[0]
-      # d2 = camera_data2[0]
-      
-      # d1['view_perspective'] = 'ORTHO' # works, kinda
-      # d2['view_perspective'] = 'PERSP' # doesn't work
-      
-      # camera_data = [
-      #   d2
-      # ]
-      
-      # components of orientation quaternion were getting scrambled
-      # - correct data, but components were in the wrong order.
-      # - why??? how???
-      
-      
-      # # YAML data original
-      # camera_data = [{"type"=>"viewport_camera", "view_perspective"=>"PERSP", "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], "fov"=>["deg", 43.009002685546875], "ortho_scale"=>["factor", 1], "near_clip"=>["m", 0.10000000149011612], "far_clip"=>["m", 1000.0]}]
-
-      # # YAML data edited
-      # camera_data = [{"type"=>"viewport_camera", 
-      #   "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], # original YAML data
-      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], # transplant from JSON
-      #   "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], 
-      #   "fov"=>["deg", 43.009002685546875], 
-      #   "near_clip"=>["m", 0.10000000149011612], 
-      #   "far_clip"=>["m", 1000.0], 
-      #   "ortho_scale"=>["factor", 1], 
-      #   "view_perspective"=>"PERSP"
-      #   }]
-      
-      
-      # # JSON data
-      # camera_data = [{"type"=>"viewport_camera", 
-      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], 
-      #   "position"=>["Vec3", 0.22299401462078094, -7.953176498413086, 2.278393268585205], 
-      #   "fov"=>["deg", 43.009002685546875], 
-      #   "near_clip"=>["m", 0.10000000149011612], 
-      #   "far_clip"=>["m", 1000.0], 
-      #   "ortho_scale"=>["factor", 69.13003540039062], 
-      #   "view_perspective"=>"PERSP"
-      #   }]
-
       
       @sync.parse_blender_data(camera_data)
       
@@ -888,21 +873,27 @@ class Core
       RB_SPIKE_PROFILER.disable
     end
     
-    @entities['viewport_camera'].tap do |camera|
-      # if camera.dirty
-        puts "camera dump"
-        entity_data_list = [
-          camera.data_dump
-        ]
-        
-        # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-        # ('CAMERA' not yet supported)
-        # ('ORTHO' support currently rather poor)
-        
-        
-        dump_yaml entity_data_list => @camera_settings_file
-      # end
-    end
+    
+    # 
+    # save 3D graphics data to file
+    # 
+    
+    
+    # if camera.dirty
+      puts "saving world to file.."
+      entity_data_list = [
+        @entities['viewport_camera'].data_dump,
+        @entities['Cube'].data_dump,
+      ]
+      
+      # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
+      # ('CAMERA' not yet supported)
+      # ('ORTHO' support currently rather poor)
+      
+      
+      dump_yaml entity_data_list => @world_save_file
+      puts "world saved!"
+    # end
     
     
   end
