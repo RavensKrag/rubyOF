@@ -540,6 +540,7 @@ void rbApp::draw(){
 			ofColor materialColor;
 			
 			ofMaterial material;
+			ofMaterial material2;
 			
 			
 			// lets make a sphere with more resolution than the default //
@@ -555,7 +556,6 @@ void rbApp::draw(){
 			
 			// specular color, the highlight/shininess color //
 			pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
-			pointLight.setPosition(center.x, center.y, 0);
 			
 			// shininess is a value between 0 - 128, 128 being the most shiny //
 			material.setShininess( 64 );
@@ -577,18 +577,61 @@ void rbApp::draw(){
 			
 			
 			
-			glm::vec3 cube_pos(0,0,0);
+			material2.setEmissiveColor( ofColor(255, 255, 255) );
+			
+			
 			glm::vec3 light_pos(4,-5,3);
+			pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
+			
+			// enable lighting //
+			ofEnableLighting();
+			// the position of the light must be updated every frame,
+			// call enable() so that it can update itself //
+			pointLight.enable();
+			material.begin();
+			
+			if(bDrawWireframe) ofNoFill();
+			else ofFill();
+			
+			// render objects in world
+			ofPushMatrix();
+				ofDrawSphere(0, 0, -200, sphereRadius);
+				
+				
+				glm::vec3 cube_pos(0,0,0);
+				ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+			ofPopMatrix();
+			material.end();
+			
+			// render the sphere that represents the light
+			material2.begin();
+			ofPushMatrix();
+				ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+			ofPopMatrix();
+			material2.end();
+			// turn off lighting //
+			ofDisableLighting();
+			
+			
+			
+			
+			
+			// glm::vec3 cube_pos(0,0,0);
+			// glm::vec3 light_pos(4,-5,3);
 			
 			
 			// ofEnableLighting();
 			// pointLight.enable();
 			
 			
+			// if(bDrawWireframe) ofNoFill();
+			// else ofFill();
+			
+			
 			// material.begin();
-			// default material does not seem to respond to light
-			ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
-			ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+			// // default material does not seem to respond to light
+			// ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+			// ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
 			// material.end();
 			
 			
