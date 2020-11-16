@@ -11,7 +11,8 @@ class WindowGuard < Window
 		begin
 			yield
 		rescue => e
-			@exception = e
+			@exception ||= e
+			# ^ storing first exeception in chain can make errors easier to read
 			puts "=> exception caught"
 			ofExit()
 		end
