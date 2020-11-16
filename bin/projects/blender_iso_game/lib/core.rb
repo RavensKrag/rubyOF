@@ -434,7 +434,7 @@ class BlenderLight < BlenderObject
     @size_x = width
     @size_y = height
     
-    light.setAreaLight(@size_x, @size_y)
+    @light.setAreaLight(@size_x, @size_y)
   end
   
   
