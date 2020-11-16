@@ -417,113 +417,20 @@ void rbApp::draw(){
 	live.call("camera_begin");
 		
 		
+		bool cpp_render = true;
+		// bool cpp_render = false;
 		
-		// bool example_code = true;
-		bool example_code = false;
-		
-		
-		
-		
-		ofBackground(10, 10, 10);
-		ofEnableDepthTest();
-		
-		// turn on smooth lighting //
-		ofSetSmoothLighting(true);
-		
-		
-		if(example_code){
-			// 
-			// this code works
-			// 
-			// example light code:
-			// ext/openFrameworks/examples/gl/singleLightExample/src/ofApp.cpp
-			// 
-			ofLight pointLight;
+		if(cpp_render){
+			ofBackground(10, 10, 10);
+			ofEnableDepthTest();
 			
-			float rotation;
-			
-			float radius;
-			float sphereRadius;
-			int numSpheres;
-			glm::vec3 center;
-			bool bDrawWireframe;
-			
-			ofColor lightColor;
-			float colorHue;
-			ofColor materialColor;
-			
-			ofMaterial material;
+			// turn on smooth lighting //
+			ofSetSmoothLighting(true);
 			
 			
-			// lets make a sphere with more resolution than the default //
-			// default is 20 //
-			ofSetSphereResolution(32);
-			
-			radius		= 300.f;
-			center = {0,0, 0};
-			
-			// Point lights emit light in all directions //
-			// set the diffuse color, color reflected from the light source //
-			pointLight.setDiffuseColor( ofColor(0.f, 255.f, 0.f));
-			
-			// specular color, the highlight/shininess color //
-			pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
-			pointLight.setPosition(center.x, center.y, 0);
-			
-			// shininess is a value between 0 - 128, 128 being the most shiny //
-			material.setShininess( 64 );
-			
-			
-			sphereRadius    = 140;
-			numSpheres      = 8;
-			rotation        = 0.f;
-			bDrawWireframe  = false;
-			
-			colorHue = ofRandom(0, 250);
-			
-			lightColor.setBrightness( 180.f );
-			lightColor.setSaturation( 150.f );
-			
-			materialColor.setBrightness(250.f);
-			materialColor.setSaturation(200);
-			
-			
-			
-			// ofSetColor(pointLight.getDiffuseColor());
-			// ofDrawSphere(pointLight.getPosition(), 20.f);
-			
-			
-			// enable lighting //
-			ofEnableLighting();
-			// the position of the light must be updated every frame,
-			// call enable() so that it can update itself //
-			pointLight.enable();
-			material.begin();
-			
-			if(bDrawWireframe) ofNoFill();
-			else ofFill();
-			
-			ofPushMatrix();
-			ofTranslate(center.x, center.y, 0);
-			ofRotateDeg(rotation, 0, 0, 1);
-			for(int i = 0; i < numSpheres; i++) {
-				float angle = TWO_PI / (float)numSpheres * i;
-				float x = cos(angle) * radius;
-				float y = sin(angle) * radius;
-				ofDrawSphere(x, y, -200, sphereRadius);
-			}
-			ofPopMatrix();
-			material.end();
-			// turn off lighting //
-			ofDisableLighting();
-			
-		}
-		else{
 			// 
 			// my custom code
-			// (doesn't work yet)
 			// 
-			
 			
 			ofLight pointLight;
 			
@@ -578,14 +485,11 @@ void rbApp::draw(){
 			
 			// turn off lighting //
 			ofDisableLighting();
+			
+			
+			
+			ofDisableDepthTest();
 		}
-		
-		
-		ofDisableDepthTest();
-		
-	
-	
-	
 	
 	live.call("camera_end");
 	
