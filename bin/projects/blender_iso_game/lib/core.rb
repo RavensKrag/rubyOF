@@ -1093,7 +1093,7 @@ class Core
         
         # // Point lights emit light in all directions //
         # // set the diffuse color, color reflected from the light source //
-        @pointLight.diffuse_color = RubyOF::Color.rgb([0, 255, 0]);
+        @pointLight.diffuse_color = RubyOF::Color.rgb([255, 255, 255]);
         
         # // specular color, the highlight/shininess color //
         @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255]);
@@ -1101,13 +1101,13 @@ class Core
         
         
         @mat1 ||= RubyOF::Material.new;
+        @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0]);
         # // shininess is a value between 0 - 128, 128 being the most shiny //
         @mat1.shininess = 64;
         
         
         
         @mat2 ||= RubyOF::Material.new;
-        
         @mat2.emissive_color = RubyOF::Color.rgb([255, 255, 255]);
         
         
