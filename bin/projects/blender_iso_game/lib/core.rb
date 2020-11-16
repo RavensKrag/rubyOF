@@ -574,7 +574,19 @@ class BlenderSync
           # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
           
           
-          @entities['Cube'].color = color
+          white = RubyOF::Color.rgb([255, 255, 255])
+          
+          # // Point lights emit light in all directions //
+          # // set the diffuse color, color reflected from the light source //
+          @entities['Light'].diffuse_color = color
+          
+          # // specular color, the highlight/shininess color //
+          @entities['Light'].specular_color = white
+          
+          
+          
+          
+          
         end
         
       end
@@ -775,6 +787,7 @@ class Core
       'Cube'  => BlenderCube.new,
       'Light' => RubyOF::Light.new
     }
+    
     
     @sync = BlenderSync.new(@w, @entities)
     
@@ -1086,23 +1099,17 @@ class Core
         
         ofSetSphereResolution(32)
         
-        light_color = RubyOF::Color.rgb([255, 255, 255])
         
-        @pointLight ||= RubyOF::Light.new
-        # ^ double guard against creating extra lights,
-        #   otherwise you will get a bunch of lights when live coding
         
-        # // Point lights emit light in all directions //
-        # // set the diffuse color, color reflected from the light source //
-        @pointLight.diffuse_color = light_color
         
-        # // specular color, the highlight/shininess color //
-        @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255])
+        light_color = @entities['Light'].diffuse_color
+        
         
         
         
         @mat1 ||= RubyOF::Material.new;
-        @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
+        # @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
+        @mat1.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
         # // shininess is a value between 0 - 128, 128 being the most shiny //
         @mat1.shininess = 64
         
@@ -1128,13 +1135,13 @@ class Core
       
       
       ofEnableDepthTest();
-        @pointLight.position = light_pos;
+        @entities['Light'].position = light_pos;
         
         # // enable lighting //
         ofEnableLighting();
         # // the position of the light must be updated every frame,
         # // call enable() so that it can update itself //
-        @pointLight.enable();
+        @entities['Light'].enable();
         
           # // render objects in world
           @mat1.begin();

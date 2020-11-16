@@ -89,6 +89,14 @@ void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
    light.setAmbientColor(c2);
 }
 
+ofColor_<unsigned char> ofLight__getDiffuseColor(ofLight& light){
+   ofColor_<float> c_float = light.getDiffuseColor();
+   
+   ofColor_<unsigned char> c_char(c_float);
+   
+   return c_char;
+}
+
 
 
 
@@ -581,7 +589,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       // .define_method("ofSetGlobalAmbientColor",   &ofSetGlobalAmbientColor)
       
-      .define_method("diffuse_color",     &ofLight::getDiffuseColor)
+      .define_method("diffuse_color",     &ofLight__getDiffuseColor)
    ;
 }
 
