@@ -696,8 +696,8 @@ class Core
   def setup
     puts "core: setup"
     
-    # ofBackground(200, 200, 200, 255)
-    # ofEnableBlendMode(:alpha)
+    ofBackground(200, 200, 200, 255)
+    ofEnableBlendMode(:alpha)
     
     
     @draw_durations = Array.new # stores profiler data for #draw
@@ -1080,7 +1080,7 @@ class Core
       # // default is 20 //
       
       if @first_draw
-        ofBackground(10, 10, 10, 255);
+        # ofBackground(10, 10, 10, 255);
         # // turn on smooth lighting //
         ofSetSmoothLighting(true);
         
@@ -1097,15 +1097,15 @@ class Core
         
         # // specular color, the highlight/shininess color //
         @pointLight.specular_color = RubyOF::Color.rgb([255, 255, 255]);
-      
-      
-      
+        
+        
+        
         @mat1 ||= RubyOF::Material.new;
         # // shininess is a value between 0 - 128, 128 being the most shiny //
         @mat1.shininess = 64;
-      
-      
-      
+        
+        
+        
         @mat2 ||= RubyOF::Material.new;
         
         @mat2.emissive_color = RubyOF::Color.rgb([255, 255, 255]);
@@ -1117,9 +1117,16 @@ class Core
       end
       
       
+      # light_pos = GLM::Vec3.new(4,-5,3);
+      # cube_pos = GLM::Vec3.new(0,0,0);
+      
+      # TODO: position of cube and light need to be saved to file (like camera values) or on the first frame the system doesn't know where to put them
+        # (defaults to origin, 0,0,0, which is awkward because
+        # then the light is inside the cube)
+        # If you click on any object in blender, the values reset, but it's annoying / confusing to have to do that every time you start the app up.
+      
       
       ofEnableDepthTest();
-        light_pos = GLM::Vec3.new(4,-5,3);
         @pointLight.position = light_pos;
         
         # // enable lighting //
@@ -1131,7 +1138,6 @@ class Core
           # // render objects in world
           @mat1.begin();
           ofPushMatrix();
-            cube_pos = GLM::Vec3.new(0,0,0);
             ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
           ofPopMatrix();
           @mat1.end();
