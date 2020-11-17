@@ -964,27 +964,7 @@ class Core
     end
     
     
-    # 
-    # save 3D graphics data to file
-    # 
-    
-    # if camera.dirty
-      puts "saving world to file.."
-      entity_data_list = 
-        @entities.to_a.collect{ |key, val|
-          val.data_dump
-        }
-      
-      
-      # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-      # ('CAMERA' not yet supported)
-      # ('ORTHO' support currently rather poor)
-      
-      
-      dump_yaml entity_data_list => @world_save_file
-      puts "world saved!"
-    # end
-    
+    save_world_state()
     
   end
   
@@ -996,6 +976,12 @@ class Core
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
       self.ensure()
+      
+      # Save world on successful reload without crash,
+      # to prevent discontinuities. Otherwise, you would
+      # need to manually refresh the Blender viewport
+      # just to see the same state that you had before reload.
+      save_world_state()
     end
     
     @crash_detected = false
@@ -1014,6 +1000,28 @@ class Core
     puts "core: ensure"
     
     @sync.stop
+  end
+  
+  
+  def save_world_state
+    # 
+    # save 3D graphics data to file
+    # 
+    
+    puts "saving world to file.."
+    entity_data_list = 
+      @entities.to_a.collect{ |key, val|
+        val.data_dump
+      }
+    
+    
+    # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
+    # ('CAMERA' not yet supported)
+    # ('ORTHO' support currently rather poor)
+    
+    
+    dump_yaml entity_data_list => @world_save_file
+    puts "world saved!"
   end
   
   
