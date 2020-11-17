@@ -124,7 +124,7 @@ class RubyOF(bpy.types.RenderEngine):
                 if first_time or depsgraph.id_type_updated('OBJECT'):
                     print("obj update detected")
                     for instance in depsgraph.object_instances:
-                        obj_data = self.foo(instance)
+                        obj_data = self.pack_data(instance)
                         data = [ obj_data ]
                         pipe.write(json.dumps(data) + "\n")
                 pipe.close()
@@ -133,7 +133,7 @@ class RubyOF(bpy.types.RenderEngine):
             except IOError as e:
                 print("broken pipe error (suppressed exception)")
         
-    def foo(self, instance):
+    def pack_data(self, instance):
         obj = instance.object
         # print(instance)
         # print(obj.type)
