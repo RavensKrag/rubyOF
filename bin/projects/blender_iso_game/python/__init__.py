@@ -124,144 +124,8 @@ class RubyOF(bpy.types.RenderEngine):
                 if first_time or depsgraph.id_type_updated('OBJECT'):
                     print("obj update detected")
                     for instance in depsgraph.object_instances:
-                        obj = instance.object
-                        # print(instance)
-                        # print(obj.type)
-                        
-                        print(obj)
-                        print(obj.type)
-                        
-                        pos   = obj.location
-                        rot   = obj.rotation_quaternion
-                        scale = obj.scale
-                        
-                        obj_data = {
-                            'name': obj.name_full,
-                            'type': obj.type,
-                            'position':[
-                                "Vec3",
-                                pos.x,
-                                pos.y,
-                                pos.z
-                            ],
-                            'rotation':[
-                                "Quat",
-                                rot.w,
-                                rot.x,
-                                rot.y,
-                                rot.z
-                            ],
-                            'scale':[
-                                "Vec3",
-                                scale.x,
-                                scale.y,
-                                scale.z
-                            ]
-                        }
-                        
-                        if obj.type == 'MESH':
-                            mesh = obj.data
-                            
-                            mesh.calc_loop_triangles()
-                            # ^ need to call this to populate the mesh.loop_triangles() cache
-                            
-                            
-                            
-                            mesh.calc_normals_split()
-                            # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-                            
-                            # ^ face normals 
-                            
-                            normal_data = [ [[val for val in vert] 
-                                            for vert in tri.split_normals]
-                                            for tri in mesh.loop_triangles ]
-                            
-                            
-                            vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
-                            
-                            
-                            index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-                            
-                            
-                            obj_data.update({
-                                'verts': vert_data,
-                                'normals': normal_data,
-                                'tris' : index_buffer
-                            })
-                        elif obj.type == 'LIGHT':
-                            print(obj.color)
-                            obj_data.update({
-                                'color': [
-                                    'rgb',
-                                    obj.data.color[0],
-                                    obj.data.color[1],
-                                    obj.data.color[2]
-                                ],
-                                # (there is a property on the object called "color" but that is not what you want)
-                                
-                                'light_type': obj.data.type,
-                                
-                                'ambient_color': [
-                                    'rgb',
-                                ],
-                                'diffuse_color': [
-                                    'rgb'
-                                ],
-                                'attenuation':[
-                                    'rgb'
-                                ]
-                                
-                            })
-                            
-                            
-                            
-                            if obj.data.type == 'AREA':
-                                obj_data.update({
-                                    'size_x': ['float', obj.data.size],
-                                    'size_y': ['float', obj.data.size_y]
-                                })
-                            elif obj.data.type == 'SPOT':
-                                obj_data.update({
-                                    'size': ['radians', obj.data.spot_size]
-                                })
-                            
-                            #  sub.prop(light, "size", text="Size X")
-                            # sub.prop(light, "size_y", text="Y")
-                            
-                            # col.prop(light, "spot_size", text="Size")
-                            # ^ angle of spotlight
-                            
-                            
-                            
-                            # col.prop(light, "color")
-                            # col.prop(light, "energy")
-                            
-                            # blender EEVEE properties:
-                                # color
-                                # power (wats)
-                                # specular
-                                # radius
-                                # shadow
-                            # OpenFrameworks properties:
-                                # setAmbientColor()
-                                # setDiffuseColor()
-                                # setSpecularColor()
-                                # setAttenuation()
-                                    # 3 args: const, linear, quadratic
-                                # setup() 
-                                # setAreaLight()
-                                # setDirectional()
-                                # setPointLight()
-                                # setSpotlight() # 2 args to set the following:
-                                    # setSpotlightCutOff()
-                                        # 0 to 90 degs, default 45
-                                    # setSpotConcentration()
-                                        # 0 to 128 exponent, default 16
-                            
-                        
-                        data = [
-                            obj_data
-                        ]
+                        obj_data = self.foo(instance)
+                        data = [ obj_data ]
                         pipe.write(json.dumps(data) + "\n")
                 pipe.close()
                 
@@ -269,7 +133,143 @@ class RubyOF(bpy.types.RenderEngine):
             except IOError as e:
                 print("broken pipe error (suppressed exception)")
         
+    def foo(self, instance):
+        obj = instance.object
+        # print(instance)
+        # print(obj.type)
         
+        # print(obj)
+        # print(obj.type)
+        
+        pos   = obj.location
+        rot   = obj.rotation_quaternion
+        scale = obj.scale
+        
+        obj_data = {
+            'name': obj.name_full,
+            'type': obj.type,
+            'position':[
+                "Vec3",
+                pos.x,
+                pos.y,
+                pos.z
+            ],
+            'rotation':[
+                "Quat",
+                rot.w,
+                rot.x,
+                rot.y,
+                rot.z
+            ],
+            'scale':[
+                "Vec3",
+                scale.x,
+                scale.y,
+                scale.z
+            ]
+        }
+        
+        if obj.type == 'MESH':
+            mesh = obj.data
+            
+            mesh.calc_loop_triangles()
+            # ^ need to call this to populate the mesh.loop_triangles() cache
+            
+            
+            
+            mesh.calc_normals_split()
+            # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+            
+            # ^ face normals 
+            
+            normal_data = [ [[val for val in vert] 
+                            for vert in tri.split_normals]
+                            for tri in mesh.loop_triangles ]
+            
+            
+            vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
+            
+            
+            index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+            
+            
+            obj_data.update({
+                'verts': vert_data,
+                'normals': normal_data,
+                'tris' : index_buffer
+            })
+        elif obj.type == 'LIGHT':
+            print(obj.color)
+            obj_data.update({
+                'color': [
+                    'rgb',
+                    obj.data.color[0],
+                    obj.data.color[1],
+                    obj.data.color[2]
+                ],
+                # (there is a property on the object called "color" but that is not what you want)
+                
+                'light_type': obj.data.type,
+                
+                'ambient_color': [
+                    'rgb',
+                ],
+                'diffuse_color': [
+                    'rgb'
+                ],
+                'attenuation':[
+                    'rgb'
+                ]
+                
+            })
+            
+            
+            
+            if obj.data.type == 'AREA':
+                obj_data.update({
+                    'size_x': ['float', obj.data.size],
+                    'size_y': ['float', obj.data.size_y]
+                })
+            elif obj.data.type == 'SPOT':
+                obj_data.update({
+                    'size': ['radians', obj.data.spot_size]
+                })
+            
+            #  sub.prop(light, "size", text="Size X")
+            # sub.prop(light, "size_y", text="Y")
+            
+            # col.prop(light, "spot_size", text="Size")
+            # ^ angle of spotlight
+            
+            
+            
+            # col.prop(light, "color")
+            # col.prop(light, "energy")
+            
+            # blender EEVEE properties:
+                # color
+                # power (wats)
+                # specular
+                # radius
+                # shadow
+            # OpenFrameworks properties:
+                # setAmbientColor()
+                # setDiffuseColor()
+                # setSpecularColor()
+                # setAttenuation()
+                    # 3 args: const, linear, quadratic
+                # setup() 
+                # setAreaLight()
+                # setDirectional()
+                # setPointLight()
+                # setSpotlight() # 2 args to set the following:
+                    # setSpotlightCutOff()
+                        # 0 to 90 degs, default 45
+                    # setSpotConcentration()
+                        # 0 to 128 exponent, default 16
+            
+        
+        return obj_data
 
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
