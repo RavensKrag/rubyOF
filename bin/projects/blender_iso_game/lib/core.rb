@@ -194,6 +194,9 @@ class BlenderMesh < BlenderObject
   
   
   def generate_mesh
+    # p @verts
+    # p @normals
+    # p @tris
     return unless !@verts.nil? and !@normals.nil? and !@tris.nil?
     
     
@@ -202,19 +205,36 @@ class BlenderMesh < BlenderObject
     @mesh.setMode(:triangles)
     
     
-    @verts.each do |x,y,z|
-      @mesh.addVertex(GLM::Vec3.new(x,y,z))
+    
+    @normals.each do |tri|
+      tri.each do |vert|
+        @mesh.addNormal(GLM::Vec3.new(*vert))
+      end
     end
     
-    @normals.each do |x,y,z|
-      @mesh.addNormal(GLM::Vec3.new(x,y,z))
+    @tris.each do |vert_idxs|
+      vert_coords = vert_idxs.map{|i|  @verts[i]  }
+      
+      vert_coords.each do |x,y,z|
+        @mesh.addVertex(GLM::Vec3.new(x,y,z))
+      end
     end
     
-    @tris.each do |v1, v2, v3|
-      @mesh.addIndex(v1)
-      @mesh.addIndex(v2)
-      @mesh.addIndex(v3)
-    end
+    
+    
+    # @verts.each do |x,y,z|
+    #   @mesh.addVertex(GLM::Vec3.new(x,y,z))
+    # end
+    
+    # @normals.each do |x,y,z|
+    #   @mesh.addNormal(GLM::Vec3.new(x,y,z))
+    # end
+    
+    # @tris.each do |v1, v2, v3|
+    #   @mesh.addIndex(v1)
+    #   @mesh.addIndex(v2)
+    #   @mesh.addIndex(v3)
+    # end
   end
   
   

@@ -166,11 +166,25 @@ class RubyOF(bpy.types.RenderEngine):
                             # ^ need to call this to populate the mesh.loop_triangles() cache
                             
                             
+                            
+                            mesh.calc_normals_split()
+                            # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+                            
+                            # ^ face normals 
+                            
+                            normal_data = [ [[val for val in vert] 
+                                            for vert in tri.split_normals]
+                                            for tri in mesh.loop_triangles ]
+                            
+                            
+                            # need to do some extra work here, but working at the face level I could get the split normals, instead of being forced to use the smoothed normals
+                            # each face also has a "use_smooth" that could come in handy
+                            
                             vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
                             
-                            normal_data = [ [vert.normal[0], vert.normal[1], vert.normal[2]] for vert in mesh.vertices]
                             
                             index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+                            
                             
                             obj_data.update({
                                 'verts': vert_data,
