@@ -177,9 +177,6 @@ class RubyOF(bpy.types.RenderEngine):
                                             for tri in mesh.loop_triangles ]
                             
                             
-                            # need to do some extra work here, but working at the face level I could get the split normals, instead of being forced to use the smoothed normals
-                            # each face also has a "use_smooth" that could come in handy
-                            
                             vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
                             
                             
