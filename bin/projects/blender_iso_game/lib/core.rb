@@ -732,6 +732,8 @@ class BlenderSync
           mesh.normals = obj['normals']
           mesh.tris    = obj['tris']
           
+          mesh.generate_mesh()
+          
           
           mesh.dirty = true
         when 'LIGHT'
@@ -1157,11 +1159,6 @@ class Core
       
     end
     
-    scheduler.section name: "cube ", budget: msec(1.0)
-      # puts "set cube mesh"
-      # raise
-    
-    
     scheduler.section name: "sync ", budget: msec(5.0)
       @sync.update
     
@@ -1316,8 +1313,6 @@ class Core
           @mat1.begin()
             
             @entities['Cube'].tap do |mesh_obj|
-              mesh_obj.generate_mesh()
-              
               
               # mesh_obj.mesh.generate_normals()
               # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
