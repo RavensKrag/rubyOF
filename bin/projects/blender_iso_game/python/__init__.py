@@ -160,7 +160,23 @@ class RubyOF(bpy.types.RenderEngine):
                         }
                         
                         if obj.type == 'MESH':
-                            pass
+                            mesh = obj.data
+                            
+                            mesh.calc_loop_triangles()
+                            # ^ need to call this to populate the mesh.loop_triangles() cache
+                            
+                            
+                            vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
+                            
+                            normal_data = [ [vert.normal[0], vert.normal[1], vert.normal[2]] for vert in mesh.vertices]
+                            
+                            index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+                            
+                            obj_data.update({
+                                'verts': vert_data,
+                                'normals': normal_data,
+                                'tris' : index_buffer
+                            })
                         elif obj.type == 'LIGHT':
                             print(obj.color)
                             obj_data.update({

@@ -173,6 +173,77 @@ class BlenderCube < BlenderObject
   end
 end
 
+
+class BlenderMesh < BlenderObject
+  extend Forwardable
+  
+  attr_reader :mesh, :node
+  attr_accessor :color
+  
+  attr_accessor :verts, :normals, :tris
+  
+  def initialize
+    @mesh = RubyOF::Mesh.new
+    @node = RubyOF::Node.new
+  end
+  
+  def_delegators :@node, :position, :position=,
+                         :orientation, :orientation=,
+                         :scale, :scale=
+  
+  
+  
+  def generate_mesh
+    return unless !@verts.nil? and !@normals.nil? and !@tris.nil?
+    
+    
+    @mesh = RubyOF::Mesh.new
+    # p mesh.methods
+    @mesh.setMode(:triangles)
+    
+    
+    @verts.each do |x,y,z|
+      @mesh.addVertex(GLM::Vec3.new(x,y,z))
+    end
+    
+    @normals.each do |x,y,z|
+      @mesh.addNormal(GLM::Vec3.new(x,y,z))
+    end
+    
+    @tris.each do |v1, v2, v3|
+      @mesh.addIndex(v1)
+      @mesh.addIndex(v2)
+      @mesh.addIndex(v3)
+    end
+  end
+  
+  
+  
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    orientation = self.orientation
+    position = self.position
+    scale = self.scale
+    
+    {
+        'type' => 'MESH',
+        'name' =>  @name,
+        'rotation' => [
+          'Quat',
+          orientation.w, orientation.x, orientation.y, orientation.z
+        ],
+        'position' => [
+          'Vec3',
+          position.x, position.y, position.z
+        ],
+        'scale' => [
+          'Vec3',
+          scale.x, scale.y, scale.z
+        ],
+    }
+  end
+end
+
 class CustomCamera< BlenderObject
   extend Forwardable
   include RubyOF::Graphics
@@ -646,17 +717,21 @@ class BlenderSync
           quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
           scale = GLM::Vec3.new(*(obj['scale'][1..3]))
           
-          cube = @entities['Cube']
+          mesh = @entities['Cube']
           
-          cube.position = pos
-          cube.orientation = quat
-          cube.scale = scale
-          
-          
-          cube.name = obj['name']
+          mesh.position = pos
+          mesh.orientation = quat
+          mesh.scale = scale
           
           
-          cube.dirty = true
+          mesh.name = obj['name']
+          
+          mesh.verts   = obj['verts']
+          mesh.normals = obj['normals']
+          mesh.tris    = obj['tris']
+          
+          
+          mesh.dirty = true
         when 'LIGHT'
           puts "light data"
           p obj
@@ -915,7 +990,7 @@ class Core
     @entities = {
       'viewport_camera' => CustomCamera.new,
       
-      'Cube'  => BlenderCube.new,
+      'Cube'  => BlenderMesh.new,
       'Light' => BlenderLight.new
     }
     
@@ -1237,9 +1312,28 @@ class Core
         
           # // render objects in world
           @mat1.begin()
-          ofPushMatrix()
-            ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-          ofPopMatrix()
+            
+            @entities['Cube'].tap do |mesh_obj|
+              mesh_obj.generate_mesh()
+              
+              
+              # mesh_obj.mesh.generate_normals()
+              # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+              
+              
+              mesh_obj.node.transformGL()
+              mesh_obj.mesh.draw()
+              mesh_obj.node.restoreTransformGL()
+              
+              
+              # ofPushMatrix()
+              #   mesh_obj.node.transformGL()
+              #   ofDrawBox(0,0,0, 2)
+              #   mesh_obj.node.restoreTransformGL()
+              #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+              # ofPopMatrix()
+            end
+            
           @mat1.end()
           
           
@@ -1305,9 +1399,9 @@ class Core
         
     #     # # material.begin
         
-    #     #   @entities['Cube'].node.transformGL()
-    #     #   @entities['Cube'].mesh.draw()
-    #     #   @entities['Cube'].node.restoreTransformGL()
+          # @entities['Cube'].node.transformGL()
+          # @entities['Cube'].mesh.draw()
+          # @entities['Cube'].node.restoreTransformGL()
         
     #     # material.end
         

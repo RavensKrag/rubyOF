@@ -55,6 +55,11 @@ void ofMesh__setMode(ofMesh &mesh, int code)
    mesh.setMode(MESH_MODES[code]);
 }
 
+void ofMesh_generateNormals(ofMesh &mesh){
+   mesh.addNormals(mesh.getFaceNormals(TRUE));
+}
+
+
 
 // ofLight expects ofColor_<float> but openframeworks can make that conversion
 
@@ -393,8 +398,21 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("setMode",           ofMesh__setMode)
       .define_method("addVertex",         &ofMesh::addVertex)
+      .define_method("addNormal",         &ofMesh::addNormal)
       .define_method("addTexCoord",       &ofMesh::addTexCoord)
       .define_method("addIndex",          &ofMesh::addIndex)
+      
+      
+      // .define_method("addNormals",
+      //    static_cast< void (ofMesh::*)
+      //    (const std::vector<ofDefaultNormalType> &norms) const
+      //    >(&ofMesh::addNormals)
+      // )
+      // .define_method("getFaceNormals",    &ofMesh::getFaceNormals)
+      
+      .define_method("generate_normals",    &ofMesh_generateNormals)
+      
+      
       
       // .define_method(
       //    "addColor",
