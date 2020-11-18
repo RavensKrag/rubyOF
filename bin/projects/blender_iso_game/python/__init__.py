@@ -29,6 +29,8 @@ from bpy.props import (StringProperty,
                        EnumProperty,
                        )
 
+import time
+
 class RubyOF(bpy.types.RenderEngine):
     # These three members are used by blender to set up the
     # RenderEngine; define its internal name, visible name and capabilities.
@@ -175,22 +177,96 @@ class RubyOF(bpy.types.RenderEngine):
             mesh.calc_loop_triangles()
             # ^ need to call this to populate the mesh.loop_triangles() cache
             
-            
-            
             mesh.calc_normals_split()
             # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
             
             # ^ face normals 
             
-            normal_data = [ [[val for val in vert] 
-                            for vert in tri.split_normals]
-                            for tri in mesh.loop_triangles ]
             
+            start_time = time.time()
             
             vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
             
             
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            print("vertex export: ", dt, " msec" )
+            
+            
+            
+            
+            start_time = time.time()
+            
+            
             index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+            
+            
+            dt = (stop_time - start_time) * 1000
+            print("index export: ", dt, " msec" )
+            
+            
+            
+            
+            start_time = time.time()
+            
+            # normal_data = [ [[val for val in vert] 
+            #                 for vert in tri.split_normals]
+            #                 for tri in mesh.loop_triangles ]
+            
+            # normal_data = []
+            # for tri in mesh.loop_triangles:
+            #     for vert in tri.split_normals:
+            #         for val in vert:
+            #             normal_data.append(val)
+            # print(len(normal_data))
+            
+            # normal_data = [None] * (len(mesh.loop_triangles) * 3 * 3)
+            # i = 0
+            # for tri in mesh.loop_triangles:
+            #     for vert in tri.split_normals:
+            #         for val in vert:
+            #             # print(i, '/', len(normal_data))
+            #             normal_data[i] = val
+            #             i +=1
+            
+            
+            
+            # # 
+            # # baseline speed
+            # # (still some delay, which means there lag on the Ruby-side too)
+            # # 
+            # normal_data = [None] * (len(mesh.loop_triangles) * 3 * 3)
+            # for i in range((len(mesh.loop_triangles) * 3 * 3)):
+            #     # print(i, '/', len(normal_data))
+            #     normal_data[i] = 1
+            
+            
+            num_tris = len(mesh.loop_triangles)
+            num_normals = (num_tris * 3 * 3)
+            normal_data = [None] * num_normals
+            
+            # iter3 = range(3)
+            
+            for i in range(num_tris):
+                tri = mesh.loop_triangles[i]
+                for j in range(3):
+                    normal = tri.split_normals[j]
+                    for k in range(3):
+                        idx = 9*i+3*j+k
+                        # print(idx)
+                        # print(i, ' ', j, ' ', k)
+                        normal_data[idx] = normal[k]
+            
+            
+            
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            print("normal export: ", dt, " msec" )
+            
+            
+            
+            
+            
             
             
             obj_data.update({
@@ -650,7 +726,7 @@ def get_panels():
     
     panels = []
     for panel in bpy.types.Panel.__subclasses__():
-        print(panel.__name__)
+        # print(panel.__name__)
         if hasattr(panel, 'COMPAT_ENGINES') and 'BLENDER_RENDER' in panel.COMPAT_ENGINES:
             if panel.__name__ not in exclude_panels:
                 panels.append(panel)

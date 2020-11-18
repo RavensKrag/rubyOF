@@ -202,6 +202,7 @@ class BlenderMesh < BlenderObject
     @mesh.setMode(:triangles)
     
     
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     # @normals.each_cons(3) do |vert|
     #   @mesh.addNormal(GLM::Vec3.new(*vert))
@@ -219,6 +220,12 @@ class BlenderMesh < BlenderObject
     RubyOF::CPP_Callbacks.generate_mesh(@mesh, @normals,
                                                @verts.flatten,
                                                @tris.flatten)
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0;
+    puts "time - mesh generation: #{dt}"
+    
   end
   
   
