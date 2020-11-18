@@ -45,6 +45,124 @@ int cpp_callback(int x) {
 
 
 
+void generate_mesh(ofMesh& mesh, Rice::Array normals, 
+	                              Rice::Array verts, 
+	                              Rice::Array tris)
+{
+	
+	// 
+	// ruby prototype:
+	// 
+	
+	// @normals.each do |tri|
+	//   tri.each do |vert|
+	//     @mesh.addNormal(GLM::Vec3.new(*vert))
+	//   end
+	// end
+
+	// @tris.each do |vert_idxs|
+	//   vert_coords = vert_idxs.map{|i|  @verts[i]  }
+
+	//   vert_coords.each do |x,y,z|
+	//     @mesh.addVertex(GLM::Vec3.new(x,y,z))
+	//   end
+	// end
+	
+	// 
+	// python exporter:
+	// 
+	 // normal_data = [ [[val for val in vert] 
+	 //                 for vert in tri.split_normals]
+	 //                 for tri in mesh.loop_triangles ]
+	 	 
+	 // vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
+	 
+	 // index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+	
+	
+	// initialize C++ memory
+	
+	float* norm_ptr = new float[normals.size()];
+	float* vert_ptr = new float[verts.size()];;
+	int*   idx_ptr  = new int[tris.size()];;
+	
+	
+	// copy ruby data over to C++ memory
+	
+	int idx;
+	
+	idx = 0;
+	for(auto aI = normals.begin(); aI != normals.end(); ++aI){
+		norm_ptr[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	idx = 0;
+	for(auto aI = verts.begin(); aI != verts.end(); ++aI){
+		vert_ptr[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	idx = 0;
+	for(auto aI = tris.begin(); aI != tris.end(); ++aI){
+		idx_ptr[idx] = from_ruby<int>(*aI);
+		idx++;
+	}
+	
+	
+	
+	
+	
+	// for(int i=0; i<normals.size(); i++){
+	// 	norm_ptr[i] = from_ruby<float>(normals[i]);
+	// }
+	
+	// for(int i=0; i<verts.size(); i++){
+	// 	vert_ptr[i] = from_ruby<float>(verts[i]);
+	// }
+	
+	// for(int i=0; i<tris.size(); i++){
+	// 	idx_ptr[i] = from_ruby<int>(tris[i]);
+	// }
+	
+	// operate on C++ memory only using pointer arithmetic
+	
+	int num_tris = tris.size()/3;
+	
+	// for each face
+	int vert_idxs[3];
+	for(int i=0; i<num_tris; i++){
+		vert_idxs[0] = idx_ptr[3*i + 0];
+		vert_idxs[1] = idx_ptr[3*i + 1];
+		vert_idxs[2] = idx_ptr[3*i + 2];
+		
+		// for each of the 3 verts in the face (all faces are triangles)
+		for(int j=0; j<3; j++){
+			int vert_idx = vert_idxs[j];
+			
+			
+			float v_val_x = vert_ptr[3*vert_idx + 0];
+			float v_val_y = vert_ptr[3*vert_idx + 1];
+			float v_val_z = vert_ptr[3*vert_idx + 2];
+			
+			float n_val_x = norm_ptr[9*i+3*j + 0];
+			float n_val_y = norm_ptr[9*i+3*j + 1];
+			float n_val_z = norm_ptr[9*i+3*j + 2];
+			
+			mesh.addVertex(glm::vec3(v_val_x, v_val_y, v_val_z));
+			mesh.addNormal(glm::vec3(n_val_x, n_val_y, n_val_z));
+		}
+		
+		
+	}
+	
+	
+	delete norm_ptr;
+	delete vert_ptr;
+	delete idx_ptr;
+}
+
+
 
 
 void render_material_editor(
@@ -851,6 +969,10 @@ void Init_rubyOF_project()
 		
 		
 		// .define_module_function("setColorPickerColor", &setColorPickerColor)
+		
+		
+		
+		.define_module_function("generate_mesh",   &generate_mesh)
 	;
 	
 	

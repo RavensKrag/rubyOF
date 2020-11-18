@@ -203,20 +203,22 @@ class BlenderMesh < BlenderObject
     
     
     
-    @normals.each do |tri|
-      tri.each do |vert|
-        @mesh.addNormal(GLM::Vec3.new(*vert))
-      end
-    end
+    # @normals.each_cons(3) do |vert|
+    #   @mesh.addNormal(GLM::Vec3.new(*vert))
+    # end
     
-    @tris.each do |vert_idxs|
-      vert_coords = vert_idxs.map{|i|  @verts[i]  }
+    # @tris.each do |vert_idxs|
+    #   vert_coords = vert_idxs.map{|i|  @verts[i]  }
       
-      vert_coords.each do |x,y,z|
-        @mesh.addVertex(GLM::Vec3.new(x,y,z))
-      end
-    end
+    #   vert_coords.each do |x,y,z|
+    #     @mesh.addVertex(GLM::Vec3.new(x,y,z))
+    #   end
+    # end
     
+    
+    RubyOF::CPP_Callbacks.generate_mesh(@mesh, @normals,
+                                               @verts.flatten,
+                                               @tris.flatten)
   end
   
   
@@ -560,7 +562,7 @@ end
 
 
 class BlenderSync
-  MAX_READS = 5
+  MAX_READS = 3
   
   def initialize(window, entities)
     @window = window
@@ -633,8 +635,13 @@ class BlenderSync
     [MAX_READS, @msg_queue.length].min.times do
       data = @msg_queue.pop
       
+      t0 = RubyOF::Utils.ofGetElapsedTimeMicros
       list = JSON.parse(data)
       # p list
+      t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+      
+      dt = t1-t0;
+      puts "time - parse json: #{dt}"
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
@@ -648,6 +655,9 @@ class BlenderSync
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(data_list)
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+
     data_list.each do |obj|
       # p obj
       if obj['type'] == 'viewport_region'        
@@ -674,7 +684,7 @@ class BlenderSync
         # (viewport camera is also considered an entity in this context)
         case obj['type']
         when 'viewport_camera'
-          puts "update viewport"
+          # puts "update viewport"
           
           @entities['viewport_camera'].tap do |camera|
             camera.dirty = true
@@ -733,12 +743,12 @@ class BlenderSync
           mesh.tris    = obj['tris']
           
           mesh.generate_mesh()
-          
+            
           
           mesh.dirty = true
         when 'LIGHT'
-          puts "light data"
-          p obj
+          # puts "light data"
+          # p obj
           
           pos   = GLM::Vec3.new(*(obj['position'][1..3]))
           quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
@@ -802,6 +812,15 @@ class BlenderSync
       end
       
     end
+    
+    
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0;
+    puts "time - parse data: #{dt}"
+    
+    
   end
   
   
