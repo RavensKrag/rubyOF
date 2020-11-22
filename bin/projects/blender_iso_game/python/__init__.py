@@ -33,6 +33,18 @@ from bpy.props import (StringProperty,
 
 import time
 
+
+
+
+
+
+
+import queue
+import threading
+
+
+
+
 class RubyOF(bpy.types.RenderEngine):
     # These three members are used by blender to set up the
     # RenderEngine; define its internal name, visible name and capabilities.
@@ -48,16 +60,23 @@ class RubyOF(bpy.types.RenderEngine):
         self.draw_data = None
         self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
         
-        # self.fifo = open(self.fifo_path, 'w')
-        # print("FIFO open")
+        
+        # data to send to ruby, as well as None to tell the io thread to stop
+        self.outbound_queue = queue.Queue()
+        
+        # self.io_thread = threading.Thread(target=worker(), args=(i,))
+        self.io_thread = threading.Thread(target=self._io_worker)
+        self.io_thread.start()
+    
 
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.
     def __del__(self):
-        pass
+        self.outbound_queue.put(None) # signal the thread to stop
+        self.io_thread.join() # wait for thread to finish
         # self.fifo.close()
         # print("FIFO closed")
-
+    
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
     def render(self, depsgraph):
@@ -82,7 +101,68 @@ class RubyOF(bpy.types.RenderEngine):
         layer = result.layers[0].passes["Combined"]
         layer.rect = rect
         self.end_result(result)
-
+    
+    
+    def _io_worker(self):
+        
+        while(True):
+            if os.path.exists(self.fifo_path):
+                print("-----")
+                print("=> FIFO open")
+                pipe = open(self.fifo_path, 'w')
+                
+                
+                print("=> wait for message...")
+                message = self.outbound_queue.get()
+                if message is None:
+                    break;
+                
+                
+                start_time = time.time()
+                try:
+                    # text = text.encode('utf-8')
+                    
+                    pipe.write(message + "\n")
+                    
+                    
+                    print("=> msg len:", len(message))
+                except IOError as e:
+                    print("broken pipe error (suppressed exception)")
+                
+                stop_time = time.time()
+                dt = (stop_time - start_time) * 1000
+                print("=> fifo data transfer: ", dt, " msec" )
+        
+                pipe.close()
+                print("=> FIFO closed")
+                print("-----")
+    
+    def fifo_write(self, message):
+        if os.path.exists(self.fifo_path):
+            print("-----")
+            print("=> FIFO open")
+            pipe = open(self.fifo_path, 'w')
+            
+            
+            start_time = time.time()
+            try:
+                # text = text.encode('utf-8')
+                
+                pipe.write(message + "\n")
+                
+                
+                print("=> msg len:", len(message))
+            except IOError as e:
+                print("broken pipe error (suppressed exception)")
+            
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            print("=> fifo data transfer: ", dt, " msec" )
+    
+            pipe.close()
+            print("=> FIFO closed")
+            print("-----")
+    
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
     # should be read from Blender in the same thread. Typically a render
@@ -116,26 +196,26 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         
-        
-        print("FIFO open")
-        if os.path.exists(self.fifo_path):
-            try:
-                # text = text.encode('utf-8')
-                pipe = open(self.fifo_path, 'w')
+        # Loop over all object instances in the scene.
+        if first_time or depsgraph.id_type_updated('OBJECT'):
+            print("obj update detected")
+            for instance in depsgraph.object_instances:
+                obj_data = self.pack_data(instance)
+                data = [ obj_data ]
+                
+                t0 = time.time()
+                output_string = json.dumps(data)
+                t1 = time.time()
+                dt = (t1 - t0) * 1000
+                print("json encode: ", dt, " msec" )
                 
                 
-                # Loop over all object instances in the scene.
-                if first_time or depsgraph.id_type_updated('OBJECT'):
-                    print("obj update detected")
-                    for instance in depsgraph.object_instances:
-                        obj_data = self.pack_data(instance)
-                        data = [ obj_data ]
-                        pipe.write(json.dumps(data) + "\n")
-                pipe.close()
-                
-                print("---")
-            except IOError as e:
-                print("broken pipe error (suppressed exception)")
+                t0 = time.time()
+                # self.outbound_queue.put(output_string)
+                self.fifo_write(output_string)
+                t1 = time.time()
+                dt = (t1 - t0) * 1000
+                print("fifo write: ", dt, " msec" )
         
     def pack_data(self, instance):
         obj = instance.object
@@ -384,96 +464,94 @@ class RubyOF(bpy.types.RenderEngine):
         # ^ these are viewport properties, not camera object properties
         
         
-        print("FIFO open")
-        if os.path.exists(self.fifo_path):
-            try:
-                # text = text.encode('utf-8')
-                pipe = open(self.fifo_path, 'w')
-                
-                mat_p = rv3d.perspective_matrix
-                mat_w = rv3d.window_matrix
-                mat_v = rv3d.view_matrix
-                
-                rot = rv3d.view_rotation
-                data = [
-                    {
-                        'type': 'viewport_camera',
-                        'rotation':[
-                            "Quat",
-                            rot.w,
-                            rot.x,
-                            rot.y,
-                            rot.z
-                        ],
-                        'position':[
-                            "Vec3",
-                            camera_origin.x,
-                            camera_origin.y,
-                            camera_origin.z
-                        ],
-                        'lens':[
-                            "mm",
-                            context.space_data.lens
-                        ],
-                        'fov':[
-                            "deg",
-                            context.scene.my_custom_props.fov
-                        ],
-                        'near_clip':[
-                            'm',
-                            space.clip_start
-                        ],
-                        'far_clip':[
-                            'm',
-                            space.clip_end
-                        ],
-                        # 'aspect_ratio':[
-                        #     "???",
-                        #     context.scene.my_custom_props.aspect_ratio
-                        # ],
-                        'ortho_scale':[
-                            "factor",
-                            context.scene.my_custom_props.ortho_scale
-                        ],
-                        'view_perspective': rv3d.view_perspective,
-                        'perspective_matrix':[
-                            'Mat4',
-                            mat_p[0][0], mat_p[0][1], mat_p[0][2], mat_p[0][3],
-                            mat_p[1][0], mat_p[1][1], mat_p[1][2], mat_p[1][3],
-                            mat_p[2][0], mat_p[2][1], mat_p[2][2], mat_p[2][3],
-                            mat_p[3][0], mat_p[3][1], mat_p[3][2], mat_p[3][3]
-                        ],
-                        'window_matrix':[
-                            'Mat4',
-                            mat_w[0][0], mat_w[0][1], mat_w[0][2], mat_w[0][3],
-                            mat_w[1][0], mat_w[1][1], mat_w[1][2], mat_w[1][3],
-                            mat_w[2][0], mat_w[2][1], mat_w[2][2], mat_w[2][3],
-                            mat_w[3][0], mat_w[3][1], mat_w[3][2], mat_w[3][3]
-                        ],
-                        'view_matrix':[
-                            'Mat4',
-                            mat_v[0][0], mat_v[0][1], mat_v[0][2], mat_v[0][3],
-                            mat_v[1][0], mat_v[1][1], mat_v[1][2], mat_v[1][3],
-                            mat_v[2][0], mat_v[2][1], mat_v[2][2], mat_v[2][3],
-                            mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
-                        ]
-                    }
+        
+        mat_p = rv3d.perspective_matrix
+        mat_w = rv3d.window_matrix
+        mat_v = rv3d.view_matrix
+        
+        rot = rv3d.view_rotation
+        data = [
+            {
+                'type': 'viewport_camera',
+                'rotation':[
+                    "Quat",
+                    rot.w,
+                    rot.x,
+                    rot.y,
+                    rot.z
+                ],
+                'position':[
+                    "Vec3",
+                    camera_origin.x,
+                    camera_origin.y,
+                    camera_origin.z
+                ],
+                'lens':[
+                    "mm",
+                    context.space_data.lens
+                ],
+                'fov':[
+                    "deg",
+                    context.scene.my_custom_props.fov
+                ],
+                'near_clip':[
+                    'm',
+                    space.clip_start
+                ],
+                'far_clip':[
+                    'm',
+                    space.clip_end
+                ],
+                # 'aspect_ratio':[
+                #     "???",
+                #     context.scene.my_custom_props.aspect_ratio
+                # ],
+                'ortho_scale':[
+                    "factor",
+                    context.scene.my_custom_props.ortho_scale
+                ],
+                'view_perspective': rv3d.view_perspective,
+                'perspective_matrix':[
+                    'Mat4',
+                    mat_p[0][0], mat_p[0][1], mat_p[0][2], mat_p[0][3],
+                    mat_p[1][0], mat_p[1][1], mat_p[1][2], mat_p[1][3],
+                    mat_p[2][0], mat_p[2][1], mat_p[2][2], mat_p[2][3],
+                    mat_p[3][0], mat_p[3][1], mat_p[3][2], mat_p[3][3]
+                ],
+                'window_matrix':[
+                    'Mat4',
+                    mat_w[0][0], mat_w[0][1], mat_w[0][2], mat_w[0][3],
+                    mat_w[1][0], mat_w[1][1], mat_w[1][2], mat_w[1][3],
+                    mat_w[2][0], mat_w[2][1], mat_w[2][2], mat_w[2][3],
+                    mat_w[3][0], mat_w[3][1], mat_w[3][2], mat_w[3][3]
+                ],
+                'view_matrix':[
+                    'Mat4',
+                    mat_v[0][0], mat_v[0][1], mat_v[0][2], mat_v[0][3],
+                    mat_v[1][0], mat_v[1][1], mat_v[1][2], mat_v[1][3],
+                    mat_v[2][0], mat_v[2][1], mat_v[2][2], mat_v[2][3],
+                    mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
                 ]
+            }
+        ]
+        
+        if context.scene.my_custom_props.b_windowLink:
+            data += [
+                {
+                    'type': 'viewport_region',
+                    'width':  region.width,
+                    'height': region.height,
+                    'pid': os.getpid()
+                }
+            ]
+        
+        output_string = json.dumps(data)
+        # self.outbound_queue.put(output_string)
+        self.fifo_write(output_string)
+        
+        
                 
-                if context.scene.my_custom_props.b_windowLink:
-                    data += [
-                        {
-                            'type': 'viewport_region',
-                            'width':  region.width,
-                            'height': region.height,
-                            'pid': os.getpid()
-                        }
-                    ]
                 
-                pipe.write(json.dumps(data) + "\n")
-                pipe.close()
-            except IOError as e:
-                print("broken pipe error (suppressed exception)")
         
         
         #

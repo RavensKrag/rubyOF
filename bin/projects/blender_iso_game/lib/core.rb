@@ -605,7 +605,12 @@ class BlenderSync
     
       fifo_path = @fifo_dir/@fifo_name
       
-      File.mkfifo(fifo_path)
+      if fifo_path.exist?
+        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
+      else
+        File.mkfifo(fifo_path)
+      end
+      
       puts "fifo created @ #{fifo_path}"
       
       @f_r = File.open(fifo_path, "r+")
@@ -1116,7 +1121,10 @@ class Core
   def ensure
     puts "core: ensure"
     
-    @sync.stop
+    # Some errors may prevent sync object from being initialized.
+    # In that case, you can get a double-crash if you try to run
+    # BlenderSync#stop.
+    @sync.stop unless @sync.nil?
   end
   
   
@@ -1137,6 +1145,7 @@ class Core
     # ('ORTHO' support currently rather poor)
     
     
+    # TODO: start saving to disk again once the mesh data exchange is finalized
     # dump_yaml entity_data_list => @world_save_file
     puts "world saved!"
   end
