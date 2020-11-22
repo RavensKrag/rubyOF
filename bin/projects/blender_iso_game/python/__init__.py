@@ -9,6 +9,8 @@ bl_info = {
 }
 
 import json
+import base64
+import struct
 
 import os
 import fcntl
@@ -264,14 +266,19 @@ class RubyOF(bpy.types.RenderEngine):
             print("normal export: ", dt, " msec" )
             
             
+            # array -> binary blob
+            binary_data = struct.pack('%dd' % num_normals, *normal_data)
             
-            
+            # normal binary -> base 64 encoded binary -> ascii
+            binary_string = base64.b64encode(binary_data).decode('ascii')
             
             
             
             obj_data.update({
                 'verts': vert_data,
-                'normals': normal_data,
+                'normals': [
+                    'double', num_normals, binary_string
+                ],
                 'tris' : index_buffer
             })
         elif obj.type == 'LIGHT':

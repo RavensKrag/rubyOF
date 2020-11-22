@@ -4,6 +4,7 @@
 require 'forwardable' # for def_delegators
 
 require 'json' # easiest way to transfer data between Python and Ruby
+require 'base64'
 
 require 'open3'
 
@@ -569,7 +570,7 @@ end
 
 
 class BlenderSync
-  MAX_READS = 3
+  MAX_READS = 20
   
   def initialize(window, entities)
     @window = window
@@ -746,8 +747,19 @@ class BlenderSync
           mesh.name = obj['name']
           
           mesh.verts   = obj['verts']
-          mesh.normals = obj['normals']
           mesh.tris    = obj['tris']
+          
+          
+          obj['normals'].tap do |type, count, data|
+            # b64 -> binary -> array
+            mesh.normals = Base64.decode64(data).unpack("d#{count}")
+            
+            # assuming type == double for now, but may want to support other types too
+          end
+          
+          obj['normals']
+          
+          
           
           mesh.generate_mesh()
             
@@ -1125,7 +1137,7 @@ class Core
     # ('ORTHO' support currently rather poor)
     
     
-    dump_yaml entity_data_list => @world_save_file
+    # dump_yaml entity_data_list => @world_save_file
     puts "world saved!"
   end
   
