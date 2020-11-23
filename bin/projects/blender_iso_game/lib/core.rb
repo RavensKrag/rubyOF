@@ -219,7 +219,7 @@ class BlenderMesh < BlenderObject
     
     
     RubyOF::CPP_Callbacks.generate_mesh(@mesh, @normals,
-                                               @verts.flatten,
+                                               @verts,
                                                @tris.flatten)
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros
@@ -645,6 +645,8 @@ class BlenderSync
     
   def update
     
+    update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     [MAX_READS, @msg_queue.length].min.times do
       data = @msg_queue.pop
       
@@ -662,6 +664,10 @@ class BlenderSync
       parse_blender_data(list)
       
     end
+    
+    update_t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    dt = update_t1 - update_t0
+    puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
   end
   
@@ -735,7 +741,7 @@ class BlenderSync
             end
           end
         when 'MESH'
-          # puts "mesh data"
+          puts "mesh data"
           # p obj
           
           pos   = GLM::Vec3.new(*(obj['position'][1..3]))
@@ -751,25 +757,58 @@ class BlenderSync
           
           mesh.name = obj['name']
           
-          mesh.verts   = obj['verts']
           mesh.tris    = obj['tris']
           
-          
-          obj['normals'].tap do |type, count, data|
-            # b64 -> binary -> array
-            mesh.normals = Base64.decode64(data).unpack("d#{count}")
+          obj['normals'].tap do |type, count, path|
+            lines = File.readlines(path)
             
-            # assuming type == double for now, but may want to support other types too
+            # p lines
+            # b64 -> binary -> array
+            puts lines.size
+            # if @last_mesh_file_n != path
+              # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+              
+              # @last_mesh_file_n = path
+              data = lines.last # should only be one line in this file
+              mesh.normals = Base64.decode64(data).unpack("d#{count}")
+              
+              # # assuming type == double for now, but may want to support other types too
+            # end
+            
+            mesh.dirty = true
           end
           
-          obj['normals']
+          obj['verts'].tap do |type, count, path|
+              # p [type, count, path]
+              
+              lines = File.readlines(path)
+              
+              # p lines
+              # b64 -> binary -> array
+              puts lines.size
+              # if @last_mesh_file_v != path
+                # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+                
+                # @last_mesh_file_v = path
+                data = lines.last # should only be one line in this file
+                # puts "data =>"
+                # p data
+                mesh.verts = Base64.decode64(data).unpack("d#{count}")
+                
+                # # assuming type == double for now, but may want to support other types too
+              # end
+              
+              mesh.dirty = true
+            end
           
           
+          if mesh.dirty
+            mesh.generate_mesh()
+          end
           
-          mesh.generate_mesh()
+          
             
           
-          mesh.dirty = true
         when 'LIGHT'
           # puts "light data"
           # p obj
@@ -831,6 +870,11 @@ class BlenderSync
           
           
           
+        when 'timestamp'
+          # t0 = obj['time']
+          # t1 = Time.now.strftime('%s.%N').to_f
+          dt = Time.now.strftime('%s.%N').to_f - obj['time']
+          puts "roundtrip time: #{dt*1000} ms"
         end
         
       end

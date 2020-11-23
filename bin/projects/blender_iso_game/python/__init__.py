@@ -43,6 +43,9 @@ import queue
 import threading
 
 
+import hashlib
+
+
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -61,21 +64,32 @@ class RubyOF(bpy.types.RenderEngine):
         self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
         
         
-        # data to send to ruby, as well as None to tell the io thread to stop
-        self.outbound_queue = queue.Queue()
+        # # data to send to ruby, as well as None to tell the io thread to stop
+        # self.outbound_queue = queue.Queue()
         
-        # self.io_thread = threading.Thread(target=worker(), args=(i,))
-        self.io_thread = threading.Thread(target=self._io_worker)
-        self.io_thread.start()
+        # # self.io_thread = threading.Thread(target=worker(), args=(i,))
+        # self.io_thread = threading.Thread(target=self._io_worker)
+        # self.io_thread.start()
+        
+        self.shm_dir = '/dev/shm/Blender_RubyOF/'
+        if not os.path.exists(self.shm_dir):
+            os.mkdir(self.shm_dir)
     
 
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.
     def __del__(self):
-        self.outbound_queue.put(None) # signal the thread to stop
-        self.io_thread.join() # wait for thread to finish
+        os.rmdir(self.shm_dir)
+        
+        # self.outbound_queue.put(None) # signal the thread to stop
+        # self.io_thread.join() # wait for thread to finish
+        
+        
         # self.fifo.close()
         # print("FIFO closed")
+        
+        
+        
     
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
@@ -132,7 +146,7 @@ class RubyOF(bpy.types.RenderEngine):
                 stop_time = time.time()
                 dt = (stop_time - start_time) * 1000
                 print("=> fifo data transfer: ", dt, " msec" )
-        
+                
                 pipe.close()
                 print("=> FIFO closed")
                 print("-----")
@@ -195,11 +209,32 @@ class RubyOF(bpy.types.RenderEngine):
                 print("Materials updated")
         
         
+        print("not first time")
+        # Test which datablocks changed
+        for update in depsgraph.updates:
+            print("Datablock updated: ", update.id.name)
+            update.is_updated_geometry
+            
+            update.is_updated_shading
+            
+            update.is_updated_transform
+        
+        # Test if any material was added, removed or changed.
+        if depsgraph.id_type_updated('MATERIAL'):
+            print("Materials updated")
+        
+        print("there are", len(depsgraph.updates), "updates to process")
+        
+        
+        start_time = time.time()
+        
         
         # Loop over all object instances in the scene.
         if first_time or depsgraph.id_type_updated('OBJECT'):
             print("obj update detected")
             for instance in depsgraph.object_instances:
+                t0_total = time.time()
+                
                 obj_data = self.pack_data(instance)
                 data = [ obj_data ]
                 
@@ -216,6 +251,16 @@ class RubyOF(bpy.types.RenderEngine):
                 t1 = time.time()
                 dt = (t1 - t0) * 1000
                 print("fifo write: ", dt, " msec" )
+                
+                
+                
+                t1_total = time.time()
+                dt = (t1_total - t0_total) * 1000
+                print("TOTAL TIME: ", dt, " msec" )
+                
+        data = [ {'type':'timestamp', 'time': start_time  } ]        
+        output_string = json.dumps(data)
+        self.fifo_write(output_string)
         
     def pack_data(self, instance):
         obj = instance.object
@@ -265,9 +310,23 @@ class RubyOF(bpy.types.RenderEngine):
             # ^ face normals 
             
             
+            
+            
+            
             start_time = time.time()
             
-            vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
+            # number of actual verts likely to be less than maximum
+            # so just measure the list
+            num_verts = len(mesh.vertices)*3 # TODO: rename this variable
+            vert_data = [None] * num_verts
+            
+            
+            for i in range(len(mesh.vertices)):
+                vert = mesh.vertices[i]
+                
+                vert_data[i*3+0] = vert.co[0]
+                vert_data[i*3+1] = vert.co[1]
+                vert_data[i*3+2] = vert.co[2]
             
             
             stop_time = time.time()
@@ -282,7 +341,7 @@ class RubyOF(bpy.types.RenderEngine):
             
             index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
             
-            
+            stop_time = time.time()
             dt = (stop_time - start_time) * 1000
             print("index export: ", dt, " msec" )
             
@@ -322,8 +381,8 @@ class RubyOF(bpy.types.RenderEngine):
             #     # print(i, '/', len(normal_data))
             #     normal_data[i] = 1
             
-            
             num_tris = len(mesh.loop_triangles)
+            
             num_normals = (num_tris * 3 * 3)
             normal_data = [None] * num_normals
             
@@ -346,6 +405,10 @@ class RubyOF(bpy.types.RenderEngine):
             print("normal export: ", dt, " msec" )
             
             
+            
+            
+            start_time = time.time()
+            
             # array -> binary blob
             binary_data = struct.pack('%dd' % num_normals, *normal_data)
             
@@ -353,11 +416,62 @@ class RubyOF(bpy.types.RenderEngine):
             binary_string = base64.b64encode(binary_data).decode('ascii')
             
             
+            # sha = hashlib.sha1(binary_data).hexdigest()
+            # tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+            
+            
+            tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
+            
+            if not os.path.exists(tmp_normal_file_path):
+                with open(tmp_normal_file_path, 'w') as f:
+                    f.write(binary_string)
+                
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            print("shm file io (normals): ", dt, " msec" )
+            
+            
+            
+            
+            
+            
+            
+            
+            start_time = time.time()
+            
+            # array -> binary blob
+            binary_data = struct.pack('%dd' % num_verts, *vert_data)
+            
+            # normal binary -> base 64 encoded binary -> ascii
+            binary_string = base64.b64encode(binary_data).decode('ascii')
+            
+            
+            # sha = hashlib.sha1(binary_data).hexdigest()
+            # tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+            
+            
+            tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
+            
+            if not os.path.exists(tmp_vert_file_path):
+                with open(tmp_vert_file_path, 'w') as f:
+                    f.write(binary_string)
+                
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            print("shm file io (verts): ", dt, " msec" )
+            
+            
+            
+            
+            
+            
             
             obj_data.update({
-                'verts': vert_data,
+                'verts': [
+                    'double', num_verts, tmp_vert_file_path
+                ],
                 'normals': [
-                    'double', num_normals, binary_string
+                    'double', num_normals, tmp_normal_file_path
                 ],
                 'tris' : index_buffer
             })
