@@ -117,40 +117,6 @@ class RubyOF(bpy.types.RenderEngine):
         self.end_result(result)
     
     
-    def _io_worker(self):
-        
-        while(True):
-            if os.path.exists(self.fifo_path):
-                print("-----")
-                print("=> FIFO open")
-                pipe = open(self.fifo_path, 'w')
-                
-                
-                print("=> wait for message...")
-                message = self.outbound_queue.get()
-                if message is None:
-                    break;
-                
-                
-                start_time = time.time()
-                try:
-                    # text = text.encode('utf-8')
-                    
-                    pipe.write(message + "\n")
-                    
-                    
-                    print("=> msg len:", len(message))
-                except IOError as e:
-                    print("broken pipe error (suppressed exception)")
-                
-                stop_time = time.time()
-                dt = (stop_time - start_time) * 1000
-                print("=> fifo data transfer: ", dt, " msec" )
-                
-                pipe.close()
-                print("=> FIFO closed")
-                print("-----")
-    
     def fifo_write(self, message):
         if os.path.exists(self.fifo_path):
             print("-----")
@@ -212,12 +178,14 @@ class RubyOF(bpy.types.RenderEngine):
         print("not first time")
         # Test which datablocks changed
         for update in depsgraph.updates:
-            print("Datablock updated: ", update.id.name)
-            update.is_updated_geometry
+            if update.is_updated_geometry:
+                print("Geometry updated: ", update.id.name)
+                
+            # if update.is_updated_shading:
+            #     print("Shading updated: ", update.id.name)
             
-            update.is_updated_shading
-            
-            update.is_updated_transform
+            # if update.is_updated_transform:
+            #     print("Transform updated: ", update.id.name)
         
         # Test if any material was added, removed or changed.
         if depsgraph.id_type_updated('MATERIAL'):
@@ -230,53 +198,67 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         # Loop over all object instances in the scene.
+        total_t0 = time.time()
+        
+        data = []
+        
         if first_time or depsgraph.id_type_updated('OBJECT'):
             print("obj update detected")
             for instance in depsgraph.object_instances:
-                t0_total = time.time()
+                obj = instance.object
                 
-                obj_data = self.pack_data(instance)
-                data = [ obj_data ]
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
                 
-                t0 = time.time()
-                output_string = json.dumps(data)
-                t1 = time.time()
-                dt = (t1 - t0) * 1000
-                print("json encode: ", dt, " msec" )
+                obj_data['transform'] = self.pack_transform(obj)
+                obj_data['data'] = self.pack_data(obj)
+
+                data.append(obj_data)
                 
-                
-                t0 = time.time()
-                # self.outbound_queue.put(output_string)
-                self.fifo_write(output_string)
-                t1 = time.time()
-                dt = (t1 - t0) * 1000
-                print("fifo write: ", dt, " msec" )
-                
-                
-                
-                t1_total = time.time()
-                dt = (t1_total - t0_total) * 1000
-                print("TOTAL TIME: ", dt, " msec" )
-                
-        data = [ {'type':'timestamp', 'time': start_time  } ]        
+        t0 = time.time()
+        output_string = json.dumps(data)
+        t1 = time.time()
+        dt = (t1 - t0) * 1000
+        print("json encode: ", dt, " msec" )
+        
+        
+        t0 = time.time()
+        # self.outbound_queue.put(output_string)
+        self.fifo_write(output_string)
+        t1 = time.time()
+        dt = (t1 - t0) * 1000
+        print("fifo write: ", dt, " msec" )
+        
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = [ 
+            {
+                'type':'timestamp', 
+                'start_time': total_t0,
+                'end_time':   total_t1
+            }
+        ]
         output_string = json.dumps(data)
         self.fifo_write(output_string)
-        
-    def pack_data(self, instance):
-        obj = instance.object
-        # print(instance)
-        # print(obj.type)
-        
-        # print(obj)
-        # print(obj.type)
+    
+    
+    def pack_transform(self, obj):
+        # 
+        # set transform properties
+        # 
         
         pos   = obj.location
         rot   = obj.rotation_quaternion
         scale = obj.scale
         
-        obj_data = {
-            'name': obj.name_full,
-            'type': obj.type,
+        transform = {
             'position':[
                 "Vec3",
                 pos.x,
@@ -298,6 +280,10 @@ class RubyOF(bpy.types.RenderEngine):
             ]
         }
         
+        return transform
+        
+       
+    def pack_data(self, obj):
         if obj.type == 'MESH':
             mesh = obj.data
             
@@ -462,11 +448,7 @@ class RubyOF(bpy.types.RenderEngine):
             
             
             
-            
-            
-            
-            
-            obj_data.update({
+            data = {
                 'verts': [
                     'double', num_verts, tmp_vert_file_path
                 ],
@@ -474,10 +456,15 @@ class RubyOF(bpy.types.RenderEngine):
                     'double', num_normals, tmp_normal_file_path
                 ],
                 'tris' : index_buffer
-            })
+            }
+            
+            return data
+            
+            
+            
         elif obj.type == 'LIGHT':
             print(obj.color)
-            obj_data.update({
+            data = {
                 'color': [
                     'rgb',
                     obj.data.color[0],
@@ -498,56 +485,58 @@ class RubyOF(bpy.types.RenderEngine):
                     'rgb'
                 ]
                 
-            })
+            }
             
             
             
             if obj.data.type == 'AREA':
-                obj_data.update({
+                data.update({
                     'size_x': ['float', obj.data.size],
                     'size_y': ['float', obj.data.size_y]
                 })
             elif obj.data.type == 'SPOT':
-                obj_data.update({
+                data.update({
                     'size': ['radians', obj.data.spot_size]
                 })
             
-            #  sub.prop(light, "size", text="Size X")
-            # sub.prop(light, "size_y", text="Y")
             
-            # col.prop(light, "spot_size", text="Size")
-            # ^ angle of spotlight
-            
-            
-            
-            # col.prop(light, "color")
-            # col.prop(light, "energy")
-            
-            # blender EEVEE properties:
-                # color
-                # power (wats)
-                # specular
-                # radius
-                # shadow
-            # OpenFrameworks properties:
-                # setAmbientColor()
-                # setDiffuseColor()
-                # setSpecularColor()
-                # setAttenuation()
-                    # 3 args: const, linear, quadratic
-                # setup() 
-                # setAreaLight()
-                # setDirectional()
-                # setPointLight()
-                # setSpotlight() # 2 args to set the following:
-                    # setSpotlightCutOff()
-                        # 0 to 90 degs, default 45
-                    # setSpotConcentration()
-                        # 0 to 128 exponent, default 16
-            
+            return data
         
-        return obj_data
-
+        
+        #  sub.prop(light, "size", text="Size X")
+        # sub.prop(light, "size_y", text="Y")
+        
+        # col.prop(light, "spot_size", text="Size")
+        # ^ angle of spotlight
+        
+        
+        
+        # col.prop(light, "color")
+        # col.prop(light, "energy")
+        
+        # blender EEVEE properties:
+            # color
+            # power (wats)
+            # specular
+            # radius
+            # shadow
+        # OpenFrameworks properties:
+            # setAmbientColor()
+            # setDiffuseColor()
+            # setSpecularColor()
+            # setAttenuation()
+                # 3 args: const, linear, quadratic
+            # setup() 
+            # setAreaLight()
+            # setDirectional()
+            # setPointLight()
+            # setSpotlight() # 2 args to set the following:
+                # setSpotlightCutOff()
+                    # 0 to 90 degs, default 45
+                # setSpotConcentration()
+                    # 0 to 128 exponent, default 16
+    
+    
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
     # with OpenGL, and not perform other expensive work.

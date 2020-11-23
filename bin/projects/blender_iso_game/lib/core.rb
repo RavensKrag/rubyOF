@@ -50,131 +50,6 @@ class BlenderObject
   end
 end
 
-class BlenderCube < BlenderObject
-  extend Forwardable
-  
-  attr_reader :mesh, :node
-  attr_accessor :color
-  
-  def initialize
-    @mesh = RubyOF::Mesh.new
-    @node = RubyOF::Node.new
-  end
-  
-  def_delegators :@node, :position, :position=,
-                         :orientation, :orientation=,
-                         :scale, :scale=
-  
-  
-  
-  def generate_mesh
-    
-    @mesh = RubyOF::Mesh.new
-    # p mesh.methods
-    @mesh.setMode(:triangles)
-    # (ccw from bottom right)
-    # (top layer)
-    @mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
-    @mesh.addVertex(GLM::Vec3.new( 1,  1,  1))
-    @mesh.addVertex(GLM::Vec3.new(-1,  1,  1))
-    @mesh.addVertex(GLM::Vec3.new(-1, -1,  1))
-    # (bottom layer)
-    @mesh.addVertex(GLM::Vec3.new( 1, -1, -1))
-    @mesh.addVertex(GLM::Vec3.new( 1,  1, -1))
-    @mesh.addVertex(GLM::Vec3.new(-1,  1, -1))
-    @mesh.addVertex(GLM::Vec3.new(-1, -1, -1))
-    
-    
-    # raise
-    
-    # TODO: pay attention to winding
-    # (need to figure out axes first)
-    
-    # right
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(2-1+4*1)
-    
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    
-    # # left
-    # @mesh.addIndex(3-1+4*0)
-    # @mesh.addIndex(3-1+4*1)
-    # @mesh.addIndex(4-1+4*1)
-    
-    # @mesh.addIndex(3-1+4*0)
-    # @mesh.addIndex(4-1+4*0)
-    # @mesh.addIndex(4-1+4*1)
-    
-    # # top
-    # @mesh.addIndex(1-1+4*0)
-    # @mesh.addIndex(2-1+4*0)
-    # @mesh.addIndex(3-1+4*0)
-    
-    # @mesh.addIndex(3-1+4*0)
-    # @mesh.addIndex(4-1+4*0)
-    # @mesh.addIndex(1-1+4*0)
-    
-    # bottom
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    @mesh.addIndex(3-1+4*1)
-    
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*1)
-    
-    # # front
-    # @mesh.addIndex(4-1+4*1)
-    # @mesh.addIndex(1-1+4*1)
-    # @mesh.addIndex(1-1+4*0)
-    
-    # @mesh.addIndex(4-1+4*1)
-    # @mesh.addIndex(1-1+4*0)
-    # @mesh.addIndex(4-1+4*0)
-    
-    # back
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    @mesh.addIndex(2-1+4*0)
-    
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(3-1+4*1)
-    
-    
-  end
-  
-  
-  
-  # convert to a hash such that it can be serialized with yaml, json, etc
-  def data_dump
-    orientation = self.orientation
-    position = self.position
-    scale = self.scale
-    
-    {
-        'type' => 'MESH',
-        'name' =>  @name,
-        'rotation' => [
-          'Quat',
-          orientation.w, orientation.x, orientation.y, orientation.z
-        ],
-        'position' => [
-          'Vec3',
-          position.x, position.y, position.z
-        ],
-        'scale' => [
-          'Vec3',
-          scale.x, scale.y, scale.z
-        ],
-    }
-  end
-end
-
-
 class BlenderMesh < BlenderObject
   extend Forwardable
   
@@ -658,9 +533,15 @@ class BlenderSync
       dt = t1-t0;
       puts "time - parse json: #{dt}"
       
+      timestamps = list.select{|x| x['type'] == 'timestamp'}
+      unless timestamps.empty?
+        time = timestamps.first['end_time']
+        dt = Time.now.strftime('%s.%N').to_f - time
+        puts "transmision time: #{dt*1000} ms"
+      end
+      
       
       # TODO: need to send over type info instead of just the object name, but this works for now
-      
       parse_blender_data(list)
       
     end
@@ -676,16 +557,30 @@ class BlenderSync
   def parse_blender_data(data_list)
     
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-
-    data_list.each do |obj|
-      # p obj
-      if obj['type'] == 'viewport_region'        
+    
+    data_list.each do |data|
+      
+      
+      # viewport camera updates (not a camera object)
+      
+      # material updates
+      
+      
+      # transform
+      # mesh
+      # light property updates
+      # camera object updates? (not implemented in Python script yet)
+      
+      
+      # first process types with no transform component
+      case data['type']
+      when 'viewport_region'
         # 
         # sync window size
         # 
         
-        w = obj['width']
-        h = obj['height']
+        w = data['width']
+        h = data['height']
         @window.set_window_shape(w,h)
         
         # @camera.aspectRatio = w.to_f/h.to_f
@@ -697,88 +592,129 @@ class BlenderSync
         # - trying to match pid_query with pid_hit
         # 
         
-        sync_window_position(blender_pid: obj['pid'])
-      else
-        # adjust entity parameters
-        # (viewport camera is also considered an entity in this context)
-        case obj['type']
-        when 'viewport_camera'
-          # puts "update viewport"
+        sync_window_position(blender_pid: data['pid'])
+      when 'viewport_camera'
+        # puts "update viewport"
+        
+        @entities['viewport_camera'].tap do |camera|
+          camera.dirty = true
           
-          @entities['viewport_camera'].tap do |camera|
-            camera.dirty = true
+          camera.position    = GLM::Vec3.new(*(data['position'][1..3]))
+          camera.orientation = GLM::Quat.new(*(data['rotation'][1..4]))
+          camera.near_clip   = data['near_clip'][1]
+          camera.far_clip    = data['far_clip'][1]
+          
+          # p data['aspect_ratio'][1]
+          # @camera.setAspectRatio(data['aspect_ratio'][1])
+          # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
+          
+          # NOTE: Aspect ratio appears to do nothing, which is bizzare
+          
+          
+          # p data['view_perspective']
+          case data['view_perspective']
+          when 'PERSP'
+            # puts "perspective cam ON"
+            camera.use_perspective_mode
             
-            camera.position    = GLM::Vec3.new(*(obj['position'][1..3]))
-            camera.orientation = GLM::Quat.new(*(obj['rotation'][1..4]))
-            camera.near_clip   = obj['near_clip'][1]
-            camera.far_clip    = obj['far_clip'][1]
+            camera.fov = data['fov'][1]
             
-            # p obj['aspect_ratio'][1]
-            # @camera.setAspectRatio(obj['aspect_ratio'][1])
-            # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
-            
-            # NOTE: Aspect ratio appears to do nothing, which is bizzare
+          when 'ORTHO'
+            camera.use_orthographic_mode
+            camera.scale = data['ortho_scale'][1]
+            # TODO: scale needs to change as camera is updated
+            # TODO: scale zooms as expected, but also effects pan rate (bad)
             
             
-            # p obj['view_perspective']
-            case obj['view_perspective']
-            when 'PERSP'
-              # puts "perspective cam ON"
-              camera.use_perspective_mode
-              
-              camera.fov = obj['fov'][1]
-              
-            when 'ORTHO'
-              camera.use_orthographic_mode
-              camera.scale = obj['ortho_scale'][1]
-              # TODO: scale needs to change as camera is updated
-              # TODO: scale zooms as expected, but also effects pan rate (bad)
-              
-              
+          when 'CAMERA'
+            
+            
+          end
+        end
+      when 'MATERIAL'
+        
+      when 'timestamp'
+        # not properly a Blender object, but a type I created
+        # to help coordinate between RubyOF and Blender
+        
+        # t0 = data['time']
+        # t1 = Time.now.strftime('%s.%N').to_f
+        dt = Time.now.strftime('%s.%N').to_f - data['start_time']
+        puts "roundtrip time: #{dt*1000} ms"
+        
+      else # other types of objects with transforms
+        # get the entity
+        entity = @entities[data['name']]
+          # NOTE: names in blender are unique 
+          # TODO: what happens when an object is renamed?
+          # TODO: what happens when an object is deleted?
+        
+        
+        # create entity if one with that name does not already exist
+        if entity.nil?
+          entity = 
+            case data['type']
+            when 'MESH'
+              BlenderMesh.new
+            when 'LIGHT'
+              BlenderLight.new
             when 'CAMERA'
-              
-              
+              # not yet implemented
+              # (skip the whole loop, because we can't process this right now)
+              next 
             end
-          end
-        when 'MESH'
-          puts "mesh data"
-          # p obj
-          
-          pos   = GLM::Vec3.new(*(obj['position'][1..3]))
-          quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
-          scale = GLM::Vec3.new(*(obj['scale'][1..3]))
-          
-          mesh = @entities['Cube']
-          
-          mesh.position = pos
-          mesh.orientation = quat
-          mesh.scale = scale
           
           
-          mesh.name = obj['name']
+          entity.name = data['name']
           
-          mesh.tris    = obj['tris']
+          @entities[data['name']] = entity
+        end
+        
+        
+        # NOTE: possible for some updates to change only transform or only data
+        
+        # first, process transform here:
+        data['transform']&.tap do |transform|
+          pos   = GLM::Vec3.new(*(transform['position'][1..3]))
+          quat  = GLM::Quat.new(*(transform['rotation'][1..4]))
+          scale = GLM::Vec3.new(*(transform['scale'][1..3]))
           
-          obj['normals'].tap do |type, count, path|
-            lines = File.readlines(path)
+          entity.position = pos
+          entity.orientation = quat
+          entity.scale = scale
+        end
+        
+        # then process object-specific properties:
+        data['data']&.tap do |obj_data|
+          case data['type']
+          when 'MESH'
+            puts "mesh data"
+            # p data
             
-            # p lines
-            # b64 -> binary -> array
-            puts lines.size
-            # if @last_mesh_file_n != path
-              # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-              
-              # @last_mesh_file_n = path
-              data = lines.last # should only be one line in this file
-              mesh.normals = Base64.decode64(data).unpack("d#{count}")
-              
-              # # assuming type == double for now, but may want to support other types too
-            # end
+            mesh = entity
             
-            mesh.dirty = true
-          end
-          
-          obj['verts'].tap do |type, count, path|
+            mesh.tris    = obj_data['tris']
+            
+            obj_data['normals'].tap do |type, count, path|
+              lines = File.readlines(path)
+              
+              # p lines
+              # b64 -> binary -> array
+              puts lines.size
+              # if @last_mesh_file_n != path
+                # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+                
+                # @last_mesh_file_n = path
+                data = lines.last # should only be one line in this file
+                mesh.normals = Base64.decode64(data).unpack("d#{count}")
+                
+                # # assuming type == double for now, but may want to support other types too
+              # end
+              
+              mesh.dirty = true
+            end
+            
+            obj_data['verts'].tap do |type, count, path|
               # p [type, count, path]
               
               lines = File.readlines(path)
@@ -800,93 +736,78 @@ class BlenderSync
               
               mesh.dirty = true
             end
+            
+            
+            if mesh.dirty
+              mesh.generate_mesh()
+            end
           
-          
-          if mesh.dirty
-            mesh.generate_mesh()
+          when 'LIGHT'
+            light = entity
+            
+            
+            light.disable()
+            
+            
+            
+            case obj_data['light_type']
+            when 'POINT'
+              # point light
+              light.setPointLight()
+            when 'SUN'
+              # directional light
+              light.setDirectional()
+              
+              # (orientation is on the opposite side of the sphere, relative to what blender expects)
+              
+            when 'SPOT'
+              # spotlight
+              size_rad = obj_data['size'][1]
+              size_deg = size_rad / (2*Math::PI) * 360
+              light.setSpotlight(size_deg, 0) # requires 2 args
+              # float spotCutOff=45.f, float exponent=0.f
+            when 'AREA'
+              width  = obj_data['size_x'][1]
+              height = obj_data['size_y'][1]
+              light.setAreaLight(width, height)
+            end
+            
+            # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
+            color_ary = obj_data['color'][1..3].map{|x| (x*0xff).round }
+            color = RubyOF::Color.rgba(color_ary + [255])
+            # light.diffuse_color  = color
+            # # light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
+            # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+            
+            
+            white = RubyOF::Color.rgb([255, 255, 255])
+            
+            # // Point lights emit light in all directions //
+            # // set the diffuse color, color reflected from the light source //
+            light.diffuse_color = color
+            
+            # // specular color, the highlight/shininess color //
+            light.specular_color = white
+            
+            
+            
+            
+            
           end
-          
-          
-            
-          
-        when 'LIGHT'
-          # puts "light data"
-          # p obj
-          
-          pos   = GLM::Vec3.new(*(obj['position'][1..3]))
-          quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
-          scale = GLM::Vec3.new(*(obj['scale'][1..3]))
-          
-          light = @entities['Light']
-          
-          light.name = obj['name']
-          
-          light.disable()
-          
-          light.position = pos
-          light.orientation = quat
-          light.scale = scale
-          
-          case obj['light_type']
-          when 'POINT'
-            # point light
-            light.setPointLight()
-          when 'SUN'
-            # directional light
-            light.setDirectional()
-            
-            # (orientation is on the opposite side of the sphere, relative to what blender expects)
-            
-          when 'SPOT'
-            # spotlight
-            size_rad = obj['size'][1]
-            size_deg = size_rad / (2*Math::PI) * 360
-            light.setSpotlight(size_deg, 0) # requires 2 args
-            # float spotCutOff=45.f, float exponent=0.f
-          when 'AREA'
-            width  = obj['size_x'][1]
-            height = obj['size_y'][1]
-            light.setAreaLight(width, height)
-          end
-          
-          # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
-          color_ary = obj['color'][1..3].map{|x| (x*0xff).round }
-          color = RubyOF::Color.rgba(color_ary + [255])
-          # light.diffuse_color  = color
-          # # light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-          # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-          
-          
-          white = RubyOF::Color.rgb([255, 255, 255])
-          
-          # // Point lights emit light in all directions //
-          # // set the diffuse color, color reflected from the light source //
-          @entities['Light'].diffuse_color = color
-          
-          # // specular color, the highlight/shininess color //
-          @entities['Light'].specular_color = white
-          
-          
-          
-          
-          
-        when 'timestamp'
-          # t0 = obj['time']
-          # t1 = Time.now.strftime('%s.%N').to_f
-          dt = Time.now.strftime('%s.%N').to_f - obj['time']
-          puts "roundtrip time: #{dt*1000} ms"
         end
         
+        
       end
-      
     end
-    
+      
+      # TODO: need to update python code to match new data format
+      
     
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     dt = t1-t0;
-    puts "time - parse data: #{dt}"
+    puts "time - parse data: #{dt} us"
     
     
   end
