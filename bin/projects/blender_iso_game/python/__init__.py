@@ -165,7 +165,7 @@ class RubyOF(bpy.types.RenderEngine):
                 pass
         else:
             first_time = False
-
+            
             # Test which datablocks changed
             for update in depsgraph.updates:
                 print("Datablock updated: ", update.id.name)
@@ -176,16 +176,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         print("not first time")
-        # Test which datablocks changed
-        for update in depsgraph.updates:
-            if update.is_updated_geometry:
-                print("Geometry updated: ", update.id.name)
-                
-            # if update.is_updated_shading:
-            #     print("Shading updated: ", update.id.name)
-            
-            # if update.is_updated_transform:
-            #     print("Transform updated: ", update.id.name)
         
         # Test if any material was added, removed or changed.
         if depsgraph.id_type_updated('MATERIAL'):
@@ -200,25 +190,56 @@ class RubyOF(bpy.types.RenderEngine):
         # Loop over all object instances in the scene.
         total_t0 = time.time()
         
-        data = []
-        
-        if first_time or depsgraph.id_type_updated('OBJECT'):
-            print("obj update detected")
-            for instance in depsgraph.object_instances:
-                obj = instance.object
-                
+        export_list = []
+        for update in depsgraph.updates:
+            obj = update.id
+            
+            if isinstance(obj, bpy.types.Object):
                 obj_data = {
                     'name': obj.name_full,
                     'type': obj.type,
                 }
                 
-                obj_data['transform'] = self.pack_transform(obj)
-                obj_data['data'] = self.pack_data(obj)
-
-                data.append(obj_data)
+                if update.is_updated_transform:
+                    print("Transform updated: ", update.id.name, '(', type(update.id) ,')')
+                    obj_data['transform'] = self.pack_transform(obj)
+                    
+                if update.is_updated_geometry:
+                    print("Geometry updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
+                    obj_data['data'] = self.pack_data(obj)
+                    
+                export_list.append(obj_data)
+        
+        
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = []
+        if first_time or depsgraph.id_type_updated('OBJECT'):
+            print("obj update detected")
+            for instance in depsgraph.object_instances:
+                obj = instance.object                
+                object_list.append(obj.name_full)
+        
+        # if first_time or depsgraph.id_type_updated('OBJECT'):
+        #     print("obj update detected")
+        #     for instance in depsgraph.object_instances:
+        #         obj = instance.object
                 
+        #         obj_data = {
+        #             'name': obj.name_full,
+        #             'type': obj.type,
+        #         }
+                
+        #         obj_data['transform'] = self.pack_transform(obj)
+                
+                
+        #         obj_data['data'] = self.pack_data(obj)
+                
+                
+        #         export_list.append(obj_data)
+        
+        
         t0 = time.time()
-        output_string = json.dumps(data)
+        output_string = json.dumps(export_list)
         t1 = time.time()
         dt = (t1 - t0) * 1000
         print("json encode: ", dt, " msec" )
@@ -239,6 +260,11 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         data = [ 
+            {
+                'type':'entity_list', 
+                'list': object_list
+            },
+            
             {
                 'type':'timestamp', 
                 'start_time': total_t0,
@@ -402,11 +428,11 @@ class RubyOF(bpy.types.RenderEngine):
             binary_string = base64.b64encode(binary_data).decode('ascii')
             
             
-            # sha = hashlib.sha1(binary_data).hexdigest()
-            # tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+            sha = hashlib.sha1(binary_data).hexdigest()
+            tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
             
             
-            tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
+            # tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
             
             if not os.path.exists(tmp_normal_file_path):
                 with open(tmp_normal_file_path, 'w') as f:
@@ -432,11 +458,11 @@ class RubyOF(bpy.types.RenderEngine):
             binary_string = base64.b64encode(binary_data).decode('ascii')
             
             
-            # sha = hashlib.sha1(binary_data).hexdigest()
-            # tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+            sha = hashlib.sha1(binary_data).hexdigest()
+            tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
             
             
-            tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
+            # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
             
             if not os.path.exists(tmp_vert_file_path):
                 with open(tmp_vert_file_path, 'w') as f:

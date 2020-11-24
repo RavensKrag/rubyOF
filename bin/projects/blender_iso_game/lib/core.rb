@@ -92,7 +92,8 @@ class BlenderMesh < BlenderObject
     #   end
     # end
     
-    
+    # p @mesh
+    # p @normals
     RubyOF::CPP_Callbacks.generate_mesh(@mesh, @normals,
                                                @verts,
                                                @tris.flatten)
@@ -520,6 +521,9 @@ class BlenderSync
     
   def update
     
+    # p @entities.keys
+    # p @entities.values.select{|x| x.is_a? BlenderMesh }.map{|x| x.name }
+    
     update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     [MAX_READS, @msg_queue.length].min.times do
@@ -633,6 +637,14 @@ class BlenderSync
         end
       when 'MATERIAL'
         
+      when 'entity_list'
+        # The viewport camera is an object in RubyOF, but not in Blender
+        # Need to remove it from the putative list such or the camera
+        # will be deleted.
+        (@entities.keys - data['list'] - ['viewport_camera'])
+        .each do |deleted_entity_name|
+          @entities.delete deleted_entity_name
+        end
       when 'timestamp'
         # not properly a Blender object, but a type I created
         # to help coordinate between RubyOF and Blender
@@ -644,6 +656,9 @@ class BlenderSync
         
       else # other types of objects with transforms
         # get the entity
+        
+        # p data if data['name'] == nil
+        
         entity = @entities[data['name']]
           # NOTE: names in blender are unique 
           # TODO: what happens when an object is renamed?
@@ -657,7 +672,7 @@ class BlenderSync
             when 'MESH'
               BlenderMesh.new
             when 'LIGHT'
-              BlenderLight.new
+              next
             when 'CAMERA'
               # not yet implemented
               # (skip the whole loop, because we can't process this right now)
@@ -739,6 +754,7 @@ class BlenderSync
             
             
             if mesh.dirty
+              puts "generate mesh"
               mesh.generate_mesh()
             end
           
@@ -1002,7 +1018,6 @@ class Core
     @entities = {
       'viewport_camera' => CustomCamera.new,
       
-      'Cube'  => BlenderMesh.new,
       'Light' => BlenderLight.new
     }
     
@@ -1263,7 +1278,7 @@ class Core
     
     
     
-    cube_pos = @entities['Cube'].node.position
+    
     light_pos = @entities['Light'].position
     
     
@@ -1324,7 +1339,9 @@ class Core
           # // render objects in world
           @mat1.begin()
             
-            @entities['Cube'].tap do |mesh_obj|
+            @entities.values
+            .select{|x| x.is_a? BlenderMesh }
+            .each do |mesh_obj|
               
               # mesh_obj.mesh.generate_normals()
               # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
@@ -1335,6 +1352,8 @@ class Core
               mesh_obj.node.restoreTransformGL()
               
               
+              
+              # cube_pos = mesh_obj.node.position
               # ofPushMatrix()
               #   mesh_obj.node.transformGL()
               #   ofDrawBox(0,0,0, 2)
