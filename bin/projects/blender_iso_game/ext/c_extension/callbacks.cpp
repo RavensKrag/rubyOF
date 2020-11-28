@@ -937,6 +937,44 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
+
+#include "ofxInstancingMaterial.h"
+
+void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+   // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setDiffuseColor(c2);
+}
+
+
+void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+   // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setSpecularColor(c2);
+}
+
+void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+   // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setAmbientColor(c2);
+}
+
+void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+   // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   ofFloatColor c2(c);
+   mat.setEmissiveColor(c2);
+}
+
+
+
+
+
+
+
 // "main" section
 extern "C"
 void Init_rubyOF_project()
@@ -974,6 +1012,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("generate_mesh",   &generate_mesh)
 	;
+	
+	
+	
+	
 	
 	
 	
@@ -1058,6 +1100,42 @@ void Init_rubyOF_project()
 	
 	
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
+	
+	
+	
+	
+	
+	// NOTE: both ofxInstancingMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxInstancingMaterial AGAIN.
+	
+	Data_Type<ofxInstancingMaterial> rb_c_ofxInstancingMaterial = 
+		define_class_under<ofxInstancingMaterial>(rb_mOFX, "InstancingMaterial");
+	
+	rb_c_ofxInstancingMaterial
+      .define_constructor(Constructor<ofxInstancingMaterial>())
+      
+      .define_method("begin", &ofxInstancingMaterial::begin)
+      .define_method("end",   &ofxInstancingMaterial::end)
+      
+      .define_method("ambient_color=", &ofxInstancingMaterial__setAmbientColor)
+      .define_method("diffuse_color=", &ofxInstancingMaterial__setDiffuseColor)
+      .define_method("specular_color=",&ofxInstancingMaterial__setSpecularColor)
+      .define_method("emissive_color=",&ofxInstancingMaterial__setEmissiveColor)
+      .define_method("shininess=",     &ofxInstancingMaterial::setShininess)
+      
+      .define_method("ambient_color",  &ofxInstancingMaterial::setAmbientColor)
+      .define_method("diffuse_color",  &ofxInstancingMaterial::getDiffuseColor)
+      .define_method("specular_color", &ofxInstancingMaterial::getSpecularColor)
+      .define_method("emissive_color", &ofxInstancingMaterial::getEmissiveColor)
+      .define_method("shininess",      &ofxInstancingMaterial::getShininess)
+   ;
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	Data_Type<ofxMidiOut> rb_c_ofxMidiOut =
 		define_class_under<ofxMidiOut>(rb_mOFX, "MidiOut");

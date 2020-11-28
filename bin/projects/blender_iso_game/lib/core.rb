@@ -1348,7 +1348,14 @@ class Core
         #   (creating the material is the expensive part anyway)
         
         
+        
+        @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
+        @mat_instanced.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
+        @mat_instanced.shininess = 64
+        
+        
         @first_draw = false
+        
       end
       
       light_color = @entities['Light'].diffuse_color
@@ -1369,34 +1376,88 @@ class Core
         @entities['Light'].enable()
         
           # // render objects in world
-          @mat1.begin()
             
+          batching = 
             @entities.values
             .select{|x| x.is_a? BlenderMesh }
-            .each do |mesh_obj|
+            .group_by{|x| x.mesh }
+          
+          p batching.collect{|k,v|  [k.class, v.size]}
+          
+          
+          
+          batching.each do |mesh_data, mesh_objs|
+            
+            # mesh_obj.mesh.generate_normals()
+            # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+            
+            
+            if mesh_objs.size > 1
+              # draw instanced
               
-              # mesh_obj.mesh.generate_normals()
-              # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
+              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
+              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
               
+              @mat_instanced.begin()
+                
+                
+                # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
+                mesh_objs.each do |mesh_obj|
+                  mesh_obj.node.transformGL()
+                  mesh_data.draw()
+                  mesh_obj.node.restoreTransformGL()
+                end
+                
+                
+                
+                
+                
+                # # collect up all the transforms
+                # mesh_objs.each do |mesh_obj|
+                #   mesh_obj.node.transformGL()
+                # end
+                
+                # # pack them into an array and send them to the shader
+                
+                
+                # # draw all the instances using one draw call
+                # mesh_data.draw_instanced(mesh_objs.size)
               
-              mesh_obj.node.transformGL()
-              mesh_obj.mesh.draw()
-              mesh_obj.node.restoreTransformGL()
+              @mat_instanced.end()
+            else 
+              # draw just a single object
               
+              mesh_obj = mesh_objs.first
               
-              # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
-              
-              
-              # cube_pos = mesh_obj.node.position
-              # ofPushMatrix()
-              #   mesh_obj.node.transformGL()
-              #   ofDrawBox(0,0,0, 2)
-              #   mesh_obj.node.restoreTransformGL()
-              #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-              # ofPopMatrix()
+              @mat1.begin()
+                mesh_obj.node.transformGL()
+                mesh_data.draw()
+                mesh_obj.node.restoreTransformGL()
+              @mat1.end()
             end
             
-          @mat1.end()
+            # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
+            
+            
+            
+            
+            
+            
+            
+            
+            # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
+            
+            
+            # cube_pos = mesh_obj.node.position
+            # ofPushMatrix()
+            #   mesh_obj.node.transformGL()
+            #   ofDrawBox(0,0,0, 2)
+            #   mesh_obj.node.restoreTransformGL()
+            #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+            # ofPopMatrix()
+          end
+            
           
           
           # // render the sphere that represents the light
