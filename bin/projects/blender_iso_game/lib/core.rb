@@ -50,30 +50,20 @@ class BlenderObject
   end
 end
 
-class BlenderMesh < BlenderObject
+class BlenderMeshData
   extend Forwardable
   
-  attr_reader :mesh, :node
-  attr_accessor :color
-  
   attr_accessor :verts, :normals, :tris
+  def_delegators :@mesh, :draw
   
   def initialize
-    @mesh = RubyOF::Mesh.new
-    @node = RubyOF::Node.new
+    @mesh = RubyOF::VboMesh.new
   end
-  
-  def_delegators :@node, :position, :position=,
-                         :orientation, :orientation=,
-                         :scale, :scale=
-  
-  
   
   def generate_mesh
     return unless !@verts.nil? and !@normals.nil? and !@tris.nil?
     
     
-    @mesh = RubyOF::Mesh.new
     # p mesh.methods
     @mesh.setMode(:triangles)
     
@@ -104,7 +94,23 @@ class BlenderMesh < BlenderObject
     puts "time - mesh generation: #{dt}"
     
   end
+end
+
+class BlenderMesh < BlenderObject
+  extend Forwardable
   
+  attr_reader :node
+  attr_accessor :mesh
+  attr_accessor :color
+  
+  def initialize
+    @mesh = BlenderMeshData.new
+    @node = RubyOF::Node.new
+  end
+  
+  def_delegators :@node, :position, :position=,
+                         :orientation, :orientation=,
+                         :scale, :scale=
   
   
   # convert to a hash such that it can be serialized with yaml, json, etc
@@ -116,18 +122,31 @@ class BlenderMesh < BlenderObject
     {
         'type' => 'MESH',
         'name' =>  @name,
-        'rotation' => [
-          'Quat',
-          orientation.w, orientation.x, orientation.y, orientation.z
-        ],
-        'position' => [
-          'Vec3',
-          position.x, position.y, position.z
-        ],
-        'scale' => [
-          'Vec3',
-          scale.x, scale.y, scale.z
-        ],
+        
+        'transform' => {
+          'rotation' => [
+            'Quat',
+            orientation.w, orientation.x, orientation.y, orientation.z
+          ],
+          'position' => [
+            'Vec3',
+            position.x, position.y, position.z
+          ],
+          'scale' => [
+            'Vec3',
+            scale.x, scale.y, scale.z
+          ]
+        },
+        
+        # 'data' => {
+        #   'verts': [
+        #     'double', num_verts, tmp_vert_file_path
+        #   ],
+        #   'normals': [
+        #     'double', num_normals, tmp_normal_file_path
+        #   ],
+        #   'tris' : index_buffer
+        # }
     }
   end
 end
@@ -448,9 +467,10 @@ end
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, entities)
+  def initialize(window, entities, meshes)
     @window = window
     @entities = entities
+    @meshes = meshes
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -706,57 +726,67 @@ class BlenderSync
             puts "mesh data"
             # p data
             
-            mesh = entity
+            mesh = @meshes[obj_data['mesh_name']]
             
-            mesh.tris    = obj_data['tris']
-            
-            obj_data['normals'].tap do |type, count, path|
-              lines = File.readlines(path)
+            if mesh.nil?
+              mesh = entity.mesh
               
-              # p lines
-              # b64 -> binary -> array
-              puts lines.size
-              # if @last_mesh_file_n != path
-                # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-                
-                # @last_mesh_file_n = path
-                data = lines.last # should only be one line in this file
-                mesh.normals = Base64.decode64(data).unpack("d#{count}")
-                
-                # # assuming type == double for now, but may want to support other types too
-              # end
+              mesh.tris = obj_data['tris']
               
-              mesh.dirty = true
+              obj_data['normals'].tap do |type, count, path|
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_n != path
+                  # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+                  
+                  # @last_mesh_file_n = path
+                  data = lines.last # should only be one line in this file
+                  mesh.normals = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              obj_data['verts'].tap do |type, count, path|
+                # p [type, count, path]
+                
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_v != path
+                  # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+                  
+                  # @last_mesh_file_v = path
+                  data = lines.last # should only be one line in this file
+                  # puts "data =>"
+                  # p data
+                  mesh.verts = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              
+              if entity.dirty
+                puts "generate mesh"
+                mesh.generate_mesh()
+              end
+              
+              @meshes[obj_data['mesh_name']] = entity.mesh
+            else
+              entity.mesh = mesh
             end
             
-            obj_data['verts'].tap do |type, count, path|
-              # p [type, count, path]
-              
-              lines = File.readlines(path)
-              
-              # p lines
-              # b64 -> binary -> array
-              puts lines.size
-              # if @last_mesh_file_v != path
-                # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
-                
-                # @last_mesh_file_v = path
-                data = lines.last # should only be one line in this file
-                # puts "data =>"
-                # p data
-                mesh.verts = Base64.decode64(data).unpack("d#{count}")
-                
-                # # assuming type == double for now, but may want to support other types too
-              # end
-              
-              mesh.dirty = true
-            end
             
-            
-            if mesh.dirty
-              puts "generate mesh"
-              mesh.generate_mesh()
-            end
           
           when 'LIGHT'
             light = entity
@@ -1021,8 +1051,10 @@ class Core
       'Light' => BlenderLight.new
     }
     
+    @meshes = Hash.new
     
-    @sync = BlenderSync.new(@w, @entities)
+    
+    @sync = BlenderSync.new(@w, @entities, @meshes)
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
@@ -1351,6 +1383,8 @@ class Core
               mesh_obj.mesh.draw()
               mesh_obj.node.restoreTransformGL()
               
+              
+              # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
               
               
               # cube_pos = mesh_obj.node.position

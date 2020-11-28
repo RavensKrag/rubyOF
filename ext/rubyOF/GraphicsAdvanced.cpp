@@ -61,6 +61,31 @@ void ofMesh_generateNormals(ofMesh &mesh){
 
 
 
+void ofMesh_draw__cpp(ofMesh &mesh, int code){
+   static const ofPolyRenderMode MESH_MODES[] = {
+      OF_MESH_POINTS,
+      OF_MESH_WIREFRAME,
+      OF_MESH_FILL
+   };
+   
+   mesh.draw(MESH_MODES[code]);
+}
+
+void ofVboMesh_draw_instanced__cpp(ofVboMesh &mesh, int code, int instances){
+   static const ofPolyRenderMode MESH_MODES[] = {
+      OF_MESH_POINTS,
+      OF_MESH_WIREFRAME,
+      OF_MESH_FILL
+   };
+   
+   mesh.drawInstanced(MESH_MODES[code], instances);
+}
+
+
+
+
+
+
 // ofLight expects ofColor_<float> but openframeworks can make that conversion
 
       // ofColor will auto convert to ofFloatColor as necessary
@@ -390,13 +415,9 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    rb_cMesh
       .define_constructor(Constructor<ofMesh>())
-      .define_method("draw",
-         static_cast< void (ofMesh::*)
-         () const
-         >(&ofMesh::draw)
-      )
+      .define_method("draw__cpp",         &ofMesh_draw__cpp)
       
-      .define_method("setMode",           ofMesh__setMode)
+      .define_method("setMode",           &ofMesh__setMode)
       .define_method("addVertex",         &ofMesh::addVertex)
       .define_method("addNormal",         &ofMesh::addNormal)
       .define_method("addTexCoord",       &ofMesh::addTexCoord)
@@ -412,8 +433,6 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("generate_normals",    &ofMesh_generateNormals)
       
-      
-      
       // .define_method(
       //    "addColor",
       //    static_cast< void (ofMesh::*)
@@ -423,27 +442,19 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // ^ expects ofColor_<float> but I have bound ofColor_<unsigned char>
    ;
    
-   // mesh.addVertex(ofVec3f(20,20));
-   // mesh.addColor(ofColor::red);
-   // mesh.addVertex(ofVec3f(40,20));
-   // mesh.addColor(ofColor::red);
-   // mesh.addVertex(ofVec3f(40,40));
-   // mesh.addColor(ofColor::red);
-   // mesh.addVertex(ofVec3f(20,40));
-   // mesh.addColor(ofColor::red);
-   // mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+   
+   // NOTE: ofMesh will work with both programmable renderer and fixed funcction pipeline. However, when using programmable renderer, the verts need to all be copied into a VBO before rendering. Thus, when using programable renderer, ofVboMesh tends to be faster than ofMesh.
+   
+   // NOTE: ofVboMesh is a subclass of ofMesh and Ruby bindings reflect this.
    
    
    // ofVboMesh
    Data_Type<ofVboMesh> rb_cVboMesh = 
-		define_class_under<ofVboMesh>(rb_mRubyOF, "VboMesh");
+		define_class_under<ofVboMesh, ofMesh>(rb_mRubyOF, "VboMesh");
    
    rb_cVboMesh
-      .define_method("draw",
-         static_cast< void (ofVboMesh::*)
-         () const
-         >(&ofVboMesh::draw)
-      )
+      .define_constructor(Constructor<ofVboMesh>())
+      .define_method("draw_instanced__cpp",  &ofVboMesh_draw_instanced__cpp)
    ;
    
    

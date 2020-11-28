@@ -134,7 +134,38 @@ class Mesh
 		
 		setMode__cpp(i)
 	end
+	
+	
+	
+	private :draw__cpp
+	
+	OF_POLY_RENDER_MODE = [
+		:points,
+		:wireframe,
+		:fill
+	]
+	
+	def draw(render_mode=:fill)
+		i = OF_POLY_RENDER_MODE.index(render_mode)
+		
+		raise ArgumentError, "Given poly render mode #{mode.inspect} is not a valid mesh mode. Please use one of the following: #{OF_POLY_RENDER_MODE.inspect}" if i.nil?
+		
+		draw__cpp(i)
+	end
 end
+
+class VboMesh
+	private :draw_instanced__cpp
+	
+	def draw_instanced(instance_count, render_mode=:fill)
+		i = OF_POLY_RENDER_MODE.index(render_mode)
+		
+		raise ArgumentError, "Given poly render mode #{mode.inspect} is not a valid mesh mode. Please use one of the following: #{OF_POLY_RENDER_MODE.inspect}" if i.nil?
+		
+		draw_instanced__cpp(i, instance_count)
+	end
+end
+
 
 
 
