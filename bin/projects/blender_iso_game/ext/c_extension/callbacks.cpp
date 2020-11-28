@@ -1127,8 +1127,13 @@ void Init_rubyOF_project()
       .define_method("specular_color", &ofxInstancingMaterial::getSpecularColor)
       .define_method("emissive_color", &ofxInstancingMaterial::getEmissiveColor)
       .define_method("shininess",      &ofxInstancingMaterial::getShininess)
+      
+      .define_method("setCustomUniformTexture",
+         static_cast< void (ofxInstancingMaterial::*)
+         (const std::string & name, const ofTexture & value, int textureLocation)
+         >(&ofxInstancingMaterial::setCustomUniformTexture)
+      )
    ;
-	
 	
 	
 	

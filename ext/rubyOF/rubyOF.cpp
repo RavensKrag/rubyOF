@@ -12,7 +12,6 @@
 #include "GraphicsAdvanced.h"
 #include "Fbo.h"
 #include "TrueTypeFont.h"
-#include "image.h"
 
 // === Additional OpenFrameworks types
 // #include "ofApp.h"
@@ -40,12 +39,6 @@ void Init_rubyOF()
 	
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
-	
-	ITP_Tuple itp_tuple = Init_rubyOF_image_texture_pixels(rb_mRubyOF);
-	Rice::Class rb_cImage   = itp_tuple.image;
-	Rice::Class rb_cTexture = itp_tuple.texture;
-	Rice::Class rb_cPixels  = itp_tuple.pixels;
-	
 	
 	
 	

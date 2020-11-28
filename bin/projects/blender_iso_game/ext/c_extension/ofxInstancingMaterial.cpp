@@ -27,14 +27,6 @@ void ofxInstancingMaterial::setColors(ofFloatColor oDiffuse, ofFloatColor oAmbie
 void ofxInstancingMaterial::setup(const ofxInstancingMaterialSettings & settings){
 	if(settings.customUniforms != data.customUniforms || settings.postFragment != data.postFragment){
 		shaders.clear();
-		uniforms1f.clear();
-		uniforms2f.clear();
-		uniforms3f.clear();
-		uniforms4f.clear();
-		uniforms1i.clear();
-		uniforms2i.clear();
-		uniforms3i.clear();
-		uniforms4i.clear();
 	}
 	data = settings;
 }
@@ -143,22 +135,53 @@ void ofxInstancingMaterial::initShaders(ofGLProgrammableRenderer & renderer) con
         shaders[&renderer]->color.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,false,true));
         shaders[&renderer]->color.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,false,true));
         shaders[&renderer]->color.bindDefaults();
+        
+            shaders[&renderer]->color.bindAttribute(5, "transformMatrix");
+        
         shaders[&renderer]->color.linkProgram();
-
-
+        
+        
         shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,true,true));
         shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,true,true));
         shaders[&renderer]->texture2DColor.bindDefaults();
         shaders[&renderer]->texture2DColor.linkProgram();
-
+        
+        
         #ifndef TARGET_OPENGLES
             shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertexRectHeader,numLights,true,true));
             shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragmentRectHeader, data.customUniforms, data.postFragment,numLights,true,true));
             shaders[&renderer]->textureRectColor.bindDefaults();
             shaders[&renderer]->textureRectColor.linkProgram();
         #endif
+        
+        
+        
+        // // void bindAttribute(GLuint location, const std::string & name) const;
+        //     // attributesBindingsCache[name] = location;
+        //     // glBindAttribLocation(program,location,name.c_str());
 
-        shadersMap[&renderer][data.postFragment] = shaders[&renderer];
+
+        // // void ofShader::setAttribute4fv(const string & name, const float* v, GLsizei stride)
+        //     // if(bLoaded){
+        //     // 	GLint location = getAttributeLocation(name);
+        //     // 	if (location != -1) {
+        //     // 		glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, stride, v);
+        //     // 		glEnableVertexAttribArray(location);
+        //     // 	}
+        //     // }
+
+        // GLuint program = shader.getProgram();
+        // GLuint location = 5; // counts starts @ 0, 0-4 taken; see ofShader.h:250
+
+        // glBindAttribLocation(program, location, "transformMatrix");
+
+
+        // GLsizei stride = sizeof(float)*4;
+        // glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, stride, &transform_mat4s[0]);
+        // // ^ pointer to a std::vector is just the same as a C array pointer
+        // glEnableVertexAttribArray(location);
+
+        // shadersMap[&renderer][data.postFragment] = shaders[&renderer];
     }
 
 }
@@ -191,48 +214,22 @@ const ofShader & ofxInstancingMaterial::getShader(int textureTarget, bool geomet
 }
 
 void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
+	
+	
 	shader.setUniform4fv("mat_ambient", &data.ambient.r);
 	shader.setUniform4fv("mat_diffuse", &data.diffuse.r);
 	shader.setUniform4fv("mat_specular", &data.specular.r);
 	shader.setUniform4fv("mat_emissive", &data.emissive.r);
 	shader.setUniform4fv("global_ambient", &ofGetGlobalAmbientColor().r);
 	shader.setUniform1f("mat_shininess",data.shininess);
-	for(auto & uniform: uniforms1f){
-		shader.setUniform1f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms2f) {
-		shader.setUniform2f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms3f) {
-		shader.setUniform3f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms4f) {
-		shader.setUniform4f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms1i) {
-		shader.setUniform1i(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms2i) {
-		shader.setUniform2i(uniform.first, uniform.second.x, uniform.second.y);
-	}
-	for (auto & uniform : uniforms3i) {
-		shader.setUniform3i(uniform.first, uniform.second.x, uniform.second.y, uniform.second.z);
-	}
-	for (auto & uniform : uniforms4i) {
-		shader.setUniform4i(uniform.first, uniform.second.x, uniform.second.y, uniform.second.z, uniform.second.w);
-	}
-	for (auto & uniform : uniforms4m) {
-		shader.setUniformMatrix4f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniforms3m) {
-		shader.setUniformMatrix3f(uniform.first, uniform.second);
-	}
-	for (auto & uniform : uniformstex) {
-		shader.setUniformTexture(uniform.first,
-								 uniform.second.textureTarget,
-								 uniform.second.textureID,
-								 uniform.second.textureLocation);
-	}
+    
+    
+    for (auto & uniform : uniformstex) {
+        shader.setUniformTexture(uniform.first,
+                                 uniform.second.textureTarget,
+                                 uniform.second.textureID,
+                                 uniform.second.textureLocation);
+    }
 }
 
 void ofxInstancingMaterial::updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
@@ -288,55 +285,21 @@ void ofxInstancingMaterial::updateLights(const ofShader & shader,ofGLProgrammabl
 	}
 }
 
-void ofxInstancingMaterial::setCustomUniform1f(const std::string & name, float value){
-	uniforms1f[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform2f(const std::string & name, glm::vec2 value){
-	uniforms2f[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform3f(const std::string & name, glm::vec3 value) {
-	uniforms3f[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform4f(const std::string & name, glm::vec4 value) {
-	uniforms4f[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform1i(const std::string & name, int value) {
-	uniforms1i[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform2i(const std::string & name, glm::vec<2,int> value) {
-	uniforms2i[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform3i(const std::string & name, glm::vec<3, int> value) {
-	uniforms3i[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniform4i(const std::string & name, glm::vec<4, int> value) {
-	uniforms4i[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniformMatrix4f(const std::string & name, glm::mat4 value){
-	uniforms4m[name] = value;
-}
-
-void ofxInstancingMaterial::setCustomUniformMatrix3f(const std::string & name, glm::mat3 value){
-	uniforms3m[name] = value;
-}
 
 void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation){
-	uniformstex[name] = {value.getTextureData().textureTarget, int(value.getTextureData().textureID), textureLocation};
+    uniformstex[name] = {value.getTextureData().textureTarget, int(value.getTextureData().textureID), textureLocation};
 }
 
-void ofxInstancingMaterial::setCustomUniformTexture(const string & name, int textureTarget, GLint textureID, int textureLocation){
-	uniformstex[name] = {textureTarget, textureID, textureLocation};
+void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation){
+    uniformstex[name] = {textureTarget, textureID, textureLocation};
 }
 
-#include "shaders/phong.vert"
+
+
+
+
+// #include "shaders/phong.vert"
+#include "shaders/phong_instanced.vert"
 #include "shaders/phong.frag"
 
 namespace{

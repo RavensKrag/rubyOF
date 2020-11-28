@@ -195,7 +195,6 @@
   - GraphicsAdvanced.o
   - TrueTypeFont.o
   - glm_bindings.o
-  - image.o
   - launcher.o
   - rubyOF.o
   "$srcs":
@@ -204,7 +203,6 @@
   - "./GraphicsAdvanced.cpp"
   - "./TrueTypeFont.cpp"
   - "./glm_bindings.cpp"
-  - "./image.cpp"
   - "./launcher.cpp"
   - "./rubyOF.cpp"
   "$INSTALLFILES": []

@@ -54,7 +54,7 @@ class BlenderMeshData
   extend Forwardable
   
   attr_accessor :verts, :normals, :tris
-  def_delegators :@mesh, :draw
+  def_delegators :@mesh, :draw, :draw_instanced
   
   def initialize
     @mesh = RubyOF::VboMesh.new
@@ -1399,30 +1399,217 @@ class Core
               # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
               # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
               
-              @mat_instanced.begin()
                 
                 
-                # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
-                mesh_objs.each do |mesh_obj|
-                  mesh_obj.node.transformGL()
-                  mesh_data.draw()
-                  mesh_obj.node.restoreTransformGL()
+              # # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
+              
+              # @mat_instanced.begin()
+              #   mesh_objs.each do |mesh_obj|
+              #     mesh_obj.node.transformGL()
+              #     mesh_data.draw()
+              #     mesh_obj.node.restoreTransformGL()
+              #   end
+              # @mat_instanced.end()
+              
+              
+              # # TODO: bind Vbo#setAttributeData()
+              # # TODO: bind Node#getLocalTransforMatrix
+              # # TODO: bind Node#getGlobalTransformMatrix
+              #     obj.node.position
+              
+              
+              
+              # # 
+              # # v2 - just use positions for now (vec3)
+              # # 
+              
+              # positions =
+              #   mesh_objs.collect do |obj|
+              #     obj.node.position
+              #   end
+              
+              # mesh_data.setTransformAttributeArray(positions)
+              
+              #   # 
+              #   # C++
+              #   # 
+                
+              #   # (material has already associated the variable name with a position in the VBO where the data will be found)
+              #   # (....or is that the VBA?? w/e within the attribute array)
+                
+              #   # mesh_data => <BlenderMeshData @mesh=<RubyOF::VboMesh> >
+              #   # ofVboMesh -> ofVbo
+                
+              #   # create the attribute array and set first data
+              #   void ??::setPositionAttributeArray(std::vector<glm::vec3> positions){
+              #     GLint location = shader.getAttributeLocation("instance_pos");
+              #     mesh.getVbo().setAttributeData(
+              #       location, &positions[0],
+              #       1, positions.size()*3, GL_STATIC_DRAW, sizeof(float*3));
+              #   }
+                
+              #   # update the data in the existing collection
+              #   void ??::updatePositionAttributeArray(std::vector<glm::vec3> positions){
+              #     GLint location = shader.getAttributeLocation("instance_pos");
+              #     mesh.getVbo().updateAttributeData(
+              #       location, &positions[0], positions.size());
+              #   }
+                
+              #   # void setAttributeData(int location, const float * vert0x, int numCoords, int total, int usage, int stride=0);
+                
+                
+                
+              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
+              #   # 
+              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
+
+              
+              
+              
+              
+              # # 
+              # # v3 - use full transforms (mat4)
+              # # 
+              
+              
+              # transforms =
+              #   mesh_objs.collect do |obj|
+              #     obj.node.getLocalTransforMatrix
+              #   end
+              
+              # mesh_data.setTransformAttributeArray(transforms)
+              
+              #   # 
+              #   # C++
+              #   # 
+                
+              #   # (material has already associated the variable name with a position in the VBO where the data will be found)
+              #   # (....or is that the VBA?? w/e within the attribute array)
+                
+              #   # mesh_data => <BlenderMeshData @mesh=<RubyOF::VboMesh> >
+              #   # ofVboMesh -> ofVbo
+                
+              #   void ??::setTransformAttributeArray(std::vector<glm::mat4> transforms){
+              #     GLint location = shader.getAttributeLocation("pointsize");
+              #     mesh.getVbo().setAttributeData(location, &transforms[0], 1, total, GL_STATIC_DRAW, stride);
+              #   }
+                
+                
+                
+              #   # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
+                
+              
+              # mesh_data.draw_instanced(transforms.size)
+              
+              # # underlying data store for mesh_data is always RubyOF::VboMesh
+              
+              # mesh_data.vbo.setAttributeData()
+              
+              
+              
+              # # vbo.setAttributeData(shader.getAttributeLocation("pointsize"), data, 1, total, GL_STATIC_DRAW);
+              
+              
+              # # collect up all the transforms
+              # mesh_objs.each do |mesh_obj|
+              #   mesh_obj.node.transformGL()
+              # end
+              
+              # # pack them into an array and send them to the shader
+              
+              
+              # # draw all the instances using one draw call
+              # mesh_data.draw_instanced(mesh_objs.size)
+              
+              
+              
+              
+              # 
+              # v4 - translation + z-rot, stored in texture
+              # 
+              
+              pixels = RubyOF::Pixels.new
+              tex = RubyOF::Texture.new
+              
+              width = 256
+              height = 256
+              pixels.allocate(width, height)
+              
+              tex.wrap_mode(:vertical => :clamp_to_edge,
+                          :horizontal => :clamp_to_edge)
+                
+              tex.filter_mode(:min => :nearest, :mag => :nearest) 
+              
+              
+              
+              # collect up all the transforms
+              positions = 
+                mesh_objs.collect do |mesh_obj|
+                  mesh_obj.node.position.to_a
                 end
+              
+              
+              # raise exception current texture size is too small
+              # to hold packed position information.
+              max_instances = width*height
+              
+              if positions.size > max_instances
+                msg = [
+                  "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
+                  "Current maximum: #{max_instances}",
+                  "Instances requested: #{positions.size}"
+                ]
                 
+                raise msg.join("\n")
+              end
+              
+              # pack into image -> texture (which will be passed to shader)
+              positions.each_with_index do |pos, i|
+                x = i / width
+                y = i % width
                 
-                
-                
-                
-                # # collect up all the transforms
-                # mesh_objs.each do |mesh_obj|
-                #   mesh_obj.node.transformGL()
-                # end
-                
-                # # pack them into an array and send them to the shader
-                
-                
-                # # draw all the instances using one draw call
-                # mesh_data.draw_instanced(mesh_objs.size)
+                color = RubyOF::Color.rgba([*pos, 0])
+                pixels.setColor(x,y, color)
+              end
+              
+              
+              # _pixels->getColor(x,y);
+              # _tex.loadData(_pixels, GL_RGBA);
+              tex.loadData(pixels)
+              
+              
+              
+              
+              # # 
+              # # Option 1
+              # # more manual
+              # # 
+              
+              # shader.setUniformTexture("position_tex", tex, 1)
+              #   # TODO: bind this fx (polymorphic)
+              #   # void ofShader::setUniformTexture(const string & name, const ofTexture& tex, int textureLocation)
+              # tex.bind(1) # not the default slot
+              
+              
+              # tex.unbind(1)
+              
+              
+              
+              # 
+              # Option 2
+              # associate texture with material
+              # using stuff already declared by material
+              # 
+              @mat_instanced.setCustomUniformTexture("position_tex", tex, 1)
+              
+              
+              # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+              
+              
+              @mat_instanced.begin()
+              
+              # draw all the instances using one draw call
+              mesh_data.draw_instanced(mesh_objs.size)
               
               @mat_instanced.end()
             else 

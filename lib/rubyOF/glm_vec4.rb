@@ -3,6 +3,10 @@ module GLM
 class Vec4
 	include RubyOF::Freezable
 	
+	def to_a
+		return [self.w, self.x, self.y, self.z]
+	end
+	
 	def to_s
 		format = '%.03f'
 		w = format % self.w
