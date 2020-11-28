@@ -360,7 +360,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("unbind",
          static_cast< void (ofTexture::*)
          (int) const
-         >(&ofTexture::bind),
+         >(&ofTexture::unbind),
          (
 				Arg("textureLocation") = 0
 			)
