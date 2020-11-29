@@ -131,9 +131,6 @@ void ofxInstancingMaterial::initShaders(ofGLProgrammableRenderer & renderer) con
         shaders[&renderer]->color.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,false,true));
         shaders[&renderer]->color.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,false,true));
         shaders[&renderer]->color.bindDefaults();
-        
-            shaders[&renderer]->color.bindAttribute(5, "transformMatrix");
-        
         shaders[&renderer]->color.linkProgram();
         
         
@@ -149,35 +146,6 @@ void ofxInstancingMaterial::initShaders(ofGLProgrammableRenderer & renderer) con
             shaders[&renderer]->textureRectColor.bindDefaults();
             shaders[&renderer]->textureRectColor.linkProgram();
         #endif
-        
-        
-        
-        // // void bindAttribute(GLuint location, const std::string & name) const;
-        //     // attributesBindingsCache[name] = location;
-        //     // glBindAttribLocation(program,location,name.c_str());
-
-
-        // // void ofShader::setAttribute4fv(const string & name, const float* v, GLsizei stride)
-        //     // if(bLoaded){
-        //     // 	GLint location = getAttributeLocation(name);
-        //     // 	if (location != -1) {
-        //     // 		glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, stride, v);
-        //     // 		glEnableVertexAttribArray(location);
-        //     // 	}
-        //     // }
-
-        // GLuint program = shader.getProgram();
-        // GLuint location = 5; // counts starts @ 0, 0-4 taken; see ofShader.h:250
-
-        // glBindAttribLocation(program, location, "transformMatrix");
-
-
-        // GLsizei stride = sizeof(float)*4;
-        // glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, stride, &transform_mat4s[0]);
-        // // ^ pointer to a std::vector is just the same as a C array pointer
-        // glEnableVertexAttribArray(location);
-
-        // shadersMap[&renderer][data.postFragment] = shaders[&renderer];
     }
 
 }
@@ -218,6 +186,8 @@ void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgramma
 	shader.setUniform4fv("mat_emissive", &data.emissive.r);
 	shader.setUniform4fv("global_ambient", &ofGetGlobalAmbientColor().r);
 	shader.setUniform1f("mat_shininess",data.shininess);
+    
+    shader.setUniform1f("instance_scale", mScale);
     
     
     for (auto & uniform : uniformstex) {
@@ -288,6 +258,14 @@ void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, co
 
 void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation){
     uniformstex[name] = {textureTarget, textureID, textureLocation};
+}
+
+void ofxInstancingMaterial::setInstanceMagnitudeScale(float scale){
+    mScale = scale;
+}
+
+float ofxInstancingMaterial::getInstanceMagnitudeScale(){
+    return mScale;
 }
 
 

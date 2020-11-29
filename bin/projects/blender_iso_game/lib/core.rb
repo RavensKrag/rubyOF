@@ -1570,6 +1570,10 @@ class Core
                 "position_tex", @instance_data.texture, 1
               )
               
+              @mat_instanced.setInstanceMagnitudeScale(
+                InstancingBuffer::FLOAT_MAX
+              )
+              
               
               # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
               

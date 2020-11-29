@@ -168,6 +168,10 @@ public:
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	
+	void setInstanceMagnitudeScale(float scale);
+	float getInstanceMagnitudeScale();
+
+	
 	void setVertexShaderSource(const std::string &source);
 	void setFragmentShaderSource(const std::string &source);
 
@@ -208,5 +212,6 @@ private:
 	
 	
 	std::map<std::string, TextureUnifom> uniformstex;
+	float mScale;
 	
 };

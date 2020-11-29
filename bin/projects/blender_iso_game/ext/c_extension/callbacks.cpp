@@ -1171,6 +1171,11 @@ void Init_rubyOF_project()
          >(&ofxInstancingMaterial::setCustomUniformTexture)
       )
       
+      .define_method("setInstanceMagnitudeScale", 
+      	&ofxInstancingMaterial::setInstanceMagnitudeScale)
+      .define_method("getInstanceMagnitudeScale", 
+      	&ofxInstancingMaterial::getInstanceMagnitudeScale)
+      
       
       .define_method("setVertexShaderSource", 
       	&ofxInstancingMaterial::setVertexShaderSource)
