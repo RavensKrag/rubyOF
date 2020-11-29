@@ -50,30 +50,20 @@ class BlenderObject
   end
 end
 
-class BlenderMesh < BlenderObject
+class BlenderMeshData
   extend Forwardable
   
-  attr_reader :mesh, :node
-  attr_accessor :color
-  
   attr_accessor :verts, :normals, :tris
+  def_delegators :@mesh, :draw, :draw_instanced
   
   def initialize
-    @mesh = RubyOF::Mesh.new
-    @node = RubyOF::Node.new
+    @mesh = RubyOF::VboMesh.new
   end
-  
-  def_delegators :@node, :position, :position=,
-                         :orientation, :orientation=,
-                         :scale, :scale=
-  
-  
   
   def generate_mesh
     return unless !@verts.nil? and !@normals.nil? and !@tris.nil?
     
     
-    @mesh = RubyOF::Mesh.new
     # p mesh.methods
     @mesh.setMode(:triangles)
     
@@ -104,7 +94,23 @@ class BlenderMesh < BlenderObject
     puts "time - mesh generation: #{dt}"
     
   end
+end
+
+class BlenderMesh < BlenderObject
+  extend Forwardable
   
+  attr_reader :node
+  attr_accessor :mesh
+  attr_accessor :color
+  
+  def initialize
+    @mesh = BlenderMeshData.new
+    @node = RubyOF::Node.new
+  end
+  
+  def_delegators :@node, :position, :position=,
+                         :orientation, :orientation=,
+                         :scale, :scale=
   
   
   # convert to a hash such that it can be serialized with yaml, json, etc
@@ -116,18 +122,31 @@ class BlenderMesh < BlenderObject
     {
         'type' => 'MESH',
         'name' =>  @name,
-        'rotation' => [
-          'Quat',
-          orientation.w, orientation.x, orientation.y, orientation.z
-        ],
-        'position' => [
-          'Vec3',
-          position.x, position.y, position.z
-        ],
-        'scale' => [
-          'Vec3',
-          scale.x, scale.y, scale.z
-        ],
+        
+        'transform' => {
+          'rotation' => [
+            'Quat',
+            orientation.w, orientation.x, orientation.y, orientation.z
+          ],
+          'position' => [
+            'Vec3',
+            position.x, position.y, position.z
+          ],
+          'scale' => [
+            'Vec3',
+            scale.x, scale.y, scale.z
+          ]
+        },
+        
+        # 'data' => {
+        #   'verts': [
+        #     'double', num_verts, tmp_vert_file_path
+        #   ],
+        #   'normals': [
+        #     'double', num_normals, tmp_normal_file_path
+        #   ],
+        #   'tris' : index_buffer
+        # }
     }
   end
 end
@@ -444,13 +463,74 @@ class BlenderLight < BlenderObject
 end
 
 
+class InstancingBuffer
+  attr_reader :pixels, :texture
+  
+  def initialize
+    @pixels = RubyOF::FloatPixels.new
+    @texture = RubyOF::Texture.new
+    
+    @width = 256
+    @height = 256
+    @pixels.allocate(@width, @height)
+    
+    @texture.wrap_mode(:vertical => :clamp_to_edge,
+                :horizontal => :clamp_to_edge)
+    
+    @texture.filter_mode(:min => :nearest, :mag => :nearest)
+  end
+  
+  FLOAT_MAX = 100
+  # https://en.wikipedia.org/wiki/Single-precision_floating-point_format#IEEE_754_single-precision_binary_floating-point_format:_binary32
+  # 
+  # The true float max is a little bigger, but this is enough.
+  # This also allows for using one max for both positive and negative.
+  def pack_positions(positions)
+    positions.each_with_index do |pos, i|
+      x = i / @width
+      y = i % @width
+      
+      # puts pos
+      arr = pos.to_a
+      # arr = [1,0,0]
+      
+      magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
+      magnitude = Math.sqrt(magnitude_sq)
+      
+      posNorm = arr.map{|i| i / magnitude }
+      posNormShifted = posNorm.map{|i| (i+1)/2 }
+      
+      magnitude_normalized = magnitude / FLOAT_MAX
+      
+      color = RubyOF::FloatColor.rgba([*posNormShifted, magnitude_normalized])
+      # p color.to_a
+      @pixels.setColor(x,y, color)
+    end
+    
+    # same logic as above, but need to make sure ofColorFloat
+    # RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
+    
+    
+    # _pixels->getColor(x,y);
+    # _tex.loadData(_pixels, GL_RGBA);
+    @texture.load_data(@pixels)
+    
+  end
+  
+  def max_instances
+    return @width*@height
+  end
+end
+
+
 
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, entities)
+  def initialize(window, entities, meshes)
     @window = window
     @entities = entities
+    @meshes = meshes
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -706,57 +786,67 @@ class BlenderSync
             puts "mesh data"
             # p data
             
-            mesh = entity
+            mesh = @meshes[obj_data['mesh_name']]
             
-            mesh.tris    = obj_data['tris']
-            
-            obj_data['normals'].tap do |type, count, path|
-              lines = File.readlines(path)
+            if mesh.nil?
+              mesh = entity.mesh
               
-              # p lines
-              # b64 -> binary -> array
-              puts lines.size
-              # if @last_mesh_file_n != path
-                # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-                
-                # @last_mesh_file_n = path
-                data = lines.last # should only be one line in this file
-                mesh.normals = Base64.decode64(data).unpack("d#{count}")
-                
-                # # assuming type == double for now, but may want to support other types too
-              # end
+              mesh.tris = obj_data['tris']
               
-              mesh.dirty = true
+              obj_data['normals'].tap do |type, count, path|
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_n != path
+                  # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+                  
+                  # @last_mesh_file_n = path
+                  data = lines.last # should only be one line in this file
+                  mesh.normals = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              obj_data['verts'].tap do |type, count, path|
+                # p [type, count, path]
+                
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_v != path
+                  # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+                  
+                  # @last_mesh_file_v = path
+                  data = lines.last # should only be one line in this file
+                  # puts "data =>"
+                  # p data
+                  mesh.verts = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              
+              if entity.dirty
+                puts "generate mesh"
+                mesh.generate_mesh()
+              end
+              
+              @meshes[obj_data['mesh_name']] = entity.mesh
+            else
+              entity.mesh = mesh
             end
             
-            obj_data['verts'].tap do |type, count, path|
-              # p [type, count, path]
-              
-              lines = File.readlines(path)
-              
-              # p lines
-              # b64 -> binary -> array
-              puts lines.size
-              # if @last_mesh_file_v != path
-                # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
-                
-                # @last_mesh_file_v = path
-                data = lines.last # should only be one line in this file
-                # puts "data =>"
-                # p data
-                mesh.verts = Base64.decode64(data).unpack("d#{count}")
-                
-                # # assuming type == double for now, but may want to support other types too
-              # end
-              
-              mesh.dirty = true
-            end
             
-            
-            if mesh.dirty
-              puts "generate mesh"
-              mesh.generate_mesh()
-            end
           
           when 'LIGHT'
             light = entity
@@ -789,14 +879,13 @@ class BlenderSync
             end
             
             # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
-            color_ary = obj_data['color'][1..3].map{|x| (x*0xff).round }
-            color = RubyOF::Color.rgba(color_ary + [255])
+            color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])
             # light.diffuse_color  = color
-            # # light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-            # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+            # # light.diffuse_color  = RubyOF::FloatColor.hex_alpha(0xffffff, 0xff)
+            # light.specular_color = RubyOF::FloatColor.hex_alpha(0xff0000, 0xff)
             
             
-            white = RubyOF::Color.rgb([255, 255, 255])
+            white = RubyOF::FloatColor.rgb([1, 1, 1])
             
             # // Point lights emit light in all directions //
             # // set the diffuse color, color reflected from the light source //
@@ -1021,8 +1110,10 @@ class Core
       'Light' => BlenderLight.new
     }
     
+    @meshes = Hash.new
     
-    @sync = BlenderSync.new(@w, @entities)
+    
+    @sync = BlenderSync.new(@w, @entities, @meshes)
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
@@ -1272,7 +1363,7 @@ class Core
     
     
     
-    c = RubyOF::Color.hex_alpha( 0xf6bfff, 0xff )
+    # c = RubyOF::FloatColor.hex_alpha( 0xf6bfff, 0xff )
     
     
     
@@ -1303,8 +1394,8 @@ class Core
         
         
         @mat1 ||= RubyOF::Material.new
-        # @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
-        @mat1.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
+        # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
+        @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
         # // shininess is a value between 0 - 128, 128 being the most shiny //
         @mat1.shininess = 64
         
@@ -1316,8 +1407,44 @@ class Core
         #   (creating the material is the expensive part anyway)
         
         
+        
+        @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
+        @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+        @mat_instanced.shininess = 64
+        
+        
+        @shader_timestamp = nil
+        
+        shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
+        @vert_shader_path = shader_src_dir/"phong_instanced.vert"
+        @frag_shader_path = shader_src_dir/"phong.frag"
+        
+        
+        
+        
         @first_draw = false
+        
       end
+      
+      
+      # load shaders if they have never been loaded before,
+      # or if the files have been updated
+      if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
+        
+        
+        vert_shader = File.readlines(@vert_shader_path).join("\n")
+        frag_shader = File.readlines(@frag_shader_path).join("\n")
+        
+        @mat_instanced.setVertexShaderSource vert_shader
+        @mat_instanced.setFragmentShaderSource frag_shader
+        
+        
+        @shader_timestamp = Time.now
+        
+        puts "shader reloaded"
+      end
+      
+      
       
       light_color = @entities['Light'].diffuse_color
       @mat2.emissive_color = light_color
@@ -1337,32 +1464,155 @@ class Core
         @entities['Light'].enable()
         
           # // render objects in world
-          @mat1.begin()
             
+          batching = 
             @entities.values
             .select{|x| x.is_a? BlenderMesh }
-            .each do |mesh_obj|
+            .group_by{|x| x.mesh }
+          
+          # p batching.collect{|k,v|  [k.class, v.size]}
+          
+          
+          
+          batching.each do |mesh_data, mesh_objs|
+            
+            # mesh_obj.mesh.generate_normals()
+            # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+            
+            
+            if mesh_objs.size > 1
+              # draw instanced
               
-              # mesh_obj.mesh.generate_normals()
-              # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
+              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
+              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
+              
+                
+                
+              # # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
+              
+              # @mat_instanced.begin()
+              #   mesh_objs.each do |mesh_obj|
+              #     mesh_obj.node.transformGL()
+              #     mesh_data.draw()
+              #     mesh_obj.node.restoreTransformGL()
+              #   end
+              # @mat_instanced.end()
               
               
-              mesh_obj.node.transformGL()
-              mesh_obj.mesh.draw()
-              mesh_obj.node.restoreTransformGL()
+              # # TODO: bind Vbo#setAttributeData()
+              # # TODO: bind Node#getLocalTransforMatrix
+              # # TODO: bind Node#getGlobalTransformMatrix
+              #     obj.node.position
+              
+              
+                
+              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
+              #   # 
+              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
+
+              # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
               
               
               
-              # cube_pos = mesh_obj.node.position
-              # ofPushMatrix()
-              #   mesh_obj.node.transformGL()
-              #   ofDrawBox(0,0,0, 2)
-              #   mesh_obj.node.restoreTransformGL()
-              #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-              # ofPopMatrix()
+              
+              # 
+              # v4 - translation + z-rot, stored in texture
+              # 
+              
+              @instance_data ||= InstancingBuffer.new
+              
+              
+              # collect up all the transforms
+              positions = 
+                mesh_objs.collect do |mesh_obj|
+                  mesh_obj.node.position
+                end
+              
+              
+              # raise exception current texture size is too small
+              # to hold packed position information.
+              max_instances = @instance_data.max_instances
+              
+              if positions.size > max_instances
+                msg = [
+                  "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
+                  "Current maximum: #{max_instances}",
+                  "Instances requested: #{positions.size}"
+                ]
+                
+                raise msg.join("\n")
+              end
+              
+              # pack into image -> texture (which will be passed to shader)
+              @instance_data.pack_positions(positions)
+              
+              # # 
+              # # Option 1
+              # # more manual
+              # # 
+              
+              # shader.setUniformTexture("position_tex", tex, 1)
+              #   # TODO: bind this fx (polymorphic)
+              #   # void ofShader::setUniformTexture(const string & name, const ofTexture& tex, int textureLocation)
+              # tex.bind(1) # not the default slot
+              
+              # tex.unbind(1)
+              
+              
+              
+              # 
+              # Option 2
+              # associate texture with material
+              # using stuff already declared by material
+              # 
+              @mat_instanced.setCustomUniformTexture(
+                "tex0", @instance_data.texture, 1
+              )
+              
+              
+              # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+              
+              
+              @mat_instanced.begin()
+              
+              # draw all the instances using one draw call
+              mesh_data.draw_instanced(mesh_objs.size)
+              
+              @mat_instanced.end()
+            else 
+              # draw just a single object
+              
+              mesh_obj = mesh_objs.first
+              
+              @mat1.begin()
+                mesh_obj.node.transformGL()
+                mesh_data.draw()
+                mesh_obj.node.restoreTransformGL()
+              @mat1.end()
             end
             
-          @mat1.end()
+            # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
+            
+            
+            
+            
+            
+            
+            
+            
+            # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
+            
+            
+            # cube_pos = mesh_obj.node.position
+            # ofPushMatrix()
+            #   mesh_obj.node.transformGL()
+            #   ofDrawBox(0,0,0, 2)
+            #   mesh_obj.node.restoreTransformGL()
+            #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+            # ofPopMatrix()
+          end
+            
           
           
           # // render the sphere that represents the light
@@ -1381,20 +1631,8 @@ class Core
     
     
     
-    
-    
-    
-    
-    
-    
-    # @entities['Cube'].generate_mesh
-    
-    # # raise "test error"
-    
-    
-    
-    # # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
-    # # (thus, you don't need a separate node to track the position of ofLight)
+    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
+    # (thus, you don't need a separate node to track the position of ofLight)
     
     # if @first_update
     #   # ofEnableDepthTest()
@@ -1404,47 +1642,7 @@ class Core
     #   # @first_update = false
     # end
     
-    # ofEnableDepthTest()
-    # # ofEnableLighting()
-    # @entities['Light'].enable
-    # @entities['viewport_camera'].begin
-    #   # puts @entities['viewport_camera'].getProjectionMatrix
-      
-    #   # @entities['Light'].setDirectional()
-    #   # @entities['Light'].lookAt(@entities['Cube'].node.position)
-        
-    #     # material = RubyOF::Material.new
-    #     # # material.ambient_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-    #     # # material.diffuse_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-    #     # @entities['Cube'].color.tap do |c| 
-    #     #   unless c.nil?
-    #     #     puts c
-    #     #     # material.ambient_color = c
-    #     #     material.diffuse_color = c
-    #     #   end
-    #     # end
-    #     # material.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-        
-    #     # # material.begin
-        
-          # @entities['Cube'].node.transformGL()
-          # @entities['Cube'].mesh.draw()
-          # @entities['Cube'].node.restoreTransformGL()
-        
-    #     # material.end
-        
-    #     cube_pos = @entities['Cube'].node.position
-    #     ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-        
-        
-    #     light_pos = @entities['Light'].position
-    #     ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-      
     
-    # @entities['viewport_camera'].end
-    # @entities['Light'].disable
-    # # ofDisableLighting()
-    # ofDisableDepthTest()
     
     
     # 

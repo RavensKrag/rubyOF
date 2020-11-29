@@ -475,6 +475,7 @@ class RubyOF(bpy.types.RenderEngine):
             
             
             data = {
+                'mesh_name': mesh.name, # name of the data, not the object
                 'verts': [
                     'double', num_verts, tmp_vert_file_path
                 ],
