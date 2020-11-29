@@ -20,6 +20,7 @@ class NonblockingErrorOutput
       
       # t1 = RubyOF::Utils.ofGetElapsedTimeMillis
       
+      @io.puts "Non-blocking error IO:"
       @io.puts e.full_message
       # ^ use ruby internal code to format the message. implementation is in c for speed. this will format exactly the same as a normal exception, which in ruby 2.5 includes bolding and other font styles.
       # sources:

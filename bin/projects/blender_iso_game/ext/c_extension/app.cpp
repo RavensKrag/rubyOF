@@ -405,12 +405,106 @@ void rbApp::draw(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	
+	// ofSetGlobalAmbientColor(ofFloatColor(1.0, 1.0, 1.0));
 	
 	// ========================================
 	// ========================================
 	
-	mSelf.call("draw");
+	
+	
+	// bool cpp_render = true;
+	bool cpp_render = false;
+		
+	if(cpp_render){
+		Rice::Object live = mSelf.call("instance_variable_get", Rice::Symbol("@live_code"));
+		live.call("camera_begin");
+		
+		
+		ofBackground(10, 10, 10);
+		ofEnableDepthTest();
+		
+		// turn on smooth lighting //
+		ofSetSmoothLighting(true);
+		
+		
+		// 
+		// my custom code
+		// 
+		
+		ofLight pointLight;
+		
+		ofMaterial material;
+		ofMaterial material2;
+		
+		
+		// lets make a sphere with more resolution than the default //
+		// default is 20 //
+		ofSetSphereResolution(32);
+		
+		
+		// Point lights emit light in all directions //
+		// set the diffuse color, color reflected from the light source //
+		pointLight.setDiffuseColor( ofColor(0.f, 255.f, 0.f));
+		
+		// specular color, the highlight/shininess color //
+		pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
+		
+		// shininess is a value between 0 - 128, 128 being the most shiny //
+		material.setShininess( 64 );
+		
+		
+		material2.setEmissiveColor( ofColor(255, 255, 255) );
+		
+		
+		
+		glm::vec3 light_pos(4,-5,3);
+		pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
+		
+		// enable lighting //
+		ofEnableLighting();
+		// the position of the light must be updated every frame,
+		// call enable() so that it can update itself //
+		pointLight.enable();
+		
+			// render objects in world
+			material.begin();
+			ofPushMatrix();
+				glm::vec3 cube_pos(0,0,0);
+				ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
+			ofPopMatrix();
+			material.end();
+			
+			
+			// render the sphere that represents the light
+			material2.begin();
+			ofPushMatrix();
+				ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
+			ofPopMatrix();
+			material2.end();
+		
+		// turn off lighting //
+		ofDisableLighting();
+		
+		
+		
+		ofDisableDepthTest();
+		
+		
+		live.call("camera_end");
+	}else{
+		mSelf.call("draw");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	gui.draw(); // ofxGui - for color picker

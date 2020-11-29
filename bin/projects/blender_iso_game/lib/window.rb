@@ -47,7 +47,7 @@ class Window < RubyOF::Window
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    super("grapevine communication", w,h) # half screen
+    super("RubyOF blender integration", w,h) # half screen
     self.position = GLM::Vec2.new(x, y)
     
     # ofSetEscapeQuitsApp false

@@ -134,17 +134,50 @@ class Mesh
 		
 		setMode__cpp(i)
 	end
+	
+	
+	
+	private :draw__cpp
+	
+	OF_POLY_RENDER_MODE = [
+		:points,
+		:wireframe,
+		:fill
+	]
+	
+	def draw(render_mode=:fill)
+		i = OF_POLY_RENDER_MODE.index(render_mode)
+		
+		raise ArgumentError, "Given poly render mode #{mode.inspect} is not a valid mesh mode. Please use one of the following: #{OF_POLY_RENDER_MODE.inspect}" if i.nil?
+		
+		draw__cpp(i)
+	end
+end
+
+class VboMesh
+	private :draw_instanced__cpp
+	
+	def draw_instanced(instance_count, render_mode=:fill)
+		i = OF_POLY_RENDER_MODE.index(render_mode)
+		
+		raise ArgumentError, "Given poly render mode #{mode.inspect} is not a valid mesh mode. Please use one of the following: #{OF_POLY_RENDER_MODE.inspect}" if i.nil?
+		
+		draw_instanced__cpp(i, instance_count)
+	end
 end
 
 
 
+
 class Color
+	CHANNEL_MAX = 255
+	
 	def to_a
 		return [self.r,self.g,self.b,self.a]
 	end
 	
 	def rgba=(color_array)
-		raise ArgumentError, "Expected an array of size 4 that encodes rgba color data (each channel should be an integer, with a maximum of 255 per channel)" unless color_array.size == 4
+		raise ArgumentError, "Expected an array of size 4 that encodes rgba color data (each channel should be an integer, with a maximum of #{CHANNEL_MAX} per channel)" unless color_array.size == 4
 		
 		self.r,self.g,self.b,self.a = color_array
 	end
@@ -158,17 +191,17 @@ class Color
 		end
 		
 		def rgb(color_array)
-			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an integer, with a maximum of 255 per channel)" unless color_array.size == 3
+			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an integer, with a maximum of #{CHANNEL_MAX} per channel)" unless color_array.size == 3
 			
 			# Must add, can't push because arrays in Ruby are objects
 			# and all objects in Ruby are reference types.
 			# Thus, the array provided will always be an in/out parameter.
-			self.rgba(color_array + [255])
+			self.rgba(color_array + [CHANNEL_MAX])
 		end
 		
 		def hex(hex)
 			color = self.new
-			color.set_hex(hex, 255)
+			color.set_hex(hex, CHANNEL_MAX)
 			return color
 		end
 		
@@ -179,6 +212,95 @@ class Color
 		end
 	end
 end
+
+class FloatColor
+	CHANNEL_MAX = 1
+	
+	def to_a
+		return [self.r,self.g,self.b,self.a]
+	end
+	
+	def rgba=(color_array)
+		raise ArgumentError, "Expected an array of size 4 that encodes rgba color data (each channel should be an float, in the range 0 to 1)" unless color_array.size == 4
+		
+		self.r,self.g,self.b,self.a = color_array
+	end
+	
+	class << self
+		def rgba(color_array)
+			color = self.new
+			color.rgba = color_array
+			
+			return color
+		end
+		
+		def rgb(color_array)
+			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an float, in the range 0 to 1)" unless color_array.size == 3
+			
+			# Must add, can't push because arrays in Ruby are objects
+			# and all objects in Ruby are reference types.
+			# Thus, the array provided will always be an in/out parameter.
+			self.rgba(color_array + [CHANNEL_MAX])
+		end
+		
+		def hex(hex)
+			color = self.new
+			color.set_hex(hex, CHANNEL_MAX)
+			return color
+		end
+		
+		def hex_alpha(hex, alpha)
+			color = self.new
+			color.set_hex(hex, alpha)
+			return color
+		end
+	end
+end
+
+class ShortColor
+	CHANNEL_MAX = 65535
+	
+	def to_a
+		return [self.r,self.g,self.b,self.a]
+	end
+	
+	def rgba=(color_array)
+		raise ArgumentError, "Expected an array of size 4 that encodes rgba color data (each channel should be an float, in the range 0 to 1)" unless color_array.size == 4
+		
+		self.r,self.g,self.b,self.a = color_array
+	end
+	
+	class << self
+		def rgba(color_array)
+			color = self.new
+			color.rgba = color_array
+			
+			return color
+		end
+		
+		def rgb(color_array)
+			raise ArgumentError, "Expected an array of size 3 that encodes rgb color data (each channel should be an float, in the range 0 to 1)" unless color_array.size == 3
+			
+			# Must add, can't push because arrays in Ruby are objects
+			# and all objects in Ruby are reference types.
+			# Thus, the array provided will always be an in/out parameter.
+			self.rgba(color_array + [CHANNEL_MAX])
+		end
+		
+		def hex(hex)
+			color = self.new
+			color.set_hex(hex, CHANNEL_MAX)
+			return color
+		end
+		
+		def hex_alpha(hex, alpha)
+			color = self.new
+			color.set_hex(hex, alpha)
+			return color
+		end
+	end
+end
+
 	
 class Shader
 	# private :load_oneNameVertAndFrag, :load_VertFragGeom
@@ -215,6 +337,19 @@ class Pixels
 	end
 end
 
+class FloatPixels
+	# private :setColor_i, :setColor_xy
+	
+	def setColor(x,y, c)
+		setColor_xy(x,y, c)
+	end
+	
+	def []=(i, c)
+		setColor_i(i, c)
+	end
+end
+
+
 class Texture
 	# TODO: clean up the interface for 'draw_wh' and 'draw_pt' bound from C++ layer
 	# TODO: perhaps bind other methods of Texture?
@@ -224,6 +359,92 @@ class Texture
 	# TODO: look into texture-atlasing for sprites, in the sprite-drawing libraries
 	
 	# TODO: figure out how textures can be used with mesh data
+	
+	WRAP_MODE = [
+		:clamp_to_edge,
+      :clamp_to_border,
+      :mirrored_repeat,
+      :repeat,
+      :mirror_clamp_to_edge
+	]
+	
+	private :setTextureWrap__cpp
+	def wrap_mode(vertical: nil, horizontal: nil)
+		i = WRAP_MODE.index(vertical)
+		j = WRAP_MODE.index(horizontal)
+		
+		
+		# TODO: finish this error checking message
+		# TODO: implement message for horizontal too
+		
+		msg = []
+		
+		if i.nil?
+			msg << "Vertical texture wrap mode #{vert_mode.inspect} is not a valid mesh mode."
+		end
+		if j.nil?
+			msg << "Horizontal texture wrap mode #{horiz_mode.inspect} is not a valid mesh mode."
+		end
+		
+		unless msg.empty?
+			msg << "These are the valid texture wrap modes: #{WRAP_MODE.inspect}"
+			
+			raise ArgumentError, msg.join("\n")
+		end
+		
+		
+		setTextureWrap__cpp(i,j)
+	end
+	
+	
+	MIN_FILTER_MODES = [
+      :nearest,
+      :linear,
+      :nearest_mipmap_nearest,
+      :linear_mipmap_nearest,
+      :nearest_mipmap_linear,
+      :linear_mipmap_linear 
+	]
+   
+	MAG_FILTER_MODES = [
+      :nearest,
+      :linear
+	]
+	
+	private :setTextureMinMagFilter__cpp
+	def filter_mode(min: nil, mag: nil)
+		i = MIN_FILTER_MODES.index(min)
+		j = MAG_FILTER_MODES.index(mag)
+		
+		msg = []
+		
+		if i.nil?
+			msg << "Texture filter min mode #{min.inspect} is not a valid mesh mode."
+			msg << "These are the valid min filter modes: #{MIN_FILTER_MODES.inspect}"
+		end
+		if j.nil?
+			msg << "Texture filter mag mode #{mag.inspect} is not a valid mesh mode."
+			msg << "These are the valid mag filter modes: #{MAG_FILTER_MODES.inspect}"
+		end
+		
+		unless msg.empty?
+			raise ArgumentError, msg.join("\n")
+		end
+		
+		
+		setTextureMinMagFilter__cpp(i,j)
+	end
+	
+	
+	private :loadData_Pixels, :loadData_FloatPixels
+	def load_data(px_data)
+		case px_data
+		when Pixels
+			loadData_Pixels(px_data)
+		when FloatPixels
+			loadData_FloatPixels(px_data)
+		end
+	end
 end
 
 class Fbo

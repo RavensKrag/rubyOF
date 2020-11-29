@@ -113,6 +113,37 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofDrawRectRounded)
 		)
 		
+		
+		
+		// 
+		// draw 3D primitives
+		// 
+		
+		.define_method("ofDrawBox",
+			static_cast< void (*)
+			(
+				float x, float y, float z, float size
+			)
+			>(&ofDrawBox)
+		)
+		.define_method("ofDrawSphere",
+			static_cast< void (*)
+			(
+				float x, float y, float z, float radius
+			)
+			>(&ofDrawSphere)
+		)
+		
+		
+		// 
+		// parameters for 3D primitives
+		// 
+		
+		.define_method("ofSetSphereResolution",  &ofSetSphereResolution)
+		
+		
+		
+		
 		// turn filling of primative shapes on / off
 		// (used to draw outlines)
 		.define_method(
@@ -138,7 +169,25 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		// NOTE: clear requires floats, while "ofBackground" takes int? Looks weird, maybe should report?
 		
 		
-		.define_method("ofEnableBlendMode", &ofEnableBlendMode__wrapper)
+		
+		
+		// OpenGL render modes and lighting controls
+		.define_method("ofEnableBlendMode",  &ofEnableBlendMode__wrapper)
+		.define_method("ofDisableBlendMode", &ofDisableBlendMode)
+		
+		.define_method("ofEnableDepthTest",  &ofEnableDepthTest)
+		.define_method("ofDisableDepthTest", &ofDisableDepthTest)
+		
+		.define_method("ofEnableLighting",  &ofEnableLighting)
+		.define_method("ofDisableLighting", &ofDisableLighting)
+		
+		.define_method("ofGetLightingEnabled", &ofGetLightingEnabled)
+		
+		.define_method("ofSetSmoothLighting",  &ofSetSmoothLighting)
+		
+		
+		
+		
 		
 		
 		// colors

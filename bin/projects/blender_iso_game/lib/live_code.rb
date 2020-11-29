@@ -26,6 +26,7 @@ class LiveCode
           return args.empty? ? @inner.send(method) : @inner.send(method, *args)
         rescue StandardError => e
           # puts "method missing error handler in LiveCode"
+          puts "Error handler in LiveCode:"
           puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
           
           self.runtime_error_detected
@@ -57,6 +58,7 @@ class LiveCode
             update_signal = @inner.update(*args)
             return update_signal
           rescue StandardError => e
+            puts "Error handler in LiveCode:"
             puts e.full_message
             
             self.runtime_error_detected
@@ -90,6 +92,7 @@ class LiveCode
             update_signal = @inner.update(*args)
             return update_signal
           rescue StandardError => e
+            puts "Error handler in LiveCode:"
             puts e.full_message
             
             self.runtime_error_detected

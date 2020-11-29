@@ -4,6 +4,7 @@
 require 'forwardable' # for def_delegators
 
 require 'json' # easiest way to transfer data between Python and Ruby
+require 'base64'
 
 require 'open3'
 
@@ -39,6 +40,7 @@ end
 
 
 class BlenderObject
+  attr_accessor :name
   attr_accessor :dirty
   
   def initialize
@@ -48,13 +50,61 @@ class BlenderObject
   end
 end
 
-class BlenderCube < BlenderObject
+class BlenderMeshData
   extend Forwardable
   
-  attr_reader :mesh, :node
+  attr_accessor :verts, :normals, :tris
+  def_delegators :@mesh, :draw, :draw_instanced
   
   def initialize
-    @mesh = RubyOF::Mesh.new
+    @mesh = RubyOF::VboMesh.new
+  end
+  
+  def generate_mesh
+    return unless !@verts.nil? and !@normals.nil? and !@tris.nil?
+    
+    
+    # p mesh.methods
+    @mesh.setMode(:triangles)
+    
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # @normals.each_cons(3) do |vert|
+    #   @mesh.addNormal(GLM::Vec3.new(*vert))
+    # end
+    
+    # @tris.each do |vert_idxs|
+    #   vert_coords = vert_idxs.map{|i|  @verts[i]  }
+      
+    #   vert_coords.each do |x,y,z|
+    #     @mesh.addVertex(GLM::Vec3.new(x,y,z))
+    #   end
+    # end
+    
+    # p @mesh
+    # p @normals
+    RubyOF::CPP_Callbacks.generate_mesh(@mesh, @normals,
+                                               @verts,
+                                               @tris.flatten)
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0;
+    puts "time - mesh generation: #{dt}"
+    
+  end
+end
+
+class BlenderMesh < BlenderObject
+  extend Forwardable
+  
+  attr_reader :node
+  attr_accessor :mesh
+  attr_accessor :color
+  
+  def initialize
+    @mesh = BlenderMeshData.new
     @node = RubyOF::Node.new
   end
   
@@ -63,85 +113,41 @@ class BlenderCube < BlenderObject
                          :scale, :scale=
   
   
-  
-  def generate_mesh
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    orientation = self.orientation
+    position = self.position
+    scale = self.scale
     
-    @mesh = RubyOF::Mesh.new
-    # p mesh.methods
-    @mesh.setMode(:triangles)
-    # (ccw from bottom right)
-    # (top layer)
-    @mesh.addVertex(GLM::Vec3.new( 1, -1,  1))
-    @mesh.addVertex(GLM::Vec3.new( 1,  1,  1))
-    @mesh.addVertex(GLM::Vec3.new(-1,  1,  1))
-    @mesh.addVertex(GLM::Vec3.new(-1, -1,  1))
-    # (bottom layer)
-    @mesh.addVertex(GLM::Vec3.new( 1, -1, -1))
-    @mesh.addVertex(GLM::Vec3.new( 1,  1, -1))
-    @mesh.addVertex(GLM::Vec3.new(-1,  1, -1))
-    @mesh.addVertex(GLM::Vec3.new(-1, -1, -1))
-    
-    
-    # raise
-    
-    # TODO: pay attention to winding
-    # (need to figure out axes first)
-    
-    # right
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(2-1+4*1)
-    
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    
-    # left
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(4-1+4*1)
-    
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(4-1+4*0)
-    @mesh.addIndex(4-1+4*1)
-    
-    # top
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(3-1+4*0)
-    
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(4-1+4*0)
-    @mesh.addIndex(1-1+4*0)
-    
-    # bottom
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    @mesh.addIndex(3-1+4*1)
-    
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*1)
-    
-    # front
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*1)
-    @mesh.addIndex(1-1+4*0)
-    
-    @mesh.addIndex(4-1+4*1)
-    @mesh.addIndex(1-1+4*0)
-    @mesh.addIndex(4-1+4*0)
-    
-    # back
-    @mesh.addIndex(3-1+4*1)
-    @mesh.addIndex(2-1+4*1)
-    @mesh.addIndex(2-1+4*0)
-    
-    @mesh.addIndex(2-1+4*0)
-    @mesh.addIndex(3-1+4*0)
-    @mesh.addIndex(3-1+4*1)
-    
-    
+    {
+        'type' => 'MESH',
+        'name' =>  @name,
+        
+        'transform' => {
+          'rotation' => [
+            'Quat',
+            orientation.w, orientation.x, orientation.y, orientation.z
+          ],
+          'position' => [
+            'Vec3',
+            position.x, position.y, position.z
+          ],
+          'scale' => [
+            'Vec3',
+            scale.x, scale.y, scale.z
+          ]
+        },
+        
+        # 'data' => {
+        #   'verts': [
+        #     'double', num_verts, tmp_vert_file_path
+        #   ],
+        #   'normals': [
+        #     'double', num_normals, tmp_normal_file_path
+        #   ],
+        #   'tris' : index_buffer
+        # }
+    }
   end
 end
 
@@ -364,14 +370,167 @@ class CustomCamera< BlenderObject
   
 end
 
+class BlenderLight < BlenderObject
+  extend Forwardable
+  
+  def initialize
+    @light = RubyOF::Light.new
+    
+    setPointLight()
+    
+    @size = nil
+    @size_x = nil
+    @size_y = nil
+  end
+  
+  
+  def setPointLight()
+    @type = 'POINT'
+    
+    @light.setPointLight()
+  end
+  
+  def setDirectional()
+    @type = 'SUN'
+    
+    @light.setDirectional()
+  end
+  
+  def setSpotlight(cutoff_radians, exponent)
+    @type = 'SPOT'
+    
+    @size = cutoff_radians
+    
+    size_deg = cutoff_radians / (2*Math::PI) * 360
+    @light.setSpotlight(size_deg, 0) # requires 2 args
+    # float spotCutOff=45.f, float exponent=0.f
+  end
+  
+  def setAreaLight(width, height)
+    @type = 'AREA'
+    
+    @size_x = width
+    @size_y = height
+    
+    @light.setAreaLight(@size_x, @size_y)
+  end
+  
+  
+  def_delegators :@light, :position, :orientation, :scale,
+                          :position=, :orientation=, :scale=,
+                          :enable, :disable, :enabled?,
+                          :diffuse_color=, :specular_color=, :ambient_color=,
+                          :diffuse_color
+  
+  
+  def data_dump
+    orientation = self.orientation
+    position = self.position
+    scale = self.scale
+    
+    color = self.diffuse_color.to_a
+            .first(3) # discard alpha component
+            .map{|x| x / 255.0 } # convert to float from 0..1
+    
+    {
+        'type' => 'LIGHT',
+        'name' =>  @name,
+        'light_type' => @type,
+        'rotation' => [
+          'Quat',
+          orientation.w, orientation.x, orientation.y, orientation.z
+        ],
+        'position' => [
+          'Vec3',
+          position.x, position.y, position.z
+        ],
+        'scale' => [
+          'Vec3',
+          scale.x, scale.y, scale.z
+        ],
+        'color' => ['rgb'] + color,
+        'size' => [
+          'radians', @size
+        ],
+        'size_x' => [
+          'float', @size_x
+        ],
+        'size_y' => [
+          'float', @size_y
+        ]
+    }
+  end
+end
+
+
+class InstancingBuffer
+  attr_reader :pixels, :texture
+  
+  def initialize
+    @pixels = RubyOF::FloatPixels.new
+    @texture = RubyOF::Texture.new
+    
+    @width = 256
+    @height = 256
+    @pixels.allocate(@width, @height)
+    
+    @texture.wrap_mode(:vertical => :clamp_to_edge,
+                :horizontal => :clamp_to_edge)
+    
+    @texture.filter_mode(:min => :nearest, :mag => :nearest)
+  end
+  
+  FLOAT_MAX = 100
+  # https://en.wikipedia.org/wiki/Single-precision_floating-point_format#IEEE_754_single-precision_binary_floating-point_format:_binary32
+  # 
+  # The true float max is a little bigger, but this is enough.
+  # This also allows for using one max for both positive and negative.
+  def pack_positions(positions)
+    positions.each_with_index do |pos, i|
+      x = i / @width
+      y = i % @width
+      
+      # puts pos
+      arr = pos.to_a
+      # arr = [1,0,0]
+      
+      magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
+      magnitude = Math.sqrt(magnitude_sq)
+      
+      posNorm = arr.map{|i| i / magnitude }
+      posNormShifted = posNorm.map{|i| (i+1)/2 }
+      
+      magnitude_normalized = magnitude / FLOAT_MAX
+      
+      color = RubyOF::FloatColor.rgba([*posNormShifted, magnitude_normalized])
+      # p color.to_a
+      @pixels.setColor(x,y, color)
+    end
+    
+    # same logic as above, but need to make sure ofColorFloat
+    # RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
+    
+    
+    # _pixels->getColor(x,y);
+    # _tex.loadData(_pixels, GL_RGBA);
+    @texture.load_data(@pixels)
+    
+  end
+  
+  def max_instances
+    return @width*@height
+  end
+end
+
 
 
 class BlenderSync
-  MAX_READS = 5
+  MAX_READS = 20
   
-  def initialize(window, entities)
+  def initialize(window, entities, meshes)
     @window = window
     @entities = entities
+    @meshes = meshes
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -402,7 +561,12 @@ class BlenderSync
     
       fifo_path = @fifo_dir/@fifo_name
       
-      File.mkfifo(fifo_path)
+      if fifo_path.exist?
+        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
+      else
+        File.mkfifo(fifo_path)
+      end
+      
       puts "fifo created @ #{fifo_path}"
       
       @f_r = File.open(fifo_path, "r+")
@@ -437,32 +601,70 @@ class BlenderSync
     
   def update
     
+    # p @entities.keys
+    # p @entities.values.select{|x| x.is_a? BlenderMesh }.map{|x| x.name }
+    
+    update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     [MAX_READS, @msg_queue.length].min.times do
       data = @msg_queue.pop
       
+      t0 = RubyOF::Utils.ofGetElapsedTimeMicros
       list = JSON.parse(data)
       # p list
+      t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+      
+      dt = t1-t0;
+      puts "time - parse json: #{dt}"
+      
+      timestamps = list.select{|x| x['type'] == 'timestamp'}
+      unless timestamps.empty?
+        time = timestamps.first['end_time']
+        dt = Time.now.strftime('%s.%N').to_f - time
+        puts "transmision time: #{dt*1000} ms"
+      end
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
-      
       parse_blender_data(list)
       
     end
+    
+    update_t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    dt = update_t1 - update_t0
+    puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
   end
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(data_list)
-    data_list.each do |obj|
-      if obj['type'] == 'viewport_region'        
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    data_list.each do |data|
+      
+      
+      # viewport camera updates (not a camera object)
+      
+      # material updates
+      
+      
+      # transform
+      # mesh
+      # light property updates
+      # camera object updates? (not implemented in Python script yet)
+      
+      
+      # first process types with no transform component
+      case data['type']
+      when 'viewport_region'
         # 
         # sync window size
         # 
         
-        w = obj['width']
-        h = obj['height']
+        w = data['width']
+        h = data['height']
         @window.set_window_shape(w,h)
         
         # @camera.aspectRatio = w.to_f/h.to_f
@@ -474,71 +676,245 @@ class BlenderSync
         # - trying to match pid_query with pid_hit
         # 
         
-        sync_window_position(blender_pid: obj['pid'])
-      else
-        # adjust entity parameters
-        # (viewport camera is also considered an entity in this context)
+        sync_window_position(blender_pid: data['pid'])
+      when 'viewport_camera'
+        # puts "update viewport"
         
-        case obj['type']
-        when 'viewport_camera'
-          puts "update viewport"
+        @entities['viewport_camera'].tap do |camera|
+          camera.dirty = true
           
-          @entities['viewport_camera'].tap do |camera|
-            camera.dirty = true
+          camera.position    = GLM::Vec3.new(*(data['position'][1..3]))
+          camera.orientation = GLM::Quat.new(*(data['rotation'][1..4]))
+          camera.near_clip   = data['near_clip'][1]
+          camera.far_clip    = data['far_clip'][1]
+          
+          # p data['aspect_ratio'][1]
+          # @camera.setAspectRatio(data['aspect_ratio'][1])
+          # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
+          
+          # NOTE: Aspect ratio appears to do nothing, which is bizzare
+          
+          
+          # p data['view_perspective']
+          case data['view_perspective']
+          when 'PERSP'
+            # puts "perspective cam ON"
+            camera.use_perspective_mode
             
-            camera.position    = GLM::Vec3.new(*(obj['position'][1..3]))
-            camera.orientation = GLM::Quat.new(*(obj['rotation'][1..4]))
-            camera.near_clip   = obj['near_clip'][1]
-            camera.far_clip    = obj['far_clip'][1]
+            camera.fov = data['fov'][1]
             
-            # p obj['aspect_ratio'][1]
-            # @camera.setAspectRatio(obj['aspect_ratio'][1])
-            # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
-            
-            # NOTE: Aspect ratio appears to do nothing, which is bizzare
+          when 'ORTHO'
+            camera.use_orthographic_mode
+            camera.scale = data['ortho_scale'][1]
+            # TODO: scale needs to change as camera is updated
+            # TODO: scale zooms as expected, but also effects pan rate (bad)
             
             
-            # p obj['view_perspective']
-            case obj['view_perspective']
-            when 'PERSP'
-              # puts "perspective cam ON"
-              camera.use_perspective_mode
-              
-              camera.fov = obj['fov'][1]
-              
-            when 'ORTHO'
-              camera.use_orthographic_mode
-              camera.scale = obj['ortho_scale'][1]
-              # TODO: scale needs to change as camera is updated
-              # TODO: scale zooms as expected, but also effects pan rate (bad)
-              
-              
-            when 'CAMERA'
-              
-              
-            end
+          when 'CAMERA'
+            
+            
           end
-        when 'MESH'
-          puts "mesh data"
-          p obj
+        end
+      when 'MATERIAL'
+        
+      when 'entity_list'
+        # The viewport camera is an object in RubyOF, but not in Blender
+        # Need to remove it from the putative list such or the camera
+        # will be deleted.
+        (@entities.keys - data['list'] - ['viewport_camera'])
+        .each do |deleted_entity_name|
+          @entities.delete deleted_entity_name
+        end
+      when 'timestamp'
+        # not properly a Blender object, but a type I created
+        # to help coordinate between RubyOF and Blender
+        
+        # t0 = data['time']
+        # t1 = Time.now.strftime('%s.%N').to_f
+        dt = Time.now.strftime('%s.%N').to_f - data['start_time']
+        puts "roundtrip time: #{dt*1000} ms"
+        
+      else # other types of objects with transforms
+        # get the entity
+        
+        # p data if data['name'] == nil
+        
+        entity = @entities[data['name']]
+          # NOTE: names in blender are unique 
+          # TODO: what happens when an object is renamed?
+          # TODO: what happens when an object is deleted?
+        
+        
+        # create entity if one with that name does not already exist
+        if entity.nil?
+          entity = 
+            case data['type']
+            when 'MESH'
+              BlenderMesh.new
+            when 'LIGHT'
+              next
+            when 'CAMERA'
+              # not yet implemented
+              # (skip the whole loop, because we can't process this right now)
+              next 
+            end
           
-          pos   = GLM::Vec3.new(*(obj['position'][1..3]))
-          quat  = GLM::Quat.new(*(obj['rotation'][1..4]))
-          scale = GLM::Vec3.new(*(obj['scale'][1..3]))
           
-          cube = @entities['Cube']
+          entity.name = data['name']
           
-          cube.position = pos
-          cube.orientation = quat
-          cube.scale = scale
-          
-          
-          cube.dirty = true
+          @entities[data['name']] = entity
         end
         
+        
+        # NOTE: possible for some updates to change only transform or only data
+        
+        # first, process transform here:
+        data['transform']&.tap do |transform|
+          pos   = GLM::Vec3.new(*(transform['position'][1..3]))
+          quat  = GLM::Quat.new(*(transform['rotation'][1..4]))
+          scale = GLM::Vec3.new(*(transform['scale'][1..3]))
+          
+          entity.position = pos
+          entity.orientation = quat
+          entity.scale = scale
+        end
+        
+        # then process object-specific properties:
+        data['data']&.tap do |obj_data|
+          case data['type']
+          when 'MESH'
+            puts "mesh data"
+            # p data
+            
+            mesh = @meshes[obj_data['mesh_name']]
+            
+            if mesh.nil?
+              mesh = entity.mesh
+              
+              mesh.tris = obj_data['tris']
+              
+              obj_data['normals'].tap do |type, count, path|
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_n != path
+                  # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+                  
+                  # @last_mesh_file_n = path
+                  data = lines.last # should only be one line in this file
+                  mesh.normals = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              obj_data['verts'].tap do |type, count, path|
+                # p [type, count, path]
+                
+                lines = File.readlines(path)
+                
+                # p lines
+                # b64 -> binary -> array
+                puts lines.size
+                # if @last_mesh_file_v != path
+                  # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+                  
+                  # @last_mesh_file_v = path
+                  data = lines.last # should only be one line in this file
+                  # puts "data =>"
+                  # p data
+                  mesh.verts = Base64.decode64(data).unpack("d#{count}")
+                  
+                  # # assuming type == double for now, but may want to support other types too
+                # end
+                
+                entity.dirty = true
+              end
+              
+              
+              if entity.dirty
+                puts "generate mesh"
+                mesh.generate_mesh()
+              end
+              
+              @meshes[obj_data['mesh_name']] = entity.mesh
+            else
+              entity.mesh = mesh
+            end
+            
+            
+          
+          when 'LIGHT'
+            light = entity
+            
+            
+            light.disable()
+            
+            
+            
+            case obj_data['light_type']
+            when 'POINT'
+              # point light
+              light.setPointLight()
+            when 'SUN'
+              # directional light
+              light.setDirectional()
+              
+              # (orientation is on the opposite side of the sphere, relative to what blender expects)
+              
+            when 'SPOT'
+              # spotlight
+              size_rad = obj_data['size'][1]
+              size_deg = size_rad / (2*Math::PI) * 360
+              light.setSpotlight(size_deg, 0) # requires 2 args
+              # float spotCutOff=45.f, float exponent=0.f
+            when 'AREA'
+              width  = obj_data['size_x'][1]
+              height = obj_data['size_y'][1]
+              light.setAreaLight(width, height)
+            end
+            
+            # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
+            color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])
+            # light.diffuse_color  = color
+            # # light.diffuse_color  = RubyOF::FloatColor.hex_alpha(0xffffff, 0xff)
+            # light.specular_color = RubyOF::FloatColor.hex_alpha(0xff0000, 0xff)
+            
+            
+            white = RubyOF::FloatColor.rgb([1, 1, 1])
+            
+            # // Point lights emit light in all directions //
+            # // set the diffuse color, color reflected from the light source //
+            light.diffuse_color = color
+            
+            # // specular color, the highlight/shininess color //
+            light.specular_color = white
+            
+            
+            
+            
+            
+          end
+        end
+        
+        
       end
-      
     end
+      
+      # TODO: need to update python code to match new data format
+      
+    
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0;
+    puts "time - parse data: #{dt} us"
+    
+    
   end
   
   
@@ -554,7 +930,7 @@ class BlenderSync
     # if @pid_query != pid
       # @pid_query = pid
       blender_pos = find_window_position("Blender",   blender_pid)
-      rubyof_pos  = find_window_position("grapevine", Process.pid)
+      rubyof_pos  = find_window_position("RubyOF blender integration", Process.pid)
       
       
       # 
@@ -595,7 +971,7 @@ class BlenderSync
     # 
     
     wm_ids = 
-      `xwininfo -root -tree | grep #{query_title_string}`.each_line
+      `xwininfo -root -tree | grep '#{query_title_string}'`.each_line
       .collect{ |line|
         # 0x6e00002 "Blender* [/home/...]": ("Blender" "Blender")  2544x1303+0+0  +206+95
         line.split.first
@@ -663,6 +1039,7 @@ class Core
     
     
     @first_update = true
+    @first_draw = true
     @mouse = CP::Vec2.new(0,0)
     
     
@@ -730,65 +1107,22 @@ class Core
     @entities = {
       'viewport_camera' => CustomCamera.new,
       
-      'Cube'  => BlenderCube.new,
-      'Light' => RubyOF::Light.new
+      'Light' => BlenderLight.new
     }
     
-    @sync = BlenderSync.new(@w, @entities)
+    @meshes = Hash.new
     
     
-    @camera_settings_file = PROJECT_DIR/'bin'/'data'/'viewport_camera.yaml'
-    if @camera_settings_file.exist?
-      puts "puts loading camera data"
-      camera_data = YAML.load_file @camera_settings_file
+    @sync = BlenderSync.new(@w, @entities, @meshes)
+    
+    
+    @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
+    if @world_save_file.exist?
+      puts "loading 3D graphics data..."
+      camera_data = YAML.load_file @world_save_file
+      puts "load complete!"
       p camera_data
       
-      # camera_data1 = YAML.load_file @camera_settings_file
-      # camera_data2 = YAML.load_file @camera_settings_file
-      
-      
-      # d1 = camera_data1[0]
-      # d2 = camera_data2[0]
-      
-      # d1['view_perspective'] = 'ORTHO' # works, kinda
-      # d2['view_perspective'] = 'PERSP' # doesn't work
-      
-      # camera_data = [
-      #   d2
-      # ]
-      
-      # components of orientation quaternion were getting scrambled
-      # - correct data, but components were in the wrong order.
-      # - why??? how???
-      
-      
-      # # YAML data original
-      # camera_data = [{"type"=>"viewport_camera", "view_perspective"=>"PERSP", "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], "fov"=>["deg", 43.009002685546875], "ortho_scale"=>["factor", 1], "near_clip"=>["m", 0.10000000149011612], "far_clip"=>["m", 1000.0]}]
-
-      # # YAML data edited
-      # camera_data = [{"type"=>"viewport_camera", 
-      #   "rotation"=>["Quat", 0.5499128103256226, 0.0524519681930542, 0.058347396552562714, 0.8315287828445435], # original YAML data
-      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], # transplant from JSON
-      #   "position"=>["Vec3", 1.3778866529464722, -7.623011112213135, 2.938840866088867], 
-      #   "fov"=>["deg", 43.009002685546875], 
-      #   "near_clip"=>["m", 0.10000000149011612], 
-      #   "far_clip"=>["m", 1000.0], 
-      #   "ortho_scale"=>["factor", 1], 
-      #   "view_perspective"=>"PERSP"
-      #   }]
-      
-      
-      # # JSON data
-      # camera_data = [{"type"=>"viewport_camera", 
-      #   "rotation"=>["Quat", 0.8091009259223938, 0.5870651006698608, -0.010769182816147804, 0.02437816560268402], 
-      #   "position"=>["Vec3", 0.22299401462078094, -7.953176498413086, 2.278393268585205], 
-      #   "fov"=>["deg", 43.009002685546875], 
-      #   "near_clip"=>["m", 0.10000000149011612], 
-      #   "far_clip"=>["m", 1000.0], 
-      #   "ortho_scale"=>["factor", 69.13003540039062], 
-      #   "view_perspective"=>"PERSP"
-      #   }]
-
       
       @sync.parse_blender_data(camera_data)
       
@@ -822,22 +1156,8 @@ class Core
       RB_SPIKE_PROFILER.disable
     end
     
-    @entities['viewport_camera'].tap do |camera|
-      # if camera.dirty
-        puts "camera dump"
-        entity_data_list = [
-          camera.data_dump
-        ]
-        
-        # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-        # ('CAMERA' not yet supported)
-        # ('ORTHO' support currently rather poor)
-        
-        
-        dump_yaml entity_data_list => @camera_settings_file
-      # end
-    end
     
+    save_world_state()
     
   end
   
@@ -849,12 +1169,15 @@ class Core
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
       self.ensure()
+      
+      # Save world on successful reload without crash,
+      # to prevent discontinuities. Otherwise, you would
+      # need to manually refresh the Blender viewport
+      # just to see the same state that you had before reload.
+      save_world_state()
     end
     
     @crash_detected = false
-    
-    @shader_files = nil
-    @shaderIsCorrect = nil
     
     @update_scheduler = nil
     
@@ -869,7 +1192,33 @@ class Core
   def ensure
     puts "core: ensure"
     
-    @sync.stop
+    # Some errors may prevent sync object from being initialized.
+    # In that case, you can get a double-crash if you try to run
+    # BlenderSync#stop.
+    @sync.stop unless @sync.nil?
+  end
+  
+  
+  def save_world_state
+    # 
+    # save 3D graphics data to file
+    # 
+    
+    puts "saving world to file.."
+    entity_data_list = 
+      @entities.to_a.collect{ |key, val|
+        val.data_dump
+      }
+    
+    
+    # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
+    # ('CAMERA' not yet supported)
+    # ('ORTHO' support currently rather poor)
+    
+    
+    # TODO: start saving to disk again once the mesh data exchange is finalized
+    # dump_yaml entity_data_list => @world_save_file
+    puts "world saved!"
   end
   
   
@@ -905,87 +1254,6 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
-    scheduler.section name: "shaders", budget: msec(1.5)
-      # puts "shaders" if Scheduler::DEBUG
-      
-      # # liveGLSL.foo "char_display" do |path_to_shader|
-      #   # @display.reload_shader
-      # # end
-      
-      
-      # # prototype possible smarter live-loading system for GLSL shaders
-      
-      
-      # bg_shader_name = "char_display_bg"
-      # fg_shader_name = "char_display"
-      
-      # @shader_files ||= [
-      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.vert",
-      #   PROJECT_DIR/"bin/data/#{bg_shader_name}.frag",
-      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.vert",
-      #   PROJECT_DIR/"bin/data/#{fg_shader_name}.frag"
-      # ]
-      
-      # @shaderIsCorrect ||= nil # NOTE: value manually reset in #on_reload
-      
-      # # load shader if it has never been loaded before, or if the files have been updated
-      # if @shaderIsCorrect.nil? || @shader_files.any?{|f| @shader_timestamp.nil? or f.mtime > @shader_timestamp }
-      #   loaded = @display.load_shaders(bg_shader_name, fg_shader_name)
-        
-        
-        
-      #   puts "load code: #{loaded}"
-      #   # ^ apparently the boolean is still true when the shader is loaded with an error???
-        
-      #   puts "loaded? : #{@display.fg_shader_loaded?}"
-      #   # ^ this doesn't work either
-        
-      #   # puts "loaded? : #{@display.bg_shader_loaded?}"
-        
-        
-        
-      #   # This is a long-standing issue, open since 2015:
-        
-      #   # https://forum.openframeworks.cc/t/identifying-when-ofshader-hasnt-linked/30626
-      #   # https://github.com/openframeworks/openFrameworks/pull/3734
-        
-      #   # (the Ruby code I have here is still better than the naieve code, because it prevents errors from flooding the terminal, but it would be great to detect if the shader is actually correct or not)
-        
-        
-      #   if loaded
-      #     case @shaderIsCorrect
-      #     when true
-      #       # good -> good
-      #       puts "GLSL: still good"
-      #     when false
-      #       # bad -> good
-      #       puts "GLSL: fixed!"
-      #     when nil
-      #       # nothing -> good
-      #       puts "GLSL: shader loaded"
-      #     end
-          
-      #     @shaderIsCorrect = true
-      #   else
-      #     case @shaderIsCorrect
-      #     when true
-      #       # good -> bad
-      #       puts "GLSL: something broke"
-      #     when false
-      #       # bad -> bad
-      #       puts "GLSL: still broken..."
-      #     when nil
-      #       # nothing -> bad
-      #       puts "GLSL: could not load shader"
-      #     end
-          
-      #     @shaderIsCorrect = false;
-      #   end
-          
-        
-      #   @shader_timestamp = Time.now
-      # end
-    
     
     if @debugging
       
@@ -1009,9 +1277,8 @@ class Core
       
     end
     
-    scheduler.section name: "cube ", budget: msec(1.0)
-      # puts "set cube mesh"
-      # raise
+    scheduler.section name: "sync ", budget: msec(5.0)
+      @sync.update
     
     
     scheduler.section name: "end", budget: msec(0.1)
@@ -1096,50 +1363,290 @@ class Core
     
     
     
-    c = RubyOF::Color.hex_alpha( 0xf6bfff, 0xff )
+    # c = RubyOF::FloatColor.hex_alpha( 0xf6bfff, 0xff )
     
     
     
-    # @camera.lookAt(GLM::Vec3.new(0, 0, 0))
-    
-    # @camera.fov = 39.6
-    
-    
-    @sync.update
-    
-    
-    # p @entities
-    
-    
-    @entities['Light']
-    
-    
-    @entities['Light'].setPointLight()
-    @entities['Light'].position = GLM::Vec3.new(4, 1, 6)
     
     
     
-    @entities['Cube'].generate_mesh
-    
-    # raise "test error"
-    
-    
+    light_pos = @entities['Light'].position
     
     
     @entities['viewport_camera'].begin
-    # puts @entities['viewport_camera'].getProjectionMatrix
     
-    
-      @entities['Light'].enable
-        
-        @entities['Cube'].node.transformGL()
-        @entities['Cube'].mesh.draw()
-        @entities['Cube'].node.restoreTransformGL()
       
-      @entities['Light'].disable
-    
+      # // 
+      # // my custom code
+      # // 
+      
+      
+      # // lets make a sphere with more resolution than the default //
+      # // default is 20 //
+      
+      if @first_draw
+        # ofBackground(10, 10, 10, 255);
+        # // turn on smooth lighting //
+        ofSetSmoothLighting(true)
+        
+        ofSetSphereResolution(32)
+        
+        
+        
+        @mat1 ||= RubyOF::Material.new
+        # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
+        @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+        # // shininess is a value between 0 - 128, 128 being the most shiny //
+        @mat1.shininess = 64
+        
+        
+        
+        @mat2 ||= RubyOF::Material.new
+        # ^ update color of this material every time the light color changes
+        #   not just on the first frame
+        #   (creating the material is the expensive part anyway)
+        
+        
+        
+        @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
+        @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+        @mat_instanced.shininess = 64
+        
+        
+        @shader_timestamp = nil
+        
+        shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
+        @vert_shader_path = shader_src_dir/"phong_instanced.vert"
+        @frag_shader_path = shader_src_dir/"phong.frag"
+        
+        
+        
+        
+        @first_draw = false
+        
+      end
+      
+      
+      # load shaders if they have never been loaded before,
+      # or if the files have been updated
+      if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
+        
+        
+        vert_shader = File.readlines(@vert_shader_path).join("\n")
+        frag_shader = File.readlines(@frag_shader_path).join("\n")
+        
+        @mat_instanced.setVertexShaderSource vert_shader
+        @mat_instanced.setFragmentShaderSource frag_shader
+        
+        
+        @shader_timestamp = Time.now
+        
+        puts "shader reloaded"
+      end
+      
+      
+      
+      light_color = @entities['Light'].diffuse_color
+      @mat2.emissive_color = light_color
+      
+      
+      # light_pos = GLM::Vec3.new(4,-5,3);
+      # cube_pos = GLM::Vec3.new(0,0,0);
+      
+      
+      ofEnableDepthTest()
+        @entities['Light'].position = light_pos
+        
+        # // enable lighting //
+        ofEnableLighting()
+        # // the position of the light must be updated every frame,
+        # // call enable() so that it can update itself //
+        @entities['Light'].enable()
+        
+          # // render objects in world
+            
+          batching = 
+            @entities.values
+            .select{|x| x.is_a? BlenderMesh }
+            .group_by{|x| x.mesh }
+          
+          # p batching.collect{|k,v|  [k.class, v.size]}
+          
+          
+          
+          batching.each do |mesh_data, mesh_objs|
+            
+            # mesh_obj.mesh.generate_normals()
+            # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
+            
+            
+            if mesh_objs.size > 1
+              # draw instanced
+              
+              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
+              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
+              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
+              
+                
+                
+              # # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
+              
+              # @mat_instanced.begin()
+              #   mesh_objs.each do |mesh_obj|
+              #     mesh_obj.node.transformGL()
+              #     mesh_data.draw()
+              #     mesh_obj.node.restoreTransformGL()
+              #   end
+              # @mat_instanced.end()
+              
+              
+              # # TODO: bind Vbo#setAttributeData()
+              # # TODO: bind Node#getLocalTransforMatrix
+              # # TODO: bind Node#getGlobalTransformMatrix
+              #     obj.node.position
+              
+              
+                
+              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
+              #   # 
+              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
+
+              # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
+              
+              
+              
+              
+              # 
+              # v4 - translation + z-rot, stored in texture
+              # 
+              
+              @instance_data ||= InstancingBuffer.new
+              
+              
+              # collect up all the transforms
+              positions = 
+                mesh_objs.collect do |mesh_obj|
+                  mesh_obj.node.position
+                end
+              
+              
+              # raise exception current texture size is too small
+              # to hold packed position information.
+              max_instances = @instance_data.max_instances
+              
+              if positions.size > max_instances
+                msg = [
+                  "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
+                  "Current maximum: #{max_instances}",
+                  "Instances requested: #{positions.size}"
+                ]
+                
+                raise msg.join("\n")
+              end
+              
+              # pack into image -> texture (which will be passed to shader)
+              @instance_data.pack_positions(positions)
+              
+              # # 
+              # # Option 1
+              # # more manual
+              # # 
+              
+              # shader.setUniformTexture("position_tex", tex, 1)
+              #   # TODO: bind this fx (polymorphic)
+              #   # void ofShader::setUniformTexture(const string & name, const ofTexture& tex, int textureLocation)
+              # tex.bind(1) # not the default slot
+              
+              # tex.unbind(1)
+              
+              
+              
+              # 
+              # Option 2
+              # associate texture with material
+              # using stuff already declared by material
+              # 
+              @mat_instanced.setCustomUniformTexture(
+                "position_tex", @instance_data.texture, 1
+              )
+              
+              @mat_instanced.setInstanceMagnitudeScale(
+                InstancingBuffer::FLOAT_MAX
+              )
+              
+              
+              # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+              
+              
+              @mat_instanced.begin()
+              
+              # draw all the instances using one draw call
+              mesh_data.draw_instanced(mesh_objs.size)
+              
+              @mat_instanced.end()
+            else 
+              # draw just a single object
+              
+              mesh_obj = mesh_objs.first
+              
+              @mat1.begin()
+                mesh_obj.node.transformGL()
+                mesh_data.draw()
+                mesh_obj.node.restoreTransformGL()
+              @mat1.end()
+            end
+            
+            # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
+            
+            
+            
+            
+            
+            
+            
+            
+            # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
+            
+            
+            # cube_pos = mesh_obj.node.position
+            # ofPushMatrix()
+            #   mesh_obj.node.transformGL()
+            #   ofDrawBox(0,0,0, 2)
+            #   mesh_obj.node.restoreTransformGL()
+            #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
+            # ofPopMatrix()
+          end
+            
+          
+          
+          # // render the sphere that represents the light
+          @mat2.begin()
+          ofPushMatrix()
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+          ofPopMatrix()
+          @mat2.end()
+        
+        # // turn off lighting //
+        @entities['Light'].disable()
+        ofDisableLighting()
+      ofDisableDepthTest()
     
     @entities['viewport_camera'].end
+    
+    
+    
+    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
+    # (thus, you don't need a separate node to track the position of ofLight)
+    
+    # if @first_update
+    #   # ofEnableDepthTest()
+    #   # @entities['Light'].setup
+      
+      
+    #   # @first_update = false
+    # end
+    
+    
     
     
     # 
@@ -1147,6 +1654,14 @@ class Core
     # 
     
     # @display.draw()
+  end
+  
+  def camera_begin
+    @entities['viewport_camera'].begin
+  end
+  
+  def camera_end
+    @entities['viewport_camera'].end
   end
   
   

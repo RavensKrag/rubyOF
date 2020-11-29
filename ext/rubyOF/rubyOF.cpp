@@ -12,7 +12,7 @@
 #include "GraphicsAdvanced.h"
 #include "Fbo.h"
 #include "TrueTypeFont.h"
-#include "image.h"
+#include "Color.h"
 
 // === Additional OpenFrameworks types
 // #include "ofApp.h"
@@ -32,6 +32,7 @@ void Init_rubyOF()
 	std::cout << "c++: set up module: RubyOF\n";
 	Module rb_mRubyOF = define_module("RubyOF");
 	
+	Init_rubyOF_Color(rb_mRubyOF); // ofColor, ofFloatColor, and ofShortColor
 	
 	Rice::Module rb_mGraphics     = Init_rubyOF_graphics(rb_mRubyOF);    // immediate mode (slow)
 	
@@ -40,12 +41,6 @@ void Init_rubyOF()
 	
 	Rice::Class  rb_cFbo          = Init_rubyOF_fbo(rb_mRubyOF);
 	Rice::Class  rb_cTrueTypeFont = Init_rubyOF_trueTypeFont(rb_mRubyOF);
-	
-	ITP_Tuple itp_tuple = Init_rubyOF_image_texture_pixels(rb_mRubyOF);
-	Rice::Class rb_cImage   = itp_tuple.image;
-	Rice::Class rb_cTexture = itp_tuple.texture;
-	Rice::Class rb_cPixels  = itp_tuple.pixels;
-	
 	
 	
 	
@@ -170,69 +165,6 @@ void Init_rubyOF()
 	
 	
 	
-	// NOTE: There is an interface for specifying colors in HSB space, but they are always stored in RGB space.
-	Data_Type<ofColor> rb_cColor = 
-		define_class_under<ofColor>(rb_mRubyOF, "Color");
-	
-	// typedef void (ofColor::*ofColor_allocWRAP)(int,int,int,int) const;
-	
-	// typedef void (ofColor::*ofColor_draw)(float x, float y) const;
-	// typedef void (ofColor::*ofColor_draw_wh)(float x, float y, float width, float height) const;
-	
-	rb_cColor
-		.define_constructor(Constructor<ofColor>())
-		
-		
-		// WARNING: set_hex does not pack alpha channel
-		//          alpha must be specified as a separate argument
-		.define_method("set_hex",  &ofColor::setHex,
-			(
-				Arg("hexColor"),
-				Arg("alpha") = 255
-			)
-		)
-		.define_method("set_hsb",  &ofColor::setHsb)
-		
-		// WARNING: get_hex does not include alpha
-		.define_method("get_hex",  &ofColor::getHex)
-		.define_method("get_hsb",  &ofColor::getHsb)
-		
-		
-    	// from ofColor.h:
-	    /// Brightness is simply the maximum of the three color components. This
-	    /// method of calculating brightness is used by Photoshop (HSB) and
-	    /// Processing (HSB).  Note that brightness is also called "Value".
-	    // 
-	    /// Lightness is simply the average of the three color components. This
-	    /// method of calculating lightness is used by the Lab and HSL color spaces.
-		
-		
-		// rgb color space manipluation (direct manipulation of the struct)
-		.define_method("r=",  &ofColor_setRed)
-		.define_method("g=",  &ofColor_setGreen)
-		.define_method("b=",  &ofColor_setBlue)
-		.define_method("a=",  &ofColor_setAlpha)
-		
-		.define_method("r",   &ofColor_getRed)
-		.define_method("g",   &ofColor_getGreen)
-		.define_method("b",   &ofColor_getBlue)
-		.define_method("a",   &ofColor_getAlpha)
-		
-		// hsb color space manipulation (indirect manipulation)
-		.define_method("hue=",         &ofColor::setHue)
-		.define_method("hue_angle=",   &ofColor::setHueAngle)
-		.define_method("saturation=",  &ofColor::setSaturation)
-		.define_method("brightness=",  &ofColor::setBrightness)
-		
-		.define_method("hue",          &ofColor::getHue)
-		.define_method("hue_angle",    &ofColor::getHueAngle)
-		.define_method("saturation",   &ofColor::getSaturation)
-		.define_method("brightness",   &ofColor::getBrightness)
-		.define_method("lightness",    &ofColor::getLightness)
-	;
-	
-	
-	
  //    /// \brief Set an ofColor_ by using channel values.
  //    ///
  //    /// When modifying an instance of ofColor_ the channel values must fall
@@ -264,36 +196,5 @@ void Init_rubyOF()
 	;
 }
 
-int  ofColor_getRed(ofColor& color){
-	return color.r;
-}
-
-int  ofColor_getGreen(ofColor& color){
-	return color.g;
-}
-
-int  ofColor_getBlue(ofColor& color){
-	return color.b;
-}
-
-int  ofColor_getAlpha(ofColor& color){
-	return color.a;
-}
-
-void ofColor_setRed(ofColor& color, int value){
-	color.r = value;
-}
-
-void ofColor_setGreen(ofColor& color, int value){
-	color.g = value;
-}
-
-void ofColor_setBlue(ofColor& color, int value){
-	color.b = value;
-}
-
-void ofColor_setAlpha(ofColor& color, int value){
-	color.a = value;
-}
 
 // VALUE klass = rb_define_class_under(outer, "Window", rb_cObject);

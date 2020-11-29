@@ -17,16 +17,3 @@
 
 
 bool ofImage_load(ofImage& image, const std::string& filename);
-
-
-
-int  ofColor_getRed(ofColor& color);
-int  ofColor_getGreen(ofColor& color);
-int  ofColor_getBlue(ofColor& color);
-int  ofColor_getAlpha(ofColor& color);
-
-void ofColor_setRed(ofColor& color, int value);
-void ofColor_setGreen(ofColor& color, int value);
-void ofColor_setBlue(ofColor& color, int value);
-void ofColor_setAlpha(ofColor& color, int value);
-

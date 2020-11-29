@@ -45,6 +45,124 @@ int cpp_callback(int x) {
 
 
 
+void generate_mesh(ofMesh& mesh, Rice::Array normals, 
+	                              Rice::Array verts, 
+	                              Rice::Array tris)
+{
+	
+	// 
+	// ruby prototype:
+	// 
+	
+	// @normals.each do |tri|
+	//   tri.each do |vert|
+	//     @mesh.addNormal(GLM::Vec3.new(*vert))
+	//   end
+	// end
+
+	// @tris.each do |vert_idxs|
+	//   vert_coords = vert_idxs.map{|i|  @verts[i]  }
+
+	//   vert_coords.each do |x,y,z|
+	//     @mesh.addVertex(GLM::Vec3.new(x,y,z))
+	//   end
+	// end
+	
+	// 
+	// python exporter:
+	// 
+	 // normal_data = [ [[val for val in vert] 
+	 //                 for vert in tri.split_normals]
+	 //                 for tri in mesh.loop_triangles ]
+	 	 
+	 // vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
+	 
+	 // index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+	
+	
+	// initialize C++ memory
+	
+	float* norm_ptr = new float[normals.size()];
+	float* vert_ptr = new float[verts.size()];;
+	int*   idx_ptr  = new int[tris.size()];;
+	
+	
+	// copy ruby data over to C++ memory
+	
+	int idx;
+	
+	idx = 0;
+	for(auto aI = normals.begin(); aI != normals.end(); ++aI){
+		norm_ptr[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	idx = 0;
+	for(auto aI = verts.begin(); aI != verts.end(); ++aI){
+		vert_ptr[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	idx = 0;
+	for(auto aI = tris.begin(); aI != tris.end(); ++aI){
+		idx_ptr[idx] = from_ruby<int>(*aI);
+		idx++;
+	}
+	
+	
+	
+	
+	
+	// for(int i=0; i<normals.size(); i++){
+	// 	norm_ptr[i] = from_ruby<float>(normals[i]);
+	// }
+	
+	// for(int i=0; i<verts.size(); i++){
+	// 	vert_ptr[i] = from_ruby<float>(verts[i]);
+	// }
+	
+	// for(int i=0; i<tris.size(); i++){
+	// 	idx_ptr[i] = from_ruby<int>(tris[i]);
+	// }
+	
+	// operate on C++ memory only using pointer arithmetic
+	
+	int num_tris = tris.size()/3;
+	
+	// for each face
+	int vert_idxs[3];
+	for(int i=0; i<num_tris; i++){
+		vert_idxs[0] = idx_ptr[3*i + 0];
+		vert_idxs[1] = idx_ptr[3*i + 1];
+		vert_idxs[2] = idx_ptr[3*i + 2];
+		
+		// for each of the 3 verts in the face (all faces are triangles)
+		for(int j=0; j<3; j++){
+			int vert_idx = vert_idxs[j];
+			
+			
+			float v_val_x = vert_ptr[3*vert_idx + 0];
+			float v_val_y = vert_ptr[3*vert_idx + 1];
+			float v_val_z = vert_ptr[3*vert_idx + 2];
+			
+			float n_val_x = norm_ptr[9*i+3*j + 0];
+			float n_val_y = norm_ptr[9*i+3*j + 1];
+			float n_val_z = norm_ptr[9*i+3*j + 2];
+			
+			mesh.addVertex(glm::vec3(v_val_x, v_val_y, v_val_z));
+			mesh.addNormal(glm::vec3(n_val_x, n_val_y, n_val_z));
+		}
+		
+		
+	}
+	
+	
+	delete norm_ptr;
+	delete vert_ptr;
+	delete idx_ptr;
+}
+
+
 
 
 void render_material_editor(
@@ -817,6 +935,81 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
+class InstancingBuffer{
+private:
+	ofPixels_<float> mPixels;
+	ofTexture mTexture;
+	
+	int width, height;
+	
+public:
+	// InstancingBuffer(){
+		
+	// }
+	
+	// ~InstancingBuffer(){
+	// 	delete _textGrid;
+	// }
+	
+	void setup(){
+		width  = 256;
+		height = 256;
+		// mPixels.allocate(width, height);
+		
+		// ofTexture.setTextureWrap();
+		// ofTexture.setTextureMinMagFilter();
+	}
+	
+	void packPositions(){
+		
+	}
+	
+	void setTextureOnMaterial(ofMaterial &mat){
+		
+	}
+};
+
+
+
+
+
+
+
+#include "ofxInstancingMaterial.h"
+
+void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofFloatColor c){
+   // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   mat.setDiffuseColor(c);
+}
+
+
+void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofFloatColor c){
+   // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   mat.setSpecularColor(c);
+}
+
+void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofFloatColor c){
+   // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   mat.setAmbientColor(c);
+}
+
+void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofFloatColor c){
+   // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
+   
+   mat.setEmissiveColor(c);
+}
+
+
+
+
+
+
+
+
+
 
 
 // "main" section
@@ -851,7 +1044,15 @@ void Init_rubyOF_project()
 		
 		
 		// .define_module_function("setColorPickerColor", &setColorPickerColor)
+		
+		
+		
+		.define_module_function("generate_mesh",   &generate_mesh)
 	;
+	
+	
+	
+	
 	
 	
 	
@@ -936,6 +1137,59 @@ void Init_rubyOF_project()
 	
 	
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
+	
+	
+	
+	
+	
+	// NOTE: both ofxInstancingMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxInstancingMaterial AGAIN.
+	
+	Data_Type<ofxInstancingMaterial> rb_c_ofxInstancingMaterial = 
+		define_class_under<ofxInstancingMaterial>(rb_mOFX, "InstancingMaterial");
+	
+	rb_c_ofxInstancingMaterial
+      .define_constructor(Constructor<ofxInstancingMaterial>())
+      
+      .define_method("begin", &ofxInstancingMaterial::begin)
+      .define_method("end",   &ofxInstancingMaterial::end)
+      
+      .define_method("ambient_color=", &ofxInstancingMaterial__setAmbientColor)
+      .define_method("diffuse_color=", &ofxInstancingMaterial__setDiffuseColor)
+      .define_method("specular_color=",&ofxInstancingMaterial__setSpecularColor)
+      .define_method("emissive_color=",&ofxInstancingMaterial__setEmissiveColor)
+      .define_method("shininess=",     &ofxInstancingMaterial::setShininess)
+      
+      .define_method("ambient_color",  &ofxInstancingMaterial::setAmbientColor)
+      .define_method("diffuse_color",  &ofxInstancingMaterial::getDiffuseColor)
+      .define_method("specular_color", &ofxInstancingMaterial::getSpecularColor)
+      .define_method("emissive_color", &ofxInstancingMaterial::getEmissiveColor)
+      .define_method("shininess",      &ofxInstancingMaterial::getShininess)
+      
+      .define_method("setCustomUniformTexture",
+         static_cast< void (ofxInstancingMaterial::*)
+         (const std::string & name, const ofTexture & value, int textureLocation)
+         >(&ofxInstancingMaterial::setCustomUniformTexture)
+      )
+      
+      .define_method("setInstanceMagnitudeScale", 
+      	&ofxInstancingMaterial::setInstanceMagnitudeScale)
+      .define_method("getInstanceMagnitudeScale", 
+      	&ofxInstancingMaterial::getInstanceMagnitudeScale)
+      
+      
+      .define_method("setVertexShaderSource", 
+      	&ofxInstancingMaterial::setVertexShaderSource)
+      
+      .define_method("setFragmentShaderSource",
+      	&ofxInstancingMaterial::setFragmentShaderSource)
+   ;
+	
+	
+	
+	
+	
+	
+	
 	
 	Data_Type<ofxMidiOut> rb_c_ofxMidiOut =
 		define_class_under<ofxMidiOut>(rb_mOFX, "MidiOut");

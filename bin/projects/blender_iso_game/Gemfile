@@ -16,7 +16,7 @@ gem 'ruby-prof'
 
 
 
-gem 'json',     "~>2.1.0"
+gem 'json',     "~>2.3.1"
 gem 'nokogiri', "~>1.8.4" # prefer nokogiri over wrapping ofXml
 gem 'roo',      "~>2.7.1" # (for loading spreadsheets)
 
