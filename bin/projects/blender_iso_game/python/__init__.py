@@ -58,9 +58,9 @@ class RubyOF(bpy.types.RenderEngine):
     # Init is called whenever a new render engine instance is created. Multiple
     # instances may exist at the same time, for example for a viewport and final
     # render.
-    def __init__(self):        
-        self.scene_data = None
-        self.draw_data = None
+    def __init__(self):
+        self.first_time = True
+        
         self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
         
         
@@ -143,6 +143,7 @@ class RubyOF(bpy.types.RenderEngine):
             print("=> FIFO closed")
             print("-----")
     
+    
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
     # should be read from Blender in the same thread. Typically a render
@@ -155,27 +156,59 @@ class RubyOF(bpy.types.RenderEngine):
         # Get viewport dimensions
         dimensions = region.width, region.height
         print("view update ---")
-        if not self.scene_data:
+        if self.first_time:
             # First time initialization
-            self.scene_data = []
-            first_time = True
-
-            # Loop over all datablocks used in the scene.
-            for datablock in depsgraph.ids:
-                pass
-        else:
-            first_time = False
+            self.first_time = False
             
-            # Test which datablocks changed
-            for update in depsgraph.updates:
-                print("Datablock updated: ", update.id.name)
+            # Loop over all datablocks used in the scene.
+            # for datablock in depsgraph.ids:
+            
+            export_list = []
+            
+            # loop over all objects
+            for instance in depsgraph.object_instances:
+                obj = instance.object
+                
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
+                
+                obj_data['transform'] = self.pack_transform(obj)
+                obj_data['data'] = self.pack_data(obj)
+                    
+                export_list.append(obj_data)
+            
+            t0 = time.time()
+            output_string = json.dumps(export_list)
+            t1 = time.time()
+            dt = (t1 - t0) * 1000
+            print("json encode: ", dt, " msec" )
+            
+            
+            t0 = time.time()
+            # self.outbound_queue.put(output_string)
+            self.fifo_write(output_string)
+            t1 = time.time()
+            dt = (t1 - t0) * 1000
+            print("fifo write: ", dt, " msec" )
+        # -- end first update block
+            
+                    
+                    
+        # else:
+        #     self.first_time = False
+            
+        #     # Test which datablocks changed
+        #     for update in depsgraph.updates:
+        #         print("Datablock updated: ", update.id.name)
 
-            # Test if any material was added, removed or changed.
-            if depsgraph.id_type_updated('MATERIAL'):
-                print("Materials updated")
+        #     # Test if any material was added, removed or changed.
+        #     if depsgraph.id_type_updated('MATERIAL'):
+        #         print("Materials updated")
         
         
-        print("not first time")
+        # print("not first time")
         
         # Test if any material was added, removed or changed.
         if depsgraph.id_type_updated('MATERIAL'):
@@ -205,19 +238,17 @@ class RubyOF(bpy.types.RenderEngine):
                     obj_data['transform'] = self.pack_transform(obj)
                     
                 if update.is_updated_geometry:
-                    print("Geometry updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
+                    print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
                     obj_data['data'] = self.pack_data(obj)
-                    
+                
                 export_list.append(obj_data)
         
         
         # full list of all objects, by name (helps Ruby delete old objects)
         object_list = []
-        if first_time or depsgraph.id_type_updated('OBJECT'):
-            print("obj update detected")
-            for instance in depsgraph.object_instances:
-                obj = instance.object                
-                object_list.append(obj.name_full)
+        for instance in depsgraph.object_instances:
+            obj = instance.object
+            object_list.append(obj.name_full)
         
         # if first_time or depsgraph.id_type_updated('OBJECT'):
         #     print("obj update detected")
