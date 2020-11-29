@@ -1432,10 +1432,6 @@ class Core
       
       # load shaders if they have never been loaded before,
       # or if the files have been updated
-      
-      p [@vert_shader_path, @frag_shader_path].collect{|f| f.mtime > @shader_timestamp } unless @shader_timestamp.nil?
-      
-      
       if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
         
         
