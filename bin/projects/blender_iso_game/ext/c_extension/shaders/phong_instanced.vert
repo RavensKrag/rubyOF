@@ -26,24 +26,39 @@ uniform SAMPLER position_tex;
 
 
 void main (void){
-    float instance_x = gl_InstanceID/256;
-    float instance_y = gl_InstanceID%256;
-    vec2 posTexCoord = vec2(instance_x, instance_y);
+    // float instance_x = gl_InstanceID/256;
+    // float instance_y = gl_InstanceID%256;
+    // vec2 posTexCoord = vec2(instance_x, instance_y);
     
-    vec4 finalPos = position + TEXTURE(position_tex, posTexCoord);
+    // vec4 finalPos = position + TEXTURE(position_tex, posTexCoord);
     
-    vec4 eyePosition = modelViewMatrix * finalPos;
-    vec3 tempNormal = (normalMatrix * normal).xyz;
-    v_transformedNormal = normalize(tempNormal);
-    v_normal = normal.xyz;
-    v_eyePosition = (eyePosition.xyz) / eyePosition.w;
-    //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
-    v_worldPosition = (modelMatrix * finalPos).xyz;
+    // vec4 eyePosition = modelViewMatrix * finalPos;
+    // vec3 tempNormal = (normalMatrix * normal).xyz;
+    // v_transformedNormal = normalize(tempNormal);
+    // v_normal = normal.xyz;
+    // v_eyePosition = (eyePosition.xyz) / eyePosition.w;
+    // //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
+    // v_worldPosition = (finalPos).xyz;
 
-    v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
-    #if HAS_COLOR
-        v_color = color;
-    #endif
+    // v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
+    // #if HAS_COLOR
+    //     v_color = color;
+    // #endif
+    // gl_Position = modelViewProjectionMatrix * finalPos;
+    
+    
+    
+    // v_color = color;
+    
+    // float instance_x = gl_InstanceID/256;
+    // float instance_y = gl_InstanceID%256;
+    // vec2 posTexCoord = vec2(instance_x, instance_y);
+    
+    // vec4 tex_pos = TEXTURE(position_tex, posTexCoord);
+    // // ^ positions likely not encoded correctly in texture.
+    vec4 tex_pos = vec4(6, -13, 0, 1);
+    vec4 finalPos = position + vec4(tex_pos.rgb, 0);
+    
     gl_Position = modelViewProjectionMatrix * finalPos;
 }
 )";
