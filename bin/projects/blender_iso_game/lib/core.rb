@@ -1567,7 +1567,7 @@ class Core
               # using stuff already declared by material
               # 
               @mat_instanced.setCustomUniformTexture(
-                "tex0", @instance_data.texture, 1
+                "position_tex", @instance_data.texture, 1
               )
               
               
