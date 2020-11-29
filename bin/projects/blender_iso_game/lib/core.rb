@@ -463,7 +463,7 @@ class BlenderLight < BlenderObject
 end
 
 
-class MeshInstanceCollectionData
+class InstancingBuffer
   attr_reader :pixels, :texture
   
   def initialize
@@ -481,17 +481,25 @@ class MeshInstanceCollectionData
   end
   
   def pack_positions(positions)
-    positions.each_with_index do |pos, i|
-      x = i / @width
-      y = i % @width
+    # positions.each_with_index do |pos, i|
+    #   x = i / @width
+    #   y = i % @width
       
-      color = RubyOF::Color.rgba([*pos, 0])
-      @pixels.setColor(x,y, color)
-    end
+    #   color = RubyOF::Color.rgba([*pos, 0])
+    #   @pixels.setColor(x,y, color)
+    # end
+    
+    # same logic as above, but need to make sure ofColorFloat
+    RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
+    # TODO: wrap ofColor_<float> because lighting needs that too
+      # (well, presumably everything that touches OpenGL ultimately needs floatig point color)
+    
+    
     
     # _pixels->getColor(x,y);
     # _tex.loadData(_pixels, GL_RGBA);
     @texture.loadData(@pixels)
+    
   end
   
   def max_instances
@@ -1469,7 +1477,7 @@ class Core
               # v4 - translation + z-rot, stored in texture
               # 
               
-              @instance_data ||= MeshInstanceCollectionData.new
+              @instance_data ||= InstancingBuffer.new
               
               
               # collect up all the transforms

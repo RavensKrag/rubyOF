@@ -190,6 +190,7 @@
   "$target": rubyOF/rubyOF
   "$LIBEXT": a
   "$objs":
+  - Color.o
   - Fbo.o
   - Graphics.o
   - GraphicsAdvanced.o
@@ -198,6 +199,7 @@
   - launcher.o
   - rubyOF.o
   "$srcs":
+  - "./Color.cpp"
   - "./Fbo.cpp"
   - "./Graphics.cpp"
   - "./GraphicsAdvanced.cpp"
