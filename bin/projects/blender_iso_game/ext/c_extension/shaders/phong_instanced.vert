@@ -129,7 +129,7 @@ void main (void){
     // 
     // v3.1
     // instancing data texture + lighting, scale magnitude by uniform
-    // ???
+    // PASS
     
     
     vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
