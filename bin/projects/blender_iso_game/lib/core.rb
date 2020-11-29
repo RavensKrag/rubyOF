@@ -485,7 +485,7 @@ class InstancingBuffer
     #   x = i / @width
     #   y = i % @width
       
-    #   color = RubyOF::Color.rgba([*pos, 0])
+    #   color = RubyOF::FloatColor.rgba([*pos, 0])
     #   @pixels.setColor(x,y, color)
     # end
     
@@ -864,14 +864,13 @@ class BlenderSync
             end
             
             # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
-            color_ary = obj_data['color'][1..3].map{|x| (x*0xff).round }
-            color = RubyOF::Color.rgba(color_ary + [255])
+            color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])
             # light.diffuse_color  = color
-            # # light.diffuse_color  = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-            # light.specular_color = RubyOF::Color.hex_alpha(0xff0000, 0xff)
+            # # light.diffuse_color  = RubyOF::FloatColor.hex_alpha(0xffffff, 0xff)
+            # light.specular_color = RubyOF::FloatColor.hex_alpha(0xff0000, 0xff)
             
             
-            white = RubyOF::Color.rgb([255, 255, 255])
+            white = RubyOF::FloatColor.rgb([1, 1, 1])
             
             # // Point lights emit light in all directions //
             # // set the diffuse color, color reflected from the light source //
@@ -1349,7 +1348,7 @@ class Core
     
     
     
-    c = RubyOF::Color.hex_alpha( 0xf6bfff, 0xff )
+    # c = RubyOF::FloatColor.hex_alpha( 0xf6bfff, 0xff )
     
     
     
@@ -1380,8 +1379,8 @@ class Core
         
         
         @mat1 ||= RubyOF::Material.new
-        # @mat1.diffuse_color = RubyOF::Color.rgb([0, 255, 0])
-        @mat1.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
+        # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
+        @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
         # // shininess is a value between 0 - 128, 128 being the most shiny //
         @mat1.shininess = 64
         
@@ -1395,7 +1394,7 @@ class Core
         
         
         @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
-        @mat_instanced.diffuse_color = RubyOF::Color.rgb([255, 255, 255])
+        @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
         @mat_instanced.shininess = 64
         
         
@@ -1588,20 +1587,8 @@ class Core
     
     
     
-    
-    
-    
-    
-    
-    
-    # @entities['Cube'].generate_mesh
-    
-    # # raise "test error"
-    
-    
-    
-    # # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
-    # # (thus, you don't need a separate node to track the position of ofLight)
+    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
+    # (thus, you don't need a separate node to track the position of ofLight)
     
     # if @first_update
     #   # ofEnableDepthTest()
@@ -1611,47 +1598,7 @@ class Core
     #   # @first_update = false
     # end
     
-    # ofEnableDepthTest()
-    # # ofEnableLighting()
-    # @entities['Light'].enable
-    # @entities['viewport_camera'].begin
-    #   # puts @entities['viewport_camera'].getProjectionMatrix
-      
-    #   # @entities['Light'].setDirectional()
-    #   # @entities['Light'].lookAt(@entities['Cube'].node.position)
-        
-    #     # material = RubyOF::Material.new
-    #     # # material.ambient_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-    #     # # material.diffuse_color  = RubyOF::Color.hex_alpha(0xff0000, 0xff)
-    #     # @entities['Cube'].color.tap do |c| 
-    #     #   unless c.nil?
-    #     #     puts c
-    #     #     # material.ambient_color = c
-    #     #     material.diffuse_color = c
-    #     #   end
-    #     # end
-    #     # material.specular_color = RubyOF::Color.hex_alpha(0xffffff, 0xff)
-        
-    #     # # material.begin
-        
-          # @entities['Cube'].node.transformGL()
-          # @entities['Cube'].mesh.draw()
-          # @entities['Cube'].node.restoreTransformGL()
-        
-    #     # material.end
-        
-    #     cube_pos = @entities['Cube'].node.position
-    #     ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-        
-        
-    #     light_pos = @entities['Light'].position
-    #     ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-      
     
-    # @entities['viewport_camera'].end
-    # @entities['Light'].disable
-    # # ofDisableLighting()
-    # ofDisableDepthTest()
     
     
     # 

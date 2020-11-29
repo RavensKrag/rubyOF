@@ -170,33 +170,29 @@ void ofShader__setUniformTexture(ofShader &shader, const string &name, const ofT
 // Material
 // 
 
-void ofMaterial__setDiffuseColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+void ofMaterial__setDiffuseColor(ofMaterial& mat, ofFloatColor& c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setDiffuseColor(c2);
+   mat.setDiffuseColor(c);
 }
 
 
-void ofMaterial__setSpecularColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+void ofMaterial__setSpecularColor(ofMaterial& mat, ofFloatColor& c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setSpecularColor(c2);
+   mat.setSpecularColor(c);
 }
 
-void ofMaterial__setAmbientColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+void ofMaterial__setAmbientColor(ofMaterial& mat, ofFloatColor& c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setAmbientColor(c2);
+   mat.setAmbientColor(c);
 }
 
-void ofMaterial__setEmissiveColor(ofMaterial& mat, ofColor_<unsigned char>& c){
+void ofMaterial__setEmissiveColor(ofMaterial& mat, ofFloatColor& c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setEmissiveColor(c2);
+   mat.setEmissiveColor(c);
 }
 
 
@@ -269,33 +265,26 @@ void ofVboMesh_draw_instanced__cpp(ofVboMesh &mesh, int code, int instances){
    // 
    // src: https://openframeworks.cc/documentation/types/ofColor/#!show_ofColor_
 
-void ofLight__setDiffuseColor(ofLight& light, ofColor_<unsigned char>& c){
+void ofLight__setDiffuseColor(ofLight& light, ofFloatColor c){
    // light.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   light.setDiffuseColor(c2);
+   light.setDiffuseColor(c);
 }
 
-void ofLight__setSpecularColor(ofLight& light, ofColor_<unsigned char>& c){
+void ofLight__setSpecularColor(ofLight& light, ofFloatColor c){
    // light.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   light.setSpecularColor(c2);
+   light.setSpecularColor(c);
 }
 
-void ofLight__setAmbientColor(ofLight& light, ofColor_<unsigned char>& c){
+void ofLight__setAmbientColor(ofLight& light, ofFloatColor c){
    // light.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   light.setAmbientColor(c2);
+   light.setAmbientColor(c);
 }
 
-ofColor_<unsigned char> ofLight__getDiffuseColor(ofLight& light){
-   ofColor_<float> c_float = light.getDiffuseColor();
-   
-   ofColor_<unsigned char> c_char(c_float);
-   
-   return c_char;
+ofFloatColor ofLight__getDiffuseColor(ofLight& light){
+   return light.getDiffuseColor();
 }
 
 

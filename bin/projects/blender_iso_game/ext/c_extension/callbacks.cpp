@@ -977,33 +977,29 @@ public:
 
 #include "ofxInstancingMaterial.h"
 
-void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofFloatColor c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setDiffuseColor(c2);
+   mat.setDiffuseColor(c);
 }
 
 
-void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofFloatColor c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setSpecularColor(c2);
+   mat.setSpecularColor(c);
 }
 
-void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofFloatColor c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setAmbientColor(c2);
+   mat.setAmbientColor(c);
 }
 
-void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofColor_<unsigned char>& c){
+void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofFloatColor c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
-   ofFloatColor c2(c);
-   mat.setEmissiveColor(c2);
+   mat.setEmissiveColor(c);
 }
 
 
