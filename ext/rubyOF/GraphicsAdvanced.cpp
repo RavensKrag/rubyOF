@@ -93,6 +93,7 @@ ofImageLoadSettings_isSeparateCMYK
 
 // 
 // Pixels
+// Pixels_<unsigned char>
 // 
 
 ofColor ofPixels__getColor_xy(ofPixels &pixels, size_t x, size_t y){
@@ -104,6 +105,23 @@ void ofPixels__setColor_xy(ofPixels &pixels, size_t x, size_t y, const ofColor &
 }
 
 void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
+   pixels.setColor(i,color);
+}
+
+// 
+// FloatPixels
+// Pixels_<float>
+// 
+
+ofFloatColor ofFloatPixels__getColor_xy(ofFloatPixels &pixels, size_t x, size_t y){
+   return pixels.getColor(x,y);
+}
+
+void ofFloatPixels__setColor_xy(ofFloatPixels &pixels, size_t x, size_t y, const ofFloatColor &color){
+   pixels.setColor(x,y,color);
+}
+
+void ofFloatPixels__setColor_i(ofFloatPixels &pixels, size_t i, const ofFloatColor &color){
    pixels.setColor(i,color);
 }
 
@@ -471,6 +489,43 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
    
    
    
+   
+   Data_Type<ofFloatPixels> rb_cFloatPixels = 
+      define_class_under<ofFloatPixels>(rb_mRubyOF, "FloatPixels");
+   
+   rb_cFloatPixels
+      .define_constructor(Constructor<ofFloatPixels>())
+      .define_method("allocate",
+         static_cast< void (ofFloatPixels::*)
+         (size_t w, size_t h, ofPixelFormat pixelFormat)
+         >(&ofFloatPixels::allocate),
+         (
+            Arg("width"),
+            Arg("height"),
+            Arg("pixelFormat") = OF_PIXELS_RGBA
+         )
+      )
+      .define_method("crop",          &ofFloatPixels::crop)
+      .define_method("cropTo",        &ofFloatPixels::cropTo)
+      .define_method("getColor_xy",   &ofFloatPixels__getColor_xy)
+      
+      .define_method("setColor_i",    &ofFloatPixels__setColor_i)
+      // ^ I think set_i actually fills an entire channel?
+      //   see ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp:837-840
+      
+      .define_method("setColor_xy",   &ofFloatPixels__setColor_xy)
+      .define_method("getPixelIndex", &ofFloatPixels::getPixelIndex)
+      .define_method("getTotalBytes", &ofFloatPixels::getTotalBytes)
+      
+      .define_method("size",          &ofFloatPixels::size) // total num pixels
+      .define_method("width",         &ofFloatPixels::getWidth)
+      .define_method("height",        &ofFloatPixels::getHeight)
+   ;
+   
+   
+   
+   
+   
    Data_Type<ofTexture> rb_cTexture = 
 		define_class_under<ofTexture>(rb_mRubyOF, "Texture");
    
@@ -504,9 +559,15 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          (ofPixels &pixels) const
          >(&ofTexture::readToPixels)
       )
-      .define_method("loadData",
+      
+      .define_method("loadData_Pixels",
          static_cast< void (ofTexture::*)
          (const ofPixels &pix)
+         >(&ofTexture::loadData)
+      )
+      .define_method("loadData_FloatPixels",
+         static_cast< void (ofTexture::*)
+         (const ofFloatPixels &pix)
          >(&ofTexture::loadData)
       )
       

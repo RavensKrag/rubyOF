@@ -337,6 +337,19 @@ class Pixels
 	end
 end
 
+class FloatPixels
+	# private :setColor_i, :setColor_xy
+	
+	def setColor(x,y, c)
+		setColor_xy(x,y, c)
+	end
+	
+	def []=(i, c)
+		setColor_i(i, c)
+	end
+end
+
+
 class Texture
 	# TODO: clean up the interface for 'draw_wh' and 'draw_pt' bound from C++ layer
 	# TODO: perhaps bind other methods of Texture?
@@ -420,6 +433,17 @@ class Texture
 		
 		
 		setTextureMinMagFilter__cpp(i,j)
+	end
+	
+	
+	private :loadData_Pixels, :loadData_FloatPixels
+	def load_data(px_data)
+		case px_data
+		when Pixels
+			loadData_Pixels(px_data)
+		when FloatPixels
+			loadData_FloatPixels(px_data)
+		end
 	end
 end
 

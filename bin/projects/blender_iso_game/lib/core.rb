@@ -467,7 +467,7 @@ class InstancingBuffer
   attr_reader :pixels, :texture
   
   def initialize
-    @pixels = RubyOF::Pixels.new
+    @pixels = RubyOF::FloatPixels.new
     @texture = RubyOF::Texture.new
     
     @width = 256
@@ -481,16 +481,16 @@ class InstancingBuffer
   end
   
   def pack_positions(positions)
-    # positions.each_with_index do |pos, i|
-    #   x = i / @width
-    #   y = i % @width
+    positions.each_with_index do |pos, i|
+      x = i / @width
+      y = i % @width
       
-    #   color = RubyOF::FloatColor.rgba([*pos, 0])
-    #   @pixels.setColor(x,y, color)
-    # end
+      color = RubyOF::FloatColor.rgba([*pos, 0])
+      @pixels.setColor(x,y, color)
+    end
     
     # same logic as above, but need to make sure ofColorFloat
-    RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
+    # RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
     # TODO: wrap ofColor_<float> because lighting needs that too
       # (well, presumably everything that touches OpenGL ultimately needs floatig point color)
     
@@ -498,7 +498,7 @@ class InstancingBuffer
     
     # _pixels->getColor(x,y);
     # _tex.loadData(_pixels, GL_RGBA);
-    @texture.loadData(@pixels)
+    @texture.load_data(@pixels)
     
   end
   
