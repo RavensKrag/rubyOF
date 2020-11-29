@@ -213,39 +213,39 @@
 
 
     void main (void){
+        vec3 ambient = global_ambient.rgb;
+        vec3 diffuse = vec3(0.0,0.0,0.0);
+        vec3 specular = vec3(0.0,0.0,0.0);
 
-  //       vec3 ambient = global_ambient.rgb;
-  //       vec3 diffuse = vec3(0.0,0.0,0.0);
-  //       vec3 specular = vec3(0.0,0.0,0.0);
+		vec3 transformedNormal = normalize(v_transformedNormal);
 
-		// vec3 transformedNormal = normalize(v_transformedNormal);
+        for( int i = 0; i < MAX_LIGHTS; i++ ){
+            if(lights[i].enabled<0.5) continue;
+            if(lights[i].type<0.5){
+                pointLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
+            }else if(lights[i].type<1.5){
+                directionalLight(lights[i], transformedNormal, ambient, diffuse, specular);
+            }else if(lights[i].type<2.5){
+                spotLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
+            }else{
+                areaLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
+            }
+        }
 
-  //       for( int i = 0; i < MAX_LIGHTS; i++ ){
-  //           if(lights[i].enabled<0.5) continue;
-  //           if(lights[i].type<0.5){
-  //               pointLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
-  //           }else if(lights[i].type<1.5){
-  //               directionalLight(lights[i], transformedNormal, ambient, diffuse, specular);
-  //           }else if(lights[i].type<2.5){
-  //               spotLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
-  //           }else{
-  //               areaLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
-  //           }
-  //       }
-
-  //       ////////////////////////////////////////////////////////////
-  //       // now add the material info
-  //       #if HAS_TEXTURE && !HAS_COLOR
-  //           vec4 tex = TEXTURE(tex0, v_texcoord);
-  //           vec4 localColor = vec4(ambient,1.0) * tex + vec4(diffuse,1.0) * tex + vec4(specular,1.0) * mat_specular + mat_emissive;
-  //       #elif HAS_TEXTURE && HAS_COLOR
-  //           vec4 tex = TEXTURE(tex0, v_texcoord);
-  //           vec4 localColor = vec4(ambient,1.0) * tex * v_color + vec4(diffuse,1.0) * tex * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
-  //       #elif HAS_COLOR
-  //           vec4 localColor = vec4(ambient,1.0) * v_color + vec4(diffuse,1.0) * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
-  //       #else
-  //           vec4 localColor = vec4(ambient,1.0) * mat_ambient + vec4(diffuse,1.0) * mat_diffuse + vec4(specular,1.0) * mat_specular + mat_emissive;
-  //       #endif
-  //       FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
-        FRAG_COLOR = vec4(1,0,0,1);
+        ////////////////////////////////////////////////////////////
+        // now add the material info
+        #if HAS_TEXTURE && !HAS_COLOR
+            vec4 tex = TEXTURE(tex0, v_texcoord);
+            vec4 localColor = vec4(ambient,1.0) * tex + vec4(diffuse,1.0) * tex + vec4(specular,1.0) * mat_specular + mat_emissive;
+        #elif HAS_TEXTURE && HAS_COLOR
+            vec4 tex = TEXTURE(tex0, v_texcoord);
+            vec4 localColor = vec4(ambient,1.0) * tex * v_color + vec4(diffuse,1.0) * tex * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
+        #elif HAS_COLOR
+            vec4 localColor = vec4(ambient,1.0) * v_color + vec4(diffuse,1.0) * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
+        #else
+            vec4 localColor = vec4(ambient,1.0) * mat_ambient + vec4(diffuse,1.0) * mat_diffuse + vec4(specular,1.0) * mat_specular + mat_emissive;
+        #endif
+        FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
+        
+        // FRAG_COLOR = vec4(1,0,0,1);
     }
