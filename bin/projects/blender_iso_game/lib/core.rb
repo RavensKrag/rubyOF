@@ -480,12 +480,30 @@ class InstancingBuffer
     @texture.filter_mode(:min => :nearest, :mag => :nearest) 
   end
   
+  FLOAT_MAX = 100
+  # https://en.wikipedia.org/wiki/Single-precision_floating-point_format#IEEE_754_single-precision_binary_floating-point_format:_binary32
+  # 
+  # The true float max is a little bigger, but this is enough.
+  # This also allows for using one max for both positive and negative.
   def pack_positions(positions)
     positions.each_with_index do |pos, i|
       x = i / @width
       y = i % @width
       
-      color = RubyOF::FloatColor.rgba([*pos, 0])
+      
+      # arr = pos.to_a
+      arr = [1,0,0]
+      
+      magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
+      magnitude = Math.sqrt(magnitude_sq)
+      
+      posNorm = arr.map{|i| i / magnitude }
+      posNormShifted = posNorm.map{|i| (i+1)/2 }
+      
+      magnitude_normalized = magnitude / FLOAT_MAX
+      
+      color = RubyOF::FloatColor.rgba([*posNormShifted, magnitude_normalized])
+      # p color.to_a
       @pixels.setColor(x,y, color)
     end
     
@@ -1482,7 +1500,7 @@ class Core
               # collect up all the transforms
               positions = 
                 mesh_objs.collect do |mesh_obj|
-                  mesh_obj.node.position.to_a
+                  mesh_obj.node.position
                 end
               
               

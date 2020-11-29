@@ -48,16 +48,64 @@ void main (void){
     
     
     
+    
+    // 
+    // v4
+    // position cubes in a grid, specified by shader only
+    // PASS
+    // 
+    
     // v_color = color;
+    float scale = 4;
+    
+    vec2 posTexCoord = vec2(gl_InstanceID/8, gl_InstanceID%8);
+    
+    vec4 finalPos = position + vec4((posTexCoord*scale).xy, 0, 0);
+    // ^ positions likely not encoded correctly in texture.
+    
+    
+    
+    
+    
+    // // 
+    // // v3
+    // // position cubes in a line, specified by shader only
+    // // PASS
+    // // 
+    
+    // // v_color = color;
+    // float scale = 4;
+    
+    // vec2 posTexCoord = vec2(gl_InstanceID, 0);
+    
+    // vec4 finalPos = position + vec4((posTexCoord*scale).xy, 0, 0);
+    // // ^ positions likely not encoded correctly in texture.
+    
+    
+    // // 
+    // // v2
+    // // FAIL 
+    // //
+    
+    // // v_color = color;
+    // float scale = 50;
     
     // float instance_x = gl_InstanceID/256;
     // float instance_y = gl_InstanceID%256;
     // vec2 posTexCoord = vec2(instance_x, instance_y);
     
-    // vec4 tex_pos = TEXTURE(position_tex, posTexCoord);
+    // vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
+    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
+    // vec4 finalPos = position + vec4(dirVec*scale, 0);
     // // ^ positions likely not encoded correctly in texture.
-    vec4 tex_pos = vec4(6, -13, 0, 1);
-    vec4 finalPos = position + vec4(tex_pos.rgb, 0);
+    
+    
+    // 
+    // v1
+    // 
+    
+    // vec4 texPos = vec4(6, -13, 0, 1);
+    // vec4 finalPos = position + vec4(texPos.rgb, 0);
     
     gl_Position = modelViewProjectionMatrix * finalPos;
 }

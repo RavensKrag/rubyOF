@@ -248,6 +248,6 @@ static const string fragmentShader = R"(
   //           vec4 localColor = vec4(ambient,1.0) * mat_ambient + vec4(diffuse,1.0) * mat_diffuse + vec4(specular,1.0) * mat_specular + mat_emissive;
   //       #endif
   //       FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
-        FRAG_COLOR = vec4(1,1,1,1);
+        FRAG_COLOR = vec4(1,0,0,1);
     }
 )";
