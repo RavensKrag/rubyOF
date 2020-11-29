@@ -480,9 +480,10 @@ class InstancingBuffer
     @texture.filter_mode(:min => :nearest, :mag => :nearest)
   end
   
-  FLOAT_MAX = 100
+  FLOAT_MAX = 1e10
   # https://en.wikipedia.org/wiki/Single-precision_floating-point_format#IEEE_754_single-precision_binary_floating-point_format:_binary32
   # 
+  # I want to use 1e37 for this, or the nearest power of two.
   # The true float max is a little bigger, but this is enough.
   # This also allows for using one max for both positive and negative.
   def pack_positions(positions)
@@ -497,12 +498,23 @@ class InstancingBuffer
       magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
       magnitude = Math.sqrt(magnitude_sq)
       
-      posNorm = arr.map{|i| i / magnitude }
-      posNormShifted = posNorm.map{|i| (i+1)/2 }
+      data = 
+        if magnitude == 0
+          posNorm = [0,0,0]
+          posNormShifted = posNorm.map{|i| (i+1)/2 }
+          
+          [*posNormShifted, 0]
+        else
+          posNorm = arr.map{|i| i / magnitude }
+          posNormShifted = posNorm.map{|i| (i+1)/2 }
+          
+          magnitude_normalized = magnitude / FLOAT_MAX
+          
+          
+          [*posNormShifted, magnitude_normalized]
+        end
       
-      magnitude_normalized = magnitude / FLOAT_MAX
-      
-      color = RubyOF::FloatColor.rgba([*posNormShifted, magnitude_normalized])
+      color = RubyOF::FloatColor.rgba(data)
       # p color.to_a
       @pixels.setColor(x,y, color)
     end
