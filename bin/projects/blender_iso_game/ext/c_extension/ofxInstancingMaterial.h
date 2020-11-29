@@ -168,9 +168,16 @@ public:
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	
+	void setVertexShaderSource(const std::string &source);
+	void setFragmentShaderSource(const std::string &source);
+
 
 
 private:
+	std::string vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const;
+	std::string fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const;
+
+	
 	void initShaders(ofGLProgrammableRenderer & renderer) const;
 	const ofShader & getShader(int textureTarget, bool geometryHasColor, ofGLProgrammableRenderer & renderer) const;
 	void updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const;
@@ -195,8 +202,8 @@ private:
 
 	mutable std::map<ofGLProgrammableRenderer*,std::shared_ptr<Shaders>> shaders;
 	static std::map<ofGLProgrammableRenderer*, std::map<std::string,std::weak_ptr<Shaders>>> shadersMap;
-	static std::string vertexShader;
-	static std::string fragmentShader;
+	std::string vertexShader;
+	std::string fragmentShader;
 	
 	
 	

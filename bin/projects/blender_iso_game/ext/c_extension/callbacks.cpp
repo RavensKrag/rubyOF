@@ -1170,6 +1170,13 @@ void Init_rubyOF_project()
          (const std::string & name, const ofTexture & value, int textureLocation)
          >(&ofxInstancingMaterial::setCustomUniformTexture)
       )
+      
+      
+      .define_method("setVertexShaderSource", 
+      	&ofxInstancingMaterial::setVertexShaderSource)
+      
+      .define_method("setFragmentShaderSource",
+      	&ofxInstancingMaterial::setFragmentShaderSource)
    ;
 	
 	

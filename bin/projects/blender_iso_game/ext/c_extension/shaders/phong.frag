@@ -1,4 +1,3 @@
-static const string fragmentShader = R"(
     IN vec2 v_texcoord; // pass the texCoord if needed
     IN vec3 v_normal;
     IN vec3 v_transformedNormal;
@@ -250,4 +249,3 @@ static const string fragmentShader = R"(
   //       FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         FRAG_COLOR = vec4(1,0,0,1);
     }
-)";

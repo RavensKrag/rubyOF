@@ -476,8 +476,8 @@ class InstancingBuffer
     
     @texture.wrap_mode(:vertical => :clamp_to_edge,
                 :horizontal => :clamp_to_edge)
-      
-    @texture.filter_mode(:min => :nearest, :mag => :nearest) 
+    
+    @texture.filter_mode(:min => :nearest, :mag => :nearest)
   end
   
   FLOAT_MAX = 100
@@ -491,8 +491,8 @@ class InstancingBuffer
       y = i % @width
       
       
-      # arr = pos.to_a
-      arr = [1,0,0]
+      arr = pos.to_a
+      # arr = [1,0,0]
       
       magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
       magnitude = Math.sqrt(magnitude_sq)
@@ -1416,9 +1416,40 @@ class Core
         @mat_instanced.shininess = 64
         
         
+        @shader_timestamp = nil
+        
+        shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
+        @vert_shader_path = shader_src_dir/"phong_instanced.vert"
+        @frag_shader_path = shader_src_dir/"phong.frag"
+        
+        
+        
+        
         @first_draw = false
         
       end
+      
+      
+      # load shaders if they have never been loaded before,
+      # or if the files have been updated
+      
+      p [@vert_shader_path, @frag_shader_path].collect{|f| f.mtime > @shader_timestamp } unless @shader_timestamp.nil?
+      
+      
+      if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
+        
+        
+        vert_shader = File.readlines(@vert_shader_path).join("\n")
+        frag_shader = File.readlines(@frag_shader_path).join("\n")
+        
+        @mat_instanced.setVertexShaderSource vert_shader
+        @mat_instanced.setFragmentShaderSource frag_shader
+        
+        
+        @shader_timestamp = Time.now
+      end
+      
+      
       
       light_color = @entities['Light'].diffuse_color
       @mat2.emissive_color = light_color

@@ -7,10 +7,6 @@ using namespace std;
 
 std::map<ofGLProgrammableRenderer*, std::map<std::string, std::weak_ptr<ofxInstancingMaterial::Shaders>>> ofxInstancingMaterial::shadersMap;
 
-namespace{
-string vertexSource(string defaultHeader, int maxLights, bool hasTexture, bool hasColor);
-string fragmentSource(string defaultHeader, string customUniforms, string postFragment, int maxLights, bool hasTexture, bool hasColor);
-}
 
 
 ofxInstancingMaterial::ofxInstancingMaterial() {
@@ -295,42 +291,50 @@ void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, in
 }
 
 
+void ofxInstancingMaterial::setVertexShaderSource(const std::string &source){
+    vertexShader = source;
+    shaders.clear();
+}
+
+void ofxInstancingMaterial::setFragmentShaderSource(const std::string &source){
+    fragmentShader = source;
+    shaders.clear();
+}
+
 
 
 
 // #include "shaders/phong.vert"
-#include "shaders/phong_instanced.vert"
-#include "shaders/phong.frag"
+// #include "shaders/phong_instanced.vert"
+// #include "shaders/phong.frag"
 
-namespace{
-    string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor){
-        header += "#define MAX_LIGHTS " + ofToString(max(1,maxLights)) + "\n";
-        if(hasTexture){
-            header += "#define HAS_TEXTURE 1\n";
-		} else {
-			header += "#define HAS_TEXTURE 0\n";
-		}
-        if(hasColor){
-            header += "#define HAS_COLOR 1\n";
-		} else {
-			header += "#define HAS_COLOR 0\n";
-		}
-        return header;
+string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor){
+    header += "#define MAX_LIGHTS " + ofToString(max(1,maxLights)) + "\n";
+    if(hasTexture){
+        header += "#define HAS_TEXTURE 1\n";
+	} else {
+		header += "#define HAS_TEXTURE 0\n";
+	}
+    if(hasColor){
+        header += "#define HAS_COLOR 1\n";
+	} else {
+		header += "#define HAS_COLOR 0\n";
+	}
+    return header;
+}
+
+std::string ofxInstancingMaterial::vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const{
+    return shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + vertexShader;
+}
+
+std::string ofxInstancingMaterial::fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const{
+    auto source = fragmentShader;
+    if(postFragment.empty()){
+        postFragment = "vec4 postFragment(vec4 localColor){ return localColor; }";
     }
+	ofStringReplace(source, "%postFragment%", postFragment);
+	ofStringReplace(source, "%custom_uniforms%", customUniforms);
 
-    string vertexSource(string defaultHeader, int maxLights, bool hasTexture, bool hasColor){
-        return shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + vertexShader;
-    }
-
-    string fragmentSource(string defaultHeader, string customUniforms,  string postFragment, int maxLights, bool hasTexture, bool hasColor){
-        auto source = fragmentShader;
-        if(postFragment.empty()){
-            postFragment = "vec4 postFragment(vec4 localColor){ return localColor; }";
-        }
-		ofStringReplace(source, "%postFragment%", postFragment);
-		ofStringReplace(source, "%custom_uniforms%", customUniforms);
-
-        source = shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + source;
-        return source;
-    }
+    source = shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + source;
+    return source;
 }
