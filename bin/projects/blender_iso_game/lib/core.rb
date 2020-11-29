@@ -490,7 +490,7 @@ class InstancingBuffer
       x = i / @width
       y = i % @width
       
-      
+      # puts pos
       arr = pos.to_a
       # arr = [1,0,0]
       
@@ -509,9 +509,6 @@ class InstancingBuffer
     
     # same logic as above, but need to make sure ofColorFloat
     # RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
-    # TODO: wrap ofColor_<float> because lighting needs that too
-      # (well, presumably everything that touches OpenGL ultimately needs floatig point color)
-    
     
     
     # _pixels->getColor(x,y);
@@ -1443,6 +1440,8 @@ class Core
         
         
         @shader_timestamp = Time.now
+        
+        puts "shader reloaded"
       end
       
       
@@ -1568,7 +1567,7 @@ class Core
               # using stuff already declared by material
               # 
               @mat_instanced.setCustomUniformTexture(
-                "position_tex", @instance_data.texture, 1
+                "tex0", @instance_data.texture, 1
               )
               
               

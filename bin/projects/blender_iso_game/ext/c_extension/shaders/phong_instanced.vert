@@ -21,7 +21,19 @@ uniform mat4 textureMatrix;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalMatrix;
 
-uniform SAMPLER position_tex;
+uniform sampler2DRect position_tex;
+// there are two types for textures:
+// sampler2DRect        non-normalized coordinates
+// sampler2D            normalized coordinates
+// 
+// https://forum.openframeworks.cc/t/how-to-bind-a-texture-to-ofvbo-correctly/28143
+// ^ explains differences between these two types,
+//   and how they interact with ofDisableArbTex()
+// 
+// the shader #define macro SAMPLER will switch between the two
+// depending on the OpenFrameworks mode / if there is a texture bound
+// but I think that really only works for the basic first texture.
+// Either way, better to just declare the sampler2DRect type here.
 
 
 void main (void){
@@ -47,6 +59,14 @@ void main (void){
     
     
     
+    // 
+    // test data
+    // 
+    
+    // (3.434, -10.038, 0.255)
+    // [0.6618145108222961, 0.027060022577643394, 0.5119929909706116, 0.10611911863088608]
+
+    
     
     
     // 
@@ -54,14 +74,44 @@ void main (void){
     // try using texture again
     //
     
-    // v_color = color;
-    float scale = 50;
+    // 
+    // direct displacement
+    // WORKS
+    
+    // vec3 displacement = vec3(3.434, -10.038, 0.255); // this works
+    
+    
+    // 
+    // displacement from encoded position
+    // PASS
+    
+    // float scale = 100;
+    
+    // vec4 pos_data = vec4(0.6618145108222961, 0.027060022577643394, 0.5119929909706116, 0.10611911863088608);
+    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
+    // vec3 displacement = dirVec*pos_data.a*scale;
+    
+    
+    // 
+    // displacement from texture data
+    // PASS
+    
+    float scale = 100;
     
     vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
     
     vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
+    // vec4 pos_data = vec4(0,0,0,0); // same as this. currently reading zero!
     vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    vec4 finalPos = position + vec4(dirVec*scale, 0);
+    
+    vec3 displacement = dirVec*pos_data.a*scale;
+    
+    
+    
+    
+    
+    
+    vec4 finalPos = position + vec4(displacement, 0);
     
     
     
