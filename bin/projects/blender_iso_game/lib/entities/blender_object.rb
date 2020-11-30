@@ -17,7 +17,7 @@ class BlenderObject
       'type' => 'MESH',
       'name' =>  @name,
 
-      'transform' => self.pack_transform()
+      'transform' => self.pack_transform(),
       'data' => self.pack_data()
     }
   end

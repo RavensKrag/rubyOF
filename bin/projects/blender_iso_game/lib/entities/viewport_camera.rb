@@ -7,6 +7,8 @@ class ViewportCamera
   include RubyOF::Graphics
   
   def initialize
+    super() # set up state machine
+    
     @name = 'viewport_camera'
     @dirty = false
       # if true, tells system that this datablock has been updated

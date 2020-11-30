@@ -72,7 +72,7 @@ class BlenderMesh < BlenderObject
     raise "ERROR: Can't pack data for an object that was never loaded." if @normal_filepath.nil? or @vert_filepath.nil?
     
     {
-      'mesh_name' => @mesh.name # name of the data, not the object
+      'mesh_name' => @mesh.name, # name of the data, not the object
       
       'verts'  => ['double', @mesh.verts.size,   @normal_filepath],
       'normals'=> ['double', @mesh.normals.size, @vert_filepath],

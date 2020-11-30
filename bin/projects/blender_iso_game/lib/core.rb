@@ -302,11 +302,11 @@ class Core
     # save 3D graphics data to file
     # 
     
-    puts "saving world to file.."
-    entity_data_list = 
-      @entities.to_a.collect{ |key, val|
-        val.data_dump
-      }
+    # puts "saving world to file.."
+    # entity_data_list = 
+    #   @entities.to_a.collect{ |key, val|
+    #     val.data_dump
+    #   }
     
     
     # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
@@ -316,7 +316,7 @@ class Core
     
     # TODO: start saving to disk again once the mesh data exchange is finalized
     # dump_yaml entity_data_list => @world_save_file
-    puts "world saved!"
+    # puts "world saved!"
   end
   
   
