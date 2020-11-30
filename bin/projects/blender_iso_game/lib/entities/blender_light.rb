@@ -59,6 +59,7 @@ class BlenderLight < BlenderObject
   # inherits BlenderObject#pack_transform()
   # inherits BlenderObject#load_transform(transform)
   
+  # part of BlenderObject serialization interface
   def pack_data()
     color = self.diffuse_color # => RubyOF::FloatColor
             .to_a.first(3) # discard alpha component
@@ -80,7 +81,7 @@ class BlenderLight < BlenderObject
     # NOTE: With current loading code, only properties relevant to active light type will be restored - all other properties will be lost.
   end
   
-  
+  # part of BlenderObject serialization interface
   def load_data(obj_data)
     case obj_data['light_type']
     when 'POINT'

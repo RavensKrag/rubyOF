@@ -68,6 +68,7 @@ class BlenderMesh < BlenderObject
   # inherits BlenderObject#pack_transform()
   # inherits BlenderObject#load_transform(transform)
   
+  # part of BlenderObject serialization interface
   def pack_data()
     raise "ERROR: Can't pack data for an object that was never loaded." if @normal_filepath.nil? or @vert_filepath.nil?
     
@@ -82,6 +83,7 @@ class BlenderMesh < BlenderObject
     }
   end
   
+  # part of BlenderObject serialization interface
   def load_data(obj_data)
     @mesh.name = obj_data['name']
     

@@ -475,7 +475,7 @@ class Core
     # 
     
     # batch objects (for GPU instancing)
-      
+    
     batching = 
       @entities.values
       .select{|x| x.is_a? BlenderMesh }
@@ -488,6 +488,7 @@ class Core
       
       if mesh_obj_list.size > 1
         # draw instanced (v4 - translation + z-rot, stored in texture)
+        # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
         
         @instance_data ||= InstancingBuffer.new
         
