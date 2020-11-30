@@ -453,7 +453,8 @@ class Core
       # // turn on smooth lighting //
       ofSetSmoothLighting(true)
       
-      ofSetSphereResolution(32)
+      ofSetSphereResolution(32) # want higher resoultion than the default 20
+      # ^ this is used to visualize the color and position of the lights
       
       
       
@@ -508,179 +509,162 @@ class Core
     end
     
     
+    # 
+    # find lights
+    # 
+    
+    lights = @entities.values.select{ |entity|  entity.is_a? BlenderLight }
     
     
+    # ========================
+    # render begin
+    # ------------------------
+    
+    # camera begin
     @entities['viewport_camera'].begin
-      
-      ofEnableDepthTest()
-        # // enable lighting //
-        ofEnableLighting()
-        # // the position of the light must be updated every frame,
-        # // call enable() so that it can update itself //
-        @entities['Light'].enable()
-        
-          # // render objects in world
-            
-          batching = 
-            @entities.values
-            .select{|x| x.is_a? BlenderMesh }
-            .group_by{|x| x.mesh }
-          
-          # p batching.collect{|k,v|  [k.class, v.size]}
-          
-          
-          
-          batching.each do |mesh_data, mesh_objs|
-            
-            # mesh_obj.mesh.generate_normals()
-            # ^ yes, generating normals does make the light function... better, but these particular normals are extremely bad...
-            
-            
-            if mesh_objs.size > 1
-              # draw instanced
-              
-              # 
-              # v4 - translation + z-rot, stored in texture
-              # 
-              
-              @instance_data ||= InstancingBuffer.new
-              
-              
-              # collect up all the transforms
-              positions = 
-                mesh_objs.collect do |mesh_obj|
-                  mesh_obj.node.position
-                end
-              
-              
-              # raise exception current texture size is too small
-              # to hold packed position information.
-              max_instances = @instance_data.max_instances
-              
-              if positions.size > max_instances
-                msg = [
-                  "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
-                  "Current maximum: #{max_instances}",
-                  "Instances requested: #{positions.size}"
-                ]
-                
-                raise msg.join("\n")
-              end
-              
-              # pack into image -> texture (which will be passed to shader)
-              @instance_data.pack_positions(positions)
-              
-              # set uniforms
-              @mat_instanced.setCustomUniformTexture(
-                "position_tex", @instance_data.texture, 1
-              )
-              
-              @mat_instanced.setInstanceMagnitudeScale(
-                InstancingBuffer::FLOAT_MAX
-              )
-              
-              
-              # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
-              
-              
-              @mat_instanced.begin()
-              
-              # draw all the instances using one draw call
-              mesh_data.draw_instanced(mesh_objs.size)
-              
-              @mat_instanced.end()
-              
-              
-              
-              
-              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
-              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
-              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
-              
-              # # TODO: bind Vbo#setAttributeData()
-              # # TODO: bind Node#getLocalTransforMatrix
-              # # TODO: bind Node#getGlobalTransformMatrix
-              #     obj.node.position
-              
-              
-                
-              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
-              #   # 
-              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
-
-              # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
-              
-              
-              
-            else 
-              # draw just a single object
-              
-              mesh_obj = mesh_objs.first
-              
-              @mat1.begin()
-                mesh_obj.node.transformGL()
-                mesh_data.draw()
-                mesh_obj.node.restoreTransformGL()
-              @mat1.end()
-            end
-            
-            # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
-            
-            
-          end
-          
-          
-          # 
-          # render the sphere that represents the light
-          # 
-          
-          light_pos = @entities['Light'].position
-          light_color = @entities['Light'].diffuse_color
-          @mat2.emissive_color = light_color
-          
-            
-          @mat2.begin()
-          ofPushMatrix()
-            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-          ofPopMatrix()
-          @mat2.end()
-        
-        # // turn off lighting //
-        @entities['Light'].disable()
-        ofDisableLighting()
-      ofDisableDepthTest()
     
+    # 
+    # setup GL state
+    # 
+    
+    ofEnableDepthTest()
+    ofEnableLighting() # // enable lighting //
+    
+    # 
+    # enable lights
+    # 
+    
+    # the position of the light must be updated every frame,
+    # call enable() so that it can update itself
+    lights.each{ |light|  light.enable() }
+    
+    
+    # 
+    # render entities
+    # 
+    
+    # batch objects (for GPU instancing)
+      
+    batching = 
+      @entities.values
+      .select{|x| x.is_a? BlenderMesh }
+      .group_by{|x| x.mesh }
+    
+      # p batching.collect{|k,v|  [k.class, v.size]}
+    
+    # render by batches
+    batching.each do |mesh_data, mesh_obj_list|
+      
+      if mesh_obj_list.size > 1
+        # draw instanced (v4 - translation + z-rot, stored in texture)
+        
+        @instance_data ||= InstancingBuffer.new
+        
+        # collect up all the transforms
+        positions = 
+          mesh_obj_list.collect do |mesh_obj|
+            mesh_obj.node.position
+          end
+        
+        # raise exception if current texture size is too small
+        # to hold packed position information.
+        max_instances = @instance_data.max_instances
+        
+        if positions.size > max_instances
+          msg = [
+            "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
+            "Current maximum: #{max_instances}",
+            "Instances requested: #{positions.size}"
+          ]
+          
+          raise msg.join("\n")
+        end
+        
+        # pack into image -> texture (which will be passed to shader)
+        @instance_data.pack_positions(positions)
+        
+        # set uniforms
+        @mat_instanced.setCustomUniformTexture(
+          "position_tex", @instance_data.texture, 1
+        )
+          # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+        
+        @mat_instanced.setInstanceMagnitudeScale(
+          InstancingBuffer::FLOAT_MAX
+        )
+        
+        
+        # draw all the instances using one draw call
+        @mat_instanced.begin()
+          mesh_data.draw_instanced(mesh_obj_list.size)
+        @mat_instanced.end()
+        
+      else
+        # draw just a single object
+        
+        mesh_obj = mesh_obj_list.first
+        
+        @mat1.begin()
+          mesh_obj.node.transformGL()
+          mesh_data.draw()
+          mesh_obj.node.restoreTransformGL()
+        @mat1.end()
+      end
+      
+      # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
+      
+    end
+    
+    
+    # 
+    # render the sphere that represents the light
+    # 
+    
+    lights.each do |light|
+      light_pos   = light.position
+      light_color = light.diffuse_color
+      
+      @mat2.emissive_color = light_color
+      
+      
+      @mat2.begin()
+      ofPushMatrix()
+        ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+      ofPopMatrix()
+      @mat2.end()
+    end
+    
+    
+    # 
+    # disable lights
+    # 
+    
+    # // turn off lighting //
+    lights.each{ |light|  light.disable() }
+    
+    
+    # 
+    # teardown GL state
+    # 
+    
+    ofDisableLighting()
+    ofDisableDepthTest()
+    
+    # camera end
     @entities['viewport_camera'].end
+    
+    # ------------------------
+    # render end
+    # ========================
+    
+    
+    
     
     
     
     # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
     # (thus, you don't need a separate node to track the position of ofLight)
     
-    # if @first_update
-    #   # ofEnableDepthTest()
-    #   # @entities['Light'].setup
-      
-      
-    #   # @first_update = false
-    # end
-    
-    
-    
-    
-    # 
-    # render text display
-    # 
-    
-    # @display.draw()
-  end
-  
-  def camera_begin
-    @entities['viewport_camera'].begin
-  end
-  
-  def camera_end
-    @entities['viewport_camera'].end
   end
   
   
