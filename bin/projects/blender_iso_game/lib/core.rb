@@ -445,93 +445,74 @@ class Core
   include RubyOF::Graphics
   def on_draw
     
-    light_pos = @entities['Light'].position
+    # 
+    # setup materials, etc
+    # 
+    if @first_draw
+      # ofBackground(10, 10, 10, 255);
+      # // turn on smooth lighting //
+      ofSetSmoothLighting(true)
+      
+      ofSetSphereResolution(32)
+      
+      
+      
+      @mat1 ||= RubyOF::Material.new
+      # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
+      @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+      # // shininess is a value between 0 - 128, 128 being the most shiny //
+      @mat1.shininess = 64
+      
+      
+      
+      @mat2 ||= RubyOF::Material.new
+      # ^ update color of this material every time the light color changes
+      #   not just on the first frame
+      #   (creating the material is the expensive part anyway)
+      
+      
+      
+      @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
+      @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+      @mat_instanced.shininess = 64
+      
+      
+      @shader_timestamp = nil
+      
+      shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
+      @vert_shader_path = shader_src_dir/"phong_instanced.vert"
+      @frag_shader_path = shader_src_dir/"phong.frag"
+      
+      
+      
+      
+      @first_draw = false
+      
+    end
+    
+    # load shaders if they have never been loaded before,
+    # or if the files have been updated
+    if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
+      
+      
+      vert_shader = File.readlines(@vert_shader_path).join("\n")
+      frag_shader = File.readlines(@frag_shader_path).join("\n")
+      
+      @mat_instanced.setVertexShaderSource vert_shader
+      @mat_instanced.setFragmentShaderSource frag_shader
+      
+      
+      @shader_timestamp = Time.now
+      
+      puts "shader reloaded"
+    end
+    
+    
     
     
     @entities['viewport_camera'].begin
-    
-      
-      # // 
-      # // my custom code
-      # // 
-      
-      
-      # // lets make a sphere with more resolution than the default //
-      # // default is 20 //
-      
-      if @first_draw
-        # ofBackground(10, 10, 10, 255);
-        # // turn on smooth lighting //
-        ofSetSmoothLighting(true)
-        
-        ofSetSphereResolution(32)
-        
-        
-        
-        @mat1 ||= RubyOF::Material.new
-        # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
-        @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-        # // shininess is a value between 0 - 128, 128 being the most shiny //
-        @mat1.shininess = 64
-        
-        
-        
-        @mat2 ||= RubyOF::Material.new
-        # ^ update color of this material every time the light color changes
-        #   not just on the first frame
-        #   (creating the material is the expensive part anyway)
-        
-        
-        
-        @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
-        @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-        @mat_instanced.shininess = 64
-        
-        
-        @shader_timestamp = nil
-        
-        shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
-        @vert_shader_path = shader_src_dir/"phong_instanced.vert"
-        @frag_shader_path = shader_src_dir/"phong.frag"
-        
-        
-        
-        
-        @first_draw = false
-        
-      end
-      
-      
-      # load shaders if they have never been loaded before,
-      # or if the files have been updated
-      if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
-        
-        
-        vert_shader = File.readlines(@vert_shader_path).join("\n")
-        frag_shader = File.readlines(@frag_shader_path).join("\n")
-        
-        @mat_instanced.setVertexShaderSource vert_shader
-        @mat_instanced.setFragmentShaderSource frag_shader
-        
-        
-        @shader_timestamp = Time.now
-        
-        puts "shader reloaded"
-      end
-      
-      
-      
-      light_color = @entities['Light'].diffuse_color
-      @mat2.emissive_color = light_color
-      
-      
-      # light_pos = GLM::Vec3.new(4,-5,3);
-      # cube_pos = GLM::Vec3.new(0,0,0);
-      
       
       ofEnableDepthTest()
-        @entities['Light'].position = light_pos
-        
         # // enable lighting //
         ofEnableLighting()
         # // the position of the light must be updated every frame,
@@ -649,8 +630,15 @@ class Core
           end
           
           
+          # 
+          # render the sphere that represents the light
+          # 
           
-          # // render the sphere that represents the light
+          light_pos = @entities['Light'].position
+          light_color = @entities['Light'].diffuse_color
+          @mat2.emissive_color = light_color
+          
+            
           @mat2.begin()
           ofPushMatrix()
             ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
