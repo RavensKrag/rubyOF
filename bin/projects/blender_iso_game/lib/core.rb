@@ -151,7 +151,7 @@ class BlenderMesh < BlenderObject
   end
 end
 
-class CustomCamera< BlenderObject
+class ViewportCamera< BlenderObject
   extend Forwardable
   include RubyOF::Graphics
   
@@ -1117,7 +1117,7 @@ class Core
     
     
     @entities = {
-      'viewport_camera' => CustomCamera.new,
+      'viewport_camera' => ViewportCamera.new,
       
       'Light' => BlenderLight.new
     }
