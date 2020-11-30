@@ -73,7 +73,7 @@ class BlenderSync
     FileUtils.rm(fifo_path)
     puts "fifo closed"
   end
-    
+  
   def update
     
     # p @entities.keys
@@ -211,6 +211,8 @@ class BlenderSync
         end
         
         
+        # puts "entity class: #{entity.class}"
+        
         # NOTE: possible for some updates to change only transform or only data
         
         # first, process transform here:
@@ -222,7 +224,7 @@ class BlenderSync
         data['data']&.tap do |obj_data|
           case data['type']
           when 'MESH'
-            puts "mesh data"
+            # puts "mesh data"
             # p data
             
             mesh = @meshes[obj_data['mesh_name']]

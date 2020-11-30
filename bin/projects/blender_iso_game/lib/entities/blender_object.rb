@@ -1,5 +1,7 @@
 
 class BlenderObject
+  DATA_TYPE = 'object--EXAMPLE_ONLY--'
+  
   attr_accessor :name
   attr_accessor :dirty
   
@@ -14,7 +16,7 @@ class BlenderObject
     raise "Data from instance of #{self.class} could not be dumped because variable @name was not set.\n=> #{self.inspect}" if @name.nil?
     
     {
-      'type' => 'MESH',
+      'type' => self.class::DATA_TYPE,
       'name' =>  @name,
 
       'transform' => self.pack_transform(),

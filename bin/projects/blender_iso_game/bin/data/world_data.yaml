@@ -1,0 +1,10057 @@
+---
+- type: viewport_camera
+  view_perspective: PERSP
+  rotation:
+  - Quat
+  - 0.9026997089385986
+  - 0.4081212282180786
+  - 0.02926308661699295
+  - -0.13309316337108612
+  position:
+  - Vec3
+  - 1.063164234161377
+  - -21.086149215698242
+  - 24.769939422607422
+  fov:
+  - deg
+  - 43.336002349853516
+  ortho_scale:
+  - factor
+  - 1
+  near_clip:
+  - m
+  - 0.10000000149011612
+  far_clip:
+  - m
+  - 1000.0
+- type: LIGHT
+  name: Light
+  transform:
+    rotation:
+    - Quat
+    - 0.8363823890686035
+    - 0.5137776732444763
+    - 0.1620679348707199
+    - -0.1011483445763588
+    position:
+    - Vec3
+    - -2.7449610233306885
+    - 1.0054539442062378
+    - 5.903861999511719
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    light_type: POINT
+    color:
+    - rgb
+    - 1.0
+    - 0.5899038910865784
+    - 0.8970053195953369
+    size:
+    - radians
+    - 
+    size_x:
+    - float
+    - 
+    size_y:
+    - float
+    - 
+- type: MESH
+  name: Cube.001
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - -39.044559478759766
+    - -40.0
+    - -40.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.004
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris:
+    - - 0
+      - 1
+      - 3
+    - - 0
+      - 3
+      - 2
+    - - 2
+      - 3
+      - 7
+    - - 2
+      - 7
+      - 6
+    - - 6
+      - 7
+      - 5
+    - - 6
+      - 5
+      - 4
+    - - 4
+      - 5
+      - 1
+    - - 4
+      - 1
+      - 0
+    - - 2
+      - 6
+      - 4
+    - - 2
+      - 4
+      - 0
+    - - 7
+      - 3
+      - 1
+    - - 7
+      - 1
+      - 5
+- type: MESH
+  name: CubeInstance
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: &1
+    - - 0
+      - 1
+      - 3
+    - - 0
+      - 3
+      - 2
+    - - 2
+      - 3
+      - 7
+    - - 2
+      - 7
+      - 6
+    - - 6
+      - 7
+      - 5
+    - - 6
+      - 5
+      - 4
+    - - 4
+      - 5
+      - 1
+    - - 4
+      - 1
+      - 0
+    - - 2
+      - 6
+      - 4
+    - - 2
+      - 4
+      - 0
+    - - 7
+      - 3
+      - 1
+    - - 7
+      - 1
+      - 5
+- type: MESH
+  name: CubeInstance.001
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.002
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.003
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.004
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.005
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.006
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.007
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -15.05954360961914
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.008
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.009
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.010
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.011
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.012
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.013
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.014
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.015
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -18.115264892578125
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.016
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.017
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.018
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.019
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.020
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.021
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.022
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.023
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -21.638212203979492
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.024
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.025
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.026
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.027
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.028
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.029
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.030
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.031
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -24.693933486938477
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.032
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.033
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.034
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.035
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.036
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.037
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.038
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.039
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -27.741262435913086
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.040
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.041
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.042
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.043
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.044
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.045
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.046
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.047
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -30.79698371887207
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.048
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.049
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.050
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.051
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.052
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.053
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.054
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.055
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -34.31993103027344
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.056
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 32.73987579345703
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.057
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 35.19686508178711
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.058
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 37.83149337768555
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.059
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 40.45988464355469
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.060
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 43.080623626708984
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.061
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 45.53761291503906
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.062
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 48.1722412109375
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.063
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 50.800628662109375
+    - -37.37565612792969
+    - 0.25453847646713257
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.001
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/91f43b7c727d8565bccb9ecc1a722e5ab7446fd3.txt"
+    tris: *1
+- type: MESH
+  name: CubeInstance.064
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: &2
+    - - 14
+      - 16
+      - 3
+    - - 14
+      - 3
+      - 1
+    - - 20
+      - 22
+      - 17
+    - - 20
+      - 17
+      - 13
+    - - 21
+      - 9
+      - 4
+    - - 21
+      - 4
+      - 15
+    - - 2
+      - 5
+      - 11
+    - - 2
+      - 11
+      - 7
+    - - 8
+      - 10
+      - 23
+    - - 8
+      - 23
+      - 19
+    - - 0
+      - 1
+      - 2
+    - - 3
+      - 4
+      - 5
+    - - 6
+      - 7
+      - 8
+    - - 9
+      - 10
+      - 11
+    - - 12
+      - 13
+      - 14
+    - - 15
+      - 16
+      - 17
+    - - 18
+      - 19
+      - 20
+    - - 21
+      - 22
+      - 23
+    - - 6
+      - 0
+      - 2
+    - - 6
+      - 2
+      - 7
+    - - 1
+      - 3
+      - 5
+    - - 1
+      - 5
+      - 2
+    - - 4
+      - 9
+      - 11
+    - - 4
+      - 11
+      - 5
+    - - 10
+      - 8
+      - 7
+    - - 10
+      - 7
+      - 11
+    - - 18
+      - 6
+      - 8
+    - - 18
+      - 8
+      - 19
+    - - 9
+      - 21
+      - 23
+    - - 9
+      - 23
+      - 10
+    - - 22
+      - 20
+      - 19
+    - - 22
+      - 19
+      - 23
+    - - 12
+      - 18
+      - 20
+    - - 12
+      - 20
+      - 13
+    - - 21
+      - 15
+      - 17
+    - - 21
+      - 17
+      - 22
+    - - 16
+      - 14
+      - 13
+    - - 16
+      - 13
+      - 17
+    - - 0
+      - 12
+      - 14
+    - - 0
+      - 14
+      - 1
+    - - 15
+      - 4
+      - 3
+    - - 15
+      - 3
+      - 16
+    - - 6
+      - 18
+      - 12
+    - - 6
+      - 12
+      - 0
+- type: MESH
+  name: CubeInstance.065
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.066
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.067
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.068
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.069
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.070
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.071
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.072
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.073
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.074
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.075
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.076
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.077
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.078
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.079
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 0.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.080
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.081
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.082
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.083
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.084
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.085
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.086
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.087
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.088
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.089
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.090
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.091
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.092
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.093
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.094
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.095
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 1.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.096
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.097
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.098
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.099
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.100
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.101
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.102
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.103
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.104
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.105
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.106
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.107
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.108
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.109
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.110
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.111
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 2.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.112
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.113
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.114
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.115
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.116
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.117
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.118
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.119
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.120
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.121
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.122
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.123
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.124
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.125
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.126
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.127
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 3.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.128
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.129
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.130
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.131
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.132
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.133
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.134
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.135
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.136
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.137
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.138
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.139
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.140
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.141
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.142
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.143
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 4.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.144
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.145
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.146
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.147
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.148
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.149
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.150
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.151
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.152
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.153
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.154
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.155
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.156
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.157
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.158
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.159
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.160
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.161
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.162
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.163
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.164
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.165
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.166
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.167
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.168
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.169
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.170
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.171
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.172
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.173
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.174
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.175
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 6.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.176
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.177
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.178
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.179
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.180
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.181
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.182
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.183
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.184
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.185
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.186
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.187
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.188
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.189
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.190
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.191
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 7.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.192
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.193
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.194
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.195
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.196
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.197
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.198
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.199
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.200
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.201
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.202
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.203
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.204
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.205
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.206
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.207
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 8.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.208
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.209
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.210
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.211
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.212
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.213
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.214
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.215
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.216
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.217
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.218
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.219
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.220
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.221
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.222
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.223
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 9.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.224
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.225
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.226
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.227
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.228
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.229
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.230
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.231
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.232
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.233
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.234
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.235
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.236
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.237
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.238
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.239
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 10.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.240
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.241
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.242
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.243
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.244
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.245
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.246
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.247
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.248
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.249
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.250
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.251
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.252
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.253
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.254
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.255
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 11.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.256
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.257
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.258
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.259
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.260
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.261
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.262
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.263
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.264
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.265
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.266
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.267
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.268
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.269
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.270
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.271
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 12.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.272
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.273
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.274
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.275
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.276
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.277
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.278
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.279
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.280
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.281
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.282
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.283
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.284
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.285
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.286
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.287
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 13.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.288
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.289
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.290
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.291
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.292
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.293
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.294
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.295
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.296
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.297
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.298
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.299
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.300
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.301
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.302
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.303
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 14.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.304
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 0.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.305
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 1.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.306
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 2.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.307
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 3.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.308
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 4.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.309
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 5.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.310
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 6.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.311
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.312
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 8.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.313
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 9.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.314
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 10.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.315
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 11.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.316
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 12.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.317
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 13.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.318
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 14.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.319
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 15.0
+    - 15.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.003
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris: *2
+- type: MESH
+  name: CubeInstance.320
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - 7.871698379516602
+    - -5.0
+    - 0.0
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  data:
+    mesh_name: Cube.005
+    verts:
+    - double
+    - 72
+    - "/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt"
+    normals:
+    - double
+    - 396
+    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    tris:
+    - - 14
+      - 16
+      - 3
+    - - 14
+      - 3
+      - 1
+    - - 20
+      - 22
+      - 17
+    - - 20
+      - 17
+      - 13
+    - - 21
+      - 9
+      - 4
+    - - 21
+      - 4
+      - 15
+    - - 2
+      - 5
+      - 11
+    - - 2
+      - 11
+      - 7
+    - - 8
+      - 10
+      - 23
+    - - 8
+      - 23
+      - 19
+    - - 0
+      - 1
+      - 2
+    - - 3
+      - 4
+      - 5
+    - - 6
+      - 7
+      - 8
+    - - 9
+      - 10
+      - 11
+    - - 12
+      - 13
+      - 14
+    - - 15
+      - 16
+      - 17
+    - - 18
+      - 19
+      - 20
+    - - 21
+      - 22
+      - 23
+    - - 6
+      - 0
+      - 2
+    - - 6
+      - 2
+      - 7
+    - - 1
+      - 3
+      - 5
+    - - 1
+      - 5
+      - 2
+    - - 4
+      - 9
+      - 11
+    - - 4
+      - 11
+      - 5
+    - - 10
+      - 8
+      - 7
+    - - 10
+      - 7
+      - 11
+    - - 18
+      - 6
+      - 8
+    - - 18
+      - 8
+      - 19
+    - - 9
+      - 21
+      - 23
+    - - 9
+      - 23
+      - 10
+    - - 22
+      - 20
+      - 19
+    - - 22
+      - 19
+      - 23
+    - - 12
+      - 18
+      - 20
+    - - 12
+      - 20
+      - 13
+    - - 21
+      - 15
+      - 17
+    - - 21
+      - 17
+      - 22
+    - - 16
+      - 14
+      - 13
+    - - 16
+      - 13
+      - 17
+    - - 0
+      - 12
+      - 14
+    - - 0
+      - 14
+      - 1
+    - - 15
+      - 4
+      - 3
+    - - 15
+      - 3
+      - 16
+    - - 6
+      - 18
+      - 12
+    - - 6
+      - 12
+      - 0

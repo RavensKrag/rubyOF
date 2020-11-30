@@ -3,6 +3,7 @@ class BlenderMeshData
   extend Forwardable
   
   attr_accessor :name
+  attr_accessor :vert_filepath, :normal_filepath
   attr_accessor :verts, :normals, :tris
   def_delegators :@mesh, :draw, :draw_instanced
   
@@ -47,6 +48,8 @@ class BlenderMeshData
 end
 
 class BlenderMesh < BlenderObject
+  DATA_TYPE = 'MESH' # required by BlenderObject interface
+  
   extend Forwardable
   
   attr_reader :node
@@ -70,13 +73,19 @@ class BlenderMesh < BlenderObject
   
   # part of BlenderObject serialization interface
   def pack_data()
-    raise "ERROR: Can't pack data for an object that was never loaded." if @normal_filepath.nil? or @vert_filepath.nil?
+    raise "ERROR: Can't pack data for #{@name} because mesh data filepaths in underlying BlenderMeshData object #{@mesh.name} were never set." if @mesh.normal_filepath.nil? or @mesh.vert_filepath.nil?
+    
+    # filepath variables never get set for instanced meshes, because they bypass #load_data(), and instead set @mesh directly
+      # (could fix by putting all the data on BlenderMeshData instead, which kinda makes more sense anyway)
+    
+    
+    # NOTE: 'mesh_name' not saved for some objects
     
     {
       'mesh_name' => @mesh.name, # name of the data, not the object
       
-      'verts'  => ['double', @mesh.verts.size,   @normal_filepath],
-      'normals'=> ['double', @mesh.normals.size, @vert_filepath],
+      'verts'  => ['double', @mesh.verts.size,   @mesh.vert_filepath],
+      'normals'=> ['double', @mesh.normals.size, @mesh.normal_filepath],
       'tris'   => @mesh.tris
       
       # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
@@ -85,12 +94,19 @@ class BlenderMesh < BlenderObject
   
   # part of BlenderObject serialization interface
   def load_data(obj_data)
-    @mesh.name = obj_data['name']
+    # puts "loading----"
+    # p obj_data
+    # puts "-----------------"
+    
+    @mesh.name = obj_data['mesh_name']
     
     @mesh.tris = obj_data['tris']
     
     obj_data['normals'].tap do |type, count, path|
-      @normal_filepath = path
+      raise "ERROR: normal vector count not set for #{@mesh.name}" if count.nil?
+      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
+      
+      @mesh.normal_filepath = path
       
       lines = File.readlines(path)
       
@@ -111,7 +127,10 @@ class BlenderMesh < BlenderObject
     end
     
     obj_data['verts'].tap do |type, count, path|
-      @vert_filepath = path
+      raise "ERROR: size of vert index buffer not set for #{@mesh.name}" if count.nil?
+      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
+      
+      @mesh.vert_filepath = path
       
       lines = File.readlines(path)
       

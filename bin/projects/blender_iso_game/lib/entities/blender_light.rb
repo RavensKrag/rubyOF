@@ -1,5 +1,7 @@
 
 class BlenderLight < BlenderObject
+  DATA_TYPE = 'LIGHT' # required by BlenderObject interface
+  
   extend Forwardable
   
   def initialize

@@ -135,8 +135,6 @@ class Core
     
     @entities = {
       'viewport_camera' => ViewportCamera.new,
-      
-      'Light' => BlenderLight.new
     }
     
     @meshes = Hash.new
@@ -146,19 +144,6 @@ class Core
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
-    if @world_save_file.exist?
-      puts "loading 3D graphics data..."
-      camera_data = YAML.load_file @world_save_file
-      puts "load complete!"
-      p camera_data
-      
-      
-      @sync.parse_blender_data(camera_data)
-      
-      @entities['viewport_camera'].dirty = false
-    end
-    
-    
     
   end
   
@@ -179,15 +164,16 @@ class Core
       self.ensure()
     end
     
-      
+    
     # puts @draw_durations.join("\t")
     if RB_SPIKE_PROFILER.enabled?
       RB_SPIKE_PROFILER.disable
     end
     
     
-    save_world_state()
+    # save_world_state()
     
+    # FileUtils.rm @world_save_file if @world_save_file.exist?
   end
   
   
@@ -211,6 +197,19 @@ class Core
     @update_scheduler = nil
     
     setup()
+    
+    
+    if @world_save_file.exist?
+      puts "loading 3D graphics data..."
+      entity_data_list = YAML.load_file @world_save_file
+      puts "load complete!"
+      # p entity_data_list
+      
+      
+      @sync.parse_blender_data(entity_data_list)
+      
+      @entities['viewport_camera'].dirty = false
+    end
   end
   
   # always run on exit, with or without exception
@@ -233,11 +232,11 @@ class Core
     # save 3D graphics data to file
     # 
     
-    # puts "saving world to file.."
-    # entity_data_list = 
-    #   @entities.to_a.collect{ |key, val|
-    #     val.data_dump
-    #   }
+    puts "saving world to file.."
+    entity_data_list = 
+      @entities.to_a.collect{ |key, val|
+        val.data_dump
+      }
     
     
     # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
@@ -245,9 +244,8 @@ class Core
     # ('ORTHO' support currently rather poor)
     
     
-    # TODO: start saving to disk again once the mesh data exchange is finalized
-    # dump_yaml entity_data_list => @world_save_file
-    # puts "world saved!"
+    dump_yaml entity_data_list => @world_save_file
+    puts "world saved!"
   end
   
   
