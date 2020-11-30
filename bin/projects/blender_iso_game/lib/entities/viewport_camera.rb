@@ -1,10 +1,16 @@
 
-class ViewportCamera< BlenderObject
+class ViewportCamera
+  attr_reader :name
+  attr_accessor :dirty
+  
   extend Forwardable
   include RubyOF::Graphics
   
   def initialize
-    super()
+    @name = 'viewport_camera'
+    @dirty = false
+      # if true, tells system that this datablock has been updated
+      # and thus needs to be saved to disk
     
     
     @of_cam = RubyOF::Camera.new

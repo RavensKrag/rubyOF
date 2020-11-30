@@ -51,32 +51,15 @@ class BlenderLight < BlenderObject
                           :diffuse_color=, :specular_color=, :ambient_color=,
                           :diffuse_color
   
+  # inherits BlenderObject#data_dump
   
-  def data_dump
-    orientation = self.orientation
-    position = self.position
-    scale = self.scale
-    
-    color = self.diffuse_color.to_a
-            .first(3) # discard alpha component
-            .map{|x| x / 255.0 } # convert to float from 0..1
+  
+  def pack_data()
+    color = self.diffuse_color # => RubyOF::FloatColor
+            .to_a.first(3) # discard alpha component
     
     {
-        'type' => 'LIGHT',
-        'name' =>  @name,
         'light_type' => @type,
-        'rotation' => [
-          'Quat',
-          orientation.w, orientation.x, orientation.y, orientation.z
-        ],
-        'position' => [
-          'Vec3',
-          position.x, position.y, position.z
-        ],
-        'scale' => [
-          'Vec3',
-          scale.x, scale.y, scale.z
-        ],
         'color' => ['rgb'] + color,
         'size' => [
           'radians', @size
@@ -90,12 +73,6 @@ class BlenderLight < BlenderObject
     }
   end
   
-  # read from a hash (deserialization)
-  def load_transform(transform)
-    self.position    = GLM::Vec3.new(*(transform['position'][1..3]))
-    self.orientation = GLM::Quat.new(*(transform['rotation'][1..4]))
-    self.scale       = GLM::Vec3.new(*(transform['scale'][1..3]))
-  end
   
   def load_data(obj_data)
     case obj_data['light_type']
@@ -119,6 +96,8 @@ class BlenderLight < BlenderObject
       height = obj_data['size_y'][1]
       self.setAreaLight(width, height)
     end
+    
+    
     
     # color in blender is float, and float color is also required by OpenGL
     color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])

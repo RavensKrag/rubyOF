@@ -2,6 +2,7 @@
 class BlenderMeshData
   extend Forwardable
   
+  attr_accessor :name
   attr_accessor :verts, :normals, :tris
   def_delegators :@mesh, :draw, :draw_instanced
   
@@ -62,51 +63,23 @@ class BlenderMesh < BlenderObject
                          :scale, :scale=
   
   
-  # convert to a hash such that it can be serialized with yaml, json, etc
-  def data_dump
-    orientation = self.orientation
-    position = self.position
-    scale = self.scale
-    
+  # inherits BlenderObject#data_dump
+  
+  
+  
+  def pack_data()
     {
-        'type' => 'MESH',
-        'name' =>  @name,
-        
-        'transform' => {
-          'rotation' => [
-            'Quat',
-            orientation.w, orientation.x, orientation.y, orientation.z
-          ],
-          'position' => [
-            'Vec3',
-            position.x, position.y, position.z
-          ],
-          'scale' => [
-            'Vec3',
-            scale.x, scale.y, scale.z
-          ]
-        },
-        
-        # 'data' => {
-        #   'verts': [
-        #     'double', num_verts, tmp_vert_file_path
-        #   ],
-        #   'normals': [
-        #     'double', num_normals, tmp_normal_file_path
-        #   ],
-        #   'tris' : index_buffer
-        # }
+      'mesh_name' => @mesh.name # name of the data, not the object
+      
+      'verts'  => ['double', num_verts,   tmp_vert_file_path],
+      'normals'=> ['double', num_normals, tmp_normal_file_path],
+      'tris'   => @mesh.tris
     }
   end
   
-  # read from a hash (deserialization)
-  def load_transform(transform)
-    self.position    = GLM::Vec3.new(*(transform['position'][1..3]))
-    self.orientation = GLM::Quat.new(*(transform['rotation'][1..4]))
-    self.scale       = GLM::Vec3.new(*(transform['scale'][1..3]))
-  end
-  
   def load_data(obj_data)
+    @mesh.name = obj_data['name']
+    
     @mesh.tris = obj_data['tris']
     
     obj_data['normals'].tap do |type, count, path|
