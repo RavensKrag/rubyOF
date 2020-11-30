@@ -216,4 +216,45 @@ class ViewportCamera< BlenderObject
     }
   end
   
+  # read from a hash (deserialization)
+  # (viewport camera is not a true entity, so the data structure is different)
+  def load(data)
+    self.position    = GLM::Vec3.new(*(data['position'][1..3]))
+    self.orientation = GLM::Quat.new(*(data['rotation'][1..4]))
+    
+    # Viewport camera does not have a scale the way that other entities do.
+    # There is a 'scale', but that's listed as 'ortho_scale'
+    # and functions quite differently.
+    
+    self.near_clip   = data['near_clip'][1]
+    self.far_clip    = data['far_clip'][1]
+    
+    # p data['aspect_ratio'][1]
+    # @self.setAspectRatio(data['aspect_ratio'][1])
+    # puts "force aspect ratio flag: #{@self.forceAspectRatio?}"
+    
+    # NOTE: Aspect ratio appears to do nothing, which is bizzare
+    
+    
+    # p data['view_perspective']
+    case data['view_perspective']
+    when 'PERSP'
+      # puts "perspective cam ON"
+      self.use_perspective_mode
+      
+      self.fov = data['fov'][1]
+      
+    when 'ORTHO'
+      self.use_orthographic_mode
+      self.scale = data['ortho_scale'][1]
+      # TODO: scale needs to change as camera is updated
+      # TODO: scale zooms as expected, but also effects pan rate (bad)
+      
+      
+    when 'CAMERA'
+      
+      
+    end
+  end
+  
 end

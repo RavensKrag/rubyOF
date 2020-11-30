@@ -119,7 +119,6 @@ class BlenderSync
     
     data_list.each do |data|
       
-      
       # viewport camera updates (not a camera object)
       
       # material updates
@@ -158,43 +157,13 @@ class BlenderSync
         @entities['viewport_camera'].tap do |camera|
           camera.dirty = true
           
-          camera.position    = GLM::Vec3.new(*(data['position'][1..3]))
-          camera.orientation = GLM::Quat.new(*(data['rotation'][1..4]))
-          camera.near_clip   = data['near_clip'][1]
-          camera.far_clip    = data['far_clip'][1]
-          
-          # p data['aspect_ratio'][1]
-          # @camera.setAspectRatio(data['aspect_ratio'][1])
-          # puts "force aspect ratio flag: #{@camera.forceAspectRatio?}"
-          
-          # NOTE: Aspect ratio appears to do nothing, which is bizzare
-          
-          
-          # p data['view_perspective']
-          case data['view_perspective']
-          when 'PERSP'
-            # puts "perspective cam ON"
-            camera.use_perspective_mode
-            
-            camera.fov = data['fov'][1]
-            
-          when 'ORTHO'
-            camera.use_orthographic_mode
-            camera.scale = data['ortho_scale'][1]
-            # TODO: scale needs to change as camera is updated
-            # TODO: scale zooms as expected, but also effects pan rate (bad)
-            
-            
-          when 'CAMERA'
-            
-            
-          end
+          camera.load(data)
         end
       when 'MATERIAL'
         
       when 'entity_list'
         # The viewport camera is an object in RubyOF, but not in Blender
-        # Need to remove it from the putative list such or the camera
+        # Need to remove it from the entity list or the camera
         # will be deleted.
         (@entities.keys - data['list'] - ['viewport_camera'])
         .each do |deleted_entity_name|
@@ -222,18 +191,19 @@ class BlenderSync
         
         # create entity if one with that name does not already exist
         if entity.nil?
-          entity = 
+          klass = 
             case data['type']
             when 'MESH'
-              BlenderMesh.new
+              BlenderMesh
             when 'LIGHT'
-              next
+              BlenderLight
             when 'CAMERA'
               # not yet implemented
               # (skip the whole loop, because we can't process this right now)
               next 
             end
           
+          entity = klass.new
           
           entity.name = data['name']
           
@@ -245,13 +215,7 @@ class BlenderSync
         
         # first, process transform here:
         data['transform']&.tap do |transform|
-          pos   = GLM::Vec3.new(*(transform['position'][1..3]))
-          quat  = GLM::Quat.new(*(transform['rotation'][1..4]))
-          scale = GLM::Vec3.new(*(transform['scale'][1..3]))
-          
-          entity.position = pos
-          entity.orientation = quat
-          entity.scale = scale
+          entity.load_transform(transform)
         end
         
         # then process object-specific properties:
@@ -264,114 +228,20 @@ class BlenderSync
             mesh = @meshes[obj_data['mesh_name']]
             
             if mesh.nil?
-              mesh = entity.mesh
-              
-              mesh.tris = obj_data['tris']
-              
-              obj_data['normals'].tap do |type, count, path|
-                lines = File.readlines(path)
-                
-                # p lines
-                # b64 -> binary -> array
-                puts lines.size
-                # if @last_mesh_file_n != path
-                  # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-                  
-                  # @last_mesh_file_n = path
-                  data = lines.last # should only be one line in this file
-                  mesh.normals = Base64.decode64(data).unpack("d#{count}")
-                  
-                  # # assuming type == double for now, but may want to support other types too
-                # end
-                
-                entity.dirty = true
-              end
-              
-              obj_data['verts'].tap do |type, count, path|
-                # p [type, count, path]
-                
-                lines = File.readlines(path)
-                
-                # p lines
-                # b64 -> binary -> array
-                puts lines.size
-                # if @last_mesh_file_v != path
-                  # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
-                  
-                  # @last_mesh_file_v = path
-                  data = lines.last # should only be one line in this file
-                  # puts "data =>"
-                  # p data
-                  mesh.verts = Base64.decode64(data).unpack("d#{count}")
-                  
-                  # # assuming type == double for now, but may want to support other types too
-                # end
-                
-                entity.dirty = true
-              end
-              
-              
-              if entity.dirty
-                puts "generate mesh"
-                mesh.generate_mesh()
-              end
-              
-              @meshes[obj_data['mesh_name']] = entity.mesh
+              # load data and then cache the underlying mesh
+              # so linked copies point to the same data
+              @meshes[obj_data['mesh_name']] = entity.load_data(obj_data).mesh
             else
+              # set the mesh based on existing linked copy
               entity.mesh = mesh
             end
-            
-            
           
           when 'LIGHT'
-            light = entity
-            
-            
-            light.disable()
-            
-            
-            
-            case obj_data['light_type']
-            when 'POINT'
-              # point light
-              light.setPointLight()
-            when 'SUN'
-              # directional light
-              light.setDirectional()
+            entity.tap do |light|
+              light.disable()
               
-              # (orientation is on the opposite side of the sphere, relative to what blender expects)
-              
-            when 'SPOT'
-              # spotlight
-              size_rad = obj_data['size'][1]
-              size_deg = size_rad / (2*Math::PI) * 360
-              light.setSpotlight(size_deg, 0) # requires 2 args
-              # float spotCutOff=45.f, float exponent=0.f
-            when 'AREA'
-              width  = obj_data['size_x'][1]
-              height = obj_data['size_y'][1]
-              light.setAreaLight(width, height)
+              light.load_data(obj_data)
             end
-            
-            # # color in blender as float, currently binding all colors as unsigned char in Ruby (255 values per channel)
-            color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])
-            # light.diffuse_color  = color
-            # # light.diffuse_color  = RubyOF::FloatColor.hex_alpha(0xffffff, 0xff)
-            # light.specular_color = RubyOF::FloatColor.hex_alpha(0xff0000, 0xff)
-            
-            
-            white = RubyOF::FloatColor.rgb([1, 1, 1])
-            
-            # // Point lights emit light in all directions //
-            # // set the diffuse color, color reflected from the light source //
-            light.diffuse_color = color
-            
-            # // specular color, the highlight/shininess color //
-            light.specular_color = white
-            
-            
-            
-            
             
           end
         end
@@ -379,10 +249,6 @@ class BlenderSync
         
       end
     end
-      
-      # TODO: need to update python code to match new data format
-      
-    
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     

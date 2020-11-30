@@ -89,4 +89,53 @@ class BlenderLight < BlenderObject
         ]
     }
   end
+  
+  # read from a hash (deserialization)
+  def load_transform(transform)
+    self.position    = GLM::Vec3.new(*(transform['position'][1..3]))
+    self.orientation = GLM::Quat.new(*(transform['rotation'][1..4]))
+    self.scale       = GLM::Vec3.new(*(transform['scale'][1..3]))
+  end
+  
+  def load_data(obj_data)
+    case obj_data['light_type']
+    when 'POINT'
+      # point light
+      self.setPointLight()
+    when 'SUN'
+      # directional light
+      self.setDirectional()
+      
+      # (orientation is on the opposite side of the sphere, relative to what blender expects)
+      
+    when 'SPOT'
+      # spotlight
+      size_rad = obj_data['size'][1]
+      size_deg = size_rad / (2*Math::PI) * 360
+      self.setSpotlight(size_deg, 0) # requires 2 args
+      # float spotCutOff=45.f, float exponent=0.f
+    when 'AREA'
+      width  = obj_data['size_x'][1]
+      height = obj_data['size_y'][1]
+      self.setAreaLight(width, height)
+    end
+    
+    # color in blender is float, and float color is also required by OpenGL
+    color = RubyOF::FloatColor.rgba(obj_data['color'][1..3] + [1])
+    # self.diffuse_color  = color
+    # # self.diffuse_color  = RubyOF::FloatColor.hex_alpha(0xffffff, 0xff)
+    # self.specular_color = RubyOF::FloatColor.hex_alpha(0xff0000, 0xff)
+    
+    
+    white = RubyOF::FloatColor.rgb([1, 1, 1])
+    
+    # // Point lights emit light in all directions //
+    # // set the diffuse color, color reflected from the light source //
+    self.diffuse_color = color
+    
+    # // specular color, the highlight/shininess color //
+    self.specular_color = white
+    
+    
+  end
 end
