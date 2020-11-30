@@ -1359,29 +1359,6 @@ class Core
   include RubyOF::Graphics
   def on_draw
     
-    
-    # 
-    # puts "draw cube"
-    # File.open(@fifo_dir/@fifo_name, "r") do
-      
-    # end
-    
-    
-    # (may need to open the fifo and write something to it, so we get an EOF descriptor that will be useful for implementing non-blocking IO)
-    
-    # puts "<---"
-    
-    
-    
-    
-    
-    # c = RubyOF::FloatColor.hex_alpha( 0xf6bfff, 0xff )
-    
-    
-    
-    
-    
-    
     light_pos = @entities['Light'].position
     
     
@@ -1495,39 +1472,6 @@ class Core
             if mesh_objs.size > 1
               # draw instanced
               
-              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
-              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
-              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
-              
-                
-                
-              # # PROTOTYPE - draw all elements in separate draw calls, no GPU instancing (just testing the basic material functionality)
-              
-              # @mat_instanced.begin()
-              #   mesh_objs.each do |mesh_obj|
-              #     mesh_obj.node.transformGL()
-              #     mesh_data.draw()
-              #     mesh_obj.node.restoreTransformGL()
-              #   end
-              # @mat_instanced.end()
-              
-              
-              # # TODO: bind Vbo#setAttributeData()
-              # # TODO: bind Node#getLocalTransforMatrix
-              # # TODO: bind Node#getGlobalTransformMatrix
-              #     obj.node.position
-              
-              
-                
-              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
-              #   # 
-              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
-
-              # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
-              
-              
-              
-              
               # 
               # v4 - translation + z-rot, stored in texture
               # 
@@ -1559,25 +1503,7 @@ class Core
               # pack into image -> texture (which will be passed to shader)
               @instance_data.pack_positions(positions)
               
-              # # 
-              # # Option 1
-              # # more manual
-              # # 
-              
-              # shader.setUniformTexture("position_tex", tex, 1)
-              #   # TODO: bind this fx (polymorphic)
-              #   # void ofShader::setUniformTexture(const string & name, const ofTexture& tex, int textureLocation)
-              # tex.bind(1) # not the default slot
-              
-              # tex.unbind(1)
-              
-              
-              
-              # 
-              # Option 2
-              # associate texture with material
-              # using stuff already declared by material
-              # 
+              # set uniforms
               @mat_instanced.setCustomUniformTexture(
                 "position_tex", @instance_data.texture, 1
               )
@@ -1596,6 +1522,29 @@ class Core
               mesh_data.draw_instanced(mesh_objs.size)
               
               @mat_instanced.end()
+              
+              
+              
+              
+              # ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp
+              # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp
+              # bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp
+              
+              # # TODO: bind Vbo#setAttributeData()
+              # # TODO: bind Node#getLocalTransforMatrix
+              # # TODO: bind Node#getGlobalTransformMatrix
+              #     obj.node.position
+              
+              
+                
+              #   # https://forum.openframeworks.cc/t/how-to-set-custom-data-to-ofvbo/18296
+              #   # 
+              #   # ^ great explanation here of how to get the data into the shader. but I still need to figure out how to make this work with materials.
+
+              # https://forum.openframeworks.cc/t/opengl-wrapper-vbo-and-shader-location/24760
+              
+              
+              
             else 
               # draw just a single object
               
@@ -1611,24 +1560,8 @@ class Core
             # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
             
             
-            
-            
-            
-            
-            
-            
-            # NOTE: not currently getting any speedup by rendering this way... may need to use ofVboMesh class to get benefits of instancing. Not sure if there's a downside to just using this all the time???
-            
-            
-            # cube_pos = mesh_obj.node.position
-            # ofPushMatrix()
-            #   mesh_obj.node.transformGL()
-            #   ofDrawBox(0,0,0, 2)
-            #   mesh_obj.node.restoreTransformGL()
-            #   # ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2)
-            # ofPopMatrix()
           end
-            
+          
           
           
           # // render the sphere that represents the light
