@@ -65,15 +65,20 @@ class BlenderMesh < BlenderObject
   
   # inherits BlenderObject#data_dump
   
-  
+  # inherits BlenderObject#pack_transform()
+  # inherits BlenderObject#load_transform(transform)
   
   def pack_data()
+    raise "ERROR: Can't pack data for an object that was never loaded." if @normal_filepath.nil? or @vert_filepath.nil?
+    
     {
       'mesh_name' => @mesh.name # name of the data, not the object
       
-      'verts'  => ['double', num_verts,   tmp_vert_file_path],
-      'normals'=> ['double', num_normals, tmp_normal_file_path],
+      'verts'  => ['double', @mesh.verts.size,   @normal_filepath],
+      'normals'=> ['double', @mesh.normals.size, @vert_filepath],
       'tris'   => @mesh.tris
+      
+      # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
     }
   end
   
@@ -83,6 +88,8 @@ class BlenderMesh < BlenderObject
     @mesh.tris = obj_data['tris']
     
     obj_data['normals'].tap do |type, count, path|
+      @normal_filepath = path
+      
       lines = File.readlines(path)
       
       # p lines
@@ -102,7 +109,7 @@ class BlenderMesh < BlenderObject
     end
     
     obj_data['verts'].tap do |type, count, path|
-      # p [type, count, path]
+      @vert_filepath = path
       
       lines = File.readlines(path)
       

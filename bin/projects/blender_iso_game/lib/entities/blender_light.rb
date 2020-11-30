@@ -33,6 +33,9 @@ class BlenderLight < BlenderObject
     size_deg = cutoff_radians / (2*Math::PI) * 360
     @light.setSpotlight(size_deg, 0) # requires 2 args
     # float spotCutOff=45.f, float exponent=0.f
+    
+    # TODO: take exponent into account
+    # TODO: save exponent for serialization
   end
   
   def setAreaLight(width, height)
@@ -53,6 +56,8 @@ class BlenderLight < BlenderObject
   
   # inherits BlenderObject#data_dump
   
+  # inherits BlenderObject#pack_transform()
+  # inherits BlenderObject#load_transform(transform)
   
   def pack_data()
     color = self.diffuse_color # => RubyOF::FloatColor
@@ -71,6 +76,8 @@ class BlenderLight < BlenderObject
           'float', @size_y
         ]
     }
+    
+    # NOTE: With current loading code, only properties relevant to active light type will be restored - all other properties will be lost.
   end
   
   
