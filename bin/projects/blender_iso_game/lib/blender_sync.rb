@@ -2,10 +2,11 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, entities, meshes)
+  def initialize(window, depsgraph)
     @window = window
-    @entities = entities
-    @meshes = meshes
+    @depsgraph = depsgraph
+    # @entities = entities
+    # @meshes = meshes
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -74,11 +75,7 @@ class BlenderSync
     puts "fifo closed"
   end
   
-  def update
-    
-    # p @entities.keys
-    # p @entities.values.select{|x| x.is_a? BlenderMesh }.map{|x| x.name }
-    
+  def update    
     update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     [MAX_READS, @msg_queue.length].min.times do
@@ -154,7 +151,7 @@ class BlenderSync
       when 'viewport_camera'
         # puts "update viewport"
         
-        @entities['viewport_camera'].tap do |camera|
+        @depsgraph.viewport_camera.tap do |camera|
           camera.dirty = true
           
           camera.load(data)
@@ -165,10 +162,7 @@ class BlenderSync
         # The viewport camera is an object in RubyOF, but not in Blender
         # Need to remove it from the entity list or the camera
         # will be deleted.
-        (@entities.keys - data['list'] - ['viewport_camera'])
-        .each do |deleted_entity_name|
-          @entities.delete deleted_entity_name
-        end
+        @depsgraph.gc(active: data['list'])
       when 'timestamp'
         # not properly a Blender object, but a type I created
         # to help coordinate between RubyOF and Blender
@@ -183,71 +177,24 @@ class BlenderSync
         
         # p data if data['name'] == nil
         
-        entity = @entities[data['name']]
-          # NOTE: names in blender are unique 
-          # TODO: what happens when an object is renamed?
-          # TODO: what happens when an object is deleted?
+        entity = @depsgraph.get_entity(data['type'], data['name'])
         
-        
-        # create entity if one with that name does not already exist
-        if entity.nil?
-          klass = 
-            case data['type']
-            when 'MESH'
-              BlenderMesh
-            when 'LIGHT'
-              BlenderLight
-            when 'CAMERA'
-              # not yet implemented
-              # (skip the whole loop, because we can't process this right now)
-              next 
-            end
+        unless entity.nil?
+          # puts "entity class: #{entity.class}"
           
-          entity = klass.new
+          # NOTE: some updates change only transform or only data
           
-          entity.name = data['name']
+          # first, process transform here:
+          data['transform']&.tap do |transform|
+            # entity.load_transform(transform)
+            @depsgraph.update_entity_transform(entity, transform)
+          end
           
-          @entities[data['name']] = entity
-        end
-        
-        
-        # puts "entity class: #{entity.class}"
-        
-        # NOTE: possible for some updates to change only transform or only data
-        
-        # first, process transform here:
-        data['transform']&.tap do |transform|
-          entity.load_transform(transform)
-        end
-        
-        # then process object-specific properties:
-        data['data']&.tap do |obj_data|
-          case data['type']
-          when 'MESH'
-            # puts "mesh data"
-            # p data
-            
-            mesh = @meshes[obj_data['mesh_name']]
-            
-            if mesh.nil?
-              # load data and then cache the underlying mesh
-              # so linked copies point to the same data
-              @meshes[obj_data['mesh_name']] = entity.load_data(obj_data).mesh
-            else
-              # set the mesh based on existing linked copy
-              entity.mesh = mesh
-            end
-          
-          when 'LIGHT'
-            entity.tap do |light|
-              light.disable()
-              
-              light.load_data(obj_data)
-            end
-            
+          # then process object-specific properties:
+          data['data']&.tap do |obj_data|
+            @depsgraph.update_entity_data(entity, data['type'], obj_data)
           end
         end
-        
         
       end
     end
