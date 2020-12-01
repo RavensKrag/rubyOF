@@ -64,7 +64,7 @@ class Window < RubyOF::Window
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
     @core = Core.new(self)
-    @live_code = LiveCode.new @core, LIB_DIR/'core.rb'
+    @live_code = LiveCode.new @core, LIB_DIR
     
     @live_code.setup()
   end

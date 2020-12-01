@@ -5,16 +5,24 @@
   # Decorator in ruby: https://web.archive.org/web/20110223230202/https://lukeredpath.co.uk/blog/decorator-pattern-with-ruby-in-8-lines.html
 # Extends any object type by composition, adding live coding functionality
 class LiveCode
-  # inner                : object to be wrapped
-  # inner_class_filepath : file that defines inner.class 
-  def initialize(inner, inner_class_filepath)
+  # inner     : object to be wrapped
+  # watch_dir : directory where files to be reloaded are stored
+  #             at minimum, one of these files should specify the inner object
+  def initialize(inner, watch_dir)
     super()
     
     @inner = inner
-    @file = Pathname.new inner_class_filepath # handle Pathname and String
+    @watch_dir = Pathname.new watch_dir # handle Pathname and String
     
-    @last_time = nil # set to nil so file is always reloaded the first time
+    @last_time = nil # set to nil so files are always reloaded the first time
   end
+  
+  # at minimum, the @inner object must respond to the following methods:
+  #  @inner.setup()
+  #  @inner.on_crash
+  #  @inner.update(*args)
+  #  @inner.on_reload
+  # see core.rb for example
   
   
   state_machine :state, :initial => :normal do
@@ -140,44 +148,53 @@ class LiveCode
   
   
   def attempt_reload(first_time: true)
-    begin
-      return if first_time
+    return if first_time
+    
+    
+    # select all files in the watch dir hierarchy that have changed
+    files_to_update = 
+      Dir[(@watch_dir + './**/*').expand_path]
+      .collect{  |path_str|   Pathname.new(path_str) }
+      .select{   |path|  path.mtime > @last_time }
+    
+    if files_to_update.size > 0
+      # update the timestamp
+      @last_time = Time.now
       
-      if file_changed?
-        # update the timestamp
-        @last_time = Time.now
-        
-        # reload the file
-        puts "live loading #{@file.to_s.gsub GEM_ROOT.to_s, '[GEM_ROOT]'}"
-        load @file.to_s
-        
-        puts "file loaded"
-        
-        
-        on_reload()
-        return :reload_successful
-      else
-        return :file_unchanged
+      # reload the files
+      files_to_update.each do |file|
+        begin
+          puts "live loading #{file.to_s.gsub GEM_ROOT.to_s, '[GEM_ROOT]'}"
+          load file.to_s
+        rescue SyntaxError, ScriptError, NameError => e
+          # This block triggers if there is some sort of
+          # syntax error or similar - something that is
+          # caught on load, rather than on run.
+          
+          # ----
+          
+          # NameError is a specific subclass of StandardError
+          # other forms of StandardError should not happen on load.
+          # 
+          # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
+          
+          # @on_error_callback.call(file, e)
+          
+          puts "FAILURE TO LOAD: #{file}"
+          $nonblocking_error.puts(e)
+          
+          self.load_error_detected
+          return :reload_failed
+        else
+          puts "file loaded"
+        end
       end
-    rescue SyntaxError, ScriptError, NameError => e
-      # This block triggers if there is some sort of
-      # syntax error or similar - something that is
-      # caught on load, rather than on run.
       
-      # ----
       
-      # NameError is a specific subclass of StandardError
-      # other forms of StandardError should not happen on load.
-      # 
-      # If they are happening, something weird and unexpected has happened, and the program should fail spectacularly, as expected.
-      
-      # @on_error_callback.call(file, e)
-      
-      puts "FAILURE TO LOAD: #{@file}"
-      $nonblocking_error.puts(e)
-      
-      self.load_error_detected
-      return :reload_failed
+      on_reload()
+      return :reload_successful
+    else
+      return :file_unchanged
     end
   end
   
