@@ -5,8 +5,6 @@ class BlenderSync
   def initialize(window, depsgraph)
     @window = window
     @depsgraph = depsgraph
-    # @entities = entities
-    # @meshes = meshes
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
