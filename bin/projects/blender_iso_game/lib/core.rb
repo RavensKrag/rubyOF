@@ -179,6 +179,7 @@ class Core
   
   def on_reload
     puts "core: on reload"
+    
     unless @crash_detected
       # on a successful reload after a normal run with no errors,
       # need to free resources from the previous normal run,
@@ -448,10 +449,29 @@ class Core
     # ========================
     # render begin
     # ------------------------
+    begin
+      setup_lights_and_camera(lights)
+      
+      render_scene(lights)
+      
+    rescue Exception => e
+      finish_lights_and_camera(lights)
+      raise e
+      
+    else
+      finish_lights_and_camera(lights)
+      
+    end
+    # ------------------------
+    # render end
+    # ========================
     
+    
+  end
+  
+  def setup_lights_and_camera(lights)
     # camera begin
     @entities['viewport_camera'].begin
-    
     # 
     # setup GL state
     # 
@@ -466,8 +486,9 @@ class Core
     # the position of the light must be updated every frame,
     # call enable() so that it can update itself
     lights.each{ |light|  light.enable() }
-    
-    
+  end
+  
+  def render_scene(lights)
     # 
     # render entities
     # 
@@ -563,8 +584,9 @@ class Core
       ofPopMatrix()
       @mat2.end()
     end
-    
-    
+  end
+  
+  def finish_lights_and_camera(lights)
     # 
     # disable lights
     # 
@@ -582,19 +604,6 @@ class Core
     
     # camera end
     @entities['viewport_camera'].end
-    
-    # ------------------------
-    # render end
-    # ========================
-    
-    
-    
-    
-    
-    
-    # NOTE: ofMesh is not a subclass of ofNode, but ofLight and ofCamera ARE
-    # (thus, you don't need a separate node to track the position of ofLight)
-    
   end
   
   
