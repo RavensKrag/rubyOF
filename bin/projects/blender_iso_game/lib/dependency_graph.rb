@@ -132,26 +132,6 @@ class DependencyGraph
     end
   end
   
-  def finish_lights_and_camera(lights)
-    # 
-    # disable lights
-    # 
-    
-    # // turn off lighting //
-    lights.each{ |light|  light.disable() }
-    
-    
-    # 
-    # teardown GL state
-    # 
-    
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    # camera end
-    @entities['viewport_camera'].end
-  end
-  
   class RenderBatch
     def initialize(mesh_obj)
       super() # set up state machine
@@ -192,6 +172,7 @@ class DependencyGraph
     
     def update
       reload_instancing_shaders()
+      update_packed_entity_positions()
     end
     
     def add(mesh_obj)
@@ -251,16 +232,6 @@ class DependencyGraph
           # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
           
           
-          # collect up all the transforms
-          positions = 
-            @entity_list.collect do |mesh_obj|
-              mesh_obj.node.position
-            end
-          
-          
-          # pack into image -> texture (which will be passed to shader)
-          @instance_data.pack_positions(positions)
-          
           # set uniforms
           @mat_instanced.setCustomUniformTexture(
             "position_tex", @instance_data.texture, 1
@@ -306,7 +277,46 @@ class DependencyGraph
       end
     end
     
+    def update_packed_entity_positions
+      dirty_entities_with_indicies = 
+        @entity_list.each_with_index
+        .collect{  |entity, i|  [entity, i]  }
+        .select{   |entity, i|  entity.dirty }
+      
+      positions_with_indicies = 
+        dirty_entities_with_indicies
+        .collect{  |entity, i|  [entity.node.position, i] }
+      
+      # pack into image -> texture (which will be passed to shader)
+      @instance_data.pack_positions(positions_with_indicies)
+      
+      dirty_entities_with_indicies.each do |entity, i|
+        entity.dirty = false
+      end
+    end
     
+    
+  end
+  
+  
+  def finish_lights_and_camera(lights)
+    # 
+    # disable lights
+    # 
+    
+    # // turn off lighting //
+    lights.each{ |light|  light.disable() }
+    
+    
+    # 
+    # teardown GL state
+    # 
+    
+    ofDisableLighting()
+    ofDisableDepthTest()
+    
+    # camera end
+    @entities['viewport_camera'].end
   end
   
   
@@ -379,7 +389,9 @@ class DependencyGraph
   def update_entity_transform(entity, transform_data)
     entity.load_transform(transform_data)
     
-    # TODO: UPDATE DEPSGRAPH WITH POSITIONS HERE
+    if entity.is_a? BlenderMesh
+      entity.dirty = true
+    end
   end
   
   def update_entity_data(entity, type_string, obj_data)
@@ -421,17 +433,5 @@ class DependencyGraph
     end
   end
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  def create_new_entity(type_string)
-    
-  end
   
 end

@@ -56,6 +56,9 @@ class BlenderMesh < BlenderObject
   attr_accessor :mesh
   attr_accessor :color
   
+  # dirty flag from BlenderObject is used to signal
+  # that an one instance in a batch has changed position
+  
   def initialize
     @mesh = BlenderMeshData.new
     @node = RubyOF::Node.new
