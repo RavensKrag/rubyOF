@@ -23,40 +23,42 @@ class InstancingBuffer
   # The true float max is a little bigger, but this is enough.
   # This also allows for using one max for both positive and negative.
   def pack_positions(positions)
-    positions.each_with_index do |pos, i|
-      x = i / @width
-      y = i % @width
+    # positions.each_with_index do |pos, i|
+    #   x = i / @width
+    #   y = i % @width
       
-      # puts pos
-      arr = pos.to_a
-      # arr = [1,0,0]
+    #   # puts pos
+    #   arr = pos.to_a
+    #   # arr = [1,0,0]
       
-      magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
-      magnitude = Math.sqrt(magnitude_sq)
+    #   magnitude_sq = arr.map{|i| i**2 }.reduce(&:+)
+    #   magnitude = Math.sqrt(magnitude_sq)
       
-      data = 
-        if magnitude == 0
-          posNorm = [0,0,0]
-          posNormShifted = posNorm.map{|i| (i+1)/2 }
+    #   data = 
+    #     if magnitude == 0
+    #       posNorm = [0,0,0]
+    #       posNormShifted = posNorm.map{|i| (i+1)/2 }
           
-          [*posNormShifted, 0]
-        else
-          posNorm = arr.map{|i| i / magnitude }
-          posNormShifted = posNorm.map{|i| (i+1)/2 }
+    #       [*posNormShifted, 0]
+    #     else
+    #       posNorm = arr.map{|i| i / magnitude }
+    #       posNormShifted = posNorm.map{|i| (i+1)/2 }
           
-          magnitude_normalized = magnitude / FLOAT_MAX
+    #       magnitude_normalized = magnitude / FLOAT_MAX
           
           
-          [*posNormShifted, magnitude_normalized]
-        end
+    #       [*posNormShifted, magnitude_normalized]
+    #     end
       
-      color = RubyOF::FloatColor.rgba(data)
-      # p color.to_a
-      @pixels.setColor(x,y, color)
-    end
+    #   color = RubyOF::FloatColor.rgba(data)
+    #   # p color.to_a
+    #   @pixels.setColor(x,y, color)
+    # end
     
-    # same logic as above, but need to make sure ofColorFloat
-    # RubyOF::CPP_Callbacks.pack_positions(@pixels, @width, @height)
+    # same logic as above, but implemented in C++
+    RubyOF::CPP_Callbacks.pack_positions(
+      @pixels, @width, FLOAT_MAX, positions.map{|x| x.to_a }.flatten
+    )
     
     
     # _pixels->getColor(x,y);

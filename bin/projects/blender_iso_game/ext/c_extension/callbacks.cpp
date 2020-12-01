@@ -971,6 +971,64 @@ public:
 
 
 
+void pack_positions(ofFloatPixels &pixels, int width, float scale, Rice::Array positions){
+	
+	// allocate data
+	float* pos_ptr = new float[positions.size()];
+	
+	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
+	int idx;
+	
+	idx = 0;
+	for(auto aI = positions.begin(); aI != positions.end(); ++aI){
+		pos_ptr[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	// core logic
+	ofFloatColor c;
+	int i_max = positions.size() / 3;
+	for (int i=0; i < i_max; i++){
+		int x = i / width;
+		int y = i % width;
+		
+		float *arr = &pos_ptr[i*3];
+		
+		
+		float posNormShifted[3];
+		float magnitude_normalized;
+		if(arr[0] == 0 && arr[1] == 0 && arr[2] == 0){
+			// zero vector (ie, the only vector with magnitude zero)
+			posNormShifted[0] = ((0)+1)/2;
+			posNormShifted[1] = ((0)+1)/2;
+			posNormShifted[2] = ((0)+1)/2;
+			
+			magnitude_normalized = 0;
+		}else{
+			// all other positions
+			// (this should guard against division by zero)
+			float magnitude = sqrt(arr[0]*arr[0] + arr[1]*arr[1] + arr[2]*arr[2]);
+			
+			posNormShifted[0] = ((arr[0]/magnitude)+1)/2;
+			posNormShifted[1] = ((arr[1]/magnitude)+1)/2;
+			posNormShifted[2] = ((arr[2]/magnitude)+1)/2;
+			
+			magnitude_normalized = magnitude / scale;
+		}
+		
+		c.r = posNormShifted[0];
+		c.g = posNormShifted[1];
+		c.b = posNormShifted[2];
+		c.a = magnitude_normalized;
+		
+		pixels.setColor(x,y, c);
+	}
+	
+	// free data
+	delete pos_ptr;
+}
+
+
 
 
 
@@ -1048,6 +1106,9 @@ void Init_rubyOF_project()
 		
 		
 		.define_module_function("generate_mesh",   &generate_mesh)
+		
+		
+		.define_module_function("pack_positions",   &pack_positions)
 	;
 	
 	
