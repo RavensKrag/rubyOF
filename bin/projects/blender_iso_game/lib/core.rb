@@ -225,6 +225,7 @@ class Core
     # ('ORTHO' support currently rather poor)
     
     
+    
     dump_yaml @depsgraph => @world_save_file
     puts "world saved!"
   end
@@ -232,6 +233,19 @@ class Core
   def load_world_state
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
+      
+      # 
+      # loading the file takes 17 - 35 ms.
+      # the entire loading update takes ~1800 ms
+      # so the file IO is negligible
+      # 
+      
+      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+      # File.readlines(@world_save_file)
+      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+      # dt = t1-t0
+      # puts "file load time: #{dt / 1000} ms"
+      
       @depsgraph = YAML.load_file @world_save_file
       
       @sync.stop

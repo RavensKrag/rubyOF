@@ -481,8 +481,8 @@ class DependencyGraph
   
   def encode_with(coder)
     data_hash = {
-      'entities'  => @entities,
       'meshes'    => @meshes,
+      'entities'  => @entities,
       'unbatched' => @unbatched,
       'batches'   => @batches
     }
@@ -492,8 +492,8 @@ class DependencyGraph
   def init_with(coder)
     initialize()
     
-    @entities = coder.map['entities']
     @meshes  = coder.map['meshes']
+    @entities = coder.map['entities']
     
     @unbatched = coder.map['unbatched']
     

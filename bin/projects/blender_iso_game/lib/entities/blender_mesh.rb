@@ -203,11 +203,17 @@ class BlenderMesh < BlenderObject
   end
   
   def encode_with(coder)
+    transform_data = [
+      orientation.w, orientation.x, orientation.y, orientation.z,
+      position.x, position.y, position.z,
+      scale.x, scale.y, scale.z
+    ]
+    
     data_hash = {
       'type' => self.class::DATA_TYPE,
       'name' =>  @name,
       
-      'transform' => self.pack_transform(),
+      'transform' => Base64.encode64(transform_data.pack('d10')),
       'data' => @mesh
     }
     
@@ -218,7 +224,17 @@ class BlenderMesh < BlenderObject
     initialize()
     
     @name = coder.map['name']
-    self.load_transform(coder.map['transform'])
+    
+    # self.load_transform(coder.map['transform'])
+    
+    transform = Base64.decode64(coder.map['transform']).unpack('d10')
+    
+    # p transform
+    
+    self.orientation = GLM::Quat.new(*(transform[0..3]))
+    self.position    = GLM::Vec3.new(*(transform[4..6]))
+    self.scale       = GLM::Vec3.new(*(transform[7..9]))
+    
     @mesh = coder.map['data']
   end
 end
