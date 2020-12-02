@@ -22,7 +22,7 @@ class InstancingBuffer
   # I want to use 1e37 for this, or the nearest power of two.
   # The true float max is a little bigger, but this is enough.
   # This also allows for using one max for both positive and negative.
-  def pack_positions(positions_with_indicies)
+  def pack_positions_with_indicies(positions_with_indicies)
     positions_with_indicies.each do |pos, i|
       x = i / @width
       y = i % @width
@@ -68,6 +68,15 @@ class InstancingBuffer
     # _tex.loadData(_pixels, GL_RGBA);
     @texture.load_data(@pixels)
     
+  end
+  
+  def pack_all_positions(positions)
+    # same logic as above, but implemented in C++
+    RubyOF::CPP_Callbacks.pack_positions(
+      @pixels, @width, FLOAT_MAX, positions.map{|x| x.to_a }.flatten
+    )
+    
+    @texture.load_data(@pixels)
   end
   
   def max_instances

@@ -265,4 +265,22 @@ class ViewportCamera
     end
   end
   
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    coder.represent_map to_yaml_type, self.data_dump
+  end
+  
+  def init_with(coder)
+    initialize()
+    self.load(coder.map)
+  end
+  
 end

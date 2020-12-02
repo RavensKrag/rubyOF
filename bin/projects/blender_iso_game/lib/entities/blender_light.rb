@@ -127,4 +127,25 @@ class BlenderLight < BlenderObject
     
     
   end
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    coder.represent_map to_yaml_type, self.data_dump
+  end
+  
+  def init_with(coder)
+    initialize()
+    
+    @name = coder.map['name']
+    
+    self.load_transform(coder.map['transform'])
+    self.load_data(coder.map['data'])
+  end
 end

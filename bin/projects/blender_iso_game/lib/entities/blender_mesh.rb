@@ -45,6 +45,100 @@ class BlenderMeshData
     puts "time - mesh generation: #{dt}"
     
   end
+  
+  def pack_data
+    {
+      'mesh_name' => self.name, # name of the data, not the object
+      
+      'verts'  => ['double', self.verts.size,   self.vert_filepath],
+      'normals'=> ['double', self.normals.size, self.normal_filepath],
+      'tris'   => self.tris
+      
+      # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
+    }
+  end
+  
+  def load_data(obj_data)
+    self.name = obj_data['mesh_name']
+    
+    self.tris = obj_data['tris']
+    
+    obj_data['normals'].tap do |type, count, path|
+      raise "ERROR: normal vector count not set for #{self.name}" if count.nil?
+      raise "ERROR: path not set for #{self.name}" if path.nil?
+      
+      self.normal_filepath = path
+      
+      lines = File.readlines(path)
+      
+      # p lines
+      # b64 -> binary -> array
+      puts lines.size
+      # if @last_mesh_file_n != path
+        # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+        
+        # @last_mesh_file_n = path
+        data = lines.last # should only be one line in this file
+        self.normals = Base64.decode64(data).unpack("d#{count}")
+        
+        # # assuming type == double for now, but may want to support other types too
+      # end
+      
+      @dirty = true
+    end
+    
+    obj_data['verts'].tap do |type, count, path|
+      raise "ERROR: size of vert index buffer not set for #{self.name}" if count.nil?
+      raise "ERROR: path not set for #{self.name}" if path.nil?
+      
+      self.vert_filepath = path
+      
+      lines = File.readlines(path)
+      
+      # p lines
+      # b64 -> binary -> array
+      puts lines.size
+      # if @last_mesh_file_v != path
+        # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+        
+        # @last_mesh_file_v = path
+        data = lines.last # should only be one line in this file
+        # puts "data =>"
+        # p data
+        self.verts = Base64.decode64(data).unpack("d#{count}")
+        
+        # # assuming type == double for now, but may want to support other types too
+      # end
+      
+      @dirty = true
+    end
+    
+    
+    if @dirty
+      puts "generate mesh: #{@name}"
+      self.generate_mesh()
+    end
+  end
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    coder.represent_map to_yaml_type, self.pack_data
+  end
+  
+  def init_with(coder)
+    initialize()
+    
+    self.load_data(coder.map)
+    
+    self.generate_mesh()
+  end
 end
 
 class BlenderMesh < BlenderObject
@@ -84,15 +178,7 @@ class BlenderMesh < BlenderObject
     
     # NOTE: 'mesh_name' not saved for some objects
     
-    {
-      'mesh_name' => @mesh.name, # name of the data, not the object
-      
-      'verts'  => ['double', @mesh.verts.size,   @mesh.vert_filepath],
-      'normals'=> ['double', @mesh.normals.size, @mesh.normal_filepath],
-      'tris'   => @mesh.tris
-      
-      # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
-    }
+    return @mesh.pack_data
   end
   
   # part of BlenderObject serialization interface
@@ -101,67 +187,38 @@ class BlenderMesh < BlenderObject
     # p obj_data
     # puts "-----------------"
     
-    @mesh.name = obj_data['mesh_name']
-    
-    @mesh.tris = obj_data['tris']
-    
-    obj_data['normals'].tap do |type, count, path|
-      raise "ERROR: normal vector count not set for #{@mesh.name}" if count.nil?
-      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
-      
-      @mesh.normal_filepath = path
-      
-      lines = File.readlines(path)
-      
-      # p lines
-      # b64 -> binary -> array
-      puts lines.size
-      # if @last_mesh_file_n != path
-        # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-        
-        # @last_mesh_file_n = path
-        data = lines.last # should only be one line in this file
-        @mesh.normals = Base64.decode64(data).unpack("d#{count}")
-        
-        # # assuming type == double for now, but may want to support other types too
-      # end
-      
-      @dirty = true
-    end
-    
-    obj_data['verts'].tap do |type, count, path|
-      raise "ERROR: size of vert index buffer not set for #{@mesh.name}" if count.nil?
-      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
-      
-      @mesh.vert_filepath = path
-      
-      lines = File.readlines(path)
-      
-      # p lines
-      # b64 -> binary -> array
-      puts lines.size
-      # if @last_mesh_file_v != path
-        # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
-        
-        # @last_mesh_file_v = path
-        data = lines.last # should only be one line in this file
-        # puts "data =>"
-        # p data
-        @mesh.verts = Base64.decode64(data).unpack("d#{count}")
-        
-        # # assuming type == double for now, but may want to support other types too
-      # end
-      
-      @dirty = true
-    end
-    
-    
-    if @dirty
-      puts "generate mesh"
-      @mesh.generate_mesh()
-    end
+    @mesh.load_data(obj_data)
     
     
     return self
+  end
+  
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    data_hash = {
+      'type' => self.class::DATA_TYPE,
+      'name' =>  @name,
+      
+      'transform' => self.pack_transform(),
+      'data' => @mesh
+    }
+    
+    coder.represent_map to_yaml_type, data_hash
+  end
+  
+  def init_with(coder)
+    initialize()
+    
+    @name = coder.map['name']
+    self.load_transform(coder.map['transform'])
+    @mesh = coder.map['data']
   end
 end

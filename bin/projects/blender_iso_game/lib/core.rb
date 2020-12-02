@@ -133,15 +133,8 @@ class Core
     
     
     
-    @entities = {
-      'viewport_camera' => ViewportCamera.new,
-    }
     
-    @meshes = Hash.new
-    
-    
-    
-    @depsgraph = DependencyGraph.new(@entities, @meshes)
+    @depsgraph = DependencyGraph.new
     @sync = BlenderSync.new(@w, @depsgraph)
     
     
@@ -227,29 +220,23 @@ class Core
     # save 3D graphics data to file
     # 
     
-    puts "saving world to file.."
-    entity_data_list = @depsgraph.pack_entities
-    
     # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
     # ('CAMERA' not yet supported)
     # ('ORTHO' support currently rather poor)
     
     
-    dump_yaml entity_data_list => @world_save_file
+    dump_yaml @depsgraph => @world_save_file
     puts "world saved!"
   end
   
   def load_world_state
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
-      entity_data_list = YAML.load_file @world_save_file
+      @depsgraph = YAML.load_file @world_save_file
+      
+      @sync.stop
+      @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
       puts "load complete!"
-      # p entity_data_list
-      
-      
-      @sync.parse_blender_data(entity_data_list)
-      
-      @depsgraph.viewport_camera.dirty = false
     end
   end
   

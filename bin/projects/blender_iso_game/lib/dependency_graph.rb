@@ -1,8 +1,10 @@
 class DependencyGraph
-  def initialize(entities, meshes)
-    @entities = entities
-    @meshes = meshes
+  def initialize()
+    @entities = {
+      'viewport_camera' => ViewportCamera.new,
+    }
     
+    @meshes = Hash.new
     
     
     # material for visualizing lights
@@ -69,10 +71,6 @@ class DependencyGraph
   end
   
   
-  def viewport_camera
-    return @entities['viewport_camera']
-  end
-  
   def pack_entities
     @entities.to_a.collect{ |key, val|
       val.data_dump
@@ -133,11 +131,20 @@ class DependencyGraph
   end
   
   class RenderBatch
+    # NOTE: can't use state machine because it requires super() in initialize
+    # and I need to bypass initialize() when loading from YAML
+    attr_reader :state # read only: state is always managed interally
+    
     def initialize(mesh_obj)
-      super() # set up state machine
-      
       @mesh = mesh_obj.mesh
       @entity_list = [mesh_obj]
+      
+      setup()
+    end
+    
+    # setup is called by the YAML loader, and bypasses initialize
+    def setup()
+      @state = 'single'
       
       
       # @mat1 and @mat_instanced should have the same apperance
@@ -167,7 +174,6 @@ class DependencyGraph
       
       
       @instance_data = InstancingBuffer.new
-      
     end
     
     def update
@@ -179,7 +185,7 @@ class DependencyGraph
       @entity_list << mesh_obj
       
       if @entity_list.size > 1
-        self.state = 'instanced_set'
+        @state = 'instanced_set'
       elsif @entity_list.size > @instance_data.max_instances
         # raise exception if current texture size is too small
         # to hold packed position information.
@@ -200,61 +206,87 @@ class DependencyGraph
       @entity_list.delete_if{|x| x.equal? mesh_obj }
       
       if @entity_list.size == 1
-        self.state = 'single'
+        @state = 'single'
       elsif @entity_list.size == 0
-        self.state = 'empty'
+        @state = 'empty'
       end
     end
     
-    
-    state_machine :state, :initial => 'single' do
-      state 'empty' do # this state used in DependencyGraph#gc
-        def draw()
-          # no-op
-        end
-      end
-      
-      state 'single' do
-        def draw()
-          mesh_obj = @entity_list.first
-          
-          @mat1.begin()
-            mesh_obj.node.transformGL()
-            @mesh.draw()
-            mesh_obj.node.restoreTransformGL()
-          @mat1.end()
-        end
-      end
-      
-      state 'instanced_set' do
-        def draw()
-          # draw instanced (v4 - translation + z-rot, stored in texture)
-          # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
-          
-          
-          # set uniforms
-          @mat_instanced.setCustomUniformTexture(
-            "position_tex", @instance_data.texture, 1
-          )
-            # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
-          
-          @mat_instanced.setInstanceMagnitudeScale(
-            InstancingBuffer::FLOAT_MAX
-          )
-          
-          
-          # draw all the instances using one draw call
-          @mat_instanced.begin()
-            @mesh.draw_instanced(@entity_list.size)
-          @mat_instanced.end()
-          
-          
-        end
+    def draw()
+      case @state
+      when 'empty'
+        # no-op
+      when 'single'
+        mesh_obj = @entity_list.first
+        
+        @mat1.begin()
+          mesh_obj.node.transformGL()
+          @mesh.draw()
+          mesh_obj.node.restoreTransformGL()
+        @mat1.end()
+      when 'instanced_set'
+        # draw instanced (v4 - translation + z-rot, stored in texture)
+        # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
+        
+        
+        # set uniforms
+        @mat_instanced.setCustomUniformTexture(
+          "position_tex", @instance_data.texture, 1
+        )
+          # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+        
+        @mat_instanced.setInstanceMagnitudeScale(
+          InstancingBuffer::FLOAT_MAX
+        )
+        
+        
+        # draw all the instances using one draw call
+        @mat_instanced.begin()
+          @mesh.draw_instanced(@entity_list.size)
+        @mat_instanced.end()
         
       end
+      # no-op
+    end
+    
+    
+    # 
+    # YAML serialization interface
+    # 
+    def to_yaml_type
+      "!ruby/object:#{self.class}"
+    end
+    
+    def encode_with(coder)
+      data_hash = {
+        'state'       => @state,
+        'mesh'        => @mesh,
+        'entity_list' => @entity_list
+      }
+      coder.represent_map to_yaml_type, data_hash
+    end
+    
+    def init_with(coder)
+      setup()
       
+      @state       = coder.map['state']
+      @mesh        = coder.map['mesh']
+      @entity_list = coder.map['entity_list']
+      
+      
+      # force update on all batches using GPU instancing
+      # otherwise InstancingBuffer will be messed up.
+      # 
+      # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
+      @entity_list.each{  |entity|  entity.dirty = true }
+      reload_instancing_shaders()
+      # update_packed_entity_positions()
+      
+      positions = @entity_list.collect{  |entity| entity.node.position  }
+      @instance_data.pack_all_positions(positions)
       
     end
+    
     
     private
     
@@ -288,14 +320,12 @@ class DependencyGraph
         .collect{  |entity, i|  [entity.node.position, i] }
       
       # pack into image -> texture (which will be passed to shader)
-      @instance_data.pack_positions(positions_with_indicies)
+      @instance_data.pack_positions_with_indicies(positions_with_indicies)
       
       dirty_entities_with_indicies.each do |entity, i|
         entity.dirty = false
       end
     end
-    
-    
   end
   
   
@@ -329,6 +359,12 @@ class DependencyGraph
   # 
   
   # TODO: reduce public interface - BlenderSync should only reference items by entity name, like a database, rather than accessing entity objects
+  
+  
+  def viewport_camera
+    return @entities['viewport_camera']
+  end
+  
   
   def gc(active: [])
     (@entities.keys - active - ['viewport_camera'])
@@ -433,5 +469,36 @@ class DependencyGraph
     end
   end
   
+  
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    data_hash = {
+      'entities'  => @entities,
+      'meshes'    => @meshes,
+      'unbatched' => @unbatched,
+      'batches'   => @batches
+    }
+    coder.represent_map to_yaml_type, data_hash
+  end
+  
+  def init_with(coder)
+    initialize()
+    
+    @entities = coder.map['entities']
+    @meshes  = coder.map['meshes']
+    
+    @unbatched = coder.map['unbatched']
+    
+    @batches = coder.map['batches']
+      # all batches using GPU instancing are forced to refresh on load
+  end
   
 end
