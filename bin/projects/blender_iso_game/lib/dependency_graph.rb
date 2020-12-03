@@ -467,7 +467,7 @@ class RenderBatch
     def encode_with(coder)
       entity_data = 
         @entity_list.collect do |entity|
-          [entity.name, entity.encode_transform_to_base64].join(' ')
+          [entity.name, entity.encode_transform_to_base64].join("\n")
           # (don't need entity.mesh.name, because we're inside of a batch, where @mesh points to the shared mesh)
         end
       
@@ -487,7 +487,7 @@ class RenderBatch
       
       @entity_list = 
         coder.map['entity_list']
-        .collect{|data_string| data_string.split(' ') }
+        .collect{|data_string| data_string.split("\n") }
         .collect do |name, base64_transform|
           entity = BlenderMesh.new(@mesh)
           entity.name = name
