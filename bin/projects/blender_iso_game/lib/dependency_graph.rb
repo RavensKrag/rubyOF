@@ -130,23 +130,223 @@ class DependencyGraph
     end
   end
   
-  class RenderBatch
+  def finish_lights_and_camera(lights)
+    # 
+    # disable lights
+    # 
+    
+    # // turn off lighting //
+    lights.each{ |light|  light.disable() }
+    
+    
+    # 
+    # teardown GL state
+    # 
+    
+    ofDisableLighting()
+    ofDisableDepthTest()
+    
+    # camera end
+    @entities['viewport_camera'].end
+  end
+  
+  
+  public
+  
+  
+  
+  # 
+  # public interface with blender sync
+  # 
+  
+  # TODO: reduce public interface - BlenderSync should only reference items by entity name, like a database, rather than accessing entity objects
+  
+  
+  def viewport_camera
+    return @entities['viewport_camera']
+  end
+  
+  
+  def gc(active: [])
+    (@entities.keys - active - ['viewport_camera'])
+    .each do |deleted_entity_name|
+      entity = @entities.delete deleted_entity_name
+      
+      if entity.is_a? BlenderMesh
+        @batches[entity.mesh].delete entity
+      end
+    end
+    
+    @batches.delete_if do |mesh, batch|
+      batch.state == 'empty'
+    end
+  end
+  
+  # get existing entity if you have one, otherwise, create a new one
+  def get_entity(type, name)
+    entity = @entities[name]
+    # NOTE: names in blender are unique 
+    # TODO: what happens when an object is renamed?
+    # TODO: what happens when an object is deleted?
+    
+    
+    # create entity if one with that name does not already exist
+    if entity.nil?
+      klass = 
+        case type
+        when 'MESH'
+          BlenderMesh
+        when 'LIGHT'
+          BlenderLight
+        when 'CAMERA'
+          # not yet implemented
+          return nil
+        end
+      
+      entity = klass.new
+      
+      entity.name = name
+      
+      @entities[name] = entity
+      
+      if entity.is_a? BlenderMesh
+        @unbatched.add entity
+      end
+    end
+    
+    return entity
+  end
+  
+  # def add_entity(entity)
+  #   # nope. should not directly add entities.
+  #   # depsgraph should be in charge of entire lifetime of entity,
+  #   # including instantiation of instances.
+  # end
+  
+  def update_entity_transform(entity, transform_data)
+    entity.load_transform(transform_data)
+    
+    if entity.is_a? BlenderMesh
+      entity.dirty = true # alert batching system that position has changed
+    end
+  end
+  
+  def update_entity_data(entity, type_string, obj_data)
+    case type_string
+    when 'MESH'
+      # puts "mesh data"
+      # p data
+      
+      mesh_name = obj_data['mesh_name']
+      
+      if @meshes.has_key? mesh_name
+        # set the mesh based on existing linked copy
+        mesh = @meshes[mesh_name]
+        entity.mesh = mesh
+      else
+        # load data and then cache the underlying mesh
+        # so linked copies point to the same data
+        @meshes[mesh_name] = entity.load_data(obj_data).mesh
+      end
+      
+      # assign mesh to batch
+      if @unbatched.include? entity
+        if @batches.has_key? entity.mesh
+          @batches[entity.mesh].add entity
+        else
+          @batches[entity.mesh] = RenderBatch.new(entity)          
+        end
+        
+        @unbatched.delete entity
+      end
+    
+    when 'LIGHT'
+      entity.tap do |light|
+        light.disable()
+        
+        light.load_data(obj_data)
+      end
+      
+    end
+  end
+  
+  
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    # @entities = {
+    #   'viewport_camera' => ViewportCamera.new,
+    # }
+    #
+    # @meshes = Hash.new
+    #
+    # @unbatched = Set.new # for entities that have not yet generated meshes
+    #
+    # @batches   = Hash.new  # single entities and instanced copies go here
+    #                        # grouped by the mesh they use
+    
+    data_hash = {
+      'entity_list' => @entities.values.select{|x| !x.is_a? BlenderMesh },
+      'batch_list'  => @batches.values
+    }
+    coder.represent_map to_yaml_type, data_hash
+  end
+  
+  def init_with(coder)
+    # initialize()
+      @mat2 = RubyOF::Material.new
+      
+      @unbatched = Set.new
+        # @unbatched set should be empty when you serialize
+        # as entities should only be held there momentarily.
+        # Within one update they should be created, stored in @unbatched, and then batched
+    
+    
+    # all batches using GPU instancing are forced to refresh position on load
+    @batches = Hash.new
+      coder.map['batch_list'].each do |batch|
+        @batches[batch.mesh] = batch
+      end
+    
+    @entities = Hash.new
+      coder.map['entity_list'].each do |entity|
+        @entities[entity.name] = entity
+      end
+      @batches.each_value do |batch|
+        batch.each do |entity|
+          @entities[entity.name] = entity
+        end
+      end
+    
+    @meshes = @batches.keys # returns copy, not reference
+  end
+  
+end
+
+class RenderBatch
     # NOTE: can't use state machine because it requires super() in initialize
     # and I need to bypass initialize() when loading from YAML
     attr_reader :state # read only: state is always managed interally
+    attr_reader :mesh  # read only: once you assign a mesh, it's done
     
     def initialize(mesh_obj)
       @mesh = mesh_obj.mesh
       @entity_list = [mesh_obj]
+      
+      @state = 'single'
       
       setup()
     end
     
     # setup is called by the YAML loader, and bypasses initialize
     def setup()
-      @state = 'single'
-      
-      
       # @mat1 and @mat_instanced should have the same apperance
       
       color = RubyOF::FloatColor.rgb([1, 1, 1])
@@ -249,6 +449,13 @@ class DependencyGraph
       # no-op
     end
     
+    # define each instead of exposing @entity_list
+    def each() # &block
+      @entity_list.each do |entity|
+        yield entity
+      end
+    end
+    
     
     # 
     # YAML serialization interface
@@ -258,10 +465,16 @@ class DependencyGraph
     end
     
     def encode_with(coder)
+      entity_data = 
+        @entity_list.collect do |entity|
+          [entity.name, entity.encode_transform_to_base64].join(' ')
+          # (don't need entity.mesh.name, because we're inside of a batch, where @mesh points to the shared mesh)
+        end
+      
       data_hash = {
         'state'       => @state,
         'mesh'        => @mesh,
-        'entity_list' => @entity_list
+        'entity_list' => entity_data
       }
       coder.represent_map to_yaml_type, data_hash
     end
@@ -271,15 +484,23 @@ class DependencyGraph
       
       @state       = coder.map['state']
       @mesh        = coder.map['mesh']
-      @entity_list = coder.map['entity_list']
       
+      @entity_list = 
+        coder.map['entity_list']
+        .collect{|data_string| data_string.split(' ') }
+        .collect do |name, base64_transform|
+          entity = BlenderMesh.new(@mesh)
+          entity.name = name
+          entity.load_transform_from_base64(base64_transform)
+        end
       
       # force update on all batches using GPU instancing
       # otherwise InstancingBuffer will be messed up.
       # 
       # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
-      @entity_list.each{  |entity|  entity.dirty = true }
       reload_instancing_shaders()
+      
+      # @entity_list.each{  |entity|  entity.dirty = true }
       # update_packed_entity_positions()
       
       positions = @entity_list.collect{  |entity| entity.node.position  }
@@ -328,177 +549,3 @@ class DependencyGraph
     end
   end
   
-  
-  def finish_lights_and_camera(lights)
-    # 
-    # disable lights
-    # 
-    
-    # // turn off lighting //
-    lights.each{ |light|  light.disable() }
-    
-    
-    # 
-    # teardown GL state
-    # 
-    
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    # camera end
-    @entities['viewport_camera'].end
-  end
-  
-  
-  public
-  
-  
-  
-  # 
-  # public interface with blender sync
-  # 
-  
-  # TODO: reduce public interface - BlenderSync should only reference items by entity name, like a database, rather than accessing entity objects
-  
-  
-  def viewport_camera
-    return @entities['viewport_camera']
-  end
-  
-  
-  def gc(active: [])
-    (@entities.keys - active - ['viewport_camera'])
-    .each do |deleted_entity_name|
-      entity = @entities.delete deleted_entity_name
-      
-      if entity.is_a? BlenderMesh
-        @batches[entity.mesh].delete entity
-      end
-    end
-    
-    @batches.delete_if do |mesh, batch|
-      batch.state == 'empty'
-    end
-  end
-  
-  # get existing entity if you have one, otherwise, create a new one
-  def get_entity(type, name)
-    entity = @entities[name]
-    # NOTE: names in blender are unique 
-    # TODO: what happens when an object is renamed?
-    # TODO: what happens when an object is deleted?
-    
-    
-    # create entity if one with that name does not already exist
-    if entity.nil?
-      klass = 
-        case type
-        when 'MESH'
-          BlenderMesh
-        when 'LIGHT'
-          BlenderLight
-        when 'CAMERA'
-          # not yet implemented
-          return nil
-        end
-      
-      entity = klass.new
-      
-      entity.name = name
-      
-      @entities[name] = entity
-      
-      if entity.is_a? BlenderMesh
-        @unbatched.add entity
-      end
-    end
-    
-    return entity
-  end
-  
-  # def add_entity(entity)
-  #   # nope. should not directly add entities.
-  #   # depsgraph should be in charge of entire lifetime of entity,
-  #   # including instantiation of instances.
-  # end
-  
-  def update_entity_transform(entity, transform_data)
-    entity.load_transform(transform_data)
-    
-    if entity.is_a? BlenderMesh
-      entity.dirty = true
-    end
-  end
-  
-  def update_entity_data(entity, type_string, obj_data)
-    case type_string
-    when 'MESH'
-      # puts "mesh data"
-      # p data
-      
-      mesh_name = obj_data['mesh_name']
-      
-      if @meshes.has_key? mesh_name
-        # set the mesh based on existing linked copy
-        mesh = @meshes[mesh_name]
-        entity.mesh = mesh
-      else
-        # load data and then cache the underlying mesh
-        # so linked copies point to the same data
-        @meshes[mesh_name] = entity.load_data(obj_data).mesh
-      end
-      
-      # assign mesh to batch
-      if @unbatched.include? entity
-        if @batches.has_key? entity.mesh
-          @batches[entity.mesh].add entity
-        else
-          @batches[entity.mesh] = RenderBatch.new(entity)          
-        end
-        
-        @unbatched.delete entity
-      end
-    
-    when 'LIGHT'
-      entity.tap do |light|
-        light.disable()
-        
-        light.load_data(obj_data)
-      end
-      
-    end
-  end
-  
-  
-  
-  # 
-  # YAML serialization interface
-  # 
-  
-  def to_yaml_type
-    "!ruby/object:#{self.class}"
-  end
-  
-  def encode_with(coder)
-    data_hash = {
-      'meshes'    => @meshes,
-      'entities'  => @entities,
-      'unbatched' => @unbatched,
-      'batches'   => @batches
-    }
-    coder.represent_map to_yaml_type, data_hash
-  end
-  
-  def init_with(coder)
-    initialize()
-    
-    @meshes  = coder.map['meshes']
-    @entities = coder.map['entities']
-    
-    @unbatched = coder.map['unbatched']
-    
-    @batches = coder.map['batches']
-      # all batches using GPU instancing are forced to refresh on load
-  end
-  
-end

@@ -153,8 +153,8 @@ class BlenderMesh < BlenderObject
   # dirty flag from BlenderObject is used to signal
   # that an one instance in a batch has changed position
   
-  def initialize
-    @mesh = BlenderMeshData.new
+  def initialize(mesh_data=BlenderMeshData.new)
+    @mesh = mesh_data
     @node = RubyOF::Node.new
   end
   
@@ -198,43 +198,62 @@ class BlenderMesh < BlenderObject
   # YAML serialization interface
   # 
   
-  def to_yaml_type
-    "!ruby/object:#{self.class}"
-  end
+  # def to_yaml_type
+  #   "!ruby/object:#{self.class}"
+  # end
   
-  def encode_with(coder)
+  # def encode_with(coder)
+  #   data_hash = {
+  #     'type' => self.class::DATA_TYPE,
+  #     'name' =>  @name,
+      
+  #     'transform' => encode_transform_to_base64(),
+  #     'data' => @mesh
+  #   }
+    
+  #   coder.represent_map to_yaml_type, data_hash
+  # end
+  
+  # def init_with(coder)
+  #   # initialize()
+  #   @mesh = coder.map['data']
+  #   @node = RubyOF::Node.new
+    
+    
+  #   @name = coder.map['name']
+    
+  #   # self.load_transform(coder.map['transform'])
+  #   load_transform_from_base64(coder.map['transform'])
+    
+  #   # p transform
+    
+    
+  # end
+  
+  def encode_transform_to_base64
+    orientation = self.orientation
+    position    = self.position
+    scale       = self.scale
+    
     transform_data = [
       orientation.w, orientation.x, orientation.y, orientation.z,
       position.x, position.y, position.z,
       scale.x, scale.y, scale.z
     ]
     
-    data_hash = {
-      'type' => self.class::DATA_TYPE,
-      'name' =>  @name,
-      
-      'transform' => Base64.encode64(transform_data.pack('d10')),
-      'data' => @mesh
-    }
-    
-    coder.represent_map to_yaml_type, data_hash
+    # strict encode disallows line feed characters
+    return Base64.strict_encode64(transform_data.pack('d10'))
   end
   
-  def init_with(coder)
-    initialize()
+  def load_transform_from_base64(base64_data)
+    # strict decode disallows line feed characters
+    transform = Base64.strict_decode64(base64_data).unpack('d10')
     
-    @name = coder.map['name']
-    
-    # self.load_transform(coder.map['transform'])
-    
-    transform = Base64.decode64(coder.map['transform']).unpack('d10')
-    
-    # p transform
     
     self.orientation = GLM::Quat.new(*(transform[0..3]))
     self.position    = GLM::Vec3.new(*(transform[4..6]))
     self.scale       = GLM::Vec3.new(*(transform[7..9]))
     
-    @mesh = coder.map['data']
+    return self
   end
 end
