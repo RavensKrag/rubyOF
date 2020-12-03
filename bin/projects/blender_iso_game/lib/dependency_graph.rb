@@ -472,6 +472,7 @@ class RenderBatch
         end
       
       data_hash = {
+        'count'       => entity_data.size, # for human reading of YAML
         'state'       => @state,
         'mesh'        => @mesh,
         'entity_list' => entity_data
