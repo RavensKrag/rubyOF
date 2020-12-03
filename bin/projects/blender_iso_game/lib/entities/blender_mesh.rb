@@ -242,12 +242,12 @@ class BlenderMesh < BlenderObject
     ]
     
     # strict encode disallows line feed characters
-    return Base64.strict_encode64(transform_data.pack('d10'))
+    return Base64.strict_encode64(transform_data.pack('F10'))
   end
   
   def load_transform_from_base64(base64_data)
     # strict decode disallows line feed characters
-    transform = Base64.strict_decode64(base64_data).unpack('d10')
+    transform = Base64.strict_decode64(base64_data).unpack('F10')
     
     
     self.orientation = GLM::Quat.new(*(transform[0..3]))
