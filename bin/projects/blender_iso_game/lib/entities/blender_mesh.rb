@@ -60,8 +60,6 @@ class BlenderMeshData
   end
   
   def load_data(obj_data)
-    self.name = obj_data['mesh_name']
-    
     self.tris = obj_data['tris']
     
     obj_data['normals'].tap do |type, count, path|
@@ -134,7 +132,7 @@ class BlenderMeshData
   end
   
   def init_with(coder)
-    initialize()
+    initialize(coder.map['mesh_name'])
     
     self.load_data(coder.map)
     
@@ -162,8 +160,8 @@ class BlenderMesh < BlenderObject
     @node = RubyOF::Node.new
   end
   
-  def_delegators :@node, :position
-                         :orientation
+  def_delegators :@node, :position,
+                         :orientation,
                          :scale
   
   def position=(vec)

@@ -437,8 +437,7 @@ class RenderBatch
         coder.map['entity_list']
         .collect{|data_string| data_string.split("\n") }
         .collect do |name, base64_transform|
-          entity = BlenderMesh.new(@mesh)
-          entity.name = name
+          entity = BlenderMesh.new(name, @mesh)
           entity.load_transform_from_base64(base64_transform)
         end
       
