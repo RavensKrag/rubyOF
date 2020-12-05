@@ -224,7 +224,7 @@ class Core
     # ('CAMERA' not yet supported)
     # ('ORTHO' support currently rather poor)
     
-    RubyProf.start
+    # RubyProf.start
     
     dump_yaml @depsgraph => @world_save_file
     puts "world saved!"
@@ -252,16 +252,16 @@ class Core
       @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
       puts "load complete!"
       
-      result = RubyProf.stop
+      # result = RubyProf.stop
       
       # printer = RubyProf::FlatPrinter.new(result)
       # printer.print(STDOUT)
       
-      printer = RubyProf::CallStackPrinter.new(result)
+      # printer = RubyProf::CallStackPrinter.new(result)
       
-      File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
-        printer.print(f)
-      end
+      # File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
+      #   printer.print(f)
+      # end
     end
   end
   
@@ -298,6 +298,12 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
+    if @first_update
+      # load_world_state
+      
+      @first_update = false
+    end
+    
     
     if @debugging
       
