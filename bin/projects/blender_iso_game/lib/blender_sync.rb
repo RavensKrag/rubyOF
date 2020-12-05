@@ -171,7 +171,7 @@ class BlenderSync
       # - trying to match pid_query with pid_hit
       # 
       
-      sync_window_position(blender_pid: data['pid'])
+      sync_window_position(blender_pid: region_data['pid'])
     end
     
     

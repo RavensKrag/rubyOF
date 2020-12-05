@@ -451,9 +451,9 @@ class RubyOF(bpy.types.RenderEngine):
         
         datablock_export = []
         
-        obj_data = [ obj.data for obj in bpy.data.objects ]
-        unique_obj_data = list(set(obj_data))
-        for datablock in unique_obj_data:
+        datablock_list = [ obj.data for obj in bpy.data.objects ]
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
             if isinstance(datablock, bpy.types.Mesh):
                 datablock_export.append( self.pack_mesh_data(datablock) )
             elif isinstance(datablock, bpy.types.Light):
@@ -524,7 +524,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         # Loop over all object instances in the scene.
         
-        datablock_export = []
+        datablock_list = [] # datablocks that need to be packed up
+        
         obj_export = []
         for update in depsgraph.updates:
             obj = update.id
@@ -543,17 +544,21 @@ class RubyOF(bpy.types.RenderEngine):
                     print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
                     obj_data['data'] = obj.data.name
                     
-                    datablock = obj.data
-                    if isinstance(datablock, bpy.types.Mesh):
-                        datablock_export.append( self.pack_mesh_data(datablock) )
-                    elif isinstance(datablock, bpy.types.Light):
-                        datablock_export.append( self.pack_light_data(datablock) )
-                    else:
-                        continue
-                
+                    datablock_list.append(obj.data)
+                    
                 obj_export.append(obj_data)
         
         
+        datablock_export = []
+        
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
+            if isinstance(datablock, bpy.types.Mesh):
+                datablock_export.append( self.pack_mesh_data(datablock) )
+            elif isinstance(datablock, bpy.types.Light):
+                datablock_export.append( self.pack_light_data(datablock) )
+            else:
+                continue
         
         
         # full list of all objects, by name (helps Ruby delete old objects)
