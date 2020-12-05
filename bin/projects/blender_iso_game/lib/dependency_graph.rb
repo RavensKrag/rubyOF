@@ -183,11 +183,15 @@ class DependencyGraph
       # => adds datablock to collection (need to pull datablock by name)
       # => adds entity to collection (need to pull entity by name)
       @entities[entity.name] = entity
+      
       # => associates datablock and entity with proper batch
-      if @batches.has_key? entity.mesh
-        @batches[entity.mesh].add entity
+      # (key should be the name, not the mesh, so that keys are immutable)
+      # (was using the entire mesh before, but mutable keys get spooky effects)
+      mesh_name = entity.mesh.name
+      if @batches.has_key? mesh_name
+        @batches[mesh_name].add entity
       else
-        @batches[entity.mesh] = RenderBatch.new(entity)          
+        @batches[mesh_name] = RenderBatch.new(entity)          
       end
       
     when BlenderLight
@@ -204,7 +208,7 @@ class DependencyGraph
     
     case entity
     when BlenderMesh
-      @batches[entity.mesh].delete entity
+      @batches[entity.mesh.name].delete entity
     when BlenderLight
       @lights.delete_if{ |light|  light.equal? entity }
     end
@@ -216,9 +220,17 @@ class DependencyGraph
   
   def find_datablock(datablock_name)
     # assumes all datablocks are mesh datablocks
-    # (linked lighting data is not supporetd)
+    # (linked lighting data is not supported)
     # (other blender object types, such as camera, are not yet implemented)
-    return @batches.keys.find{ |datablock| datablock.name = datablock_name }
+    @batches.values
+    .collect{ |batch| batch.mesh }
+    .find{ |mesh_datablock| mesh_datablock.name == datablock_name }
+    # ^ the problem was here: I used = when I meant ==
+    #   and then the names got all gummed up, as well as the links
+    # TODO: do I want to go back to using BlenderMesh as keys? or is it actually better to use string keys?
+    
+    # TODO: when you delete some instances from the world, the position data gets messed up. it's easily fixed with an additional move, but maybe there's a more elegant way... basically, the code implictily assumes that the deleted meshes are the ones with indicies at the end of the list, but this is not necessarily the case. thus, if you don't update all positions on deletion, then the "wrong instances" appear to be deleted. This is not exactly the case, but it's a pretty weird graphical effect, regaurdless.
+    
   end
   
   
@@ -256,7 +268,7 @@ class DependencyGraph
     # all batches using GPU instancing are forced to refresh position on load
     @batches = Hash.new
       coder.map['batch_list'].each do |batch|
-        @batches[batch.mesh] = batch
+        @batches[batch.mesh.name] = batch
       end
     
     @entities = Hash.new
@@ -269,7 +281,8 @@ class DependencyGraph
         end
       end
     
-    @meshes = @batches.keys # returns copy, not reference
+    # Hash#values returns copy, not reference
+    @meshes = @batches.values.collect{ |batch|  batch.mesh } 
     @lights = @entities.values.select{ |entity| entity.is_a? BlenderLight }
   end
   
@@ -394,6 +407,10 @@ class RenderBatch
         
       end
       # no-op
+    end
+    
+    def to_s
+      return "(#{@mesh.name} => [#{@entity_list.size} :: #{@entity_list.collect{|x| x.name }.join(',')}] )"
     end
     
     # define each instead of exposing @entity_list

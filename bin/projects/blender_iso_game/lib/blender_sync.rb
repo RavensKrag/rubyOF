@@ -81,6 +81,11 @@ class BlenderSync
       
       t0 = RubyOF::Utils.ofGetElapsedTimeMicros
       blender_data = JSON.parse(data_string)
+      
+      # File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'a+') do |f|
+      #   f.puts data_string
+      # end
+      
       # p list
       t1 = RubyOF::Utils.ofGetElapsedTimeMicros
       
@@ -186,6 +191,7 @@ class BlenderSync
     # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
     
     
+    # FIXME: when you add a new cylinder, all of the instances become cylinders. this is not good. thi geometry persists through YAML reload, even when the original cylinder is deletede.
     
     new_datablocks = Hash.new
     
@@ -224,6 +230,8 @@ class BlenderSync
         end
       end
     end
+    
+    p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
     
     
     blender_data['objects']&.tap do |object_list|
