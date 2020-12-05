@@ -163,7 +163,7 @@ class RubyOF(bpy.types.RenderEngine):
             self.send_initial_data()
         else:
             if depsgraph.id_type_updated('OBJECT'):
-                self.send_update_data()
+                self.send_update_data(depsgraph)
         
         
         # print("not first time")
@@ -525,7 +525,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         
     # TODO: need to update this loop as well - don't want to re-pack all of the data when one mesh being used by 4000 instances gets updated. only want to pack that mesh data up 1x, not 4000x.
-    def send_update_data(self):
+    def send_update_data(self, depsgraph):
         total_t0 = time.time()
         
         
