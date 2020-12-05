@@ -7,7 +7,8 @@ class BlenderMeshData
   attr_accessor :verts, :normals, :tris
   def_delegators :@mesh, :draw, :draw_instanced
   
-  def initialize
+  def initialize(name)
+    @name = name
     @mesh = RubyOF::VboMesh.new
   end
   
@@ -151,16 +152,34 @@ class BlenderMesh < BlenderObject
   attr_accessor :color
   
   # dirty flag from BlenderObject is used to signal
-  # that an one instance in a batch has changed position
+  # that this instance has changed position
+  # (only used when this entity is part of a GPU instanced batch)
   
-  def initialize(mesh_data=BlenderMeshData.new)
+  def initialize(name, mesh_data)
+    super(name)
+    
     @mesh = mesh_data
     @node = RubyOF::Node.new
   end
   
-  def_delegators :@node, :position, :position=,
-                         :orientation, :orientation=,
-                         :scale, :scale=
+  def_delegators :@node, :position
+                         :orientation
+                         :scale
+  
+  def position=(vec)
+    @node.position = vec
+    @dirty = true
+  end
+  
+  def orientation=(quat)
+    @node.orientation = quat
+    @dirty = true
+  end
+  
+  def scale=(vec)
+    @node.scale = vec
+    @dirty = true
+  end
   
   
   # inherits BlenderObject#data_dump

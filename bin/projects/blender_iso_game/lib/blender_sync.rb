@@ -77,26 +77,20 @@ class BlenderSync
     update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     [MAX_READS, @msg_queue.length].min.times do
-      data = @msg_queue.pop
+      data_string = @msg_queue.pop
       
       t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      list = JSON.parse(data)
+      blender_data = JSON.parse(data_string)
       # p list
       t1 = RubyOF::Utils.ofGetElapsedTimeMicros
       
       dt = t1-t0;
       puts "time - parse json: #{dt}"
       
-      timestamps = list.select{|x| x['type'] == 'timestamp'}
-      unless timestamps.empty?
-        time = timestamps.first['end_time']
-        dt = Time.now.strftime('%s.%N').to_f - time
-        puts "transmision time: #{dt*1000} ms"
-      end
       
       
       # TODO: need to send over type info instead of just the object name, but this works for now
-      parse_blender_data(list)
+      parse_blender_data(blender_data)
       
     end
     
@@ -108,94 +102,203 @@ class BlenderSync
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
-  def parse_blender_data(data_list)
+  def parse_blender_data(blender_data)
     
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    data_list.each do |data|
-      
-      # viewport camera updates (not a camera object)
-      
-      # material updates
-      
-      
-      # transform
-      # mesh
-      # light property updates
-      # camera object updates? (not implemented in Python script yet)
-      
-      
-      # first process types with no transform component
-      case data['type']
-      when 'viewport_region'
-        # 
-        # sync window size
-        # 
+    # data = {
+    #     'timestamps' : {
+    #         'start_time': total_t0,
+    #         'end_time':   total_t1
+    #     },
         
-        w = data['width']
-        h = data['height']
-        @window.set_window_shape(w,h)
+    #     'all_entity_names' : object_list,
         
-        # @camera.aspectRatio = w.to_f/h.to_f
+    #     'datablocks' : datablock_export,
+    #     'objects' : obj_export
+    # }
+    
+    
+    # process timestamps twice:
+    # + calculate transmission time at the start of this function
+    # + calculate roundtrip time at the end of this function
+    timestamps = blender_data['timestamps']
+    unless timestamps.nil?
+      time = timestamps['end_time']
+      dt = Time.now.strftime('%s.%N').to_f - time
+      puts "transmision time: #{dt*1000} ms"
+    end
+    
+    
+    
+    
+    # only sent on update, not on initial
+    blender_data['all_entity_names']&.tap do |entity_names|
+      # The viewport camera is an object in RubyOF, but not in Blender
+      # Need to remove it from the entity list or the camera
+      # will be deleted.
+      @depsgraph.gc(active: entity_names)
+    end
+    
+    
+    # sent on viewport update, not every frame
+    blender_data['viewport_camera']&.tap do |camera_data|
+      # puts "update viewport"
+      
+      @depsgraph.viewport_camera.tap do |camera|
+        camera.dirty = true
         
-        
-        # 
-        # sync window position
-        # (assuming running on Linux)
-        # - trying to match pid_query with pid_hit
-        # 
-        
-        sync_window_position(blender_pid: data['pid'])
-      when 'viewport_camera'
-        # puts "update viewport"
-        
-        @depsgraph.viewport_camera.tap do |camera|
-          camera.dirty = true
+        camera.load(camera_data)
+      end
+    end
+    
+    # sent on some updates, when window link enabled
+    blender_data['viewport_region']&.tap do |region_data|
+      # 
+      # sync window size
+      # 
+      
+      w = region_data['width']
+      h = region_data['height']
+      @window.set_window_shape(w,h)
+      
+      # @camera.aspectRatio = w.to_f/h.to_f
+      
+      
+      # 
+      # sync window position
+      # (assuming running on Linux)
+      # - trying to match pid_query with pid_hit
+      # 
+      
+      sync_window_position(blender_pid: data['pid'])
+    end
+    
+    
+    
+    # TODO: lights and meshes work differently. do I want to be able to send data on linked copies of lights from Blender? Blender supports this, but I'm not sure it's useful to this renderer. Where do I handle that disconnect?
+    
+    
+    # TODO: figure out again what data belongs here and what belongs in depsgraph
+    # TODO: consider moving this entire data processing function into depsgraph
+      # (that may actually be bad, because this function also deals with changing window size. while tools like Blender need that, I don't think it's necessary for gameplay code to have that power)
+    
+    # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
+    
+    
+    
+    new_datablocks = Hash.new
+    
+    blender_data['datablocks']&.tap do |datablock_list|
+      datablock_list.each do |data|
+        case data['type']
+        when 'bpy.types.Mesh'
+          # create underlying mesh data (verts)
+          # to later associate with mesh objects (transform)
+          # which sets the foundation for instanced geometry
           
-          camera.load(data)
-        end
-      when 'MATERIAL'
-        
-      when 'entity_list'
-        # The viewport camera is an object in RubyOF, but not in Blender
-        # Need to remove it from the entity list or the camera
-        # will be deleted.
-        @depsgraph.gc(active: data['list'])
-      when 'timestamp'
-        # not properly a Blender object, but a type I created
-        # to help coordinate between RubyOF and Blender
-        
-        # t0 = data['time']
-        # t1 = Time.now.strftime('%s.%N').to_f
-        dt = Time.now.strftime('%s.%N').to_f - data['start_time']
-        puts "roundtrip time: #{dt*1000} ms"
-        
-      else # other types of objects with transforms
-        # get the entity
-        
-        # p data if data['name'] == nil
-        
-        entity = @depsgraph.get_entity(data['type'], data['name'])
-        
-        unless entity.nil?
-          # puts "entity class: #{entity.class}"
+          name = data['mesh_name']
           
-          # NOTE: some updates change only transform or only data
-          
-          # first, process transform here:
-          data['transform']&.tap do |transform|
-            # entity.load_transform(transform)
-            @depsgraph.update_entity_transform(entity, transform)
+          mesh_datablock = @depsgraph.find_datablock(name)
+          if mesh_datablock.nil?
+            mesh_datablock = BlenderMeshData.new(name)
           end
           
-          # then process object-specific properties:
-          data['data']&.tap do |obj_data|
-            @depsgraph.update_entity_data(entity, data['type'], obj_data)
+          
+          mesh_datablock.load_data(data)
+          
+          new_datablocks[name] = mesh_datablock
+          
+        when 'bpy.types.Light'
+          # associate light data with light objects
+          # because I don't want to have linked lights in RubyOF
+          blender_data['objects']&.tap do |object_list|
+            object_list
+            .select{|obj_data|  obj_data['type'] == 'LIGHT' }
+            .each do |light_data|
+              if light_data['data'] == data['light_name']
+                light_data['data'] = data
+              end
+            end
+          end
+        end
+      end
+    end
+    
+    
+    blender_data['objects']&.tap do |object_list|
+      object_list.each do |data|
+        # set type-specific properties
+        case data['type']
+        when 'MESH'
+          # associate mesh object (transform) with underlying mesh data (verts)
+          
+          # TODO: how do you handle an existing object being linked to a different mesh?
+          
+          
+          # if 'data' field is set, assume that linkage must be updated
+          name = data['name']
+          
+          mesh_entity = @depsgraph.find_entity(name)
+          if mesh_entity.nil?
+            datablock_name = data['data']
+            mesh_datablock = new_datablocks[datablock_name]
+            mesh_entity = BlenderMesh.new(name, mesh_datablock)
+            
+            @depsgraph.add mesh_entity
+          end
+          
+          data['transform']&.tap do |transform_data|
+            mesh_entity.load_transform(transform_data)
+          end
+          
+          # TODO: need indirection when loading transforms or something, so that the deps graph can know to update the instancing buffer
+            # DONE
+          
+          # TODO: need to figure out again how to add to batches / how to update batches
+            # have a plan (see below) but not implemented yet
+        when 'LIGHT'
+          # load transform AND data for lights here as necessary
+          # ('data' field has already been linked to necessary data)
+          name = data['name']
+          
+          light = @depsgraph.find_entity(name)
+          if light.nil?
+            light = BlenderLight.new(name)
+            
+            @depsgraph.add light
+          end
+          
+          light.disable()
+          
+          data['transform']&.tap do |transform_data|
+            light.load_transform(transform_data)
+          end
+          
+          data['data']&.tap do |core_data|
+            light.load_data(core_data)
           end
         end
         
       end
+      
     end
+    
+    
+    
+    
+    
+    # process this last for proper timing
+    unless timestamps.nil?
+      # t0 = data['time']
+      # t1 = Time.now.strftime('%s.%N').to_f
+      dt = Time.now.strftime('%s.%N').to_f - timestamps['start_time']
+      puts "roundtrip time: #{dt*1000} ms"
+    end
+    
+    
+    
+    
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     

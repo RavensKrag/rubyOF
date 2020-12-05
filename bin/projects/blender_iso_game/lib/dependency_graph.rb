@@ -5,6 +5,7 @@ class DependencyGraph
     }
     
     @meshes = Hash.new
+    @lights = Array.new
     
     
     # material for visualizing lights
@@ -24,8 +25,6 @@ class DependencyGraph
     #   .select{|x| x.is_a? BlenderMesh }
     #   .group_by{|x| x.mesh }
     
-    @unbatched = Set.new # for entities that have not yet generated meshes
-    
     @batches   = Hash.new  # single entities and instanced copies go here
                            # grouped by the mesh they use
     
@@ -42,27 +41,24 @@ class DependencyGraph
     end
     
     
-    lights = @entities.values.select{ |entity|  entity.is_a? BlenderLight }
-    
-    
     # ========================
     # render begin
     # ------------------------
     begin
-      setup_lights_and_camera(lights)
+      setup_lights_and_camera()
       
-      render_scene(lights)
+      render_scene()
       
     
     # clean up lights and camera whether there is an exception or not
     # but if there's an exception, you need to re-raise it
     # (can't just use 'ensure' here)
     rescue Exception => e 
-      finish_lights_and_camera(lights)
+      finish_lights_and_camera()
       raise e
       
     else
-      finish_lights_and_camera(lights)
+      finish_lights_and_camera()
       
     end
     # ------------------------
@@ -81,7 +77,7 @@ class DependencyGraph
   private
   
   
-  def setup_lights_and_camera(lights)
+  def setup_lights_and_camera
     # camera begin
     @entities['viewport_camera'].begin
     # 
@@ -97,10 +93,10 @@ class DependencyGraph
     
     # the position of the light must be updated every frame,
     # call enable() so that it can update itself
-    lights.each{ |light|  light.enable() }
+    @lights.each{ |light|  light.enable() }
   end
   
-  def render_scene(lights)
+  def render_scene
     # 
     # render entities
     # 
@@ -115,7 +111,7 @@ class DependencyGraph
     # render the sphere that represents the light
     # 
     
-    lights.each do |light|
+    @lights.each do |light|
       light_pos   = light.position
       light_color = light.diffuse_color
       
@@ -130,13 +126,13 @@ class DependencyGraph
     end
   end
   
-  def finish_lights_and_camera(lights)
+  def finish_lights_and_camera
     # 
     # disable lights
     # 
     
     # // turn off lighting //
-    lights.each{ |light|  light.disable() }
+    @lights.each{ |light|  light.disable() }
     
     
     # 
@@ -170,11 +166,8 @@ class DependencyGraph
   def gc(active: [])
     (@entities.keys - active - ['viewport_camera'])
     .each do |deleted_entity_name|
-      entity = @entities.delete deleted_entity_name
+      self.delete deleted_entity_name
       
-      if entity.is_a? BlenderMesh
-        @batches[entity.mesh].delete entity
-      end
     end
     
     @batches.delete_if do |mesh, batch|
@@ -182,92 +175,50 @@ class DependencyGraph
     end
   end
   
-  # get existing entity if you have one, otherwise, create a new one
-  def get_entity(type, name)
-    entity = @entities[name]
-    # NOTE: names in blender are unique 
-    # TODO: what happens when an object is renamed?
-    # TODO: what happens when an object is deleted?
-    
-    
-    # create entity if one with that name does not already exist
-    if entity.nil?
-      klass = 
-        case type
-        when 'MESH'
-          BlenderMesh
-        when 'LIGHT'
-          BlenderLight
-        when 'CAMERA'
-          # not yet implemented
-          return nil
-        end
-      
-      entity = klass.new
-      
-      entity.name = name
-      
-      @entities[name] = entity
-      
-      if entity.is_a? BlenderMesh
-        @unbatched.add entity
-      end
-    end
-    
-    return entity
-  end
   
-  # def add_entity(entity)
-  #   # nope. should not directly add entities.
-  #   # depsgraph should be in charge of entire lifetime of entity,
-  #   # including instantiation of instances.
-  # end
   
-  def update_entity_transform(entity, transform_data)
-    entity.load_transform(transform_data)
-    
-    if entity.is_a? BlenderMesh
-      entity.dirty = true # alert batching system that position has changed
-    end
-  end
-  
-  def update_entity_data(entity, type_string, obj_data)
-    case type_string
-    when 'MESH'
-      # puts "mesh data"
-      # p data
-      
-      mesh_name = obj_data['mesh_name']
-      
-      if @meshes.has_key? mesh_name
-        # set the mesh based on existing linked copy
-        mesh = @meshes[mesh_name]
-        entity.mesh = mesh
+  def add(entity)
+    case entity
+    when BlenderMesh
+      # => adds datablock to collection (need to pull datablock by name)
+      # => adds entity to collection (need to pull entity by name)
+      @entities[entity.name] = entity
+      # => associates datablock and entity with proper batch
+      if @batches.has_key? entity.mesh
+        @batches[entity.mesh].add entity
       else
-        # load data and then cache the underlying mesh
-        # so linked copies point to the same data
-        @meshes[mesh_name] = entity.load_data(obj_data).mesh
+        @batches[entity.mesh] = RenderBatch.new(entity)          
       end
       
-      # assign mesh to batch
-      if @unbatched.include? entity
-        if @batches.has_key? entity.mesh
-          @batches[entity.mesh].add entity
-        else
-          @batches[entity.mesh] = RenderBatch.new(entity)          
-        end
-        
-        @unbatched.delete entity
-      end
-    
-    when 'LIGHT'
-      entity.tap do |light|
-        light.disable()
-        
-        light.load_data(obj_data)
-      end
+    when BlenderLight
+      # => add to list of lights
+      @lights << entity
+      # => add to entity collection (need to pull it by name later)
+      @entities[entity.name] = entity
       
     end
+  end
+  
+  def delete(entity_name)
+    entity = @entities.delete entity_name
+    
+    case entity
+    when BlenderMesh
+      @batches[entity.mesh].delete entity
+    when BlenderLight
+      @lights.delete_if{ |light|  light.equal? entity }
+    end
+  end
+  
+  def find_entity(entity_name)
+    return @entities[entity_name]
+  end
+  
+  def find_datablock(datablock_name)
+    # assumes all datablocks are mesh datablocks
+    # (linked lighting data is not supporetd)
+    # (other blender object types, such as camera, are not yet implemented)
+    return @batches.keys.find{ |datablock| datablock.name = datablock_name }
   end
   
   
@@ -287,8 +238,6 @@ class DependencyGraph
     #
     # @meshes = Hash.new
     #
-    # @unbatched = Set.new # for entities that have not yet generated meshes
-    #
     # @batches   = Hash.new  # single entities and instanced copies go here
     #                        # grouped by the mesh they use
     
@@ -303,11 +252,6 @@ class DependencyGraph
     # initialize()
       @mat2 = RubyOF::Material.new
       
-      @unbatched = Set.new
-        # @unbatched set should be empty when you serialize
-        # as entities should only be held there momentarily.
-        # Within one update they should be created, stored in @unbatched, and then batched
-    
     
     # all batches using GPU instancing are forced to refresh position on load
     @batches = Hash.new
@@ -326,6 +270,7 @@ class DependencyGraph
       end
     
     @meshes = @batches.keys # returns copy, not reference
+    @lights = @entities.values.select{ |entity| entity.is_a? BlenderLight }
   end
   
 end
@@ -382,6 +327,8 @@ class RenderBatch
     end
     
     def add(mesh_obj)
+      # TODO: may want to double-check that the entity being added uses the mesh that is managed by this batch
+      
       @entity_list << mesh_obj
       
       if @entity_list.size > 1
@@ -531,6 +478,7 @@ class RenderBatch
       end
     end
     
+    # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
     def update_packed_entity_positions
       dirty_entities_with_indicies = 
         @entity_list.each_with_index

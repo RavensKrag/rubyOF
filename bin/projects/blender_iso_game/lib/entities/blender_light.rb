@@ -4,7 +4,9 @@ class BlenderLight < BlenderObject
   
   extend Forwardable
   
-  def initialize
+  def initialize(name)
+    super(name)
+    
     @light = RubyOF::Light.new
     
     setPointLight()
