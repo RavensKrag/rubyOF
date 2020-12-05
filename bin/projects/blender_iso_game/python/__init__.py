@@ -402,46 +402,39 @@ class RubyOF(bpy.types.RenderEngine):
         return data
     
     
+        
+    #  sub.prop(light, "size", text="Size X")
+    # sub.prop(light, "size_y", text="Y")
     
-    def pack_data(self, obj):
-        if obj.type == 'MESH':
-            return pack_mesh_data(obj.data)
-        elif obj.type == 'LIGHT':
-            return pack_light_data(obj.data)
-        
-        
-        #  sub.prop(light, "size", text="Size X")
-        # sub.prop(light, "size_y", text="Y")
-        
-        # col.prop(light, "spot_size", text="Size")
-        # ^ angle of spotlight
-        
-        
-        
-        # col.prop(light, "color")
-        # col.prop(light, "energy")
-        
-        # blender EEVEE properties:
-            # color
-            # power (wats)
-            # specular
-            # radius
-            # shadow
-        # OpenFrameworks properties:
-            # setAmbientColor()
-            # setDiffuseColor()
-            # setSpecularColor()
-            # setAttenuation()
-                # 3 args: const, linear, quadratic
-            # setup() 
-            # setAreaLight()
-            # setDirectional()
-            # setPointLight()
-            # setSpotlight() # 2 args to set the following:
-                # setSpotlightCutOff()
-                    # 0 to 90 degs, default 45
-                # setSpotConcentration()
-                    # 0 to 128 exponent, default 16
+    # col.prop(light, "spot_size", text="Size")
+    # ^ angle of spotlight
+    
+    
+    
+    # col.prop(light, "color")
+    # col.prop(light, "energy")
+    
+    # blender EEVEE properties:
+        # color
+        # power (wats)
+        # specular
+        # radius
+        # shadow
+    # OpenFrameworks properties:
+        # setAmbientColor()
+        # setDiffuseColor()
+        # setSpecularColor()
+        # setAttenuation()
+            # 3 args: const, linear, quadratic
+        # setup() 
+        # setAreaLight()
+        # setDirectional()
+        # setPointLight()
+        # setSpotlight() # 2 args to set the following:
+            # setSpotlightCutOff()
+                # 0 to 90 degs, default 45
+            # setSpotConcentration()
+                # 0 to 128 exponent, default 16
     
     
     
