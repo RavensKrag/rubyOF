@@ -4,7 +4,9 @@ class BlenderLight < BlenderObject
   
   extend Forwardable
   
-  def initialize
+  def initialize(name)
+    super(name)
+    
     @light = RubyOF::Light.new
     
     setPointLight()
@@ -126,5 +128,24 @@ class BlenderLight < BlenderObject
     self.specular_color = white
     
     
+  end
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    coder.represent_map to_yaml_type, self.data_dump
+  end
+  
+  def init_with(coder)
+    initialize(coder.map['name'])
+    
+    self.load_transform(coder.map['transform'])
+    self.load_data(coder.map['data'])
   end
 end

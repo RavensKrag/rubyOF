@@ -7,7 +7,8 @@ class BlenderMeshData
   attr_accessor :verts, :normals, :tris
   def_delegators :@mesh, :draw, :draw_instanced
   
-  def initialize
+  def initialize(name)
+    @name = name
     @mesh = RubyOF::VboMesh.new
   end
   
@@ -16,6 +17,8 @@ class BlenderMeshData
     
     
     # p mesh.methods
+    @mesh.clear
+    
     @mesh.setMode(:triangles)
     
     
@@ -45,6 +48,100 @@ class BlenderMeshData
     puts "time - mesh generation: #{dt}"
     
   end
+  
+  def pack_data
+    {
+      'mesh_name' => self.name, # name of the data, not the object
+      
+      'verts'  => ['double', self.verts.size,   self.vert_filepath],
+      'normals'=> ['double', self.normals.size, self.normal_filepath],
+      'tris'   => self.tris
+      
+      # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
+    }
+  end
+  
+  def load_data(obj_data)
+    @mesh.clear
+    
+    self.tris = obj_data['tris']
+    
+    obj_data['normals'].tap do |type, count, path|
+      raise "ERROR: normal vector count not set for #{self.name}" if count.nil?
+      raise "ERROR: path not set for #{self.name}" if path.nil?
+      
+      self.normal_filepath = path
+      
+      lines = File.readlines(path)
+      
+      # p lines
+      # b64 -> binary -> array
+      puts lines.size
+      # if @last_mesh_file_n != path
+        # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
+        
+        # @last_mesh_file_n = path
+        data = lines.last # should only be one line in this file
+        self.normals = Base64.decode64(data).unpack("f#{count}")
+        
+        # # assuming type == double for now, but may want to support other types too
+      # end
+      
+      @dirty = true
+    end
+    
+    obj_data['verts'].tap do |type, count, path|
+      raise "ERROR: size of vert index buffer not set for #{self.name}" if count.nil?
+      raise "ERROR: path not set for #{self.name}" if path.nil?
+      
+      self.vert_filepath = path
+      
+      lines = File.readlines(path)
+      
+      # p lines
+      # b64 -> binary -> array
+      puts lines.size
+      # if @last_mesh_file_v != path
+        # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
+        
+        # @last_mesh_file_v = path
+        data = lines.last # should only be one line in this file
+        # puts "data =>"
+        # p data
+        self.verts = Base64.decode64(data).unpack("f#{count}")
+        
+        # # assuming type == double for now, but may want to support other types too
+      # end
+      
+      @dirty = true
+    end
+    
+    
+    if @dirty
+      puts "generate mesh: #{@name}"
+      self.generate_mesh()
+    end
+  end
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  def to_yaml_type
+    "!ruby/object:#{self.class}"
+  end
+  
+  def encode_with(coder)
+    coder.represent_map to_yaml_type, self.pack_data
+  end
+  
+  def init_with(coder)
+    initialize(coder.map['mesh_name'])
+    
+    self.load_data(coder.map)
+    
+    self.generate_mesh()
+  end
 end
 
 class BlenderMesh < BlenderObject
@@ -56,14 +153,35 @@ class BlenderMesh < BlenderObject
   attr_accessor :mesh
   attr_accessor :color
   
-  def initialize
-    @mesh = BlenderMeshData.new
+  # dirty flag from BlenderObject is used to signal
+  # that this instance has changed position
+  # (only used when this entity is part of a GPU instanced batch)
+  
+  def initialize(name, mesh_data)
+    super(name)
+    
+    @mesh = mesh_data
     @node = RubyOF::Node.new
   end
   
-  def_delegators :@node, :position, :position=,
-                         :orientation, :orientation=,
-                         :scale, :scale=
+  def_delegators :@node, :position,
+                         :orientation,
+                         :scale
+  
+  def position=(vec)
+    @node.position = vec
+    @dirty = true
+  end
+  
+  def orientation=(quat)
+    @node.orientation = quat
+    @dirty = true
+  end
+  
+  def scale=(vec)
+    @node.scale = vec
+    @dirty = true
+  end
   
   
   # inherits BlenderObject#data_dump
@@ -81,15 +199,7 @@ class BlenderMesh < BlenderObject
     
     # NOTE: 'mesh_name' not saved for some objects
     
-    {
-      'mesh_name' => @mesh.name, # name of the data, not the object
-      
-      'verts'  => ['double', @mesh.verts.size,   @mesh.vert_filepath],
-      'normals'=> ['double', @mesh.normals.size, @mesh.normal_filepath],
-      'tris'   => @mesh.tris
-      
-      # NOTE: this will mesh data from temp files, which is good enough to continue a session, but not good enough to restore progress after restarting the machine.
-    }
+    return @mesh.pack_data
   end
   
   # part of BlenderObject serialization interface
@@ -98,66 +208,72 @@ class BlenderMesh < BlenderObject
     # p obj_data
     # puts "-----------------"
     
-    @mesh.name = obj_data['mesh_name']
-    
-    @mesh.tris = obj_data['tris']
-    
-    obj_data['normals'].tap do |type, count, path|
-      raise "ERROR: normal vector count not set for #{@mesh.name}" if count.nil?
-      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
-      
-      @mesh.normal_filepath = path
-      
-      lines = File.readlines(path)
-      
-      # p lines
-      # b64 -> binary -> array
-      puts lines.size
-      # if @last_mesh_file_n != path
-        # FileUtils.rm @last_mesh_file_n unless @last_mesh_file_n.nil?
-        
-        # @last_mesh_file_n = path
-        data = lines.last # should only be one line in this file
-        @mesh.normals = Base64.decode64(data).unpack("d#{count}")
-        
-        # # assuming type == double for now, but may want to support other types too
-      # end
-      
-      @dirty = true
-    end
-    
-    obj_data['verts'].tap do |type, count, path|
-      raise "ERROR: size of vert index buffer not set for #{@mesh.name}" if count.nil?
-      raise "ERROR: path not set for #{@mesh.name}" if path.nil?
-      
-      @mesh.vert_filepath = path
-      
-      lines = File.readlines(path)
-      
-      # p lines
-      # b64 -> binary -> array
-      puts lines.size
-      # if @last_mesh_file_v != path
-        # FileUtils.rm @last_mesh_file_v unless @last_mesh_file_v.nil?
-        
-        # @last_mesh_file_v = path
-        data = lines.last # should only be one line in this file
-        # puts "data =>"
-        # p data
-        @mesh.verts = Base64.decode64(data).unpack("d#{count}")
-        
-        # # assuming type == double for now, but may want to support other types too
-      # end
-      
-      @dirty = true
-    end
+    @mesh.load_data(obj_data)
     
     
-    if @dirty
-      puts "generate mesh"
-      @mesh.generate_mesh()
-    end
+    return self
+  end
+  
+  
+  # 
+  # YAML serialization interface
+  # 
+  
+  # def to_yaml_type
+  #   "!ruby/object:#{self.class}"
+  # end
+  
+  # def encode_with(coder)
+  #   data_hash = {
+  #     'type' => self.class::DATA_TYPE,
+  #     'name' =>  @name,
+      
+  #     'transform' => encode_transform_to_base64(),
+  #     'data' => @mesh
+  #   }
     
+  #   coder.represent_map to_yaml_type, data_hash
+  # end
+  
+  # def init_with(coder)
+  #   # initialize()
+  #   @mesh = coder.map['data']
+  #   @node = RubyOF::Node.new
+    
+    
+  #   @name = coder.map['name']
+    
+  #   # self.load_transform(coder.map['transform'])
+  #   load_transform_from_base64(coder.map['transform'])
+    
+  #   # p transform
+    
+    
+  # end
+  
+  def encode_transform_to_base64
+    orientation = self.orientation
+    position    = self.position
+    scale       = self.scale
+    
+    transform_data = [
+      orientation.w, orientation.x, orientation.y, orientation.z,
+      position.x, position.y, position.z,
+      scale.x, scale.y, scale.z
+    ]
+    
+    # strict encode disallows line feed characters
+    return Base64.strict_encode64(transform_data.pack('F10'))
+  end
+  
+  def load_transform_from_base64(base64_data)
+    # strict decode disallows line feed characters
+    transform = Base64.strict_decode64(base64_data).unpack('F10')
+    
+    
+    self.orientation = GLM::Quat.new(*(transform[0..3]))
+    self.position    = GLM::Vec3.new(*(transform[4..6]))
+    self.scale       = GLM::Vec3.new(*(transform[7..9]))
     
     return self
   end

@@ -106,10 +106,10 @@ class RubyOF(bpy.types.RenderEngine):
             color = [0.1, 0.2, 0.1, 1.0]
         else:
             color = [0.2, 0.1, 0.1, 1.0]
-
+        
         pixel_count = self.size_x * self.size_y
         rect = [color] * pixel_count
-
+        
         # Here we write the pixel values to the RenderResult
         result = self.begin_result(0, 0, self.size_x, self.size_y)
         layer = result.layers[0].passes["Combined"]
@@ -160,52 +160,21 @@ class RubyOF(bpy.types.RenderEngine):
             # First time initialization
             self.first_time = False
             
-            # Loop over all datablocks used in the scene.
-            # for datablock in depsgraph.ids:
+            self.send_initial_data()
+        else:
+            if depsgraph.id_type_updated('OBJECT'):
+                self.send_update_data(depsgraph)
             
-            export_list = []
-            
-            # loop over all objects
-            for instance in depsgraph.object_instances:
-                obj = instance.object
+            if context.active_object.mode == 'EDIT':
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.mode_set(mode= 'OBJECT')
+                self.send_mesh_edit_update(depsgraph, context.active_object)
+                # bpy.ops.object.mode_set(mode= 'EDIT')
                 
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                obj_data['transform'] = self.pack_transform(obj)
-                obj_data['data'] = self.pack_data(obj)
-                    
-                export_list.append(obj_data)
-            
-            t0 = time.time()
-            output_string = json.dumps(export_list)
-            t1 = time.time()
-            dt = (t1 - t0) * 1000
-            print("json encode: ", dt, " msec" )
-            
-            
-            t0 = time.time()
-            # self.outbound_queue.put(output_string)
-            self.fifo_write(output_string)
-            t1 = time.time()
-            dt = (t1 - t0) * 1000
-            print("fifo write: ", dt, " msec" )
-        # -- end first update block
-            
-                    
-                    
-        # else:
-        #     self.first_time = False
-            
-        #     # Test which datablocks changed
-        #     for update in depsgraph.updates:
-        #         print("Datablock updated: ", update.id.name)
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
 
-        #     # Test if any material was added, removed or changed.
-        #     if depsgraph.id_type_updated('MATERIAL'):
-        #         print("Materials updated")
         
         
         # print("not first time")
@@ -217,93 +186,8 @@ class RubyOF(bpy.types.RenderEngine):
         print("there are", len(depsgraph.updates), "updates to process")
         
         
-        start_time = time.time()
         
         
-        # Loop over all object instances in the scene.
-        total_t0 = time.time()
-        
-        export_list = []
-        for update in depsgraph.updates:
-            obj = update.id
-            
-            if isinstance(obj, bpy.types.Object):
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                if update.is_updated_transform:
-                    print("Transform updated: ", update.id.name, '(', type(update.id) ,')')
-                    obj_data['transform'] = self.pack_transform(obj)
-                    
-                if update.is_updated_geometry:
-                    print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
-                    obj_data['data'] = self.pack_data(obj)
-                
-                export_list.append(obj_data)
-        
-        
-        # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = []
-        for instance in depsgraph.object_instances:
-            obj = instance.object
-            object_list.append(obj.name_full)
-        
-        # if first_time or depsgraph.id_type_updated('OBJECT'):
-        #     print("obj update detected")
-        #     for instance in depsgraph.object_instances:
-        #         obj = instance.object
-                
-        #         obj_data = {
-        #             'name': obj.name_full,
-        #             'type': obj.type,
-        #         }
-                
-        #         obj_data['transform'] = self.pack_transform(obj)
-                
-                
-        #         obj_data['data'] = self.pack_data(obj)
-                
-                
-        #         export_list.append(obj_data)
-        
-        
-        t0 = time.time()
-        output_string = json.dumps(export_list)
-        t1 = time.time()
-        dt = (t1 - t0) * 1000
-        print("json encode: ", dt, " msec" )
-        
-        
-        t0 = time.time()
-        # self.outbound_queue.put(output_string)
-        self.fifo_write(output_string)
-        t1 = time.time()
-        dt = (t1 - t0) * 1000
-        print("fifo write: ", dt, " msec" )
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = [ 
-            {
-                'type':'entity_list', 
-                'list': object_list
-            },
-            
-            {
-                'type':'timestamp', 
-                'start_time': total_t0,
-                'end_time':   total_t1
-            }
-        ]
-        output_string = json.dumps(data)
-        self.fifo_write(output_string)
     
     
     def pack_transform(self, obj):
@@ -339,261 +223,432 @@ class RubyOF(bpy.types.RenderEngine):
         
         return transform
         
-       
-    def pack_data(self, obj):
-        if obj.type == 'MESH':
-            mesh = obj.data
-            
-            mesh.calc_loop_triangles()
-            # ^ need to call this to populate the mesh.loop_triangles() cache
-            
-            mesh.calc_normals_split()
-            # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-            
-            # ^ face normals 
-            
-            
-            
-            
-            
-            start_time = time.time()
-            
-            # number of actual verts likely to be less than maximum
-            # so just measure the list
-            num_verts = len(mesh.vertices)*3 # TODO: rename this variable
-            vert_data = [None] * num_verts
-            
-            
-            for i in range(len(mesh.vertices)):
-                vert = mesh.vertices[i]
-                
-                vert_data[i*3+0] = vert.co[0]
-                vert_data[i*3+1] = vert.co[1]
-                vert_data[i*3+2] = vert.co[2]
-            
-            
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("vertex export: ", dt, " msec" )
-            
-            
-            
-            
-            start_time = time.time()
-            
-            
-            index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-            
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("index export: ", dt, " msec" )
-            
-            
-            
-            
-            start_time = time.time()
-            
-            # normal_data = [ [[val for val in vert] 
-            #                 for vert in tri.split_normals]
-            #                 for tri in mesh.loop_triangles ]
-            
-            # normal_data = []
-            # for tri in mesh.loop_triangles:
-            #     for vert in tri.split_normals:
-            #         for val in vert:
-            #             normal_data.append(val)
-            # print(len(normal_data))
-            
-            # normal_data = [None] * (len(mesh.loop_triangles) * 3 * 3)
-            # i = 0
-            # for tri in mesh.loop_triangles:
-            #     for vert in tri.split_normals:
-            #         for val in vert:
-            #             # print(i, '/', len(normal_data))
-            #             normal_data[i] = val
-            #             i +=1
-            
-            
-            
-            # # 
-            # # baseline speed
-            # # (still some delay, which means there lag on the Ruby-side too)
-            # # 
-            # normal_data = [None] * (len(mesh.loop_triangles) * 3 * 3)
-            # for i in range((len(mesh.loop_triangles) * 3 * 3)):
-            #     # print(i, '/', len(normal_data))
-            #     normal_data[i] = 1
-            
-            num_tris = len(mesh.loop_triangles)
-            
-            num_normals = (num_tris * 3 * 3)
-            normal_data = [None] * num_normals
-            
-            # iter3 = range(3)
-            
-            for i in range(num_tris):
-                tri = mesh.loop_triangles[i]
-                for j in range(3):
-                    normal = tri.split_normals[j]
-                    for k in range(3):
-                        idx = 9*i+3*j+k
-                        # print(idx)
-                        # print(i, ' ', j, ' ', k)
-                        normal_data[idx] = normal[k]
-            
-            
-            
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("normal export: ", dt, " msec" )
-            
-            
-            
-            
-            start_time = time.time()
-            
-            # array -> binary blob
-            binary_data = struct.pack('%dd' % num_normals, *normal_data)
-            
-            # normal binary -> base 64 encoded binary -> ascii
-            binary_string = base64.b64encode(binary_data).decode('ascii')
-            
-            
-            sha = hashlib.sha1(binary_data).hexdigest()
-            tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
-            
-            
-            # tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
-            
-            if not os.path.exists(tmp_normal_file_path):
-                with open(tmp_normal_file_path, 'w') as f:
-                    f.write(binary_string)
-                
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("shm file io (normals): ", dt, " msec" )
-            
-            
-            
-            
-            
-            
-            
-            
-            start_time = time.time()
-            
-            # array -> binary blob
-            binary_data = struct.pack('%dd' % num_verts, *vert_data)
-            
-            # normal binary -> base 64 encoded binary -> ascii
-            binary_string = base64.b64encode(binary_data).decode('ascii')
-            
-            
-            sha = hashlib.sha1(binary_data).hexdigest()
-            tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
-            
-            
-            # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
-            
-            if not os.path.exists(tmp_vert_file_path):
-                with open(tmp_vert_file_path, 'w') as f:
-                    f.write(binary_string)
-                
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("shm file io (verts): ", dt, " msec" )
-            
-            
-            
-            data = {
-                'mesh_name': mesh.name, # name of the data, not the object
-                'verts': [
-                    'double', num_verts, tmp_vert_file_path
-                ],
-                'normals': [
-                    'double', num_normals, tmp_normal_file_path
-                ],
-                'tris' : index_buffer
-            }
-            
-            return data
-            
-            
-            
-        elif obj.type == 'LIGHT':
-            print(obj.color)
-            data = {
-                'color': [
-                    'rgb',
-                    obj.data.color[0],
-                    obj.data.color[1],
-                    obj.data.color[2]
-                ],
-                # (there is a property on the object called "color" but that is not what you want)
-                
-                'light_type': obj.data.type,
-                
-                'ambient_color': [
-                    'rgb',
-                ],
-                'diffuse_color': [
-                    'rgb'
-                ],
-                'attenuation':[
-                    'rgb'
-                ]
-                
-            }
-            
-            
-            
-            if obj.data.type == 'AREA':
-                data.update({
-                    'size_x': ['float', obj.data.size],
-                    'size_y': ['float', obj.data.size_y]
-                })
-            elif obj.data.type == 'SPOT':
-                data.update({
-                    'size': ['radians', obj.data.spot_size]
-                })
-            
-            
-            return data
-        
-        
-        #  sub.prop(light, "size", text="Size X")
-        # sub.prop(light, "size_y", text="Y")
-        
-        # col.prop(light, "spot_size", text="Size")
-        # ^ angle of spotlight
-        
-        
-        
-        # col.prop(light, "color")
-        # col.prop(light, "energy")
-        
-        # blender EEVEE properties:
-            # color
-            # power (wats)
-            # specular
-            # radius
-            # shadow
-        # OpenFrameworks properties:
-            # setAmbientColor()
-            # setDiffuseColor()
-            # setSpecularColor()
-            # setAttenuation()
-                # 3 args: const, linear, quadratic
-            # setup() 
-            # setAreaLight()
-            # setDirectional()
-            # setPointLight()
-            # setSpotlight() # 2 args to set the following:
-                # setSpotlightCutOff()
-                    # 0 to 90 degs, default 45
-                # setSpotConcentration()
-                    # 0 to 128 exponent, default 16
     
+    def pack_mesh_data(self, mesh):
+        mesh.calc_loop_triangles()
+        # ^ need to call this to populate the mesh.loop_triangles() cache
+        
+        mesh.calc_normals_split()
+        # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+        
+        # ^ face normals 
+        
+        
+        
+        
+        
+        start_time = time.time()
+        
+        # number of actual verts likely to be less than maximum
+        # so just measure the list
+        num_verts = len(mesh.vertices)*3 # TODO: rename this variable
+        vert_data = [None] * num_verts
+        
+        
+        for i in range(len(mesh.vertices)):
+            vert = mesh.vertices[i]
+            
+            vert_data[i*3+0] = vert.co[0]
+            vert_data[i*3+1] = vert.co[1]
+            vert_data[i*3+2] = vert.co[2]
+        
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("vertex export: ", dt, " msec" )
+        
+        
+        
+        
+        start_time = time.time()
+        
+        
+        index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("index export: ", dt, " msec" )
+        
+        
+        
+        
+        start_time = time.time()
+        
+        num_tris = len(mesh.loop_triangles)
+        
+        num_normals = (num_tris * 3 * 3)
+        normal_data = [None] * num_normals
+        
+        # iter3 = range(3)
+        
+        for i in range(num_tris):
+            tri = mesh.loop_triangles[i]
+            for j in range(3):
+                normal = tri.split_normals[j]
+                for k in range(3):
+                    idx = 9*i+3*j+k
+                    # print(idx)
+                    # print(i, ' ', j, ' ', k)
+                    normal_data[idx] = normal[k]
+        
+        
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("normal export: ", dt, " msec" )
+        
+        
+        
+        
+        start_time = time.time()
+        
+        # array -> binary blob
+        binary_data = struct.pack('%df' % num_normals, *normal_data)
+        
+        # normal binary -> base 64 encoded binary -> ascii
+        binary_string = base64.b64encode(binary_data).decode('ascii')
+        
+        
+        sha = hashlib.sha1(binary_data).hexdigest()
+        tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+        
+        
+        # tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
+        
+        if not os.path.exists(tmp_normal_file_path):
+            with open(tmp_normal_file_path, 'w') as f:
+                f.write(binary_string)
+            
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("shm file io (normals): ", dt, " msec" )
+        
+        
+        
+        
+        
+        
+        
+        
+        start_time = time.time()
+        
+        # array -> binary blob
+        binary_data = struct.pack('%df' % num_verts, *vert_data)
+        
+        # normal binary -> base 64 encoded binary -> ascii
+        binary_string = base64.b64encode(binary_data).decode('ascii')
+        
+        
+        sha = hashlib.sha1(binary_data).hexdigest()
+        tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
+        
+        
+        # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
+        
+        if not os.path.exists(tmp_vert_file_path):
+            with open(tmp_vert_file_path, 'w') as f:
+                f.write(binary_string)
+            
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("shm file io (verts): ", dt, " msec" )
+        
+        
+        
+        data = {
+            'type': 'bpy.types.Mesh',
+            'mesh_name': mesh.name, # name of the data, not the object
+            'verts': [
+                'double', num_verts, tmp_vert_file_path
+            ],
+            'normals': [
+                'double', num_normals, tmp_normal_file_path
+            ],
+            'tris' : index_buffer
+        }
+        
+        return data
+    
+    def pack_light_data(self, light):
+        data = {
+            'light_name': light.name,
+            'type': 'bpy.types.Light', 
+            'color': [
+                'rgb',
+                light.color[0],
+                light.color[1],
+                light.color[2]
+            ],
+            # (there is a property on the object called "color" but that is not what you want)
+            
+            'light_type': light.type,
+            
+            'ambient_color': [
+                'rgb',
+            ],
+            'diffuse_color': [
+                'rgb'
+            ],
+            'attenuation':[
+                'rgb'
+            ]
+            
+        }
+        
+        
+        
+        if light.type == 'AREA':
+            data.update({
+                'size_x': ['float', light.size],
+                'size_y': ['float', light.size_y]
+            })
+        elif light.type == 'SPOT':
+            data.update({
+                'size': ['radians', light.spot_size]
+            })
+        
+        
+        return data
+    
+    
+        
+    #  sub.prop(light, "size", text="Size X")
+    # sub.prop(light, "size_y", text="Y")
+    
+    # col.prop(light, "spot_size", text="Size")
+    # ^ angle of spotlight
+    
+    
+    
+    # col.prop(light, "color")
+    # col.prop(light, "energy")
+    
+    # blender EEVEE properties:
+        # color
+        # power (wats)
+        # specular
+        # radius
+        # shadow
+    # OpenFrameworks properties:
+        # setAmbientColor()
+        # setDiffuseColor()
+        # setSpecularColor()
+        # setAttenuation()
+            # 3 args: const, linear, quadratic
+        # setup() 
+        # setAreaLight()
+        # setDirectional()
+        # setPointLight()
+        # setSpotlight() # 2 args to set the following:
+            # setSpotlightCutOff()
+                # 0 to 90 degs, default 45
+            # setSpotConcentration()
+                # 0 to 128 exponent, default 16
+    
+    
+    
+    
+    def send_initial_data(self):
+        total_t0 = time.time()
+        
+        # Loop over all datablocks used in the scene.
+        # for datablock in depsgraph.ids:
+        
+        
+        # not sure whether to use bpy.data.objects or [instance.object for instance in depsgraph.object_instances]. Seems like they are the same unless maybe you're using instances (but linked duplicates are not instances)
+        
+        
+        datablock_export = []
+        
+        datablock_list = [ obj.data for obj in bpy.data.objects ]
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
+            if isinstance(datablock, bpy.types.Mesh):
+                datablock_export.append( self.pack_mesh_data(datablock) )
+            elif isinstance(datablock, bpy.types.Light):
+                datablock_export.append( self.pack_light_data(datablock) )
+            else:
+                continue
+        
+        obj_export = []
+        
+        # loop over all objects
+        for obj in bpy.data.objects:
+            obj_data = {
+                'name': obj.name_full,
+                'type': obj.type,
+            }
+            
+            obj_data['transform'] = self.pack_transform(obj)
+            obj_data['data'] = obj.data.name
+            
+            obj_export.append(obj_data)
+        
+        # # loop over all objects
+        # for instance in depsgraph.object_instances:
+        #     obj = instance.object
+            
+        #     obj_data = {
+        #         'name': obj.name_full,
+        #         'type': obj.type,
+        #     }
+            
+        #     obj_data['transform'] = self.pack_transform(obj)
+        #     obj_data['data'] = obj.data.name
+            
+        #     obj_export.append(obj_data)
+        
+        
+        
+        # TODO: want to separate out lights from meshes (objects)
+        # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
+        
+        
+        
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'datablocks' : datablock_export,
+            'objects' : obj_export
+        }
+        output_string = json.dumps(data)
+        self.fifo_write(output_string)
+        
+        
+        
+    # TODO: need to update this loop as well - don't want to re-pack all of the data when one mesh being used by 4000 instances gets updated. only want to pack that mesh data up 1x, not 4000x.
+    def send_update_data(self, depsgraph):
+        total_t0 = time.time()
+        
+        
+        # Loop over all object instances in the scene.
+        
+        datablock_list = [] # datablocks that need to be packed up
+        
+        obj_export = []
+        for update in depsgraph.updates:
+            obj = update.id
+            
+            if isinstance(obj, bpy.types.Object):
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
+                
+                if update.is_updated_transform:
+                    print("Transform updated: ", update.id.name, '(', type(update.id) ,')')
+                    obj_data['transform'] = self.pack_transform(obj)
+                
+                if update.is_updated_geometry:
+                    print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
+                    obj_data['data'] = obj.data.name
+                    
+                    datablock_list.append(obj.data)
+                    
+                obj_export.append(obj_data)
+        
+        
+        datablock_export = []
+        
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
+            if isinstance(datablock, bpy.types.Mesh):
+                datablock_export.append( self.pack_mesh_data(datablock) )
+            elif isinstance(datablock, bpy.types.Light):
+                datablock_export.append( self.pack_light_data(datablock) )
+            else:
+                continue
+        
+        
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = []
+        for instance in depsgraph.object_instances:
+            obj = instance.object
+            object_list.append(obj.name_full)
+        
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'all_entity_names' : object_list,
+            
+            'datablocks' : datablock_export,
+            'objects' : obj_export
+        }
+        output_string = json.dumps(data)
+        self.fifo_write(output_string)
+        
+    
+    def send_mesh_edit_update(self, depsgraph, active_object):
+        print("mesh edit detected")
+        print(active_object)
+        
+        total_t0 = time.time()
+        
+        
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = []
+        for instance in depsgraph.object_instances:
+            obj = instance.object
+            object_list.append(obj.name_full)
+        
+        
+        obj_export = [
+            {
+                'name': active_object.name_full,
+                'type': active_object.type,
+                'data': active_object.data.name
+            }
+        ]
+        
+        
+        datablock_export = [
+            self.pack_mesh_data(active_object.data)
+        ]   
+        
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'all_entity_names' : object_list,
+            
+            'datablocks' : datablock_export,
+            'objects' : obj_export
+        }
+        
+        
+        
+        output_string = json.dumps(data)
+        self.fifo_write(output_string)
+        
     
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
@@ -631,9 +686,8 @@ class RubyOF(bpy.types.RenderEngine):
         mat_v = rv3d.view_matrix
         
         rot = rv3d.view_rotation
-        data = [
-            {
-                'type': 'viewport_camera',
+        data = {
+            'viewport_camera' : {
                 'rotation':[
                     "Quat",
                     rot.w,
@@ -694,17 +748,14 @@ class RubyOF(bpy.types.RenderEngine):
                     mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
                 ]
             }
-        ]
+        }
         
         if context.scene.my_custom_props.b_windowLink:
-            data += [
-                {
-                    'type': 'viewport_region',
-                    'width':  region.width,
-                    'height': region.height,
-                    'pid': os.getpid()
-                }
-            ]
+            data['viewport_region'] = {
+                'width':  region.width,
+                'height': region.height,
+                'pid': os.getpid()
+            }
         
         output_string = json.dumps(data)
         # self.outbound_queue.put(output_string)

@@ -46,7 +46,7 @@ load LIB_DIR/'entities'/'blender_light.rb'
 
 load LIB_DIR/'instancing_buffer.rb'
 
-
+load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
 
@@ -133,14 +133,11 @@ class Core
     
     
     
-    @entities = {
-      'viewport_camera' => ViewportCamera.new,
-    }
     
-    @meshes = Hash.new
+    @depsgraph = DependencyGraph.new
+    @sync = BlenderSync.new(@w, @depsgraph)
     
     
-    @sync = BlenderSync.new(@w, @entities, @meshes)
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
@@ -200,17 +197,7 @@ class Core
     setup()
     
     
-    if @world_save_file.exist?
-      puts "loading 3D graphics data..."
-      entity_data_list = YAML.load_file @world_save_file
-      puts "load complete!"
-      # p entity_data_list
-      
-      
-      @sync.parse_blender_data(entity_data_list)
-      
-      @entities['viewport_camera'].dirty = false
-    end
+    load_world_state()
   end
   
   # always run on exit, with or without exception
@@ -233,20 +220,49 @@ class Core
     # save 3D graphics data to file
     # 
     
-    puts "saving world to file.."
-    entity_data_list = 
-      @entities.to_a.collect{ |key, val|
-        val.data_dump
-      }
-    
-    
     # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
     # ('CAMERA' not yet supported)
     # ('ORTHO' support currently rather poor)
     
+    # RubyProf.start
     
-    dump_yaml entity_data_list => @world_save_file
+    dump_yaml @depsgraph => @world_save_file
     puts "world saved!"
+  end
+  
+  def load_world_state
+    if @world_save_file.exist?
+      puts "loading 3D graphics data..."
+      
+      # 
+      # loading the file takes 17 - 35 ms.
+      # the entire loading update takes ~1800 ms
+      # so the file IO is negligible
+      # 
+      
+      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+      # File.readlines(@world_save_file)
+      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+      # dt = t1-t0
+      # puts "file load time: #{dt / 1000} ms"
+      
+      @depsgraph = YAML.load_file @world_save_file
+      
+      @sync.stop
+      @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
+      puts "load complete!"
+      
+      # result = RubyProf.stop
+      
+      # printer = RubyProf::FlatPrinter.new(result)
+      # printer.print(STDOUT)
+      
+      # printer = RubyProf::CallStackPrinter.new(result)
+      
+      # File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
+      #   printer.print(f)
+      # end
+    end
   end
   
   
@@ -282,6 +298,12 @@ class Core
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
   def on_update(scheduler)
+    if @first_update
+      # load_world_state
+      
+      @first_update = false
+    end
+    
     
     if @debugging
       
@@ -386,224 +408,12 @@ class Core
       ofSetSphereResolution(32) # want higher resoultion than the default 20
       # ^ this is used to visualize the color and position of the lights
       
-      
-      
-      @mat1 ||= RubyOF::Material.new
-      # @mat1.diffuse_color = RubyOF::FloatColor.rgb([0, 1, 0])
-      @mat1.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-      # // shininess is a value between 0 - 128, 128 being the most shiny //
-      @mat1.shininess = 64
-      
-      
-      
-      @mat2 ||= RubyOF::Material.new
-      # ^ update color of this material every time the light color changes
-      #   not just on the first frame
-      #   (creating the material is the expensive part anyway)
-      
-      
-      
-      @mat_instanced ||= RubyOF::OFX::InstancingMaterial.new
-      @mat_instanced.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-      @mat_instanced.shininess = 64
-      
-      
-      @shader_timestamp = nil
-      
-      shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
-      @vert_shader_path = shader_src_dir/"phong_instanced.vert"
-      @frag_shader_path = shader_src_dir/"phong.frag"
-      
-      
-      
-      
       @first_draw = false
       
     end
     
-    # load shaders if they have never been loaded before,
-    # or if the files have been updated
-    if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
-      
-      
-      vert_shader = File.readlines(@vert_shader_path).join("\n")
-      frag_shader = File.readlines(@frag_shader_path).join("\n")
-      
-      @mat_instanced.setVertexShaderSource vert_shader
-      @mat_instanced.setFragmentShaderSource frag_shader
-      
-      
-      @shader_timestamp = Time.now
-      
-      puts "shader reloaded"
-    end
+    @depsgraph.draw
     
-    
-    # 
-    # find lights
-    # 
-    
-    lights = @entities.values.select{ |entity|  entity.is_a? BlenderLight }
-    
-    
-    # ========================
-    # render begin
-    # ------------------------
-    begin
-      setup_lights_and_camera(lights)
-      
-      render_scene(lights)
-      
-    rescue Exception => e
-      finish_lights_and_camera(lights)
-      raise e
-      
-    else
-      finish_lights_and_camera(lights)
-      
-    end
-    # ------------------------
-    # render end
-    # ========================
-    
-    
-  end
-  
-  def setup_lights_and_camera(lights)
-    # camera begin
-    @entities['viewport_camera'].begin
-    # 
-    # setup GL state
-    # 
-    
-    ofEnableDepthTest()
-    ofEnableLighting() # // enable lighting //
-    
-    # 
-    # enable lights
-    # 
-    
-    # the position of the light must be updated every frame,
-    # call enable() so that it can update itself
-    lights.each{ |light|  light.enable() }
-  end
-  
-  def render_scene(lights)
-    # 
-    # render entities
-    # 
-    
-    # batch objects (for GPU instancing)
-    
-    batching = 
-      @entities.values
-      .select{|x| x.is_a? BlenderMesh }
-      .group_by{|x| x.mesh }
-    
-      # p batching.collect{|k,v|  [k.class, v.size]}
-    
-    # render by batches
-    batching.each do |mesh_data, mesh_obj_list|
-      
-      if mesh_obj_list.size > 1
-        # draw instanced (v4 - translation + z-rot, stored in texture)
-        # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
-        
-        @instance_data ||= InstancingBuffer.new
-        
-        # collect up all the transforms
-        positions = 
-          mesh_obj_list.collect do |mesh_obj|
-            mesh_obj.node.position
-          end
-        
-        # raise exception if current texture size is too small
-        # to hold packed position information.
-        max_instances = @instance_data.max_instances
-        
-        if positions.size > max_instances
-          msg = [
-            "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
-            "Current maximum: #{max_instances}",
-            "Instances requested: #{positions.size}"
-          ]
-          
-          raise msg.join("\n")
-        end
-        
-        # pack into image -> texture (which will be passed to shader)
-        @instance_data.pack_positions(positions)
-        
-        # set uniforms
-        @mat_instanced.setCustomUniformTexture(
-          "position_tex", @instance_data.texture, 1
-        )
-          # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
-        
-        @mat_instanced.setInstanceMagnitudeScale(
-          InstancingBuffer::FLOAT_MAX
-        )
-        
-        
-        # draw all the instances using one draw call
-        @mat_instanced.begin()
-          mesh_data.draw_instanced(mesh_obj_list.size)
-        @mat_instanced.end()
-        
-      else
-        # draw just a single object
-        
-        mesh_obj = mesh_obj_list.first
-        
-        @mat1.begin()
-          mesh_obj.node.transformGL()
-          mesh_data.draw()
-          mesh_obj.node.restoreTransformGL()
-        @mat1.end()
-      end
-      
-      # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
-      
-    end
-    
-    
-    # 
-    # render the sphere that represents the light
-    # 
-    
-    lights.each do |light|
-      light_pos   = light.position
-      light_color = light.diffuse_color
-      
-      @mat2.emissive_color = light_color
-      
-      
-      @mat2.begin()
-      ofPushMatrix()
-        ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-      ofPopMatrix()
-      @mat2.end()
-    end
-  end
-  
-  def finish_lights_and_camera(lights)
-    # 
-    # disable lights
-    # 
-    
-    # // turn off lighting //
-    lights.each{ |light|  light.disable() }
-    
-    
-    # 
-    # teardown GL state
-    # 
-    
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    # camera end
-    @entities['viewport_camera'].end
   end
   
   
