@@ -155,9 +155,6 @@ class DependencyGraph
   # public interface with blender sync
   # 
   
-  # TODO: reduce public interface - BlenderSync should only reference items by entity name, like a database, rather than accessing entity objects
-  
-  
   def viewport_camera
     return @entities['viewport_camera']
   end
@@ -251,8 +248,10 @@ class DependencyGraph
     #                        # grouped by the mesh they use
     
     data_hash = {
-      'entity_list' => @entities.values.select{|x| !x.is_a? BlenderMesh },
-      'batch_list'  => @batches.values
+      'entity_list' => @entities.values.select{|x| 
+                            !x.is_a? BlenderMesh  },
+      'batch_list'  => @batches.values,
+      'lights'      => @lights,
     }
     coder.represent_map to_yaml_type, data_hash
   end
@@ -280,7 +279,7 @@ class DependencyGraph
     
     # Hash#values returns copy, not reference
     @meshes = @batches.values.collect{ |batch|  batch.mesh } 
-    @lights = @entities.values.select{ |entity| entity.is_a? BlenderLight }
+    @lights = coder.map['lights']
   end
   
 end

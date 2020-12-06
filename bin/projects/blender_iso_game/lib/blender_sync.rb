@@ -181,17 +181,8 @@ class BlenderSync
     
     
     
-    # TODO: lights and meshes work differently. do I want to be able to send data on linked copies of lights from Blender? Blender supports this, but I'm not sure it's useful to this renderer. Where do I handle that disconnect?
-    
-    
-    # TODO: figure out again what data belongs here and what belongs in depsgraph
-    # TODO: consider moving this entire data processing function into depsgraph
-      # (that may actually be bad, because this function also deals with changing window size. while tools like Blender need that, I don't think it's necessary for gameplay code to have that power)
-    
     # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
     
-    
-    # FIXME: when you add a new cylinder, all of the instances become cylinders. this is not good. thi geometry persists through YAML reload, even when the original cylinder is deletede.
     
     new_datablocks = Hash.new
     
@@ -259,12 +250,7 @@ class BlenderSync
           data['transform']&.tap do |transform_data|
             mesh_entity.load_transform(transform_data)
           end
-          
-          # TODO: need indirection when loading transforms or something, so that the deps graph can know to update the instancing buffer
-            # DONE
-          
-          # TODO: need to figure out again how to add to batches / how to update batches
-            # have a plan (see below) but not implemented yet
+        
         when 'LIGHT'
           # load transform AND data for lights here as necessary
           # ('data' field has already been linked to necessary data)
