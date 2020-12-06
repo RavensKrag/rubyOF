@@ -164,6 +164,17 @@ class RubyOF(bpy.types.RenderEngine):
         else:
             if depsgraph.id_type_updated('OBJECT'):
                 self.send_update_data(depsgraph)
+            
+            if context.active_object.mode == 'EDIT':
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.mode_set(mode= 'OBJECT')
+                self.send_mesh_edit_update(depsgraph, context.active_object)
+                # bpy.ops.object.mode_set(mode= 'EDIT')
+                
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
+
         
         
         # print("not first time")
@@ -174,8 +185,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         print("there are", len(depsgraph.updates), "updates to process")
         
-        
-        start_time = time.time()
         
         
         
@@ -588,6 +597,57 @@ class RubyOF(bpy.types.RenderEngine):
         output_string = json.dumps(data)
         self.fifo_write(output_string)
         
+    
+    def send_mesh_edit_update(self, depsgraph, active_object):
+        print("mesh edit detected")
+        print(active_object)
+        
+        total_t0 = time.time()
+        
+        
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = []
+        for instance in depsgraph.object_instances:
+            obj = instance.object
+            object_list.append(obj.name_full)
+        
+        
+        obj_export = [
+            {
+                'name': active_object.name_full,
+                'type': active_object.type,
+                'data': active_object.data.name
+            }
+        ]
+        
+        
+        datablock_export = [
+            self.pack_mesh_data(active_object.data)
+        ]   
+        
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'all_entity_names' : object_list,
+            
+            'datablocks' : datablock_export,
+            'objects' : obj_export
+        }
+        
+        
+        
+        output_string = json.dumps(data)
+        self.fifo_write(output_string)
         
     
     # For viewport renders, this method is called whenever Blender redraws

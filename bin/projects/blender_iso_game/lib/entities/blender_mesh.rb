@@ -62,6 +62,8 @@ class BlenderMeshData
   end
   
   def load_data(obj_data)
+    @mesh.clear
+    
     self.tris = obj_data['tris']
     
     obj_data['normals'].tap do |type, count, path|

@@ -5,15 +5,15 @@ entity_list:
   view_perspective: PERSP
   rotation:
   - Quat
-  - 0.8786725401878357
-  - 0.4104069769382477
-  - 0.21084842085838318
-  - 0.12265191972255707
+  - 0.9025574922561646
+  - 0.3253607451915741
+  - 0.25398701429367065
+  - 0.12255971133708954
   position:
   - Vec3
-  - 0.5236338973045349
-  - -34.687286376953125
-  - 24.401548385620117
+  - -3.406317710876465
+  - -19.24127960205078
+  - 15.88264274597168
   fov:
   - deg
   - 43.336002349853516
@@ -71,11 +71,11 @@ batch_list:
     verts:
     - double
     - 24
-    - "/dev/shm/Blender_RubyOF/ca56664d91f453fc705ded40b49b71ff531e0e01.txt"
+    - "/dev/shm/Blender_RubyOF/b79347fa58df05eccdd619c74563b78e3c1abce0.txt"
     normals:
     - double
     - 108
-    - "/dev/shm/Blender_RubyOF/f9396aac97b05e27e49ebe5cefd05d5438ba2571.txt"
+    - "/dev/shm/Blender_RubyOF/687fe235bb183e9583ca9263ed8c6cdd8bcc9cab.txt"
     tris:
     - - 0
       - 1
