@@ -82,7 +82,7 @@ class BlenderMeshData
         
         # @last_mesh_file_n = path
         data = lines.last # should only be one line in this file
-        self.normals = Base64.decode64(data).unpack("d#{count}")
+        self.normals = Base64.decode64(data).unpack("f#{count}")
         
         # # assuming type == double for now, but may want to support other types too
       # end
@@ -108,7 +108,7 @@ class BlenderMeshData
         data = lines.last # should only be one line in this file
         # puts "data =>"
         # p data
-        self.verts = Base64.decode64(data).unpack("d#{count}")
+        self.verts = Base64.decode64(data).unpack("f#{count}")
         
         # # assuming type == double for now, but may want to support other types too
       # end

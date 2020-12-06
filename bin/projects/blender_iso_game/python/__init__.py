@@ -303,7 +303,7 @@ class RubyOF(bpy.types.RenderEngine):
         start_time = time.time()
         
         # array -> binary blob
-        binary_data = struct.pack('%dd' % num_normals, *normal_data)
+        binary_data = struct.pack('%df' % num_normals, *normal_data)
         
         # normal binary -> base 64 encoded binary -> ascii
         binary_string = base64.b64encode(binary_data).decode('ascii')
@@ -333,7 +333,7 @@ class RubyOF(bpy.types.RenderEngine):
         start_time = time.time()
         
         # array -> binary blob
-        binary_data = struct.pack('%dd' % num_verts, *vert_data)
+        binary_data = struct.pack('%df' % num_verts, *vert_data)
         
         # normal binary -> base 64 encoded binary -> ascii
         binary_string = base64.b64encode(binary_data).decode('ascii')
