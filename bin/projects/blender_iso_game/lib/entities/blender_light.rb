@@ -4,7 +4,9 @@ class BlenderLight < BlenderObject
   
   extend Forwardable
   
-  def initialize
+  def initialize(name)
+    super(name)
+    
     @light = RubyOF::Light.new
     
     setPointLight()
@@ -141,9 +143,7 @@ class BlenderLight < BlenderObject
   end
   
   def init_with(coder)
-    initialize()
-    
-    @name = coder.map['name']
+    initialize(coder.map['name'])
     
     self.load_transform(coder.map['transform'])
     self.load_data(coder.map['data'])

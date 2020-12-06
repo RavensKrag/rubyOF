@@ -693,6 +693,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_constructor(Constructor<ofMesh>())
       .define_method("draw__cpp",         &ofMesh_draw__cpp)
       
+      .define_method("clear",             &ofMesh::clear)
+      
       .define_method("setMode",           &ofMesh__setMode)
       .define_method("addVertex",         &ofMesh::addVertex)
       .define_method("addNormal",         &ofMesh::addNormal)
