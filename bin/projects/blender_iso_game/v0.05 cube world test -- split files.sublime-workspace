@@ -4,6 +4,70 @@
 		"selected_items":
 		[
 			[
+				"Blendhr",
+				"BlenderLight"
+			],
+			[
+				"deps",
+				"depsgraph"
+			],
+			[
+				"ent",
+				"entity_names"
+			],
+			[
+				"datab",
+				"datablock"
+			],
+			[
+				"entit",
+				"entity_list"
+			],
+			[
+				"encode",
+				"encode_transform"
+			],
+			[
+				"generate",
+				"generate_mesh"
+			],
+			[
+				"enti",
+				"entity_list"
+			],
+			[
+				"Mesh",
+				"BlenderMesh"
+			],
+			[
+				"batch",
+				"batches"
+			],
+			[
+				"viewpo",
+				"viewport_camera"
+			],
+			[
+				"dep",
+				"depsgraph"
+			],
+			[
+				"relo",
+				"reload_instancing_shaders"
+			],
+			[
+				"FLAT",
+				"FLOAT_MAX"
+			],
+			[
+				"magni",
+				"magnitude"
+			],
+			[
+				"magnitude",
+				"magnitude_normalized"
+			],
+			[
 				"tras",
 				"transforms"
 			],
@@ -22,10 +86,6 @@
 			[
 				"view",
 				"viewport_camera"
-			],
-			[
-				"entit",
-				"entities"
 			],
 			[
 				"tims",
@@ -82,10 +142,6 @@
 			[
 				"first",
 				"first_update"
-			],
-			[
-				"ent",
-				"entries"
 			],
 			[
 				"ofcam",
@@ -458,62 +514,6 @@
 			[
 				"while",
 				"while_active"
-			],
-			[
-				"curr",
-				"current_state"
-			],
-			[
-				"calb",
-				"callback_obj"
-			],
-			[
-				"call",
-				"callbacks"
-			],
-			[
-				"RUby",
-				"RubyOF"
-			],
-			[
-				"pause",
-				"pause_execution"
-			],
-			[
-				"dynamic",
-				"dynamic_load"
-			],
-			[
-				"wrapped",
-				"wrapped_object"
-			],
-			[
-				"dynam",
-				"dynamic_load"
-			],
-			[
-				"currn",
-				"current_turn"
-			],
-			[
-				"current",
-				"current_turn"
-			],
-			[
-				"turn",
-				"turn_number"
-			],
-			[
-				"pre",
-				"protect_runtime_errors"
-			],
-			[
-				"save",
-				"save_directory"
-			],
-			[
-				"mous",
-				"mouse_history"
 			]
 		]
 	},
@@ -523,7 +523,16 @@
 			"file": "python/__init__.py",
 			"settings":
 			{
-				"buffer_size": 31812,
+				"buffer_size": 32347,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "\n################################################################\n###                        Noise Ops                         ###\n###                                                          ###\n###       A set of noise operators for modifying meshes      ###\n###          Written by: David (silvermindyarr)              ###\n###        Thanks to: batFINGER on blenderartists.org        ###\n################################################################\n\nimport bpy\nimport mathutils\nimport math\nimport random\n\n\n\nclass NoiseOps():\n    class Simple_Noise(bpy.types.Operator):\n        '''Add noise to a mesh's vertices'''\n        bl_idname = \"mesh.simple_noise\"\n        bl_label = \"Add Simple Noise To Mesh\"\n        bl_options = {'REGISTER', 'UNDO'}\n        \n        # Settings\n        min_seed = 0 \n        max_seed = 4000\n        random_seed = bpy.props.IntProperty(name=\"Random Seed:\",\n                                description=\"Seed used to generate random numbers\",\n                                default= min_seed , min=min_seed, max=max_seed)\n        from_center = bpy.props.BoolProperty(name=\"From Center\",\n                description=\"Noise is calculated from object center\",\n                default=False)\n        use_units = bpy.props.BoolProperty(name=\"Distance in units\",\n                description=\"Noise is calculated using units for distance\",\n                default=False)\n        MIN_DISTANCE = 0.01\n        max_distance = bpy.props.FloatProperty(name=\"Max Noise Distance\",\n                description=\"Maximum Distance\",\n                default=0.1, min=0.0, max=100)\n        smoothing_iterations = bpy.props.IntProperty(name=\"Smoothing:\",\n                                description=\"Number of smoothing iterations\",\n                                default= 0 , min=0, max=100)\n        # Methods\n        @classmethod\n        def poll(self, context):\n            print(\"Poll...\")\n            return context.active_object is not None and context.active_object.type == \"MESH\"       \n        def invoke(self, context, event):\n            print(\"\n\", \"Invoke...\")\n            #Set seed to random\n            self.random_seed = random.randint(self.min_seed, self.max_seed)\n            pass\n            return(self.execute(context))\n        def execute(self, context):\n            print(\"\n\",\"Execute...\")\n            random.seed(self.random_seed)\n            object = context.object\n            mesh = object.data\n            mode = object.mode\n            noise_vector = mathutils.Vector()\n            if self.use_units == True: modified_max_distance = self.max_distance \n            else: modified_max_distance = self.max_distance / 300\n            \n        \n            #Jump into object mode in order to make changes\n            bpy.ops.object.mode_set(mode='OBJECT')\n            \n            # Apply noise\n            if self.from_center == True: # From Center\n                for vertex in mesh.vertices:\n                    if (mode == 'OBJECT') or ((mode == 'EDIT') and (vertex.select == True)):\n                        noise_vector.xyz = vertex.co\n                        vertex_vector_length = noise_vector.length\n                        \n                        max_dist = modified_max_distance\n                        min_dist = (-1 * modified_max_distance)\n                        \n                        length_change = random.uniform(min_dist, max_dist)\n                        if (noise_vector.length + length_change) &lt; (self.MIN_DISTANCE): # Keeps from setting vector length to negative number\n                            length_change = (-1 * (noise_vector.length - self.MIN_DISTANCE))\n                        \n                        noise_vector.length += length_change\n                       \n                        \n                        vertex.co = noise_vector\n            else: # Simple noise ( Not from center)\n                    for vertex in mesh.vertices:\n                        if (mode == 'OBJECT') or ((mode == 'EDIT') and (vertex.select == True)):\n                            noise_vector.x = random.uniform( (-1 * modified_max_distance) , modified_max_distance)\n                            noise_vector.y = random.uniform( (-1 * modified_max_distance) , modified_max_distance)\n                            noise_vector.z = random.uniform( (-1 * modified_max_distance) , modified_max_distance)\n                            \n                            vertex.co += noise_vector\n                        else: print(\"Didnt meet criteria\")\n            \n            # Apply smoothing\n            bpy.ops.object.mode_set(mode= 'EDIT')\n            if mode == 'EDIT':\n                # Smoothing only on what's already selected\n                pass\n            elif mode == 'OBJECT':\n                bpy.ops.mesh.select_all(action='SELECT')\n            \n            if self.smoothing_iterations &gt;= 1:\n                bpy.ops.mesh.vertices_smooth(repeat=self.smoothing_iterations, xaxis=True, yaxis=True, zaxis=True)\n    \n            #Jump back to mode user was in before\n            bpy.ops.object.mode_set(mode= mode) \n            print(\"Execute: Done\")\n            return {'FINISHED'}\n    \n\n        \ndef register():\n    bpy.utils.register_class(NoiseOps.Simple_Noise)\n    print(\"Thanks for using Noise Ops\")\ndef unregister():\n    bpy.utils.unregister_class(NoiseOps.Simple_Noise)\n    print(\"Thanks for using Noise Ops!\")\nif __name__ == '__main__':\n    register()",
+			"settings":
+			{
+				"buffer_size": 5416,
 				"line_ending": "Unix"
 			}
 		},
@@ -531,7 +540,41 @@
 			"file": "lib/blender_sync.rb",
 			"settings":
 			{
-				"buffer_size": 10259,
+				"buffer_size": 12609,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "\n    \n    # BlenderMesh dirty flag now set whenever position / orientation / scale are sent in BlenderMesh\n    # that flag is used / unset when the batch updates the position data texture\n    \n    \n    # NOTE: no point in adding a datablock that is not attached to an entity\n    \n    \n    \n    datablock = BlenderMeshData.new('Cube.003')\n    entity = BlenderMesh.new('CubeInstance.001', datablock)\n    @depsgraph.add(entity)\n      # => adds datablock to collection (need to pull datablock by name)\n      # => adds entity to collection (need to pull entity by name)\n      # => associates datablock and entity with proper batch\n    \n    \n    # do I need @depsgraph interface to update postion?\n    \n    @depsgraph.find_entity('CubeInstance.001').load_transform(data)\n    \n    # ...seems like no.\n    \n    \n    datablock = @depsgraph.find_datablock('Cube.003')\n      # => adds to some data structure such that I\n      #    can get mesh datablocks back out by name\n    \n    entity = BlenderMesh.new('CubeInstance.002', datablock)\n    @depsgraph.add(entity)\n    \n    \n    light = BlenderLight.new('Light') # no linked datablocks for lights\n    @depsgraph.add(light)\n      # => add to list of lights\n      # => add to entity collection (need to pull it by name later)\n    \n    \n    \n    @depsgraph.find_entity('Light') # for when position or other data changes\n    \n    # may want to 'alias find find_entity' to search for entities by default\n    # (but still want an explict interface like #find_entity)\n    \n    @depsgraph.delete('Light')\n      # this is inteface to delete an entity\n      # no interface to delete datablocks explicitly \n      # - they are automatically cleared when no entities are using them\n    \n    \n    @depsgraph.delete('CubeInstance.002')\n      # => 'Cube.003' datablock persists\n    @depsgraph.delete('CubeInstance.001')\n      # => 'Cube.003' has no users, so it is deleted on next @depsgraph#gc\n      \n      \n    # @depsgraph data structure:\n      # store mesh entities / mesh datablocks in batches\n        # => { datablock => <RenderBatch @mesh=datablock, @list=[e0, e1, e2]> }\n      # store lights in list\n        # => @lights = [l0, l1, l2]\n      # cache all entities (light and meshes) in a hash for easy access by name\n        # => @entities = { 'CubeInstance.001' => e0, 'Light' => l0, ... }\n    \n    ",
+			"settings":
+			{
+				"buffer_size": 2329,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "\nshader reloaded\nshader reloaded\nfifo message thread stopped\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm>\n#<Pathname:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm>\nfifo closed\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\nload complete!\nMeasure Mode: wall_time\nfifo message thread start\nThread ID: 14518080\nFiber ID: 14518060\nTotal: 4.061650\nSort by: self_time\n\n %self      total      self      wait     child     calls  name                           location\n  5.57      1.839     0.226     0.000     1.613    91127  *Psych::Visitors::Visitor#visit /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/visitor.rb:15\n  5.20      0.618     0.211     0.000     0.406    32848   Psych::Visitors::YAMLTree#visit_String /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:255\n  4.74      0.648     0.193     0.000     0.456   124031  *Class#new                      \n  3.77      0.657     0.153     0.000     0.504        1   Psych::Parser#parse            \n  3.56      1.561     0.144     0.000     1.416    45561  *Psych::Visitors::YAMLTree#accept /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:123\n  3.47      0.248     0.141     0.000     0.107    57790   Psych::ScalarScanner#tokenize  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/scalar_scanner.rb:31\n  3.23      0.131     0.131     0.000     0.000     4097   RubyOF::Node#initialize        \n  3.08      0.125     0.125     0.000     0.000    66288   Psych::Nodes::Scalar#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/scalar.rb:58\n  3.05      0.551     0.124     0.000     0.427    66288   Psych::TreeBuilder#scalar      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:96\n  2.81      1.909     0.114     0.000     1.795     8568  *Array#each                     \n  2.64      0.251     0.107     0.000     0.144    82684   Psych::TreeBuilder#set_location /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:122\n  2.19      0.089     0.089     0.000     0.000   143052   String#match?                  \n  2.14      0.087     0.087     0.000     0.000    36882   GLM::Vec3#get_component        \n  2.13      0.087     0.087     0.000     0.000    91127   Psych::TreeBuilder#set_start_location /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:127\n  1.88      0.076     0.076     0.000     0.000    91126   Psych::TreeBuilder#set_end_location /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:132\n  1.74      1.839     0.071     0.000     1.768    91127  *Psych::Visitors::Visitor#accept /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/visitor.rb:5\n  1.60      0.248     0.065     0.000     0.182    33144   Psych::Visitors::ToRuby#deserialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:46\n  1.50      0.539     0.061     0.000     0.478     4097   BlenderMesh#init_with          /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:223\n  1.48      0.060     0.060     0.000     0.000    49785   Psych::TreeBuilder#event_location /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:33\n  1.43      1.497     0.058     0.000     1.439    45563  *Psych::Visitors::ToRuby#accept /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:31\n  1.37      0.372     0.056     0.000     0.316     4097   BlenderMesh#encode_with        /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:205\n  1.35      0.055     0.055     0.000     0.000     4099   GLM::Quat#initialize           \n  1.26      0.051     0.051     0.000     0.000    16396   GLM::Quat#get_component        \n  1.25      0.051     0.051     0.000     0.000   177882   Kernel#class                   \n  1.10      0.047     0.045     0.000     0.002    33144   Psych::Emitter#scalar          \n  1.09      0.044     0.044     0.000     0.000     4099   RubyOF::VboMesh#initialize     \n  1.07      0.044     0.044     0.000     0.000   124413   Kernel#hash                    \n  1.07      0.043     0.043     0.000     0.000    66177   Kernel#object_id               \n  1.06      0.099     0.043     0.000     0.056    45561   Psych::Visitors::YAMLTree::Registrar#key? /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:30\n  1.06      0.316     0.043     0.000     0.273    33144   Psych::Visitors::ToRuby#visit_Psych_Nodes_Scalar /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:122\n  0.99      0.040     0.040     0.000     0.000    16389   RubyOF::Node#orientation       \n  0.99      0.040     0.040     0.000     0.000     4099   RubyOF::Node#orientation=      \n  0.95      0.038     0.038     0.000     0.000    37364   Psych::Visitors::ToRuby#register /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:325\n  0.89      0.036     0.036     0.000     0.000     8198   Psych::Emitter#alias           \n  0.88      0.036     0.036     0.000     0.000   103352   Hash#key?                      \n  0.81      0.061     0.033     0.000     0.028    37358   Psych::Visitors::ToRuby#resolve_class /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:410\n  0.81      0.080     0.033     0.000     0.047    33144   Psych::Visitors::Emitter#visit_Psych_Nodes_Scalar /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:31\n  0.80      1.560     0.032     0.000     1.528     4111  *Hash#each                      \n  0.79      0.032     0.032     0.000     0.000     4099   RubyOF::Node#position=         \n  0.77      0.114     0.031     0.000     0.083    16396   Psych::TreeBuilder#alias       /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:103\n  0.76      0.031     0.031     0.000     0.000     4098   RubyOF::Node#scale=            \n  0.70      0.028     0.028     0.000     0.000     8197   GLM::Vec3#initialize           \n  0.67      0.060     0.027     0.000     0.033    20530   Psych::Visitors::ToRuby#deduplicate /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:380\n  0.66      0.027     0.027     0.000     0.000    16389   RubyOF::Node#position          \n  0.65      0.037     0.026     0.000     0.011    32848   Psych::Visitors::YAMLTree#binary? /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:389\n  0.63      0.025     0.025     0.000     0.000    20528   String#-@                      \n  0.61      0.025     0.025     0.000     0.000     8209   Psych::Coder#initialize        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/coder.rb:13\n  0.60      1.497     0.024     0.000     1.473     4111  *Psych::Visitors::ToRuby#visit_Psych_Nodes_Mapping /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:158\n  0.58      1.561     0.023     0.000     1.537     4104  *Psych::Visitors::YAMLTree#dump_coder /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:496\n  0.57      0.028     0.023     0.000     0.004    37358   Psych::ClassLoader#load        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/class_loader.rb:25\n  0.56      0.028     0.023     0.000     0.005    16411   Psych::Coder#map               /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/coder.rb:34\n  0.56      0.023     0.023     0.000     0.000     4117   Array#join                     \n  0.55      0.085     0.022     0.000     0.063     8222   Psych::TreeBuilder#start_mapping (eval):2\n  0.54      0.022     0.022     0.000     0.000     8210   Regexp#===                     \n  0.53      0.062     0.022     0.000     0.040    16388   BlenderMesh#orientation        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.49      0.029     0.020     0.000     0.009     8222   Psych::Nodes::Mapping#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/mapping.rb:48\n  0.47      0.019     0.019     0.000     0.000    45697   Kernel#respond_to?             \n  0.43      0.017     0.017     0.000     0.000    12292   RubyOF::Node#scale             \n  0.42      1.497     0.017     0.000     1.480     4105  *Psych::Visitors::ToRuby#revive /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:392\n  0.41      0.017     0.017     0.000     0.000     8194   Array#pack                     <internal:pack>:133\n  0.41      1.560     0.017     0.000     1.544     4104  *Psych::Visitors::YAMLTree#emit_coder /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:509\n  0.36      0.666     0.015     0.000     0.651     4105   Psych::Visitors::ToRuby#init_with /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:397\n  0.36      0.043     0.015     0.000     0.028     8222   Psych::TreeBuilder#end_mapping (eval):9\n  0.35      0.033     0.014     0.000     0.019    12291   BlenderMesh#position           /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.34      0.031     0.014     0.000     0.017    12291   BlenderMesh#scale              /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.32      0.019     0.013     0.000     0.006     8443   Psych::TreeBuilder#pop         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:116\n  0.28      1.497     0.011     0.000     1.485     4111  *Enumerable#each_slice          \n  0.26      0.011     0.011     0.000     0.000    32848   String#encoding                \n  0.26      0.010     0.010     0.000     0.000    16396   Psych::Nodes::Alias#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/alias.rb:14\n  0.25      0.014     0.010     0.000     0.004     4220   Psych::Visitors::YAMLTree::Registrar#register /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:24\n  0.25      0.038     0.010     0.000     0.028    12294   GLM::Vec3#z                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec3.rb:44\n  0.24      0.041     0.010     0.000     0.031    12294   GLM::Vec3#x                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec3.rb:44\n  0.24      0.010     0.010     0.000     0.000        2   RubyOF::Texture#loadData_FloatPixels \n  0.24      0.010     0.010     0.000     0.000     8444   Psych::Nodes::Node#initialize  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/node.rb:33\n  0.23      0.038     0.009     0.000     0.028    12294   GLM::Vec3#y                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec3.rb:44\n  0.23      0.342     0.009     0.000     0.332     4111  *Psych::Visitors::Emitter#visit_Psych_Nodes_Mapping /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:41\n  0.23      0.009     0.009     0.000     0.000    28770   Module#===                     \n  0.23      0.012     0.009     0.000     0.002     8198   Psych::Visitors::YAMLTree::Registrar#id_for /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:36\n  0.22      0.013     0.009     0.000     0.004     8444   Psych::TreeBuilder#push        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:111\n  0.21      0.049     0.009     0.000     0.040     4097   BlenderMesh#orientation=       /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.21      0.009     0.009     0.000     0.000     4101   String#unpack1                 <internal:pack>:280\n  0.21      0.039     0.008     0.000     0.031     4097   BlenderMesh#scale=             /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.20      0.045     0.008     0.000     0.036     8198   Psych::Visitors::Emitter#visit_Psych_Nodes_Alias /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:47\n  0.19      0.008     0.008     0.000     0.000     4101   String#unpack                  <internal:pack>:256\n  0.19      0.014     0.008     0.000     0.006     8198   Psych::Visitors::ToRuby#visit_Psych_Nodes_Alias /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:320\n  0.19      0.208     0.008     0.000     0.200     4097   BlenderMesh#initialize         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:156\n  0.18      0.007     0.007     0.000     0.000    20547   Kernel#is_a?                   \n  0.18      0.012     0.007     0.000     0.004     4097   BlenderMesh#to_yaml_type       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:201\n  0.17      0.007     0.007     0.000     0.000     8209   Psych::Coder#map=              /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/coder.rb:73\n  0.16      0.009     0.006     0.000     0.002     8198   Psych::Visitors::YAMLTree::Registrar#node_for /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:40\n  0.16      0.038     0.006     0.000     0.032     4097   BlenderMesh#position=          /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.15      0.043     0.006     0.000     0.036     4097   GLM::Vec3#to_a                 /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec3.rb:6\n  0.15      0.006     0.006     0.000     0.000     4105   Class#allocate                 \n  0.15      0.006     0.006     0.000     0.000     8198   Hash#fetch                     \n  0.14      0.006     0.006     0.000     0.000     8479   Integer#to_s                   \n  0.14      0.006     0.006     0.000     0.000     4111   Psych::Emitter#start_mapping   \n  0.14      1.497     0.006     0.000     1.491     4111  *Psych::Visitors::ToRuby#revive_hash /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:337\n  0.14      0.009     0.006     0.000     0.003     4104   Psych::Coder#represent_map     /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/coder.rb:54\n  0.13      0.014     0.005     0.000     0.009     4101   <Module::Base64>#decode64      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/base64.rb:58\n  0.13      0.005     0.005     0.000     0.000    12945   Array#push                     \n  0.13      0.005     0.005     0.000     0.000    16419   Kernel#block_given?            \n  0.12      0.055     0.005     0.000     0.050     4099   BlenderMeshData#initialize     /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:10\n  0.12      0.019     0.005     0.000     0.014     4220   Psych::Visitors::YAMLTree#register /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:491\n  0.11      0.005     0.005     0.000     0.000       66   IO#read                        \n  0.11      0.010     0.004     0.000     0.006     4097   <Module::Base64>#encode64      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/base64.rb:38\n  0.11      0.024     0.004     0.000     0.020     4099   GLM::Quat#w                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb:58\n  0.11      0.004     0.004     0.000     0.000     4105   Psych::ClassLoader#find        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/class_loader.rb:45\n  0.09      0.046     0.004     0.000     0.043       10   Array#map                      \n  0.09      0.013     0.004     0.000     0.010     4099   GLM::Quat#y                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb:58\n  0.09      0.004     0.004     0.000     0.000     8443   Array#pop                      \n  0.08      0.014     0.003     0.000     0.011     4099   GLM::Quat#z                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb:58\n  0.08      0.011     0.003     0.000     0.008        2   Array#collect                  \n  0.08      0.015     0.003     0.000     0.011     4099   GLM::Quat#x                    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb:58\n  0.08      0.003     0.003     0.000     0.000     4111   Array#size                     \n  0.07      0.003     0.003     0.000     0.000     4106   Array#compact                  \n  0.07      0.003     0.003     0.000     0.000     4104   Module#to_s                    \n  0.07      0.003     0.003     0.000     0.000        7   Array#flatten                  \n  0.07      0.003     0.003     0.000     0.000     8450   Array#last                     \n  0.05      0.002     0.002     0.000     0.000       65   StringIO#write                 \n  0.05      0.002     0.002     0.000     0.000     4111   Psych::Emitter#end_mapping     \n  0.04      0.002     0.002     0.000     0.000     4113   Module#name                    \n  0.04      0.002     0.002     0.000     0.000        2   <Module::RubyOF::CPP_Callbacks>#pack_positions \n  0.03      0.001     0.001     0.000     0.000       22   IO#write                       \n  0.02      0.001     0.001     0.000     0.000        8   <Class::IO>#readlines          \n  0.02      0.002     0.001     0.000     0.002      218   Psych::TreeBuilder#start_sequence (eval):2\n  0.01      0.001     0.001     0.000     0.000      218   Psych::Nodes::Sequence#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/sequence.rb:73\n  0.01      0.001     0.000     0.000     0.001      218   Psych::TreeBuilder#end_sequence (eval):9\n  0.01      0.000     0.000     0.000     0.000        4   File#initialize                \n  0.01      0.003     0.000     0.000     0.003      269   Psych::Visitors::YAMLTree#visit_Integer /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:233\n  0.01      0.000     0.000     0.000     0.000      292   String#gsub                    \n  0.01      0.070     0.000     0.000     0.070      109  *Psych::Visitors::YAMLTree#visit_Enumerator /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:357\n  0.01      0.037     0.000     0.000     0.037      109  *Psych::Visitors::ToRuby#visit_Psych_Nodes_Sequence /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:126\n  0.01      0.037     0.000     0.000     0.037      109  *Psych::Visitors::ToRuby#register_empty /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:330\n  0.01      0.001     0.000     0.000     0.001      269   Psych::ScalarScanner#parse_int /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/scalar_scanner.rb:103\n  0.01      0.056     0.000     0.000     0.055      109  *Psych::Visitors::Emitter#visit_Psych_Nodes_Sequence /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:35\n  0.01      0.001     0.000     0.000     0.001       16   Pathname#plus                  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/pathname.rb:355\n  0.01      0.071     0.000     0.000     0.070      109  *Psych::Visitors::YAMLTree#visit_Array /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:349\n  0.00      0.000     0.000     0.000     0.000        4   <Module::RubyOF::CPP_Callbacks>#generate_mesh \n  0.00      0.000     0.000     0.000     0.000        3   RubyOF::Camera#initialize      \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Emitter#end_document    \n  0.00      0.000     0.000     0.000     0.000      269   Kernel#Integer                 \n  0.00      0.000     0.000     0.000     0.000       68   <Class::File>#basename         \n  0.00      0.000     0.000     0.000     0.000       68   String#[]                      \n  0.00      0.001     0.000     0.000     0.000       68   Pathname#chop_basename         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/pathname.rb:41\n  0.00      0.000     0.000     0.000     0.000      228   Array#index                    \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Light#initialize       \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Graphics#ofBackground  \n  0.00      0.000     0.000     0.000     0.000        2   <Class::File>#mkfifo           \n  0.00      0.000     0.000     0.000     0.000       23   Psych::Visitors::YAMLTree#visit_Float /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:240\n  0.00      0.001     0.000     0.000     0.001        1   #<StateMachine::HelperModule:0x0000558ca05171b0>#use_perspective_mode /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:764\n  0.00      0.076     0.000     0.000     0.076        2   DependencyGraph::RenderBatch#init_with /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:269\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::Mesh#setMode__cpp      \n  0.00      0.000     0.000     0.000     0.000       68   Regexp#match?                  \n  0.00      0.000     0.000     0.000     0.000        1   <Class::File>#unlink           \n  0.00      0.000     0.000     0.000     0.000       21   IO#puts                        \n  0.00      0.001     0.000     0.000     0.001       16   Pathname#/                     /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/pathname.rb:349\n  0.00      0.000     0.000     0.000     0.000       63   Kernel#initialize_dup          \n  0.00      0.000     0.000     0.000     0.000       23   Float#to_s                     \n  0.00      0.001     0.000     0.000     0.001        1   StateMachine::Event#fire       /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/event.rb:168\n  0.00      0.001     0.000     0.000     0.001        2   DependencyGraph::RenderBatch#setup /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:146\n  0.00      0.000     0.000     0.000     0.000       16   <Class::File>#join             \n  0.00      0.002     0.000     0.000     0.002        1   Core#setup                     /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/core.rb:60\n  0.00      0.000     0.000     0.000     0.000      109   Psych::Emitter#end_sequence    \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#initialize  \n  0.00      0.000     0.000     0.000     0.000       12   RubyOF::TrueTypeFontSettings#font_name \n  0.00      0.000     0.000     0.000     0.000      109   Psych::Emitter#start_sequence  \n  0.00      0.000     0.000     0.000     0.000       61   String#initialize_copy         \n  0.00      4.059     0.000     0.000     4.059        4   <Class::IO>#open               \n  0.00      0.000     0.000     0.000     0.000       32   Pathname#initialize            \n  0.00      0.000     0.000     0.000     0.000       23   Kernel#Float                   \n  0.00      0.000     0.000     0.000     0.000        3   <Module::FileTest>#exist?      \n  0.00      0.000     0.000     0.000     0.000        6   Kernel#tap                     \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::OFX::InstancingMaterial#setVertexShaderSource \n  0.00      0.000     0.000     0.000     0.000       12   StateMachine::NodeCollection#[] /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:145\n  0.00      0.000     0.000     0.000     0.000       52   String#rindex                  \n  0.00      0.000     0.000     0.000     0.000        2   Thread#initialize              \n  0.00      0.000     0.000     0.000     0.000      109   NilClass#===                   \n  0.00      0.000     0.000     0.000     0.000       21   Kernel#puts                    \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::Material#initialize    \n  0.00      0.001     0.000     0.000     0.000        2   <Class::RubyOF::TrueTypeFont>#dsl_load /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:74\n  0.00      0.000     0.000     0.000     0.000       58   Array#first                    \n  0.00      0.001     0.000     0.000     0.001        4   BlenderMeshData#generate_mesh  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:14\n  0.00      1.560     0.000     0.000     1.560        6  *Psych::Visitors::YAMLTree#visit_Hash /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:325\n  0.00      0.001     0.000     0.000     0.001        2   BlenderSync#initialize         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb:5\n  0.00      0.000     0.000     0.000     0.000       16   StateMachine::NodeCollection#index /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:171\n  0.00      0.000     0.000     0.000     0.000       10  *Array#hash                     \n  0.00      0.001     0.000     0.000     0.001        2   DependencyGraph::RenderBatch#reload_instancing_shaders /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:293\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::ResourceManager#load   /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/resource_manager.rb:16\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#pack_data         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:65\n  0.00      0.060     0.000     0.000     0.060        2   InstancingBuffer#pack_all_positions /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/instancing_buffer.rb:73\n  0.00      0.000     0.000     0.000     0.000       12   RubyOF::TrueTypeFontSettings#font_size \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::OFX::InstancingMaterial#setFragmentShaderSource \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Texture#setTextureWrap__cpp \n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::MachineCollection#initialize_states /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine_collection.rb:26\n  0.00      0.000     0.000     0.000     0.000        8   String#split                   \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::TrueTypeFontSettings#== /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:237\n  0.00      0.000     0.000     0.000     0.000        3   IO#close                       \n  0.00      0.001     0.000     0.000     0.001        3   ViewportCamera#initialize      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:9\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::FloatPixels#allocate   \n  0.00      0.000     0.000     0.000     0.000       12   RubyOF::TrueTypeFontSettings#antialiased? \n  0.00      0.001     0.000     0.000     0.001        1   ViewportCamera#load            /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:229\n  0.00      2.155     0.000     0.000     2.155        1   Core#load_world_state          /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/core.rb:233\n  0.00      0.000     0.000     0.000     0.000        5   StateMachine::Machine#read     /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1087\n  0.00      0.000     0.000     0.000     0.000        4   StateMachine::Machine#write    /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1111\n  0.00      0.000     0.000     0.000     0.000        2   InstancingBuffer#initialize    /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/instancing_buffer.rb:5\n  0.00      0.001     0.000     0.000     0.001        2   DependencyGraph#initialize     /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:2\n  0.00      0.000     0.000     0.000     0.000        7   Psych::ClassLoader#path2class  \n  0.00      0.000     0.000     0.000     0.000       40   Array#unshift                  \n  0.00      0.000     0.000     0.000     0.000        8   <Module::RubyOF::Utils>#ofGetElapsedTimeMicros \n  0.00      0.000     0.000     0.000     0.000        7   StateMachine::Assertions#assert_valid_keys /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/assertions.rb:15\n  0.00      0.000     0.000     0.000     0.000       18   Pathname#to_s                  \n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::Machine#initialize_state /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:699\n  0.00      0.000     0.000     0.000     0.000        6   Hash#each_value                \n  0.00      0.010     0.000     0.000     0.010        2   RubyOF::Texture#load_data      /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:440\n  0.00      0.000     0.000     0.000     0.000       11   Pathname#to_path               \n  0.00      0.000     0.000     0.000     0.000        1   BlenderObject#data_dump        /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_object.rb:15\n  0.00      0.000     0.000     0.000     0.000        1   Thread#kill                    \n  0.00      0.000     0.000     0.000     0.000       12   Kernel#instance_variable_defined? \n  0.00      0.000     0.000     0.000     0.000        8   Symbol#to_s                    \n  0.00      0.000     0.000     0.000     0.000        2   Kernel#p                       \n  0.00      0.000     0.000     0.000     0.000        9   StateMachine::Machine#dynamic_initial_state? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:687\n  0.00      1.903     0.000     0.000     1.903        1   <Module::Psych>#dump           /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych.rb:506\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#initialize /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:22\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Texture#wrap_mode      /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:372\n  0.00      1.904     0.000     0.000     1.904        1   Core#save_world_state          /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/core.rb:229\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#r=          \n  0.00      0.000     0.000     0.000     0.000        7   Psych::ClassLoader#resolve     /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/class_loader.rb:49\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#data_dump       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:196\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Material#diffuse_color= \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Graphics#ofEnableBlendMode__cpp \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::TrueTypeFontSettings#initialize \n  0.00      0.000     0.000     0.000     0.000        1   <Class::StateMachine::Machine>#find_or_create /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:431\n  0.00      2.154     0.000     0.000     2.154        1   <Module::Psych>#load           /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych.rb:271\n  0.00      0.000     0.000     0.000     0.000        9   Kernel#instance_variable_get   \n  0.00      0.000     0.000     0.000     0.000        2   <Class::Time>#now              \n  0.00      0.000     0.000     0.000     0.000        1   BlenderObject#pack_transform   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_object.rb:29\n  0.00      0.000     0.000     0.000     0.000        3   #<StateMachine::HelperModule:0x0000558ca05171b0>#initialize /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1992\n  0.00      0.342     0.000     0.000     0.342        1   Psych::Nodes::Node#yaml        /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/node.rb:58\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#initialize /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:94\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::OFX::InstancingMaterial#diffuse_color= \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#visit_Object /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:153\n  0.00      0.001     0.000     0.000     0.001        2   BlenderMeshData#load_data      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:61\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::FloatPixels#initialize \n  0.00      0.000     0.000     0.000     0.000       10   StateMachine::Machine#attribute /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:714\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#perform /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:50\n  0.00      0.000     0.000     0.000     0.000        6   BasicObject#initialize         \n  0.00      0.000     0.000     0.000     0.000        3  *Kernel#catch                   \n  0.00      0.000     0.000     0.000     0.000        1   BlenderSync#stop               /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb:62\n  0.00      1.561     0.000     0.000     1.561        1   Psych::Visitors::YAMLTree#<<   /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:103\n  0.00      0.000     0.000     0.000     0.000       10   Hash#initialize                \n  0.00      0.000     0.000     0.000     0.000        4   <Class::RubyOF::FloatColor>#rgba /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:230\n  0.00      0.000     0.000     0.000     0.000        2   Psych::TreeBuilder#start_stream /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:84\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#before /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:399\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::Color#set_hex          \n  0.00      0.657     0.000     0.000     0.657        1   <Module::Psych>#parse_stream   /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych.rb:448\n  0.00      0.000     0.000     0.000     0.000        7   Array#-                        \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#rgba=       /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:223\n  0.00      0.000     0.000     0.000     0.000        1   Thread#join                    \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Texture#filter_mode    /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:415\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Texture#initialize     \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::Mesh#setMode           /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:130\n  0.00      0.000     0.000     0.000     0.000       10   Hash#keys                      \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Handlers::DocumentStream#end_document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/handlers/document_stream.rb:17\n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::Machine#initialize_state? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1971\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#init_with         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:143\n  0.00      0.000     0.000     0.000     0.000        7   Hash#merge                     \n  0.00      4.062     0.000     0.000     4.062        1   Core#on_reload                 /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/core.rb:193\n  0.00      0.000     0.000     0.000     0.000        2  *StateMachine::TransitionCollection#run_callbacks /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:125\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#initialize        /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:7\n  0.00      0.000     0.000     0.000     0.000        2   BlenderMeshData#pack_data      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:49\n  0.00      0.000     0.000     0.000     0.000        1   BlenderObject#load_transform   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_object.rb:50\n  0.00      0.000     0.000     0.000     0.000       16   Hash#any?                      \n  0.00      0.000     0.000     0.000     0.000        2   <Class::Thread>#new            \n  0.00      0.001     0.000     0.000     0.001        2   BlenderMeshData#init_with      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:135\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::TrueTypeFontSettings#add_alphabet /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:227\n  0.00      0.000     0.000     0.000     0.000        2   Psych::TreeBuilder#initialize  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:22\n  0.00      0.001     0.000     0.000     0.001        1   ViewportCamera#init_with       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:281\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::TrueTypeFontSettings#hash /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:262\n  0.00      0.000     0.000     0.000     0.000        4   StateMachine::ClassMethods#state_machines /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/extensions.rb:19\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Camera#fov=            \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Graphics#ofEnableBlendMode /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:89\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#a=          \n  0.00      1.497     0.000     0.000     1.497        1   Psych::Nodes::Node#to_ruby     /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/node.rb:49\n  0.00      0.000     0.000     0.000     0.000        2   DependencyGraph::RenderBatch#encode_with /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:260\n  0.00      0.000     0.000     0.000     0.000        6   StateMachine::NodeCollection#fetch /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:164\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Event#transition_for /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/event.rb:139\n  0.00      0.000     0.000     0.000     0.000       23   Float#infinite?                \n  0.00      0.000     0.000     0.000     0.000        1   <Class::Psych::Visitors::YAMLTree>#create /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:49\n  0.00      0.000     0.000     0.000     0.000        1   <Class::Psych::Visitors::ToRuby>#create /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:15\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#event    /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1342\n  0.00      0.657     0.000     0.000     0.657        1   <Module::Psych>#parse          /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych.rb:384\n  0.00      0.000     0.000     0.000     0.000        2   BlenderMeshData#encode_with    /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:131\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#catch_exceptions /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:168\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#b=          \n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::Machine#initial_state /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:682\n  0.00      0.000     0.000     0.000     0.000        1   DependencyGraph#init_with      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:492\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::TrueTypeFontSettings#cpp_add_alphabet \n  0.00      0.000     0.000     0.000     0.000        4   <Class::RubyOF::Color>#hex_alpha /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:208\n  0.00      0.000     0.000     0.000     0.000       23   Float#nan?                     \n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::FloatColor#g=          \n  0.00      0.000     0.000     0.000     0.000        3   <Class::RubyOF::FloatColor>#rgb /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:237\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#perform /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:214\n  0.00      0.000     0.000     0.000     0.000        4   StateMachine::TransitionCollection#actions /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:102\n  0.00      0.000     0.000     0.000     0.000        2   Hash#initialize_copy           \n  0.00      0.000     0.000     0.000     0.000        2   Psych::Nodes::Stream#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/stream.rb:32\n  0.00      0.000     0.000     0.000     0.000        4   StateMachine::State#value      /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/state.rb:148\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::OFX::InstancingMaterial#initialize \n  0.00      0.000     0.000     0.000     0.000        2   Set#initialize                 /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/set.rb:93\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#transaction /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:2221\n  0.00      1.904     0.000     0.000     1.904        1   HelperFunctions#dump_yaml      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb:78\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::Color#initialize       \n  0.00      0.342     0.000     0.000     0.342        1   Psych::Visitors::Emitter#visit_Psych_Nodes_Stream /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:19\n  0.00      0.000     0.000     0.000     0.000        9   Array#initialize               \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:56\n  0.00      0.000     0.000     0.000     0.000        3   Psych::Visitors::YAMLTree#visit_NilClass /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:363\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Texture#setTextureMinMagFilter__cpp \n  0.00      0.000     0.000     0.000     0.000        1   <Class::StringIO>#new          \n  0.00      0.000     0.000     0.000     0.000        3   Enumerable#detect              \n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::NodeCollection#to_sym? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:212\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#load_data         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:87\n  0.00      0.000     0.000     0.000     0.000        5   Array#all?                     \n  0.00      0.000     0.000     0.000     0.000        2   IO#closed?                     \n  0.00      0.000     0.000     0.000     0.000        2   Kernel#dup                     \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Branch#matches_conditions? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:219\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::ToRuby#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:23\n  0.00      0.000     0.000     0.000     0.000        2   BlenderMeshData#to_yaml_type   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_mesh.rb:127\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#run_callbacks /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:242\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::OFX::InstancingMaterial#shininess= \n  0.00      0.000     0.000     0.000     0.000        6   Array#==                       \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Camera#near_clip=      \n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Light#setPointLight    \n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#encode_with     /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:277\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#within_transaction /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:179\n  0.00      0.000     0.000     0.000     0.000        5   StateMachine::Transition#action /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:116\n  0.00      0.000     0.000     0.000     0.000        5   Array#uniq                     \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Branch#match     /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:118\n  0.00      0.000     0.000     0.000     0.000        4   RubyOF::TrueTypeFontSettings#eql? /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:253\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::Emitter#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:5\n  0.00      0.000     0.000     0.000     0.000        1   DependencyGraph#encode_with    /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:482\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Light#diffuse_color    \n  0.00      0.000     0.000     0.000     0.000        7   Hash#include?                  \n  0.00      1.903     0.000     0.000     1.903        1   Object#to_yaml                 /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/core_ext.rb:12\n  0.00      0.000     0.000     0.000     0.000        1   StringIO#initialize            \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Handlers::DocumentStream#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/handlers/document_stream.rb:7\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::Material#shininess=    \n  0.00      0.000     0.000     0.000     0.000        1   String#encode                  \n  0.00      0.000     0.000     0.000     0.000        1   Psych::TreeBuilder#start_document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:65\n  0.00      0.000     0.000     0.000     0.000        2   DependencyGraph::RenderBatch#to_yaml_type /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:256\n  0.00      0.000     0.000     0.000     0.000        4   Array#include?                 \n  0.00      0.342     0.000     0.000     0.342        1   Psych::Visitors::Emitter#visit_Psych_Nodes_Document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/emitter.rb:25\n  0.00      0.000     0.000     0.000     0.000        2   Psych::Nodes::Document#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/document.rb:45\n  0.00      0.000     0.000     0.000     0.000        2   Psych::ClassLoader#initialize  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/class_loader.rb:21\n  0.00      0.000     0.000     0.000     0.000        1   String#sub                     \n  0.00      0.000     0.000     0.000     0.000        3   Pathname#exist?                \n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#encode_with       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:139\n  0.00      0.000     0.000     0.000     0.000        1   InputHandler#initialize        /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/input_handler.rb:4\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::TrueTypeFont::DSL_Object#add_alphabet /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:109\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::MacroMethods#state_machine /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/macro_methods.rb:518\n  0.00      0.000     0.000     0.000     0.000        3   StateMachine::Branch#matches_requirement? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:213\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#tree /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:98\n  0.00      0.000     0.000     0.000     0.000        2   Psych::ScalarScanner#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/scalar_scanner.rb:25\n  0.00      0.000     0.000     0.000     0.000        2   Kernel#Array                   \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::FloatColor#r           \n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#orientation       /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        5   Array#empty?                   \n  0.00      0.000     0.000     0.000     0.000        2   BlenderLight#setPointLight     /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:18\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Branch#match_query /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:190\n  0.00      0.000     0.000     0.000     0.000        2   Array#[]                       \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Handlers::DocumentStream#start_document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/handlers/document_stream.rb:12\n  0.00      0.000     0.000     0.000     0.000        1   Enumerable#find_all            \n  0.00      0.000     0.000     0.000     0.000        2   WeakRef#__getobj__             /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/weakref.rb:46\n  0.00      0.000     0.000     0.000     0.000        6   NilClass#to_s                  \n  0.00      1.497     0.000     0.000     1.497        1   Psych::Visitors::ToRuby#visit_Psych_Nodes_Document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/to_ruby.rb:312\n  0.00      0.000     0.000     0.000     0.000        2   RubyOF::TrueTypeFont::DSL_Object#initialize /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:104\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Branch#match_states /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:205\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::FloatColor#to_a        /home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb:219\n  0.00      0.000     0.000     0.000     0.000        3   Hash#values                    \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#within_transaction /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:225\n  0.00      0.000     0.000     0.000     0.000        4   StateMachine::TransitionCollection#success? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:91\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#within_transaction /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1900\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::StateCollection#match /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/state_collection.rb:55\n  0.00      0.000     0.000     0.000     0.000        2   StateMachine::NodeCollection#each /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:118\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#dump_ivars /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:531\n  0.00      0.000     0.000     0.000     0.000        1   Psych::TreeBuilder#end_document /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:77\n  0.00      0.000     0.000     0.000     0.000        1   Array#reject!                  \n  0.00      0.000     0.000     0.000     0.000        4   Kernel#instance_of?            \n  0.00      0.000     0.000     0.000     0.000        2   Singleton::SingletonClassMethods#instance /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/singleton.rb:121\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#to_yaml_type      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb:135\n  0.00      0.000     0.000     0.000     0.000        1   DependencyGraph#to_yaml_type   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb:478\n  0.00      0.000     0.000     0.000     0.000        1   Pathname#inspect               \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Handler#streaming?      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/handler.rb:251\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#start /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:86\n  0.00      0.000     0.000     0.000     0.000        1   <Module::FileUtils>#rm         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:576\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#position=         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::TrueTypeFontSettings#add_unicode_range /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:218\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#persist /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:275\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree#finish /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:92\n  0.00      2.155     0.000     0.000     2.155        1   <Module::Psych>#load_file      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych.rb:576\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Parser#initialize       /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/parser.rb:47\n  0.00      0.000     0.000     0.000     0.000        2   WeakRef#weakref_alive?         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/weakref.rb:57\n  0.00      0.000     0.000     0.000     0.000        2   ObjectSpace::WeakMap#key?      \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#use_event_attributes? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:109\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#to_yaml_type    /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:273\n  0.00      0.000     0.000     0.000     0.000        1   FileUtils::Entry_#platform_support /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1470\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Camera#far_clip=       \n  0.00      0.000     0.000     0.000     0.000        1   Array#|                        \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Nodes::Document#root    /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/nodes/document.rb:56\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#near_clip=      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:45\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#run_actions /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:147\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Matcher#filter   /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/matcher.rb:18\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#after /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:444\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#orientation=    /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:27\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#fov=            /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:32\n  0.00      0.000     0.000     0.000     0.000        2   Time#initialize                \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Emitter#initialize      \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Branch#match_event /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/branch.rb:199\n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#far_clip=       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:50\n  0.00      0.000     0.000     0.000     0.000        1   IO#external_encoding           \n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#diffuse_color     /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::FloatColor#b           \n  0.00      0.000     0.000     0.000     0.000        1   CP::Vec2#initialize            \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Emitter#end_stream      \n  0.00      0.000     0.000     0.000     0.000        1   Psych::TreeBuilder#end_stream  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/tree_builder.rb:90\n  0.00      0.000     0.000     0.000     0.000        4   String#hash                    \n  0.00      0.000     0.000     0.000     0.000        1   ViewportCamera#position=       /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb:22\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#attribute /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:111\n  0.00      0.000     0.000     0.000     0.000        1   SequenceMemory#initialize      /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/sequence_memory.rb:7\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Light#specular_color=  \n  0.00      0.000     0.000     0.000     0.000        2   ObjectSpace::WeakMap#[]        \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#pausable /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:346\n  0.00      0.000     0.000     0.000     0.000        1   <Module::FileUtils>#fu_list    /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1581\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#reset /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:313\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::FloatColor#g           \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::NodeCollection#keys /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/node_collection.rb:68\n  0.00      0.000     0.000     0.000     0.000        1   FileUtils::Entry_#initialize   /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1203\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#scale             /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   <Module::FileUtils>#remove_file /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:794\n  0.00      0.000     0.000     0.000     0.000        1   FileUtils::Entry_#remove_file  /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1464\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#position          /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::FloatColor#a           \n  0.00      0.000     0.000     0.000     0.000        1   Kernel#instance_variables      \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#valid? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:83\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::TrueTypeFontSettings#add_range \n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::Light#diffuse_color=   \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Visitors::YAMLTree::Registrar#initialize /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/psych/visitors/yaml_tree.rb:17\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::StateCollection#match! /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/state_collection.rb:79\n  0.00      0.000     0.000     0.000     0.000        4   BasicObject#equal?             \n  0.00      0.000     0.000     0.000     0.000        2   Thread::Queue#initialize       \n  0.00      0.000     0.000     0.000     0.000        1   Psych::Emitter#start_stream    \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#add_states /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:2255\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#persist /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:139\n  0.00      0.000     0.000     0.000     0.000        1   RubyOF::TrueTypeFont::DSL_Object#add_unicode_range /home/ravenskrag/Desktop/gem_structure/lib/rubyOF/true_type_font.rb:124\n  0.00      0.000     0.000     0.000     0.000        2   NilClass#to_a                  \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::TransitionCollection#reset /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition_collection.rb:115\n  0.00      0.000     0.000     0.000     0.000        1   IO#inspect                     \n  0.00      0.000     0.000     0.000     0.000        2   <Class::File>#path             \n  0.00      0.000     0.000     0.000     0.000        1   FileUtils::Entry_#path         /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1220\n  0.00      0.000     0.000     0.000     0.000        1   Psych::Emitter#start_document  \n  0.00      0.000     0.000     0.000     0.000        1   Class#superclass               \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#add_events /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:2276\n  0.00      0.000     0.000     0.000     0.000        1   Array#any?                     \n  0.00      0.000     0.000     0.000     0.000        1   Array#&                        \n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#orientation=      /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::AllMatcher#matches? /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/matcher.rb:40\n  0.00      0.000     0.000     0.000     0.000        1   Kernel#instance_variable_set   \n  0.00      0.000     0.000     0.000     0.000        1   Array#length                   \n  0.00      0.000     0.000     0.000     0.000        1   FileUtils::StreamUtils_#fu_windows? /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/fileutils.rb:1169\n  0.00      0.000     0.000     0.000     0.000        1   StringIO#string                \n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#scale=            /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#specular_color=   /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   BlenderLight#diffuse_color=    /home/ravenskrag/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0/forwardable.rb:226\n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Transition#resume /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/transition.rb:377\n  0.00      0.000     0.000     0.000     0.000        2   #<Module:0x0000558c9f193d28>#is_a? \n  0.00      0.000     0.000     0.000     0.000        1   Hash#[]                        \n  0.00      0.000     0.000     0.000     0.000        1   StateMachine::Machine#reset    /home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/state_machine-1.2.0/lib/state_machine/machine.rb:1878\n\n* recursively called methods\n\nColumns are:\n\n  %self     - The percentage of time spent in this method, derived from self_time/total_time.\n  total     - The time spent in this method and its children.\n  self      - The time spent in this method.\n  wait      - The amount of time this method waited for other threads.\n  child     - The time spent in this method's children.\n  calls     - The number of times this method was called.\n  name      - The name of the method.\n  location  - The location of the method.\n\nThe interpretation of method names is:\n\n  * MyObject#test - An instance method \"test\" of the class \"MyObject\"\n  * <Object:MyObject>#test - The <> characters indicate a method on a singleton class.\nMeasure Mode: wall_time\nThread ID: 15015880\nFiber ID: 15015860\nTotal: 2.155467\nSort by: self_time\n\n %self      total      self      wait     child     calls  name                           location\n  0.01      2.155     0.000     0.001     2.155        1   BlenderSync#initialize         /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb:51\n  0.00      0.000     0.000     0.000     0.000        2   IO#write                       \n  0.00      2.155     0.000     2.155     0.000        1   IO#gets                        \n  0.00      2.155     0.000     0.000     2.155        1   Kernel#loop                    \n  0.00      0.000     0.000     0.000     0.000        2   IO#puts                        \n  0.00      0.000     0.000     0.000     0.000        2   Kernel#puts                    \n\n* recursively called methods\n\nColumns are:\n\n  %self     - The percentage of time spent in this method, derived from self_time/total_time.\n  total     - The time spent in this method and its children.\n  self      - The time spent in this method.\n  wait      - The amount of time this method waited for other threads.\n  child     - The time spent in this method's children.\n  calls     - The number of times this method was called.\n  name      - The name of the method.\n  location  - The location of the method.\n\nThe interpretation of method names is:\n\n  * MyObject#test - An instance method \"test\" of the class \"MyObject\"\n  * <Object:MyObject>#test - The <> characters indicate a method on a singleton class.\nTOTAL UPDATE TIME: 20\nTOTAL UPDATE TIME: 36\nTOTAL UPDATE TIME: 15\nTOTAL UPDATE TIME: 13\n[:mouse_in, 2008, 1077]\n[:mouse_out, 1888, 1093]\nTOTAL UPDATE TIME: 18\n[:mouse_in, 1888, 1093]\n[:mouse_out, 1823, 834]\nTOTAL UPDATE TIME: 26\nTOTAL UPDATE TIME: 11\n",
+			"settings":
+			{
+				"buffer_size": 72656,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/dependency_graph.rb",
+			"settings":
+			{
+				"buffer_size": 14380,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/instancing_buffer.rb",
+			"settings":
+			{
+				"buffer_size": 2383,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -540,7 +583,77 @@
 			"file": "lib/core.rb",
 			"settings":
 			{
-				"buffer_size": 27074,
+				"buffer_size": 20162,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/data/world_data.yaml",
+			"settings":
+			{
+				"buffer_size": 21344,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "AAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8=",
+			"settings":
+			{
+				"buffer_size": 108,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "transform: rrrrRRRRrrrrRRRRppppPPPPppppSSSSssssSSSS\n\n\nCubeInstance.069: &8 !ruby/object:BlenderMesh\n type: MESH\n name: CubeInstance.069\n transform: rrrrRRRRrrrrRRRRppppPPPPppppSSSSssssSSSS\n            rotation        position    scale\n data: *1\nCubeInstance.070: &9 !ruby/object:BlenderMesh\n type: MESH\n name: CubeInstance.070\n transform: rrrrRRRRrrrrRRRRppppPPPPppppSSSSssssSSSS\n            rotation        position    scale\n data: *1",
+			"settings":
+			{
+				"buffer_size": 435,
+				"line_ending": "Unix",
+				"name": "transform: rrrrRRRRrrrrRRRRppppPPPPppppSSSSssssSSS"
+			}
+		},
+		{
+			"contents": "--",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix",
+				"name": "--"
+			}
+		},
+		{
+			"file": "lib/entities/blender_object.rb",
+			"settings":
+			{
+				"buffer_size": 1942,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/blender_mesh.rb",
+			"settings":
+			{
+				"buffer_size": 7003,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/blender_light.rb",
+			"settings":
+			{
+				"buffer_size": 3731,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/viewport_camera.rb",
+			"settings":
+			{
+				"buffer_size": 6292,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -573,37 +686,19 @@
 			}
 		},
 		{
-			"file": "lib/entities/blender_object.rb",
+			"file": "lib/window.rb",
 			"settings":
 			{
-				"buffer_size": 1717,
+				"buffer_size": 4123,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "lib/entities/blender_mesh.rb",
+			"file": "lib/live_code.rb",
 			"settings":
 			{
-				"buffer_size": 3652,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/entities/blender_light.rb",
-			"settings":
-			{
-				"buffer_size": 3193,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/entities/viewport_camera.rb",
-			"settings":
-			{
-				"buffer_size": 5981,
+				"buffer_size": 6288,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -615,30 +710,37 @@
 				"buffer_size": 2,
 				"line_ending": "Unix",
 				"name": "--"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp",
+			"settings":
+			{
+				"buffer_size": 19200,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.h",
+			"settings":
+			{
+				"buffer_size": 20593,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+			"settings":
+			{
+				"buffer_size": 7904,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
 			"settings":
 			{
-				"buffer_size": 25487,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "--",
-			"settings":
-			{
-				"buffer_size": 2,
-				"line_ending": "Unix",
-				"name": "--"
-			}
-		},
-		{
-			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
-			"settings":
-			{
-				"buffer_size": 41404,
+				"buffer_size": 25552,
 				"line_ending": "Unix"
 			}
 		},
@@ -646,7 +748,8 @@
 			"file": "ext/c_extension/callbacks.cpp",
 			"settings":
 			{
-				"buffer_size": 33392,
+				"buffer_size": 34864,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -681,16 +784,6 @@
 				"buffer_size": 49016,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"contents": "Searching 30642 files for \"#define SAMPLER\"\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/event_ordering/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxImGui/example-demo/bin/example-demo:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/apps/projectGenerator/commandLine/bin/projectGenerator:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/areaLightExample/bin/areaLightExample:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/singleLightExample/bin/singleLightExample:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp:\n 2282  #endif\n 2283  \tif(textureTarget==GL_TEXTURE_2D){\n 2284: \t\theader += \"#define SAMPLER sampler2D\\n\";\n 2285  \t}else{\n 2286: \t\theader += \"#define SAMPLER sampler2DRect\\n\";\n 2287  \t}\n 2288  \treturn header;\n ....\n 2358  \tGLenum textureTarget = video.getTexture().getTextureData().textureTarget;\n 2359  \tif(textureTarget==GL_TEXTURE_2D){\n 2360: \t\theader += \"#define SAMPLER sampler2D\\n\";\n 2361  \t}\n 2362  #ifndef TARGET_OPENGLES\n 2363  \telse if(textureTarget==GL_TEXTURE_RECTANGLE){\n 2364: \t\theader += \"#define SAMPLER sampler2DRect\\n\";\n 2365  \t}\n 2366  #endif\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/projectGenerator-linux64/projectGenerator:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/projectGenerator-linux64/resources/app/app/projectGenerator:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n38 matches across 13 files\n",
-			"settings":
-			{
-				"buffer_size": 2447,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
 		}
 	],
 	"build_system": "",
@@ -705,20 +798,20 @@
 		"selected_items":
 		[
 			[
-				"lower",
-				"Convert Case: Lower Case"
-			],
-			[
-				"c++",
-				"Set Syntax: C++"
+				"pyth",
+				"Set Syntax: Python"
 			],
 			[
 				"wra",
 				"Word Wrap: Toggle"
 			],
 			[
-				"pyth",
-				"Set Syntax: Python"
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
 			],
 			[
 				"upp",
@@ -1238,6 +1331,11 @@
 	],
 	"file_history":
 	[
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_light.rb",
 		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
@@ -1265,7 +1363,6 @@
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.h",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp",
@@ -1361,15 +1458,11 @@
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/sequence_memory.rb",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/char_mapped_display.rb",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/spike_profiler.h",
-		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/apothecary/build/glm/doc/api/a00035_source.html",
-		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/mat4x4.hpp",
-		"/home/ravenskrag/Desktop/gem_structure/rake/helper_functions.rb",
-		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
-		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Class.cpp"
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/apothecary/build/glm/doc/api/a00035_source.html"
 	],
 	"find":
 	{
-		"height": 104.0
+		"height": 48.0
 	},
 	"find_in_files":
 	{
@@ -1415,134 +1508,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			":",
-			"': ",
-			":",
-			"oflight",
-			"'light_ty",
+			"todo",
+			"poll",
+			"sha",
+			"pack_mesh_data",
+			"data",
+			"data updated",
+			"send_mesh_edit_update",
+			"send_update_data",
+			".select",
+			"==",
+			"entity.mesh.name",
+			"entity.mesh",
+			"datablock",
+			"@batches",
+			"=>",
+			"add",
+			"dc514da53c069c1dd779110b5bd2d1e70119cfa5",
+			"cylinder",
 			"pack_data",
-			"'viewport_camera'",
-			"name",
-			"light.",
-			"camera.",
-			"read_fifo",
-			"viewport",
-			"@meshes",
-			"meshes",
-			"entity.dirty",
-			"obj_data",
-			"mesh_obj_list",
-			"mesh_objs",
-			"camera_end",
-			"camera_begin",
-			"@entities['Light']",
-			"Light",
-			"light_pos",
-			"Light",
-			"CustomCamera",
-			"viewport_camera",
-			"CustomCamera",
-			"mScale",
-			"depsgraph.object_instances",
-			"BlenderSync",
-			"bGeometryUpdated",
-			"self.draw_data",
-			"self.scene_data",
-			"scene_data",
-			"@mat1",
-			"@entities",
-			"InstancingBuffer",
-			"mScale",
-			"setInstanceMagnitudeScale",
-			"InstancingBuffer",
-			"beginDefaultShader",
-			"defaultshader",
-			"::bind",
-			"#define SAMPLER",
-			"SAMPLER",
-			"TEXTURE",
-			"setDefaultUniforms",
-			"updateMaterial",
-			"ofx",
-			"InstancingBuffer",
-			"InstancingMaterial",
-			"vertexSource",
-			"on_update",
-			"oftostd",
-			"ofTostd",
-			"std::",
-			"shaderHeader",
-			"::setupShaderFromSource",
-			"std::",
-			"string",
-			"std::string",
-			"std::",
-			"vertexSource",
-			"shaderheader",
-			"shaderHeader",
-			"string",
-			"String",
-			"string",
-			"shaderHeader",
-			"shaderheader",
-			"shader",
-			"PROJECT_DIR",
-			"InstancingBuffer",
-			"first_draw",
-			"InstancingBuffer",
-			"setVertexShaderSource",
-			"std::string",
-			"vertexShader",
-			"header",
-			"InstancingBuffer",
-			"mat_ambient",
-			"oftexture",
-			"pack_positions",
-			"pos.to_a",
+			"pack_mesh_data",
+			"send_update_data",
+			".name",
+			"@name",
+			"lights",
+			"each_light",
+			"get_entity",
+			"update_entity_transform",
+			"update_entity_data",
+			"@batches",
+			"pack_transform",
+			"@unbatched",
+			"blenderlight",
+			"update_packed_entity_positions",
+			".dirty",
+			"dirty",
+			"'mesh_name'",
+			".type",
+			"id_type_update",
+			"pack_light_data",
+			".update",
+			"x",
+			"pack_mesh_data",
+			"export_list",
+			"obj_data_export",
+			"obj.data",
+			"load_world_state",
+			"first_update",
+			"entity_list",
+			"entity.mesh",
+			"batch",
+			"@batches",
+			"@unbatched",
+			"get_entity",
+			"@unbatched",
+			"update_entity_data",
+			"@unbatched",
+			"load_transform",
+			"createMatrix",
+			"getGlobalTransformMatrix",
+			"position",
+			"micros",
+			"t0 = ",
 			"positions",
 			"pack_positions",
-			"InstancingBuffer",
+			"positions_with_indicies",
+			"update_packed_entity_positions",
+			"update",
+			".update",
+			"update_packed_entity_positions",
+			"entites",
+			"lights",
+			"entity.dirty",
+			"attempt_reload",
+			"on_reload",
+			"shader reloaded",
+			"dirty =",
+			"interface",
+			"viewport_camera",
+			"lights",
+			"@sync",
+			"@meshes",
+			"@entities",
+			"@unbatched",
+			".state",
+			"self.state",
+			"@mesh",
+			": &6",
+			"&6 ",
+			"&6",
+			"encode_with",
+			"@batches",
+			"@unbatched",
+			"entity.dirty",
+			"@unbatched",
+			"@entities",
+			"entities",
+			"entties",
+			"yaml",
+			"to_yaml",
+			"verts:\n    - double\n    - 72\n    - \"/dev/shm/Blender_RubyOF/b9c9c895a8a836132df702edb8302f742d87ca0b.txt\"",
+			".dirty",
+			"entity.is_a? BlenderMesh",
+			"dirty =",
+			"dirty",
+			"dirty_entities_with_index",
+			"with_index",
 			"pack_positions",
-			"tex_pos",
-			"ofFloatPixels__getColor_xy",
-			"setcolor_xy",
-			"ofFloatPixels__getColor_xy",
-			"ofFloatPixels",
-			"ofFloatPixels__getColor_xy",
-			"ofFloatPixels__setColor_xy",
-			"ofFloatPixels__getColor_xy",
-			"floatpixels",
-			"oftexture",
-			"rb_cPixels",
-			"ofPixels",
-			"pixels",
-			"pack_positions",
-			"ofColor_<unsigned char>&",
-			"RubyOF::",
-			"Color",
-			"RubyOF::Color",
-			"color",
-			"ofColor_",
-			"ofColor_<unsigned char>&",
-			"c",
-			"ofColor_<unsigned char>& ",
-			"ofColor_<unsigned char>&",
-			"ofColor_<float>&",
-			"ofColor_<float>",
-			"unsigned char",
-			"ofColor_",
-			"ofColor&",
-			"ofColor",
-			"int",
-			"ofColor_",
-			"ofColor",
-			"int",
-			"rb_cFloatColor",
-			"ofFloatColor",
-			"setHex",
-			"ofColor_",
-			"ofColor",
-			"Color"
+			"dirty",
+			"position",
+			"positions",
+			".delete_if",
+			".delete",
+			"remove",
+			"obj_data['mesh_name']",
+			"meshes",
+			"RubyOF::FloatColor.rgb([1, 1, 1])",
+			"instance_data",
+			"pack_entities",
+			"viewport_camera",
+			"@depsgraph.viewport_camera",
+			".viewport_camera",
+			"draw",
+			"@world_save_file",
+			"@entities",
+			"@entities['viewport_camera']",
+			"@mat2",
+			"@meshes",
+			"@entities"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1563,7 +1656,7 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -1572,15 +1665,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 31812,
+						"buffer_size": 32347,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15838,
-								15838
+								4876,
+								4876
 							]
 						],
 						"settings":
@@ -1590,27 +1683,12 @@
 							{
 								"close":
 								{
-									"1":
-									[
-										15848,
-										15849
-									]
 								},
 								"icon":
 								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/single_quote.png",
-										"region.greenish"
-									]
 								},
 								"open":
 								{
-									"1":
-									[
-										15838,
-										15839
-									]
 								},
 								"unmatched":
 								{
@@ -1623,56 +1701,56 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"rainbowth.lispy": false,
 							"syntax": "Packages/Python/Python.sublime-syntax",
@@ -1680,137 +1758,147 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 14371.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "lib/blender_sync.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10259,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3482,
-								3482
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-									"1":
-									[
-										3444,
-										3447
-									]
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/User/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2467.0,
+						"translation.y": 4482.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "lib/core.rb",
+					"buffer": 1,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 27074,
+						"buffer_size": 5416,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2891,
-								2891
+								5069,
+								5069
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										5069,
+										5070
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										5058,
+										5059
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 744.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/blender_sync.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12609,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7419,
+								7419
 							]
 						],
 						"settings":
@@ -1831,9 +1919,1112 @@
 								{
 									"1":
 									[
-										2892,
-										2897
+										9801,
+										9804
 									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7179.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2329,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2329,
+								2329
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 246.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 72656,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6386,
+								6386
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/dependency_graph.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4884,
+								4884
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										5515,
+										5518
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4659,
+										4662
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 18.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/instancing_buffer.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2383,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1962,
+								1962
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2071,
+										2074
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										766,
+										769
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1119.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lib/core.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3327,
+								3327
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3406,
+										3409
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1141,
+										1144
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3813.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "bin/data/world_data.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21344,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 108,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								108,
+								108
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 435,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								400,
+								400
+							]
+						],
+						"settings":
+						{
+							"auto_name": "transform: rrrrRRRRrrrrRRRRppppPPPPppppSSSSssssSSS",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "lib/entities/blender_object.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1942,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								150,
+								150
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										426,
+										429
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										113,
+										116
+									]
+								},
+								"unmatched":
+								{
 								}
 							},
 							"bracket_highlighter.regions":
@@ -1900,14 +3091,374 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1116.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "lib/entities/blender_mesh.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7003,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1651,
+								1651
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3389,
+										3392
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1607,
+										1610
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1209.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 14,
+					"file": "lib/entities/blender_light.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3731,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3634,
+								3634
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3723,
+										3726
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										3575,
+										3578
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2912.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/entities/viewport_camera.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6292,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4752,
+								4752
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4751,
+										4752
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4706,
+										4707
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5766.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
 					"file": "ext/c_extension/shaders/phong_instanced.vert",
 					"semi_transient": false,
 					"settings":
@@ -1919,8 +3470,8 @@
 						"selection":
 						[
 							[
-								587,
-								587
+								4234,
+								4234
 							]
 						],
 						"settings":
@@ -1930,12 +3481,27 @@
 							{
 								"close":
 								{
+									"1":
+									[
+										4771,
+										4772
+									]
 								},
 								"icon":
 								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
 								},
 								"open":
 								{
+									"1":
+									[
+										1201,
+										1202
+									]
 								},
 								"unmatched":
 								{
@@ -1948,56 +3514,56 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"rainbowth.lispy": false,
 							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
@@ -2005,14 +3571,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3906.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 17,
 					"file": "ext/c_extension/shaders/phong.frag",
 					"semi_transient": false,
 					"settings":
@@ -2068,56 +3634,56 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"rainbowth.lispy": false,
 							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
@@ -2128,11 +3694,11 @@
 						"translation.y": 6880.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 18,
 					"semi_transient": false,
 					"settings":
 					{
@@ -2150,6 +3716,36 @@
 						"settings":
 						{
 							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "lib/window.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								559,
+								559
+							]
+						],
+						"settings":
+						{
 							"bracket_highlighter.busy": false,
 							"bracket_highlighter.locations":
 							{
@@ -2225,30 +3821,32 @@
 								"bh_default_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "lib/entities/blender_object.rb",
+					"buffer": 20,
+					"file": "lib/live_code.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1717,
+						"buffer_size": 6288,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1044,
-								1044
+								1997,
+								1997
 							]
 						],
 						"settings":
@@ -2260,8 +3858,8 @@
 								{
 									"1":
 									[
-										1054,
-										1055
+										2025,
+										2026
 									]
 								},
 								"icon":
@@ -2276,8 +3874,8 @@
 								{
 									"1":
 									[
-										1044,
-										1045
+										1997,
+										1998
 									]
 								},
 								"unmatched":
@@ -2348,27 +3946,270 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 837.0,
+						"translation.y": 297.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "lib/entities/blender_mesh.rb",
+					"buffer": 21,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3652,
+						"buffer_size": 2,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2122,
-								2122
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 19200,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7473,
+								7473
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7861.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20593,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20411,
+								20411
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										20590,
+										20591
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 16696.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7904,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6674,
+								6674
 							]
 						],
 						"settings":
@@ -2380,8 +4221,232 @@
 								{
 									"1":
 									[
-										2127,
-										2128
+										6735,
+										6736
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										6673,
+										6674
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 9070.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25552,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19739,
+								19739
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 22059.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "ext/c_extension/callbacks.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34864,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22937,
+								22937
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										23931,
+										23932
 									]
 								},
 								"icon":
@@ -2396,8 +4461,8 @@
 								{
 									"1":
 									[
-										1712,
-										1713
+										22621,
+										22622
 									]
 								},
 								"unmatched":
@@ -2463,647 +4528,18 @@
 								"bh_default_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/User/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1545.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "lib/entities/blender_light.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3193,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2528,
-								2528
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										3185,
-										3188
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/dot.png",
-										"region.yellowish brackethighlighter.default"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										1862,
-										1865
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/User/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1395.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "lib/entities/viewport_camera.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5981,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								380,
-								380
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										379,
-										380
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/round_bracket.png",
-										"region.yellowish"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										377,
-										378
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/User/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2,
-								2
-							]
-						],
-						"settings":
-						{
-							"auto_name": "--",
-							"bracket_highlighter.busy": false,
-							"rainbowth.lispy": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 19,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 25487,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6956,
-								6956
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
-							"tab_size": 3,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 8729.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2,
-								2
-							]
-						],
-						"settings":
-						{
-							"auto_name": "--",
-							"bracket_highlighter.busy": false,
-							"rainbowth.lispy": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 41404,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								20632,
-								20632
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 20323.0,
+						"translation.y": 30949.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
-					"file": "ext/c_extension/callbacks.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 33392,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								28673,
-								28673
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										28673,
-										28674
-									]
-								},
-								"icon":
-								{
-									"1":
-									[
-										"Packages/BracketHighlighter/icons/double_quote.png",
-										"region.greenish"
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										28647,
-										28648
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 36724.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
+					"buffer": 27,
 					"file": "ext/c_extension/ofxInstancingMaterial.h",
 					"semi_transient": false,
 					"settings":
@@ -3211,18 +4647,18 @@
 								"bh_default_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 4734.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 28,
 					"file": "ext/c_extension/ofxInstancingMaterial.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3278,59 +4714,59 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -3338,11 +4774,11 @@
 						"translation.y": 6057.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 29,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3398,70 +4834,70 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 49866.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 30,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3569,147 +5005,14 @@
 								"bh_default_content"
 							],
 							"rainbowth.lispy": false,
-							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 5846.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2447,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										1426,
-										1441
-									],
-									[
-										1491,
-										1506
-									],
-									[
-										1708,
-										1723
-									],
-									[
-										1853,
-										1868
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								1258,
-								1258
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"rainbowth.lispy": false,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 186.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
+					"stack_index": 28,
 					"type": "text"
 				}
 			]
@@ -3779,6 +5082,38 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"blender data",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"blenderdata",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"ofnode",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp"
+			],
+			[
+				"depgr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"graphics.c",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"world da",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			],
+			[
+				"livecode",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
 			[
 				"graphi",
 				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
@@ -3898,10 +5233,6 @@
 			[
 				"ofmateria",
 				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
-			],
-			[
-				"ofnode",
-				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp"
 			],
 			[
 				"vbomeshdrawinst",
@@ -4164,10 +5495,6 @@
 				"vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Symbol.cpp"
 			],
 			[
-				"livecode",
-				"bin/projects/blender_iso_game/lib/live_code.rb"
-			],
-			[
 				"live code",
 				"bin/projects/blender_iso_game/lib/live_code.rb"
 			],
@@ -4266,30 +5593,6 @@
 			[
 				"ofttf",
 				"ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp"
-			],
-			[
-				"testapp",
-				"ext/oF_apps/testApp/testApp.qbs"
-			],
-			[
-				"window",
-				"lib/rubyOF/window.rb"
-			],
-			[
-				"app",
-				"bin/projects/grapevine_midi/ext/c_extension/app.cpp"
-			],
-			[
-				"main",
-				"bin/main.rb"
-			],
-			[
-				"midi appfactor",
-				"bin/projects/grapevine_midi/ext/c_extension/app_factory.cpp"
-			],
-			[
-				"ofevents",
-				"ext/openFrameworks/libs/openFrameworks/events/ofEvents.cpp"
 			]
 		],
 		"width": 0.0
@@ -4384,7 +5687,7 @@
 	"show_open_files": true,
 	"show_tabs": false,
 	"side_bar_visible": true,
-	"side_bar_width": 444.0,
+	"side_bar_width": 403.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
