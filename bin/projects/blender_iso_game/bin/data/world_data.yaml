@@ -5,15 +5,15 @@ entity_list:
   view_perspective: PERSP
   rotation:
   - Quat
-  - 0.9106259346008301
-  - 0.37027913331985474
-  - 0.09425117075443268
-  - 0.1573863923549652
+  - 0.8786725401878357
+  - 0.4104069769382477
+  - 0.21084842085838318
+  - 0.12265191972255707
   position:
   - Vec3
-  - 12.030717849731445
-  - -22.8015193939209
-  - 22.816497802734375
+  - 0.5236338973045349
+  - -34.687286376953125
+  - 24.401548385620117
   fov:
   - deg
   - 43.336002349853516
@@ -67,6 +67,60 @@ batch_list:
   count: 1
   state: single
   mesh: !ruby/object:BlenderMeshData
+    mesh_name: Cube
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/ca56664d91f453fc705ded40b49b71ff531e0e01.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/f9396aac97b05e27e49ebe5cefd05d5438ba2571.txt"
+    tris:
+    - - 0
+      - 1
+      - 3
+    - - 0
+      - 3
+      - 2
+    - - 2
+      - 3
+      - 7
+    - - 2
+      - 7
+      - 6
+    - - 6
+      - 7
+      - 5
+    - - 6
+      - 5
+      - 4
+    - - 4
+      - 5
+      - 1
+    - - 4
+      - 1
+      - 0
+    - - 2
+      - 6
+      - 4
+    - - 2
+      - 4
+      - 0
+    - - 7
+      - 3
+      - 1
+    - - 7
+      - 1
+      - 5
+  entity_list:
+  - |-
+    Cube
+    AACAPwAAAAAAAAAAAAAAAEdut8EAAMDAwFKCPgAAgD8AAIA/AACAPw==
+- !ruby/object:RenderBatch
+  count: 1
+  state: single
+  mesh: !ruby/object:BlenderMeshData
     mesh_name: Cube.002
     verts:
     - double
@@ -115,10 +169,118 @@ batch_list:
       - 5
   entity_list:
   - |-
-    Cube
-    AACAPwAAAAAAAAAAAAAAABy5ncAAACDBvlKCPgAAgD8AAIA/AACAPw==
+    Cube.001
+    AACAPwAAAAAAAAAAAAAAABy5vcAAAMDAwFKCPgAAgD8AAIA/AACAPw==
 - !ruby/object:RenderBatch
-  count: 97
+  count: 1
+  state: single
+  mesh: !ruby/object:BlenderMeshData
+    mesh_name: Cube.004
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/008e2917993168721dabb9fa5b51f3db872ea83b.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/e13f42e457f70e6157b0cc7a38a9d3c2d5cc4b91.txt"
+    tris:
+    - - 0
+      - 1
+      - 3
+    - - 0
+      - 3
+      - 2
+    - - 2
+      - 3
+      - 7
+    - - 2
+      - 7
+      - 6
+    - - 6
+      - 7
+      - 5
+    - - 6
+      - 5
+      - 4
+    - - 4
+      - 5
+      - 1
+    - - 4
+      - 1
+      - 0
+    - - 2
+      - 6
+      - 4
+    - - 2
+      - 4
+      - 0
+    - - 7
+      - 3
+      - 1
+    - - 7
+      - 1
+      - 5
+  entity_list:
+  - |-
+    Cube.002
+    AACAPwAAAAAAAAAAAAAAADhyO8AAAMDAwFKCPgAAgD8AAIA/AACAPw==
+- !ruby/object:RenderBatch
+  count: 1
+  state: single
+  mesh: !ruby/object:BlenderMeshData
+    mesh_name: Cube.005
+    verts:
+    - double
+    - 24
+    - "/dev/shm/Blender_RubyOF/f7a3ab461ed63c3468449f2ecee98e1409841fa9.txt"
+    normals:
+    - double
+    - 108
+    - "/dev/shm/Blender_RubyOF/62c85d891d90edc961984ea81b2e4e69b65da260.txt"
+    tris:
+    - - 0
+      - 1
+      - 3
+    - - 0
+      - 3
+      - 2
+    - - 2
+      - 3
+      - 7
+    - - 2
+      - 7
+      - 6
+    - - 6
+      - 7
+      - 5
+    - - 6
+      - 5
+      - 4
+    - - 4
+      - 5
+      - 1
+    - - 4
+      - 1
+      - 0
+    - - 2
+      - 6
+      - 4
+    - - 2
+      - 4
+      - 0
+    - - 7
+      - 3
+      - 1
+    - - 7
+      - 1
+      - 5
+  entity_list:
+  - |-
+    Cube.003
+    AACAPwAAAAAAAAAAAAAAAI7cXsEAAMDAwFKCPgAAgD8AAIA/AACAPw==
+- !ruby/object:RenderBatch
+  count: 67
   state: instanced_set
   mesh: !ruby/object:BlenderMeshData
     mesh_name: Cube.003
@@ -129,7 +291,7 @@ batch_list:
     normals:
     - double
     - 396
-    - "/dev/shm/Blender_RubyOF/f8498959629b70bfd0d521ffec43ad2216946837.txt"
+    - "/dev/shm/Blender_RubyOF/c30f8a8136edbfb57da985336b40f9cd2d840e16.txt"
     tris:
     - - 14
       - 16
@@ -295,6 +457,18 @@ batch_list:
     CubeInstance.073
     AACAPwAAAAAAAAAAAAAAAAAAEEEAAAAAAAAAAAAAgD8AAIA/AACAPw==
   - |-
+    CubeInstance.074
+    AACAPwAAAAAAAAAAAAAAAAAAIEEAAAAAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.075
+    AACAPwAAAAAAAAAAAAAAAAAAMEEAAAAAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.076
+    AACAPwAAAAAAAAAAAAAAAAAAQEEAAAAAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.077
+    AACAPwAAAAAAAAAAAAAAAAAAUEEAAAAAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
     CubeInstance.080
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -325,6 +499,15 @@ batch_list:
     CubeInstance.089
     AACAPwAAAAAAAAAAAAAAAAAAEEEAAIA/AAAAAAAAgD8AAIA/AACAPw==
   - |-
+    CubeInstance.090
+    AACAPwAAAAAAAAAAAAAAAAAAIEEAAIA/AAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.091
+    AACAPwAAAAAAAAAAAAAAAAAAMEEAAIA/AAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.092
+    AACAPwAAAAAAAAAAAAAAAAAAQEEAAIA/AAAAAAAAgD8AAIA/AACAPw==
+  - |-
     CubeInstance.096
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -340,6 +523,9 @@ batch_list:
     CubeInstance.100
     AACAPwAAAAAAAAAAAAAAAAAAgEAAAABAAAAAAAAAgD8AAIA/AACAPw==
   - |-
+    CubeInstance.101
+    AACAPwAAAAAAAAAAAAAAAAAAoEAAAABAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
     CubeInstance.102
     AACAPwAAAAAAAAAAAAAAAAAAwEAAAABAAAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -348,6 +534,12 @@ batch_list:
   - |-
     CubeInstance.104
     AACAPwAAAAAAAAAAAAAAAAAAAEEAAABAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.105
+    AACAPwAAAAAAAAAAAAAAAAAAEEEAAABAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.106
+    AACAPwAAAAAAAAAAAAAAAAAAIEEAAABAAAAAAAAAgD8AAIA/AACAPw==
   - |-
     CubeInstance.112
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAgD8AAIA/AACAPw==
@@ -361,6 +553,21 @@ batch_list:
     CubeInstance.115
     AACAPwAAAAAAAAAAAAAAAAAAQEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
+    CubeInstance.116
+    AACAPwAAAAAAAAAAAAAAAAAAgEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.117
+    AACAPwAAAAAAAAAAAAAAAAAAoEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.118
+    AACAPwAAAAAAAAAAAAAAAAAAwEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.119
+    AACAPwAAAAAAAAAAAAAAAAAA4EAAAEBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.120
+    AACAPwAAAAAAAAAAAAAAAAAAAEEAAEBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
     CubeInstance.128
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -373,6 +580,15 @@ batch_list:
     CubeInstance.131
     AACAPwAAAAAAAAAAAAAAAAAAQEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
+    CubeInstance.132
+    AACAPwAAAAAAAAAAAAAAAAAAgEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.133
+    AACAPwAAAAAAAAAAAAAAAAAAoEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.134
+    AACAPwAAAAAAAAAAAAAAAAAAwEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
     CubeInstance.144
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAKBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -384,6 +600,12 @@ batch_list:
   - |-
     CubeInstance.147
     AACAPwAAAAAAAAAAAAAAAAAAQEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.148
+    AACAPwAAAAAAAAAAAAAAAAAAgEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.149
+    AACAPwAAAAAAAAAAAAAAAAAAoEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
     CubeInstance.160
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAMBAAAAAAAAAgD8AAIA/AACAPw==
@@ -403,158 +625,8 @@ batch_list:
     CubeInstance.177
     AACAPwAAAAAAAAAAAAAAAAAAgD8AAOBAAAAAAAAAgD8AAIA/AACAPw==
   - |-
-    CubeInstance.178
-    AACAPwAAAAAAAAAAAAAAAAAAAEAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
     CubeInstance.192
     AACAPwAAAAAAAAAAAAAAAAAAAAAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.193
-    AACAPwAAAAAAAAAAAAAAAAAAgD8AAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.194
-    AACAPwAAAAAAAAAAAAAAAAAAAEAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.195
-    AACAPwAAAAAAAAAAAAAAAAAAQEAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.208
-    AACAPwAAAAAAAAAAAAAAAAAAAAAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.209
-    AACAPwAAAAAAAAAAAAAAAAAAgD8AABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.210
-    AACAPwAAAAAAAAAAAAAAAAAAAEAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.211
-    AACAPwAAAAAAAAAAAAAAAAAAQEAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.227
-    AACAPwAAAAAAAAAAAAAAAAAAQEAAACBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.196
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.212
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.213
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.214
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.215
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAABBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.228
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAACBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.229
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAACBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.230
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAACBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.231
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAACBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.246
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAADBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.247
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAADBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.101
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAABAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.116
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.117
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.118
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAEBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.119
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAEBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.120
-    AACAPwAAAAAAAAAAAAAAAAAAAEEAAEBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.132
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.133
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.134
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAIBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.135
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAIBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.136
-    AACAPwAAAAAAAAAAAAAAAAAAAEEAAIBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.148
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.149
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.150
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAKBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.151
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAKBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.152
-    AACAPwAAAAAAAAAAAAAAAAAAAEEAAKBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.164
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAMBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.165
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAMBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.166
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAMBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.167
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAMBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.168
-    AACAPwAAAAAAAAAAAAAAAAAAAEEAAMBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.179
-    AACAPwAAAAAAAAAAAAAAAAAAQEAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.180
-    AACAPwAAAAAAAAAAAAAAAAAAgEAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.181
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.182
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.183
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.184
-    AACAPwAAAAAAAAAAAAAAAAAAAEEAAOBAAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.197
-    AACAPwAAAAAAAAAAAAAAAAAAoEAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.198
-    AACAPwAAAAAAAAAAAAAAAAAAwEAAAABBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.199
-    AACAPwAAAAAAAAAAAAAAAAAA4EAAAABBAAAAAAAAgD8AAIA/AACAPw==
 - !ruby/object:RenderBatch
   count: 1
   state: single
@@ -709,7 +781,7 @@ batch_list:
   count: 1
   state: single
   mesh: !ruby/object:BlenderMeshData
-    mesh_name: Cylinder.002
+    mesh_name: Cylinder
     verts:
     - double
     - 192
@@ -1094,208 +1166,262 @@ batch_list:
   entity_list:
   - |-
     Cylinder
-    AACAPwAAAAAAAAAAAAAAAG7k9r8AAMDAvlKCPgAAgD8AAIA/AACAPw==
+    AACAPwAAAAAAAAAAAAAAAHIjAUEAABDBvlKCPgAAgD8AAIA/AACAPw==
 - !ruby/object:RenderBatch
   count: 1
   state: single
   mesh: !ruby/object:BlenderMeshData
-    mesh_name: Cone.001
+    mesh_name: Icosphere
     verts:
     - double
-    - 99
-    - "/dev/shm/Blender_RubyOF/4b1ec167da6a7e7a0029ddcf760e72d1ab7237d9.txt"
+    - 126
+    - "/dev/shm/Blender_RubyOF/a2e47e9ff82bd18206dd691a290b44f84c8785b8.txt"
     normals:
     - double
-    - 558
-    - "/dev/shm/Blender_RubyOF/88337df9971e99c4062f154b0b7bf3c34ac961b3.txt"
+    - 720
+    - "/dev/shm/Blender_RubyOF/8f0c8dd544803f1e7190d7b0c7ad15874e994c00.txt"
     tris:
     - - 0
-      - 32
-      - 1
+      - 13
+      - 12
     - - 1
-      - 32
-      - 2
+      - 13
+      - 15
+    - - 0
+      - 12
+      - 17
+    - - 0
+      - 17
+      - 19
+    - - 0
+      - 19
+      - 16
+    - - 1
+      - 15
+      - 22
     - - 2
-      - 32
-      - 3
+      - 14
+      - 24
     - - 3
-      - 32
-      - 4
+      - 18
+      - 26
     - - 4
-      - 32
-      - 5
+      - 20
+      - 28
     - - 5
-      - 32
-      - 6
+      - 21
+      - 30
+    - - 1
+      - 22
+      - 25
+    - - 2
+      - 24
+      - 27
+    - - 3
+      - 26
+      - 29
+    - - 4
+      - 28
+      - 31
+    - - 5
+      - 30
+      - 23
     - - 6
       - 32
-      - 7
+      - 37
     - - 7
-      - 32
-      - 8
+      - 33
+      - 39
     - - 8
-      - 32
-      - 9
+      - 34
+      - 40
     - - 9
-      - 32
-      - 10
+      - 35
+      - 41
     - - 10
-      - 32
+      - 36
+      - 38
+    - - 38
+      - 41
       - 11
-    - - 11
-      - 32
-      - 12
-    - - 12
-      - 32
-      - 13
-    - - 13
-      - 32
-      - 14
-    - - 14
-      - 32
-      - 15
-    - - 15
-      - 32
-      - 16
-    - - 16
-      - 32
-      - 17
-    - - 17
-      - 32
-      - 18
-    - - 18
-      - 32
-      - 19
-    - - 19
-      - 32
-      - 20
-    - - 20
-      - 32
-      - 21
-    - - 21
-      - 32
-      - 22
-    - - 22
-      - 32
-      - 23
-    - - 23
-      - 32
-      - 24
-    - - 24
-      - 32
-      - 25
-    - - 25
-      - 32
-      - 26
-    - - 26
-      - 32
-      - 27
-    - - 27
-      - 32
-      - 28
-    - - 28
-      - 32
-      - 29
-    - - 29
-      - 32
-      - 30
-    - - 31
-      - 0
-      - 1
-    - - 1
-      - 2
-      - 3
-    - - 3
-      - 4
-      - 5
-    - - 5
-      - 6
-      - 7
-    - - 7
+    - - 38
+      - 36
+      - 41
+    - - 36
+      - 9
+      - 41
+    - - 41
+      - 40
+      - 11
+    - - 41
+      - 35
+      - 40
+    - - 35
       - 8
-      - 9
-    - - 9
-      - 10
+      - 40
+    - - 40
+      - 39
       - 11
-    - - 11
-      - 12
-      - 13
-    - - 13
-      - 14
-      - 15
-    - - 15
-      - 16
-      - 17
-    - - 17
+    - - 40
+      - 34
+      - 39
+    - - 34
+      - 7
+      - 39
+    - - 39
+      - 37
+      - 11
+    - - 39
+      - 33
+      - 37
+    - - 33
+      - 6
+      - 37
+    - - 37
+      - 38
+      - 11
+    - - 37
+      - 32
+      - 38
+    - - 32
+      - 10
+      - 38
+    - - 23
+      - 36
+      - 10
+    - - 23
+      - 30
+      - 36
+    - - 30
+      - 9
+      - 36
+    - - 31
+      - 35
+      - 9
+    - - 31
+      - 28
+      - 35
+    - - 28
+      - 8
+      - 35
+    - - 29
+      - 34
+      - 8
+    - - 29
+      - 26
+      - 34
+    - - 26
+      - 7
+      - 34
+    - - 27
+      - 33
+      - 7
+    - - 27
+      - 24
+      - 33
+    - - 24
+      - 6
+      - 33
+    - - 25
+      - 32
+      - 6
+    - - 25
+      - 22
+      - 32
+    - - 22
+      - 10
+      - 32
+    - - 30
+      - 31
+      - 9
+    - - 30
+      - 21
+      - 31
+    - - 21
+      - 4
+      - 31
+    - - 28
+      - 29
+      - 8
+    - - 28
+      - 20
+      - 29
+    - - 20
+      - 3
+      - 29
+    - - 26
+      - 27
+      - 7
+    - - 26
       - 18
+      - 27
+    - - 18
+      - 2
+      - 27
+    - - 24
+      - 25
+      - 6
+    - - 24
+      - 14
+      - 25
+    - - 14
+      - 1
+      - 25
+    - - 22
+      - 23
+      - 10
+    - - 22
+      - 15
+      - 23
+    - - 15
+      - 5
+      - 23
+    - - 16
+      - 21
+      - 5
+    - - 16
       - 19
+      - 21
+    - - 19
+      - 4
+      - 21
     - - 19
       - 20
-      - 21
-    - - 21
-      - 22
-      - 23
-    - - 23
-      - 24
-      - 25
-    - - 25
-      - 26
-      - 27
-    - - 27
-      - 28
-      - 29
-    - - 29
-      - 30
-      - 31
-    - - 31
-      - 1
-      - 3
-    - - 3
-      - 5
-      - 7
-    - - 7
-      - 9
-      - 11
-    - - 11
-      - 13
-      - 15
-    - - 15
-      - 17
-      - 19
+      - 4
     - - 19
-      - 21
-      - 23
-    - - 23
-      - 25
-      - 27
-    - - 27
-      - 29
-      - 31
-    - - 31
+      - 17
+      - 20
+    - - 17
       - 3
-      - 7
-    - - 7
-      - 11
-      - 15
+      - 20
+    - - 17
+      - 18
+      - 3
+    - - 17
+      - 12
+      - 18
+    - - 12
+      - 2
+      - 18
     - - 15
-      - 19
-      - 23
-    - - 23
-      - 27
-      - 31
-    - - 31
-      - 7
-      - 15
+      - 16
+      - 5
     - - 15
-      - 23
-      - 31
-    - - 30
-      - 32
-      - 31
-    - - 31
-      - 32
+      - 13
+      - 16
+    - - 13
       - 0
+      - 16
+    - - 12
+      - 14
+      - 2
+    - - 12
+      - 13
+      - 14
+    - - 13
+      - 1
+      - 14
   entity_list:
   - |-
-    Cone
-    AACAPwAAAAAAAAAAAAAAAMmNBEAAAMDAvlKCPgAAgD8AAIA/AACAPw==
+    Icosphere
+    AACAPwAAAAAAAAAAAAAAAJIbiT8AAODAvlKCPgAAgD8AAIA/AACAPw==

@@ -17,6 +17,8 @@ class BlenderMeshData
     
     
     # p mesh.methods
+    @mesh.clear
+    
     @mesh.setMode(:triangles)
     
     

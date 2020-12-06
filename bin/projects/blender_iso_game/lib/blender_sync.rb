@@ -294,6 +294,10 @@ class BlenderSync
     
     
     
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0;
+    puts "time - parse data: #{dt} us"
     
     
     # process this last for proper timing
@@ -308,10 +312,6 @@ class BlenderSync
     
     
     
-    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    dt = t1-t0;
-    puts "time - parse data: #{dt} us"
     
     
   end

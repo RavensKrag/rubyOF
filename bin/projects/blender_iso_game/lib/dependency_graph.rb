@@ -225,9 +225,6 @@ class DependencyGraph
     @batches.values
     .collect{ |batch| batch.mesh }
     .find{ |mesh_datablock| mesh_datablock.name == datablock_name }
-    # ^ the problem was here: I used = when I meant ==
-    #   and then the names got all gummed up, as well as the links
-    # TODO: do I want to go back to using BlenderMesh as keys? or is it actually better to use string keys?
     
     # TODO: when you delete some instances from the world, the position data gets messed up. it's easily fixed with an additional move, but maybe there's a more elegant way... basically, the code implictily assumes that the deleted meshes are the ones with indicies at the end of the list, but this is not necessarily the case. thus, if you don't update all positions on deletion, then the "wrong instances" appear to be deleted. This is not exactly the case, but it's a pretty weird graphical effect, regaurdless.
     
