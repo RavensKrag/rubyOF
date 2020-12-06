@@ -208,12 +208,12 @@ class BlenderSync
           mesh_datablock = @depsgraph.find_datablock(name)
           if mesh_datablock.nil?
             mesh_datablock = BlenderMeshData.new(name)
+            new_datablocks[name] = mesh_datablock
           end
           
-          
+          puts "load: #{data.inspect}"
           mesh_datablock.load_data(data)
           
-          new_datablocks[name] = mesh_datablock
           
         when 'bpy.types.Light'
           # associate light data with light objects
@@ -231,7 +231,7 @@ class BlenderSync
       end
     end
     
-    p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
+    # p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
     
     
     blender_data['objects']&.tap do |object_list|
