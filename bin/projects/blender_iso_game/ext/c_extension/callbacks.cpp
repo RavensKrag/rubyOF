@@ -974,22 +974,20 @@ public:
 void pack_positions(ofFloatPixels &pixels, int width, float scale, Rice::Array positions){
 	
 	// allocate data
-	float* pos_ptr = new float[positions.size()*3];
+	glm::vec3* pos_ptr = new glm::vec3[positions.size()];
 	
 	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
 	int idx;
 	
 	idx = 0;
 	for(auto aI = positions.begin(); aI != positions.end(); ++aI){
-		glm::vec3* vec = from_ruby<glm::vec3*>(*aI);
+		glm::vec3 vec = from_ruby<glm::vec3>(*aI);
 		
 		// std::cout <<"("<< vec.x <<", "<< vec.y <<", "<< vec.z <<")"<< std::endl;
 		
-		pos_ptr[idx+0] = vec->x;
-		pos_ptr[idx+1] = vec->y;
-		pos_ptr[idx+2] = vec->z;
+		pos_ptr[idx] = vec;
 		
-		idx += 3;
+		idx += 1;
 	}
 	
 	// core logic
@@ -999,33 +997,33 @@ void pack_positions(ofFloatPixels &pixels, int width, float scale, Rice::Array p
 		int x = i / width;
 		int y = i % width;
 		
-		float *arr = &pos_ptr[i*3];
+		glm::vec3* arr = &pos_ptr[i];
 		
 		
-		float posNormShifted[3];
+		glm::vec3 posNormShifted;
 		float magnitude_normalized;
-		if(arr[0] == 0 && arr[1] == 0 && arr[2] == 0){
+		if(arr->x == 0 && arr->y == 0 && arr->z == 0){
 			// zero vector (ie, the only vector with magnitude zero)
-			posNormShifted[0] = ((0)+1)/2;
-			posNormShifted[1] = ((0)+1)/2;
-			posNormShifted[2] = ((0)+1)/2;
+			posNormShifted.x = ((0)+1)/2;
+			posNormShifted.y = ((0)+1)/2;
+			posNormShifted.z = ((0)+1)/2;
 			
 			magnitude_normalized = 0;
 		}else{
 			// all other positions
 			// (this should guard against division by zero)
-			float magnitude = sqrt(arr[0]*arr[0] + arr[1]*arr[1] + arr[2]*arr[2]);
+			float magnitude = sqrt(arr->x*arr->x + arr->y*arr->y + arr->z*arr->z);
 			
-			posNormShifted[0] = ((arr[0]/magnitude)+1)/2;
-			posNormShifted[1] = ((arr[1]/magnitude)+1)/2;
-			posNormShifted[2] = ((arr[2]/magnitude)+1)/2;
+			posNormShifted.x = ((arr->x/magnitude)+1)/2;
+			posNormShifted.y = ((arr->y/magnitude)+1)/2;
+			posNormShifted.z = ((arr->z/magnitude)+1)/2;
 			
 			magnitude_normalized = magnitude / scale;
 		}
 		
-		c.r = posNormShifted[0];
-		c.g = posNormShifted[1];
-		c.b = posNormShifted[2];
+		c.r = posNormShifted.x;
+		c.g = posNormShifted.y;
+		c.b = posNormShifted.z;
 		c.a = magnitude_normalized;
 		
 		pixels.setColor(x,y, c);
