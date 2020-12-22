@@ -11,9 +11,9 @@ entity_list:
   - -0.004391206428408623
   position:
   - Vec3
-  - 30.251953125
-  - -0.002610713243484497
-  - 126.10102844238281
+  - 32.774391174316406
+  - 15.169698715209961
+  - 49.2175178527832
   fov:
   - deg
   - 43.336002349853516
@@ -291,7 +291,7 @@ batch_list:
     normals:
     - double
     - 396
-    - "/dev/shm/Blender_RubyOF/532571dfd6696eb1f4ff63be42a6d7969f27e663.txt"
+    - "/dev/shm/Blender_RubyOF/abb4a5229f2b3bef0cb1f400b3e2270c65e975c9.txt"
     tris:
     - - 14
       - 16
@@ -2272,9 +2272,6 @@ batch_list:
     CubeInstance.1468
     AACAPwAAAAAAAAAAAAAAAAAA2EEAANhBAAAAAAAAgD8AAIA/AACAPw==
   - |-
-    CubeInstance.1469
-    AACAPwAAAAAAAAAAAAAAAAAA4EEAANhBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
     CubeInstance.147
     AACAPwAAAAAAAAAAAAAAAAAAAEAAABBBAAAAAAAAgD8AAIA/AACAPw==
   - |-
@@ -2928,9 +2925,6 @@ batch_list:
   - |-
     CubeInstance.1667
     AACAPwAAAAAAAAAAAAAAAAAACEIAAMBBAAAAAAAAgD8AAIA/AACAPw==
-  - |-
-    CubeInstance.1668
-    AACAPwAAAAAAAAAAAAAAAAAADEIAAMBBAAAAAAAAgD8AAIA/AACAPw==
   - |-
     CubeInstance.1669
     AACAPwAAAAAAAAAAAAAAAAAAEEIAAMBBAAAAAAAAgD8AAIA/AACAPw==
@@ -12714,6 +12708,12 @@ batch_list:
   - |-
     CubeInstance.999
     AACAPwAAAAAAAAAAAAAAAAAAWEIAAGBBAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.1469
+    AACAPwAAAAAAAAAAAAAAAAAA4EEAANhBAAAAAAAAgD8AAIA/AACAPw==
+  - |-
+    CubeInstance.1668
+    AACAPwAAAAAAAAAAAAAAAAAADEIAAMBBAAAAAAAAgD8AAIA/AACAPw==
 - !ruby/object:RenderBatch
   count: 1
   state: single

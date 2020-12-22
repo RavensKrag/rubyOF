@@ -312,6 +312,8 @@ class RenderBatch
     
     # setup is called by the YAML loader, and bypasses initialize
     def setup()
+      @batch_dirty = false
+      
       # @mat1 and @mat_instanced should have the same apperance
       
       color = RubyOF::FloatColor.rgb([1, 1, 1])
@@ -379,6 +381,8 @@ class RenderBatch
       elsif @entity_list.size == 0
         @state = 'empty'
       end
+      
+      @batch_dirty = true
     end
     
     def draw()
@@ -505,32 +509,9 @@ class RenderBatch
     
     # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
     def update_packed_entity_positions
-      # dirty_entities_with_indicies = 
-      #   @entity_list.each_with_index
-      #   .collect{  |entity, i|  [entity, i]  }
-      #   .select{   |entity, i|  entity.dirty }
-      
-      # positions_with_indicies = 
-      #   dirty_entities_with_indicies
-      #   .collect{  |entity, i|  [entity.node.position, i] }
-      
-      # # pack into image -> texture (which will be passed to shader)
-      # @instance_data.pack_positions_with_indicies(positions_with_indicies)
-      
-      # dirty_entities_with_indicies.each do |entity, i|
-      #   entity.dirty = false
-      # end
-      
-      
-      
-      
-      
-      # (only updating the batch when at least one entity is dirty helps a lot, but not sure exactly why)
-      # from the logs it looks like maybe the same batch is being updated many times per frame? If that is the case, that needs to be fixed deeper in the code somewhere.
-      
       # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
       
-      if @entity_list.any?{|entity| entity.dirty }
+      if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
         t0 = RubyOF::Utils.ofGetElapsedTimeMicros
         nodes = @entity_list.collect{|entity| entity.node}
         
@@ -542,6 +523,7 @@ class RenderBatch
         @instance_data.pack_all_transforms(nodes)
         
         @entity_list.each{|entity| entity.dirty = false }
+        @batch_dirty = false
       end
       
     end
