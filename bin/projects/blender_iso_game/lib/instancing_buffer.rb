@@ -88,13 +88,13 @@ class InstancingBuffer
     
   end
   
-  def pack_all_positions(positions)
+  def pack_all_transforms(nodes)
     # same logic as above, but implemented in C++
     
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    RubyOF::CPP_Callbacks.pack_positions(
-      @pixels, @width, FLOAT_MAX, positions
+    RubyOF::CPP_Callbacks.pack_transforms(
+      @pixels, @width, FLOAT_MAX, nodes
     )
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros

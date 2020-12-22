@@ -537,17 +537,9 @@ class RenderBatch
         t1 = RubyOF::Utils.ofGetElapsedTimeMicros
         dt = t1-t0
         puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
-      
-        
-        t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-        positions = nodes.collect{|node| node.position}
-        
-        t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-        dt = t1-t0
-        puts "time - gather mesh position vectors: #{dt.to_f / 1000} ms"
         
         
-        @instance_data.pack_all_positions(positions)
+        @instance_data.pack_all_transforms(nodes)
         
         # @entity_list.each{|entity| entity.dirty = false }
       # end

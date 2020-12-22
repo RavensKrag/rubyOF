@@ -971,28 +971,28 @@ public:
 
 
 
-void pack_positions(ofFloatPixels &pixels, int width, float scale, Rice::Array positions){
+void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
 	
 	// allocate data
-	glm::vec3* pos_ptr = new glm::vec3[positions.size()];
+	glm::vec3* pos_ptr = new glm::vec3[nodes.size()];
 	
 	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
 	int idx;
 	
 	idx = 0;
-	for(auto aI = positions.begin(); aI != positions.end(); ++aI){
-		glm::vec3 vec = from_ruby<glm::vec3>(*aI);
+	for(auto aI = nodes.begin(); aI != nodes.end(); ++aI){
+		ofNode* node = from_ruby<ofNode*>(*aI);
 		
 		// std::cout <<"("<< vec.x <<", "<< vec.y <<", "<< vec.z <<")"<< std::endl;
 		
-		pos_ptr[idx] = vec;
+		pos_ptr[idx] = node->getPosition();
 		
 		idx += 1;
 	}
 	
 	// core logic
 	ofFloatColor c;
-	int i_max = positions.size();
+	int i_max = nodes.size();
 	for (int i=0; i < i_max; i++){
 		int x = i / width;
 		int y = i % width;
@@ -1113,7 +1113,7 @@ void Init_rubyOF_project()
 		.define_module_function("generate_mesh",   &generate_mesh)
 		
 		
-		.define_module_function("pack_positions",   &pack_positions)
+		.define_module_function("pack_transforms",   &pack_transforms)
 	;
 	
 	
