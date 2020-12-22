@@ -530,7 +530,7 @@ class RenderBatch
       
       # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
       
-      # if @entity_list.any?{|entity| entity.dirty }
+      if @entity_list.any?{|entity| entity.dirty }
         t0 = RubyOF::Utils.ofGetElapsedTimeMicros
         nodes = @entity_list.collect{|entity| entity.node}
         
@@ -541,8 +541,8 @@ class RenderBatch
         
         @instance_data.pack_all_transforms(nodes)
         
-        # @entity_list.each{|entity| entity.dirty = false }
-      # end
+        @entity_list.each{|entity| entity.dirty = false }
+      end
       
     end
   end
