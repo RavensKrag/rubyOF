@@ -476,8 +476,8 @@ class RenderBatch
       # @entity_list.each{  |entity|  entity.dirty = true }
       # update_packed_entity_positions()
       
-      positions = @entity_list.collect{  |entity| entity.node.position  }
-      @instance_data.pack_all_positions(positions)
+      nodes = @entity_list.collect{  |entity| entity.node}
+      @instance_data.pack_all_transforms(nodes)
       
     end
     

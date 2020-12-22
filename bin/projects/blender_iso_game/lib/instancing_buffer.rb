@@ -89,8 +89,6 @@ class InstancingBuffer
   end
   
   def pack_all_transforms(nodes)
-    # same logic as above, but implemented in C++
-    
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     RubyOF::CPP_Callbacks.pack_transforms(
