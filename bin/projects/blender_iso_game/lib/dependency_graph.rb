@@ -36,9 +36,17 @@ class DependencyGraph
   
   include RubyOF::Graphics
   def draw
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     @batches.each do |mesh, batch|
       batch.update
     end
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0
+    puts "time - batch update: #{dt.to_f / 1000} ms"
+    
     
     
     # ========================

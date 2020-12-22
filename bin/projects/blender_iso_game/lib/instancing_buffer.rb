@@ -23,6 +23,8 @@ class InstancingBuffer
   # The true float max is a little bigger, but this is enough.
   # This also allows for using one max for both positive and negative.
   def pack_positions_with_indicies(positions_with_indicies)
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     positions_with_indicies.each do |pos, i|
       x = i / @width
       y = i % @width
@@ -56,7 +58,7 @@ class InstancingBuffer
     end
     
     
-    # # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
+    # # # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
     
     # # same logic as above, but implemented in C++
     # data = positions_with_indicies.map{|pos,i| pos}.map{|x| x.to_a }.flatten
@@ -64,10 +66,25 @@ class InstancingBuffer
     #   @pixels, @width, FLOAT_MAX, data
     # )
     
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0
+    puts "time - pack instances: #{dt.to_f / 1000} ms"
+    
+    
+    
+    
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     # _pixels->getColor(x,y);
     # _tex.loadData(_pixels, GL_RGBA);
     @texture.load_data(@pixels)
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    dt = t1-t0
+    puts "time - instance pixels to texture: #{dt.to_f / 1000} ms"
     
   end
   
