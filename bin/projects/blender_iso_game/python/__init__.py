@@ -230,12 +230,12 @@ class RubyOF(bpy.types.RenderEngine):
         
         mesh.calc_normals_split()
         # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-        
-        # ^ face normals 
-        
+        # ^ normals stored on the tri / face
         
         
-        
+        # 
+        # vert positions
+        # 
         
         start_time = time.time()
         
@@ -258,7 +258,9 @@ class RubyOF(bpy.types.RenderEngine):
         print("vertex export: ", dt, " msec" )
         
         
-        
+        # 
+        # index buffer
+        # 
         
         start_time = time.time()
         
@@ -270,7 +272,9 @@ class RubyOF(bpy.types.RenderEngine):
         print("index export: ", dt, " msec" )
         
         
-        
+        # 
+        # normal vectors
+        # 
         
         start_time = time.time()
         
@@ -298,7 +302,9 @@ class RubyOF(bpy.types.RenderEngine):
         print("normal export: ", dt, " msec" )
         
         
-        
+        # 
+        # pack Base64 normal vector data
+        # 
         
         start_time = time.time()
         
@@ -324,11 +330,9 @@ class RubyOF(bpy.types.RenderEngine):
         print("shm file io (normals): ", dt, " msec" )
         
         
-        
-        
-        
-        
-        
+        # 
+        # pack Base64 vertex data
+        # 
         
         start_time = time.time()
         
@@ -354,15 +358,18 @@ class RubyOF(bpy.types.RenderEngine):
         print("shm file io (verts): ", dt, " msec" )
         
         
+        # 
+        # Pack final mesh datablock data for FIFO transmission
+        # 
         
         data = {
             'type': 'bpy.types.Mesh',
             'mesh_name': mesh.name, # name of the data, not the object
             'verts': [
-                'double', num_verts, tmp_vert_file_path
+                'float', num_verts, tmp_vert_file_path
             ],
             'normals': [
-                'double', num_normals, tmp_normal_file_path
+                'float', num_normals, tmp_normal_file_path
             ],
             'tris' : index_buffer
         }
