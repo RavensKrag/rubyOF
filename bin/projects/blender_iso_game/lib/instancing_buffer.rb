@@ -56,11 +56,12 @@ class InstancingBuffer
     end
     
     
-    # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
+    # # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
     
     # # same logic as above, but implemented in C++
+    # data = positions_with_indicies.map{|pos,i| pos}.map{|x| x.to_a }.flatten
     # RubyOF::CPP_Callbacks.pack_positions(
-    #   @pixels, @width, FLOAT_MAX, positions.map{|x| x.to_a }.flatten
+    #   @pixels, @width, FLOAT_MAX, data
     # )
     
     
