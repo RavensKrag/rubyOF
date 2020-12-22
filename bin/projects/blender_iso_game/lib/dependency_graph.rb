@@ -36,9 +36,12 @@ class DependencyGraph
   
   include RubyOF::Graphics
   def draw
+    puts ">>>>> batches: #{@batches.keys.size}"
+    
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     @batches.each do |mesh, batch|
+      puts "batch id #{batch.__id__}"
       batch.update
     end
     
@@ -302,7 +305,7 @@ class RenderBatch
       @mesh = mesh_obj.mesh
       @entity_list = [mesh_obj]
       
-      @state = 'single'
+      @state = 'single' # ['single', 'instanced_set', 'empty']
       
       setup()
     end
@@ -339,8 +342,10 @@ class RenderBatch
     end
     
     def update
-      reload_instancing_shaders()
-      update_packed_entity_positions()
+      if @state == 'instanced_set'
+        reload_instancing_shaders()
+        update_packed_entity_positions()
+      end
     end
     
     def add(mesh_obj)
@@ -500,21 +505,53 @@ class RenderBatch
     
     # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
     def update_packed_entity_positions
-      dirty_entities_with_indicies = 
-        @entity_list.each_with_index
-        .collect{  |entity, i|  [entity, i]  }
-        .select{   |entity, i|  entity.dirty }
+      # dirty_entities_with_indicies = 
+      #   @entity_list.each_with_index
+      #   .collect{  |entity, i|  [entity, i]  }
+      #   .select{   |entity, i|  entity.dirty }
       
-      positions_with_indicies = 
-        dirty_entities_with_indicies
-        .collect{  |entity, i|  [entity.node.position, i] }
+      # positions_with_indicies = 
+      #   dirty_entities_with_indicies
+      #   .collect{  |entity, i|  [entity.node.position, i] }
       
-      # pack into image -> texture (which will be passed to shader)
-      @instance_data.pack_positions_with_indicies(positions_with_indicies)
+      # # pack into image -> texture (which will be passed to shader)
+      # @instance_data.pack_positions_with_indicies(positions_with_indicies)
       
-      dirty_entities_with_indicies.each do |entity, i|
-        entity.dirty = false
-      end
+      # dirty_entities_with_indicies.each do |entity, i|
+      #   entity.dirty = false
+      # end
+      
+      
+      
+      
+      
+      # (only updating the batch when at least one entity is dirty helps a lot, but not sure exactly why)
+      # from the logs it looks like maybe the same batch is being updated many times per frame? If that is the case, that needs to be fixed deeper in the code somewhere.
+      
+      # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
+      
+      # if @entity_list.any?{|entity| entity.dirty }
+        t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+        nodes = @entity_list.collect{|entity| entity.node}
+        
+        t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+        dt = t1-t0
+        puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
+      
+        
+        t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+        positions = nodes.collect{|node| node.position}
+        
+        t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+        dt = t1-t0
+        puts "time - gather mesh position vectors: #{dt.to_f / 1000} ms"
+        
+        
+        @instance_data.pack_all_positions(positions)
+        
+        # @entity_list.each{|entity| entity.dirty = false }
+      # end
+      
     end
   end
   

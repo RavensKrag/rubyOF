@@ -58,7 +58,7 @@ class InstancingBuffer
     end
     
     
-    # # # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
+    # # NOTE: C++ now out of date - need to send index data as well so that I can update only a certain subset of instances if necessary
     
     # # same logic as above, but implemented in C++
     # data = positions_with_indicies.map{|pos,i| pos}.map{|x| x.to_a }.flatten
@@ -90,11 +90,27 @@ class InstancingBuffer
   
   def pack_all_positions(positions)
     # same logic as above, but implemented in C++
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     RubyOF::CPP_Callbacks.pack_positions(
-      @pixels, @width, FLOAT_MAX, positions.map{|x| x.to_a }.flatten
+      @pixels, @width, FLOAT_MAX, positions
     )
     
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    dt = t1-t0
+    puts "time - pack instance positions: #{dt.to_f / 1000} ms"
+    
+    
+    
+    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
     @texture.load_data(@pixels)
+    
+    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    dt = t1-t0
+    puts "time - instance pixels to texture: #{dt.to_f / 1000} ms"
+    
   end
   
   def max_instances

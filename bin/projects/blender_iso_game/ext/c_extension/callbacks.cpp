@@ -974,20 +974,27 @@ public:
 void pack_positions(ofFloatPixels &pixels, int width, float scale, Rice::Array positions){
 	
 	// allocate data
-	float* pos_ptr = new float[positions.size()];
+	float* pos_ptr = new float[positions.size()*3];
 	
 	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
 	int idx;
 	
 	idx = 0;
 	for(auto aI = positions.begin(); aI != positions.end(); ++aI){
-		pos_ptr[idx] = from_ruby<float>(*aI);
-		idx++;
+		glm::vec3* vec = from_ruby<glm::vec3*>(*aI);
+		
+		// std::cout <<"("<< vec.x <<", "<< vec.y <<", "<< vec.z <<")"<< std::endl;
+		
+		pos_ptr[idx+0] = vec->x;
+		pos_ptr[idx+1] = vec->y;
+		pos_ptr[idx+2] = vec->z;
+		
+		idx += 3;
 	}
 	
 	// core logic
 	ofFloatColor c;
-	int i_max = positions.size() / 3;
+	int i_max = positions.size();
 	for (int i=0; i < i_max; i++){
 		int x = i / width;
 		int y = i % width;
