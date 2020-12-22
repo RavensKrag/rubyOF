@@ -241,7 +241,18 @@ class BlenderSync
           mesh_entity = @depsgraph.find_entity(name)
           if mesh_entity.nil?
             datablock_name = data['data']
-            mesh_datablock = new_datablocks[datablock_name]
+            
+            # look for datablock in depsgraph
+            mesh_datablock = @depsgraph.find_datablock(datablock_name)
+            
+            # if it's not in the depsgraph yet, it must be something that needs to be added on this frame, so it should be in new_datablocks
+            if mesh_datablock.nil?
+              mesh_datablock = new_datablocks[datablock_name]
+            end
+            
+            raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." if mesh_datablock.nil?
+            
+            
             mesh_entity = BlenderMesh.new(name, mesh_datablock)
             
             @depsgraph.add mesh_entity
