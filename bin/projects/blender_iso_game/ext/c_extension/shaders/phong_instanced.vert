@@ -95,15 +95,59 @@ void main (void){
     
     
     
+    // // 
+    // // v3.2
+    // // instancing data texture + lighting, scale magnitude by uniform
+    // // width of texture comes from uniform
+    // // PASS
+    
+    
+    // vec2 posTexCoord = vec2(gl_InstanceID/tex_width, gl_InstanceID%tex_width);
+    // vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
+    
+    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
+    
+    // vec3 displacement = dirVec*pos_data.a*instance_scale;
+    
+    
+    // vec4 finalPos = position + vec4(displacement, 0);
+    
+    
+    
+    // vec4 eyePosition = modelViewMatrix * finalPos;
+    // vec3 tempNormal = (normalMatrix * normal).xyz;
+    // v_transformedNormal = normalize(tempNormal);
+    // v_normal = normal.xyz;
+    // v_eyePosition = (eyePosition.xyz) / eyePosition.w;
+    // //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
+    // v_worldPosition = (finalPos).xyz;
+
+    // v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
+    // #if HAS_COLOR
+    //     v_color = color;
+    // #endif
+    // gl_Position = modelViewProjectionMatrix * finalPos;
+    
+    
+    
+    
     // 
-    // v3.2
+    // v3.3
     // instancing data texture + lighting, scale magnitude by uniform
-    // width of texture comes from uniform
-    // ???
+    // + width of texture comes from uniform
+    // + orientation encoded in texture (but not using orientation yet)
+    // PASS
+    
+    // NOTE: rotate first, then translate
+    // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material
     
     
-    vec2 posTexCoord = vec2(gl_InstanceID/tex_width, gl_InstanceID%tex_width);
-    vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
+    vec2 posTexCoord = vec2(gl_InstanceID/(tex_width/2),
+                            gl_InstanceID%(tex_width/2))
+                       + vec2((tex_width/2)*0, 0)
+                       + vec2(0.5, 0.5);
+    
+    vec4 pos_data = TEXTURE(position_tex, posTexCoord);
     
     vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
     

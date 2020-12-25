@@ -112,6 +112,7 @@ class InstancingBuffer
   end
   
   def max_instances
-    return @width*@height
+    # texture encodes both position and orientation
+    return @width*@height/2
   end
 end

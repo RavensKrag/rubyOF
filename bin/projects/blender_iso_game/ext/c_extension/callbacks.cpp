@@ -973,36 +973,51 @@ public:
 
 void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
 	
+	// 
 	// allocate data
-	glm::vec3* pos_ptr = new glm::vec3[nodes.size()];
+	// 
+	ofNode** nodes_ptr = new ofNode*[nodes.size()]; // ptr to array of ptrs
 	
+	// 
 	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
-	int idx;
-	
-	idx = 0;
+	// 
+	int idx = 0;
 	for(auto aI = nodes.begin(); aI != nodes.end(); ++aI){
 		ofNode* node = from_ruby<ofNode*>(*aI);
 		
 		// std::cout <<"("<< vec.x <<", "<< vec.y <<", "<< vec.z <<")"<< std::endl;
 		
-		pos_ptr[idx] = node->getPosition();
+		nodes_ptr[idx] = node;
+		
 		
 		idx += 1;
 	}
 	
+	
+	// 
 	// core logic
+	// 
+	
+	// example: if there are 8 entities in a 8x2 texture,
+	//          it should be packed like this:
+	//    12341234
+	//    56785678
+	// where the left half of the texture encodes position (normalized vec3),
+	// and the right half of the texture encodes orientation (quaternion)
+	
 	ofFloatColor c;
-	int i_max = nodes.size();
-	for (int i=0; i < i_max; i++){
-		int x = i / width;
-		int y = i % width;
+	
+	// encode position
+	for (int i=0; i < nodes.size(); i++){
+		int x = (i / (width/2)) + (width/2*0);
+		int y = (i % (width/2));
 		
-		glm::vec3* arr = &pos_ptr[i];
+		glm::vec3 pos = nodes_ptr[i]->getPosition();
 		
 		
 		glm::vec3 posNormShifted;
 		float magnitude_normalized;
-		if(arr->x == 0 && arr->y == 0 && arr->z == 0){
+		if(pos.x == 0 && pos.y == 0 && pos.z == 0){
 			// zero vector (ie, the only vector with magnitude zero)
 			posNormShifted.x = ((0)+1)/2;
 			posNormShifted.y = ((0)+1)/2;
@@ -1012,11 +1027,11 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 		}else{
 			// all other positions
 			// (this should guard against division by zero)
-			float magnitude = sqrt(arr->x*arr->x + arr->y*arr->y + arr->z*arr->z);
+			float magnitude = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
 			
-			posNormShifted.x = ((arr->x/magnitude)+1)/2;
-			posNormShifted.y = ((arr->y/magnitude)+1)/2;
-			posNormShifted.z = ((arr->z/magnitude)+1)/2;
+			posNormShifted.x = ((pos.x/magnitude)+1)/2;
+			posNormShifted.y = ((pos.y/magnitude)+1)/2;
+			posNormShifted.z = ((pos.z/magnitude)+1)/2;
 			
 			magnitude_normalized = magnitude / scale;
 		}
@@ -1029,8 +1044,30 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 		pixels.setColor(x,y, c);
 	}
 	
+	// encode orientation
+	for (int i=0; i < nodes.size(); i++){
+		int x = (i / (width/2)) + (width/2*1);
+		int y = (i % (width/2));
+		
+		glm::quat orientation = nodes_ptr[i]->getOrientationQuat();
+		
+		// quaternions are stored xyzw but are printed wxyz
+			// src: https://stackoverflow.com/questions/48348509/glmquat-why-the-order-of-x-y-z-w-components-are-mixed
+		// will send to glsl as xyzw, because presumably that's what I need???
+		c.r = orientation.x;
+		c.g = orientation.y;
+		c.b = orientation.z;
+		c.a = orientation.w;
+		
+		pixels.setColor(x,y, c);
+	}
+	
+	
+	
 	// free data
-	delete pos_ptr;
+	delete nodes_ptr;
+	// ^ do not free the nodes themselves, as their memory is managed
+	//   by the associated entities
 }
 
 
