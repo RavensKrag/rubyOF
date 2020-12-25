@@ -188,6 +188,7 @@ void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgramma
 	shader.setUniform1f("mat_shininess",data.shininess);
     
     shader.setUniform1f("instance_scale", mScale);
+    shader.setUniform1i("tex_width", mWidth);
     
     
     for (auto & uniform : uniformstex) {
@@ -266,6 +267,14 @@ void ofxInstancingMaterial::setInstanceMagnitudeScale(float scale){
 
 float ofxInstancingMaterial::getInstanceMagnitudeScale(){
     return mScale;
+}
+
+void ofxInstancingMaterial::setInstanceTextureWidth(int width){
+    mWidth = width;
+}
+
+float ofxInstancingMaterial::getInstanceTextureWidth(){
+    return mWidth;
 }
 
 

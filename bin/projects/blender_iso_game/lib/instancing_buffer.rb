@@ -1,6 +1,6 @@
 
 class InstancingBuffer
-  attr_reader :pixels, :texture
+  attr_reader :pixels, :texture, :width, :height
   
   def initialize
     @pixels = RubyOF::FloatPixels.new

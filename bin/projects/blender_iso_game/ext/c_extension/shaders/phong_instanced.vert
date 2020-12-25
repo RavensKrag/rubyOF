@@ -22,6 +22,7 @@ uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalMatrix;
 
 uniform float instance_scale;
+uniform int tex_width;
 
 uniform sampler2DRect position_tex;
 // there are two types for textures:
@@ -59,51 +60,19 @@ void main (void){
     // gl_Position = modelViewProjectionMatrix * position;
     
     
-    
-    // 
-    // v2.5
-    // try using texture again
-    //
-    
-    // 
-    // displacement from texture data
-    // PASS
-    
-    // float scale = 100;
-    
-    // vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
-    
-    // vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
-    // // vec4 pos_data = vec4(0,0,0,0); // same as this. currently reading zero!
-    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    
-    // vec3 displacement = dirVec*pos_data.a*scale;
-    
-    
-    // vec4 finalPos = position + vec4(displacement, 0);
-    
-    
-    // gl_Position = modelViewProjectionMatrix * finalPos;
-    
-    
-    
-    
     // // 
-    // // v3.0
-    // // instancing data texture + lighting
+    // // v3.1
+    // // instancing data texture + lighting, scale magnitude by uniform
     // // PASS
     
     
-    
-    // float scale = 100;
-    
     // vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
     
     // vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
     // // vec4 pos_data = vec4(0,0,0,0); // same as this. currently reading zero!
     // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
     
-    // vec3 displacement = dirVec*pos_data.a*scale;
+    // vec3 displacement = dirVec*pos_data.a*instance_scale;
     
     
     // vec4 finalPos = position + vec4(displacement, 0);
@@ -127,15 +96,15 @@ void main (void){
     
     
     // 
-    // v3.1
+    // v3.2
     // instancing data texture + lighting, scale magnitude by uniform
-    // PASS
+    // width of texture comes from uniform
+    // ???
     
     
-    vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
-    
+    vec2 posTexCoord = vec2(gl_InstanceID/tex_width, gl_InstanceID%tex_width);
     vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
-    // vec4 pos_data = vec4(0,0,0,0); // same as this. currently reading zero!
+    
     vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
     
     vec3 displacement = dirVec*pos_data.a*instance_scale;

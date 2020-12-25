@@ -170,6 +170,10 @@ public:
 	
 	void setInstanceMagnitudeScale(float scale);
 	float getInstanceMagnitudeScale();
+	
+	void setInstanceTextureWidth(int width);
+	float getInstanceTextureWidth();
+
 
 	
 	void setVertexShaderSource(const std::string &source);
@@ -213,5 +217,6 @@ private:
 	
 	std::map<std::string, TextureUnifom> uniformstex;
 	float mScale;
+	int mWidth;
 	
 };

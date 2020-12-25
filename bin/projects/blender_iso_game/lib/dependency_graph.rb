@@ -412,6 +412,10 @@ class RenderBatch
           InstancingBuffer::FLOAT_MAX
         )
         
+        @mat_instanced.setInstanceTextureWidth(
+          @instance_data.width
+        )
+        
         
         # draw all the instances using one draw call
         @mat_instanced.begin()

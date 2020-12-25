@@ -1242,6 +1242,11 @@ void Init_rubyOF_project()
       .define_method("getInstanceMagnitudeScale", 
       	&ofxInstancingMaterial::getInstanceMagnitudeScale)
       
+      .define_method("setInstanceTextureWidth", 
+      	&ofxInstancingMaterial::setInstanceTextureWidth)
+      .define_method("getInstanceTextureWidth", 
+      	&ofxInstancingMaterial::getInstanceTextureWidth)
+      
       
       .define_method("setVertexShaderSource", 
       	&ofxInstancingMaterial::setVertexShaderSource)
