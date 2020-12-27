@@ -268,39 +268,31 @@ void main (void){
     // + transform matrix encoded in texture
     // ???
     
-    // NOTE: rotate first, then translate
     // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material
     
     
+    // https://stackoverflow.com/questions/13633395/how-do-you-access-the-individual-elements-of-a-glsl-mat4
     
-    // vec2 texCoord_rot = vec2(gl_InstanceID/(tex_width/2),
-    //                          gl_InstanceID%(tex_width/2))
-    //                    + vec2((tex_width/2)*1, 0)
-    //                    + vec2(0.5, 0.5);
+    vec2 texCoord0 = vec2(0, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord1 = vec2(1, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord2 = vec2(2, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord3 = vec2(3, gl_InstanceID) + vec2(0.5, 0.5);
     
-    // vec4 quat = TEXTURE(position_tex, texCoord_rot);
-    vec4 quat = vec4(0, 0, 0.707, 0.707); // wxyz
+    // mat4 transform = mat4(vec4(1,0,0,0),
+    //                       vec4(0,1,0,0),
+    //                       vec4(0,0,1,0),
+    //                       vec4(1,1,1,1));
     
+    // ^ yes indeed, matricies are column major
+    // https://stackoverflow.com/questions/33807535/translation-in-glsl-shader
     
-    
-    vec2 texCoord_pos = vec2(gl_InstanceID/(tex_width/2),
-                            gl_InstanceID%(tex_width/2))
-                       + vec2((tex_width/2)*0, 0)
-                       + vec2(0.5, 0.5);
-    
-    vec4 pos_data = TEXTURE(position_tex, texCoord_pos);
-    
-    
-    vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    
-    vec3 displacement = dirVec*pos_data.a*instance_scale;
+    mat4 transform = mat4(vec4(TEXTURE(position_tex, texCoord0).rgba),
+                          vec4(TEXTURE(position_tex, texCoord1).rgba),
+                          vec4(TEXTURE(position_tex, texCoord2).rgba),
+                          TEXTURE(position_tex, texCoord3));
     
     
-    
-    // vec4 finalPos = position;
-    // vec4 finalPos = position + vec4(displacement, 0);
-    // vec4 finalPos = vec4(rotate_vector(quat, position.xyz), 0) + vec4(displacement, 0);
-    vec4 finalPos = position + vec4(displacement, 0);
+    vec4 finalPos = transform * position;
     
     // NOTE: may have to transform normals because of rotation? unclear
     
@@ -320,5 +312,4 @@ void main (void){
         v_color = color;
     #endif
     gl_Position = modelViewProjectionMatrix * finalPos;
-}
 }

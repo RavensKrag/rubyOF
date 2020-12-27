@@ -51,11 +51,11 @@ class DependencyGraph
     # puts "time - batch update: #{dt.to_f / 1000} ms"
     
     
-    RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
-      print "color test => "
-      puts c
-      print "\n"
-    end
+    # RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
+    #   print "color test => "
+    #   puts c
+    #   print "\n"
+    # end
     
     
     

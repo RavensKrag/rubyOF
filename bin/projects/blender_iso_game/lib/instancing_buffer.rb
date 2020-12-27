@@ -6,12 +6,12 @@ class InstancingBuffer
     @pixels = RubyOF::FloatPixels.new
     @texture = RubyOF::Texture.new
     
-    @width = 256
-    @height = 256
+    @width = 4
+    @height = 4096
     @pixels.allocate(@width, @height)
     
     @texture.wrap_mode(:vertical => :clamp_to_edge,
-                :horizontal => :clamp_to_edge)
+                     :horizontal => :clamp_to_edge)
     
     @texture.filter_mode(:min => :nearest, :mag => :nearest)
   end
@@ -112,7 +112,7 @@ class InstancingBuffer
   end
   
   def max_instances
-    # texture encodes both position and orientation
-    return @width*@height/2
+    # texture encodes one mat4 (transform matrix) per row, for all N entities
+    return @height
   end
 end
