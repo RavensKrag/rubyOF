@@ -36,19 +36,26 @@ class DependencyGraph
   
   include RubyOF::Graphics
   def draw
-    puts ">>>>> batches: #{@batches.keys.size}"
+    # puts ">>>>> batches: #{@batches.keys.size}"
     
-    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     @batches.each do |mesh, batch|
-      puts "batch id #{batch.__id__}"
+      # puts "batch id #{batch.__id__}"
       batch.update
     end
     
-    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    dt = t1-t0
-    puts "time - batch update: #{dt.to_f / 1000} ms"
+    # dt = t1-t0
+    # puts "time - batch update: #{dt.to_f / 1000} ms"
+    
+    
+    RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
+      print "color test => "
+      puts c
+      print "\n"
+    end
     
     
     

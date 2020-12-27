@@ -935,40 +935,6 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
-class InstancingBuffer{
-private:
-	ofPixels_<float> mPixels;
-	ofTexture mTexture;
-	
-	int width, height;
-	
-public:
-	// InstancingBuffer(){
-		
-	// }
-	
-	// ~InstancingBuffer(){
-	// 	delete _textGrid;
-	// }
-	
-	void setup(){
-		width  = 256;
-		height = 256;
-		// mPixels.allocate(width, height);
-		
-		// ofTexture.setTextureWrap();
-		// ofTexture.setTextureMinMagFilter();
-	}
-	
-	void packPositions(){
-		
-	}
-	
-	void setTextureOnMaterial(ofMaterial &mat){
-		
-	}
-};
-
 
 
 void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
