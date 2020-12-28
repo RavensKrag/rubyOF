@@ -971,7 +971,7 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 	// where the left half of the texture encodes position (normalized vec3),
 	// and the right half of the texture encodes orientation (quaternion)
 	
-	ofFloatColor c;
+	// ofFloatColor c;
 	
 	// // encode position
 	// for (int i=0; i < nodes.size(); i++){

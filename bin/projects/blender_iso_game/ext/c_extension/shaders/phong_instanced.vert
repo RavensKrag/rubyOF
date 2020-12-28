@@ -198,69 +198,6 @@ void main (void){
     
     
     
-    
-    // // 
-    // // v4.0
-    // // instancing data texture + lighting, scale magnitude by uniform
-    // // + width of texture comes from uniform
-    // // + orientation encoded in texture
-    // // FAIL
-    
-    // // NOTE: rotate first, then translate
-    // // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material
-    
-    
-    
-    // // vec2 texCoord_rot = vec2(gl_InstanceID/(tex_width/2),
-    // //                          gl_InstanceID%(tex_width/2))
-    // //                    + vec2((tex_width/2)*1, 0)
-    // //                    + vec2(0.5, 0.5);
-    
-    // // vec4 quat = TEXTURE(position_tex, texCoord_rot);
-    // vec4 quat = vec4(0, 0, 0.707, 0.707); // wxyz
-    
-    
-    
-    // vec2 texCoord_pos = vec2(gl_InstanceID/(tex_width/2),
-    //                         gl_InstanceID%(tex_width/2))
-    //                    + vec2((tex_width/2)*0, 0)
-    //                    + vec2(0.5, 0.5);
-    
-    // vec4 pos_data = TEXTURE(position_tex, texCoord_pos);
-    
-    
-    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    
-    // vec3 displacement = dirVec*pos_data.a*instance_scale;
-    
-    
-    
-    // // vec4 finalPos = position;
-    // // vec4 finalPos = position + vec4(displacement, 0);
-    // // vec4 finalPos = vec4(rotate_vector(quat, position.xyz), 0) + vec4(displacement, 0);
-    // vec4 finalPos = position + vec4(displacement, 0);
-    
-    // // NOTE: may have to transform normals because of rotation? unclear
-    
-    
-    
-    
-    // vec4 eyePosition = modelViewMatrix * finalPos;
-    // vec3 tempNormal = (normalMatrix * normal).xyz;
-    // v_transformedNormal = normalize(tempNormal);
-    // v_normal = normal.xyz;
-    // v_eyePosition = (eyePosition.xyz) / eyePosition.w;
-    // //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
-    // v_worldPosition = (finalPos).xyz;
-
-    // v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
-    // #if HAS_COLOR
-    //     v_color = color;
-    // #endif
-    // gl_Position = modelViewProjectionMatrix * finalPos;
-    
-    
-    
     // 
     // v4.1
     // instancing data texture + lighting, scale magnitude by uniform
