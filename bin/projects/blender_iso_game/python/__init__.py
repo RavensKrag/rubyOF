@@ -781,7 +781,6 @@ class RubyOF(bpy.types.RenderEngine):
                 ],
                 'fov':[
                     "deg",
-                    # context.scene.my_custom_props.fov
                     fov
                 ],
                 'near_clip':[
@@ -906,14 +905,6 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         name="camera",
         description="Camera to be used by the RubyOF game engine")
     
-    fov: FloatProperty(
-        name = "FOV",
-        description = "Viewport field of view",
-        default = 39.6,
-        min = 0.0001,
-        max = 100.0000
-        )
-    
     # aspect_ratio: FloatProperty(
     #     name = "Aspect ratio",
     #     description = "Viewport aspect ratio",
@@ -961,7 +952,6 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         self.layout.prop(context.scene.my_custom_props, "alpha")
         self.layout.prop(context.scene.my_custom_props, "b_windowLink")
         self.layout.prop(context.scene.my_custom_props, "camera")
-        self.layout.prop(context.scene.my_custom_props, "fov")
         # self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
         self.layout.prop(context.scene.my_custom_props, "ortho_scale")
         
