@@ -45,7 +45,19 @@ import threading
 
 import hashlib
 
+import math
 
+
+
+def focallength_to_fov(focal_length, sensor):
+    return 2.0 * math.atan((sensor / 2.0) / focal_length)
+
+def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
+    if (sensor_fit == CAMERA_SENSOR_FIT_VERT):
+        return sensor_y;
+    
+    return sensor_x;
+    
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -657,6 +669,7 @@ class RubyOF(bpy.types.RenderEngine):
         self.fifo_write(output_string)
         
     
+    
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
     # with OpenGL, and not perform other expensive work.
@@ -679,13 +692,67 @@ class RubyOF(bpy.types.RenderEngine):
         space = context.space_data # SpaceView3D(Space)
         
         
-        print(camera_direction)
-        # ^ note: camera objects have both lens (mm) and angle (fov degrees)
+        # print(camera_direction)
+        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
         
-        print(space.clip_start)
-        print(space.clip_end)
-        # ^ these are viewport properties, not camera object properties
+        # print(space.clip_start)
+        # print(space.clip_end)
+        # # ^ these are viewport properties, not camera object properties
         
+        
+        h = region.height
+        w = region.width
+        
+        # camera sensor size:
+        # 36 mm is the default, with sensor fit set to 'AUTO'
+        print("focal length: ")
+        print(context.space_data.lens)
+        
+        
+        print("FOV (assuming sensor 50mm): ")
+        hfov = focallength_to_fov(context.space_data.lens, 50)
+        print(hfov / (2*math.pi)*360)
+        
+        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
+        print(vfov / (2*math.pi)*360)
+        
+        
+        
+        print("FOV (assuming sensor 36mm): ")
+        hfov = focallength_to_fov(context.space_data.lens, 36)
+        print(hfov / (2*math.pi)*360)
+        
+        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
+        print(vfov / (2*math.pi)*360)
+        
+        
+        
+        print("FOV (assuming sensor 24mm): ")
+        hfov = focallength_to_fov(context.space_data.lens, 24)
+        print(hfov / (2*math.pi)*360)
+        
+        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
+        print(vfov / (2*math.pi)*360)
+        
+        
+        
+        # rv3d->dist * sensor_size / v3d->lens
+        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
+        
+            # (ortho_scale * context.space_data.lens) / rv3d.view_distance = sensor_size
+        print('ortho scale -> sensor size')
+        print((context.scene.my_custom_props.ortho_scale * context.space_data.lens) / rv3d.view_distance)
+        
+        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
+        vmat_inv = rv3d.view_matrix.inverted()
+        pmat = rv3d.perspective_matrix @ vmat_inv
+        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
+        print('rv3d fov:')
+        print(fov)
+        
+        # print('rv3d fov -> ortho scale')
+        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
+        # print(ortho_scale)
         
         
         mat_p = rv3d.perspective_matrix
@@ -714,7 +781,8 @@ class RubyOF(bpy.types.RenderEngine):
                 ],
                 'fov':[
                     "deg",
-                    context.scene.my_custom_props.fov
+                    # context.scene.my_custom_props.fov
+                    fov
                 ],
                 'near_clip':[
                     'm',
