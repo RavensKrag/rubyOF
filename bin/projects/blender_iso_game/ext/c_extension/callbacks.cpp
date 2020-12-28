@@ -935,40 +935,6 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
-class InstancingBuffer{
-private:
-	ofPixels_<float> mPixels;
-	ofTexture mTexture;
-	
-	int width, height;
-	
-public:
-	// InstancingBuffer(){
-		
-	// }
-	
-	// ~InstancingBuffer(){
-	// 	delete _textGrid;
-	// }
-	
-	void setup(){
-		width  = 256;
-		height = 256;
-		// mPixels.allocate(width, height);
-		
-		// ofTexture.setTextureWrap();
-		// ofTexture.setTextureMinMagFilter();
-	}
-	
-	void packPositions(){
-		
-	}
-	
-	void setTextureOnMaterial(ofMaterial &mat){
-		
-	}
-};
-
 
 
 void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
@@ -1005,61 +971,63 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 	// where the left half of the texture encodes position (normalized vec3),
 	// and the right half of the texture encodes orientation (quaternion)
 	
-	ofFloatColor c;
+	// ofFloatColor c;
 	
-	// encode position
-	for (int i=0; i < nodes.size(); i++){
-		int x = (i / (width/2)) + (width/2*0);
-		int y = (i % (width/2));
+	// // encode position
+	// for (int i=0; i < nodes.size(); i++){
+	// 	int x = (i / (width/2)) + (width/2*0);
+	// 	int y = (i % (width/2));
 		
-		glm::vec3 pos = nodes_ptr[i]->getPosition();
+	// 	glm::vec3 pos = nodes_ptr[i]->getPosition();
 		
 		
-		glm::vec3 posNormShifted;
-		float magnitude_normalized;
-		if(pos.x == 0 && pos.y == 0 && pos.z == 0){
-			// zero vector (ie, the only vector with magnitude zero)
-			posNormShifted.x = ((0)+1)/2;
-			posNormShifted.y = ((0)+1)/2;
-			posNormShifted.z = ((0)+1)/2;
+	// 	glm::vec3 posNormShifted;
+	// 	float magnitude_normalized;
+	// 	if(pos.x == 0 && pos.y == 0 && pos.z == 0){
+	// 		// zero vector (ie, the only vector with magnitude zero)
+	// 		posNormShifted.x = ((0)+1)/2;
+	// 		posNormShifted.y = ((0)+1)/2;
+	// 		posNormShifted.z = ((0)+1)/2;
 			
-			magnitude_normalized = 0;
-		}else{
-			// all other positions
-			// (this should guard against division by zero)
-			float magnitude = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
+	// 		magnitude_normalized = 0;
+	// 	}else{
+	// 		// all other positions
+	// 		// (this should guard against division by zero)
+	// 		float magnitude = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
 			
-			posNormShifted.x = ((pos.x/magnitude)+1)/2;
-			posNormShifted.y = ((pos.y/magnitude)+1)/2;
-			posNormShifted.z = ((pos.z/magnitude)+1)/2;
+	// 		posNormShifted.x = ((pos.x/magnitude)+1)/2;
+	// 		posNormShifted.y = ((pos.y/magnitude)+1)/2;
+	// 		posNormShifted.z = ((pos.z/magnitude)+1)/2;
 			
-			magnitude_normalized = magnitude / scale;
-		}
+	// 		magnitude_normalized = magnitude / scale;
+	// 	}
 		
-		c.r = posNormShifted.x;
-		c.g = posNormShifted.y;
-		c.b = posNormShifted.z;
-		c.a = magnitude_normalized;
+	// 	c.r = posNormShifted.x;
+	// 	c.g = posNormShifted.y;
+	// 	c.b = posNormShifted.z;
+	// 	c.a = magnitude_normalized;
 		
-		pixels.setColor(x,y, c);
-	}
+	// 	pixels.setColor(x,y, c);
+	// }
 	
-	// encode orientation
+	
+	// encode transform matrix (4x4 matrix)
+	// format: output a 4xN texture (WxH)
+	//         where N is the number of entity nodes.
+	//         (pixel format is RGBA, so each px encodes a vec4)
 	for (int i=0; i < nodes.size(); i++){
-		int x = (i / (width/2)) + (width/2*1);
-		int y = (i % (width/2));
 		
-		glm::quat orientation = nodes_ptr[i]->getOrientationQuat();
+		glm::mat4 mat = nodes_ptr[i]->getGlobalTransformMatrix();
 		
 		// quaternions are stored xyzw but are printed wxyz
 			// src: https://stackoverflow.com/questions/48348509/glmquat-why-the-order-of-x-y-z-w-components-are-mixed
 		// will send to glsl as xyzw, because presumably that's what I need???
-		c.r = orientation.x;
-		c.g = orientation.y;
-		c.b = orientation.z;
-		c.a = orientation.w;
 		
-		pixels.setColor(x,y, c);
+		
+		for(int j=0; j<4; j++){
+			glm::vec4 col = mat[j];
+			pixels.setColor(j,i, ofFloatColor(col.x, col.y, col.z, col.w));
+		}
 	}
 	
 	
