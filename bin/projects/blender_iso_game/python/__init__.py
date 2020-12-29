@@ -705,18 +705,29 @@ class RubyOF(bpy.types.RenderEngine):
         
         # camera sensor size:
         # 36 mm is the default, with sensor fit set to 'AUTO'
+        # (this is also the default horizontal sensor fit)
+        # (the default vertical sensor fit is 24mm)
+        
         print("focal length: ")
         print(context.space_data.lens)
         
+        
+        # 
+        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
+        # 
         
         # rv3d->dist * sensor_size / v3d->lens
         # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
         
             # (ortho_scale * context.space_data.lens) / rv3d.view_distance = sensor_size
+        
+        # with estimated ortho scale, compute sensor size
+        ortho_scale = context.scene.my_custom_props.ortho_scale
         print('ortho scale -> sensor size')
-        print((context.scene.my_custom_props.ortho_scale * context.space_data.lens) / rv3d.view_distance)
+        sensor_size = ortho_scale * context.space_data.lens) / rv3d.view_distance
+        print(sensor_size)
         
-        
+        # then, with that constant sensor size, compute the dynamic ortho scale
         print('that sensor size -> ortho scale')
         sensor_size = 71.98320027323571
         ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens
@@ -724,6 +735,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         # ^ this works now!
         #   but now I need to be able to automatically compute the sensor size...
+        
+        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
         
         
         
@@ -789,7 +802,8 @@ class RubyOF(bpy.types.RenderEngine):
                 # ],
                 'ortho_scale':[
                     "factor",
-                    context.scene.my_custom_props.ortho_scale
+                    # context.scene.my_custom_props.ortho_scale
+                    ortho_scale
                 ],
                 'view_perspective': rv3d.view_perspective,
                 'perspective_matrix':[
