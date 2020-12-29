@@ -142,12 +142,12 @@ class ViewportCamera
         
         projectionMat = 
           GLM.ortho(
-            - vp.width/2,
-            + vp.width/2,
-            - vp.height/2,
-            + vp.height/2,
+            - vp.width/2 * @scale,
+            + vp.width/2 * @scale,
+            - vp.height/2 * @scale,
+            + vp.height/2 * @scale,
             @near_clip,
-            @far_clip*@scale
+            @far_clip
           );
         ofLoadMatrix(projectionMat * m5);
         
@@ -165,11 +165,12 @@ class ViewportCamera
         
         cameraTransform = m1 * m2
         
-        modelViewMat = m0 * GLM.inverse(cameraTransform)
+        modelViewMat = GLM.inverse(cameraTransform)
+        # modelViewMat = m0 * GLM.inverse(cameraTransform)
         # ^ maybe apply scale here?
         ofLoadViewMatrix(modelViewMat);
         
-        
+        # puts modelViewMat
         
         # @scale of about 25 works great for testing purposes with no translation
         
