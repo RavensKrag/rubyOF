@@ -3,14 +3,17 @@ module GLM
 class Mat4
 	# include RubyOF::Freezable
 	
-	# def to_s
-	# 	format = '%.03f'
-	# 	x = format % self.x
-	# 	y = format % self.y
-	# 	z = format % self.z
-		
-	# 	return "(#{x}, #{y}, #{z})"
-	# end
+	def to_s
+		msg = [
+			"<Mat4 (column major) > (",
+			"  (#{self[0].to_a.map{|x| '%.03f' % x }.join(', ')})",
+			"  (#{self[1].to_a.map{|x| '%.03f' % x }.join(', ')})",
+			"  (#{self[2].to_a.map{|x| '%.03f' % x }.join(', ')})",
+			"  (#{self[3].to_a.map{|x| '%.03f' % x }.join(', ')})",
+			")>"
+		]
+		return msg.join("\n")
+	end
 	
 	def inspect
 		super()

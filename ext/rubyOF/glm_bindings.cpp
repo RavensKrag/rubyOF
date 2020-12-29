@@ -17,6 +17,10 @@ glm::mat4 glm_mat4_mult__mat4(const glm::mat4 &self, const glm::mat4 &m){
    return self*m;
 }
 
+glm::vec4 const & glm_mat4__col_v4f(const glm::mat4 &self, int i){
+   return self[i];
+}
+
 glm::mat4 glm_ortho__float(
    float const left, float const right,
    float const bottom, float const top,
@@ -98,7 +102,8 @@ Module Init_GLM(){
                               const glm::vec4&,
                               const glm::vec4&>())
       
-      .define_method("*",  &glm_mat4_mult__mat4)
+      .define_method("*",   &glm_mat4_mult__mat4)
+      .define_method("[]",  &glm_mat4__col_v4f)
       
    ;
    
