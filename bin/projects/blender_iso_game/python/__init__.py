@@ -709,33 +709,6 @@ class RubyOF(bpy.types.RenderEngine):
         print(context.space_data.lens)
         
         
-        print("FOV (assuming sensor 50mm): ")
-        hfov = focallength_to_fov(context.space_data.lens, 50)
-        print(hfov / (2*math.pi)*360)
-        
-        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
-        print(vfov / (2*math.pi)*360)
-        
-        
-        
-        print("FOV (assuming sensor 36mm): ")
-        hfov = focallength_to_fov(context.space_data.lens, 36)
-        print(hfov / (2*math.pi)*360)
-        
-        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
-        print(vfov / (2*math.pi)*360)
-        
-        
-        
-        print("FOV (assuming sensor 24mm): ")
-        hfov = focallength_to_fov(context.space_data.lens, 24)
-        print(hfov / (2*math.pi)*360)
-        
-        vfov = 2.0 * math.atan( math.tan(hfov/2.0) * h/w )
-        print(vfov / (2*math.pi)*360)
-        
-        
-        
         # rv3d->dist * sensor_size / v3d->lens
         # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
         
@@ -743,13 +716,32 @@ class RubyOF(bpy.types.RenderEngine):
         print('ortho scale -> sensor size')
         print((context.scene.my_custom_props.ortho_scale * context.space_data.lens) / rv3d.view_distance)
         
+        
+        print('that sensor size -> ortho scale')
+        sensor_size = 71.98320027323571
+        ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens
+        print(ortho_scale)
+        
+        # ^ this works now!
+        #   but now I need to be able to automatically compute the sensor size...
+        
+        
+        
         # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
         vmat_inv = rv3d.view_matrix.inverted()
-        pmat = rv3d.perspective_matrix @ vmat_inv
+        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
         fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
         print('rv3d fov:')
         print(fov)
         
+        print('ortho view distance')
+        print(rv3d.view_distance)
+            # ^ rv3d.view_distance is inversely proportional to context.scene.my_custom_props.ortho_scale
+            
+            # as seen in a camera object,
+            # in blender, when ortho_scale is bigger
+            # then objects in the scene appear smaller.
+            
         # print('rv3d fov -> ortho scale')
         # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
         # print(ortho_scale)
@@ -917,7 +909,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         name = "Ortho scale",
         description = "Scale for orthographic render mode (manual override)",
         default = 1,
-        min = 1,
+        min = 0,
         max = 100000
         )
 
