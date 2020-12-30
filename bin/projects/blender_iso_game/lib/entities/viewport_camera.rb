@@ -141,7 +141,7 @@ class ViewportCamera
                        GLM::Vec3.new(1, -1, 1))
         
         
-        viewfac = vp.width
+        viewfac = [vp.width, vp.height].max
         # TODO: viewfac should automatically switch to which either dimension (width or height) is greater
         
         # NOTE: viewfac should be based on the sensor fit
