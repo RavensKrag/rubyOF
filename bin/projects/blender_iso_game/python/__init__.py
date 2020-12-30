@@ -724,7 +724,7 @@ class RubyOF(bpy.types.RenderEngine):
         # with estimated ortho scale, compute sensor size
         ortho_scale = context.scene.my_custom_props.ortho_scale
         print('ortho scale -> sensor size')
-        sensor_size = ortho_scale * context.space_data.lens) / rv3d.view_distance
+        sensor_size = ortho_scale * context.space_data.lens / rv3d.view_distance
         print(sensor_size)
         
         # then, with that constant sensor size, compute the dynamic ortho scale
