@@ -142,6 +142,8 @@ class ViewportCamera
         
         
         viewfac = vp.width
+        # TODO: viewfac should automatically switch to which either dimension (width or height) is greater
+        
         # NOTE: viewfac should be based on the sensor fit
             # src: blender-git/blender/source/blender/blenkernel/intern/camera.c
             # inside the function BKE_camera_params_compute_viewplane() :
