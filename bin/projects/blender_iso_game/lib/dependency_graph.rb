@@ -239,10 +239,7 @@ class DependencyGraph
     # (other blender object types, such as camera, are not yet implemented)
     @batches.values
     .collect{ |batch| batch.mesh }
-    .find{ |mesh_datablock| mesh_datablock.name == datablock_name }
-    
-    # TODO: when you delete some instances from the world, the position data gets messed up. it's easily fixed with an additional move, but maybe there's a more elegant way... basically, the code implictily assumes that the deleted meshes are the ones with indicies at the end of the list, but this is not necessarily the case. thus, if you don't update all positions on deletion, then the "wrong instances" appear to be deleted. This is not exactly the case, but it's a pretty weird graphical effect, regaurdless.
-    
+    .find{ |mesh_datablock| mesh_datablock.name == datablock_name }    
   end
   
   
@@ -369,6 +366,9 @@ class RenderBatch
         # to hold packed position information.
         
         # NOTE: can't currently set size dynamically, because shader must be compiled with correct dimensions. may want to update dynamic shader compilation pipeline in OFX::InstancingMaterial
+        # ^ actually, shaders are now loaded in this very file
+        #   see: reload_instancing_shaders()
+        
         
         msg = [
           "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
@@ -405,23 +405,22 @@ class RenderBatch
           mesh_obj.node.restoreTransformGL()
         @mat1.end()
       when 'instanced_set'
-        # draw instanced (v4 - translation + z-rot, stored in texture)
-        # NOTE: doesn't actually store z-rot right now, it's position only (normalized vector in RGB, with A channel for normalized magnitude)
+        # draw instanced (v4.2 - 4x4 full transform matrix in texture)
         
         
         # set uniforms
         @mat_instanced.setCustomUniformTexture(
-          "position_tex", @instance_data.texture, 1
+          "transform_tex", @instance_data.texture, 1
         )
           # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
         
-        @mat_instanced.setInstanceMagnitudeScale(
-          InstancingBuffer::FLOAT_MAX
-        )
+        # @mat_instanced.setInstanceMagnitudeScale(
+        #   InstancingBuffer::FLOAT_MAX
+        # )
         
-        @mat_instanced.setInstanceTextureWidth(
-          @instance_data.width
-        )
+        # @mat_instanced.setInstanceTextureWidth(
+        #   @instance_data.width
+        # )
         
         
         # draw all the instances using one draw call
@@ -510,6 +509,8 @@ class RenderBatch
         
         @mat_instanced.setVertexShaderSource vert_shader
         @mat_instanced.setFragmentShaderSource frag_shader
+        
+        # NOTE: the shader source strings *will* be effected by the shader preprocessing pipeline in ofShader.cpp
         
         
         @shader_timestamp = Time.now
