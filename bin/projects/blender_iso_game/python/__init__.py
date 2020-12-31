@@ -45,7 +45,19 @@ import threading
 
 import hashlib
 
+import math
 
+
+
+def focallength_to_fov(focal_length, sensor):
+    return 2.0 * math.atan((sensor / 2.0) / focal_length)
+
+def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
+    if (sensor_fit == CAMERA_SENSOR_FIT_VERT):
+        return sensor_y;
+    
+    return sensor_x;
+    
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -657,6 +669,7 @@ class RubyOF(bpy.types.RenderEngine):
         self.fifo_write(output_string)
         
     
+    
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
     # with OpenGL, and not perform other expensive work.
@@ -679,13 +692,72 @@ class RubyOF(bpy.types.RenderEngine):
         space = context.space_data # SpaceView3D(Space)
         
         
-        print(camera_direction)
-        # ^ note: camera objects have both lens (mm) and angle (fov degrees)
+        # print(camera_direction)
+        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
         
-        print(space.clip_start)
-        print(space.clip_end)
-        # ^ these are viewport properties, not camera object properties
+        # print(space.clip_start)
+        # print(space.clip_end)
+        # # ^ these are viewport properties, not camera object properties
         
+        
+        h = region.height
+        w = region.width
+        
+        # camera sensor size:
+        # 36 mm is the default, with sensor fit set to 'AUTO'
+        # (this is also the default horizontal sensor fit)
+        # (the default vertical sensor fit is 24mm)
+        
+        print("focal length: ")
+        print(context.space_data.lens)
+        
+        
+        # 
+        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
+        # 
+        
+        # rv3d->dist * sensor_size / v3d->lens
+        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
+        
+            # (ortho_scale * context.space_data.lens) / rv3d.view_distance = sensor_size
+        
+        # with estimated ortho scale, compute sensor size
+        ortho_scale = context.scene.my_custom_props.ortho_scale
+        print('ortho scale -> sensor size')
+        sensor_size = ortho_scale * context.space_data.lens / rv3d.view_distance
+        print(sensor_size)
+        
+        # then, with that constant sensor size, compute the dynamic ortho scale
+        print('that sensor size -> ortho scale')
+        sensor_size = 71.98320027323571
+        ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens
+        print(ortho_scale)
+        
+        # ^ this works now!
+        #   but now I need to be able to automatically compute the sensor size...
+        
+        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
+        
+        
+        
+        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
+        vmat_inv = rv3d.view_matrix.inverted()
+        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
+        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
+        print('rv3d fov:')
+        print(fov)
+        
+        print('ortho view distance')
+        print(rv3d.view_distance)
+            # ^ rv3d.view_distance is inversely proportional to context.scene.my_custom_props.ortho_scale
+            
+            # as seen in a camera object,
+            # in blender, when ortho_scale is bigger
+            # then objects in the scene appear smaller.
+            
+        # print('rv3d fov -> ortho scale')
+        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
+        # print(ortho_scale)
         
         
         mat_p = rv3d.perspective_matrix
@@ -714,7 +786,7 @@ class RubyOF(bpy.types.RenderEngine):
                 ],
                 'fov':[
                     "deg",
-                    context.scene.my_custom_props.fov
+                    fov
                 ],
                 'near_clip':[
                     'm',
@@ -730,7 +802,8 @@ class RubyOF(bpy.types.RenderEngine):
                 # ],
                 'ortho_scale':[
                     "factor",
-                    context.scene.my_custom_props.ortho_scale
+                    # context.scene.my_custom_props.ortho_scale
+                    ortho_scale
                 ],
                 'view_perspective': rv3d.view_perspective,
                 'perspective_matrix':[
@@ -838,14 +911,6 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         name="camera",
         description="Camera to be used by the RubyOF game engine")
     
-    fov: FloatProperty(
-        name = "FOV",
-        description = "Viewport field of view",
-        default = 39.6,
-        min = 0.0001,
-        max = 100.0000
-        )
-    
     # aspect_ratio: FloatProperty(
     #     name = "Aspect ratio",
     #     description = "Viewport aspect ratio",
@@ -858,7 +923,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         name = "Ortho scale",
         description = "Scale for orthographic render mode (manual override)",
         default = 1,
-        min = 1,
+        min = 0,
         max = 100000
         )
 
@@ -893,7 +958,6 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         self.layout.prop(context.scene.my_custom_props, "alpha")
         self.layout.prop(context.scene.my_custom_props, "b_windowLink")
         self.layout.prop(context.scene.my_custom_props, "camera")
-        self.layout.prop(context.scene.my_custom_props, "fov")
         # self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
         self.layout.prop(context.scene.my_custom_props, "ortho_scale")
         

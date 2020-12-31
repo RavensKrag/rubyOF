@@ -1,0 +1,5961 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"nodes",
+				"nodes"
+			],
+			[
+				"rot",
+				"rotate_vector"
+			],
+			[
+				"Blendhr",
+				"BlenderLight"
+			],
+			[
+				"deps",
+				"depsgraph"
+			],
+			[
+				"ent",
+				"entity_names"
+			],
+			[
+				"datab",
+				"datablock"
+			],
+			[
+				"entit",
+				"entity_list"
+			],
+			[
+				"encode",
+				"encode_transform"
+			],
+			[
+				"generate",
+				"generate_mesh"
+			],
+			[
+				"enti",
+				"entity_list"
+			],
+			[
+				"Mesh",
+				"BlenderMesh"
+			],
+			[
+				"batch",
+				"batches"
+			],
+			[
+				"viewpo",
+				"viewport_camera"
+			],
+			[
+				"dep",
+				"depsgraph"
+			],
+			[
+				"relo",
+				"reload_instancing_shaders"
+			],
+			[
+				"FLAT",
+				"FLOAT_MAX"
+			],
+			[
+				"magni",
+				"magnitude"
+			],
+			[
+				"magnitude",
+				"magnitude_normalized"
+			],
+			[
+				"tras",
+				"transforms"
+			],
+			[
+				"fs",
+				"frag_shader_path"
+			],
+			[
+				"pos",
+				"positions"
+			],
+			[
+				"main",
+				"max_instances"
+			],
+			[
+				"view",
+				"viewport_camera"
+			],
+			[
+				"tims",
+				"timestamps"
+			],
+			[
+				"norm",
+				"normal_data"
+			],
+			[
+				"shm",
+				"shm_dir"
+			],
+			[
+				"fifo",
+				"fifo_path"
+			],
+			[
+				"queue",
+				"outbound_queue"
+			],
+			[
+				"index",
+				"index_buffer"
+			],
+			[
+				"specul",
+				"specular_color"
+			],
+			[
+				"setpo",
+				"set_point_light"
+			],
+			[
+				"attr",
+				"attr_accessor"
+			],
+			[
+				"or",
+				"orientation"
+			],
+			[
+				"diffuse",
+				"diffuse_color"
+			],
+			[
+				"point",
+				"pointLight"
+			],
+			[
+				"mat",
+				"material2"
+			],
+			[
+				"first",
+				"first_update"
+			],
+			[
+				"ofcam",
+				"of_cam"
+			],
+			[
+				"hit",
+				"hit_wm_id"
+			],
+			[
+				"parse",
+				"parse_blender_data"
+			],
+			[
+				"camera",
+				"camera_settings_file"
+			],
+			[
+				"jso",
+				"json_obj"
+			],
+			[
+				"Wait",
+				"WaitReadable"
+			],
+			[
+				"fr",
+				"f_r"
+			],
+			[
+				"midi",
+				"midi_history"
+			],
+			[
+				"noteo",
+				"note_on"
+			],
+			[
+				"delat",
+				"deltatime"
+			],
+			[
+				"setColor",
+				"setColorPickerColor"
+			],
+			[
+				"mfrac",
+				"mFrameCounter_draw"
+			],
+			[
+				"mplott",
+				"mPloter_draw_time"
+			],
+			[
+				"widt",
+				"whole_iter_dt"
+			],
+			[
+				"charm",
+				"char_mapped_display"
+			],
+			[
+				"CP",
+				"CPP_Callbacks"
+			],
+			[
+				"grid",
+				"setGridCodepoint"
+			],
+			[
+				"_grid",
+				"_textGrid"
+			],
+			[
+				"yi",
+				"y_size"
+			],
+			[
+				"x",
+				"x_size"
+			],
+			[
+				"profiler",
+				"run_profiler"
+			],
+			[
+				"new",
+				"new_msg_count"
+			],
+			[
+				"SPIKE",
+				"RB_SPIKE_PROFILER"
+			],
+			[
+				"spike",
+				"spike_profiler"
+			],
+			[
+				"sc",
+				"stack_counter"
+			],
+			[
+				"__",
+				"__FILE__"
+			],
+			[
+				"start",
+				"start_time"
+			],
+			[
+				"size",
+				"sizeof\tDeviot sizeof()"
+			],
+			[
+				"stack",
+				"stack_pointer"
+			],
+			[
+				"mesh",
+				"meshes"
+			],
+			[
+				"meshifl",
+				"meshify_line_again"
+			],
+			[
+				"meshif",
+				"meshify_line_setup"
+			],
+			[
+				"end",
+				"endl"
+			],
+			[
+				"meshifi",
+				"meshify_line_setup"
+			],
+			[
+				"from",
+				"from_ruby"
+			],
+			[
+				"charme",
+				"char_mesh_dirty"
+			],
+			[
+				"section",
+				"section_count"
+			],
+			[
+				"upda",
+				"on_update"
+			],
+			[
+				"update",
+				"update_scheduler"
+			],
+			[
+				"bars",
+				"bar_segments"
+			],
+			[
+				"colo",
+				"colors"
+			],
+			[
+				"ofPop",
+				"ofPopMatrix"
+			],
+			[
+				"ofPush",
+				"ofPushMatrix"
+			],
+			[
+				"define",
+				"define_method"
+			],
+			[
+				"prev",
+				"previous_time"
+			],
+			[
+				"fi",
+				"frame_idx"
+			],
+			[
+				"name",
+				"section_name"
+			],
+			[
+				"time",
+				"time_used_this_frame"
+			],
+			[
+				"time_",
+				"time_used_this_frame"
+			],
+			[
+				"need",
+				"need_more_time"
+			],
+			[
+				"tot",
+				"total_time_per_frame"
+			],
+			[
+				"updat",
+				"update_steps"
+			],
+			[
+				"spr",
+				"sprite"
+			],
+			[
+				"conta",
+				"contain_vect"
+			],
+			[
+				"fgor",
+				"foreground"
+			],
+			[
+				"color",
+				"color_array"
+			],
+			[
+				"colr",
+				"color_array"
+			],
+			[
+				"flush",
+				"flushColors_fg"
+			],
+			[
+				"bg_co",
+				"bg_colors"
+			],
+			[
+				"font",
+				"fonts"
+			],
+			[
+				"ofenbl",
+				"ofEnableBlendMode__wrapper"
+			],
+			[
+				"ofP",
+				"ofPopMatrix"
+			],
+			[
+				"bottm",
+				"bottom_left"
+			],
+			[
+				"fgc",
+				"fg_color"
+			],
+			[
+				"prints",
+				"print_string"
+			],
+			[
+				"each",
+				"each_with_index"
+			],
+			[
+				"yie",
+				"yielder"
+			],
+			[
+				"Enumera",
+				"Enumerator"
+			],
+			[
+				"getcolor",
+				"getColor_bg"
+			],
+			[
+				"colbg",
+				"ColorHelper_bgOnly"
+			],
+			[
+				"getcolo",
+				"getColor_bg"
+			],
+			[
+				"helpr",
+				"ColorHelper_bgANDfg"
+			],
+			[
+				"Colo",
+				"ColorHelperHelper"
+			],
+			[
+				"Ruby",
+				"RubyOF"
+			],
+			[
+				"defi",
+				"define_method"
+			],
+			[
+				"_colo",
+				"_bgColorPixels"
+			],
+			[
+				"_fg",
+				"_fgColorPixels"
+			],
+			[
+				"charw",
+				"char_width_pxs"
+			],
+			[
+				"origi",
+				"uniform__origin"
+			],
+			[
+				"gpu",
+				"text_colors_gpu"
+			],
+			[
+				"textc",
+				"text_colors_cpu"
+			],
+			[
+				"txc",
+				"text_colors_cpu"
+			],
+			[
+				"ofL",
+				"ofLogNotice"
+			],
+			[
+				"shared",
+				"shared_ptr"
+			],
+			[
+				"leo",
+				"load_oneNameVertAndFrag"
+			],
+			[
+				"loop",
+				"looper_i"
+			],
+			[
+				"ofGet",
+				"ofGetElapsedTimeMillis"
+			],
+			[
+				"code",
+				"codepoints"
+			],
+			[
+				"pron",
+				"portName"
+			],
+			[
+				"portn",
+				"portNum"
+			],
+			[
+				"delta",
+				"deltatime"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "python/__init__.py",
+			"settings":
+			{
+				"buffer_size": 35169,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/blender_sync.rb",
+			"settings":
+			{
+				"buffer_size": 11983,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/dependency_graph.rb",
+			"settings":
+			{
+				"buffer_size": 15026,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/instancing_buffer.rb",
+			"settings":
+			{
+				"buffer_size": 3206,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/c_extension/callbacks.cpp",
+			"settings":
+			{
+				"buffer_size": 35948,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/c_extension/shaders/phong_instanced.vert",
+			"settings":
+			{
+				"buffer_size": 8262,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "uniform vec3 uTranslate;\nuniform vec3 uScale;\nuniform vec3 uRotate;\nuniform vec3 uRotate2;\n\nout Vertex {\n   vec4 color;\n   vec3 camSpaceVert;\n   vec3 camVector;\n   vec3 norm;\n}vVert;\n\n// Return rotation matrix\nmat3 rotationMatrixXYZ(vec3 r)\n{\n   float cx = cos(radians(r.x));\n   float sx = sin(radians(r.x));\n   float cy = cos(radians(r.y));\n   float sy = sin(radians(r.y));\n   float cz = cos(radians(r.z));\n   float sz = sin(radians(r.z));\n\n   return mat3(cy * cz,   cx * sz + sx * sy * cz,  sx * sz - cx * sy * cz,\n              -cy * sz,   cx * cz - sx * sy * sz,  sx * cz + cx * sy * sz,\n               sy,        -sx * cy,                cx * cy);               \n\n}\n\n//return transformation matrix\nmat4 xFormXYZ(vec3 t, vec3 sc, vec3 r)\n{\n   mat3 scale = mat3( sc.x, 0.0, 0.0,\n   0.0, sc.y, 0.0,\n   0.0, 0.0, sc.z);\n\n   mat3 xfm = rotationMatrixXYZ(uRotate)  * scale;\n\n   return mat4(xfm[0][0], xfm[0][1], xfm[0][2], 0.0,\n            xfm[1][0], xfm[1][1], xfm[1][2], 0.0,\n            xfm[2][0], xfm[2][1], xfm[2][2], 0.0,\n            t.x,       t.y, t.z,  1.0 );  \n\n   /* this would be valid as well\n   return mat4(xfm[0], 0.0,\n   xfm[1], 0.0,\n   xfm[2], 0.0,\n   t, 1.0 );\n   */\n}\n\nmat4 xfm = xFormXYZ(uTranslate, uScale, uRotate);\nmat3 rot2 = rotationMatrixXYZ(uRotate2);\n\nvoid main()\n{\n   //multilply the point by the transform matrix, it must be a vec4 because the matrix is 4x4 matrix and includes translation\n   vec4 point = xfm * vec4(P, 1.0);\n   //the normal needs to be rotated also but not translated so the w component is 0.0\n   vec3 normal = (xfm * vec4(N, 0.0)).xyz;\n\n   //do another rotation after first transformation - just need vec3's this time becuase the rotation matrix is 3x3\n   point.xyz = rot2 * point.xyz;\n   normal = rot2 * normal;\n\n\n\n   // First deform the vertex and normal\n   // TDDeform always returns values in world space\n   vec4 worldSpaceVert =TDDeform(point);\n   vec4 camSpaceVert = uTDMat.cam * worldSpaceVert;\n   gl_Position = TDCamToProj(camSpaceVert);\n\n   // This is here to ensure we only execute lighting etc. code\n   // when we need it. If picking is active we don't need this, so\n   // this entire block of code will be ommited from the compile.\n   // The TD_PICKING_ACTIVE define will be set automatically when\n   // picking is active.\n\n   #ifndef TD_PICKING_ACTIVE\n\n   vec3 camSpaceNorm = uTDMat.camForNormals * TDDeformNorm(normal).xyz;\n   vVert.norm.stp = camSpaceNorm.stp;\n   vVert.camSpaceVert.xyz = camSpaceVert.xyz;\n   vVert.color = TDInstanceColor(Cd);\n   vec3 camVec = -camSpaceVert.xyz;\n   vVert.camVector.stp = camVec.stp;\n\n   #else // TD_PICKING_ACTIVE\n\n   // This will automatically write out the nessesarily values\n   // for this shader to work with picking.\n   // See the documentation if you want to write custom values for picking.\n   TDWritePickingValues();\n\n   #endif // TD_PICKING_ACTIVE\n}",
+			"settings":
+			{
+				"buffer_size": 2856,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/c_extension/shaders/phong.frag",
+			"settings":
+			{
+				"buffer_size": 10311,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/c_extension/ofxInstancingMaterial.cpp",
+			"settings":
+			{
+				"buffer_size": 13054,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ext/c_extension/ofxInstancingMaterial.h",
+			"settings":
+			{
+				"buffer_size": 8191,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix",
+				"name": "--"
+			}
+		},
+		{
+			"file": "lib/core.rb",
+			"settings":
+			{
+				"buffer_size": 20162,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/data/world_data.yaml",
+			"settings":
+			{
+				"buffer_size": 386854,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix",
+				"name": "--"
+			}
+		},
+		{
+			"file": "lib/entities/blender_object.rb",
+			"settings":
+			{
+				"buffer_size": 1942,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/blender_mesh.rb",
+			"settings":
+			{
+				"buffer_size": 7003,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/blender_light.rb",
+			"settings":
+			{
+				"buffer_size": 3731,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/entities/viewport_camera.rb",
+			"settings":
+			{
+				"buffer_size": 7028,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/window.rb",
+			"settings":
+			{
+				"buffer_size": 4123,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/live_code.rb",
+			"settings":
+			{
+				"buffer_size": 6288,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix",
+				"name": "--"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+			"settings":
+			{
+				"buffer_size": 482,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
+			"settings":
+			{
+				"buffer_size": 40363,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+			"settings":
+			{
+				"buffer_size": 7087,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+			"settings":
+			{
+				"buffer_size": 4914,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail/type_quat.inl",
+			"settings":
+			{
+				"buffer_size": 10312,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/gtc/quaternion.hpp",
+			"settings":
+			{
+				"buffer_size": 5465,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/detail/type_quat.hpp",
+			"settings":
+			{
+				"buffer_size": 5517,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+			"settings":
+			{
+				"buffer_size": 7904,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+			"settings":
+			{
+				"buffer_size": 25552,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+			"settings":
+			{
+				"buffer_size": 88399,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp",
+			"settings":
+			{
+				"buffer_size": 49016,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.h",
+			"settings":
+			{
+				"buffer_size": 12008,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 750.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"sort",
+				"SortBy: Alphabetically"
+			],
+			[
+				"sor",
+				"SortBy: Alphabetically"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"upper",
+				"Convert Case: Upper Case"
+			],
+			[
+				"uniq",
+				"Permute Lines: Unique"
+			],
+			[
+				"lowe",
+				"Convert Case: Lower Case"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"jso",
+				"Set Syntax: JSON"
+			],
+			[
+				"python",
+				"Set Syntax: Python"
+			],
+			[
+				"low",
+				"Convert Case: Lower Case"
+			],
+			[
+				"upper ",
+				"Convert Case: Upper Case"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"expor",
+				"Export to HTML: Show Export Menu"
+			],
+			[
+				"enable pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"disab",
+				"Package Control: Disable Package"
+			],
+			[
+				"pagke li",
+				"Package Control: List Packages"
+			],
+			[
+				"packag list",
+				"Package Control: List Packages"
+			],
+			[
+				"package list",
+				"Package Control: List Packages"
+			],
+			[
+				"syntax glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"synt rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"auto",
+				"Toggle AutoSave: current file only"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"krake",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pcaka",
+				"Package Control: Install Package"
+			],
+			[
+				"pcak",
+				"Package Control: Discover Packages"
+			]
+		],
+		"width": 1062.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts"
+	],
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/ts/cuda_perf.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_light.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/bin/data/computeShader.glsl",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/computeShaderTextureExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofBufferObject.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/multiTextureShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.frag",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/vboMeshDrawInstancedExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_object.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVbo.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec3.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/shaders/phong.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/shaders/phong.frag",
+		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__defaultShader_noMaterialMeansNoLights.cpp",
+		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__ofMaterial_bindingShaderAndSettingLightUniforms.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/bin/data/char_display_bg.vert",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/bin/data/char_display_bg.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/bin/data/default.vert",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/bin/data/default_tex2DNoColor.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/lib/core.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/main.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Color.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Color.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/char_display_bg.frag",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLRenderer.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofMesh.inl",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_vec4.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/image.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/image.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/phong_instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/alphaMaskingShaderExample/bin/data/shaders_gles/alphamask.frag",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/alphaMaskingShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/material_editor.frag",
+		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.05.10 p3 a modern curses-like graphics interface/notes__ofTrueTypeFont_defaultShaderBinding.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/build/window_guard.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/__init__.py",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_light.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/lib/controller_state_machine.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/areaLightExample/config.make",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/singleLightExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/singleLightExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxPoco/libs/poco/include/Poco/LocalDateTime.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAssimpModelLoader/libs/assimp/include/assimp/material.inl",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLRenderer.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/of3dGraphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/of3dPrimitives.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/of3dPrimitives.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/of3dGraphics.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofMesh.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppEGLWindow.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/of3dUtils.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/multiLightExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/viewport_camera.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/container/allocator_traits.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/3d/normalsExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Data_Type.ipp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/window_geometry.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsBaseTypes.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofWindowSettings.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppRunner.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_mat4.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxiOS/src/utils/ofxiOSExtras.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/lib/UI_model.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/monkey_patches/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxPanel.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxPanel.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGui.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/sequence_memory.rb"
+	],
+	"find":
+	{
+		"height": 48.0
+	},
+	"find_in_files":
+	{
+		"height": 264.0,
+		"where_history":
+		[
+			"",
+			"/home/ravenskrag/Desktop/gem_structure/**/*",
+			"/home/ravenskrag/Desktop/gem_structure/*",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			"/home/ravenskrag/Desktop/gem_structure/ext/",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			"",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF,/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			"",
+			"*.rb",
+			"",
+			"/home/ravenskrag/Desktop/gem_structure/,*.cpp",
+			"/home/ravenskrag/Desktop/gem_structure/",
+			"/home/ravenskrag/Desktop/gem_structure/,*.rb",
+			"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/",
+			"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons",
+			"",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			"/home/ravenskrag/Desktop/gem_structure,.*cpp",
+			"/home/ravenskrag/Desktop/gem_structure,*.rb",
+			"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks",
+			"/home/ravenskrag/Desktop/gem_structure/bin/,*.rb",
+			"/home/ravenskrag/Desktop/gem_structure/bin/**/*.rb",
+			"/home/ravenskrag/Desktop/gem_structure/bin",
+			"/home/ravenskrag/Desktop/gem_structure/run",
+			"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"RenderBatch",
+			"instancingmaterial",
+			"Texture(",
+			"TEXTURE(",
+			"color",
+			"FloatColor",
+			"InstancingBuffer",
+			"batch",
+			"match",
+			"quat",
+			"string_cast",
+			"tquat",
+			"struct {",
+			"x, y,",
+			"glm",
+			"toString",
+			"string",
+			"quat",
+			"typedef",
+			"Quat",
+			"typedef",
+			"quat",
+			"transform",
+			"load",
+			"transform",
+			"position",
+			"orientation",
+			"arr",
+			"->",
+			"mwidth",
+			"settexture",
+			"256",
+			"uniformstex",
+			"mScale",
+			"mscale",
+			"instance",
+			"pack_",
+			"pack_positions_with_indicies",
+			"pack_transforms",
+			"pack_positions",
+			"positions",
+			"pack_all_positions",
+			"positions",
+			"arr.",
+			"time - pack instance positions: ",
+			"pack instance positions",
+			"time - batch update: ",
+			"10",
+			"time - batch update: 10",
+			"time - batch update: ",
+			"batch update",
+			"json",
+			".update",
+			"update_packed_entity_positions",
+			"pack_all_positions",
+			"cout",
+			"pack_positionS_with",
+			"pack_positions_with_indicies",
+			"@instance_data",
+			"pack_all_positions",
+			"pack_positions_with_indicies",
+			"time - pack instances: ",
+			"time - pack instances: 0.09 ms",
+			"pack instances",
+			" ms",
+			"time - batch update: ",
+			"batch update",
+			"@instance_data",
+			"instance_data",
+			"getelapsedtimemi",
+			"RubyOF::Utils",
+			"timer",
+			"mil",
+			"milli",
+			"millis",
+			"update",
+			"depsgraph.update",
+			"update_packed_entity_positions",
+			"pack_positions_with_indicies",
+			"update_packed_entity_positions",
+			"pack",
+			"pack_all",
+			"find_datablock",
+			"properties",
+			"sync",
+			"ofdrawcub",
+			"ofdraw",
+			"pack_mesh_data",
+			"normals",
+			"getnormals",
+			"'double",
+			"TODO",
+			"base64",
+			"@lights",
+			"todo",
+			"poll",
+			"sha",
+			"pack_mesh_data",
+			"data",
+			"data updated",
+			"send_mesh_edit_update",
+			"send_update_data",
+			".select",
+			"==",
+			"entity.mesh.name",
+			"entity.mesh",
+			"datablock",
+			"@batches",
+			"=>",
+			"add",
+			"dc514da53c069c1dd779110b5bd2d1e70119cfa5",
+			"cylinder",
+			"pack_data",
+			"pack_mesh_data",
+			"send_update_data",
+			".name",
+			"@name",
+			"lights",
+			"each_light",
+			"get_entity",
+			"update_entity_transform",
+			"update_entity_data",
+			"@batches",
+			"pack_transform",
+			"@unbatched",
+			"blenderlight",
+			"update_packed_entity_positions",
+			".dirty"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"o",
+			" "
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 15,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "python/__init__.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 35169,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 10527.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/blender_sync.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11983,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6842,
+								6842
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										8708,
+										8711
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										6760,
+										6764
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7613.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/dependency_graph.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15026,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7661,
+								7661
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										7150,
+										7155
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9411.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/instancing_buffer.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								222,
+								222
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										420,
+										423
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										78,
+										81
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ext/c_extension/callbacks.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 35948,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22072,
+								22072
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 29114.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "ext/c_extension/shaders/phong_instanced.vert",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8262,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4938,
+								4938
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2856,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1278,
+								1278
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 558.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "ext/c_extension/shaders/phong.frag",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8725,
+								8725
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										9280,
+										9281
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										8676,
+										8677
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6880.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "ext/c_extension/ofxInstancingMaterial.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13054,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6994,
+								6994
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										7739,
+										7740
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										6989,
+										6990
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7458.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "ext/c_extension/ofxInstancingMaterial.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8191,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8177,
+								8177
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										8188,
+										8189
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4502,
+										4503
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 6187.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lib/core.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12776,
+								12776
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										13265,
+										13268
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										11592,
+										11595
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 16262.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "bin/data/world_data.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 386854,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 32,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "lib/entities/blender_object.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1942,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1493,
+								1493
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1711,
+										1714
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1505,
+										1508
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 855.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "lib/entities/blender_mesh.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7003,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4655,
+								4655
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										6999,
+										7002
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										3728,
+										3733
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "lib/entities/blender_light.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3731,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								521,
+								521
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										520,
+										521
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/single_quote.png",
+										"region.greenish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										515,
+										516
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "lib/entities/viewport_camera.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7028,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3891,
+										3894
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1,
+										6
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "lib/window.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								559,
+								559
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "lib/live_code.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6288,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1997,
+								1997
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2025,
+										2026
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1997,
+										1998
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 18.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 31,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 482,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								361,
+								361
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										358,
+										361
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										280,
+										283
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 40363,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								212,
+								212
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										356,
+										357
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										202,
+										203
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7087,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								781,
+								781
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										435,
+										436
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3720.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4914,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2436.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/glm/include/glm/detail/type_quat.inl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10312,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1736,
+								1736
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										137,
+										138
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1413.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/gtc/quaternion.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5465,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1934,
+								1934
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										1937,
+										1938
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1918,
+										1919
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 979.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/detail/type_quat.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5517,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1900,
+								1900
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3770,
+										3771
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										443,
+										444
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1258.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7904,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2877,
+								2877
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2877,
+										2878
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/double_quote.png",
+										"region.greenish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										2867,
+										2868
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2994.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25552,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22255,
+								22255
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										22258,
+										22259
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										22239,
+										22240
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 24818.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 88399,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								83617,
+								83617
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										83617,
+										83618
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										83616,
+										83617
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 85245.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 49016,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5781,
+								5781
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										5782,
+										5783
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										5781,
+										5782
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5802.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 32,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12008,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5043,
+								5043
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Deviot (Arduino IDE)/deviot.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4234.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 48.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.deviot":
+	{
+		"height": 236.0
+	},
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "blender_iso_game.sublime-project",
+	"replace":
+	{
+		"height": 88.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"ofpixels",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp"
+			],
+			[
+				"color",
+				"gem_structure/lib/rubyOF/color.rb"
+			],
+			[
+				"string cast",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl"
+			],
+			[
+				"quaternion",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtc/quaternion.hpp"
+			],
+			[
+				"quat.h",
+				"gem_structure/vendor/apothecary/glm/include/glm/detail/type_quat.hpp"
+			],
+			[
+				"quat.",
+				"gem_structure/ext/openFrameworks/libs/glm/include/glm/detail/type_quat.inl"
+			],
+			[
+				"glm bind",
+				"gem_structure/ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"rubyofcpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"glm quat",
+				"gem_structure/lib/rubyOF/glm_quat.rb"
+			],
+			[
+				"dep",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"blender data",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"blenderdata",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"ofnode",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp"
+			],
+			[
+				"depgr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"graphics.c",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"world da",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			],
+			[
+				"livecode",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"graphi",
+				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"rubyof.rb",
+				"gem_structure/lib/rubyOF.rb"
+			],
+			[
+				"graphicsadv",
+				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"ofshade",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp"
+			],
+			[
+				"glpro",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"ofxinsta",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp"
+			],
+			[
+				"callback",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"oftexture",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp"
+			],
+			[
+				"midi core",
+				"gem_structure/bin/projects/grapevine_midi/lib/core.rb"
+			],
+			[
+				"vec3rb",
+				"gem_structure/lib/rubyOF/glm_vec3.rb"
+			],
+			[
+				"color.cpp",
+				"gem_structure/ext/rubyOF/Color.cpp"
+			],
+			[
+				"compute example",
+				"gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/computeShaderTextureExample.qbs"
+			],
+			[
+				"fbuffer",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofBufferObject.cpp"
+			],
+			[
+				"ofcolor",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp"
+			],
+			[
+				"ruby.cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"glmvec3",
+				"gem_structure/lib/rubyOF/glm_vec3.rb"
+			],
+			[
+				"texture.h",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h"
+			],
+			[
+				"ofbuferob",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofBufferObject.cpp"
+			],
+			[
+				"ofbasemateril",
+				"gem_structure/ext/openFrameworks/addons/ofxAssimpModelLoader/libs/assimp/include/assimp/material.inl"
+			],
+			[
+				"callbac",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"ofmat",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"ofmesh",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofMesh.inl"
+			],
+			[
+				"ruby.rb",
+				"gem_structure/lib/rubyOF.rb"
+			],
+			[
+				"ofvbomesh",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp"
+			],
+			[
+				"graphs",
+				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"ofshader",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofShader.cpp"
+			],
+			[
+				"oflight",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp"
+			],
+			[
+				"glrenderer",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLRenderer.cpp"
+			],
+			[
+				"ofmateria",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"vbomeshdrawinst",
+				"gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/vboMeshDrawInstancedExample.qbs"
+			],
+			[
+				"scedul",
+				"gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb"
+			],
+			[
+				"ofglrender",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLRenderer.cpp"
+			],
+			[
+				"gl renderer",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"blender window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"ofmateral",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"blender ofapp",
+				"gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
+			],
+			[
+				"blender gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"gem ",
+				"gem_structure/Gemfile"
+			],
+			[
+				"ofmaterial",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"rubyof.cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"rubyof",
+				"gem_structure/lib/rubyOF.rb"
+			],
+			[
+				"programmable",
+				"ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"windowg",
+				"build/window_guard.rb"
+			],
+			[
+				"camera ya",
+				"bin/projects/blender_iso_game/bin/data/viewport_camera.yaml"
+			],
+			[
+				"glmbi",
+				"ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"graph adv",
+				"ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"graphc",
+				"ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"init p",
+				"bin/projects/blender_iso_game/python/__init__.py"
+			],
+			[
+				"core",
+				"bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"matrix trans",
+				"vendor/apothecary/glm/include/glm/ext/matrix_transform.hpp"
+			],
+			[
+				"glm matrix oper",
+				"vendor/apothecary/glm/include/glm/gtx/matrix_operation.hpp"
+			],
+			[
+				"matrix flo 4x4",
+				"vendor/apothecary/glm/include/glm/ext/matrix_float4x4.hpp"
+			],
+			[
+				"glm mat4 type",
+				"vendor/apothecary/glm/include/glm/detail/type_mat4x4.hpp"
+			],
+			[
+				"vec3",
+				"lib/rubyOF/glm_vec3.rb"
+			],
+			[
+				"glmbin",
+				"ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"type mat4x4",
+				"vendor/apothecary/glm/include/glm/detail/type_mat4x4.hpp"
+			],
+			[
+				"mat double 4x4",
+				"vendor/apothecary/glm/include/glm/ext/matrix_double4x4.hpp"
+			],
+			[
+				"glm mat4x4 ",
+				"vendor/apothecary/glm/include/glm/mat4x4.hpp"
+			],
+			[
+				"ofgraphi",
+				"ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.h"
+			],
+			[
+				"renderer",
+				"ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"ofapprunner",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppRunner.cpp"
+			],
+			[
+				"ofcamera",
+				"ext/openFrameworks/libs/openFrameworks/3d/ofCamera.cpp"
+			],
+			[
+				"glprogramm",
+				"ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"glfwwindow",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp"
+			],
+			[
+				"quaternio",
+				"vendor/apothecary/glm/include/glm/gtc/quaternion.hpp"
+			],
+			[
+				"ofxinfinit",
+				"ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp"
+			],
+			[
+				"monkey ",
+				"lib/rubyOF/monkey_patches/chipmunk/vec2.rb"
+			],
+			[
+				"windo geom",
+				"bin/projects/blender_iso_game/bin/data/window_geometry.yaml"
+			],
+			[
+				"rake",
+				"Rakefile"
+			],
+			[
+				"glm mat4",
+				"vendor/apothecary/glm/include/glm/mat4x4.hpp"
+			],
+			[
+				"common",
+				"common.rb"
+			],
+			[
+				"rake helper",
+				"rake/helper_functions.rb"
+			],
+			[
+				"camera yaml",
+				"bin/projects/blender_iso_game/bin/data/viewport_camera.yaml"
+			],
+			[
+				".yaml",
+				"bin/projects/blender_iso_game/bin/data/viewport_camera.yaml"
+			],
+			[
+				"helper",
+				"bin/projects/blender_iso_game/lib/helpers.rb"
+			],
+			[
+				"help",
+				"rake/helper_functions.rb"
+			],
+			[
+				"graphics advance",
+				"ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"rice data_type",
+				"vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Data_Type.cpp"
+			],
+			[
+				"window geom",
+				"bin/projects/blender_iso_game/bin/data/window_geometry.yaml"
+			],
+			[
+				"imguiini",
+				"bin/projects/blender_iso_game/imgui.ini"
+			],
+			[
+				"versio",
+				"lib/rubyOF/version.rb"
+			],
+			[
+				"vec4",
+				"lib/rubyOF/glm_vec4.rb"
+			],
+			[
+				"launch",
+				"ext/rubyOF/launcher.cpp"
+			],
+			[
+				"vec3.rb",
+				"lib/rubyOF/glm_vec3.rb"
+			],
+			[
+				"ofmesh.h",
+				"ext/openFrameworks/libs/openFrameworks/3d/ofMesh.h"
+			],
+			[
+				"mesh",
+				"ext/rubyOF/Mesh.cpp"
+			],
+			[
+				"free",
+				"lib/rubyOF/freezable.rb"
+			],
+			[
+				"glm vec3",
+				"lib/rubyOF/glm_vec3.rb"
+			],
+			[
+				"rubyofrb",
+				"lib/rubyOF.rb"
+			],
+			[
+				"point",
+				"lib/rubyOF/point.rb"
+			],
+			[
+				"ofquater",
+				"ext/openFrameworks/libs/openFrameworks/math/ofQuaternion.h"
+			],
+			[
+				"graphicsconst",
+				"ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h"
+			],
+			[
+				"ricesymbol",
+				"vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Symbol.cpp"
+			],
+			[
+				"live code",
+				"bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"settings.xml",
+				"bin/projects/blender_iso_game/bin/data/settings.xml"
+			],
+			[
+				"ofxguigrou",
+				"ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.cpp"
+			],
+			[
+				"ofxgui panel",
+				"ext/openFrameworks/addons/ofxGui/src/ofxPanel.h"
+			],
+			[
+				"ofxgui",
+				"ext/openFrameworks/addons/ofxGui/src/ofxGui.h"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				"version",
+				"lib/rubyOF/version.rb"
+			],
+			[
+				"midi window",
+				"bin/projects/grapevine_midi/lib/window.rb"
+			],
+			[
+				"lau",
+				"ext/rubyOF/launcher.cpp"
+			],
+			[
+				"ofapp",
+				"ext/oF_apps/testApp/src/ofApp.cpp"
+			],
+			[
+				"midi test app.cpp",
+				"bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.cpp"
+			],
+			[
+				"midi gemfile lock",
+				"bin/projects/grapevine_midi/Gemfile.lock"
+			],
+			[
+				"gemfileloc",
+				"Gemfile.lock"
+			],
+			[
+				"gemfilelock",
+				"Gemfile.lock"
+			],
+			[
+				"ofbasewin",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppBaseWindow.h"
+			],
+			[
+				"ofappru",
+				"ext/openFrameworks/libs/openFrameworks/app/ofAppRunner.cpp"
+			],
+			[
+				"ofapp.",
+				"ext/oF_apps/testApp/src/ofApp.cpp"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 421.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

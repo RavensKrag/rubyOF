@@ -6,6 +6,9 @@
 		},
 		{
 			"path": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts"
+		},
+		{
+			"path": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender"
 		}
 	]
 }
