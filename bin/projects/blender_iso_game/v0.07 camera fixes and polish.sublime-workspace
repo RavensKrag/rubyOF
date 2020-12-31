@@ -520,6 +520,179 @@
 	"buffers":
 	[
 		{
+			"file": "python/__init__.py",
+			"settings":
+			{
+				"buffer_size": 35169,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/blender_sync.rb",
+			"settings":
+			{
+				"buffer_size": 11983,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_camera.py",
+			"settings":
+			{
+				"buffer_size": 18101,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/modules/bpy_types.py",
+			"settings":
+			{
+				"buffer_size": 32147,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/presets/tracking_camera/Blender.py",
+			"settings":
+			{
+				"buffer_size": 219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/camera.c",
+			"settings":
+			{
+				"buffer_size": 32710,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__camera-FOV-and-ortho_scale.cpp",
+			"settings":
+			{
+				"buffer_size": 6350,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/math_geom.c",
+			"settings":
+			{
+				"buffer_size": 174419,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/BKE_camera.h",
+			"settings":
+			{
+				"buffer_size": 6339,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/BLI_math_rotation.h",
+			"settings":
+			{
+				"buffer_size": 10590,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/math_rotation.c",
+			"settings":
+			{
+				"buffer_size": 63878,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_camera.c",
+			"settings":
+			{
+				"buffer_size": 34402,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesdna/DNA_camera_types.h",
+			"settings":
+			{
+				"buffer_size": 5323,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/space_view3d.py",
+			"settings":
+			{
+				"buffer_size": 253658,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 34880 files for \"lens_unit\"\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/io_scene_gltf2/blender/imp/gltf2_blender_camera.py:\n   44          else:\n   45              cam.angle_y = pycamera.perspective.yfov\n   46:             cam.lens_unit = \"FOV\"\n   47              cam.sensor_fit = \"VERTICAL\"\n   48  \n\n/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_operators/presets.py:\n  329          if self.use_focal_length:\n  330              preset_values.append(\"cam.lens\")\n  331:             preset_values.append(\"cam.lens_unit\")\n  332          return preset_values\n  333  \n\n/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_camera.py:\n   85  \n   86          if cam.type == 'PERSP':\n   87:             if cam.lens_unit == 'MILLIMETERS':\n   88                  col.prop(cam, \"lens\")\n   89:             elif cam.lens_unit == 'FOV':\n   90                  col.prop(cam, \"angle\")\n   91:             col.prop(cam, \"lens_unit\")\n   92  \n   93          elif cam.type == 'ORTHO':\n   ..\n  112                      sub.prop(ccam, \"longitude_max\", text=\"Max\")\n  113              elif engine in {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}:\n  114:                 if cam.lens_unit == 'MILLIMETERS':\n  115                      col.prop(cam, \"lens\")\n  116:                 elif cam.lens_unit == 'FOV':\n  117                      col.prop(cam, \"angle\")\n  118:                 col.prop(cam, \"lens_unit\")\n  119  \n  120          col = layout.column()\n\n/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/space_view3d.py:\n 2448                  props.data_path_item = \"data.lens\"\n 2449                  props.input_scale = 0.1\n 2450:                 if obj.data.lens_unit == 'MILLIMETERS':\n 2451                      props.header_text = \"Camera Lens Angle: %.1fmm\"\n 2452                  else:\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_camera.c:\n  494        {0, NULL, 0, NULL, NULL},\n  495    };\n  496:   static const EnumPropertyItem prop_lens_unit_items[] = {\n  497        {0, \"MILLIMETERS\", 0, \"Millimeters\", \"Specify the lens in millimeters\"},\n  498        {CAM_ANGLETOGGLE,\n  ...\n  683    RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);\n  684  \n  685:   prop = RNA_def_property(srna, \"lens_unit\", PROP_ENUM, PROP_NONE);\n  686    RNA_def_property_enum_bitflag_sdna(prop, NULL, \"flag\");\n  687:   RNA_def_property_enum_items(prop, prop_lens_unit_items);\n  688    RNA_def_property_ui_text(prop, \"Lens Unit\", \"Unit to edit lens in for the user interface\");\n  689  \n\n12 matches across 5 files\n\n\nSearching 34880 files for \"focallength_to_fov\"\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/BLI_math_rotation.h:\n  231  void vec_apply_track(float vec[3], short axis);\n  232  \n  233: float focallength_to_fov(float focal_length, float sensor);\n  234  float fov_to_focallength(float fov, float sensor);\n  235  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/math_rotation.c:\n 2228  \n 2229  /* lens/angle conversion (radians) */\n 2230: float focallength_to_fov(float focal_length, float sensor)\n 2231  {\n 2232    return 2.0f * atanf((sensor / 2.0f) / focal_length);\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/uvproject.c:\n  143    uci.do_persp = (camera->type == CAM_PERSP);\n  144  \n  145:   uci.camangle = focallength_to_fov(camera->lens, camera->sensor_x) / 2.0f;\n  146    uci.camsize = uci.do_persp ? tanf(uci.camangle) : camera->ortho_scale;\n  147  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_view3d/view3d_utils.c:\n 1190      }\n 1191  \n 1192:     angle = focallength_to_fov(lens, sensor_size);\n 1193  \n 1194      /* zoom influences lens, correct this by scaling the angle as a distance\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/io/collada/AnimationExporter.cpp:\n  322          sensor_value = ((Camera *)ob->data)->sensor_x;\n  323        }\n  324:       float value = RAD2DEGF(focallength_to_fov(lens_value, sensor_value));\n  325        mcurve->add_value(value, frame);\n  326      }\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/io/collada/CameraExporter.cpp:\n   65      case CAM_PERSP: {\n   66        COLLADASW::PerspectiveOptic persp(mSW);\n   67:       persp.setXFov(RAD2DEGF(focallength_to_fov(cam->lens, cam->sensor_x)), \"xfov\");\n   68        persp.setAspectRatio((float)(sce->r.xsch) / (float)(sce->r.ysch), false, \"aspect_ratio\");\n   69        persp.setZFar(cam->clip_end, false, \"zfar\");\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_camera.c:\n   46    Camera *cam = (Camera *)ptr->owner_id;\n   47    float sensor = BKE_camera_sensor_size(cam->sensor_fit, cam->sensor_x, cam->sensor_y);\n   48:   return focallength_to_fov(cam->lens, sensor);\n   49  }\n   50  \n   ..\n   59  {\n   60    Camera *cam = (Camera *)ptr->owner_id;\n   61:   return focallength_to_fov(cam->lens, cam->sensor_x);\n   62  }\n   63  \n   ..\n   71  {\n   72    Camera *cam = (Camera *)ptr->owner_id;\n   73:   return focallength_to_fov(cam->lens, cam->sensor_y);\n   74  }\n   75  \n\n9 matches across 7 files\n\n\nSearching 34881 files for \"GPU_matrix_push_projection\"\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/draw/engines/external/external_engine.c:\n  236  \n  237    /* Rendered draw. */\n  238:   GPU_matrix_push_projection();\n  239    GPU_matrix_push();\n  240    ED_region_pixelspace(region);\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/animation/time_scrub_ui.c:\n  160  {\n  161    const View2D *v2d = &region->v2d;\n  162:   GPU_matrix_push_projection();\n  163    wmOrtho2_region_pixelspace(region);\n  164  \n  ...\n  183    const View2D *v2d = &region->v2d;\n  184  \n  185:   GPU_matrix_push_projection();\n  186    wmOrtho2_region_pixelspace(region);\n  187  \n  ...\n  214  void ED_time_scrub_channel_search_draw(const bContext *C, ARegion *region, bDopeSheet *dopesheet)\n  215  {\n  216:   GPU_matrix_push_projection();\n  217    wmOrtho2_region_pixelspace(region);\n  218  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/gpencil/gpencil_fill.c:\n  394    }\n  395  \n  396:   GPU_matrix_push_projection();\n  397    GPU_matrix_identity_set();\n  398    GPU_matrix_push();\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/interface/interface.c:\n 1901  \n 1902    /* pixel space for AA widgets */\n 1903:   GPU_matrix_push_projection();\n 1904    GPU_matrix_push();\n 1905    GPU_matrix_identity_set();\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/interface/interface_draw.c:\n 1794    bool use_project_matrix = (size >= -GPU_MATRIX_ORTHO_CLIP_NEAR_DEFAULT);\n 1795    if (use_project_matrix) {\n 1796:     GPU_matrix_push_projection();\n 1797      GPU_matrix_ortho_set_z(-size, size);\n 1798    }\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/interface/view2d_draw.c:\n  250                                         char direction)\n  251  {\n  252:   GPU_matrix_push_projection();\n  253    UI_view2d_view_ortho(v2d);\n  254    draw_parallel_lines(lines, &v2d->cur, &v2d->mask, color, direction);\n  ...\n  315    }\n  316  \n  317:   GPU_matrix_push_projection();\n  318    wmOrtho2_region_pixelspace(region);\n  319  \n  ...\n  374    }\n  375  \n  376:   GPU_matrix_push_projection();\n  377    wmOrtho2_region_pixelspace(region);\n  378  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/mesh/editmesh_knife.c:\n 1054    GPU_depth_test(false);\n 1055  \n 1056:   GPU_matrix_push_projection();\n 1057    GPU_polygon_offset(1.0f, 1.0f);\n 1058  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/sculpt_paint/paint_cursor.c:\n 1461  \n 1462            /* Draw 3D brush cursor. */\n 1463:           GPU_matrix_push_projection();\n 1464            ED_view3d_draw_setup_view(wm,\n 1465                                      CTX_wm_window(C),\n ....\n 1572                !is_multires) {\n 1573              if (BKE_pbvh_type(ss->pbvh) == PBVH_FACES && ss->deform_modifiers_active) {\n 1574:               GPU_matrix_push_projection();\n 1575                ED_view3d_draw_setup_view(wm,\n 1576                                          CTX_wm_window(C),\n ....\n 1593                brush->flag2 & BRUSH_MULTIPLANE_SCRAPE_PLANES_PREVIEW &&\n 1594                !SCULPT_stroke_is_first_brush_step_of_symmetry_pass(ss->cache)) {\n 1595:             GPU_matrix_push_projection();\n 1596              ED_view3d_draw_setup_view(wm,\n 1597                                        CTX_wm_window(C),\n ....\n 1612            if (brush->sculpt_tool == SCULPT_TOOL_CLOTH &&\n 1613                !SCULPT_stroke_is_first_brush_step_of_symmetry_pass(ss->cache)) {\n 1614:             GPU_matrix_push_projection();\n 1615              ED_view3d_draw_setup_view(CTX_wm_manager(C),\n 1616                                        CTX_wm_window(C),\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_node/drawnode.c:\n 3619    ImBuf *ibuf;\n 3620  \n 3621:   GPU_matrix_push_projection();\n 3622    GPU_matrix_push();\n 3623    wmOrtho2_region_pixelspace(region);\n ....\n 3640      float x, y;\n 3641  \n 3642:     GPU_matrix_push_projection();\n 3643      GPU_matrix_push();\n 3644  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_sequencer/sequencer_draw.c:\n 1628      GPU_matrix_push();\n 1629      GPU_matrix_identity_set();\n 1630:     GPU_matrix_push_projection();\n 1631      GPU_matrix_identity_projection_set();\n 1632    }\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_view3d/view3d_draw.c:\n 1714    }\n 1715  \n 1716:   GPU_matrix_push_projection();\n 1717    GPU_matrix_identity_set();\n 1718    GPU_matrix_push();\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_view3d/view3d_gizmo_navigate_type.c:\n  274    bool use_project_matrix = (clip_range >= -GPU_MATRIX_ORTHO_CLIP_NEAR_DEFAULT);\n  275    if (use_project_matrix) {\n  276:     GPU_matrix_push_projection();\n  277      GPU_matrix_ortho_set_z(-clip_range, clip_range);\n  278    }\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/space_view3d/view3d_gizmo_ruler.c:\n  567  \n  568    /* Pixel Space. */\n  569:   GPU_matrix_push_projection();\n  570    GPU_matrix_push();\n  571    GPU_matrix_identity_set();\n  ...\n  603    /* 3d drawing. */\n  604  \n  605:   GPU_matrix_push_projection();\n  606    GPU_matrix_push();\n  607    GPU_matrix_projection_set(rv3d->winmat);\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/GPU_matrix.h:\n   81  /* Projection Matrix (2D or 3D) */\n   82  \n   83: void GPU_matrix_push_projection(void);\n   84  void GPU_matrix_pop_projection(void);\n   85  \n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix.c:\n  149  }\n  150  \n  151: void GPU_matrix_push_projection(void)\n  152  {\n  153    BLI_assert(ProjectionStack.top + 1 < MATRIX_STACK_DEPTH);\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_viewport.c:\n  621    GPU_framebuffer_bind(dfbl->stereo_comp_fb);\n  622    GPU_matrix_push();\n  623:   GPU_matrix_push_projection();\n  624    GPU_matrix_identity_set();\n  625    GPU_matrix_identity_projection_set();\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/python/gpu/gpu_py_matrix.c:\n  117  }\n  118  \n  119: PyDoc_STRVAR(bpygpu_matrix_push_projection_doc,\n  120               \".. function:: push_projection()\\n\"\n  121               \"\\n\"\n  122               \"   Add to the projection matrix stack.\\n\");\n  123: static PyObject *bpygpu_matrix_push_projection(PyObject *UNUSED(self))\n  124  {\n  125    if (!bpygpu_stack_is_push_projection_ok_or_error()) {\n  126      return NULL;\n  127    }\n  128:   GPU_matrix_push_projection();\n  129    Py_RETURN_NONE;\n  130  }\n  ...\n  198        return NULL;\n  199      }\n  200:     GPU_matrix_push_projection();\n  201      self->level = GPU_matrix_stack_level_get_projection();\n  202    }\n  ...\n  477  \n  478      {\"push_projection\",\n  479:      (PyCFunction)bpygpu_matrix_push_projection,\n  480       METH_NOARGS,\n  481:      bpygpu_matrix_push_projection_doc},\n  482      {\"pop_projection\",\n  483       (PyCFunction)bpygpu_matrix_pop_projection,\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/windowmanager/intern/wm_playanim.c:\n  370  \n  371      fac = 2.0f * fac - 1.0f;\n  372:     GPU_matrix_push_projection();\n  373      GPU_matrix_identity_projection_set();\n  374      GPU_matrix_push();\n\n32 matches across 18 files\n\n\nSearching 34881 files for \"ProjectionStack\"\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/event_ordering/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/ext/addons_app/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin/testApp_debug:\n    <binary>\n\n/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofCairoRenderer.h:\n  189  \tofRectangle viewportRect, originalViewport;\n  190  \n  191: \tstd::stack<glm::mat4> projectionStack;\n  192  \tstd::stack<glm::mat4> modelViewStack;\n  193  \tstd::stack<ofRectangle> viewportStack;\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix.c:\n   67  #define ModelView ModelViewStack.stack[ModelViewStack.top]\n   68  \n   69: #define ProjectionStack gpu_context_active_matrix_state_get()->projection_stack\n   70: #define Projection ProjectionStack.stack[ProjectionStack.top]\n   71  \n   72  GPUMatrixState *GPU_matrix_state_create(void)\n   ..\n  151  void GPU_matrix_push_projection(void)\n  152  {\n  153:   BLI_assert(ProjectionStack.top + 1 < MATRIX_STACK_DEPTH);\n  154:   ProjectionStack.top++;\n  155:   copy_m4_m4(Projection, ProjectionStack.stack[ProjectionStack.top - 1]);\n  156  }\n  157  \n  158  void GPU_matrix_pop_projection(void)\n  159  {\n  160:   BLI_assert(ProjectionStack.top > 0);\n  161:   ProjectionStack.top--;\n  162    gpu_matrix_state_active_set_dirty(true);\n  163  }\n\n16 matches across 8 files\n",
+			"settings":
+			{
+				"buffer_size": 15672,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_viewport.c",
+			"settings":
+			{
+				"buffer_size": 34821,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix.c",
+			"settings":
+			{
+				"buffer_size": 20807,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_context_private.h",
+			"settings":
+			{
+				"buffer_size": 2079,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix_private.h",
+			"settings":
+			{
+				"buffer_size": 955,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/GPU_matrix.h",
+			"settings":
+			{
+				"buffer_size": 8486,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "--",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix",
+				"name": "--"
+			}
+		},
+		{
 			"file": "lib/core.rb",
 			"settings":
 			{
@@ -528,10 +701,28 @@
 			}
 		},
 		{
+			"file": "lib/window.rb",
+			"settings":
+			{
+				"buffer_size": 4123,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "lib/entities/viewport_camera.rb",
 			"settings":
 			{
-				"buffer_size": 6292,
+				"buffer_size": 7045,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_mat4.rb",
+			"settings":
+			{
+				"buffer_size": 1206,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -544,10 +735,43 @@
 			}
 		},
 		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
+			"settings":
+			{
+				"buffer_size": 42941,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+			"settings":
+			{
+				"buffer_size": 88399,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp",
 			"settings":
 			{
 				"buffer_size": 16715,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+			"settings":
+			{
+				"buffer_size": 7087,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+			"settings":
+			{
+				"buffer_size": 4914,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -563,6 +787,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"c",
+				"Set Syntax: C/C++(11) - customized"
+			],
 			[
 				"glsl",
 				"Set Syntax: GLSL"
@@ -1070,10 +1298,6 @@
 			[
 				"pcaka",
 				"Package Control: Install Package"
-			],
-			[
-				"pcak",
-				"Package Control: Discover Packages"
 			]
 		],
 		"width": 1062.0
@@ -1097,9 +1321,18 @@
 	},
 	"expanded_folders":
 	[
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts"
 	],
 	"file_history":
 	[
+		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__cameraOrthoMatrix.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/space_view3d_stored_views/core.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/grapevine_midi/ext/c_extension/callbacks.cpp",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix_private.h",
 		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__defaultShader_noMaterialMeansNoLights.cpp",
 		"/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__ofMaterial_bindingShaderAndSettingLightUniforms.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/ts/cuda_perf.hpp",
@@ -1110,7 +1343,6 @@
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/chipmunk/vec2.rb",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
-		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_light.rb",
 		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
@@ -1176,7 +1408,6 @@
 		"/home/ravenskrag/Desktop/gem_structure/build/window_guard.rb",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp",
-		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/window.rb",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/__init__.py",
 		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_light.py",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/lib/controller_state_machine.rb",
@@ -1201,7 +1432,6 @@
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/viewport_camera.yaml",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/Gemfile",
-		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/boost/include/boost/container/allocator_traits.hpp",
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/3d/normalsExample/src/ofApp.cpp",
 		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
@@ -1222,12 +1452,7 @@
 		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.h",
 		"/home/ravenskrag/Desktop/gem_structure/bin/projects/livecode2/lib/UI_model.rb",
 		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/monkey_patches/chipmunk/vec2.rb",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.h",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.cpp",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxPanel.cpp",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxPanel.h",
-		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGui.h",
-		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/sequence_memory.rb"
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.h"
 	],
 	"find":
 	{
@@ -1277,6 +1502,66 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"offset",
+			"alpha",
+			"@w",
+			"camera.new",
+			"camera",
+			"viewportcamera",
+			"viewportcamera\n",
+			"viewport_camera",
+			"sensor_si",
+			"sensor_size",
+			"ortho scale",
+			"viewdx",
+			"params->is_ortho",
+			"matrix",
+			"compute_matrix",
+			"/home/ravenskrag/Code/Source/",
+			"orthographic_m4",
+			"view_location",
+			"gpu_matrix",
+			"ProjectionStack",
+			"projection",
+			"projectionstack",
+			"GPU_matrix_push_projection",
+			"matrix",
+			"camera",
+			"viewport->",
+			"viewport",
+			"projection",
+			"push",
+			"projection",
+			"matrix",
+			"glm_mat4_mult__mat4",
+			"ortho_scale",
+			"scale",
+			"my_custom_props",
+			".fov",
+			"view_",
+			"view_distance",
+			"lens",
+			"send_mesh_edit_update",
+			"updat",
+			"sensor_fit",
+			"vfov",
+			"focallength_to_fov",
+			"lens",
+			"prop_lens_unit_items",
+			"lens_unit",
+			"lens",
+			"camera",
+			"unit",
+			"lens",
+			"lens_unit",
+			"lens",
+			"FOV",
+			"\"lens\"",
+			"'lens",
+			"lens",
+			"fov",
+			"camera",
+			"'scale",
 			"isOrtho",
 			"projectionmat",
 			"ortho",
@@ -1344,67 +1629,7 @@
 			"pack_positions_with_indicies",
 			"@instance_data",
 			"pack_all_positions",
-			"pack_positions_with_indicies",
-			"time - pack instances: ",
-			"time - pack instances: 0.09 ms",
-			"pack instances",
-			" ms",
-			"time - batch update: ",
-			"batch update",
-			"@instance_data",
-			"instance_data",
-			"getelapsedtimemi",
-			"RubyOF::Utils",
-			"timer",
-			"mil",
-			"milli",
-			"millis",
-			"update",
-			"depsgraph.update",
-			"update_packed_entity_positions",
-			"pack_positions_with_indicies",
-			"update_packed_entity_positions",
-			"pack",
-			"pack_all",
-			"find_datablock",
-			"properties",
-			"sync",
-			"ofdrawcub",
-			"ofdraw",
-			"pack_mesh_data",
-			"normals",
-			"getnormals",
-			"'double",
-			"TODO",
-			"base64",
-			"@lights",
-			"todo",
-			"poll",
-			"sha",
-			"pack_mesh_data",
-			"data",
-			"data updated",
-			"send_mesh_edit_update",
-			"send_update_data",
-			".select",
-			"==",
-			"entity.mesh.name",
-			"entity.mesh",
-			"datablock",
-			"@batches",
-			"=>",
-			"add",
-			"dc514da53c069c1dd779110b5bd2d1e70119cfa5",
-			"cylinder",
-			"pack_data",
-			"pack_mesh_data",
-			"send_update_data",
-			".name",
-			"@name",
-			"lights",
-			"each_light",
-			"get_entity",
-			"update_entity_transform"
+			"pack_positions_with_indicies"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1425,24 +1650,129 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 23,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "lib/core.rb",
+					"file": "python/__init__.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 20162,
+						"buffer_size": 35169,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								895,
-								895
+								22410,
+								22410
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 22648.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/blender_sync.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11983,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9971,
+								9971
 							]
 						],
 						"settings":
@@ -1454,24 +1784,24 @@
 								{
 									"1":
 									[
-										898,
-										899
+										10454,
+										10457
 									]
 								},
 								"icon":
 								{
 									"1":
 									[
-										"Packages/BracketHighlighter/icons/single_quote.png",
-										"region.greenish"
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
 									]
 								},
 								"open":
 								{
 									"1":
 									[
-										879,
-										880
+										9203,
+										9206
 									]
 								},
 								"unmatched":
@@ -1542,27 +1872,340 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 483.0,
+						"translation.y": 10124.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "lib/entities/viewport_camera.rb",
+					"buffer": 2,
+					"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_data_camera.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6292,
+						"buffer_size": 18101,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3199,
-								3199
+								2586,
+								2586
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1816.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/modules/bpy_types.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 32147,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2212,
+								2212
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1581.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/presets/tracking_camera/Blender.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								219,
+								219
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/intern/camera.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 32710,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8797,
+								8797
 							]
 						],
 						"settings":
@@ -1574,8 +2217,2258 @@
 								{
 									"1":
 									[
-										3824,
-										3827
+										8810,
+										8811
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										8765,
+										8766
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7559.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer/notes__camera-FOV-and-ortho_scale.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6350,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3026,
+								3026
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4738,
+										4739
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										2910,
+										2911
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3534.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/math_geom.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 174419,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								135664,
+								135664
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										135667,
+										135668
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										135651,
+										135652
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 152763.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenkernel/BKE_camera.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6339,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1688,
+								1688
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										2090,
+										2091
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1677,
+										1678
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 917.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/BLI_math_rotation.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10590,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9791,
+								9791
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										9810,
+										9811
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										9764,
+										9765
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6941.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/math_rotation.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 63878,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								55873,
+								55873
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										55872,
+										55873
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										55815,
+										55816
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 70437.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesrna/intern/rna_camera.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34402,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2849,
+								2849
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										952,
+										957
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2498.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/makesdna/DNA_camera_types.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2688,
+								2688
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3239,
+										3240
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										2398,
+										2399
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2312.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/space_view3d.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 253658,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								179983,
+								179983
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 180477.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15672,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										537,
+										546
+									],
+									[
+										858,
+										867
+									],
+									[
+										1105,
+										1114
+									],
+									[
+										1206,
+										1215
+									],
+									[
+										1306,
+										1315
+									],
+									[
+										1566,
+										1575
+									],
+									[
+										1675,
+										1684
+									],
+									[
+										1783,
+										1792
+									],
+									[
+										2088,
+										2097
+									],
+									[
+										2410,
+										2419
+									],
+									[
+										2686,
+										2695
+									],
+									[
+										2834,
+										2843
+									],
+									[
+										3467,
+										3485
+									],
+									[
+										3750,
+										3768
+									],
+									[
+										4052,
+										4070
+									],
+									[
+										4341,
+										4359
+									],
+									[
+										4684,
+										4702
+									],
+									[
+										5004,
+										5022
+									],
+									[
+										5475,
+										5493
+									],
+									[
+										5610,
+										5628
+									],
+									[
+										5752,
+										5770
+									],
+									[
+										6311,
+										6337
+									],
+									[
+										6569,
+										6595
+									],
+									[
+										6718,
+										6744
+									],
+									[
+										6930,
+										6956
+									],
+									[
+										7138,
+										7164
+									],
+									[
+										7387,
+										7413
+									],
+									[
+										7710,
+										7736
+									],
+									[
+										7977,
+										8003
+									],
+									[
+										8155,
+										8181
+									],
+									[
+										8272,
+										8298
+									],
+									[
+										8500,
+										8526
+									],
+									[
+										8751,
+										8777
+									],
+									[
+										9048,
+										9074
+									],
+									[
+										9384,
+										9410
+									],
+									[
+										9702,
+										9728
+									],
+									[
+										9994,
+										10020
+									],
+									[
+										10145,
+										10171
+									],
+									[
+										10399,
+										10425
+									],
+									[
+										10618,
+										10644
+									],
+									[
+										10962,
+										10988
+									],
+									[
+										11216,
+										11242
+									],
+									[
+										11360,
+										11386
+									],
+									[
+										11613,
+										11639
+									],
+									[
+										11819,
+										11845
+									],
+									[
+										12110,
+										12136
+									],
+									[
+										12356,
+										12382
+									],
+									[
+										12561,
+										12587
+									],
+									[
+										12728,
+										12754
+									],
+									[
+										12848,
+										12874
+									],
+									[
+										13028,
+										13054
+									],
+									[
+										13096,
+										13122
+									],
+									[
+										13370,
+										13396
+									],
+									[
+										14447,
+										14462
+									],
+									[
+										14996,
+										15011
+									],
+									[
+										15094,
+										15109
+									],
+									[
+										15116,
+										15131
+									],
+									[
+										15278,
+										15293
+									],
+									[
+										15334,
+										15349
+									],
+									[
+										15389,
+										15404
+									],
+									[
+										15411,
+										15426
+									],
+									[
+										15528,
+										15543
+									],
+									[
+										15563,
+										15578
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								14836,
+								14836
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+									"1":
+									[
+										13140,
+										13141
+									]
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 4,
+							"rainbowth.lispy": false,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 10044.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_viewport.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21511,
+								21511
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										21681,
+										21682
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										21375,
+										21376
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 20703.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20807,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3880,
+								3880
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3955,
+										3956
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										3794,
+										3795
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3534.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_context_private.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2079,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14,
+								14
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/intern/gpu_matrix_private.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 955,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender/gpu/GPU_matrix.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8486,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4468,
+								4468
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3490.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"auto_name": "--",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "lib/core.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3339,
+								3339
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										3406,
+										3409
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										1141,
+										1144
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3397.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "lib/window.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								655,
+								655
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4119,
+										4122
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										626,
+										631
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "lib/entities/viewport_camera.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7045,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3085,
+								3085
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4577,
+										4580
 									]
 								},
 								"icon":
@@ -1665,11 +4558,130 @@
 						"translation.y": 3813.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 24,
+					"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_mat4.rb",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								728,
+								728
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										819,
+										820
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/square_bracket.png",
+										"region.bluish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										698,
+										699
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/User/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1784,24 +4796,128 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp",
+					"buffer": 26,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16715,
+						"buffer_size": 42941,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5127,
-								5127
+								3105,
+								3105
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2808.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 88399,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20170,
+								20170
 							]
 						],
 						"settings":
@@ -1813,8 +4929,8 @@
 								{
 									"1":
 									[
-										5132,
-										5133
+										20171,
+										20172
 									]
 								},
 								"icon":
@@ -1829,8 +4945,127 @@
 								{
 									"1":
 									[
-										4936,
-										4937
+										19968,
+										19969
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 18037.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16715,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4652,
+								4652
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4661,
+										4662
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4652,
+										4653
 									]
 								},
 								"unmatched":
@@ -1901,10 +5136,234 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4172.0,
+						"translation.y": 3304.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7087,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4914,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								559,
+								559
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										570,
+										571
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										450,
+										451
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/sublime-languages/Better C++/CCpp.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
 					"type": "text"
 				}
 			]
@@ -1974,6 +5433,90 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"blend rsync",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"iso window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"blendsy",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"core",
+				"scripts/addons/space_view3d_stored_views/core.py"
+			],
+			[
+				"dependency",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"iso gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"program ren",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"gpu context priv",
+				"blender/gpu/intern/gpu_context_private.h"
+			],
+			[
+				"gpu matrix priv",
+				"blender/gpu/intern/gpu_matrix_private.h"
+			],
+			[
+				"viewport",
+				"blender/gpu/intern/gpu_viewport.c"
+			],
+			[
+				"gpu matr h",
+				"blender/gpu/GPU_matrix.h"
+			],
+			[
+				"glm cpp",
+				"gem_structure/ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"ruby.cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"mat4",
+				"gem_structure/lib/rubyOF/glm_mat4.rb"
+			],
+			[
+				"bpy",
+				"scripts/modules/bpy_types.py"
+			],
+			[
+				"camera",
+				"blender/blenkernel/BKE_camera.h"
+			],
+			[
+				"dna camera type",
+				"blender/makesdna/DNA_camera_types.h"
+			],
+			[
+				"cam .c",
+				"blenkernel/intern/camera.c"
+			],
+			[
+				"blender camera",
+				"scripts/presets/tracking_camera/Blender.py"
+			],
+			[
+				"bl ui space viw",
+				"scripts/startup/bl_ui/space_view3d.py"
+			],
+			[
+				"propertis data camera",
+				"scripts/startup/bl_ui/properties_data_camera.py"
+			],
 			[
 				"ofxinfi",
 				"gem_structure/ext/openFrameworks/addons/ofxInfiniteCanvas/src/ofxInfiniteCanvas.cpp"
@@ -2119,10 +5662,6 @@
 				"gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp"
 			],
 			[
-				"ruby.cpp",
-				"gem_structure/ext/rubyOF/rubyOF.cpp"
-			],
-			[
 				"glmvec3",
 				"gem_structure/lib/rubyOF/glm_vec3.rb"
 			],
@@ -2253,10 +5792,6 @@
 			[
 				"init p",
 				"bin/projects/blender_iso_game/python/__init__.py"
-			],
-			[
-				"core",
-				"bin/projects/blender_iso_game/lib/core.rb"
 			],
 			[
 				"matrix trans",
@@ -2409,82 +5944,6 @@
 			[
 				"glm vec3",
 				"lib/rubyOF/glm_vec3.rb"
-			],
-			[
-				"rubyofrb",
-				"lib/rubyOF.rb"
-			],
-			[
-				"point",
-				"lib/rubyOF/point.rb"
-			],
-			[
-				"ofquater",
-				"ext/openFrameworks/libs/openFrameworks/math/ofQuaternion.h"
-			],
-			[
-				"graphicsconst",
-				"ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h"
-			],
-			[
-				"ricesymbol",
-				"vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Symbol.cpp"
-			],
-			[
-				"live code",
-				"bin/projects/blender_iso_game/lib/live_code.rb"
-			],
-			[
-				"settings.xml",
-				"bin/projects/blender_iso_game/bin/data/settings.xml"
-			],
-			[
-				"ofxguigrou",
-				"ext/openFrameworks/addons/ofxGui/src/ofxGuiGroup.cpp"
-			],
-			[
-				"ofxgui panel",
-				"ext/openFrameworks/addons/ofxGui/src/ofxPanel.h"
-			],
-			[
-				"ofxgui",
-				"ext/openFrameworks/addons/ofxGui/src/ofxGui.h"
-			],
-			[
-				".",
-				".gitignore"
-			],
-			[
-				"version",
-				"lib/rubyOF/version.rb"
-			],
-			[
-				"midi window",
-				"bin/projects/grapevine_midi/lib/window.rb"
-			],
-			[
-				"lau",
-				"ext/rubyOF/launcher.cpp"
-			],
-			[
-				"ofapp",
-				"ext/oF_apps/testApp/src/ofApp.cpp"
-			],
-			[
-				"midi test app.cpp",
-				"bin/projects/grapevine_midi/ext/addons_app/testApp/src/ofApp.cpp"
-			],
-			[
-				"midi gemfile lock",
-				"bin/projects/grapevine_midi/Gemfile.lock"
-			],
-			[
-				"gemfileloc",
-				"Gemfile.lock"
-			],
-			[
-				"gemfilelock",
-				"Gemfile.lock"
 			]
 		],
 		"width": 0.0

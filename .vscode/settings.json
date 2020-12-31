@@ -1,0 +1,22 @@
+{
+   "C_Cpp.intelliSenseEngineFallback": "Disabled",
+   "C_Cpp.errorSquiggles": "Enabled",
+   
+   // Controls the indentation of wrapped lines. Can be one of 'none', 'same' or 'indent'.
+   "editor.wrappingIndent": "same",
+      
+   // Controls how lines should wrap. Can be:
+   //  - 'off' (disable wrapping),
+   //  - 'on' (viewport wrapping),
+   //  - 'wordWrapColumn' (wrap at `editor.wordWrapColumn`) or
+   //  - 'bounded' (wrap at minimum of viewport and `editor.wordWrapColumn`).
+   //
+   // default: 'off'
+   "editor.wordWrap": "bounded",
+   
+   // Controls the wrapping column of the editor when `editor.wordWrap` is 'wordWrapColumn' or 'bounded'.
+   "editor.wordWrapColumn": 100,
+   "editor.rulers": [
+      100,120
+   ]
+}
