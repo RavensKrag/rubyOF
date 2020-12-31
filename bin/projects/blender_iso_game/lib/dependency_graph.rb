@@ -4,7 +4,7 @@ class DependencyGraph
       'viewport_camera' => ViewportCamera.new,
     }
     
-    @meshes = Hash.new
+    # @meshes = Hash.new
     @lights = Array.new
     
     
@@ -293,7 +293,7 @@ class DependencyGraph
       end
     
     # Hash#values returns copy, not reference
-    @meshes = @batches.values.collect{ |batch|  batch.mesh } 
+    # @meshes = @batches.values.collect{ |batch|  batch.mesh } 
     @lights = coder.map['lights']
   end
   
