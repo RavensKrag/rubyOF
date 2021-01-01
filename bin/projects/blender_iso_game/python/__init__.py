@@ -29,7 +29,7 @@ from bpy.props import (StringProperty,
                        IntProperty,
                        FloatProperty,
                        EnumProperty,
-                       )
+                       FloatVectorProperty)
 
 import time
 
@@ -928,6 +928,49 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         )
 
 
+# def update_rgb_nodes(self, context):
+#     pass
+    # mat = self.id_data
+    # nodes = [n for n in mat.node_tree.nodes
+    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
+
+    # for n in nodes:
+    #     n.outputs[0].default_value = self.rgb_controller
+
+class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
+    # diffuse color
+    # alpha
+    # shininess
+    
+    color: FloatVectorProperty(
+        name = "Color",
+        description = "Diffuse color",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0), # white is default
+        size = 3,
+        # min = 0.0,
+        # max = 1.0
+        )
+    
+    alpha: FloatProperty(
+        name = "alpha",
+        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
+        default = 1,
+        min = 0,
+        max = 1,
+        precision = 2,
+        step = 0.01
+        )
+    
+    shininess: FloatProperty(
+        name = "shininess",
+        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
+        default = 0.2,
+        min = 0,
+        max = 128
+        )
+
+
 #
 # Panel for general renderer properties (under Render Properties tab)
 #
@@ -1043,6 +1086,129 @@ class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
 
 
 
+class MaterialButtonsPanel:
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    # COMPAT_ENGINES must be defined in each subclass, external engines can add themselves here
+
+    @classmethod
+    def poll(cls, context):
+        mat = context.material
+        return mat and (context.engine in cls.COMPAT_ENGINES) and not mat.grease_pencil
+
+
+# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+#     bl_label = "Preview"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+#     def draw(self, context):
+#         self.layout.template_preview(context.material)
+
+
+# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
+#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
+#     _context_path = "material"
+#     _property_type = bpy.types.Material
+
+# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
+#     bl_label = "Viewport Display"
+#     bl_context = "material"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     bl_order = 10
+
+#     @classmethod
+#     def poll(cls, context):
+#         mat = context.material
+#         return mat and not mat.grease_pencil
+
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.use_property_split = True
+
+#         mat = context.material
+
+#         col = layout.column()
+#         col.prop(mat, "diffuse_color", text="Color")
+#         col.prop(mat, "metallic")
+#         col.prop(mat, "roughness")
+
+
+class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel):
+    bl_label = ""
+    bl_context = "material"
+    bl_options = {'HIDE_HEADER'}
+    COMPAT_ENGINES = {'RUBYOF'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        mat = context.material
+
+        if (ob and ob.type == 'GPENCIL') or (mat and mat.grease_pencil):
+            return False
+
+        return (ob or mat) and (context.engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+
+        mat = context.material
+        ob = context.object
+        slot = context.material_slot
+        space = context.space_data
+        if ob:
+            is_sortable = len(ob.material_slots) > 1
+            rows = 3
+            if is_sortable:
+                rows = 5
+
+            row = layout.row()
+
+            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
+
+            col = row.column(align=True)
+            col.operator("object.material_slot_add", icon='ADD', text="")
+            col.operator("object.material_slot_remove", icon='REMOVE', text="")
+
+            col.separator()
+
+            col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
+
+            if is_sortable:
+                col.separator()
+
+                col.operator("object.material_slot_move", icon='TRIA_UP', text="").direction = 'UP'
+                col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+
+        row = layout.row()
+
+        if ob:
+            row.template_ID(ob, "active_material", new="material.new")
+
+            if slot:
+                icon_link = 'MESH_DATA' if slot.link == 'DATA' else 'OBJECT_DATA'
+                row.prop(slot, "link", icon=icon_link, icon_only=True)
+
+            if ob.mode == 'EDIT':
+                row = layout.row(align=True)
+                row.operator("object.material_slot_assign", text="Assign")
+                row.operator("object.material_slot_select", text="Select")
+                row.operator("object.material_slot_deselect", text="Deselect")
+
+        elif mat:
+            row.template_ID(space, "pin_id")
+        
+        
+        col = layout.column()
+        col.prop(mat.rb_mat, "color",)
+        col.prop(mat.rb_mat, "alpha")
+        col.prop(mat.rb_mat, "shininess")
+
+
+
+
 
 
 
@@ -1103,9 +1269,11 @@ def get_panels():
 
 classes = (
     RubyOF_Properties,
+    RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
-    DATA_PT_spot
+    DATA_PT_spot,
+    RUBYOF_MATERIAL_PT_context_material
 )
 
 def register():
@@ -1121,7 +1289,13 @@ def register():
         bpy.utils.register_class(c)
     
     # Bind variable for properties
-    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(type=RubyOF_Properties)
+    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(
+            type=RubyOF_Properties
+        )
+    
+    bpy.types.Material.rb_mat = bpy.props.PointerProperty(
+            type=RubyOF_MATERIAL_Properties
+        )
     
 
 
