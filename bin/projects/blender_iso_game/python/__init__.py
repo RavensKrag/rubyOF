@@ -1,7 +1,7 @@
 bl_info = {
     "name": "RubyOF renderer engine",
     "author": "Jason Ko",
-    "version": (0, 0, 1),
+    "version": (0, 0, 2),
     "blender": (2, 90, 1),
     "location": "Render",
     "description": "Integration with external real-time RubyOF renderer for games, etc",
