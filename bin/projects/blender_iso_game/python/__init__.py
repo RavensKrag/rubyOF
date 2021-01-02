@@ -58,6 +58,45 @@ def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
     
     return sensor_x;
     
+class IPC_Helper():
+    def __init__(self, fifo_path):
+        self.fifo_path = fifo_path
+    
+    def write(self, message):
+        if not os.path.exists(self.fifo_path):
+            return
+        
+        print("-----")
+        print("=> FIFO open")
+        pipe = open(self.fifo_path, 'w')
+        
+        
+        start_time = time.time()
+        try:
+            # text = text.encode('utf-8')
+            
+            pipe.write(message + "\n")
+            
+            
+            print("=> msg len:", len(message))
+        except IOError as e:
+            print("broken pipe error (suppressed exception)")
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("=> fifo data transfer: ", dt, " msec" )
+        
+        pipe.close()
+        print("=> FIFO closed")
+        print("-----")
+    
+    
+    def __del__(self):
+        pass
+        
+        # self.fifo.close()
+        # print("FIFO closed")
+    
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -73,7 +112,7 @@ class RubyOF(bpy.types.RenderEngine):
     def __init__(self):
         self.first_time = True
         
-        self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
+        self.to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
         
         
         # # data to send to ruby, as well as None to tell the io thread to stop
@@ -97,8 +136,7 @@ class RubyOF(bpy.types.RenderEngine):
         # self.io_thread.join() # wait for thread to finish
         
         
-        # self.fifo.close()
-        # print("FIFO closed")
+        
         
         
         
@@ -128,32 +166,6 @@ class RubyOF(bpy.types.RenderEngine):
         layer.rect = rect
         self.end_result(result)
     
-    
-    def fifo_write(self, message):
-        if os.path.exists(self.fifo_path):
-            print("-----")
-            print("=> FIFO open")
-            pipe = open(self.fifo_path, 'w')
-            
-            
-            start_time = time.time()
-            try:
-                # text = text.encode('utf-8')
-                
-                pipe.write(message + "\n")
-                
-                
-                print("=> msg len:", len(message))
-            except IOError as e:
-                print("broken pipe error (suppressed exception)")
-            
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("=> fifo data transfer: ", dt, " msec" )
-    
-            pipe.close()
-            print("=> FIFO closed")
-            print("-----")
     
     
     # For viewport renders, this method gets called once at the start and
@@ -557,7 +569,7 @@ class RubyOF(bpy.types.RenderEngine):
             'objects' : obj_export
         }
         output_string = json.dumps(data)
-        self.fifo_write(output_string)
+        self.to_ruby.write(output_string)
         
         
         
@@ -630,7 +642,7 @@ class RubyOF(bpy.types.RenderEngine):
             'objects' : obj_export
         }
         output_string = json.dumps(data)
-        self.fifo_write(output_string)
+        self.to_ruby.write(output_string)
         
     
     def send_mesh_edit_update(self, depsgraph, active_object):
@@ -682,7 +694,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         output_string = json.dumps(data)
-        self.fifo_write(output_string)
+        self.to_ruby.write(output_string)
         
     
     
@@ -855,7 +867,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         output_string = json.dumps(data)
         # self.outbound_queue.put(output_string)
-        self.fifo_write(output_string)
+        self.to_ruby.write(output_string)
         
         
         
