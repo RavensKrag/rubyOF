@@ -245,16 +245,13 @@ class RubyOF(bpy.types.RenderEngine):
         region = context.region
         view3d = context.space_data
         scene = depsgraph.scene
-
-        # Get viewport dimensions
-        dimensions = region.width, region.height
-        print("view update ---")
         
+        print("view update ---")
         
         total_t0 = time.time()
         
-        datablock_export = []
         obj_export = []
+        datablock_export = []
         
         if self.first_time:
             # First time initialization
@@ -371,8 +368,8 @@ class RubyOF(bpy.types.RenderEngine):
             
             'all_entity_names' : object_list,
             
-            'datablocks' : datablock_export,
-            'objects' : obj_export
+            'objects' : obj_export,
+            'datablocks' : datablock_export
         }
         output_string = json.dumps(data)
         self.to_ruby.write(output_string)
