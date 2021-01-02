@@ -115,6 +115,12 @@ class RubyOF(bpy.types.RenderEngine):
         self.to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
         
         
+        data = {
+            'interrupt': 'RESET'
+        }
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
+        
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
         
@@ -134,12 +140,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         # self.outbound_queue.put(None) # signal the thread to stop
         # self.io_thread.join() # wait for thread to finish
-        
-        
-        
-        
-        
-        
+    
     
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
@@ -166,7 +167,75 @@ class RubyOF(bpy.types.RenderEngine):
         layer.rect = rect
         self.end_result(result)
     
-    
+    # For viewport renders, this method is called whenever Blender redraws
+    # the 3D viewport. The renderer is expected to quickly draw the render
+    # with OpenGL, and not perform other expensive work.
+    # Blender will draw overlays for selection and editing on top of the
+    # rendered image automatically.
+    # 
+    # NOTE: if this function is too slow it causes viewport flicker
+    def view_draw(self, context, depsgraph):
+        #
+        # Update the viewport camera
+        #
+        region = context.region
+        rv3d = context.region_data # RegionView3D(bpy_struct)
+        coord = (region.width/2.0, region.height/2.0)
+        
+        v3du = bpy_extras.view3d_utils
+        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
+        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
+        
+        space = context.space_data # SpaceView3D(Space)
+        
+        # print(camera_direction)
+        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
+        
+        data = self.__pack_viewport_camera(
+            rotation         = rv3d.view_rotation,
+            position         = camera_origin,
+            lens             = space.lens,
+            perspective_fov  = self.__viewport_fov(rv3d),
+            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
+            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
+            near_clip        = space.clip_start,
+            far_clip         = space.clip_end,
+            view_perspective = rv3d.view_perspective
+        )
+        
+        if context.scene.my_custom_props.b_windowLink:
+            data['viewport_region'] = {
+                'width':  region.width,
+                'height': region.height,
+                'pid': os.getpid()
+            }
+        
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
+        
+        
+        #
+        # Render the viewport
+        #
+        region = context.region
+        scene = depsgraph.scene
+        
+        # Get viewport dimensions
+        dimensions = region.width, region.height
+        
+        # Bind shader that converts from scene linear to display space,
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        self.bind_display_space_shader(scene)
+        
+        
+        a = context.scene.my_custom_props.alpha
+        bgl.glClearColor(0*a,0*a,0*a,a)
+        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
+        
+        
+        self.unbind_display_space_shader()
+        bgl.glDisable(bgl.GL_BLEND)
     
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
@@ -180,26 +249,182 @@ class RubyOF(bpy.types.RenderEngine):
         # Get viewport dimensions
         dimensions = region.width, region.height
         print("view update ---")
-                
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
             
-            self.send_initial_data()
-        else:
-            if depsgraph.id_type_updated('OBJECT'):
-                self.send_update_data(depsgraph)
             
-            if context.active_object.mode == 'EDIT':
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
-                # bpy.ops.object.mode_set(mode= 'OBJECT')
-                self.send_mesh_edit_update(depsgraph, context.active_object)
-                # bpy.ops.object.mode_set(mode= 'EDIT')
+            total_t0 = time.time()
+            
+            # Loop over all datablocks used in the scene.
+            # for datablock in depsgraph.ids:
+            
+            datablock_list = [ obj.data for obj in bpy.data.objects ]
+            
+            datablock_export = self.export_unique_datablocks(datablock_list)
+            
+            
+            obj_export = []
+            
+            # loop over all objects
+            for obj in bpy.data.objects:
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
-
+                obj_data['transform'] = self.pack_transform(obj)
+                obj_data['data'] = obj.data.name
+                
+                obj_export.append(obj_data)
+            
+            
+            # TODO: want to separate out lights from meshes (objects)
+            # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
+            
+            
+            total_t1 = time.time()
+            dt = (total_t1 - total_t0) * 1000
+            print("TOTAL TIME: ", dt, " msec" )
+            
+            
+            data = {
+                'timestamps' : {
+                    'start_time': total_t0,
+                    'end_time':   total_t1
+                },
+                
+                'datablocks' : datablock_export,
+                'objects' : obj_export
+            }
+            output_string = json.dumps(data)
+            self.to_ruby.write(output_string)
+        elif context.active_object.mode == 'EDIT':
+            # editing one object: only send edits to that single mesh
+            
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.editmode_toggle()
+            # bpy.ops.object.mode_set(mode= 'OBJECT')
+            
+            
+            print("mesh edit detected")
+            print(active_object)
+            
+            total_t0 = time.time()
+            
+            
+            # full list of all objects, by name (helps Ruby delete old objects)
+            object_list = [ instance.object.name_full for instance 
+                            in depsgraph.object_instances ]
+            
+            
+            obj_export = [
+                {
+                    'name': active_object.name_full,
+                    'type': active_object.type,
+                    'data': active_object.data.name
+                }
+            ]
+            
+            
+            datablock_export = [
+                self.pack_mesh_data(active_object.data)
+            ]
+            
+            
+            
+            total_t1 = time.time()
+            dt = (total_t1 - total_t0) * 1000
+            print("TOTAL TIME: ", dt, " msec" )
+            
+            
+            data = {
+                'timestamps' : {
+                    'start_time': total_t0,
+                    'end_time':   total_t1
+                },
+                
+                'all_entity_names' : object_list,
+                
+                'datablocks' : datablock_export,
+                'objects' : obj_export
+            }
+            
+            
+            
+            output_string = json.dumps(data)
+            self.to_ruby.write(output_string)
+            
+            # bpy.ops.object.mode_set(mode= 'EDIT')
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.editmode_toggle()
+            
+        elif depsgraph.id_type_updated('OBJECT'):
+            # one or more objects have changed
+            # only send the data that has changed.
+            
+            total_t0 = time.time()
+            
+            # Loop over all object instances in the scene.
+            
+            datablock_list = [] # datablocks that need to be packed up
+            
+            obj_export = []
+            
+            print("there are", len(depsgraph.updates), "updates to process")
+            
+            for update in depsgraph.updates:
+                obj = update.id
+                
+                if isinstance(obj, bpy.types.Object):
+                    obj_data = {
+                        'name': obj.name_full,
+                        'type': obj.type,
+                    }
+                    
+                    if update.is_updated_transform:
+                        obj_data['transform'] = self.pack_transform(obj)
+                    
+                    if update.is_updated_geometry:
+                        obj_data['data'] = obj.data.name
+                        datablock_list.append(obj.data)
+                    
+                    
+                    obj_export.append(obj_data)
+            
+            
+            datablock_export = self.export_unique_datablocks(datablock_list)
+            
+            
+            # full list of all objects, by name (helps Ruby delete old objects)
+            object_list = [ instance.object.name_full for instance 
+                            in depsgraph.object_instances ]
+            
+            
+            total_t1 = time.time()
+            dt = (total_t1 - total_t0) * 1000
+            print("TOTAL TIME: ", dt, " msec" )
+            
+            
+            data = {
+                'timestamps' : {
+                    'start_time': total_t0,
+                    'end_time':   total_t1
+                },
+                
+                'all_entity_names' : object_list,
+                
+                'datablocks' : datablock_export,
+                'objects' : obj_export
+            }
+            
+            output_string = json.dumps(data)
+            self.to_ruby.write(output_string)
+            
+        else:
+            pass
+        
         
         
         # print("not first time")
@@ -218,17 +443,24 @@ class RubyOF(bpy.types.RenderEngine):
         # TODO: send information on which objects are using which materials
         
         # note: in blender, one object can have many material slots
-        
-        
-        
-            
-        
-        print("there are", len(depsgraph.updates), "updates to process")
-        
-        
-        
-        
     
+    # ---- private helper methods ----
+    
+    
+    def export_unique_datablocks(self, datablock_list):
+        datablock_export = []
+        
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
+            if isinstance(datablock, bpy.types.Mesh):
+                datablock_export.append( self.pack_mesh_data(datablock) )
+            elif isinstance(datablock, bpy.types.Light):
+                datablock_export.append( self.__pack_light(datablock) )
+            else:
+                continue
+        
+        return datablock_export
+        
     
     def pack_transform(self, obj):
         # 
@@ -453,282 +685,10 @@ class RubyOF(bpy.types.RenderEngine):
     
     
     
-    def send_initial_data(self):
-        total_t0 = time.time()
-        
-        # Loop over all datablocks used in the scene.
-        # for datablock in depsgraph.ids:
-        
-        
-        # not sure whether to use bpy.data.objects or [instance.object for instance in depsgraph.object_instances]. Seems like they are the same unless maybe you're using instances (but linked duplicates are not instances)
-        
-        
-        datablock_export = []
-        
-        datablock_list = [ obj.data for obj in bpy.data.objects ]
-        unique_datablocks = list(set(datablock_list))
-        for datablock in unique_datablocks:
-            if isinstance(datablock, bpy.types.Mesh):
-                datablock_export.append( self.pack_mesh_data(datablock) )
-            elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.__pack_light(datablock) )
-            else:
-                continue
-        
-        obj_export = []
-        
-        # loop over all objects
-        for obj in bpy.data.objects:
-            obj_data = {
-                'name': obj.name_full,
-                'type': obj.type,
-            }
-            
-            obj_data['transform'] = self.pack_transform(obj)
-            obj_data['data'] = obj.data.name
-            
-            obj_export.append(obj_data)
-        
-        # # loop over all objects
-        # for instance in depsgraph.object_instances:
-        #     obj = instance.object
-            
-        #     obj_data = {
-        #         'name': obj.name_full,
-        #         'type': obj.type,
-        #     }
-            
-        #     obj_data['transform'] = self.pack_transform(obj)
-        #     obj_data['data'] = obj.data.name
-            
-        #     obj_export.append(obj_data)
-        
-        
-        
-        # TODO: want to separate out lights from meshes (objects)
-        # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
-        
-        
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
-        
-        
-    # TODO: need to update this loop as well - don't want to re-pack all of the data when one mesh being used by 4000 instances gets updated. only want to pack that mesh data up 1x, not 4000x.
-    def send_update_data(self, depsgraph):
-        total_t0 = time.time()
-        
-        
-        # Loop over all object instances in the scene.
-        
-        datablock_list = [] # datablocks that need to be packed up
-        
-        obj_export = []
-        for update in depsgraph.updates:
-            obj = update.id
-            
-            if isinstance(obj, bpy.types.Object):
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                if update.is_updated_transform:
-                    print("Transform updated: ", update.id.name, '(', type(update.id) ,')')
-                    obj_data['transform'] = self.pack_transform(obj)
-                
-                if update.is_updated_geometry:
-                    print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
-                    obj_data['data'] = obj.data.name
-                    
-                    datablock_list.append(obj.data)
-                    
-                obj_export.append(obj_data)
-        
-        
-        datablock_export = []
-        
-        unique_datablocks = list(set(datablock_list))
-        for datablock in unique_datablocks:
-            if isinstance(datablock, bpy.types.Mesh):
-                datablock_export.append( self.pack_mesh_data(datablock) )
-            elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.__pack_light(datablock) )
-            else:
-                continue
-        
-        
-        # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = []
-        for instance in depsgraph.object_instances:
-            obj = instance.object
-            object_list.append(obj.name_full)
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'all_entity_names' : object_list,
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
-    
-    def send_mesh_edit_update(self, depsgraph, active_object):
-        print("mesh edit detected")
-        print(active_object)
-        
-        total_t0 = time.time()
-        
-        
-        # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = []
-        for instance in depsgraph.object_instances:
-            obj = instance.object
-            object_list.append(obj.name_full)
-        
-        
-        obj_export = [
-            {
-                'name': active_object.name_full,
-                'type': active_object.type,
-                'data': active_object.data.name
-            }
-        ]
-        
-        
-        datablock_export = [
-            self.pack_mesh_data(active_object.data)
-        ]   
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'all_entity_names' : object_list,
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        
-        
-        
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
-    
-    
-    # For viewport renders, this method is called whenever Blender redraws
-    # the 3D viewport. The renderer is expected to quickly draw the render
-    # with OpenGL, and not perform other expensive work.
-    # Blender will draw overlays for selection and editing on top of the
-    # rendered image automatically.
-    # 
-    # NOTE: if this function is too slow it causes viewport flicker
-    def view_draw(self, context, depsgraph):
-        #
-        # Update the viewport camera
-        #
-        region = context.region
-        rv3d = context.region_data # RegionView3D(bpy_struct)
-        coord = (region.width/2.0, region.height/2.0)
-        
-        v3du = bpy_extras.view3d_utils
-        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
-        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
-        
-        space = context.space_data # SpaceView3D(Space)
-        
-        # print(camera_direction)
-        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
-        
-        data = self.__pack_viewport_camera(
-            rotation         = rv3d.view_rotation,
-            position         = camera_origin,
-            lens             = space.lens,
-            perspective_fov  = self.__viewport_fov(rv3d),
-            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
-            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
-            near_clip        = space.clip_start,
-            far_clip         = space.clip_end,
-            view_perspective = rv3d.view_perspective
-        )
-        
-        if context.scene.my_custom_props.b_windowLink:
-            data['viewport_region'] = {
-                'width':  region.width,
-                'height': region.height,
-                'pid': os.getpid()
-            }
-        
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
-        
-        #
-        # Render the viewport
-        #
-        region = context.region
-        scene = depsgraph.scene
-        
-        # Get viewport dimensions
-        dimensions = region.width, region.height
-        
-        # Bind shader that converts from scene linear to display space,
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
-        self.bind_display_space_shader(scene)
-        
-        
-        a = context.scene.my_custom_props.alpha
-        bgl.glClearColor(0*a,0*a,0*a,a)
-        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
-        
-        
-        self.unbind_display_space_shader()
-        bgl.glDisable(bgl.GL_BLEND)
     
     
     
-    # ---- private helper methods ----
+    
     
     @staticmethod
     def __pack_light(light):

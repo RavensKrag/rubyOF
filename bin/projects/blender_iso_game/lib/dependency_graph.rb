@@ -231,37 +231,13 @@ class DependencyGraph
     case entity
     when BlenderMesh
       # => adds datablock to collection (need to pull datablock by name)
-      
-      
       batch, i = find_batch_with_index @batches, entity
-      
-      # i = 
-      #   @batches.find_index{ |mesh, mat, batch| 
-      #     entity.mesh.equal? mesh and entity.material.equal? mat
-      #   }
-      
-      # if i.nil?
-      #   batch = RenderBatch.new
-      #   @batches << [entity.mesh, entity.material, batch]
-        
-      #   i = @batches.size-1
-      # end
-      
-      # batch = @batches[i].last # last element of triple is the batch itself
-      
-      
       
       batch.add entity
       
       
       # index by name
       @mesh_objects[entity.name] = entity
-      
-      # unless @mesh_materials.has_key? entity.material.name
-      #   @mesh_materials[entity.material.name] = entity.material
-      # end
-      
-      
       
       
     when BlenderLight
@@ -338,22 +314,6 @@ class DependencyGraph
   
   
   
-  
-  
-  # def find_entity(entity_name)
-  #   return @entities[entity_name]
-  # end
-  
-  # def find_datablock(datablock_name)
-  #   # assumes all datablocks are mesh datablocks
-  #   # (linked lighting data is not supported)
-  #   # (other blender object types, such as camera, are not yet implemented)
-  #   @batches.values
-  #   .collect{ |batch| batch.mesh }
-  #   .find{ |mesh_datablock| mesh_datablock.name == datablock_name }    
-  # end
-  
-  
   def find_mesh_object(mesh_object_name)
     @mesh_objects[mesh_object_name]
   end
@@ -386,22 +346,6 @@ class DependencyGraph
   end
   
   def encode_with(coder)
-    
-    # @cameras = {
-    #   'viewport_camera' => ViewportCamera.new,
-    # }
-    
-    
-    # @lights = Array.new
-    # @light_material = RubyOF::Material.new
-    
-    # @mesh_objects    = Hash.new # {name => mesh }
-    # @mesh_datablocks = Hash.new # {name => datablock }
-    
-    
-    # @mesh_materials  = Hash.new # {name => material }
-    
-    
     
     # no need to store the batches: just regenerate them later
     # (NOTE: this may slow down reloading for scenes with many batches. need to check the performance on this later)
@@ -498,7 +442,7 @@ class BatchKey
   alias :eql? :==
 end
 
-class RenderBatch
+  class RenderBatch
     # NOTE: can't use state machine because it requires super() in initialize
     # and I need to bypass initialize() when loading from YAML
     attr_reader :state # read only: state is always managed interally
@@ -520,19 +464,8 @@ class RenderBatch
       @batch_dirty = false
       
       # @mat1 and @mat_instanced should have the same apperance
-      
-      # color = RubyOF::FloatColor.rgb([1, 1, 1])
-      # shininess = 64
-      
-      # @mat1 = RubyOF::Material.new
-      # @mat1.diffuse_color = color
-      # # // shininess is a value between 0 - 128, 128 being the most shiny //
-      # @mat1.shininess = shininess
-      
-      
       @mat_instanced = RubyOF::OFX::InstancingMaterial.new
-      @mat_instanced.diffuse_color = @mat1.diffuse_color
-      @mat_instanced.shininess = @mat1.shininess
+      update_instanced_material_properties
       
       # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
       
@@ -551,7 +484,19 @@ class RenderBatch
     def update
       if @state == 'instanced_set'
         reload_instancing_shaders()
-        update_packed_entity_positions()
+        
+        # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
+        
+        if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
+          update_packed_entity_positions
+          # update_instanced_material_properties
+            # ^ calling this on update seems to cause segfault???
+          
+          @entity_list.each{|entity| entity.dirty = false }
+          @batch_dirty = false
+        end
+        
+        
       end
     end
     
@@ -720,25 +665,22 @@ class RenderBatch
       end
     end
     
+    def update_instanced_material_properties
+      @mat_instanced.diffuse_color = @mat1.diffuse_color
+      @mat_instanced.shininess = @mat1.shininess
+    end
+    
     # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
     def update_packed_entity_positions
-      # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
+      t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+      nodes = @entity_list.collect{|entity| entity.node}
       
-      if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
-        t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-        nodes = @entity_list.collect{|entity| entity.node}
-        
-        t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-        dt = t1-t0
-        puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
-        
-        
-        @instance_data.pack_all_transforms(nodes)
-        
-        @entity_list.each{|entity| entity.dirty = false }
-        @batch_dirty = false
-      end
+      t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+      dt = t1-t0
+      puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
       
+      
+      @instance_data.pack_all_transforms(nodes)
     end
   end
   

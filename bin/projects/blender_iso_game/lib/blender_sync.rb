@@ -124,6 +124,15 @@ class BlenderSync
     # }
     
     
+    if blender_data['interrupt'] == 'RESET '
+      # blender has reset, so reset all RubyOF data
+      @depsgraph.gc(active: [])
+      
+      return
+    end
+    
+    
+    
     # process timestamps twice:
     # + calculate transmission time at the start of this function
     # + calculate roundtrip time at the end of this function
