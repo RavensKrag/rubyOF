@@ -290,10 +290,8 @@ class RubyOF(bpy.types.RenderEngine):
             bpy.ops.object.editmode_toggle()
             # bpy.ops.object.mode_set(mode= 'OBJECT')
             
-            
             print("mesh edit detected")
             print(active_object)
-            
             
             obj_export = [
                 {
@@ -303,20 +301,17 @@ class RubyOF(bpy.types.RenderEngine):
                 }
             ]
             
-            
             datablock_export = [
                 self.pack_mesh_data(active_object.data)
             ]
             
-            
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.editmode_toggle()
             # bpy.ops.object.mode_set(mode= 'EDIT')
-            bpy.ops.object.editmode_toggle()
-            bpy.ops.object.editmode_toggle()
             
         elif depsgraph.id_type_updated('OBJECT'):
             # one or more objects have changed
             # only send the data that has changed.
-            
             
             datablock_list = [] # datablocks that need to be packed up
             
