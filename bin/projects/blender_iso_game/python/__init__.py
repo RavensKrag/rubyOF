@@ -276,6 +276,12 @@ class RubyOF(bpy.types.RenderEngine):
                 obj_data['transform'] = self.pack_transform(obj)
                 obj_data['data'] = obj.data.name
                 
+                # Update material linkage
+                if isinstance(obj.data, bpy.types.Mesh):
+                    if(len(obj.material_slots) > 0):
+                        mat = obj.material_slots[0].material
+                        obj_data['material'] = mat.name
+                
                 obj_export.append(obj_data)
             
             
@@ -291,15 +297,23 @@ class RubyOF(bpy.types.RenderEngine):
             # bpy.ops.object.mode_set(mode= 'OBJECT')
             
             print("mesh edit detected")
+            active_object = context.active_object
             print(active_object)
             
-            obj_export = [
-                {
+            obj_data = {
                     'name': active_object.name_full,
                     'type': active_object.type,
                     'data': active_object.data.name
                 }
-            ]
+            
+            # Update material linkage
+            if depsgraph.id_type_updated('MATERIAL'):
+                if(len(active_object.material_slots) > 0):
+                    mat = active_object.material_slots[0].material
+                    obj_data['material'] = mat.name
+            
+            
+            obj_export = [ obj_data ]
             
             datablock_export = [
                 self.pack_mesh_data(active_object.data)
@@ -335,6 +349,14 @@ class RubyOF(bpy.types.RenderEngine):
                         datablock_list.append(obj.data)
                     
                     
+                    # Update material linkage
+                    if depsgraph.id_type_updated('MATERIAL'):
+                        if isinstance(obj.data, bpy.types.Mesh):
+                            if(len(obj.material_slots) > 0):
+                                mat = obj.material_slots[0].material
+                                obj_data['material'] = mat.name
+                    
+                    
                     obj_export.append(obj_data)
             
             
@@ -342,6 +364,47 @@ class RubyOF(bpy.types.RenderEngine):
             
         else:
             pass
+        
+        
+        
+        # Update material datablocks.
+        material_export = []
+        if depsgraph.id_type_updated('MATERIAL'):
+            print("Materials updated")
+            
+            for update in depsgraph.updates:
+                obj = update.id
+                
+                if isinstance(obj, bpy.types.Material):
+                    mat = obj
+                    print(mat.name)
+                    
+                    material_data = {
+                        'type': 'MATERIAL',
+                        'name': mat.name,
+                        'color': [
+                            'FloatColor_rgb',
+                            mat.rb_mat.color[0],
+                            mat.rb_mat.color[1],
+                            mat.rb_mat.color[2],
+                        ],
+                        'alpha': [
+                            'float',
+                            mat.rb_mat.alpha
+                        ],
+                        'shininess': [
+                            'float',
+                            mat.rb_mat.shininess
+                        ]
+                    }
+                    
+                    material_export.append(material_data)
+            
+            
+            
+            # for obj in bpy.data.objects:
+            #     if isinstance(obj, bpy.types.Mesh):
+        
         
         
         
@@ -366,20 +429,14 @@ class RubyOF(bpy.types.RenderEngine):
             'objects' : obj_export,
             'datablocks' : datablock_export
         }
+        
+        if len(material_export) != 0:
+            data['materials'] = material_export
+        
         output_string = json.dumps(data)
         self.to_ruby.write(output_string)
         
         
-        # print("not first time")
-        
-        
-        # Test if any material was added, removed or changed.
-        if depsgraph.id_type_updated('MATERIAL'):
-            print("Materials updated")
-            
-            # for obj in bpy.data.objects:
-            #     if isinstance(obj, bpy.types.Mesh):
-                    
         
         
         # TODO: serialize and send materials that have changed

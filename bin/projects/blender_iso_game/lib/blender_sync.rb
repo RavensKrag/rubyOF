@@ -246,6 +246,17 @@ class BlenderSync
       @test_material.shininess = 64
     end
     
+    blender_data['materials']&.tap do |material_list|
+      material_list.each do |data|
+        # p data['color'][1..3] # => data is already an array of floats
+        color = RubyOF::FloatColor.rgb(data['color'][1..3])
+        puts color
+        
+        @test_material.diffuse_color = color
+      end
+    end
+    
+    
     
     blender_data['objects']&.tap do |object_list|
       object_list.each do |data|

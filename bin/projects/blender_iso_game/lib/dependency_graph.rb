@@ -150,7 +150,6 @@ class DependencyGraph
     # (RenderBatch automatically uses GPU instancing when necessary)
     @batches.each{|mesh, mat, batch|  batch.draw }
     
-    
     # 
     # render the sphere that represents the light
     # 
@@ -301,7 +300,7 @@ class DependencyGraph
       }
     
     if i.nil?
-      batch = RenderBatch.new(entity)
+      batch = RenderBatch.new()
       batches << [entity.mesh, entity.material, batch]
       
       i = batches.size-1
@@ -448,13 +447,13 @@ end
     attr_reader :state # read only: state is always managed interally
     attr_reader :mesh  # read only: once you assign a mesh, it's done
     
-    def initialize(mesh_obj)
-      @mesh = mesh_obj.mesh
-      @entity_list = [mesh_obj]
+    def initialize()
+      @mesh = nil
+      @mat1 = nil
       
-      @mat1 = mesh_obj.material
+      @entity_list = nil
       
-      @state = 'single' # ['single', 'instanced_set', 'empty']
+      @state = 'empty' # ['single', 'instanced_set', 'empty']
       
       setup()
     end
@@ -465,7 +464,6 @@ end
       
       # @mat1 and @mat_instanced should have the same apperance
       @mat_instanced = RubyOF::OFX::InstancingMaterial.new
-      update_instanced_material_properties
       
       # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
       
@@ -489,7 +487,7 @@ end
         
         if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
           update_packed_entity_positions
-          # update_instanced_material_properties
+          update_instanced_material_properties
             # ^ calling this on update seems to cause segfault???
           
           @entity_list.each{|entity| entity.dirty = false }
@@ -503,27 +501,46 @@ end
     def add(mesh_obj)
       # TODO: may want to double-check that the entity being added uses the mesh that is managed by this batch
       
-      @entity_list << mesh_obj
-      
-      if @entity_list.size > 1
-        @state = 'instanced_set'
-      elsif @entity_list.size > @instance_data.max_instances
-        # raise exception if current texture size is too small
-        # to hold packed position information.
+      case @state
+      when 'empty'
+        @mesh = mesh_obj.mesh
+        @mat1 = mesh_obj.material
         
-        # NOTE: can't currently set size dynamically, because shader must be compiled with correct dimensions. may want to update dynamic shader compilation pipeline in OFX::InstancingMaterial
-        # ^ actually, shaders are now loaded in this very file
-        #   see: reload_instancing_shaders()
+        @entity_list = [mesh_obj]
         
+        @state = 'single'
+      else
+        @entity_list << mesh_obj
         
-        msg = [
-          "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
-          "Current maximum: #{@instance_data.max_instances}",
-          "Instances requested: #{@entity_list.size}"
-        ]
+        if @entity_list.size > 1
+          @state = 'instanced_set'
+          update_instanced_material_properties
+          
+        elsif @entity_list.size > @instance_data.max_instances
+          # raise exception if current texture size is too small
+          # to hold packed position information.
+          
+          # NOTE: can't currently set size dynamically, because shader must be compiled with correct dimensions. may want to update dynamic shader compilation pipeline in OFX::InstancingMaterial
+          # ^ actually, shaders are now loaded in this very file
+          #   see: reload_instancing_shaders()
+          
+          
+          msg = [
+            "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
+            "Current maximum: #{@instance_data.max_instances}",
+            "Instances requested: #{@entity_list.size}"
+          ]
+          
+          raise msg.join("\n")
+        end
         
-        raise msg.join("\n")
       end
+      
+      
+      
+      
+      
+      
     end
     
     def delete(mesh_obj)
