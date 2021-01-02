@@ -487,8 +487,10 @@ end
         
         if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
           update_packed_entity_positions
-          update_instanced_material_properties
-            # ^ calling this on update seems to cause segfault???
+          
+          # update_instanced_material_properties
+          #   # ^ calling this on update seems to cause segfault???
+          #   # (was getting many weird segfaults before. I think it was a synchronization with Blender problem, but I'll keep this note here just in case.)
           
           @entity_list.each{|entity| entity.dirty = false }
           @batch_dirty = false
@@ -514,7 +516,6 @@ end
         
         if @entity_list.size > 1
           @state = 'instanced_set'
-          update_instanced_material_properties
           
         elsif @entity_list.size > @instance_data.max_instances
           # raise exception if current texture size is too small
@@ -570,6 +571,7 @@ end
       when 'instanced_set'
         # draw instanced (v4.2 - 4x4 full transform matrix in texture)
         
+        update_instanced_material_properties
         
         # set uniforms
         @mat_instanced.setCustomUniformTexture(
