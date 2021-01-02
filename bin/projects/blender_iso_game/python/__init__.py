@@ -91,8 +91,8 @@ class IPC_Helper():
         print("-----")
     
     
-    def __del__(self):
-        pass
+    # def __del__(self):
+    #     pass
         
         # self.fifo.close()
         # print("FIFO closed")
@@ -703,9 +703,9 @@ class RubyOF(bpy.types.RenderEngine):
     # with OpenGL, and not perform other expensive work.
     # Blender will draw overlays for selection and editing on top of the
     # rendered image automatically.
+    # 
+    # NOTE: if this function is too slow it causes viewport flicker
     def view_draw(self, context, depsgraph):
-        # NOTE: if this function is too slow and it causes viewport flicker
-        
         #
         # Update the viewport camera
         #
@@ -719,144 +719,20 @@ class RubyOF(bpy.types.RenderEngine):
         
         space = context.space_data # SpaceView3D(Space)
         
-        
         # print(camera_direction)
         # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
         
-        # print(space.clip_start)
-        # print(space.clip_end)
-        # # ^ these are viewport properties, not camera object properties
-        
-        
-        h = region.height
-        w = region.width
-        
-        # camera sensor size:
-        # 36 mm is the default, with sensor fit set to 'AUTO'
-        # (this is also the default horizontal sensor fit)
-        # (the default vertical sensor fit is 24mm)
-        
-        print("focal length: ")
-        print(context.space_data.lens)
-        
-        
-        # 
-        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
-        # 
-        
-        # rv3d->dist * sensor_size / v3d->lens
-        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
-        
-            # (ortho_scale * context.space_data.lens) / rv3d.view_distance = sensor_size
-        
-        # with estimated ortho scale, compute sensor size
-        ortho_scale = context.scene.my_custom_props.ortho_scale
-        print('ortho scale -> sensor size')
-        sensor_size = ortho_scale * context.space_data.lens / rv3d.view_distance
-        print(sensor_size)
-        
-        # then, with that constant sensor size, compute the dynamic ortho scale
-        print('that sensor size -> ortho scale')
-        sensor_size = 71.98320027323571
-        ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens
-        print(ortho_scale)
-        
-        # ^ this works now!
-        #   but now I need to be able to automatically compute the sensor size...
-        
-        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
-        
-        
-        
-        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
-        vmat_inv = rv3d.view_matrix.inverted()
-        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
-        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
-        print('rv3d fov:')
-        print(fov)
-        
-        print('ortho view distance')
-        print(rv3d.view_distance)
-            # ^ rv3d.view_distance is inversely proportional to context.scene.my_custom_props.ortho_scale
-            
-            # as seen in a camera object,
-            # in blender, when ortho_scale is bigger
-            # then objects in the scene appear smaller.
-            
-        # print('rv3d fov -> ortho scale')
-        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
-        # print(ortho_scale)
-        
-        
-        mat_p = rv3d.perspective_matrix
-        mat_w = rv3d.window_matrix
-        mat_v = rv3d.view_matrix
-        
-        rot = rv3d.view_rotation
-        data = {
-            'viewport_camera' : {
-                'rotation':[
-                    "Quat",
-                    rot.w,
-                    rot.x,
-                    rot.y,
-                    rot.z
-                ],
-                'position':[
-                    "Vec3",
-                    camera_origin.x,
-                    camera_origin.y,
-                    camera_origin.z
-                ],
-                'lens':[
-                    "mm",
-                    context.space_data.lens
-                ],
-                'fov':[
-                    "deg",
-                    fov
-                ],
-                'near_clip':[
-                    'm',
-                    space.clip_start
-                ],
-                'far_clip':[
-                    'm',
-                    space.clip_end
-                ],
-                # 'aspect_ratio':[
-                #     "???",
-                #     context.scene.my_custom_props.aspect_ratio
-                # ],
-                'ortho_scale':[
-                    "factor",
-                    # context.scene.my_custom_props.ortho_scale
-                    ortho_scale
-                ],
-                'view_perspective': rv3d.view_perspective,
-                'perspective_matrix':[
-                    'Mat4',
-                    mat_p[0][0], mat_p[0][1], mat_p[0][2], mat_p[0][3],
-                    mat_p[1][0], mat_p[1][1], mat_p[1][2], mat_p[1][3],
-                    mat_p[2][0], mat_p[2][1], mat_p[2][2], mat_p[2][3],
-                    mat_p[3][0], mat_p[3][1], mat_p[3][2], mat_p[3][3]
-                ],
-                'window_matrix':[
-                    'Mat4',
-                    mat_w[0][0], mat_w[0][1], mat_w[0][2], mat_w[0][3],
-                    mat_w[1][0], mat_w[1][1], mat_w[1][2], mat_w[1][3],
-                    mat_w[2][0], mat_w[2][1], mat_w[2][2], mat_w[2][3],
-                    mat_w[3][0], mat_w[3][1], mat_w[3][2], mat_w[3][3]
-                ],
-                'view_matrix':[
-                    'Mat4',
-                    mat_v[0][0], mat_v[0][1], mat_v[0][2], mat_v[0][3],
-                    mat_v[1][0], mat_v[1][1], mat_v[1][2], mat_v[1][3],
-                    mat_v[2][0], mat_v[2][1], mat_v[2][2], mat_v[2][3],
-                    mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
-                ]
-            }
-        }
+        data = self.__pack_viewport_camera(
+            rotation         = rv3d.view_rotation,
+            position         = camera_origin,
+            lens             = space.lens,
+            perspective_fov  = self.__viewport_fov(rv3d),
+            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
+            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
+            near_clip        = space.clip_start,
+            far_clip         = space.clip_end,
+            view_perspective = rv3d.view_perspective
+        )
         
         if context.scene.my_custom_props.b_windowLink:
             data['viewport_region'] = {
@@ -866,11 +742,7 @@ class RubyOF(bpy.types.RenderEngine):
             }
         
         output_string = json.dumps(data)
-        # self.outbound_queue.put(output_string)
         self.to_ruby.write(output_string)
-        
-        
-        
         
         
         #
@@ -895,7 +767,104 @@ class RubyOF(bpy.types.RenderEngine):
         
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
-
+    
+    
+    
+    # ---- private helper methods ----
+    
+    @staticmethod
+    def __pack_viewport_camera(rotation, position,
+                            lens, perspective_fov, ortho_scale,
+                            near_clip, far_clip,
+                            view_perspective):
+        return {
+            'viewport_camera' : {
+                'rotation':[
+                    "Quat",
+                    rotation.w,
+                    rotation.x,
+                    rotation.y,
+                    rotation.z
+                ],
+                'position':[
+                    "Vec3",
+                    position.x,
+                    position.y,
+                    position.z
+                ],
+                'lens':[
+                    "mm",
+                    lens
+                ],
+                'fov':[
+                    "deg",
+                    perspective_fov
+                ],
+                'near_clip':[
+                    'm',
+                    near_clip
+                ],
+                'far_clip':[
+                    'm',
+                    far_clip
+                ],
+                # 'aspect_ratio':[
+                #     "???",
+                #     context.scene.my_custom_props.aspect_ratio
+                # ],
+                'ortho_scale':[
+                    "factor",
+                    ortho_scale
+                ],
+                'view_perspective': view_perspective,
+            }
+        }
+    
+    
+    @staticmethod
+    def __ortho_scale(scene, space, rv3d):
+        # 
+        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
+        # 
+        
+        # rv3d->dist * sensor_size / v3d->lens
+        # ortho_scale = rv3d.view_distance * sensor_size / space.lens;
+        
+            # (ortho_scale * space.lens) / rv3d.view_distance = sensor_size
+        
+        # with estimated ortho scale, compute sensor size
+        ortho_scale = scene.my_custom_props.ortho_scale
+        print('ortho scale -> sensor size')
+        sensor_size = ortho_scale * space.lens / rv3d.view_distance
+        print(sensor_size)
+        
+        # then, with that constant sensor size, compute the dynamic ortho scale
+        print('that sensor size -> ortho scale')
+        sensor_size = 71.98320027323571
+        ortho_scale = rv3d.view_distance * sensor_size / space.lens
+        print(ortho_scale)
+        
+        # ^ this works now!
+        #   but now I need to be able to automatically compute the sensor size...
+        
+        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
+        
+        return ortho_scale
+    
+    @staticmethod
+    def __viewport_fov(rv3d):
+        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
+        vmat_inv = rv3d.view_matrix.inverted()
+        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
+        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
+        print('rv3d fov:')
+        print(fov)
+        
+        return fov
+        
+    
+    
+    # --------------------------------
 
 
 #
