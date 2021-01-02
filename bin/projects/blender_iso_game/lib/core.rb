@@ -39,6 +39,7 @@ def usec(time)
 end
 
 
+load LIB_DIR/'entities'/'blender_material.rb'
 load LIB_DIR/'entities'/'blender_object.rb'
 load LIB_DIR/'entities'/'blender_mesh.rb'
 load LIB_DIR/'entities'/'viewport_camera.rb'

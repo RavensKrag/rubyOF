@@ -1,14 +1,14 @@
 class DependencyGraph
   def initialize()
     
-    @cameras = {
-      'viewport_camera' => ViewportCamera.new,
-    }
+    @viewport_camera = ViewportCamera.new
+    
+    @cameras = Hash.new
     
     
     @lights = Array.new
     @light_material = RubyOF::Material.new
-    # ^ materials used to visualize lights a small spheres in space.
+    # ^ material used to visualize lights a small spheres in space.
     # color of this material may change for every light
     # so every light is rendered as a separate batch,
     # even though they all use the same sphere mesh.
@@ -20,17 +20,18 @@ class DependencyGraph
     # (basically just shows the color and position of each light)
     # (very important for debugging synchronization between RubyOF and blender)
     
+    
     @mesh_objects    = Hash.new # {name => mesh }
-    @mesh_datablocks = Hash.new # {name => datablock }
+    # @mesh_datablocks = Hash.new # {name => datablock }
     
     
-    @mesh_materials  = Hash.new # {name => material }
-    # ^ standard materials for individual meshes
-    # 
-    #   (materials are NOT entities, by which I mean
-    #    it is possible for a material and an entity
-    #    to have the same name. )
-    #  
+    # @mesh_materials  = Hash.new # {name => material }
+    # # ^ standard materials for individual meshes
+    # # 
+    # #   (materials are NOT entities, by which I mean
+    # #    it is possible for a material and an entity
+    # #    to have the same name. )
+    # #  
     
     
     # actually, mesh objects and mesh datablocks can have overlaps in names too
@@ -45,13 +46,13 @@ class DependencyGraph
     # batch objects (for GPU instancing)
     # 
     
-    # batching = 
-    #   @entities.values
-    #   .select{|x| x.is_a? BlenderMesh }
-    #   .group_by{|x| x.mesh }
-    
-    @batches   = Hash.new  # single entities and instanced copies go here
-                           # grouped by the mesh they use
+    @batches   = Array.new
+      # # implement as a triple store
+      # @batches = [
+      #   [entity.mesh, entity.material,  RenderBatch.new]
+      #   [entity.mesh, entity.material,  RenderBatch.new]
+      #   [entity.mesh, entity.material,  RenderBatch.new]
+      # ]
     
   end
   
@@ -65,7 +66,7 @@ class DependencyGraph
     
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    @batches.each do |mesh, batch|
+    @batches.each do |mesh, mat, batch|
       # puts "batch id #{batch.__id__}"
       batch.update
     end
@@ -122,7 +123,7 @@ class DependencyGraph
   
   def setup_lights_and_camera
     # camera begin
-    @cameras['viewport_camera'].begin
+    @viewport_camera.begin
     # 
     # setup GL state
     # 
@@ -147,7 +148,7 @@ class DependencyGraph
     
     # render by batches
     # (RenderBatch automatically uses GPU instancing when necessary)
-    @batches.each{|mesh, batch|  batch.draw }
+    @batches.each{|mesh, mat, batch|  batch.draw }
     
     
     # 
@@ -188,7 +189,7 @@ class DependencyGraph
     ofDisableDepthTest()
     
     # camera end
-    @cameras['viewport_camera'].end
+    @viewport_camera.end
   end
   
   
@@ -201,23 +202,22 @@ class DependencyGraph
   # 
   
   def viewport_camera
-    return @cameras['viewport_camera']
-  end
-  
-  def list_entity_names
-    return [
-      @cameras.keys,
-      @lights.collect{ |x| x.name },
-      @mesh_objects.keys
-    ].compact 
+    return @viewport_camera
   end
   
   
   def gc(active: [])
-    entities = self.list_entity_names - ['viewport_camera']
+    # TODO: update with camera object type when that is implemented
+    # (currently the only camera that is synced is the viewport camera)
     
-    (entities - active).each do |entity_name|
-      delete entity_name # also removes empty batches
+    [
+      # ['camera',     (@cameras.keys - ['viewport_camera']) ],
+      [BlenderMesh,  @mesh_objects.keys],
+      [BlenderLight, @lights.collect{ |x| x.name } ]
+    ].each do |type, names|
+      (names - active).each do |entity_name|
+        delete entity_name, type # also removes empty batches
+      end
     end
   end
   
@@ -226,37 +226,40 @@ class DependencyGraph
   def add(entity)
     # TODO: guard against adding the same entity twice
     
-    # always add entity to entity collection
-    @entities[entity.name] = entity
     
     # then perform additional processing based on type
     case entity
     when BlenderMesh
       # => adds datablock to collection (need to pull datablock by name)
-      # => adds entity to collection (need to pull entity by name)
       
       
-      # batch = find_batch(@batches, entity)
-      # batch.add entity
+      batch, i = find_batch_with_index @batches, entity
+      
+      # i = 
+      #   @batches.find_index{ |mesh, mat, batch| 
+      #     entity.mesh.equal? mesh and entity.material.equal? mat
+      #   }
+      
+      # if i.nil?
+      #   batch = RenderBatch.new
+      #   @batches << [entity.mesh, entity.material, batch]
+        
+      #   i = @batches.size-1
+      # end
+      
+      # batch = @batches[i].last # last element of triple is the batch itself
       
       
-      
-      # # implement as a triple store
-      # @batches = [
-      #   [entity.mesh, entity.material,  RenderBatch.new]
-      #   [entity.mesh, entity.material,  RenderBatch.new]
-      #   [entity.mesh, entity.material,  RenderBatch.new]
-      # ]
-      
-      
-      
-      batch, i = find_batch_with_index @batches
       
       batch.add entity
       
       
+      # index by name
+      @mesh_objects[entity.name] = entity
       
-      
+      # unless @mesh_materials.has_key? entity.material.name
+      #   @mesh_materials[entity.material.name] = entity.material
+      # end
       
       
       
@@ -269,29 +272,40 @@ class DependencyGraph
     return entity
   end
   
-  def delete(entity_name)
-    entity = @entities.delete entity_name
-    
-    case entity
+  def delete(entity_name, entity_type)
+    case entity_type
     when BlenderMesh
-      # batch = find_batch(@batches, entity)
-      # batch.delete entity
+      entity = @mesh_objects[entity_name]
       
-      
-      batch, i = find_batch_with_index @batches
+      batch, i = find_batch_with_index @batches, entity
       
       batch.delete(entity)
       
       if batch.state == 'empty'
+        # remove triple with mesh and material when batch empty
+        # along with the batch itself
         @batches.delete_at i
       end
       
       
+      # remove from index
+      @mesh_objects.delete entity.name
+      
+      
       
       # TODO: remove material if unused
+        # if no batches include the material, it will drop out of triple store.
+        # This should just happen automatically,
+        # so I don't think I need to do any further work.
       # TODO: remove mesh if unused
+        # Mesh datablocks are referenced by mesh objects, Batches, and triples.
+        # If there are no mesh objects that need that datablock,
+        # then there should also not be any batches ore triples that use it,
+        # so it should drop out on it's own.
+      
+      # ^ for these two reasons, it is better to not have additional collections for these things. waiting a little bit to extract by name might not actually be that bad.
     when BlenderLight
-      @lights.delete_if{ |light|  light.equal? entity }
+      @lights.delete_if{ |light|  light.name == entity_name }
     end
     
     return entity
@@ -299,103 +313,25 @@ class DependencyGraph
   
   
   
-    # TODO: change batch initalizer to take 0 argument
-    # TODO: batch should initialize as empty
-    
-  
-  # assuming batch is organized by trees
-  # where only the leaves store data
-  # problem: results in mulitple places where new batch must be created
-  #          (super ugly code)
-  private def find_batch(assoc_tree, entity)
-  # which object (mat or mesh) is at which internal node level is arbitrary
-    
-      # # lisp style
-      # @batches = [
-      #   ['mat1', [ ['mesh1',[1,2,3,4,5]]
-      #              ['mesh2',[6,7,8]] ] ],
-      #   ['mat2', [ ['mesh1',[9]] ] ]
-      # ]
-      
-      # # (don't try pattern matching with assoc - it just makes things hairy)
-      
-      
-      
-      # @batches.assoc('mat1')&.last
-      #        &.assoc('mesh1')&.last
-      
-      
-      # level1_node = @batches.assoc('mat1')&.last
-      # level2_node = level1_node&.assoc('mesh1')&.last
-      # # => [mesh, [list of entities] ]
-      # # a list of entities is essentially a batch,
-      # # and then I need a new type for Batch, aka a new class
-      # # (I mean, I have an implementation already, I need to update that)
-    
-  
-    
-    material = entity.material
-    mesh = entity.mesh
-    
-    
-    # @batches.assoc(entity.material)&.last
-    #        &.assoc(entity.mesh)&.last
-    # .tap do |batch|
-    #   batch.add entity
-    # end
-    
-    # # ok, but what if some of the nodes in the tree do not exist yet?
-    
-    
-    parent = @batches
-    
-    node = parent.assoc(entity.material) # <-- assoc 1
-    if node.nil?
-      new_batch = RenderBatch.new()
-      
-      parent << [entity.material, [ [entity.mesh, new_batch] ] ]
-      return new_batch
-    else
-      parent = node.last
-      
-      node = parent.assoc(entity.mesh)   # <-- assoc 2
-      
-      if node.nil?
-        new_batch = RenderBatch.new()
-        
-        parent << [entity.mesh, new_batch]
-        return new_batch
-      else
-        
-        return node.last # => RenderBatch
-        
-      end
-    end
-    
-    
-    
-    
-    
-    
-  end
-  
+  # TODO: change batch initalizer to take 0 argument
+  # TODO: batch should initialize as empty
   
   # assuming batches are stored as triples:
-  private def find_batch_with_index(batches)
+  private def find_batch_with_index(batches, entity)
     # find batch and index
     i = 
-      @batches.find_index{ |mesh, mat, batch| 
+      batches.find_index{ |mesh, mat, batch| 
         entity.mesh.equal? mesh and entity.material.equal? mat
       }
     
     if i.nil?
-      batch = RenderBatch.new
-      @batches << [entity.mesh, entity.material, batch]
+      batch = RenderBatch.new(entity)
+      batches << [entity.mesh, entity.material, batch]
       
-      i = @batches.size-1
+      i = batches.size-1
     end
     
-    batch = @batches[i].last
+    batch = batches[i].last # last element of triple is the batch itself
     
     return batch, i
   end
@@ -404,42 +340,38 @@ class DependencyGraph
   
   
   
-  def find_entity(entity_name)
-    return @entities[entity_name]
+  # def find_entity(entity_name)
+  #   return @entities[entity_name]
+  # end
+  
+  # def find_datablock(datablock_name)
+  #   # assumes all datablocks are mesh datablocks
+  #   # (linked lighting data is not supported)
+  #   # (other blender object types, such as camera, are not yet implemented)
+  #   @batches.values
+  #   .collect{ |batch| batch.mesh }
+  #   .find{ |mesh_datablock| mesh_datablock.name == datablock_name }    
+  # end
+  
+  
+  def find_mesh_object(mesh_object_name)
+    @mesh_objects[mesh_object_name]
   end
-  
-  def find_datablock(datablock_name)
-    # assumes all datablocks are mesh datablocks
-    # (linked lighting data is not supported)
-    # (other blender object types, such as camera, are not yet implemented)
-    @batches.values
-    .collect{ |batch| batch.mesh }
-    .find{ |mesh_datablock| mesh_datablock.name == datablock_name }    
-  end
-  
-  
   
   def find_mesh_datablock(mesh_name)
-    return @mesh_datablocks[mesh_name]
+    @batches.collect{ |mesh, mat, batch| mesh  }.uniq
+            .find{ |mesh|  mesh.name == mesh_name  }
   end
   
-  
-  
-  def add_material(material)
-    @mesh_materials[material.name] = material
-    
-    return material
-  end
-  
-  def delete_material(material_name)
-    material = @mesh_materials.delete material_name
-    
-    # TODO: delete from other places too
-    # (what happens if there is a mesh with no material? when do you sound the alarm? don't want to error too early - may attach a new mat later - but if you do it too late it may be hard to detect what went wrong)
+  def find_light(light_name)
+    @lights.find{ |light|  light.name == light_name }
   end
   
   def find_material_datablock(material_name)
-    return @mesh_materials[material_name]
+    # @batches.collect{ |mesh, mat, batch| mat  }.uniq
+    #         .find{ |mat|  mat.name == material_name  }
+    
+    @mesh_materials[material_name]
   end
   
   
@@ -475,14 +407,16 @@ class DependencyGraph
     # (NOTE: this may slow down reloading for scenes with many batches. need to check the performance on this later)
     
     data_hash = {
-      'viewport_camera' => @cameras['viewport_camera'],
+      'viewport_camera' => @viewport_camera,
       
       'lights' => @lights,
       'light_material' => @light_material,
       
       'mesh_objects'    => @mesh_objects,
-      'mesh_datablocks' => @mesh_datablocks,
-      'mesh_materials'  => @mesh_materials
+      'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
+      'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
+      
+      'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
     
@@ -497,6 +431,27 @@ class DependencyGraph
   
   def init_with(coder)
     # initialize()
+    
+    # @viewport_camera = ViewportCamera.new
+    
+    @cameras = Hash.new
+    
+    
+    @lights = Array.new
+    # @light_material = RubyOF::Material.new
+    
+    @mesh_objects    = Hash.new # {name => mesh }
+    
+    @batches   = Hash.new  # single entities and instanced copies go here
+                           # grouped by the mesh they use
+    
+    
+    
+    
+    
+    
+    
+    
       @light_material = RubyOF::Material.new
       
     
@@ -506,15 +461,15 @@ class DependencyGraph
         @batches[batch.mesh.name] = batch
       end
     
-    @entities = Hash.new
-      coder.map['entity_list'].each do |entity|
-        @entities[entity.name] = entity
-      end
-      @batches.each_value do |batch|
-        batch.each do |entity|
-          @entities[entity.name] = entity
-        end
-      end
+    # @entities = Hash.new
+    #   coder.map['entity_list'].each do |entity|
+    #     @entities[entity.name] = entity
+    #   end
+    #   @batches.each_value do |batch|
+    #     batch.each do |entity|
+    #       @entities[entity.name] = entity
+    #     end
+    #   end
     
     # Hash#values returns copy, not reference
     # @meshes = @batches.values.collect{ |batch|  batch.mesh } 
@@ -553,6 +508,8 @@ class RenderBatch
       @mesh = mesh_obj.mesh
       @entity_list = [mesh_obj]
       
+      @mat1 = mesh_obj.material
+      
       @state = 'single' # ['single', 'instanced_set', 'empty']
       
       setup()
@@ -564,18 +521,18 @@ class RenderBatch
       
       # @mat1 and @mat_instanced should have the same apperance
       
-      color = RubyOF::FloatColor.rgb([1, 1, 1])
-      shininess = 64
+      # color = RubyOF::FloatColor.rgb([1, 1, 1])
+      # shininess = 64
       
-      @mat1 = RubyOF::Material.new
-      @mat1.diffuse_color = color
-      # // shininess is a value between 0 - 128, 128 being the most shiny //
-      @mat1.shininess = shininess
+      # @mat1 = RubyOF::Material.new
+      # @mat1.diffuse_color = color
+      # # // shininess is a value between 0 - 128, 128 being the most shiny //
+      # @mat1.shininess = shininess
       
       
       @mat_instanced = RubyOF::OFX::InstancingMaterial.new
-      @mat_instanced.diffuse_color = color
-      @mat_instanced.shininess = shininess
+      @mat_instanced.diffuse_color = @mat1.diffuse_color
+      @mat_instanced.shininess = @mat1.shininess
       
       # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
       

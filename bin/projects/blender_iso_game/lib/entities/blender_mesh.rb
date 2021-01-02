@@ -151,7 +151,8 @@ class BlenderMesh < BlenderObject
   
   attr_reader :node
   attr_accessor :mesh
-  attr_accessor :color
+  
+  attr_accessor :material
   
   # dirty flag from BlenderObject is used to signal
   # that this instance has changed position
@@ -162,6 +163,8 @@ class BlenderMesh < BlenderObject
     
     @mesh = mesh_data
     @node = RubyOF::Node.new
+    
+    @material = nil
   end
   
   def_delegators :@node, :position,

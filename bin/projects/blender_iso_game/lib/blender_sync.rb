@@ -181,8 +181,9 @@ class BlenderSync
     
     
     
-    # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
     
+    
+    # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
     
     new_datablocks = Hash.new
     
@@ -196,7 +197,7 @@ class BlenderSync
           
           name = data['mesh_name']
           
-          mesh_datablock = @depsgraph.find_datablock(name)
+          mesh_datablock = @depsgraph.find_mesh_datablock(name)
           if mesh_datablock.nil?
             mesh_datablock = BlenderMeshData.new(name)
             new_datablocks[name] = mesh_datablock
@@ -218,11 +219,23 @@ class BlenderSync
               end
             end
           end
+        when 'bpy.types.Material'
+          puts "material recieved"
         end
       end
     end
     
     # p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
+    
+    
+    
+    
+    if @test_material.nil?
+      @test_material = BlenderMaterial.new('default')
+      
+      @test_material.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+      @test_material.shininess = 64
+    end
     
     
     blender_data['objects']&.tap do |object_list|
@@ -238,12 +251,17 @@ class BlenderSync
           # if 'data' field is set, assume that linkage must be updated
           name = data['name']
           
-          mesh_entity = @depsgraph.find_entity(name)
+          mesh_entity = @depsgraph.find_mesh_object(name)
           if mesh_entity.nil?
             datablock_name = data['data']
             
+            
+            # 
+            # find associated underlying mesh datablock
+            # 
+            
             # look for datablock in depsgraph
-            mesh_datablock = @depsgraph.find_datablock(datablock_name)
+            mesh_datablock = @depsgraph.find_mesh_datablock(datablock_name)
             
             # if it's not in the depsgraph yet, it must be something that needs to be added on this frame, so it should be in new_datablocks
             if mesh_datablock.nil?
@@ -253,7 +271,25 @@ class BlenderSync
             raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." if mesh_datablock.nil?
             
             
+            # 
+            # create new mesh object
+            # 
+            
             mesh_entity = BlenderMesh.new(name, mesh_datablock)
+            
+            
+            # 
+            # associate with material
+            # 
+            
+            # mat = @depsgraph.find_material_datablock("__default__")
+            # mesh_entity.material = mat
+            mesh_entity.material = @test_material
+            
+            
+            # 
+            # add mesh object to dependency graph
+            # 
             
             @depsgraph.add mesh_entity
           end
@@ -267,7 +303,7 @@ class BlenderSync
           # ('data' field has already been linked to necessary data)
           name = data['name']
           
-          light = @depsgraph.find_entity(name)
+          light = @depsgraph.find_light(name)
           if light.nil?
             light = BlenderLight.new(name)
             
