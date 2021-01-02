@@ -136,7 +136,11 @@ class RubyOF(bpy.types.RenderEngine):
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.
     def __del__(self):
-        os.rmdir(self.shm_dir)
+        pass
+        # os.rmdir(self.shm_dir)
+        # ^ can't remove this on exit, as there may still be files inside that RubyOF needs. Not sure who should delete this dir or when, but it's not as straightforward as I thought.
+        # Also, I don't think this function can delete a directory that still has files inside.
+        
         
         # self.outbound_queue.put(None) # signal the thread to stop
         # self.io_thread.join() # wait for thread to finish
@@ -252,6 +256,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         obj_export = []
         datablock_export = []
+        material_export = []
         
         if self.first_time:
             # First time initialization
@@ -260,10 +265,6 @@ class RubyOF(bpy.types.RenderEngine):
             
             # Loop over all datablocks used in the scene.
             # for datablock in depsgraph.ids:
-            
-            datablock_list = [ obj.data for obj in bpy.data.objects ]
-            
-            datablock_export = self.export_unique_datablocks(datablock_list)
             
             
             # loop over all objects
@@ -276,14 +277,17 @@ class RubyOF(bpy.types.RenderEngine):
                 obj_data['transform'] = self.pack_transform(obj)
                 obj_data['data'] = obj.data.name
                 
-                # Update material linkage
+                # link meshes with materials and pack material data
                 if isinstance(obj.data, bpy.types.Mesh):
                     if(len(obj.material_slots) > 0):
                         mat = obj.material_slots[0].material
                         obj_data['material'] = mat.name
+                        material_export.append(self.__pack_material(mat))
                 
                 obj_export.append(obj_data)
             
+            datablock_list = [ obj.data for obj in bpy.data.objects ]
+            datablock_export = self.export_unique_datablocks(datablock_list)
             
             # TODO: want to separate out lights from meshes (objects)
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
@@ -307,10 +311,12 @@ class RubyOF(bpy.types.RenderEngine):
                 }
             
             # Update material linkage
+            # (active object must be a mesh here, no need to check)
             if depsgraph.id_type_updated('MATERIAL'):
                 if(len(active_object.material_slots) > 0):
                     mat = active_object.material_slots[0].material
                     obj_data['material'] = mat.name
+                    material_export.append(self.__pack_material(mat))
             
             
             obj_export = [ obj_data ]
@@ -323,94 +329,77 @@ class RubyOF(bpy.types.RenderEngine):
             bpy.ops.object.editmode_toggle()
             # bpy.ops.object.mode_set(mode= 'EDIT')
             
-        elif depsgraph.id_type_updated('OBJECT'):
-            # one or more objects have changed
-            # only send the data that has changed.
+        else:
+            # It is possible multiple things have been updated.
+            # Could by a mixture of objects and/or materials.
+            # Only send the data that has changed.
             
             datablock_list = [] # datablocks that need to be packed up
             
             print("there are", len(depsgraph.updates), "updates to process")
             
             # Loop over all object instances in the scene.
+            updated_objects   = []
+            updated_materials = []
+            
             for update in depsgraph.updates:
                 obj = update.id
                 
                 if isinstance(obj, bpy.types.Object):
-                    obj_data = {
-                        'name': obj.name_full,
-                        'type': obj.type,
-                    }
-                    
-                    if update.is_updated_transform:
-                        obj_data['transform'] = self.pack_transform(obj)
-                    
-                    if update.is_updated_geometry:
-                        obj_data['data'] = obj.data.name
-                        datablock_list.append(obj.data)
-                    
-                    
-                    # Update material linkage
-                    if depsgraph.id_type_updated('MATERIAL'):
-                        if isinstance(obj.data, bpy.types.Mesh):
-                            if(len(obj.material_slots) > 0):
-                                mat = obj.material_slots[0].material
-                                obj_data['material'] = mat.name
-                    
-                    
-                    obj_export.append(obj_data)
+                    updated_objects.append(obj)
+                
+                # only send data for updated materials
+                if isinstance(obj, bpy.types.Material):
+                    updated_materials.append(obj)
             
+            for mat in updated_materials:
+                material_export.append(self.__pack_material(mat))
+            
+            for obj in updated_objects:
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
+                
+                if update.is_updated_transform:
+                    obj_data['transform'] = self.pack_transform(obj)
+                
+                if update.is_updated_geometry:
+                    obj_data['data'] = obj.data.name
+                    datablock_list.append(obj.data)
+                
+                
+                # Update material linkage if this material was updated
+                
+                # NOTE: object not marked as updated when a new material slot is added / changes are made to it's material. Thus, the depsgraph check here is not helpful, and actually is actively harmful.
+                
+                # if mat in updated_materials:
+                
+                # if depsgraph.id_type_updated('MATERIAL'):
+                # print("material updated detected")
+                if isinstance(obj.data, bpy.types.Mesh):
+                    if(len(obj.material_slots) > 0):
+                        mat = obj.material_slots[0].material
+                        obj_data['material'] = mat.name
+                    else:
+                        obj_data['material'] = '' # signal deleted mat?
+                        # (then ruby needs to use the default material)
+                
+                obj_export.append(obj_data)
             
             datablock_export = self.export_unique_datablocks(datablock_list)
-            
-        else:
-            pass
-        
-        
-        
-        # Update material datablocks.
-        material_export = []
-        if depsgraph.id_type_updated('MATERIAL'):
-            print("Materials updated")
-            
-            for update in depsgraph.updates:
-                obj = update.id
-                
-                if isinstance(obj, bpy.types.Material):
-                    mat = obj
-                    print(mat.name)
-                    
-                    material_data = {
-                        'type': 'MATERIAL',
-                        'name': mat.name,
-                        'color': [
-                            'FloatColor_rgb',
-                            mat.rb_mat.color[0],
-                            mat.rb_mat.color[1],
-                            mat.rb_mat.color[2],
-                        ],
-                        'alpha': [
-                            'float',
-                            mat.rb_mat.alpha
-                        ],
-                        'shininess': [
-                            'float',
-                            mat.rb_mat.shininess
-                        ]
-                    }
-                    
-                    material_export.append(material_data)
-            
-            
-            
-            # for obj in bpy.data.objects:
-            #     if isinstance(obj, bpy.types.Mesh):
-        
-        
+        # ----------
         
         
         # full list of all objects, by name (helps Ruby delete old objects)
         object_list = [ instance.object.name_full for instance 
                         in depsgraph.object_instances ]
+        
+        # full list of all materials, by name (helps Ruby delet old materials)
+        material_list = []
+        for mat in bpy.data.materials:
+            if mat.users > 0:
+                material_list.append(mat.name_full)
         
         
         total_t1 = time.time()
@@ -427,11 +416,11 @@ class RubyOF(bpy.types.RenderEngine):
             'all_entity_names' : object_list,
             
             'objects' : obj_export,
-            'datablocks' : datablock_export
+            'datablocks' : datablock_export,
+            
+            'materials' : material_export,
+            'all_material_names' : material_list
         }
-        
-        if len(material_export) != 0:
-            data['materials'] = material_export
         
         output_string = json.dumps(data)
         self.to_ruby.write(output_string)
@@ -688,8 +677,6 @@ class RubyOF(bpy.types.RenderEngine):
     
     
     
-    
-    
     @staticmethod
     def __pack_light(light):
         data = {
@@ -724,6 +711,28 @@ class RubyOF(bpy.types.RenderEngine):
             })
         
         return data
+    
+    
+    @staticmethod
+    def __pack_material(material):
+        return {
+            'type': 'bpy.types.Material',
+            'name': material.name,
+            'color': [
+                'FloatColor_rgb',
+                material.rb_mat.color[0],
+                material.rb_mat.color[1],
+                material.rb_mat.color[2],
+            ],
+            'alpha': [
+                'float',
+                material.rb_mat.alpha
+            ],
+            'shininess': [
+                'float',
+                material.rb_mat.shininess
+            ]
+        }
     
     
     @staticmethod
@@ -1133,7 +1142,7 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
                 col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
 
         row = layout.row()
-
+        
         if ob:
             row.template_ID(ob, "active_material", new="material.new")
 
@@ -1150,11 +1159,15 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
         elif mat:
             row.template_ID(space, "pin_id")
         
-        
-        col = layout.column()
-        col.prop(mat.rb_mat, "color",)
-        col.prop(mat.rb_mat, "alpha")
-        col.prop(mat.rb_mat, "shininess")
+        # when you create a new texture slot, it is initialized empty
+        # so you need to make sure there's actually a material there
+        # or you get a Python error.
+        # (Blender won't crash, but this is still not good behavior.)
+        if mat:
+            col = layout.column()
+            col.prop(mat.rb_mat, "color",)
+            col.prop(mat.rb_mat, "alpha")
+            col.prop(mat.rb_mat, "shininess")
 
 
 
