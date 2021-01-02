@@ -227,11 +227,13 @@ class Core
     
     # RubyProf.start
     
-    dump_yaml @depsgraph => @world_save_file
-    puts "world saved!"
+    # dump_yaml @depsgraph => @world_save_file
+    # puts "world saved!"
   end
   
   def load_world_state
+    return false
+    
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
       
