@@ -250,12 +250,16 @@ class RubyOF(bpy.types.RenderEngine):
         dimensions = region.width, region.height
         print("view update ---")
         
+        
+        total_t0 = time.time()
+        
+        datablock_export = []
+        obj_export = []
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
             
-            
-            total_t0 = time.time()
             
             # Loop over all datablocks used in the scene.
             # for datablock in depsgraph.ids:
@@ -264,8 +268,6 @@ class RubyOF(bpy.types.RenderEngine):
             
             datablock_export = self.export_unique_datablocks(datablock_list)
             
-            
-            obj_export = []
             
             # loop over all objects
             for obj in bpy.data.objects:
@@ -284,22 +286,6 @@ class RubyOF(bpy.types.RenderEngine):
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
             
             
-            total_t1 = time.time()
-            dt = (total_t1 - total_t0) * 1000
-            print("TOTAL TIME: ", dt, " msec" )
-            
-            
-            data = {
-                'timestamps' : {
-                    'start_time': total_t0,
-                    'end_time':   total_t1
-                },
-                
-                'datablocks' : datablock_export,
-                'objects' : obj_export
-            }
-            output_string = json.dumps(data)
-            self.to_ruby.write(output_string)
         elif context.active_object.mode == 'EDIT':
             # editing one object: only send edits to that single mesh
             
@@ -310,13 +296,6 @@ class RubyOF(bpy.types.RenderEngine):
             
             print("mesh edit detected")
             print(active_object)
-            
-            total_t0 = time.time()
-            
-            
-            # full list of all objects, by name (helps Ruby delete old objects)
-            object_list = [ instance.object.name_full for instance 
-                            in depsgraph.object_instances ]
             
             
             obj_export = [
@@ -333,29 +312,6 @@ class RubyOF(bpy.types.RenderEngine):
             ]
             
             
-            
-            total_t1 = time.time()
-            dt = (total_t1 - total_t0) * 1000
-            print("TOTAL TIME: ", dt, " msec" )
-            
-            
-            data = {
-                'timestamps' : {
-                    'start_time': total_t0,
-                    'end_time':   total_t1
-                },
-                
-                'all_entity_names' : object_list,
-                
-                'datablocks' : datablock_export,
-                'objects' : obj_export
-            }
-            
-            
-            
-            output_string = json.dumps(data)
-            self.to_ruby.write(output_string)
-            
             # bpy.ops.object.mode_set(mode= 'EDIT')
             bpy.ops.object.editmode_toggle()
             bpy.ops.object.editmode_toggle()
@@ -364,16 +320,12 @@ class RubyOF(bpy.types.RenderEngine):
             # one or more objects have changed
             # only send the data that has changed.
             
-            total_t0 = time.time()
-            
-            # Loop over all object instances in the scene.
             
             datablock_list = [] # datablocks that need to be packed up
             
-            obj_export = []
-            
             print("there are", len(depsgraph.updates), "updates to process")
             
+            # Loop over all object instances in the scene.
             for update in depsgraph.updates:
                 obj = update.id
                 
@@ -396,35 +348,34 @@ class RubyOF(bpy.types.RenderEngine):
             
             datablock_export = self.export_unique_datablocks(datablock_list)
             
-            
-            # full list of all objects, by name (helps Ruby delete old objects)
-            object_list = [ instance.object.name_full for instance 
-                            in depsgraph.object_instances ]
-            
-            
-            total_t1 = time.time()
-            dt = (total_t1 - total_t0) * 1000
-            print("TOTAL TIME: ", dt, " msec" )
-            
-            
-            data = {
-                'timestamps' : {
-                    'start_time': total_t0,
-                    'end_time':   total_t1
-                },
-                
-                'all_entity_names' : object_list,
-                
-                'datablocks' : datablock_export,
-                'objects' : obj_export
-            }
-            
-            output_string = json.dumps(data)
-            self.to_ruby.write(output_string)
-            
         else:
             pass
         
+        
+        
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = [ instance.object.name_full for instance 
+                        in depsgraph.object_instances ]
+        
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'all_entity_names' : object_list,
+            
+            'datablocks' : datablock_export,
+            'objects' : obj_export
+        }
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
         
         
         # print("not first time")
