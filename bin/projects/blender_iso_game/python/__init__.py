@@ -168,6 +168,7 @@ class RubyOF(bpy.types.RenderEngine):
         # Get viewport dimensions
         dimensions = region.width, region.height
         print("view update ---")
+                
         if self.first_time:
             # First time initialization
             self.first_time = False
@@ -191,9 +192,24 @@ class RubyOF(bpy.types.RenderEngine):
         
         # print("not first time")
         
+        
         # Test if any material was added, removed or changed.
         if depsgraph.id_type_updated('MATERIAL'):
             print("Materials updated")
+            
+            # for obj in bpy.data.objects:
+            #     if isinstance(obj, bpy.types.Mesh):
+                    
+        
+        
+        # TODO: serialize and send materials that have changed
+        # TODO: send information on which objects are using which materials
+        
+        # note: in blender, one object can have many material slots
+        
+        
+        
+            
         
         print("there are", len(depsgraph.updates), "updates to process")
         
@@ -842,8 +858,7 @@ class RubyOF(bpy.types.RenderEngine):
         self.fifo_write(output_string)
         
         
-                
-                
+        
         
         
         #
