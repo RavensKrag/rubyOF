@@ -416,48 +416,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         return data
     
-    def pack_light_data(self, light):
-        data = {
-            'light_name': light.name,
-            'type': 'bpy.types.Light', 
-            'color': [
-                'rgb',
-                light.color[0],
-                light.color[1],
-                light.color[2]
-            ],
-            # (there is a property on the object called "color" but that is not what you want)
-            
-            'light_type': light.type,
-            
-            'ambient_color': [
-                'rgb',
-            ],
-            'diffuse_color': [
-                'rgb'
-            ],
-            'attenuation':[
-                'rgb'
-            ]
-            
-        }
-        
-        
-        
-        if light.type == 'AREA':
-            data.update({
-                'size_x': ['float', light.size],
-                'size_y': ['float', light.size_y]
-            })
-        elif light.type == 'SPOT':
-            data.update({
-                'size': ['radians', light.spot_size]
-            })
-        
-        
-        return data
-    
-    
         
     #  sub.prop(light, "size", text="Size X")
     # sub.prop(light, "size_y", text="Y")
@@ -513,7 +471,7 @@ class RubyOF(bpy.types.RenderEngine):
             if isinstance(datablock, bpy.types.Mesh):
                 datablock_export.append( self.pack_mesh_data(datablock) )
             elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.pack_light_data(datablock) )
+                datablock_export.append( self.__pack_light(datablock) )
             else:
                 continue
         
@@ -612,7 +570,7 @@ class RubyOF(bpy.types.RenderEngine):
             if isinstance(datablock, bpy.types.Mesh):
                 datablock_export.append( self.pack_mesh_data(datablock) )
             elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.pack_light_data(datablock) )
+                datablock_export.append( self.__pack_light(datablock) )
             else:
                 continue
         
@@ -771,6 +729,42 @@ class RubyOF(bpy.types.RenderEngine):
     
     
     # ---- private helper methods ----
+    
+    @staticmethod
+    def __pack_light(light):
+        data = {
+            'light_name': light.name,
+            'type': 'bpy.types.Light', 
+            'color': [
+                'rgb',
+                light.color[0],
+                light.color[1],
+                light.color[2]
+            ],
+            'light_type': light.type,
+            'ambient_color': [
+                'rgb',
+            ],
+            'diffuse_color': [
+                'rgb'
+            ],
+            'attenuation':[
+                'rgb'
+            ]
+        }
+        
+        if light.type == 'AREA':
+            data.update({
+                'size_x': ['float', light.size],
+                'size_y': ['float', light.size_y]
+            })
+        elif light.type == 'SPOT':
+            data.update({
+                'size': ['radians', light.spot_size]
+            })
+        
+        return data
+    
     
     @staticmethod
     def __pack_viewport_camera(rotation, position,
