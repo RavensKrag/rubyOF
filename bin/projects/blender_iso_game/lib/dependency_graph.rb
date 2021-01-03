@@ -227,8 +227,9 @@ class DependencyGraph
     
     
     # then perform additional processing based on type
-    case entity
-    when BlenderMesh
+    # (need to use strings to be symmetric with #delete)
+    case entity.class::DATA_TYPE
+    when 'MESH'
       # => adds datablock to collection (need to pull datablock by name)
       batch, i = find_batch_with_index @batches, entity
       
@@ -239,7 +240,7 @@ class DependencyGraph
       @mesh_objects[entity.name] = entity
       
       
-    when BlenderLight
+    when 'LIGHT'
       # => add to list of lights
       @lights << entity
     end
@@ -247,9 +248,9 @@ class DependencyGraph
     return entity
   end
   
-  # not completely symmetric with #add
-  # (this takes strings for types, #add takes ClassObjects)
-  # (but #delete needs to take strings b/c of how case equality === works)
+  
+  # #delete needs to take strings for types because due to
+  # how case equality === works, you can't use ClassObjects
   def delete(entity_name, entity_type)
     puts "deleting: #{[entity_name, entity_type].inspect}"
     
