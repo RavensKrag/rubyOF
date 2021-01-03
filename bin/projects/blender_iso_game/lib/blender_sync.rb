@@ -281,6 +281,10 @@ class BlenderSync
     end
     
     
+    # Hash mapping {mesh object name => material name}
+    material_map = blender_data['material_map']
+    p material_map
+    
     
     blender_data['objects']&.tap do |object_list|
       object_list.each do |data|
@@ -321,6 +325,7 @@ class BlenderSync
             
             mesh_entity = BlenderMesh.new(name, mesh_datablock)
             
+            # TODO: move further down and require material in initializer
             
             
             
@@ -329,24 +334,28 @@ class BlenderSync
             # 
             # associate with material
             # 
-            puts "material name: #{data['material'].inspect}"
-            material = 
-              if data['material'] == ''
-                @default_material
-              else
-                @depsgraph.find_material_datablock(data['material']) || 
-                new_materials[data['material']]
+            material_map[name].tap do |material_name|
+              puts "material name: #{material_name.inspect}"
+              material = 
+                if material_name == ''
+                  @default_material
+                else
+                  @depsgraph.find_material_datablock(material_name) || 
+                  new_materials[material_name]
+                end
+              
+              p material
+              
+              if material.nil?
+                raise "Could not find material named '#{material_name}' assigned to mesh object '#{mesh_entity.name}'"
               end
-            
-            p material
-            
-            if material.nil?
-              raise "Could not find material named '#{data['material']}' assigned to mesh object '#{mesh_entity.name}'"
+              
+              
+              
+              mesh_entity.material = material
             end
             
             
-            
-            mesh_entity.material = material
             
             
             
@@ -374,8 +383,7 @@ class BlenderSync
           puts ">>current mat name: #{mesh_entity.material.name}"
           puts ">>material name: #{data['material'].inspect}"
           
-          
-          data['material']&.tap do |material_name|
+          material_map[mesh_entity.name]&.tap do |material_name|
             puts "material name: #{material_name.inspect}"
             
             if material_name != mesh_entity.material.name

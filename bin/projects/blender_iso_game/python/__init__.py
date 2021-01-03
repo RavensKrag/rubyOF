@@ -277,16 +277,12 @@ class RubyOF(bpy.types.RenderEngine):
                 obj_data['transform'] = self.pack_transform(obj)
                 obj_data['data'] = obj.data.name
                 
-                # link meshes with materials and pack material data
-                if isinstance(obj.data, bpy.types.Mesh):
-                    if(len(obj.material_slots) > 0):
-                        mat = obj.material_slots[0].material
-                        obj_data['material'] = mat.name
-                        material_export.append(self.__pack_material(mat))
-                    else:
-                        obj_data['material'] = ''
-                
                 obj_export.append(obj_data)
+            
+            # loop over all materials
+            for mat in bpy.data.materials:
+                if mat.users > 0:
+                    material_export.append(self.__pack_material(mat))
             
             datablock_list = [ obj.data for obj in bpy.data.objects ]
             datablock_export = self.export_unique_datablocks(datablock_list)
@@ -312,22 +308,20 @@ class RubyOF(bpy.types.RenderEngine):
                     'data': active_object.data.name
                 }
             
-            # Update material linkage
-            # (active object must be a mesh here, no need to check)
-            if depsgraph.id_type_updated('MATERIAL'):
-                if(len(active_object.material_slots) > 0):
-                    mat = active_object.material_slots[0].material
-                    obj_data['material'] = mat.name
-                    material_export.append(self.__pack_material(mat))
-                else:
-                    obj_data['material'] = ''
-            
-            
             obj_export = [ obj_data ]
             
             datablock_export = [
                 self.pack_mesh_data(active_object.data)
             ]
+            
+            # send material data if any material was changed
+            # (maybe it was this material? no way to be sure, so just send it)
+            if(depsgraph.id_type_updated('MATERIAL')):
+                if(len(active_object.material_slots) > 0):
+                    mat = active_object.material_slots[0].material
+                    material_export = [
+                        self.__pack_material(mat)
+                    ]
             
             bpy.ops.object.editmode_toggle()
             bpy.ops.object.editmode_toggle()
@@ -350,57 +344,26 @@ class RubyOF(bpy.types.RenderEngine):
                 obj = update.id
                 
                 if isinstance(obj, bpy.types.Object):
-                    updated_objects.append(obj)
-                
-                # only send data for updated materials
-                if isinstance(obj, bpy.types.Material):
-                    updated_materials.append(obj)
-            
-            for mat in updated_materials:
-                material_export.append(self.__pack_material(mat))
-            
-            for obj in updated_objects:
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                if update.is_updated_transform:
-                    obj_data['transform'] = self.pack_transform(obj)
-                
-                if update.is_updated_geometry:
-                    obj_data['data'] = obj.data.name
-                    datablock_list.append(obj.data)
-                
-                obj_export.append(obj_data)
-            
-            # Update material linkage if this material was updated
-            
-            # NOTE: object not marked as updated when a new material slot is added / changes are made to it's material. Thus, the depsgraph check here is not helpful, and actually is actively harmful.
-            
-            
-            # information about material linkages
-            # (send all info every frame)
-            # (RubyOF will figure out whether to rebind or not)
-            for obj in bpy.data.objects:
-                # print(type(obj))
-                if isinstance(obj.data, bpy.types.Mesh):
-                    print("found mesh")
-                    
                     obj_data = {
                         'name': obj.name_full,
                         'type': obj.type,
                     }
                     
-                    if(len(obj.material_slots) > 0):
-                        mat = obj.material_slots[0].material
-                        obj_data['material'] = mat.name
-                    else:
-                        obj_data['material'] = '' # signal deleted mat?
-                        # (then ruby needs to use the default material)
+                    if update.is_updated_transform:
+                        obj_data['transform'] = self.pack_transform(obj)
+                    
+                    if update.is_updated_geometry:
+                        obj_data['data'] = obj.data.name
+                        datablock_list.append(obj.data)
                     
                     obj_export.append(obj_data)
+                
+                # only send data for updated materials
+                if isinstance(obj, bpy.types.Material):
+                    mat = obj
+                    material_export.append(self.__pack_material(mat))
             
+            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
             
             datablock_export = self.export_unique_datablocks(datablock_list)
         # ----------
@@ -410,11 +373,27 @@ class RubyOF(bpy.types.RenderEngine):
         object_list = [ instance.object.name_full for instance 
                         in depsgraph.object_instances ]
         
-        # full list of all materials, by name (helps Ruby delet old materials)
-        material_list = []
-        for mat in bpy.data.materials:
-            if mat.users > 0:
-                material_list.append(mat.name_full)
+        
+        
+        # information about material linkages
+        # (send all info every frame)
+        # (RubyOF will figure out whether to rebind or not)
+        material_map = {}
+        for obj in bpy.data.objects:
+            if isinstance(obj.data, bpy.types.Mesh):
+                print("found mesh")
+                
+                material_name = ''
+                # ^ default material name
+                #   tells RubyOF to bind default material
+                
+                # if there is a material bound, use that instead of the default
+                if(len(obj.material_slots) > 0):
+                    mat = obj.material_slots[0].material
+                    material_name = mat.name
+                
+                # map { mesh object => material }
+                material_map[obj.name_full] = material_name
         
         
         total_t1 = time.time()
@@ -434,7 +413,7 @@ class RubyOF(bpy.types.RenderEngine):
             'datablocks' : datablock_export,
             
             'materials' : material_export,
-            'all_material_names' : material_list
+            'material_map' : material_map
         }
         
         output_string = json.dumps(data)
