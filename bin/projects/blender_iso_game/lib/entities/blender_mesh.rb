@@ -158,13 +158,13 @@ class BlenderMesh < BlenderObject
   # that this instance has changed position
   # (only used when this entity is part of a GPU instanced batch)
   
-  def initialize(name, mesh_data)
+  def initialize(name, mesh_data, material)
     super(name)
     
     @mesh = mesh_data
     @node = RubyOF::Node.new
     
-    @material = nil
+    @material = material
   end
   
   def_delegators :@node, :position,

@@ -221,7 +221,12 @@ class DependencyGraph
   end
   
   
-  
+  # DependencyGraph#add(o) returns self
+  # comparison with other collections in Ruby:
+  #   Array#<<(o) returns self
+  #   Set#add(o) returns self
+  #   Hash#store(k,v) AKA Hash#[]=(k,v) returns v
+  # as DependencGrapy provides a Set-like interface, #add returns self
   def add(entity)
     # TODO: guard against adding the same entity twice
     
@@ -245,7 +250,8 @@ class DependencyGraph
       @lights << entity
     end
     
-    return entity
+    
+    return self
   end
   
   
@@ -291,7 +297,8 @@ class DependencyGraph
       @lights.delete_if{ |light|  light.name == entity_name }
     end
     
-    return entity
+    
+    return self
   end
   
   
@@ -321,24 +328,58 @@ class DependencyGraph
   
   
   
-  def find_mesh_object(mesh_object_name)
-    @mesh_objects[mesh_object_name]
+  # all methods starting with "fetch_" work as Hash#fetch
+  # 
+  # Return the value associated with the given key,
+  # but if the key does not exist and a block is given,
+  # return the output of the block instead
+  # 
+  # src: https://avdi.codes/why-and-how-to-use-rubys-hashfetch-for-default-values/
+  
+  # (actually, Hash#fetch also raises KeyError exception if key not found and no block given, but I don't do that here... hmmm maybe I need to support that?)
+  # (Hash#fetch also supports a second argument as a default output)
+  # (I should really implement this entire interface, otherwise it will cause confusion)
+  
+  def fetch_mesh_object(mesh_object_name)
+    out = @mesh_objects[mesh_object_name]
+    
+    if out.nil? and block_given?
+      return yield mesh_object_name
+    else
+      return out
+    end
   end
   
-  def find_mesh_datablock(mesh_name)
-    @batches.collect{ |mesh, mat, batch| mesh  }.uniq
+  def fetch_mesh_datablock(mesh_name)
+    out = @batches.collect{ |mesh, mat, batch| mesh  }.uniq
             .find{ |mesh|  mesh.name == mesh_name  }
+    
+    if out.nil? and block_given?
+      return yield mesh_name
+    else
+      return out
+    end
   end
   
-  def find_light(light_name)
-    @lights.find{ |light|  light.name == light_name }
+  def fetch_light(light_name)
+    out = @lights.find{ |light|  light.name == light_name }
+    
+    if out.nil? and block_given?
+      return yield light_name
+    else
+      return out
+    end
   end
   
-  def find_material_datablock(material_name)
-    @batches.collect{ |mesh, mat, batch| mat  }.uniq
+  def fetch_material_datablock(material_name)
+    out = @batches.collect{ |mesh, mat, batch| mat  }.uniq
             .find{ |mat|  mat.name == material_name  }
     
-    # @mesh_materials[material_name]
+    if out.nil? and block_given?
+      return yield material_name
+    else
+      return out
+    end
   end
   
   

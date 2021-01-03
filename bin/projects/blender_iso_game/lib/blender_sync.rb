@@ -206,11 +206,11 @@ class BlenderSync
           
           name = data['mesh_name']
           
-          mesh_datablock = @depsgraph.find_mesh_datablock(name)
-          if mesh_datablock.nil?
-            mesh_datablock = BlenderMeshData.new(name)
-            new_datablocks[name] = mesh_datablock
-          end
+          mesh_datablock =
+            @depsgraph.fetch_mesh_datablock(name) do
+              mesh_datablock = BlenderMeshData.new(name)
+              new_datablocks[name] = mesh_datablock
+            end
           
           puts "load: #{data.inspect}"
           mesh_datablock.load_data(data)
@@ -263,12 +263,11 @@ class BlenderSync
         # (same pattern as mesh datablock manipulation)
         # retrieve existing material and edit its properties
         
-        mat = @depsgraph.find_material_datablock(data['name'])
-        
-        if mat.nil?
-          mat = BlenderMaterial.new(data['name'])
-          new_materials[mat.name] = mat
-        end
+        mat =
+          @depsgraph.fetch_material_datablock(data['name']) do
+            mat = BlenderMaterial.new(data['name'])
+            new_materials[mat.name] = mat
+          end
         
         # p data['color'][1..3] # => data is already an array of floats
         color = RubyOF::FloatColor.rgb(data['color'][1..3])
@@ -281,9 +280,29 @@ class BlenderSync
     end
     
     
+    
+    # (lambda closes on the new_materials Hash, so it is passed implicity)
+    get_material = ->(material_name) do 
+      puts "material name: #{material_name.inspect}"
+      
+      if material_name == ''
+        # (can't use nil, b/c nil means this field was not set)
+        @default_material
+      else
+        @depsgraph.fetch_material_datablock(material_name) do
+          new_materials.fetch(material_name) do
+            raise "Could not find material '#{material_name}'"
+          end
+        end
+      end
+    end
+    
+    
+        
     # Hash mapping {mesh object name => material name}
     material_map = blender_data['material_map']
     p material_map
+    
     
     
     blender_data['objects']&.tap do |object_list|
@@ -297,111 +316,50 @@ class BlenderSync
           
           
           # if 'data' field is set, assume that linkage must be updated
-          name = data['name']
           
-          mesh_entity = @depsgraph.find_mesh_object(name)
-          if mesh_entity.nil?
-            datablock_name = data['data']
-            
-            
-            # 
-            # find associated underlying mesh datablock
-            # 
-            
-            # look for datablock in depsgraph
-            # (if it's not in the depsgraph yet, it must be something that needs to be added on this frame, so it should be in new_datablocks)
-            mesh_datablock = 
-              @depsgraph.find_mesh_datablock(datablock_name) ||
-              new_datablocks[datablock_name]
-            
-            if mesh_datablock.nil?
-              raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
-            end
-            
-            
-            # 
-            # create new mesh object
-            # 
-            
-            mesh_entity = BlenderMesh.new(name, mesh_datablock)
-            
-            # TODO: move further down and require material in initializer
-            
-            
-            
-            # any entity that is added to a batch must have an associated material, otherwise, things start to get weird -> You will get a nil inside the batch... and then when you try to pull materials out of the depsgraph you can pull a nil... it's a bad time.
-            
-            # 
-            # associate with material
-            # 
-            material_map[name].tap do |material_name|
-              puts "material name: #{material_name.inspect}"
-              material = 
-                if material_name == ''
-                  @default_material
-                else
-                  @depsgraph.find_material_datablock(material_name) || 
-                  new_materials[material_name]
+          mesh_entity =
+            @depsgraph.fetch_mesh_object(data['name']) do |name|
+              
+              mesh_datablock = 
+                data['data'].yield_self do |datablock_name|
+                  
+                  @depsgraph.fetch_mesh_datablock(datablock_name) do
+                    new_datablocks.fetch(datablock_name) do
+                      raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
+                    end
+                  end
+                  
                 end
               
-              p material
+              material = get_material[material_map[name]]
               
-              if material.nil?
-                raise "Could not find material named '#{material_name}' assigned to mesh object '#{mesh_entity.name}'"
+              BlenderMesh.new(name, mesh_datablock, material).tap do |entity|
+                @depsgraph.add entity
               end
-              
-              
-              
-              mesh_entity.material = material
             end
-            
-            
-            
-            
-            
-            
-            # 
-            # add mesh object to dependency graph
-            # 
-            
-            @depsgraph.add mesh_entity
-          end
           
           
           # 
           # rebind materials for existing objects
           # 
           
-          # find desired material name
-          # check against existing material
-          # if material has changed:
-            # rebind material
-            # change batch (remove from current, add to new batch)
+          # (material mappings should be sent every update for every mesh obj)
           
-          
-          puts ">>entity name: #{mesh_entity.name}"
-          puts ">>current mat name: #{mesh_entity.material.name}"
-          puts ">>material name: #{data['material'].inspect}"
-          
-          material_map[mesh_entity.name]&.tap do |material_name|
-            puts "material name: #{material_name.inspect}"
+          material_map[mesh_entity.name].tap do |material_name|
+            puts ">> entity name: #{mesh_entity.name}"
+            puts ">> current mat name: #{mesh_entity.material.name}"
+            puts ">> material name: #{material_name.inspect}"
+            
+            if material_name.nil?
+              raise "ERROR: Material name for mesh entity '#{mesh_entity.name}' not recieved from Blender. Can not specify material. Please at least specify '' (empty string) to denote use of default material. "
+            end
             
             if material_name != mesh_entity.material.name
               # find material
-              material = 
-                if material_name == ''
-                  # (can't use nil, b/c nil means this field was not set)
-                  @default_material
-                else
-                  @depsgraph.find_material_datablock(material_name) || 
-                  new_materials[material_name]
-                end
-              
-              p material
-              
-              if material.nil?
-                raise "Could not find material named '#{material_name}' assigned to mesh object '#{mesh_entity.name}'"
-              end
+              material = get_material[material_name]
+              # ^ get material first just in case there is an error
+              #   Thus, if the material does not exist
+              #   then the exception hits here and the depsgraph is preserved.
               
               # remove from existing batch
               @depsgraph.delete mesh_entity.name, 'MESH'
@@ -417,24 +375,22 @@ class BlenderSync
           
           
           
-          
-          
-          
           data['transform']&.tap do |transform_data|
             mesh_entity.load_transform(transform_data)
           end
+        
         
         when 'LIGHT'
           # load transform AND data for lights here as necessary
           # ('data' field has already been linked to necessary data)
           name = data['name']
           
-          light = @depsgraph.find_light(name)
-          if light.nil?
-            light = BlenderLight.new(name)
-            
-            @depsgraph.add light
-          end
+          light =
+            @depsgraph.fetch_light(name) do
+              BlenderLight.new(name).tap do |light|
+                @depsgraph.add light
+              end
+            end
           
           light.disable()
           
@@ -477,6 +433,11 @@ class BlenderSync
   
   
   private
+  
+  def foo_(material_name: nil,
+           new_materials: nil)
+    
+  end
   
   
   def sync_window_position(blender_pid: nil)
