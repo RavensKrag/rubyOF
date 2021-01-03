@@ -240,7 +240,15 @@ class BlenderSync
     
     
     if @default_material.nil?
-      @default_material = BlenderMaterial.new('default')
+      @default_material = BlenderMaterial.new('')
+      # ^ default material name needs to be '' (empty string)
+      #   because that's the string that the Blender Python script
+      #   sends when no material is bound.
+      #   (I could change it something else, but this seems ok for now)
+      # 
+      #   If the strings do not match, the default material gets rebound
+      #   every frame, which can be very expensive / wasteful.
+      
       
       @default_material.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
       @default_material.shininess = 64
@@ -314,6 +322,10 @@ class BlenderSync
             mesh_entity = BlenderMesh.new(name, mesh_datablock)
             
             
+            
+            
+            # any entity that is added to a batch must have an associated material, otherwise, things start to get weird -> You will get a nil inside the batch... and then when you try to pull materials out of the depsgraph you can pull a nil... it's a bad time.
+            
             # 
             # associate with material
             # 
@@ -337,12 +349,68 @@ class BlenderSync
             mesh_entity.material = material
             
             
+            
+            
             # 
             # add mesh object to dependency graph
             # 
             
             @depsgraph.add mesh_entity
           end
+          
+          
+          # 
+          # rebind materials for existing objects
+          # 
+          
+          # find desired material name
+          # check against existing material
+          # if material has changed:
+            # rebind material
+            # change batch (remove from current, add to new batch)
+          
+          
+          puts ">>entity name: #{mesh_entity.name}"
+          puts ">>current mat name: #{mesh_entity.material.name}"
+          puts ">>material name: #{data['material'].inspect}"
+          
+          
+          data['material']&.tap do |material_name|
+            puts "material name: #{material_name.inspect}"
+            
+            if material_name != mesh_entity.material.name
+              # find material
+              material = 
+                if material_name == ''
+                  # (can't use nil, b/c nil means this field was not set)
+                  @default_material
+                else
+                  @depsgraph.find_material_datablock(material_name) || 
+                  new_materials[material_name]
+                end
+              
+              p material
+              
+              if material.nil?
+                raise "Could not find material named '#{material_name}' assigned to mesh object '#{mesh_entity.name}'"
+              end
+              
+              # remove from existing batch
+              @depsgraph.delete mesh_entity.name, 'MESH'
+              
+              # bind new material
+              mesh_entity.material = material
+              
+              # assign to new batch
+              @depsgraph.add mesh_entity
+              
+            end
+          end
+          
+          
+          
+          
+          
           
           data['transform']&.tap do |transform_data|
             mesh_entity.load_transform(transform_data)

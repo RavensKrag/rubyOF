@@ -372,24 +372,35 @@ class RubyOF(bpy.types.RenderEngine):
                     obj_data['data'] = obj.data.name
                     datablock_list.append(obj.data)
                 
-                
-                # Update material linkage if this material was updated
-                
-                # NOTE: object not marked as updated when a new material slot is added / changes are made to it's material. Thus, the depsgraph check here is not helpful, and actually is actively harmful.
-                
-                # if mat in updated_materials:
-                
-                # if depsgraph.id_type_updated('MATERIAL'):
-                # print("material updated detected")
+                obj_export.append(obj_data)
+            
+            # Update material linkage if this material was updated
+            
+            # NOTE: object not marked as updated when a new material slot is added / changes are made to it's material. Thus, the depsgraph check here is not helpful, and actually is actively harmful.
+            
+            
+            # information about material linkages
+            # (send all info every frame)
+            # (RubyOF will figure out whether to rebind or not)
+            for obj in bpy.data.objects:
+                # print(type(obj))
                 if isinstance(obj.data, bpy.types.Mesh):
+                    print("found mesh")
+                    
+                    obj_data = {
+                        'name': obj.name_full,
+                        'type': obj.type,
+                    }
+                    
                     if(len(obj.material_slots) > 0):
                         mat = obj.material_slots[0].material
                         obj_data['material'] = mat.name
                     else:
                         obj_data['material'] = '' # signal deleted mat?
                         # (then ruby needs to use the default material)
-                
-                obj_export.append(obj_data)
+                    
+                    obj_export.append(obj_data)
+            
             
             datablock_export = self.export_unique_datablocks(datablock_list)
         # ----------

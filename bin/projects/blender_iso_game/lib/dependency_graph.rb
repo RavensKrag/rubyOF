@@ -211,8 +211,8 @@ class DependencyGraph
     
     [
       # ['camera',     (@cameras.keys - ['viewport_camera']) ],
-      [BlenderMesh,  @mesh_objects.keys],
-      [BlenderLight, @lights.collect{ |x| x.name } ]
+      ['MESH',  @mesh_objects.keys],
+      ['LIGHT', @lights.collect{ |x| x.name } ]
     ].each do |type, names|
       (names - active).each do |entity_name|
         delete entity_name, type # also removes empty batches
@@ -247,12 +247,19 @@ class DependencyGraph
     return entity
   end
   
+  # not completely symmetric with #add
+  # (this takes strings for types, #add takes ClassObjects)
+  # (but #delete needs to take strings b/c of how case equality === works)
   def delete(entity_name, entity_type)
+    puts "deleting: #{[entity_name, entity_type].inspect}"
+    
     case entity_type
-    when BlenderMesh
+    when 'MESH'
       entity = @mesh_objects[entity_name]
       
       batch, i = find_batch_with_index @batches, entity
+      
+      # p batch
       
       batch.delete(entity)
       
@@ -279,7 +286,7 @@ class DependencyGraph
         # so it should drop out on it's own.
       
       # ^ for these two reasons, it is better to not have additional collections for these things. waiting a little bit to extract by name might not actually be that bad.
-    when BlenderLight
+    when 'LIGHT'
       @lights.delete_if{ |light|  light.name == entity_name }
     end
     
