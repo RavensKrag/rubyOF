@@ -258,6 +258,8 @@ class RubyOF(bpy.types.RenderEngine):
         datablock_export = []
         material_export = []
         
+        active_object = context.active_object
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
@@ -291,7 +293,7 @@ class RubyOF(bpy.types.RenderEngine):
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
             
             
-        elif context.active_object.mode == 'EDIT':
+        elif active_object != None and active_object.mode == 'EDIT':
             # editing one object: only send edits to that single mesh
             
             bpy.ops.object.editmode_toggle()
@@ -299,7 +301,6 @@ class RubyOF(bpy.types.RenderEngine):
             # bpy.ops.object.mode_set(mode= 'OBJECT')
             
             print("mesh edit detected")
-            active_object = context.active_object
             print(active_object)
             
             obj_data = {
