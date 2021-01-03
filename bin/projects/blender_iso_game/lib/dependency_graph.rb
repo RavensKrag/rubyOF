@@ -327,10 +327,10 @@ class DependencyGraph
   end
   
   def find_material_datablock(material_name)
-    # @batches.collect{ |mesh, mat, batch| mat  }.uniq
-    #         .find{ |mat|  mat.name == material_name  }
+    @batches.collect{ |mesh, mat, batch| mat  }.uniq
+            .find{ |mat|  mat.name == material_name  }
     
-    @mesh_materials[material_name]
+    # @mesh_materials[material_name]
   end
   
   

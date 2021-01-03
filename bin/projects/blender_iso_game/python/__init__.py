@@ -283,6 +283,8 @@ class RubyOF(bpy.types.RenderEngine):
                         mat = obj.material_slots[0].material
                         obj_data['material'] = mat.name
                         material_export.append(self.__pack_material(mat))
+                    else:
+                        obj_data['material'] = ''
                 
                 obj_export.append(obj_data)
             
@@ -317,6 +319,8 @@ class RubyOF(bpy.types.RenderEngine):
                     mat = active_object.material_slots[0].material
                     obj_data['material'] = mat.name
                     material_export.append(self.__pack_material(mat))
+                else:
+                    obj_data['material'] = ''
             
             
             obj_export = [ obj_data ]

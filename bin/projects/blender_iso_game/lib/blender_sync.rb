@@ -239,20 +239,36 @@ class BlenderSync
     
     
     
-    if @test_material.nil?
-      @test_material = BlenderMaterial.new('default')
+    if @default_material.nil?
+      @default_material = BlenderMaterial.new('default')
       
-      @test_material.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-      @test_material.shininess = 64
+      @default_material.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
+      @default_material.shininess = 64
     end
+    
+    
+    
+    new_materials = Hash.new
     
     blender_data['materials']&.tap do |material_list|
       material_list.each do |data|
+        # (same pattern as mesh datablock manipulation)
+        # retrieve existing material and edit its properties
+        
+        mat = @depsgraph.find_material_datablock(data['name'])
+        
+        if mat.nil?
+          mat = BlenderMaterial.new(data['name'])
+          new_materials[mat.name] = mat
+        end
+        
         # p data['color'][1..3] # => data is already an array of floats
         color = RubyOF::FloatColor.rgb(data['color'][1..3])
         puts color
         
-        @test_material.diffuse_color = color
+        mat.diffuse_color = color
+        
+        # NOTE: how do I link new materials to existing objects?
       end
     end
     
@@ -281,14 +297,14 @@ class BlenderSync
             # 
             
             # look for datablock in depsgraph
-            mesh_datablock = @depsgraph.find_mesh_datablock(datablock_name)
+            # (if it's not in the depsgraph yet, it must be something that needs to be added on this frame, so it should be in new_datablocks)
+            mesh_datablock = 
+              @depsgraph.find_mesh_datablock(datablock_name) ||
+              new_datablocks[datablock_name]
             
-            # if it's not in the depsgraph yet, it must be something that needs to be added on this frame, so it should be in new_datablocks
             if mesh_datablock.nil?
-              mesh_datablock = new_datablocks[datablock_name]
+              raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
             end
-            
-            raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." if mesh_datablock.nil?
             
             
             # 
@@ -301,10 +317,24 @@ class BlenderSync
             # 
             # associate with material
             # 
+            puts "material name: #{data['material'].inspect}"
+            material = 
+              if data['material'] == ''
+                @default_material
+              else
+                @depsgraph.find_material_datablock(data['material']) || 
+                new_materials[data['material']]
+              end
             
-            # mat = @depsgraph.find_material_datablock("__default__")
-            # mesh_entity.material = mat
-            mesh_entity.material = @test_material
+            p material
+            
+            if material.nil?
+              raise "Could not find material named '#{data['material']}' assigned to mesh object '#{mesh_entity.name}'"
+            end
+            
+            
+            
+            mesh_entity.material = material
             
             
             # 

@@ -247,11 +247,11 @@ class ViewportCamera
     self.position    = GLM::Vec3.new(*(data['position'][1..3]))
     self.orientation = GLM::Quat.new(*(data['rotation'][1..4]))
     
-    puts "position"
-    p self.position
+    # puts "position"
+    # p self.position
     
-    puts "orientation"
-    p self.orientation
+    # puts "orientation"
+    # p self.orientation
     
     # Viewport camera does not have a scale the way that other entities do.
     # There is a 'scale', but that's listed as 'ortho_scale'
