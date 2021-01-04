@@ -131,6 +131,11 @@ class DependencyGraph
     ofEnableDepthTest()
     ofEnableLighting() # // enable lighting //
     
+    
+    ofEnableAlphaBlending()
+    # ^ doesn't seem to do anything, at least not right now
+    
+    
     # 
     # enable lights
     # 
@@ -141,6 +146,7 @@ class DependencyGraph
   end
   
   def render_scene
+    
     # 
     # render entities
     # 
@@ -468,26 +474,6 @@ class DependencyGraph
     @lights = coder.map['lights']
   end
   
-end
-
-class BatchKey
-  attr_reader :mesh, :mat
-  
-  def initialize(mesh, mat)
-    @mesh = mesh
-    @mat = mat
-  end
-  
-  def hash
-    [@mesh.__id__, @mat.__id__].hash
-  end
-  
-  def ==(other)
-    self.class == other.class and 
-      @mesh == other.mesh and @mat == other.mat
-  end
-  
-  alias :eql? :==
 end
 
   class RenderBatch

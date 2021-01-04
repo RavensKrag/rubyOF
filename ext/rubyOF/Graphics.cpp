@@ -181,6 +181,10 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 		.define_method("ofEnableLighting",  &ofEnableLighting)
 		.define_method("ofDisableLighting", &ofDisableLighting)
 		
+		.define_method("ofEnableAlphaBlending",  &ofEnableAlphaBlending)
+		.define_method("ofDisableAlphaBlending", &ofDisableAlphaBlending)
+		
+		
 		.define_method("ofGetLightingEnabled", &ofGetLightingEnabled)
 		
 		.define_method("ofSetSmoothLighting",  &ofSetSmoothLighting)
