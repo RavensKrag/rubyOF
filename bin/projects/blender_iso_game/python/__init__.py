@@ -1,7 +1,7 @@
 bl_info = {
     "name": "RubyOF renderer engine",
     "author": "Jason Ko",
-    "version": (0, 0, 1),
+    "version": (0, 0, 2),
     "blender": (2, 90, 1),
     "location": "Render",
     "description": "Integration with external real-time RubyOF renderer for games, etc",
@@ -29,7 +29,7 @@ from bpy.props import (StringProperty,
                        IntProperty,
                        FloatProperty,
                        EnumProperty,
-                       )
+                       FloatVectorProperty)
 
 import time
 
@@ -58,6 +58,45 @@ def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
     
     return sensor_x;
     
+class IPC_Helper():
+    def __init__(self, fifo_path):
+        self.fifo_path = fifo_path
+    
+    def write(self, message):
+        if not os.path.exists(self.fifo_path):
+            return
+        
+        print("-----")
+        print("=> FIFO open")
+        pipe = open(self.fifo_path, 'w')
+        
+        
+        start_time = time.time()
+        try:
+            # text = text.encode('utf-8')
+            
+            pipe.write(message + "\n")
+            
+            
+            print("=> msg len:", len(message))
+        except IOError as e:
+            print("broken pipe error (suppressed exception)")
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        print("=> fifo data transfer: ", dt, " msec" )
+        
+        pipe.close()
+        print("=> FIFO closed")
+        print("-----")
+    
+    
+    # def __del__(self):
+    #     pass
+        
+        # self.fifo.close()
+        # print("FIFO closed")
+    
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -73,8 +112,14 @@ class RubyOF(bpy.types.RenderEngine):
     def __init__(self):
         self.first_time = True
         
-        self.fifo_path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm"
+        self.to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
         
+        
+        data = {
+            'interrupt': 'RESET'
+        }
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
@@ -91,17 +136,15 @@ class RubyOF(bpy.types.RenderEngine):
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.
     def __del__(self):
-        os.rmdir(self.shm_dir)
+        pass
+        # os.rmdir(self.shm_dir)
+        # ^ can't remove this on exit, as there may still be files inside that RubyOF needs. Not sure who should delete this dir or when, but it's not as straightforward as I thought.
+        # Also, I don't think this function can delete a directory that still has files inside.
+        
         
         # self.outbound_queue.put(None) # signal the thread to stop
         # self.io_thread.join() # wait for thread to finish
-        
-        
-        # self.fifo.close()
-        # print("FIFO closed")
-        
-        
-        
+    
     
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
@@ -128,33 +171,75 @@ class RubyOF(bpy.types.RenderEngine):
         layer.rect = rect
         self.end_result(result)
     
-    
-    def fifo_write(self, message):
-        if os.path.exists(self.fifo_path):
-            print("-----")
-            print("=> FIFO open")
-            pipe = open(self.fifo_path, 'w')
-            
-            
-            start_time = time.time()
-            try:
-                # text = text.encode('utf-8')
-                
-                pipe.write(message + "\n")
-                
-                
-                print("=> msg len:", len(message))
-            except IOError as e:
-                print("broken pipe error (suppressed exception)")
-            
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            print("=> fifo data transfer: ", dt, " msec" )
-    
-            pipe.close()
-            print("=> FIFO closed")
-            print("-----")
-    
+    # For viewport renders, this method is called whenever Blender redraws
+    # the 3D viewport. The renderer is expected to quickly draw the render
+    # with OpenGL, and not perform other expensive work.
+    # Blender will draw overlays for selection and editing on top of the
+    # rendered image automatically.
+    # 
+    # NOTE: if this function is too slow it causes viewport flicker
+    def view_draw(self, context, depsgraph):
+        #
+        # Update the viewport camera
+        #
+        region = context.region
+        rv3d = context.region_data # RegionView3D(bpy_struct)
+        coord = (region.width/2.0, region.height/2.0)
+        
+        v3du = bpy_extras.view3d_utils
+        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
+        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
+        
+        space = context.space_data # SpaceView3D(Space)
+        
+        # print(camera_direction)
+        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
+        
+        data = self.__pack_viewport_camera(
+            rotation         = rv3d.view_rotation,
+            position         = camera_origin,
+            lens             = space.lens,
+            perspective_fov  = self.__viewport_fov(rv3d),
+            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
+            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
+            near_clip        = space.clip_start,
+            far_clip         = space.clip_end,
+            view_perspective = rv3d.view_perspective
+        )
+        
+        if context.scene.my_custom_props.b_windowLink:
+            data['viewport_region'] = {
+                'width':  region.width,
+                'height': region.height,
+                'pid': os.getpid()
+            }
+        
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
+        
+        
+        #
+        # Render the viewport
+        #
+        region = context.region
+        scene = depsgraph.scene
+        
+        # Get viewport dimensions
+        dimensions = region.width, region.height
+        
+        # Bind shader that converts from scene linear to display space,
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        self.bind_display_space_shader(scene)
+        
+        
+        a = context.scene.my_custom_props.alpha
+        bgl.glClearColor(0*a,0*a,0*a,a)
+        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
+        
+        
+        self.unbind_display_space_shader()
+        bgl.glDisable(bgl.GL_BLEND)
     
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
@@ -164,43 +249,202 @@ class RubyOF(bpy.types.RenderEngine):
         region = context.region
         view3d = context.space_data
         scene = depsgraph.scene
-
-        # Get viewport dimensions
-        dimensions = region.width, region.height
+        
         print("view update ---")
+        
+        total_t0 = time.time()
+        
+        obj_export = []
+        datablock_export = []
+        material_export = []
+        
+        active_object = context.active_object
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
             
-            self.send_initial_data()
-        else:
-            if depsgraph.id_type_updated('OBJECT'):
-                self.send_update_data(depsgraph)
             
-            if context.active_object.mode == 'EDIT':
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
-                # bpy.ops.object.mode_set(mode= 'OBJECT')
-                self.send_mesh_edit_update(depsgraph, context.active_object)
-                # bpy.ops.object.mode_set(mode= 'EDIT')
+            # Loop over all datablocks used in the scene.
+            # for datablock in depsgraph.ids:
+            
+            
+            # loop over all objects
+            for obj in bpy.data.objects:
+                obj_data = {
+                    'name': obj.name_full,
+                    'type': obj.type,
+                }
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
-
+                obj_data['transform'] = self.pack_transform(obj)
+                obj_data['data'] = obj.data.name
+                
+                obj_export.append(obj_data)
+            
+            # loop over all materials
+            for mat in bpy.data.materials:
+                if mat.users > 0:
+                    material_export.append(self.__pack_material(mat))
+            
+            datablock_list = [ obj.data for obj in bpy.data.objects ]
+            datablock_export = self.export_unique_datablocks(datablock_list)
+            
+            # TODO: want to separate out lights from meshes (objects)
+            # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
+            
+            
+        elif active_object != None and active_object.mode == 'EDIT':
+            # editing one object: only send edits to that single mesh
+            
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.editmode_toggle()
+            # bpy.ops.object.mode_set(mode= 'OBJECT')
+            
+            print("mesh edit detected")
+            print(active_object)
+            
+            obj_data = {
+                    'name': active_object.name_full,
+                    'type': active_object.type,
+                    'data': active_object.data.name
+                }
+            
+            obj_export = [ obj_data ]
+            
+            datablock_export = [
+                self.pack_mesh_data(active_object.data)
+            ]
+            
+            # send material data if any material was changed
+            # (maybe it was this material? no way to be sure, so just send it)
+            if(depsgraph.id_type_updated('MATERIAL')):
+                if(len(active_object.material_slots) > 0):
+                    mat = active_object.material_slots[0].material
+                    material_export = [
+                        self.__pack_material(mat)
+                    ]
+            
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.editmode_toggle()
+            # bpy.ops.object.mode_set(mode= 'EDIT')
+            
+        else:
+            # It is possible multiple things have been updated.
+            # Could by a mixture of objects and/or materials.
+            # Only send the data that has changed.
+            
+            datablock_list = [] # datablocks that need to be packed up
+            
+            print("there are", len(depsgraph.updates), "updates to process")
+            
+            # Loop over all object instances in the scene.
+            updated_objects   = []
+            updated_materials = []
+            
+            for update in depsgraph.updates:
+                obj = update.id
+                
+                if isinstance(obj, bpy.types.Object):
+                    obj_data = {
+                        'name': obj.name_full,
+                        'type': obj.type,
+                    }
+                    
+                    if update.is_updated_transform:
+                        obj_data['transform'] = self.pack_transform(obj)
+                    
+                    if update.is_updated_geometry:
+                        obj_data['data'] = obj.data.name
+                        datablock_list.append(obj.data)
+                    
+                    obj_export.append(obj_data)
+                
+                # only send data for updated materials
+                if isinstance(obj, bpy.types.Material):
+                    mat = obj
+                    material_export.append(self.__pack_material(mat))
+            
+            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
+            
+            datablock_export = self.export_unique_datablocks(datablock_list)
+        # ----------
         
         
-        # print("not first time")
-        
-        # Test if any material was added, removed or changed.
-        if depsgraph.id_type_updated('MATERIAL'):
-            print("Materials updated")
-        
-        print("there are", len(depsgraph.updates), "updates to process")
+        # full list of all objects, by name (helps Ruby delete old objects)
+        object_list = [ instance.object.name_full for instance 
+                        in depsgraph.object_instances ]
         
         
         
+        # information about material linkages
+        # (send all info every frame)
+        # (RubyOF will figure out whether to rebind or not)
+        material_map = {}
+        for obj in bpy.data.objects:
+            if isinstance(obj.data, bpy.types.Mesh):
+                print("found mesh")
+                
+                material_name = ''
+                # ^ default material name
+                #   tells RubyOF to bind default material
+                
+                # if there is a material bound, use that instead of the default
+                if(len(obj.material_slots) > 0):
+                    mat = obj.material_slots[0].material
+                    material_name = mat.name
+                
+                # map { mesh object => material }
+                material_map[obj.name_full] = material_name
         
+        
+        total_t1 = time.time()
+        dt = (total_t1 - total_t0) * 1000
+        print("TOTAL TIME: ", dt, " msec" )
+        
+        
+        data = {
+            'timestamps' : {
+                'start_time': total_t0,
+                'end_time':   total_t1
+            },
+            
+            'all_entity_names' : object_list,
+            
+            'objects' : obj_export,
+            'datablocks' : datablock_export,
+            
+            'materials' : material_export,
+            'material_map' : material_map
+        }
+        
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
+        
+        
+        
+        
+        # TODO: serialize and send materials that have changed
+        # TODO: send information on which objects are using which materials
+        
+        # note: in blender, one object can have many material slots
     
+    # ---- private helper methods ----
+    
+    
+    def export_unique_datablocks(self, datablock_list):
+        datablock_export = []
+        
+        unique_datablocks = list(set(datablock_list))
+        for datablock in unique_datablocks:
+            if isinstance(datablock, bpy.types.Mesh):
+                datablock_export.append( self.pack_mesh_data(datablock) )
+            elif isinstance(datablock, bpy.types.Light):
+                datablock_export.append( self.__pack_light(datablock) )
+            else:
+                continue
+        
+        return datablock_export
+        
     
     def pack_transform(self, obj):
         # 
@@ -388,48 +632,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         return data
     
-    def pack_light_data(self, light):
-        data = {
-            'light_name': light.name,
-            'type': 'bpy.types.Light', 
-            'color': [
-                'rgb',
-                light.color[0],
-                light.color[1],
-                light.color[2]
-            ],
-            # (there is a property on the object called "color" but that is not what you want)
-            
-            'light_type': light.type,
-            
-            'ambient_color': [
-                'rgb',
-            ],
-            'diffuse_color': [
-                'rgb'
-            ],
-            'attenuation':[
-                'rgb'
-            ]
-            
-        }
-        
-        
-        
-        if light.type == 'AREA':
-            data.update({
-                'size_x': ['float', light.size],
-                'size_y': ['float', light.size_y]
-            })
-        elif light.type == 'SPOT':
-            data.update({
-                'size': ['radians', light.spot_size]
-            })
-        
-        
-        return data
-    
-    
         
     #  sub.prop(light, "size", text="Size X")
     # sub.prop(light, "size_y", text="Y")
@@ -467,334 +669,102 @@ class RubyOF(bpy.types.RenderEngine):
     
     
     
-    def send_initial_data(self):
-        total_t0 = time.time()
-        
-        # Loop over all datablocks used in the scene.
-        # for datablock in depsgraph.ids:
-        
-        
-        # not sure whether to use bpy.data.objects or [instance.object for instance in depsgraph.object_instances]. Seems like they are the same unless maybe you're using instances (but linked duplicates are not instances)
-        
-        
-        datablock_export = []
-        
-        datablock_list = [ obj.data for obj in bpy.data.objects ]
-        unique_datablocks = list(set(datablock_list))
-        for datablock in unique_datablocks:
-            if isinstance(datablock, bpy.types.Mesh):
-                datablock_export.append( self.pack_mesh_data(datablock) )
-            elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.pack_light_data(datablock) )
-            else:
-                continue
-        
-        obj_export = []
-        
-        # loop over all objects
-        for obj in bpy.data.objects:
-            obj_data = {
-                'name': obj.name_full,
-                'type': obj.type,
-            }
-            
-            obj_data['transform'] = self.pack_transform(obj)
-            obj_data['data'] = obj.data.name
-            
-            obj_export.append(obj_data)
-        
-        # # loop over all objects
-        # for instance in depsgraph.object_instances:
-        #     obj = instance.object
-            
-        #     obj_data = {
-        #         'name': obj.name_full,
-        #         'type': obj.type,
-        #     }
-            
-        #     obj_data['transform'] = self.pack_transform(obj)
-        #     obj_data['data'] = obj.data.name
-            
-        #     obj_export.append(obj_data)
-        
-        
-        
-        # TODO: want to separate out lights from meshes (objects)
-        # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
-        
-        
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        output_string = json.dumps(data)
-        self.fifo_write(output_string)
-        
-        
-        
-    # TODO: need to update this loop as well - don't want to re-pack all of the data when one mesh being used by 4000 instances gets updated. only want to pack that mesh data up 1x, not 4000x.
-    def send_update_data(self, depsgraph):
-        total_t0 = time.time()
-        
-        
-        # Loop over all object instances in the scene.
-        
-        datablock_list = [] # datablocks that need to be packed up
-        
-        obj_export = []
-        for update in depsgraph.updates:
-            obj = update.id
-            
-            if isinstance(obj, bpy.types.Object):
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                if update.is_updated_transform:
-                    print("Transform updated: ", update.id.name, '(', type(update.id) ,')')
-                    obj_data['transform'] = self.pack_transform(obj)
-                
-                if update.is_updated_geometry:
-                    print("Data updated: ", update.id.name, '(', type(update.id) ,')', '  type: ', obj.type)
-                    obj_data['data'] = obj.data.name
-                    
-                    datablock_list.append(obj.data)
-                    
-                obj_export.append(obj_data)
-        
-        
-        datablock_export = []
-        
-        unique_datablocks = list(set(datablock_list))
-        for datablock in unique_datablocks:
-            if isinstance(datablock, bpy.types.Mesh):
-                datablock_export.append( self.pack_mesh_data(datablock) )
-            elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.pack_light_data(datablock) )
-            else:
-                continue
-        
-        
-        # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = []
-        for instance in depsgraph.object_instances:
-            obj = instance.object
-            object_list.append(obj.name_full)
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'all_entity_names' : object_list,
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        output_string = json.dumps(data)
-        self.fifo_write(output_string)
-        
-    
-    def send_mesh_edit_update(self, depsgraph, active_object):
-        print("mesh edit detected")
-        print(active_object)
-        
-        total_t0 = time.time()
-        
-        
-        # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = []
-        for instance in depsgraph.object_instances:
-            obj = instance.object
-            object_list.append(obj.name_full)
-        
-        
-        obj_export = [
-            {
-                'name': active_object.name_full,
-                'type': active_object.type,
-                'data': active_object.data.name
-            }
-        ]
-        
-        
-        datablock_export = [
-            self.pack_mesh_data(active_object.data)
-        ]   
-        
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
-        
-        data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'all_entity_names' : object_list,
-            
-            'datablocks' : datablock_export,
-            'objects' : obj_export
-        }
-        
-        
-        
-        output_string = json.dumps(data)
-        self.fifo_write(output_string)
-        
     
     
-    # For viewport renders, this method is called whenever Blender redraws
-    # the 3D viewport. The renderer is expected to quickly draw the render
-    # with OpenGL, and not perform other expensive work.
-    # Blender will draw overlays for selection and editing on top of the
-    # rendered image automatically.
-    def view_draw(self, context, depsgraph):
-        # NOTE: if this function is too slow and it causes viewport flicker
-        
-        #
-        # Update the viewport camera
-        #
-        region = context.region
-        rv3d = context.region_data # RegionView3D(bpy_struct)
-        coord = (region.width/2.0, region.height/2.0)
-        
-        v3du = bpy_extras.view3d_utils
-        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
-        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
-        
-        space = context.space_data # SpaceView3D(Space)
-        
-        
-        # print(camera_direction)
-        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
-        
-        # print(space.clip_start)
-        # print(space.clip_end)
-        # # ^ these are viewport properties, not camera object properties
-        
-        
-        h = region.height
-        w = region.width
-        
-        # camera sensor size:
-        # 36 mm is the default, with sensor fit set to 'AUTO'
-        # (this is also the default horizontal sensor fit)
-        # (the default vertical sensor fit is 24mm)
-        
-        print("focal length: ")
-        print(context.space_data.lens)
-        
-        
-        # 
-        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
-        # 
-        
-        # rv3d->dist * sensor_size / v3d->lens
-        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
-        
-            # (ortho_scale * context.space_data.lens) / rv3d.view_distance = sensor_size
-        
-        # with estimated ortho scale, compute sensor size
-        ortho_scale = context.scene.my_custom_props.ortho_scale
-        print('ortho scale -> sensor size')
-        sensor_size = ortho_scale * context.space_data.lens / rv3d.view_distance
-        print(sensor_size)
-        
-        # then, with that constant sensor size, compute the dynamic ortho scale
-        print('that sensor size -> ortho scale')
-        sensor_size = 71.98320027323571
-        ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens
-        print(ortho_scale)
-        
-        # ^ this works now!
-        #   but now I need to be able to automatically compute the sensor size...
-        
-        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
-        
-        
-        
-        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
-        vmat_inv = rv3d.view_matrix.inverted()
-        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
-        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
-        print('rv3d fov:')
-        print(fov)
-        
-        print('ortho view distance')
-        print(rv3d.view_distance)
-            # ^ rv3d.view_distance is inversely proportional to context.scene.my_custom_props.ortho_scale
-            
-            # as seen in a camera object,
-            # in blender, when ortho_scale is bigger
-            # then objects in the scene appear smaller.
-            
-        # print('rv3d fov -> ortho scale')
-        # ortho_scale = rv3d.view_distance * sensor_size / context.space_data.lens;
-        # print(ortho_scale)
-        
-        
-        mat_p = rv3d.perspective_matrix
-        mat_w = rv3d.window_matrix
-        mat_v = rv3d.view_matrix
-        
-        rot = rv3d.view_rotation
+    
+    @staticmethod
+    def __pack_light(light):
         data = {
+            'light_name': light.name,
+            'type': 'bpy.types.Light', 
+            'color': [
+                'rgb',
+                light.color[0],
+                light.color[1],
+                light.color[2]
+            ],
+            'light_type': light.type,
+            'ambient_color': [
+                'rgb',
+            ],
+            'diffuse_color': [
+                'rgb'
+            ],
+            'attenuation':[
+                'rgb'
+            ]
+        }
+        
+        if light.type == 'AREA':
+            data.update({
+                'size_x': ['float', light.size],
+                'size_y': ['float', light.size_y]
+            })
+        elif light.type == 'SPOT':
+            data.update({
+                'size': ['radians', light.spot_size]
+            })
+        
+        return data
+    
+    
+    @staticmethod
+    def __pack_material(material):
+        return {
+            'type': 'bpy.types.Material',
+            'name': material.name,
+            'color': [
+                'FloatColor_rgb',
+                material.rb_mat.color[0],
+                material.rb_mat.color[1],
+                material.rb_mat.color[2],
+            ],
+            'alpha': [
+                'float',
+                material.rb_mat.alpha
+            ],
+            'shininess': [
+                'float',
+                material.rb_mat.shininess
+            ]
+        }
+    
+    
+    @staticmethod
+    def __pack_viewport_camera(rotation, position,
+                            lens, perspective_fov, ortho_scale,
+                            near_clip, far_clip,
+                            view_perspective):
+        return {
             'viewport_camera' : {
                 'rotation':[
                     "Quat",
-                    rot.w,
-                    rot.x,
-                    rot.y,
-                    rot.z
+                    rotation.w,
+                    rotation.x,
+                    rotation.y,
+                    rotation.z
                 ],
                 'position':[
                     "Vec3",
-                    camera_origin.x,
-                    camera_origin.y,
-                    camera_origin.z
+                    position.x,
+                    position.y,
+                    position.z
                 ],
                 'lens':[
                     "mm",
-                    context.space_data.lens
+                    lens
                 ],
                 'fov':[
                     "deg",
-                    fov
+                    perspective_fov
                 ],
                 'near_clip':[
                     'm',
-                    space.clip_start
+                    near_clip
                 ],
                 'far_clip':[
                     'm',
-                    space.clip_end
+                    far_clip
                 ],
                 # 'aspect_ratio':[
                 #     "???",
@@ -802,73 +772,57 @@ class RubyOF(bpy.types.RenderEngine):
                 # ],
                 'ortho_scale':[
                     "factor",
-                    # context.scene.my_custom_props.ortho_scale
                     ortho_scale
                 ],
-                'view_perspective': rv3d.view_perspective,
-                'perspective_matrix':[
-                    'Mat4',
-                    mat_p[0][0], mat_p[0][1], mat_p[0][2], mat_p[0][3],
-                    mat_p[1][0], mat_p[1][1], mat_p[1][2], mat_p[1][3],
-                    mat_p[2][0], mat_p[2][1], mat_p[2][2], mat_p[2][3],
-                    mat_p[3][0], mat_p[3][1], mat_p[3][2], mat_p[3][3]
-                ],
-                'window_matrix':[
-                    'Mat4',
-                    mat_w[0][0], mat_w[0][1], mat_w[0][2], mat_w[0][3],
-                    mat_w[1][0], mat_w[1][1], mat_w[1][2], mat_w[1][3],
-                    mat_w[2][0], mat_w[2][1], mat_w[2][2], mat_w[2][3],
-                    mat_w[3][0], mat_w[3][1], mat_w[3][2], mat_w[3][3]
-                ],
-                'view_matrix':[
-                    'Mat4',
-                    mat_v[0][0], mat_v[0][1], mat_v[0][2], mat_v[0][3],
-                    mat_v[1][0], mat_v[1][1], mat_v[1][2], mat_v[1][3],
-                    mat_v[2][0], mat_v[2][1], mat_v[2][2], mat_v[2][3],
-                    mat_v[3][0], mat_v[3][1], mat_v[3][2], mat_v[3][3]
-                ]
+                'view_perspective': view_perspective,
             }
         }
+    
+    
+    @staticmethod
+    def __ortho_scale(scene, space, rv3d):
+        # 
+        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
+        # 
         
-        if context.scene.my_custom_props.b_windowLink:
-            data['viewport_region'] = {
-                'width':  region.width,
-                'height': region.height,
-                'pid': os.getpid()
-            }
+        # rv3d->dist * sensor_size / v3d->lens
+        # ortho_scale = rv3d.view_distance * sensor_size / space.lens;
         
-        output_string = json.dumps(data)
-        # self.outbound_queue.put(output_string)
-        self.fifo_write(output_string)
+            # (ortho_scale * space.lens) / rv3d.view_distance = sensor_size
         
+        # with estimated ortho scale, compute sensor size
+        ortho_scale = scene.my_custom_props.ortho_scale
+        print('ortho scale -> sensor size')
+        sensor_size = ortho_scale * space.lens / rv3d.view_distance
+        print(sensor_size)
         
-                
-                
+        # then, with that constant sensor size, compute the dynamic ortho scale
+        print('that sensor size -> ortho scale')
+        sensor_size = 71.98320027323571
+        ortho_scale = rv3d.view_distance * sensor_size / space.lens
+        print(ortho_scale)
         
+        # ^ this works now!
+        #   but now I need to be able to automatically compute the sensor size...
         
-        #
-        # Render the viewport
-        #
-        region = context.region
-        scene = depsgraph.scene
+        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
         
-        # Get viewport dimensions
-        dimensions = region.width, region.height
+        return ortho_scale
+    
+    @staticmethod
+    def __viewport_fov(rv3d):
+        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
+        vmat_inv = rv3d.view_matrix.inverted()
+        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
+        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
+        print('rv3d fov:')
+        print(fov)
         
-        # Bind shader that converts from scene linear to display space,
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
-        self.bind_display_space_shader(scene)
+        return fov
         
-        
-        a = context.scene.my_custom_props.alpha
-        bgl.glClearColor(0*a,0*a,0*a,a)
-        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
-        
-        
-        self.unbind_display_space_shader()
-        bgl.glDisable(bgl.GL_BLEND)
-
+    
+    
+    # --------------------------------
 
 
 #
@@ -925,6 +879,49 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default = 1,
         min = 0,
         max = 100000
+        )
+
+
+# def update_rgb_nodes(self, context):
+#     pass
+    # mat = self.id_data
+    # nodes = [n for n in mat.node_tree.nodes
+    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
+
+    # for n in nodes:
+    #     n.outputs[0].default_value = self.rgb_controller
+
+class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
+    # diffuse color
+    # alpha
+    # shininess
+    
+    color: FloatVectorProperty(
+        name = "Color",
+        description = "Diffuse color",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0), # white is default
+        size = 3,
+        # min = 0.0,
+        # max = 1.0
+        )
+    
+    alpha: FloatProperty(
+        name = "alpha",
+        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
+        default = 1,
+        min = 0,
+        max = 1,
+        precision = 2,
+        step = 0.01
+        )
+    
+    shininess: FloatProperty(
+        name = "shininess",
+        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
+        default = 0.2,
+        min = 0,
+        max = 128
         )
 
 
@@ -1043,6 +1040,133 @@ class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
 
 
 
+class MaterialButtonsPanel:
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    # COMPAT_ENGINES must be defined in each subclass, external engines can add themselves here
+
+    @classmethod
+    def poll(cls, context):
+        mat = context.material
+        return mat and (context.engine in cls.COMPAT_ENGINES) and not mat.grease_pencil
+
+
+# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+#     bl_label = "Preview"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+#     def draw(self, context):
+#         self.layout.template_preview(context.material)
+
+
+# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
+#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
+#     _context_path = "material"
+#     _property_type = bpy.types.Material
+
+# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
+#     bl_label = "Viewport Display"
+#     bl_context = "material"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     bl_order = 10
+
+#     @classmethod
+#     def poll(cls, context):
+#         mat = context.material
+#         return mat and not mat.grease_pencil
+
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.use_property_split = True
+
+#         mat = context.material
+
+#         col = layout.column()
+#         col.prop(mat, "diffuse_color", text="Color")
+#         col.prop(mat, "metallic")
+#         col.prop(mat, "roughness")
+
+
+class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel):
+    bl_label = ""
+    bl_context = "material"
+    bl_options = {'HIDE_HEADER'}
+    COMPAT_ENGINES = {'RUBYOF'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        mat = context.material
+
+        if (ob and ob.type == 'GPENCIL') or (mat and mat.grease_pencil):
+            return False
+
+        return (ob or mat) and (context.engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+
+        mat = context.material
+        ob = context.object
+        slot = context.material_slot
+        space = context.space_data
+        if ob:
+            is_sortable = len(ob.material_slots) > 1
+            rows = 3
+            if is_sortable:
+                rows = 5
+
+            row = layout.row()
+
+            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
+
+            col = row.column(align=True)
+            col.operator("object.material_slot_add", icon='ADD', text="")
+            col.operator("object.material_slot_remove", icon='REMOVE', text="")
+
+            col.separator()
+
+            col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
+
+            if is_sortable:
+                col.separator()
+
+                col.operator("object.material_slot_move", icon='TRIA_UP', text="").direction = 'UP'
+                col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+
+        row = layout.row()
+        
+        if ob:
+            row.template_ID(ob, "active_material", new="material.new")
+
+            if slot:
+                icon_link = 'MESH_DATA' if slot.link == 'DATA' else 'OBJECT_DATA'
+                row.prop(slot, "link", icon=icon_link, icon_only=True)
+
+            if ob.mode == 'EDIT':
+                row = layout.row(align=True)
+                row.operator("object.material_slot_assign", text="Assign")
+                row.operator("object.material_slot_select", text="Select")
+                row.operator("object.material_slot_deselect", text="Deselect")
+
+        elif mat:
+            row.template_ID(space, "pin_id")
+        
+        # when you create a new texture slot, it is initialized empty
+        # so you need to make sure there's actually a material there
+        # or you get a Python error.
+        # (Blender won't crash, but this is still not good behavior.)
+        if mat:
+            col = layout.column()
+            col.prop(mat.rb_mat, "color",)
+            col.prop(mat.rb_mat, "alpha")
+            col.prop(mat.rb_mat, "shininess")
+
+
+
+
 
 
 
@@ -1103,9 +1227,11 @@ def get_panels():
 
 classes = (
     RubyOF_Properties,
+    RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
-    DATA_PT_spot
+    DATA_PT_spot,
+    RUBYOF_MATERIAL_PT_context_material
 )
 
 def register():
@@ -1121,7 +1247,13 @@ def register():
         bpy.utils.register_class(c)
     
     # Bind variable for properties
-    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(type=RubyOF_Properties)
+    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(
+            type=RubyOF_Properties
+        )
+    
+    bpy.types.Material.rb_mat = bpy.props.PointerProperty(
+            type=RubyOF_MATERIAL_Properties
+        )
     
 
 

@@ -187,8 +187,8 @@ void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgramma
 	shader.setUniform4fv("global_ambient", &ofGetGlobalAmbientColor().r);
 	shader.setUniform1f("mat_shininess",data.shininess);
     
-    shader.setUniform1f("instance_scale", mScale);
-    shader.setUniform1i("tex_width", mWidth);
+    // shader.setUniform1f("instance_scale", mScale);
+    // shader.setUniform1i("tex_width", mWidth);
     
     
     for (auto & uniform : uniformstex) {
@@ -261,21 +261,21 @@ void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, in
     uniformstex[name] = {textureTarget, textureID, textureLocation};
 }
 
-void ofxInstancingMaterial::setInstanceMagnitudeScale(float scale){
-    mScale = scale;
-}
+// void ofxInstancingMaterial::setInstanceMagnitudeScale(float scale){
+//     mScale = scale;
+// }
 
-float ofxInstancingMaterial::getInstanceMagnitudeScale(){
-    return mScale;
-}
+// float ofxInstancingMaterial::getInstanceMagnitudeScale(){
+//     return mScale;
+// }
 
-void ofxInstancingMaterial::setInstanceTextureWidth(int width){
-    mWidth = width;
-}
+// void ofxInstancingMaterial::setInstanceTextureWidth(int width){
+//     mWidth = width;
+// }
 
-float ofxInstancingMaterial::getInstanceTextureWidth(){
-    return mWidth;
-}
+// float ofxInstancingMaterial::getInstanceTextureWidth(){
+//     return mWidth;
+// }
 
 
 void ofxInstancingMaterial::setVertexShaderSource(const std::string &source){

@@ -151,17 +151,20 @@ class BlenderMesh < BlenderObject
   
   attr_reader :node
   attr_accessor :mesh
-  attr_accessor :color
+  
+  attr_accessor :material
   
   # dirty flag from BlenderObject is used to signal
   # that this instance has changed position
   # (only used when this entity is part of a GPU instanced batch)
   
-  def initialize(name, mesh_data)
+  def initialize(name, mesh_data, material)
     super(name)
     
     @mesh = mesh_data
     @node = RubyOF::Node.new
+    
+    @material = material
   end
   
   def_delegators :@node, :position,

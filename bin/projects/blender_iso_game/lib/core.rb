@@ -39,6 +39,7 @@ def usec(time)
 end
 
 
+load LIB_DIR/'entities'/'blender_material.rb'
 load LIB_DIR/'entities'/'blender_object.rb'
 load LIB_DIR/'entities'/'blender_mesh.rb'
 load LIB_DIR/'entities'/'viewport_camera.rb'
@@ -226,11 +227,13 @@ class Core
     
     # RubyProf.start
     
-    dump_yaml @depsgraph => @world_save_file
-    puts "world saved!"
+    # dump_yaml @depsgraph => @world_save_file
+    # puts "world saved!"
   end
   
   def load_world_state
+    return false
+    
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
       

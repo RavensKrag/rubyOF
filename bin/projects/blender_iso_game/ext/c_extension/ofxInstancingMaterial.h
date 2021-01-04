@@ -168,11 +168,11 @@ public:
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	
-	void setInstanceMagnitudeScale(float scale);
-	float getInstanceMagnitudeScale();
+	// void setInstanceMagnitudeScale(float scale);
+	// float getInstanceMagnitudeScale();
 	
-	void setInstanceTextureWidth(int width);
-	float getInstanceTextureWidth();
+	// void setInstanceTextureWidth(int width);
+	// float getInstanceTextureWidth();
 
 
 	
@@ -216,7 +216,7 @@ private:
 	
 	
 	std::map<std::string, TextureUnifom> uniformstex;
-	float mScale;
-	int mWidth;
+	// float mScale;
+	// int mWidth;
 	
 };

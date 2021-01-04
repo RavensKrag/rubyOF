@@ -21,10 +21,11 @@ uniform mat4 textureMatrix;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalMatrix;
 
-uniform float instance_scale;
-uniform int tex_width;
+// uniform float instance_scale;
+// uniform int tex_width;
 
-uniform sampler2DRect position_tex;
+// uniform sampler2DRect position_tex;
+uniform sampler2DRect transform_tex;
 // there are two types for textures:
 // sampler2DRect        non-normalized coordinates
 // sampler2D            normalized coordinates
@@ -87,41 +88,6 @@ void main (void){
     
     
     // // 
-    // // v3.1
-    // // instancing data texture + lighting, scale magnitude by uniform
-    // // PASS
-    
-    
-    // vec2 posTexCoord = vec2(gl_InstanceID/256, gl_InstanceID%256);
-    
-    // vec4 pos_data = TEXTURE(position_tex, posTexCoord+vec2(0.5, 0.5));
-    // // vec4 pos_data = vec4(0,0,0,0); // same as this. currently reading zero!
-    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    
-    // vec3 displacement = dirVec*pos_data.a*instance_scale;
-    
-    
-    // vec4 finalPos = position + vec4(displacement, 0);
-    
-    
-    
-    // vec4 eyePosition = modelViewMatrix * finalPos;
-    // vec3 tempNormal = (normalMatrix * normal).xyz;
-    // v_transformedNormal = normalize(tempNormal);
-    // v_normal = normal.xyz;
-    // v_eyePosition = (eyePosition.xyz) / eyePosition.w;
-    // //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
-    // v_worldPosition = (finalPos).xyz;
-
-    // v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
-    // #if HAS_COLOR
-    //     v_color = color;
-    // #endif
-    // gl_Position = modelViewProjectionMatrix * finalPos;
-    
-    
-    
-    // // 
     // // v3.2
     // // instancing data texture + lighting, scale magnitude by uniform
     // // width of texture comes from uniform
@@ -157,49 +123,8 @@ void main (void){
     
     
     
-    // // 
-    // // v3.3
-    // // instancing data texture + lighting, scale magnitude by uniform
-    // // + width of texture comes from uniform
-    // // + orientation encoded in texture (but not using orientation yet)
-    // // PASS
-    
-    // vec2 posTexCoord = vec2(gl_InstanceID/(tex_width/2),
-    //                         gl_InstanceID%(tex_width/2))
-    //                    + vec2((tex_width/2)*0, 0)
-    //                    + vec2(0.5, 0.5);
-    
-    // vec4 pos_data = TEXTURE(position_tex, posTexCoord);
-    
-    // vec3 dirVec = vec3((pos_data.r*2)-1, (pos_data.g*2)-1, (pos_data.b*2)-1);
-    
-    // vec3 displacement = dirVec*pos_data.a*instance_scale;
-    
-    
-    // vec4 finalPos = position + vec4(displacement, 0);
-    
-    
-    
-    // vec4 eyePosition = modelViewMatrix * finalPos;
-    // vec3 tempNormal = (normalMatrix * normal).xyz;
-    // v_transformedNormal = normalize(tempNormal);
-    // v_normal = normal.xyz;
-    // v_eyePosition = (eyePosition.xyz) / eyePosition.w;
-    // //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
-    // v_worldPosition = (finalPos).xyz;
-
-    // v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
-    // #if HAS_COLOR
-    //     v_color = color;
-    // #endif
-    // gl_Position = modelViewProjectionMatrix * finalPos;
-    
-    
-    
-    
-    
     // 
-    // v4.1
+    // v4.2
     // instancing data texture + lighting, scale magnitude by uniform
     // + width of texture comes from uniform
     // + transform matrix encoded in texture
@@ -223,10 +148,10 @@ void main (void){
     // ^ yes indeed, matricies are column major
     // https://stackoverflow.com/questions/33807535/translation-in-glsl-shader
     
-    mat4 transform = mat4(vec4(TEXTURE(position_tex, texCoord0).rgba),
-                          vec4(TEXTURE(position_tex, texCoord1).rgba),
-                          vec4(TEXTURE(position_tex, texCoord2).rgba),
-                          TEXTURE(position_tex, texCoord3));
+    mat4 transform = mat4(TEXTURE(transform_tex, texCoord0),
+                          TEXTURE(transform_tex, texCoord1),
+                          TEXTURE(transform_tex, texCoord2),
+                          TEXTURE(transform_tex, texCoord3));
     
     
     vec4 finalPos = transform * position;
