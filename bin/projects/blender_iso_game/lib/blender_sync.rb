@@ -273,7 +273,11 @@ class BlenderSync
         
         # p data['color'][1..3] # => data is already an array of floats
         color = RubyOF::FloatColor.rgb(data['color'][1..3])
+        color.a = data['alpha'][1]
+        
+        
         puts color
+        
         
         mat.diffuse_color = color
         
