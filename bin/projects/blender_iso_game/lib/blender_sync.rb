@@ -204,12 +204,11 @@ class BlenderSync
           # to later associate with mesh objects (transform)
           # which sets the foundation for instanced geometry
           
-          name = data['mesh_name']
-          
           mesh_datablock =
-            @depsgraph.fetch_mesh_datablock(name) do
-              mesh_datablock = BlenderMeshData.new(name)
-              new_datablocks[name] = mesh_datablock
+            @depsgraph.fetch_mesh_datablock(data['mesh_name']) do |name|
+              BlenderMeshData.new(name).tap do |mesh_datablock|
+                new_datablocks[name] = mesh_datablock
+              end
             end
           
           puts "load: #{data.inspect}"
@@ -217,19 +216,21 @@ class BlenderSync
           
           
         when 'bpy.types.Light'
-          # associate light data with light objects
-          # because I don't want to have linked lights in RubyOF
+          # I don't want to have linked lights in RubyOF.
+          # Thus, rather than create light datablocks here,
+          # link the deserialized JSON message into the object 'data' field
+          # so it all can be unpacked together in a later phase
+          
           blender_data['objects']&.tap do |object_list|
+            
             object_list
-            .select{|obj_data|  obj_data['type'] == 'LIGHT' }
-            .each do |light_data|
-              if light_data['data'] == data['light_name']
-                light_data['data'] = data
-              end
-            end
+            .select{|o| o['type'] == 'LIGHT' }
+            .find{  |o| o['data'] == data['light_name'] }
+            .tap{   |o| o['data'] = data }
+            
           end
-        when 'bpy.types.Material'
-          puts "material recieved"
+          
+          
         end
       end
     end
@@ -265,8 +266,9 @@ class BlenderSync
         
         mat =
           @depsgraph.fetch_material_datablock(data['name']) do
-            mat = BlenderMaterial.new(data['name'])
-            new_materials[mat.name] = mat
+            BlenderMaterial.new(data['name']).tap do |mat|
+              new_materials[mat.name] = mat
+            end
           end
         
         # p data['color'][1..3] # => data is already an array of floats
@@ -383,10 +385,9 @@ class BlenderSync
         when 'LIGHT'
           # load transform AND data for lights here as necessary
           # ('data' field has already been linked to necessary data)
-          name = data['name']
           
           light =
-            @depsgraph.fetch_light(name) do
+            @depsgraph.fetch_light(data['name']) do |name|
               BlenderLight.new(name).tap do |light|
                 @depsgraph.add light
               end
@@ -433,12 +434,6 @@ class BlenderSync
   
   
   private
-  
-  def foo_(material_name: nil,
-           new_materials: nil)
-    
-  end
-  
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
