@@ -132,8 +132,10 @@ class DependencyGraph
     ofEnableLighting() # // enable lighting //
     
     
-    ofEnableAlphaBlending()
-    # ^ doesn't seem to do anything, at least not right now
+    # ofEnableAlphaBlending()
+    # # ^ doesn't seem to do anything, at least not right now
+    
+    ofEnableBlendMode(:alpha)
     
     
     # 
