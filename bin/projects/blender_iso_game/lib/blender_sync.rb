@@ -279,7 +279,29 @@ class BlenderSync
         puts color
         
         
-        mat.diffuse_color = color
+        mat.diffuse_color  = color
+        
+        
+        
+        # Default values from 
+        # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
+        
+        # mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
+        # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
+        # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+        # mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+        
+        
+        # Defaults, but with 0 alpha channel
+        # (all alpha will now come from diffuse, because different components are combined with addition)
+        
+        mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
+        mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
+        mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
+        
+        
+        
+        
         
         # NOTE: how do I link new materials to existing objects?
       end
