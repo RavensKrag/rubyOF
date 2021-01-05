@@ -287,18 +287,6 @@ class DependencyGraph
       @mesh_objects.delete entity.name
       
       
-      
-      # TODO: remove material if unused
-        # if no batches include the material, it will drop out of triple store.
-        # This should just happen automatically,
-        # so I don't think I need to do any further work.
-      # TODO: remove mesh if unused
-        # Mesh datablocks are referenced by mesh objects, Batches, and triples.
-        # If there are no mesh objects that need that datablock,
-        # then there should also not be any batches ore triples that use it,
-        # so it should drop out on it's own.
-      
-      # ^ for these two reasons, it is better to not have additional collections for these things. waiting a little bit to extract by name might not actually be that bad.
     when 'LIGHT'
       @lights.delete_if{ |light|  light.name == entity_name }
     end
@@ -308,9 +296,6 @@ class DependencyGraph
   end
   
   
-  
-  # TODO: change batch initalizer to take 0 argument
-  # TODO: batch should initialize as empty
   
   # assuming batches are stored as triples:
   private def find_batch_with_index(batches, entity)
