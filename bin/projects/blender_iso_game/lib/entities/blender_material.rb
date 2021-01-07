@@ -1,4 +1,4 @@
-class BlenderMaterial < RubyOF::Material
+class BlenderMaterial < RubyOF::OFX::InstancingMaterial
 	attr_reader :name
 	
 	def initialize(name)

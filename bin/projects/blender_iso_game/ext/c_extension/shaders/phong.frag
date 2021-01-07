@@ -243,9 +243,20 @@
         #elif HAS_COLOR
             vec4 localColor = vec4(ambient,1.0) * v_color + vec4(diffuse,1.0) * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
         #else
-            vec4 localColor = vec4(ambient,1.0) * mat_ambient + vec4(diffuse,1.0) * mat_diffuse + vec4(specular,1.0) * mat_specular + mat_emissive;
+            vec4 localColor = 
+                vec4(ambient, 1.0) * mat_ambient  + 
+                vec4(diffuse, 1.0) * mat_diffuse  + 
+                vec4(specular,1.0) * mat_specular + 
+                                     mat_emissive;
+            
         #endif
         FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         
-        // FRAG_COLOR = vec4(1,0,0,1);
+        // FRAG_COLOR = vec4(1,0,0,0.5);
+        // ^ alpha blending works, but alpha is not correctly being applied to to the objects
+        
+        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, v_color.a);
+        //     // "v_color undeclared" ??? then how is there any color at all???
+        
+        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, mat_diffuse.a);
     }

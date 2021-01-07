@@ -187,9 +187,38 @@ void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgramma
 	shader.setUniform4fv("global_ambient", &ofGetGlobalAmbientColor().r);
 	shader.setUniform1f("mat_shininess",data.shininess);
     
-    // shader.setUniform1f("instance_scale", mScale);
-    // shader.setUniform1i("tex_width", mWidth);
     
+    
+    for(auto & uniform: uniforms1f){
+        shader.setUniform1f(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms2f) {
+        shader.setUniform2f(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms3f) {
+        shader.setUniform3f(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms4f) {
+        shader.setUniform4f(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms1i) {
+        shader.setUniform1i(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms2i) {
+        shader.setUniform2i(uniform.first, uniform.second.x, uniform.second.y);
+    }
+    for (auto & uniform : uniforms3i) {
+        shader.setUniform3i(uniform.first, uniform.second.x, uniform.second.y, uniform.second.z);
+    }
+    for (auto & uniform : uniforms4i) {
+        shader.setUniform4i(uniform.first, uniform.second.x, uniform.second.y, uniform.second.z, uniform.second.w);
+    }
+    for (auto & uniform : uniforms4m) {
+        shader.setUniformMatrix4f(uniform.first, uniform.second);
+    }
+    for (auto & uniform : uniforms3m) {
+        shader.setUniformMatrix3f(uniform.first, uniform.second);
+    }
     
     for (auto & uniform : uniformstex) {
         shader.setUniformTexture(uniform.first,
@@ -253,6 +282,48 @@ void ofxInstancingMaterial::updateLights(const ofShader & shader,ofGLProgrammabl
 }
 
 
+
+void ofMaterial::setCustomUniform1f(const std::string & name, float value){
+    uniforms1f[name] = value;
+}
+
+void ofMaterial::setCustomUniform2f(const std::string & name, glm::vec2 value){
+    uniforms2f[name] = value;
+}
+
+void ofMaterial::setCustomUniform3f(const std::string & name, glm::vec3 value) {
+    uniforms3f[name] = value;
+}
+
+void ofMaterial::setCustomUniform4f(const std::string & name, glm::vec4 value) {
+    uniforms4f[name] = value;
+}
+
+void ofMaterial::setCustomUniform1i(const std::string & name, int value) {
+    uniforms1i[name] = value;
+}
+
+void ofMaterial::setCustomUniform2i(const std::string & name, glm::vec<2,int> value) {
+    uniforms2i[name] = value;
+}
+
+void ofMaterial::setCustomUniform3i(const std::string & name, glm::vec<3, int> value) {
+    uniforms3i[name] = value;
+}
+
+void ofMaterial::setCustomUniform4i(const std::string & name, glm::vec<4, int> value) {
+    uniforms4i[name] = value;
+}
+
+void ofMaterial::setCustomUniformMatrix4f(const std::string & name, glm::mat4 value){
+    uniforms4m[name] = value;
+}
+
+void ofMaterial::setCustomUniformMatrix3f(const std::string & name, glm::mat3 value){
+    uniforms3m[name] = value;
+}
+
+
 void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation){
     uniformstex[name] = {value.getTextureData().textureTarget, int(value.getTextureData().textureID), textureLocation};
 }
@@ -260,23 +331,6 @@ void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, co
 void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation){
     uniformstex[name] = {textureTarget, textureID, textureLocation};
 }
-
-// void ofxInstancingMaterial::setInstanceMagnitudeScale(float scale){
-//     mScale = scale;
-// }
-
-// float ofxInstancingMaterial::getInstanceMagnitudeScale(){
-//     return mScale;
-// }
-
-// void ofxInstancingMaterial::setInstanceTextureWidth(int width){
-//     mWidth = width;
-// }
-
-// float ofxInstancingMaterial::getInstanceTextureWidth(){
-//     return mWidth;
-// }
-
 
 void ofxInstancingMaterial::setVertexShaderSource(const std::string &source){
     vertexShader = source;
@@ -290,10 +344,6 @@ void ofxInstancingMaterial::setFragmentShaderSource(const std::string &source){
 
 
 
-
-// #include "shaders/phong.vert"
-// #include "shaders/phong_instanced.vert"
-// #include "shaders/phong.frag"
 
 string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor){
     header += "#define MAX_LIGHTS " + ofToString(max(1,maxLights)) + "\n";

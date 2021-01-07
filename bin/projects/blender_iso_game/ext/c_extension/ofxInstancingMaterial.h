@@ -168,13 +168,6 @@ public:
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	
-	// void setInstanceMagnitudeScale(float scale);
-	// float getInstanceMagnitudeScale();
-	
-	// void setInstanceTextureWidth(int width);
-	// float getInstanceTextureWidth();
-
-
 	
 	void setVertexShaderSource(const std::string &source);
 	void setFragmentShaderSource(const std::string &source);
@@ -215,8 +208,18 @@ private:
 	
 	
 	
+	
+	std::map<std::string, float> uniforms1f;
+	std::map<std::string, glm::vec2> uniforms2f;
+	std::map<std::string, glm::vec3> uniforms3f;
+	std::map<std::string, glm::vec4> uniforms4f;
+	std::map<std::string, float> uniforms1i;
+	std::map<std::string, glm::vec<2, int, glm::precision::defaultp>> uniforms2i;
+	std::map<std::string, glm::vec<3, int, glm::precision::defaultp>> uniforms3i;
+	std::map<std::string, glm::vec<4, int, glm::precision::defaultp>> uniforms4i;
+	std::map<std::string, glm::mat4> uniforms4m;
+	std::map<std::string, glm::mat3> uniforms3m;
+	
 	std::map<std::string, TextureUnifom> uniformstex;
-	// float mScale;
-	// int mWidth;
 	
 };
