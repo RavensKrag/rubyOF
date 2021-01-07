@@ -272,8 +272,10 @@ class BlenderSync
           end
         
         # p data['color'][1..3] # => data is already an array of floats
-        color = RubyOF::FloatColor.rgb(data['color'][1..3])
-        color.a = data['alpha'][1]
+        # convert to premultiplied alpha format
+        alpha = data['alpha'][1]
+        color = RubyOF::FloatColor.rgb(data['color'][1..3].map{|i| i * alpha})
+        color.a = alpha
         
         
         puts color
