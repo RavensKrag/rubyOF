@@ -47,6 +47,7 @@ load LIB_DIR/'entities'/'blender_light.rb'
 
 load LIB_DIR/'instancing_buffer.rb'
 
+load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
