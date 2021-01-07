@@ -66,6 +66,13 @@ class DependencyGraph
     
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
+    non_transparent, transparent = 
+      @batches.partition do |mesh, mat, batch|
+        mat.diffuse_color.a == 1
+      end
+      
+    @batches = non_transparent + transparent
+    
     @batches.each do |mesh, mat, batch|
       # puts "batch id #{batch.__id__}"
       batch.update
