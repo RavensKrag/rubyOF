@@ -23,7 +23,7 @@ class RenderBatch
     
     @shader_timestamp = nil
     
-    shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
+    shader_src_dir = PROJECT_DIR/"bin/glsl"
     
     @shader_paths = {
       :vert_instanced => shader_src_dir/"phong_instanced.vert",
