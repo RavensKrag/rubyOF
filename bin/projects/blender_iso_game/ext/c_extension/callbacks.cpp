@@ -1047,77 +1047,67 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 #include "ofxInstancingMaterial.h"
 
-void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setDiffuseColor(c);
 }
 
 
-void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setSpecularColor(c);
 }
 
-void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setAmbientColor(c);
 }
 
-void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setEmissiveColor(c);
 }
 
-void wrap_ofxInstancingMaterial(Module rb_mOFX){
-	// NOTE: both ofxInstancingMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxInstancingMaterial AGAIN.
+void wrap_ofxDynamicMaterial(Module rb_mOFX){
+	// NOTE: both ofxDynamicMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxDynamicMaterial AGAIN.
 	
-	Data_Type<ofxInstancingMaterial> rb_c_ofxInstancingMaterial = 
-		define_class_under<ofxInstancingMaterial>(rb_mOFX, "InstancingMaterial");
+	Data_Type<ofxDynamicMaterial> rb_c_ofxDynamicMaterial = 
+		define_class_under<ofxDynamicMaterial>(rb_mOFX, "DynamicMaterial");
 	
-	rb_c_ofxInstancingMaterial
-      .define_constructor(Constructor<ofxInstancingMaterial>())
+	rb_c_ofxDynamicMaterial
+      .define_constructor(Constructor<ofxDynamicMaterial>())
       
-      .define_method("begin", &ofxInstancingMaterial::begin)
-      .define_method("end",   &ofxInstancingMaterial::end)
+      .define_method("begin", &ofxDynamicMaterial::begin)
+      .define_method("end",   &ofxDynamicMaterial::end)
       
-      .define_method("ambient_color=", &ofxInstancingMaterial__setAmbientColor)
-      .define_method("diffuse_color=", &ofxInstancingMaterial__setDiffuseColor)
-      .define_method("specular_color=",&ofxInstancingMaterial__setSpecularColor)
-      .define_method("emissive_color=",&ofxInstancingMaterial__setEmissiveColor)
-      .define_method("shininess=",     &ofxInstancingMaterial::setShininess)
+      .define_method("ambient_color=", &ofxDynamicMaterial__setAmbientColor)
+      .define_method("diffuse_color=", &ofxDynamicMaterial__setDiffuseColor)
+      .define_method("specular_color=",&ofxDynamicMaterial__setSpecularColor)
+      .define_method("emissive_color=",&ofxDynamicMaterial__setEmissiveColor)
+      .define_method("shininess=",     &ofxDynamicMaterial::setShininess)
       
-      .define_method("ambient_color",  &ofxInstancingMaterial::setAmbientColor)
-      .define_method("diffuse_color",  &ofxInstancingMaterial::getDiffuseColor)
-      .define_method("specular_color", &ofxInstancingMaterial::getSpecularColor)
-      .define_method("emissive_color", &ofxInstancingMaterial::getEmissiveColor)
-      .define_method("shininess",      &ofxInstancingMaterial::getShininess)
+      .define_method("ambient_color",  &ofxDynamicMaterial::setAmbientColor)
+      .define_method("diffuse_color",  &ofxDynamicMaterial::getDiffuseColor)
+      .define_method("specular_color", &ofxDynamicMaterial::getSpecularColor)
+      .define_method("emissive_color", &ofxDynamicMaterial::getEmissiveColor)
+      .define_method("shininess",      &ofxDynamicMaterial::getShininess)
       
       .define_method("setCustomUniformTexture",
-         static_cast< void (ofxInstancingMaterial::*)
+         static_cast< void (ofxDynamicMaterial::*)
          (const std::string & name, const ofTexture & value, int textureLocation)
-         >(&ofxInstancingMaterial::setCustomUniformTexture)
+         >(&ofxDynamicMaterial::setCustomUniformTexture)
       )
-      
-      // .define_method("setInstanceMagnitudeScale", 
-      // 	&ofxInstancingMaterial::setInstanceMagnitudeScale)
-      // .define_method("getInstanceMagnitudeScale", 
-      // 	&ofxInstancingMaterial::getInstanceMagnitudeScale)
-      
-      // .define_method("setInstanceTextureWidth", 
-      // 	&ofxInstancingMaterial::setInstanceTextureWidth)
-      // .define_method("getInstanceTextureWidth", 
-      // 	&ofxInstancingMaterial::getInstanceTextureWidth)
       
       
       .define_method("setVertexShaderSource", 
-      	&ofxInstancingMaterial::setVertexShaderSource)
+      	&ofxDynamicMaterial::setVertexShaderSource)
       
       .define_method("setFragmentShaderSource",
-      	&ofxInstancingMaterial::setFragmentShaderSource)
+      	&ofxDynamicMaterial::setFragmentShaderSource)
    ;
 	
 }
@@ -1259,7 +1249,7 @@ void Init_rubyOF_project()
 	
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
 	
-	wrap_ofxInstancingMaterial(rb_mOFX);
+	wrap_ofxDynamicMaterial(rb_mOFX);
 	
 	
 	

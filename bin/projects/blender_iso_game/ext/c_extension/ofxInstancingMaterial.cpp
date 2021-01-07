@@ -5,14 +5,14 @@
 
 using namespace std;
 
-std::map<ofGLProgrammableRenderer*, std::map<std::string, std::weak_ptr<ofxInstancingMaterial::Shaders>>> ofxInstancingMaterial::shadersMap;
+std::map<ofGLProgrammableRenderer*, std::map<std::string, std::weak_ptr<ofxDynamicMaterial::Shaders>>> ofxDynamicMaterial::shadersMap;
 
 
 
-ofxInstancingMaterial::ofxInstancingMaterial() {
+ofxDynamicMaterial::ofxDynamicMaterial() {
 }
 
-void ofxInstancingMaterial::setColors(ofFloatColor oDiffuse, ofFloatColor oAmbient, ofFloatColor oSpecular, ofFloatColor oEmissive) {
+void ofxDynamicMaterial::setColors(ofFloatColor oDiffuse, ofFloatColor oAmbient, ofFloatColor oSpecular, ofFloatColor oEmissive) {
 	setDiffuseColor(oDiffuse);
 	setAmbientColor(oAmbient);
 	setSpecularColor(oSpecular);
@@ -20,74 +20,74 @@ void ofxInstancingMaterial::setColors(ofFloatColor oDiffuse, ofFloatColor oAmbie
 }
 
 
-void ofxInstancingMaterial::setup(const ofxInstancingMaterialSettings & settings){
+void ofxDynamicMaterial::setup(const ofxDynamicMaterialSettings & settings){
 	if(settings.customUniforms != data.customUniforms || settings.postFragment != data.postFragment){
 		shaders.clear();
 	}
 	data = settings;
 }
 
-void ofxInstancingMaterial::setDiffuseColor(ofFloatColor oDiffuse) {
+void ofxDynamicMaterial::setDiffuseColor(ofFloatColor oDiffuse) {
 	data.diffuse = oDiffuse;
 }
 
-void ofxInstancingMaterial::setAmbientColor(ofFloatColor oAmbient) {
+void ofxDynamicMaterial::setAmbientColor(ofFloatColor oAmbient) {
 	data.ambient = oAmbient;
 }
 
-void ofxInstancingMaterial::setSpecularColor(ofFloatColor oSpecular) {
+void ofxDynamicMaterial::setSpecularColor(ofFloatColor oSpecular) {
 	data.specular = oSpecular;
 }
 
-void ofxInstancingMaterial::setEmissiveColor(ofFloatColor oEmissive) {
+void ofxDynamicMaterial::setEmissiveColor(ofFloatColor oEmissive) {
 	data.emissive = oEmissive;
 }
 
-void ofxInstancingMaterial::setShininess(float nShininess) {
+void ofxDynamicMaterial::setShininess(float nShininess) {
 	data.shininess = nShininess;
 }
 
-void ofxInstancingMaterial::setData(const ofxInstancingMaterial::Data &data){
+void ofxDynamicMaterial::setData(const ofxDynamicMaterial::Data &data){
 	setup(data);
 }
 
-float ofxInstancingMaterial::getShininess()const{
+float ofxDynamicMaterial::getShininess()const{
 	return data.shininess;
 }
 
-ofFloatColor ofxInstancingMaterial::getDiffuseColor()const {
+ofFloatColor ofxDynamicMaterial::getDiffuseColor()const {
 	return data.diffuse;
 }
 
-ofFloatColor ofxInstancingMaterial::getAmbientColor()const {
+ofFloatColor ofxDynamicMaterial::getAmbientColor()const {
 	return data.ambient;
 }
 
-ofFloatColor ofxInstancingMaterial::getSpecularColor()const {
+ofFloatColor ofxDynamicMaterial::getSpecularColor()const {
 	return data.specular;
 }
 
-ofFloatColor ofxInstancingMaterial::getEmissiveColor()const {
+ofFloatColor ofxDynamicMaterial::getEmissiveColor()const {
 	return data.emissive;
 }
 
-ofxInstancingMaterialSettings ofxInstancingMaterial::getSettings() const{
+ofxDynamicMaterialSettings ofxDynamicMaterial::getSettings() const{
     return data;
 }
 
-void ofxInstancingMaterial::begin() const{
+void ofxDynamicMaterial::begin() const{
 	if(ofGetGLRenderer()){
 		ofGetGLRenderer()->bind(*this);
 	}
 }
 
-void ofxInstancingMaterial::end() const{
+void ofxDynamicMaterial::end() const{
 	if(ofGetGLRenderer()){
 		ofGetGLRenderer()->unbind(*this);
 	}
 }
 
-void ofxInstancingMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
+void ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
     auto rendererShaders = shaders.find(&renderer);
     if(rendererShaders == shaders.end() || rendererShaders->second->numLights != ofLightsData().size()){
         if(shadersMap[&renderer].find(data.postFragment)!=shadersMap[&renderer].end()){
@@ -150,7 +150,7 @@ void ofxInstancingMaterial::initShaders(ofGLProgrammableRenderer & renderer) con
 
 }
 
-const ofShader & ofxInstancingMaterial::getShader(int textureTarget, bool geometryHasColor, ofGLProgrammableRenderer & renderer) const{
+const ofShader & ofxDynamicMaterial::getShader(int textureTarget, bool geometryHasColor, ofGLProgrammableRenderer & renderer) const{
     initShaders(renderer);
 	switch(textureTarget){
 	case OF_NO_TEXTURE:
@@ -177,7 +177,7 @@ const ofShader & ofxInstancingMaterial::getShader(int textureTarget, bool geomet
 	}
 }
 
-void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
+void ofxDynamicMaterial::updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
 	
 	
 	shader.setUniform4fv("mat_ambient", &data.ambient.r);
@@ -228,7 +228,7 @@ void ofxInstancingMaterial::updateMaterial(const ofShader & shader,ofGLProgramma
     }
 }
 
-void ofxInstancingMaterial::updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
+void ofxDynamicMaterial::updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
 	for(size_t i=0;i<ofLightsData().size();i++){
 		string idx = ofToString(i);
 		shared_ptr<ofLight::Data> light = ofLightsData()[i].lock();
@@ -324,20 +324,20 @@ void ofMaterial::setCustomUniformMatrix3f(const std::string & name, glm::mat3 va
 }
 
 
-void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation){
+void ofxDynamicMaterial::setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation){
     uniformstex[name] = {value.getTextureData().textureTarget, int(value.getTextureData().textureID), textureLocation};
 }
 
-void ofxInstancingMaterial::setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation){
+void ofxDynamicMaterial::setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation){
     uniformstex[name] = {textureTarget, textureID, textureLocation};
 }
 
-void ofxInstancingMaterial::setVertexShaderSource(const std::string &source){
+void ofxDynamicMaterial::setVertexShaderSource(const std::string &source){
     vertexShader = source;
     shaders.clear();
 }
 
-void ofxInstancingMaterial::setFragmentShaderSource(const std::string &source){
+void ofxDynamicMaterial::setFragmentShaderSource(const std::string &source){
     fragmentShader = source;
     shaders.clear();
 }
@@ -360,11 +360,11 @@ string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor
     return header;
 }
 
-std::string ofxInstancingMaterial::vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const{
+std::string ofxDynamicMaterial::vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const{
     return shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + vertexShader;
 }
 
-std::string ofxInstancingMaterial::fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const{
+std::string ofxDynamicMaterial::fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const{
     auto source = fragmentShader;
     if(postFragment.empty()){
         postFragment = "vec4 postFragment(vec4 localColor){ return localColor; }";
