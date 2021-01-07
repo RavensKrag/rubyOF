@@ -1,4 +1,4 @@
-#include "ofxInstancingMaterial.h"
+#include "ofxDynamicMaterial.h"
 #include "ofConstants.h"
 #include "ofLight.h"
 #include "ofGLProgrammableRenderer.h"

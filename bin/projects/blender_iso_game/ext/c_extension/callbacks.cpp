@@ -1045,7 +1045,7 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
-#include "ofxInstancingMaterial.h"
+#include "ofxDynamicMaterial.h"
 
 void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
