@@ -206,7 +206,14 @@
 
 
     %postFragment%
-
+    
+    
+    float w(in float z, in float a){
+        float accum = z*z*z*z*z;
+        return 1/accum;
+    }
+    
+    
     //////////////////////////////////////////////////////
     // here's the main method
     //////////////////////////////////////////////////////
@@ -250,7 +257,8 @@
                                      mat_emissive;
             
         #endif
-        FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
+        
+        // FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         
         // FRAG_COLOR = vec4(1,0,0,0.5);
         // ^ alpha blending works, but alpha is not correctly being applied to to the objects
@@ -259,4 +267,17 @@
         //     // "v_color undeclared" ??? then how is there any color at all???
         
         // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, mat_diffuse.a);
+        
+        
+        
+        // TODO: call clamp later
+        // TODO: make sure zi and ai variables get set
+        
+        // HDR-style : will clamp in the final compositing phase later
+        
+        float ai = mat_ambient.a; // no alpha map, so all fragments have same alpha
+        float zi = v_eyePosition.z; // relative to the camera
+        
+        FRAG_COLOR[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+        FRAG_COLOR[1] = vec4(localColor.a);
     }

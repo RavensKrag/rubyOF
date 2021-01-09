@@ -305,10 +305,12 @@ end
 class Shader
 	# private :load_oneNameVertAndFrag, :load_VertFragGeom
 	
-	def load(*args)
+	private :load_shaders__cpp
+	def load_glsl(*args)
 		
 		if(args.length <= 3)
-			super(*args)
+			p args.map{|x| x.to_s }
+			load_shaders__cpp(args.map{|x| x.to_s })
 		else
 			raise ArgumentError, 'Expected either one path (vertex and fragment shaders have the same name, i.e. dof.vert and dof.frag) or up to 3 paths: vert,frag,geom (geometry shader is optional)'
 		end
@@ -458,27 +460,36 @@ class Fbo
 		end
 	end
 	
-	Settings = Struct.new(
-		:width,
-		:height,
-		:numColorbuffers,
+	
+	
+	DEFAULT_SETTINGS = {
+		:width => 0,
+		:height => 0,
+		:numColorbuffers => 1,
 		
-		:useDepth,
-		:useStencil,
-		:depthStencilAsTexture,
-		:textureTarget,
-		:internalformat,
-		:depthStencilInternalFormat,
-		:wrapModeHorizontal,
-		:wrapModeVertical,
-		:minFilter,
-		:maxFilter,
-		:numSamples
-	)
+		:useDepth => false,
+		:useStencil => false,
+		:depthStencilAsTexture => false,
+		:textureTarget => Gl::GL_TEXTURE_2D,
+		:internalformat => Gl::GL_TEXTURE_2D,
+		:depthStencilInternalFormat => GL::GL_DEPTH_COMPONENT24,
+		:wrapModeHorizontal => GL::GL_CLAMP_TO_EDGE,
+		:wrapModeVertical => GL::GL_CLAMP_TO_EDGE,
+		:minFilter => GL::GL_LINEAR,
+		:maxFilter => GL::GL_LINEAR,
+		:numSamples => 0
+	}
+	
+	Settings = Struct.new(*DEFAULT_SETTINGS.keys) do 
+		def initialize()
+			super(*DEFAULT_SETTINGS.values)
+		end
+	end
+	
 	# NOTE: While in OpenGL the names are "min" and "mag"
 	#       (as in magnify)
 	#       there seems to be a 'typo' of sorts in OpenFrameworks,
-	#       so the proper name for this field is 'mag'
+	#       so the proper name for this field is 'max' instead of 'mag'
 	# There is a function called ofTextureSetMinMagFilters() though.
 end
 

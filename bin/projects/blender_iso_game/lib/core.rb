@@ -63,7 +63,7 @@ class Core
     puts "core: setup"
     
     ofBackground(200, 200, 200, 255)
-    ofEnableBlendMode(:alpha)
+    # ofEnableBlendMode(:alpha)
     
     
     @draw_durations = Array.new # stores profiler data for #draw
@@ -416,7 +416,7 @@ class Core
       
     end
     
-    @depsgraph.draw
+    @depsgraph.draw(@w)
     
   end
   

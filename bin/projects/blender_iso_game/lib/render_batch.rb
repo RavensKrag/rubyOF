@@ -112,17 +112,17 @@ class RenderBatch
   end
   
   def draw()
+    @mat.begin()
+    
     case @state
     when 'empty'
       # no-op
     when 'single'
       mesh_obj = @entity_list.first
       
-      @mat.begin()
-        mesh_obj.node.transformGL()
-        @mesh.draw()
-        mesh_obj.node.restoreTransformGL()
-      @mat.end()
+      mesh_obj.node.transformGL()
+      @mesh.draw()
+      mesh_obj.node.restoreTransformGL()
     when 'instanced_set'
       # draw instanced (v4.2 - 4x4 full transform matrix in texture)
       
@@ -142,12 +142,12 @@ class RenderBatch
       
       
       # draw all the instances using one draw call
-      @mat.begin()
-        @mesh.draw_instanced(@entity_list.size)
-      @mat.end()
+      @mesh.draw_instanced(@entity_list.size)
       
     end
     # no-op
+    
+    @mat.end()
   end
   
   private def transition_to(new_state)

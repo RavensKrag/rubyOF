@@ -61,17 +61,11 @@ class DependencyGraph
   # 
   
   include RubyOF::Graphics
-  def draw
+  include Gl
+  def draw(window)
     # puts ">>>>> batches: #{@batches.keys.size}"
     
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    non_transparent, transparent = 
-      @batches.partition do |mesh, mat, batch|
-        mat.diffuse_color.a == 1
-      end
-      
-    @batches = non_transparent + transparent
     
     @batches.each do |mesh, mat, batch|
       # puts "batch id #{batch.__id__}"
@@ -93,27 +87,296 @@ class DependencyGraph
     
     
     # ========================
+    # ------------------------
     # render begin
     # ------------------------
+      # camera begin
+      @viewport_camera.begin
+      # 
+      # setup GL state
+      # 
+      
+      ofEnableDepthTest()
+      ofEnableLighting() # // enable lighting //
+      
+      
+      # ofEnableAlphaBlending()
+      # # ^ doesn't seem to do anything, at least not right now
+      
+      # ofEnableBlendMode(:alpha)
+      
+      
+      
+      
+      # 
+      # enable lights
+      # 
+      
+      # the position of the light must be updated every frame,
+      # call enable() so that it can update itself
+      @lights.each{ |light|  light.enable() }
+      
+      
+      # =====================
+      # (world space)
+      # --------------------
     begin
-      setup_lights_and_camera()
       
-      render_scene()
       
-    
+      
+      # 
+      # partition batches into opaque entities and transparent entities
+      # 
+      
+      opaque, transparent = 
+        @batches.partition do |mesh, mat, batch|
+          mat.diffuse_color.a == 1
+        end
+      
+      # 
+      # draw opaque surfaces to framebuffer
+      # 
+      
+      opaque.each{|mesh, mat, batch|  batch.draw }
+      
+      
+      # 
+      # draw transparent surfaces to fbo
+      # 
+      # @accumTexture     ||= RubyOF::Texture.new
+      # @revealageTexture ||= RubyOF::Texture.new
+      
+      
+      
+      accumTex_i     = 0
+      revealageTex_i = 1
+      
+      if @transparency_fbo.nil?
+        @transparency_fbo = 
+          RubyOF::Fbo.new.tap do |fbo|
+            # # fbo.createAndAttachTexture(GLenum internalFormat, GLenum attachmentPoint)
+            
+            # # fbo.createAndAttachTexture(GLenum internalFormat, GLenum attachmentPoint)
+            
+            # fbo.createAndAttachTexture(GLenum internalFormat, accumTex_i);
+            # fbo.createAndAttachTexture(GLenum internalFormat, revealageTex_i);
+            # # ^ the main texture settings will be copied from ofFboSettings
+            
+            # #  ofFbo#getTexture runs #updateTexture, which blits data from the backbuffer into the texture. I don't think that's what I want, so I may have to attach my own texture manually...
+            
+            # # ^ this only happens if MSAA is enabled (or some other scenario where the textures are attached to another fbo), as per the comments in ofFbo.cpp regaurding fbo != fboTextures
+            
+             
+            
+            # alternatively, you could do something like this:
+            # ofFboSettings.new
+            
+            
+            settings = 
+              RubyOF::Fbo::Settings.new.tap do |s|
+                s.width  = window.width
+                s.height = window.height
+                s.internalformat = GL_RGBA32F;
+                s.numSamples     = 0; # no multisampling
+                s.useDepth       = true;
+                s.useStencil     = true;
+                # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
+                
+                s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+                
+                
+                
+                s.numColorbuffers = 2;
+                # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+              end
+            
+            
+            fbo.allocate(settings)
+            
+            # (though, in any case you need to call Fbo#allocate at some point)
+            
+            
+            
+            # fbo.createAndAttachTexture(GL_RGBA32F, 1);
+            # fbo.createAndAttachTexture(GL_RGBA32F, 2);
+            
+            
+            
+            
+            # @fbo.attachTexture(@accumTexture, GLenum internalFormat, GLenum attachmentPoint)
+            
+            # @fbo.attachTexture(@revealageTexture, GLenum internalFormat, GLenum attachmentPoint)
+          end
+      end
+      
+      
+      color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
+      color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
+      
+      @transparency_fbo.clearColorBuffer(accumTex_i,     color_zero)
+      @transparency_fbo.clearColorBuffer(revealageTex_i, color_one)
+      
+      # accumTexture     = RubyOF::Texture.new
+        # TODO: ^ clear to vec4(0)
+      # revealageTexture = RubyOF::Texture.new
+        # TODO: ^ clear to float(1)
+      
+      # bindFramebuffer(@accumTexture, @revealageTexture)
+      @transparency_fbo.tap do |fbo|
+        fbo.begin
+        
+        # glDepthMask(GL_FALSE)
+        # glEnable(GL_BLEND)
+        # glBlendFunci(0, GL_ONE, GL_ONE) # summation
+        # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
+        
+        
+        transparent.each{|mesh, mat, batch|  batch.draw }
+        
+        
+        fbo.end
+      end
+      # unbindFramebuffer()
+      
+      
+      
     # clean up lights and camera whether there is an exception or not
     # but if there's an exception, you need to re-raise it
     # (can't just use 'ensure' here)
+    
     rescue Exception => e 
-      finish_lights_and_camera()
-      raise e
+      @exception = e # supress exception so we can exit cleanly first
+    ensure
+      # 
+      # disable lights
+      # 
       
-    else
-      finish_lights_and_camera()
+      # // turn off lighting //
+      @lights.each{ |light|  light.disable() }
+      
+      
+      # 
+      # teardown GL state
+      # 
+      
+      ofDisableLighting()
+      ofDisableDepthTest()
+      
+      # camera end
+      @viewport_camera.end
+      
+      
+      # 
+      # after cleaning up, now throw the exception if needed
+      # 
+      unless @exception.nil?
+        e = @exception
+        @exception = nil
+        raise e
+      end
       
     end
+      
+      
+      
+      # =======================
+      # (screen space)
+      # ----------------------
+      
+      
+      raise "ERROR: fbo no longer exists bp2" if @transparency_fbo.nil?
+      # ^ fbo no longer exists here... why???
+      
+      
+      # 
+      # blend fbo (transparency data) with framebuffer
+      # 
+      
+      if @compositing_shader.nil?
+        @compositing_shader = RubyOF::Shader.new
+        
+        shader_src_dir = PROJECT_DIR/"bin/glsl"
+        @compositing_shader.load_glsl(shader_src_dir/'alpha_composite')
+        # ^ loads vertex shader AND fragment shader
+        #   (.vert and .frag, same basename)
+        
+        # careful - these shaders don't go through the same pre-processing step as the ones in Material, so the '#define's don't apply here.
+        # (the pre-processing is used by ofMaterial and defined in ofGLProgrammableRenderer.cpp)
+        
+        # NOTE: no shader hotloading for this shader right now
+      end
+      
+      # void ofFbo::updateTexture(int attachmentPoint)
+      
+        # Explicityl resolve MSAA render buffers into textures
+        # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
+        # \note This will get called implicitly upon getTexture();
+      
+      
+      raise "ERROR: fbo no longer exists bp3" if @transparency_fbo.nil?
+      
+      # blend the two textures into the framebuffer
+      
+      # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
+      
+      @compositing_shader.tap do |shader|
+        # shader.setUniformTexture('accumTexture',     @accumTexture,     0)
+        # shader.setUniformTexture('revealageTexture', @revealageTexture, 1)
+        
+        tex = @transparency_fbo.getTexture(accumTex_i)
+        shader.setUniformTexture('accumTexture',     tex, 0)
+        
+        tex = @transparency_fbo.getTexture(revealageTex_i)
+        shader.setUniformTexture('revealageTexture', tex, 1)
+        
+        # NOTE: may not be able to access the variables accumTex_i and revealageTex_i from here. need to test this - not sure how begin / end block used for execptions effects variable scope
+        
+        
+        
+        
+        shader.begin
+        
+          # (draw a fullscreen quad to facilitate the shader)
+          # p [0,0, window.width, window.height]
+          ofDrawRectangle(0,0,0, window.width, window.height)
+        
+        shader.end
+      end
+      
+      
+      
+      
+      
+      # # 
+      # # render the sphere that represents the light
+      # # 
+      
+      # @lights.each do |light|
+      #   light_pos   = light.position
+      #   light_color = light.diffuse_color
+        
+      #   @light_material.tap do |mat|
+      #     mat.emissive_color = light_color
+          
+          
+      #     mat.begin()
+      #     ofPushMatrix()
+      #       ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+      #     ofPopMatrix()
+      #     mat.end()
+      #   end
+      # end
+      
+      
+      
+      
+      
+      
+      
+    
     # ------------------------
     # render end
+    # ------------------------
     # ========================
   end
   
@@ -129,81 +392,18 @@ class DependencyGraph
   
   
   def setup_lights_and_camera
-    # camera begin
-    @viewport_camera.begin
-    # 
-    # setup GL state
-    # 
     
-    ofEnableDepthTest()
-    ofEnableLighting() # // enable lighting //
-    
-    
-    # ofEnableAlphaBlending()
-    # # ^ doesn't seem to do anything, at least not right now
-    
-    ofEnableBlendMode(:alpha)
-    
-    
-    # 
-    # enable lights
-    # 
-    
-    # the position of the light must be updated every frame,
-    # call enable() so that it can update itself
-    @lights.each{ |light|  light.enable() }
   end
   
+  
+  # render by batches
+  # (RenderBatch automatically uses GPU instancing when necessary)
   def render_scene
     
-    # 
-    # render entities
-    # 
-    
-    
-    # render by batches
-    # (RenderBatch automatically uses GPU instancing when necessary)
-    @batches.each{|mesh, mat, batch|  batch.draw }
-    
-    # 
-    # render the sphere that represents the light
-    # 
-    
-    @lights.each do |light|
-      light_pos   = light.position
-      light_color = light.diffuse_color
-      
-      @light_material.tap do |mat|
-        mat.emissive_color = light_color
-        
-        
-        mat.begin()
-        ofPushMatrix()
-          ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-        ofPopMatrix()
-        mat.end()
-      end
-    end
   end
   
   def finish_lights_and_camera
-    # 
-    # disable lights
-    # 
     
-    # // turn off lighting //
-    @lights.each{ |light|  light.disable() }
-    
-    
-    # 
-    # teardown GL state
-    # 
-    
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    # camera end
-    @viewport_camera.end
   end
   
   
