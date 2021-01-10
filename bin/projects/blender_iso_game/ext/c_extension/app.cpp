@@ -552,39 +552,16 @@ void rbApp::draw(){
 	
 	ofSetSphereResolution(32);
 	
+	ofBackground(255/2, 255/2, 255/2);
+	// turn on smooth lighting //
+	ofSetSmoothLighting(true);
 	
 	camera.begin();
-		
-		
-		ofBackground(255/2, 255/2, 255/2);
 		ofEnableDepthTest();
-		
-		// turn on smooth lighting //
-		ofSetSmoothLighting(true);
-		
-		
 		
 		ofEnableLighting();
 		
 		pointLight.enable();
-		
-		
-		mat1.begin();
-			ofDrawSphere(glm::vec3(0,3,0), 1); // red
-		mat1.end();
-		
-		
-		
-		
-		// fbo.begin();
-		
-		mat2.begin();
-			ofDrawSphere(glm::vec3(3,3,0), 1); // green
-		mat2.end();
-		
-		// fbo.end();
-		
-		
 		
 		
 		mat_light.begin();
@@ -593,11 +570,41 @@ void rbApp::draw(){
 		
 		
 		
+		mat1.begin();
+			ofDrawSphere(glm::vec3(0,3,0), 1); // red
+		mat1.end();
+		
+		
+		
 		ofDisableLighting();
 		ofDisableDepthTest();
 	
 	camera.end();
 	
+	
+	fbo.begin();
+	ofBackground(255/6, 255/6, 255/2, 255/5);
+	
+	camera.begin();
+		ofEnableDepthTest();
+		
+		ofEnableLighting();
+		
+		pointLight.enable();
+		
+		
+		
+		mat2.begin();
+			ofDrawSphere(glm::vec3(3,3,0), 1); // green
+		mat2.end();
+		
+		
+		
+		ofDisableLighting();
+		ofDisableDepthTest();
+	
+	camera.end();
+	fbo.end();
 	
 	fbo.draw(0,0);
 	
