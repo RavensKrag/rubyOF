@@ -416,204 +416,116 @@ void rbApp::draw(){
 	bool cpp_render = false;
 		
 	if(cpp_render){
-		Rice::Object live = mSelf.call("instance_variable_get", Rice::Symbol("@live_code"));
-		live.call("camera_begin");
+		// 
+		// FBO render test
+		// 
 		
 		
-		ofBackground(10, 10, 10);
-		ofEnableDepthTest();
+		ofCamera camera;
+		// ofxDynamicMaterial mat1;
+		// ofxDynamicMaterial mat2;
+		ofMaterial mat1;
+		ofMaterial mat2;
+		ofMaterial mat_light;
+		// ofMesh mesh1;
+		// ofMesh mesh2;
+		ofLight pointLight;
 		
+		ofFbo fbo;
+		ofFboSettings fbo_settings;
+		
+		glm::vec3 light_pos(0,0,0);
+		
+		
+		
+		
+		camera.setPosition(glm::vec3(10,-10,20));
+		camera.lookAt(glm::vec3(0,0,0));
+		
+		ofFloatColor light_color(1, 1, 1);
+		pointLight.setDiffuseColor(light_color);
+		pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
+		pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
+		
+		mat1.setDiffuseColor(ofFloatColor(1,0,0,1));
+		mat2.setDiffuseColor(ofFloatColor(0,1,0,1));
+		
+		mat_light.setEmissiveColor(light_color);
+		
+		
+		
+		
+		fbo_settings.width = ofGetWidth();
+		fbo_settings.height = ofGetHeight();
+		fbo_settings.useDepth = true;
+		fbo_settings.depthStencilAsTexture = true;
+		
+		fbo_settings.internalformat = GL_RGBA32F_ARB;
+		
+		fbo.allocate(fbo_settings);
+		
+		
+		ofSetSphereResolution(32);
+		
+		ofBackground(255/2, 255/2, 255/2);
 		// turn on smooth lighting //
 		ofSetSmoothLighting(true);
 		
-		
-		// 
-		// my custom code
-		// 
-		
-		ofLight pointLight;
-		
-		ofMaterial material;
-		ofMaterial material2;
-		
-		
-		// lets make a sphere with more resolution than the default //
-		// default is 20 //
-		ofSetSphereResolution(32);
-		
-		
-		// Point lights emit light in all directions //
-		// set the diffuse color, color reflected from the light source //
-		pointLight.setDiffuseColor( ofColor(0.f, 255.f, 0.f));
-		
-		// specular color, the highlight/shininess color //
-		pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
-		
-		// shininess is a value between 0 - 128, 128 being the most shiny //
-		material.setShininess( 64 );
-		
-		
-		material2.setEmissiveColor( ofColor(255, 255, 255) );
-		
-		
-		
-		glm::vec3 light_pos(4,-5,3);
-		pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
-		
-		// enable lighting //
-		ofEnableLighting();
-		// the position of the light must be updated every frame,
-		// call enable() so that it can update itself //
-		pointLight.enable();
-		
-			// render objects in world
-			material.begin();
-			ofPushMatrix();
-				glm::vec3 cube_pos(0,0,0);
-				ofDrawBox(cube_pos.x, cube_pos.y, cube_pos.z, 2);
-			ofPopMatrix();
-			material.end();
+		camera.begin();
+			ofEnableDepthTest();
+			
+			ofEnableLighting();
+			
+			pointLight.enable();
 			
 			
-			// render the sphere that represents the light
-			material2.begin();
-			ofPushMatrix();
-				ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1);
-			ofPopMatrix();
-			material2.end();
+			mat_light.begin();
+				ofDrawSphere(light_pos, 0.1);
+			mat_light.end();
+			
+			
+			
+			mat1.begin();
+				ofDrawSphere(glm::vec3(0,3,0), 1); // red
+			mat1.end();
+			
+			
+			
+			ofDisableLighting();
+			ofDisableDepthTest();
 		
-		// turn off lighting //
-		ofDisableLighting();
+		camera.end();
 		
 		
+		fbo.begin();
+		ofBackground(255/6, 255/6, 255/2, 255/5);
 		
-		ofDisableDepthTest();
+		camera.begin();
+			ofEnableDepthTest();
+			
+			ofEnableLighting();
+			
+			pointLight.enable();
+			
+			
+			
+			mat2.begin();
+				ofDrawSphere(glm::vec3(3,3,0), 1); // green
+			mat2.end();
+			
+			
+			
+			ofDisableLighting();
+			ofDisableDepthTest();
 		
+		camera.end();
+		fbo.end();
 		
-		live.call("camera_end");
+		fbo.draw(0,0);
+		
 	}else{
-		// mSelf.call("draw");
+		mSelf.call("draw");
 	}
-	
-	
-	
-	
-	
-	
-	
-	// 
-	// FBO render test
-	// 
-	
-	
-	ofCamera camera;
-	// ofxDynamicMaterial mat1;
-	// ofxDynamicMaterial mat2;
-	ofMaterial mat1;
-	ofMaterial mat2;
-	ofMaterial mat_light;
-	// ofMesh mesh1;
-	// ofMesh mesh2;
-	ofLight pointLight;
-	
-	ofFbo fbo;
-	ofFboSettings fbo_settings;
-	
-	glm::vec3 light_pos(0,0,0);
-	
-	
-	
-	
-	camera.setPosition(glm::vec3(10,-10,20));
-	camera.lookAt(glm::vec3(0,0,0));
-	
-	ofFloatColor light_color(1, 1, 1);
-	pointLight.setDiffuseColor(light_color);
-	pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
-	pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
-	
-	mat1.setDiffuseColor(ofFloatColor(1,0,0,1));
-	mat2.setDiffuseColor(ofFloatColor(0,1,0,1));
-	
-	mat_light.setEmissiveColor(light_color);
-	
-	
-	
-	
-	fbo_settings.width = ofGetWidth();
-	fbo_settings.height = ofGetHeight();
-	fbo_settings.useDepth = true;
-	fbo_settings.depthStencilAsTexture = true;
-	
-	fbo_settings.internalformat = GL_RGBA32F_ARB;
-	
-	fbo.allocate(fbo_settings);
-	
-	
-	ofSetSphereResolution(32);
-	
-	ofBackground(255/2, 255/2, 255/2);
-	// turn on smooth lighting //
-	ofSetSmoothLighting(true);
-	
-	camera.begin();
-		ofEnableDepthTest();
-		
-		ofEnableLighting();
-		
-		pointLight.enable();
-		
-		
-		mat_light.begin();
-			ofDrawSphere(light_pos, 0.1);
-		mat_light.end();
-		
-		
-		
-		mat1.begin();
-			ofDrawSphere(glm::vec3(0,3,0), 1); // red
-		mat1.end();
-		
-		
-		
-		ofDisableLighting();
-		ofDisableDepthTest();
-	
-	camera.end();
-	
-	
-	fbo.begin();
-	ofBackground(255/6, 255/6, 255/2, 255/5);
-	
-	camera.begin();
-		ofEnableDepthTest();
-		
-		ofEnableLighting();
-		
-		pointLight.enable();
-		
-		
-		
-		mat2.begin();
-			ofDrawSphere(glm::vec3(3,3,0), 1); // green
-		mat2.end();
-		
-		
-		
-		ofDisableLighting();
-		ofDisableDepthTest();
-	
-	camera.end();
-	fbo.end();
-	
-	fbo.draw(0,0);
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
