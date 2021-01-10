@@ -1071,6 +1071,22 @@ void disableScreenspaceBlending(){
 
 
 
+void allocateFbo(ofFbo& fbo){
+	ofFboSettings s;
+
+	s.width = ofGetWidth();
+	s.height = ofGetHeight();
+	s.useDepth = true;
+	s.depthStencilAsTexture = true;
+	
+	s.internalformat = GL_RGBA32F_ARB;
+	
+	fbo.allocate(s);
+}
+
+
+
+
 
 
 
@@ -1204,6 +1220,10 @@ void Init_rubyOF_project()
 			                     &enableScreenspaceBlending)
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
+		
+		
+		.define_module_function("allocateFbo",
+			                     &allocateFbo)
 	;
 	
 	

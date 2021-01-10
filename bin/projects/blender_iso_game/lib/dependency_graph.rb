@@ -90,11 +90,11 @@ class DependencyGraph
     
     fbo = init_fbo(window) # => @transparency_fbo
     
-    # render_to_fbo(fbo, accumTex_i, revealageTex_i) do
+    render_to_fbo(fbo, accumTex_i, revealageTex_i) do
       camera_begin()
         transparent.each{|mesh, mat, batch|  batch.draw }
       camera_end()
-    # end
+    end
     
     
     
@@ -174,24 +174,27 @@ class DependencyGraph
       if @transparency_fbo.nil?
         @transparency_fbo = 
           RubyOF::Fbo.new.tap do |fbo|
-            settings = 
-              RubyOF::Fbo::Settings.new.tap do |s|
-                s.width  = window.width*0.5
-                s.height = window.height*0.5
-                s.internalformat = GL_RGBA32F;
-                # s.numSamples     = 0; # no multisampling
-                s.useDepth       = true;
-                # s.useStencil     = true;
-                # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
+            # settings = 
+            #   RubyOF::Fbo::Settings.new.tap do |s|
+            #     s.width  = window.width#*0.5
+            #     s.height = window.height#*0.5
+            #     s.internalformat = GL_RGBA32F_ARB;
+            #     # s.numSamples     = 0; # no multisampling
+            #     s.useDepth       = true;
+            #     # s.useStencil     = true;
+            #     # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
                 
-                s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+            #     # s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
                 
                 
-                # s.numColorbuffers = 1;
-                # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
-              end
+            #     # s.numColorbuffers = 1;
+            #     # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+            #   end
             
-            fbo.allocate(settings)
+            # fbo.allocate(settings)
+            
+            
+            RubyOF::CPP_Callbacks.allocateFbo(fbo);
           end
       end
       
@@ -205,14 +208,14 @@ class DependencyGraph
       
       # NOTE: must bind the FBO before you clear it in this way
       
-      color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
+      # color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
       # color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
       
-      fbo.clearColorBuffer(accumTex_i,     color_zero)
+      # fbo.clearColorBuffer(accumTex_i,     color_zero)
       # fbo.clearColorBuffer(revealageTex_i, color_one)
       
       
-      
+      ofBackground(255,255,255, 255/2)
       
       # ofClear(1,1,0,1)
       
