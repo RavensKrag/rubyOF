@@ -174,27 +174,27 @@ class DependencyGraph
       if @transparency_fbo.nil?
         @transparency_fbo = 
           RubyOF::Fbo.new.tap do |fbo|
-            # settings = 
-            #   RubyOF::Fbo::Settings.new.tap do |s|
-            #     s.width  = window.width#*0.5
-            #     s.height = window.height#*0.5
-            #     s.internalformat = GL_RGBA32F_ARB;
-            #     # s.numSamples     = 0; # no multisampling
-            #     s.useDepth       = true;
-            #     # s.useStencil     = true;
-            #     # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
+            settings = 
+              RubyOF::Fbo::Settings.new.tap do |s|
+                s.width  = window.width#*0.5
+                s.height = window.height#*0.5
+                s.internalformat = GL_RGBA32F_ARB;
+                # s.numSamples     = 0; # no multisampling
+                s.useDepth       = true;
+                # s.useStencil     = true;
+                # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
                 
-            #     # s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+                # s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
                 
                 
-            #     # s.numColorbuffers = 1;
-            #     # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
-            #   end
+                # s.numColorbuffers = 1;
+                # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+              end
             
-            # fbo.allocate(settings)
+            fbo.allocate(settings)
             
             
-            RubyOF::CPP_Callbacks.allocateFbo(fbo);
+            # RubyOF::CPP_Callbacks.allocateFbo(fbo);
           end
       end
       
