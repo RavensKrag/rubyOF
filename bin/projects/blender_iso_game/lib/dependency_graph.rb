@@ -210,25 +210,29 @@ class DependencyGraph
       end
       
       
-      color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
-      color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
-      
-      @transparency_fbo.clearColorBuffer(accumTex_i,     color_zero)
-      @transparency_fbo.clearColorBuffer(revealageTex_i, color_one)
-      
       # accumTexture     = RubyOF::Texture.new
         # TODO: ^ clear to vec4(0)
       # revealageTexture = RubyOF::Texture.new
         # TODO: ^ clear to float(1)
       
       # bindFramebuffer(@accumTexture, @revealageTexture)
+      
       @transparency_fbo.tap do |fbo|
         fbo.begin
+        
+        color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
+        color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
+        
+        @transparency_fbo.clearColorBuffer(accumTex_i,     color_zero)
+        @transparency_fbo.clearColorBuffer(revealageTex_i, color_one)
+        
+        
         
         # glDepthMask(GL_FALSE)
         # glEnable(GL_BLEND)
         # glBlendFunci(0, GL_ONE, GL_ONE) # summation
         # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
+        RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
         
         
         transparent.each{|mesh, mat, batch|  batch.draw }
@@ -284,7 +288,6 @@ class DependencyGraph
       # ----------------------
       
       
-      raise "ERROR: fbo no longer exists bp2" if @transparency_fbo.nil?
       # ^ fbo no longer exists here... why???
       
       
@@ -294,8 +297,19 @@ class DependencyGraph
       
       if @compositing_shader.nil?
         @compositing_shader = RubyOF::Shader.new
+        @shader_timestamp = nil
+        # NOTE: no shader hotloading for this shader right now
         
-        shader_src_dir = PROJECT_DIR/"bin/glsl"
+      end
+      
+      shader_src_dir = PROJECT_DIR/"bin/glsl"
+      
+      # dynamic reloading of compositing shader
+      # (code copied from RenderBatch#reload_shaders)
+      
+      if @shader_timestamp.nil? || [shader_src_dir/'alpha_composite.vert', shader_src_dir/'alpha_composite.frag'].any?{|f| f.mtime > @shader_timestamp }
+        
+        
         @compositing_shader.load_glsl(shader_src_dir/'alpha_composite')
         # ^ loads vertex shader AND fragment shader
         #   (.vert and .frag, same basename)
@@ -303,8 +317,12 @@ class DependencyGraph
         # careful - these shaders don't go through the same pre-processing step as the ones in Material, so the '#define's don't apply here.
         # (the pre-processing is used by ofMaterial and defined in ofGLProgrammableRenderer.cpp)
         
-        # NOTE: no shader hotloading for this shader right now
+        
+        @shader_timestamp = Time.now
       end
+      
+      
+      
       
       # void ofFbo::updateTexture(int attachmentPoint)
       
@@ -313,11 +331,11 @@ class DependencyGraph
         # \note This will get called implicitly upon getTexture();
       
       
-      raise "ERROR: fbo no longer exists bp3" if @transparency_fbo.nil?
-      
       # blend the two textures into the framebuffer
       
+      # glBlendEquation(GL_FUNC_ADD)
       # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
+      RubyOF::CPP_Callbacks.enableScreenspaceBlending()
       
       @compositing_shader.tap do |shader|
         # shader.setUniformTexture('accumTexture',     @accumTexture,     0)
@@ -335,15 +353,14 @@ class DependencyGraph
         
         
         shader.begin
-        
-          # (draw a fullscreen quad to facilitate the shader)
-          # p [0,0, window.width, window.height]
+          # ofSetColor(RubyOF::Color.hex(0xffffff))
+          # # (draw a fullscreen quad to facilitate the shader)
           ofDrawRectangle(0,0,0, window.width, window.height)
         
         shader.end
       end
       
-      
+      RubyOF::CPP_Callbacks.disableScreenspaceBlending()
       
       
       
