@@ -492,11 +492,114 @@ void rbApp::draw(){
 		
 		live.call("camera_end");
 	}else{
-		mSelf.call("draw");
+		// mSelf.call("draw");
 	}
 	
 	
 	
+	
+	
+	
+	
+	// 
+	// FBO render test
+	// 
+	
+	
+	ofCamera camera;
+	// ofxDynamicMaterial mat1;
+	// ofxDynamicMaterial mat2;
+	ofMaterial mat1;
+	ofMaterial mat2;
+	ofMaterial mat_light;
+	// ofMesh mesh1;
+	// ofMesh mesh2;
+	ofLight pointLight;
+	
+	ofFbo fbo;
+	ofFboSettings fbo_settings;
+	
+	glm::vec3 light_pos(0,0,0);
+	
+	
+	
+	
+	camera.setPosition(glm::vec3(10,-10,20));
+	camera.lookAt(glm::vec3(0,0,0));
+	
+	ofFloatColor light_color(1, 1, 1);
+	pointLight.setDiffuseColor(light_color);
+	pointLight.setSpecularColor( ofColor(255.f, 255.f, 255.f));
+	pointLight.setPosition(light_pos.x, light_pos.y, light_pos.z);
+	
+	mat1.setDiffuseColor(ofFloatColor(1,0,0,1));
+	mat2.setDiffuseColor(ofFloatColor(0,1,0,1));
+	
+	mat_light.setEmissiveColor(light_color);
+	
+	
+	
+	
+	fbo_settings.width = ofGetWidth();
+	fbo_settings.height = ofGetHeight();
+	fbo_settings.useDepth = true;
+	fbo_settings.depthStencilAsTexture = true;
+	
+	fbo_settings.internalformat = GL_RGBA32F_ARB;
+	
+	fbo.allocate(fbo_settings);
+	
+	
+	ofSetSphereResolution(32);
+	
+	
+	camera.begin();
+		
+		
+		ofBackground(255/2, 255/2, 255/2);
+		ofEnableDepthTest();
+		
+		// turn on smooth lighting //
+		ofSetSmoothLighting(true);
+		
+		
+		
+		ofEnableLighting();
+		
+		pointLight.enable();
+		
+		
+		mat1.begin();
+			ofDrawSphere(glm::vec3(0,3,0), 1); // red
+		mat1.end();
+		
+		
+		
+		
+		// fbo.begin();
+		
+		mat2.begin();
+			ofDrawSphere(glm::vec3(3,3,0), 1); // green
+		mat2.end();
+		
+		// fbo.end();
+		
+		
+		
+		
+		mat_light.begin();
+			ofDrawSphere(light_pos, 0.1);
+		mat_light.end();
+		
+		
+		
+		ofDisableLighting();
+		ofDisableDepthTest();
+	
+	camera.end();
+	
+	
+	fbo.draw(0,0);
 	
 	
 	
