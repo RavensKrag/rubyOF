@@ -8,7 +8,7 @@
     IN vec4 v_color;
 #endif
 
-
+#define TRANSPARENT_PASS 1
     struct lightData
     {
         float enabled;
@@ -209,7 +209,10 @@
     
     
     float w(in float z, in float a){
-        float accum = z*z*z*z*z;
+        // if(z<1e-5){
+        //     z = 1;
+        // }
+        float accum = abs(z*z*z*z*z);
         return 1/accum;
     }
     
@@ -269,15 +272,30 @@
         // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, mat_diffuse.a);
         
         
-        
         // TODO: call clamp later
         // TODO: make sure zi and ai variables get set
         
         // HDR-style : will clamp in the final compositing phase later
         
-        float ai = mat_ambient.a; // no alpha map, so all fragments have same alpha
-        float zi = v_eyePosition.z; // relative to the camera
+        // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
         
-        FRAG_COLOR[0] = vec4(localColor.rgb, ai) * w(zi, ai);
-        FRAG_COLOR[1] = vec4(localColor.a);
+        // #if TRANSPARENT_PASS
+        if(mat_diffuse.a != 1){
+            
+        
+            float ai = mat_ambient.a; // no alpha map, so all fragments have same alpha
+            float zi = v_eyePosition.z; // relative to the camera
+            
+            
+            gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+            gl_FragData[1] = vec4(localColor.a);
+        }else{
+        // #else
+            // gl_FragColor = localColor;
+            
+            gl_FragData[1] = clamp(vec4(diffuse, 1.0) * mat_diffuse, 0.0, 1.0);
+            // ^ this might work, but maybe not
+        // #endif
+            
+        }
     }

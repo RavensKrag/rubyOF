@@ -291,7 +291,7 @@ class BlenderSync
         # mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
         # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
         # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-        # mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+        mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
         
         
         # Defaults, but with 0 alpha channel

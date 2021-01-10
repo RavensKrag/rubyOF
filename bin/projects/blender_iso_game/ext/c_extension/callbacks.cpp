@@ -1040,6 +1040,31 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
+void enableTransparencyBufferBlending(){
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunci(0, GL_ONE, GL_ONE); // summation
+	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+}
+
+void disableTransparencyBufferBlending(){
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+}
+
+
+
+void enableScreenspaceBlending(){
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+}
+
+void disableScreenspaceBlending(){
+	glDisable(GL_BLEND);
+}
+
+
 
 
 
@@ -1108,6 +1133,9 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
       
       .define_method("setFragmentShaderSource",
       	&ofxDynamicMaterial::setFragmentShaderSource)
+      
+      .define_method("forceShaderRecompilation", 
+      	&ofxDynamicMaterial::forceShaderRecompilation)
    ;
 	
 }
@@ -1159,6 +1187,18 @@ void Init_rubyOF_project()
 		
 		
 		.define_module_function("pack_transforms",   &pack_transforms)
+		
+		
+		.define_module_function("enableTransparencyBufferBlending",
+			                     &enableTransparencyBufferBlending)
+		.define_module_function("disableTransparencyBufferBlending",
+			                     &disableTransparencyBufferBlending)
+		
+		
+		.define_module_function("enableScreenspaceBlending",
+			                     &enableScreenspaceBlending)
+		.define_module_function("disableScreenspaceBlending",
+			                     &disableScreenspaceBlending)
 	;
 	
 	
