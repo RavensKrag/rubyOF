@@ -25,4 +25,6 @@ uniform mat4 modelViewProjectionMatrix;
 
 void main (void){
     gl_Position = modelViewProjectionMatrix * position;
+    
+    v_texcoord = gl_Position.xy;
 }

@@ -281,21 +281,40 @@
         
         // #if TRANSPARENT_PASS
         if(mat_diffuse.a != 1){
+            // ---transparent pass---
             
-        
-            float ai = mat_ambient.a; // no alpha map, so all fragments have same alpha
+            float ai = mat_diffuse.a; // no alpha map, so all fragments have same alpha
             float zi = v_eyePosition.z; // relative to the camera
             
             
-            gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
-            gl_FragData[1] = vec4(localColor.a);
+            
+            // // trivial write to test things:
+            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
+            // gl_FragData[1] = vec4(1,0,1, 1);
+            
+            
+            gl_FragData[0] = localColor;
+            gl_FragData[1] = localColor;
+            
+            
+            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+            // gl_FragData[0] = vec4(localColor.rgb, ai);
+            // gl_FragData[1] = vec4(localColor.a);
         }else{
         // #else
+        
+            // ---opaque pass---
+            
+            // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
+            
+            
             // gl_FragColor = localColor;
             
-            gl_FragData[1] = clamp(vec4(diffuse, 1.0) * mat_diffuse, 0.0, 1.0);
+            gl_FragData[0] = localColor;
             // ^ this might work, but maybe not
-        // #endif
             
+            
+        // #endif
+        
         }
     }

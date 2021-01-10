@@ -71,9 +71,7 @@ void ofFbo_allocate_from_struct(ofFbo& fbo, Rice::Object rb_settings){
 	// use a texture instead of a renderbuffer for depth (useful to draw it or use it in a shader later)
 	// bool
 	
-			                 tmp_obj = rb_settings.call("textureTarget");
-	s.textureTarget      = tmp_obj.is_nil() ? GL_TEXTURE_2D : 
-	                                       from_ruby<GLenum>(tmp_obj);
+	s.textureTarget      = from_ruby<GLenum>(rb_settings.call("textureTarget"));
 	// GL_TEXTURE_2D or GL_TEXTURE_RECTANGLE_ARB
 	// GLenum
 	

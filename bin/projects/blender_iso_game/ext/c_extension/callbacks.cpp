@@ -1041,15 +1041,20 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 void enableTransparencyBufferBlending(){
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunci(0, GL_ONE, GL_ONE); // summation
-	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+	// glDepthMask(GL_FALSE);
+	// glEnable(GL_BLEND);
+	// glBlendFunci(0, GL_ONE, GL_ONE); // summation
+	// glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+	
+	ofPushMatrix();
+	// ofScale(1,-1,1);
+	ofLoadIdentityMatrix();
 }
 
 void disableTransparencyBufferBlending(){
-	glDepthMask(GL_TRUE);
-	glDisable(GL_BLEND);
+	// glDepthMask(GL_TRUE);
+	// glDisable(GL_BLEND);
+	ofPopMatrix();
 }
 
 

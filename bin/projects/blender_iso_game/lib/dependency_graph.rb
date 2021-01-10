@@ -54,6 +54,8 @@ class DependencyGraph
       #   [entity.mesh, entity.material,  RenderBatch.new]
       # ]
     
+    
+    
   end
   
   # 
@@ -63,33 +65,58 @@ class DependencyGraph
   include RubyOF::Graphics
   include Gl
   def draw(window)
-    # puts ">>>>> batches: #{@batches.keys.size}"
-    
-    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     @batches.each do |mesh, mat, batch|
       # puts "batch id #{batch.__id__}"
       batch.update
     end
     
-    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    # dt = t1-t0
-    # puts "time - batch update: #{dt.to_f / 1000} ms"
     
     
-    # RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
-    #   print "color test => "
-    #   puts c
-    #   print "\n"
+    accumTex_i     = 0
+    revealageTex_i = 1
+    
+    
+    
+    opaque, transparent = partition_batches()
+    
+    
+    
+    camera_begin()
+      opaque.each{|mesh, mat, batch|  batch.draw }
+    camera_end()
+    
+    
+    
+    fbo = init_fbo(window) # => @transparency_fbo
+    
+    # render_to_fbo(fbo, accumTex_i, revealageTex_i) do
+      camera_begin()
+        transparent.each{|mesh, mat, batch|  batch.draw }
+      camera_end()
     # end
     
     
     
-    # ========================
-    # ------------------------
-    # render begin
-    # ------------------------
+    # init_compositing_shader()
+    # live_reload_compositing_shader_glsl()
+    
+    draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+  end
+  
+  
+  private
+    
+    def partition_batches
+      opaque, transparent = 
+        @batches.partition do |mesh, mat, batch|
+          mat.diffuse_color.a == 1
+        end
+      
+      return opaque, transparent
+    end
+    
+    def camera_begin
       # camera begin
       @viewport_camera.begin
       # 
@@ -120,137 +147,9 @@ class DependencyGraph
       # =====================
       # (world space)
       # --------------------
-    begin
-      
-      
-      
-      # 
-      # partition batches into opaque entities and transparent entities
-      # 
-      
-      opaque, transparent = 
-        @batches.partition do |mesh, mat, batch|
-          mat.diffuse_color.a == 1
-        end
-      
-      # 
-      # draw opaque surfaces to framebuffer
-      # 
-      
-      opaque.each{|mesh, mat, batch|  batch.draw }
-      
-      
-      # 
-      # draw transparent surfaces to fbo
-      # 
-      # @accumTexture     ||= RubyOF::Texture.new
-      # @revealageTexture ||= RubyOF::Texture.new
-      
-      
-      
-      accumTex_i     = 0
-      revealageTex_i = 1
-      
-      if @transparency_fbo.nil?
-        @transparency_fbo = 
-          RubyOF::Fbo.new.tap do |fbo|
-            # # fbo.createAndAttachTexture(GLenum internalFormat, GLenum attachmentPoint)
-            
-            # # fbo.createAndAttachTexture(GLenum internalFormat, GLenum attachmentPoint)
-            
-            # fbo.createAndAttachTexture(GLenum internalFormat, accumTex_i);
-            # fbo.createAndAttachTexture(GLenum internalFormat, revealageTex_i);
-            # # ^ the main texture settings will be copied from ofFboSettings
-            
-            # #  ofFbo#getTexture runs #updateTexture, which blits data from the backbuffer into the texture. I don't think that's what I want, so I may have to attach my own texture manually...
-            
-            # # ^ this only happens if MSAA is enabled (or some other scenario where the textures are attached to another fbo), as per the comments in ofFbo.cpp regaurding fbo != fboTextures
-            
-             
-            
-            # alternatively, you could do something like this:
-            # ofFboSettings.new
-            
-            
-            settings = 
-              RubyOF::Fbo::Settings.new.tap do |s|
-                s.width  = window.width
-                s.height = window.height
-                s.internalformat = GL_RGBA32F;
-                s.numSamples     = 0; # no multisampling
-                s.useDepth       = true;
-                s.useStencil     = true;
-                # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
-                
-                s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-                
-                
-                
-                s.numColorbuffers = 2;
-                # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
-              end
-            
-            
-            fbo.allocate(settings)
-            
-            # (though, in any case you need to call Fbo#allocate at some point)
-            
-            
-            
-            # fbo.createAndAttachTexture(GL_RGBA32F, 1);
-            # fbo.createAndAttachTexture(GL_RGBA32F, 2);
-            
-            
-            
-            
-            # @fbo.attachTexture(@accumTexture, GLenum internalFormat, GLenum attachmentPoint)
-            
-            # @fbo.attachTexture(@revealageTexture, GLenum internalFormat, GLenum attachmentPoint)
-          end
-      end
-      
-      
-      # accumTexture     = RubyOF::Texture.new
-        # TODO: ^ clear to vec4(0)
-      # revealageTexture = RubyOF::Texture.new
-        # TODO: ^ clear to float(1)
-      
-      # bindFramebuffer(@accumTexture, @revealageTexture)
-      
-      @transparency_fbo.tap do |fbo|
-        fbo.begin
-        
-        color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
-        color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
-        
-        @transparency_fbo.clearColorBuffer(accumTex_i,     color_zero)
-        @transparency_fbo.clearColorBuffer(revealageTex_i, color_one)
-        
-        
-        
-        # glDepthMask(GL_FALSE)
-        # glEnable(GL_BLEND)
-        # glBlendFunci(0, GL_ONE, GL_ONE) # summation
-        # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
-        RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
-        
-        
-        transparent.each{|mesh, mat, batch|  batch.draw }
-        
-        
-        fbo.end
-      end
-      # unbindFramebuffer()
-      
-      
-      
-    # clean up lights and camera whether there is an exception or not
-    # but if there's an exception, you need to re-raise it
-    # (can't just use 'ensure' here)
+    end
     
-    rescue Exception => e 
-      @exception = e # supress exception so we can exit cleanly first
-    ensure
+    def camera_end
       # 
       # disable lights
       # 
@@ -269,45 +168,132 @@ class DependencyGraph
       # camera end
       @viewport_camera.end
       
-      
-      # 
-      # after cleaning up, now throw the exception if needed
-      # 
-      unless @exception.nil?
-        e = @exception
-        @exception = nil
-        raise e
+    end
+    
+    def init_fbo(window)
+      if @transparency_fbo.nil?
+        @transparency_fbo = 
+          RubyOF::Fbo.new.tap do |fbo|
+            settings = 
+              RubyOF::Fbo::Settings.new.tap do |s|
+                s.width  = window.width*0.5
+                s.height = window.height*0.5
+                s.internalformat = GL_RGBA32F;
+                # s.numSamples     = 0; # no multisampling
+                s.useDepth       = true;
+                # s.useStencil     = true;
+                # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
+                
+                s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+                
+                
+                # s.numColorbuffers = 1;
+                # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+              end
+            
+            fbo.allocate(settings)
+          end
       end
       
+      
+      return @transparency_fbo
     end
+    
+    def render_to_fbo(fbo, accumTex_i, revealageTex_i) # &block
+      fbo.begin
+      
+      
+      # NOTE: must bind the FBO before you clear it in this way
+      
+      color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
+      # color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
+      
+      fbo.clearColorBuffer(accumTex_i,     color_zero)
+      # fbo.clearColorBuffer(revealageTex_i, color_one)
       
       
       
-      # =======================
-      # (screen space)
-      # ----------------------
+      
+      # ofClear(1,1,0,1)
+      
+      # glDepthMask(GL_FALSE)
+      # glEnable(GL_BLEND)
+      # glBlendFunci(0, GL_ONE, GL_ONE) # summation
+      # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
+      # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+      
+      # ofDisableAlphaBlending()
+      
+      yield
+      
+      # ofEnableAlphaBlending()
+      
+      # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
       
       
-      # ^ fbo no longer exists here... why???
+      fbo.end
+      # unbindFramebuffer()
+    end
+    
+    
+    def draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+      # blend the two textures into the framebuffer
       
+      # glBlendEquation(GL_FUNC_ADD)
+      # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
+      # RubyOF::CPP_Callbacks.enableScreenspaceBlending()
       
-      # 
-      # blend fbo (transparency data) with framebuffer
-      # 
+      # @compositing_shader.tap do |shader|
+        # shader.setUniformTexture('accumTexture',     @accumTexture,     0)
+        # shader.setUniformTexture('revealageTexture', @revealageTexture, 1)
+        
+        # shader.begin
+          
+          
+          # # 
+          # # v1
+          # # 
+          # tex = @transparency_fbo.getTexture(accumTex_i)
+          # shader.setUniformTexture('accumTexture',     tex, 0)
+          
+          # # tex = @transparency_fbo.getTexture(revealageTex_i)
+          # # shader.setUniformTexture('revealageTexture', tex, 1)
+          
+          # ofDrawRectangle(0,0,0, window.width, window.height)
+          
+          
+          # 
+          # v2
+          # 
+          
+          fbo.draw(0,0)
+        
+        # shader.end
+      # end
       
+      # RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
+    end
+    
+    
+    
+    def init_compositing_shader
       if @compositing_shader.nil?
         @compositing_shader = RubyOF::Shader.new
         @shader_timestamp = nil
-        # NOTE: no shader hotloading for this shader right now
-        
       end
-      
-      shader_src_dir = PROJECT_DIR/"bin/glsl"
+    end
+    
+    def live_reload_compositing_shader_glsl
+      shader_src_dir = PROJECT_DIR/'bin'/'glsl'
       
       # dynamic reloading of compositing shader
       # (code copied from RenderBatch#reload_shaders)
       
+      # p @shader_timestamp
       if @shader_timestamp.nil? || [shader_src_dir/'alpha_composite.vert', shader_src_dir/'alpha_composite.frag'].any?{|f| f.mtime > @shader_timestamp }
+        
+        puts "reloading alpha compositing shaders..."
         
         
         @compositing_shader.load_glsl(shader_src_dir/'alpha_composite')
@@ -321,81 +307,155 @@ class DependencyGraph
         @shader_timestamp = Time.now
       end
       
+    end
+    
+    
+    def foo
       
       
       
-      # void ofFbo::updateTexture(int attachmentPoint)
-      
-        # Explicityl resolve MSAA render buffers into textures
-        # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
-        # \note This will get called implicitly upon getTexture();
       
       
-      # blend the two textures into the framebuffer
+      # puts ">>>>> batches: #{@batches.keys.size}"
       
-      # glBlendEquation(GL_FUNC_ADD)
-      # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
-      RubyOF::CPP_Callbacks.enableScreenspaceBlending()
-      
-      @compositing_shader.tap do |shader|
-        # shader.setUniformTexture('accumTexture',     @accumTexture,     0)
-        # shader.setUniformTexture('revealageTexture', @revealageTexture, 1)
-        
-        tex = @transparency_fbo.getTexture(accumTex_i)
-        shader.setUniformTexture('accumTexture',     tex, 0)
-        
-        tex = @transparency_fbo.getTexture(revealageTex_i)
-        shader.setUniformTexture('revealageTexture', tex, 1)
-        
-        # NOTE: may not be able to access the variables accumTex_i and revealageTex_i from here. need to test this - not sure how begin / end block used for execptions effects variable scope
-        
-        
-        
-        
-        shader.begin
-          # ofSetColor(RubyOF::Color.hex(0xffffff))
-          # # (draw a fullscreen quad to facilitate the shader)
-          ofDrawRectangle(0,0,0, window.width, window.height)
-        
-        shader.end
-      end
-      
-      RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
       
       
+      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
       
-      # # 
-      # # render the sphere that represents the light
-      # # 
+      # dt = t1-t0
+      # puts "time - batch update: #{dt.to_f / 1000} ms"
       
-      # @lights.each do |light|
-      #   light_pos   = light.position
-      #   light_color = light.diffuse_color
-        
-      #   @light_material.tap do |mat|
-      #     mat.emissive_color = light_color
-          
-          
-      #     mat.begin()
-      #     ofPushMatrix()
-      #       ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-      #     ofPopMatrix()
-      #     mat.end()
-      #   end
+      
+      # RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
+      #   print "color test => "
+      #   puts c
+      #   print "\n"
       # end
       
       
       
+      # ========================
+      # ------------------------
+      # render begin
+      # ------------------------
+        
+        
+        # =====================
+        # (world space)
+        # --------------------
+      begin
+        
+        
+        
+        # 
+        # partition batches into opaque entities and transparent entities
+        # 
+        
+        # 
+        # draw opaque surfaces to framebuffer
+        # 
+        
+        
+        # transparent.each{|mesh, mat, batch|  batch.draw }
+        
+        # 
+        # draw transparent surfaces to fbo
+        # 
+        # @accumTexture     ||= RubyOF::Texture.new
+        # @revealageTexture ||= RubyOF::Texture.new
+        
+        
+        
+        
+        
+        
+        # accumTexture     = RubyOF::Texture.new
+          # TODO: ^ clear to vec4(0)
+        # revealageTexture = RubyOF::Texture.new
+          # TODO: ^ clear to float(1)
+        
+        # bindFramebuffer(@accumTexture, @revealageTexture)
+        
+        
+        
+        
+        
+      # clean up lights and camera whether there is an exception or not
+      # but if there's an exception, you need to re-raise it
+      # (can't just use 'ensure' here)
       
-      
-      
-      
-    
-    # ------------------------
-    # render end
-    # ------------------------
-    # ========================
-  end
+      rescue Exception => e 
+        @exception = e # supress exception so we can exit cleanly first
+      ensure
+        
+        
+        # 
+        # after cleaning up, now throw the exception if needed
+        # 
+        unless @exception.nil?
+          e = @exception
+          @exception = nil
+          raise e
+        end
+        
+      end
+        
+        
+        
+        # =======================
+        # (screen space)
+        # ----------------------
+        
+        
+        # ^ fbo no longer exists here... why???
+        
+        
+        # 
+        # blend fbo (transparency data) with framebuffer
+        # 
+        
+        
+        
+        
+        
+        # void ofFbo::updateTexture(int attachmentPoint)
+        
+          # Explicityl resolve MSAA render buffers into textures
+          # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
+          # \note This will get called implicitly upon getTexture();
+        
+        
+        
+        
+        # # 
+        # # render the sphere that represents the light
+        # # 
+        
+        # @lights.each do |light|
+        #   light_pos   = light.position
+        #   light_color = light.diffuse_color
+          
+        #   @light_material.tap do |mat|
+        #     mat.emissive_color = light_color
+            
+            
+        #     mat.begin()
+        #     ofPushMatrix()
+        #       ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+        #     ofPopMatrix()
+        #     mat.end()
+        #   end
+        # end
+        
+        
+      # ------------------------
+      # render end
+      # ------------------------
+      # ========================
+    end
+  
+  public
   
   
   # def pack_entities
@@ -403,28 +463,6 @@ class DependencyGraph
   #     val.data_dump
   #   }
   # end
-  
-  
-  private
-  
-  
-  def setup_lights_and_camera
-    
-  end
-  
-  
-  # render by batches
-  # (RenderBatch automatically uses GPU instancing when necessary)
-  def render_scene
-    
-  end
-  
-  def finish_lights_and_camera
-    
-  end
-  
-  
-  public
   
   
   
