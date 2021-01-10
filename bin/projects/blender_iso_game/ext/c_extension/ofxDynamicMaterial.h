@@ -171,6 +171,8 @@ public:
 	
 	void setVertexShaderSource(const std::string &source);
 	void setFragmentShaderSource(const std::string &source);
+	
+	bool forceShaderRecompilation();
 
 
 
@@ -179,7 +181,7 @@ private:
 	std::string fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const;
 
 	
-	void initShaders(ofGLProgrammableRenderer & renderer) const;
+	bool initShaders(ofGLProgrammableRenderer & renderer) const;
 	const ofShader & getShader(int textureTarget, bool geometryHasColor, ofGLProgrammableRenderer & renderer) const;
 	void updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const;
 	void updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const;
