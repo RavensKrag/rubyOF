@@ -249,7 +249,6 @@ class DependencyGraph
       # 
       # v2
       # 
-      @compositing_shader.tap do |shader|
         tex0 = @transparency_fbo.getTexture(accumTex_i)
         tex1 = @transparency_fbo.getTexture(revealageTex_i)
         
@@ -269,34 +268,57 @@ class DependencyGraph
         # 
         
         
-        # shader.begin
-        #   shader.setUniformTexture('src_tex_unit0',     tex0, 0)
-        #   # # shader.setUniformTexture('revealageTexture', tex1, 1)
+        # @compositing_shader.tap do |shader|
+          # shader.begin
+          #   shader.setUniformTexture('src_tex_unit0',     tex0, 0)
+          #   # # shader.setUniformTexture('revealageTexture', tex1, 1)
+            
+          #   # tex0.bind(0)
+          #   # # tex1.bind(1)
+            
+          #   mesh = RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
+          #   mesh.draw()
+          #   # ofDrawRectangle(0,0,0, window.width, window.height)
+            
+            
+          #   # tex0.draw_wh(0,0,0, window.width, window.height)
+            
+          # shader.end
           
-        #   # tex0.bind(0)
-        #   # # tex1.bind(1)
-          
-        #   mesh = RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
-        #   mesh.draw()
-        #   # ofDrawRectangle(0,0,0, window.width, window.height)
-          
-          
-        #   # tex0.draw_wh(0,0,0, window.width, window.height)
-          
-        # shader.end
-        
-        # # tex0.unbind(0)
-        # # tex1.unbind(1)
+          # # tex0.unbind(0)
+          # # tex1.unbind(1)
+        # end
         
         
         # 
         # v2.3
         # 
         
-        RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
+        # RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
         
         
-      end
+        # 
+        # v3
+        # 
+        
+        @compositing_shader.tap do |shader|
+          shader.begin()
+          
+          tex0.bind(0)
+          
+            fullscreen_quad = 
+              RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
+            fullscreen_quad.draw()
+          
+          
+          tex0.unbind(0)
+          
+          shader.end()
+        end
+        
+        # RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
+        
+        
       
       
       # 
