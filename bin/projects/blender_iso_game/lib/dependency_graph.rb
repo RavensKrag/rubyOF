@@ -305,13 +305,14 @@ class DependencyGraph
           shader.begin()
           
           tex0.bind(0)
+          tex1.bind(1)
           
             fullscreen_quad = 
               RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
             fullscreen_quad.draw()
           
-          
           tex0.unbind(0)
+          tex1.unbind(1)
           
           shader.end()
         end
