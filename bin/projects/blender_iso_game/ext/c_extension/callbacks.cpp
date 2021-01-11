@@ -1291,10 +1291,10 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	
 	currentShader.begin();
 	
-	bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
-	currentShader.setUniform1f("usingTexture",usingTexture);	
+	// bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
+	// currentShader.setUniform1f("usingTexture",usingTexture);	
 	
-	currentShader.setUniform1f("usingColors", colorsEnabled);	
+	// currentShader.setUniform1f("usingColors", colorsEnabled);
 	
 	
 	

@@ -11,8 +11,8 @@
 out vec4 fragColor;
 
 uniform sampler2DRect src_tex_unit0;
-uniform float usingTexture;
-uniform float usingColors;
+// uniform float usingTexture;
+// uniform float usingColors;
 uniform vec4 globalColor;
 
 IN float depth;
