@@ -1251,14 +1251,13 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	ofGLProgrammableRenderer* render_ptr = dynamic_cast<ofGLProgrammableRenderer*>(renderer.get());
 	
 	// render_ptr->setAttributes(true,false,true,false);
+		bool vertices = true;
+		
+		bool texCoordsEnabled = true;
+		bool colorsEnabled = false;
+		bool normalsEnabled = false;
 	
-	bool vertices = true;
-	
-	bool texCoordsEnabled = true;
-	bool colorsEnabled = false;
-	bool normalsEnabled = false;
-	
-	const ofShader * nextShader = nullptr;
+	// const ofShader * nextShader = nullptr;
 	
 	glGetError();
 	int major = render_ptr->getGLVersionMajor();
@@ -1286,10 +1285,12 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	ofShader& currentShader = defaultTexRectNoColor;
 	currentShader = shader;
 	
-	GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
 	
 	
 	currentShader.begin();
+	
+	
+	// GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
 	
 	// bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
 	// currentShader.setUniform1f("usingTexture",usingTexture);	
@@ -1297,19 +1298,30 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	// currentShader.setUniform1f("usingColors", colorsEnabled);
 	
 	
-	
 	if(tex0.isAllocated()) {
-		render_ptr->bind(tex0,0);
-		// ^ a shader is bound in here somewhere
-		// nextShader = &defaultTexRectNoColor;
+		// render_ptr->bind(tex0,0);
+		// // ^ a shader is bound in here somewhere
+		// // nextShader = &defaultTexRectNoColor;
+		tex0.bind(0);
 		
-		render_ptr->draw(
+		ofMesh fullscreen_quad = 
 			tex0.getMeshForSubsection(pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
-											  0,0, tex0.getWidth(),tex0.getHeight(),
-											  renderer->isVFlipped(),renderer->getRectMode()),
-			OF_MESH_FILL,false,true,false);
+			                          0,0, tex0.getWidth(),tex0.getHeight(),
+			                          renderer->isVFlipped(),renderer->getRectMode());
 		
-		render_ptr->unbind(tex0,0);
+		// render_ptr->draw(fullscreen_quad,
+		//                  OF_MESH_FILL,
+		//                  colorsEnabled,texCoordsEnabled,normalsEnabled);
+		
+			colorsEnabled    ? fullscreen_quad.enableColors()   : fullscreen_quad.disableColors();
+			texCoordsEnabled ? fullscreen_quad.enableTextures() : fullscreen_quad.disableTextures();
+			normalsEnabled   ? fullscreen_quad.enableNormals()  : fullscreen_quad.disableNormals();
+			
+			fullscreen_quad.draw();
+		
+		
+		// render_ptr->unbind(tex0,0);
+		tex0.unbind(0);
 	} else {
 		ofLogWarning("ofGLProgrammableRenderer") << "draw(): texture is not allocated";
 	}
