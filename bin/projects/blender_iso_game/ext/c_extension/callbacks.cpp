@@ -1087,6 +1087,14 @@ void allocateFbo(ofFbo& fbo){
 	fbo.allocate(s);
 }
 
+
+// ofFbo has member functions to clear color buffers by index,
+// as well as clearing the first depth buffer.
+	// void ofFbo::clearColorBuffer(size_t buffer_idx, const ofFloatColor & color)
+	// void ofFbo::clearDepthBuffer(float value)
+// But, you can't clear depth buffers past the first buffer with that interface, 
+// so I created this function to allow clearing of the other depth buffers.
+// (not sure if this is strictly necessary - had to change many things to get the transparency working. should test more to see if I need this code or not.)
 void clearFboBuffers(int buffer_idx, ofFloatColor& color){
 	// glClearColor(color.r, color.g, color.b, color.a);
 	// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
