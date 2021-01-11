@@ -272,15 +272,33 @@ class DependencyGraph
         # v2.2
         # 
         
-        shader.begin
-          shader.setUniformTexture('accumTexture',     tex0, 0)
-          shader.setUniformTexture('revealageTexture', tex1, 1)
+        
+        # shader.begin
+        #   shader.setUniformTexture('src_tex_unit0',     tex0, 0)
+        #   # # shader.setUniformTexture('revealageTexture', tex1, 1)
           
-          mesh = RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
-          mesh.draw()
-          # ofDrawRectangle(0,0,0, window.width, window.height)
-          # tex0.draw_wh(0,0,0, window.width, window.height)
-        shader.end
+        #   # tex0.bind(0)
+        #   # # tex1.bind(1)
+          
+        #   mesh = RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
+        #   mesh.draw()
+        #   # ofDrawRectangle(0,0,0, window.width, window.height)
+          
+          
+        #   # tex0.draw_wh(0,0,0, window.width, window.height)
+          
+        # shader.end
+        
+        # # tex0.unbind(0)
+        # # tex1.unbind(1)
+        
+        
+        # 
+        # v2.3
+        # 
+        
+        RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
+        
         
       end
       

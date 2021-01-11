@@ -1136,6 +1136,267 @@ ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
 
 
 
+#include "ofGLProgrammableRenderer.h"
+
+
+static string shaderSource(const string & src, int major, int minor){
+	string shaderSrc = src;
+	ofStringReplace(shaderSrc,"%glsl_version%",ofGLSLVersionFromGL(major,minor));
+#ifndef TARGET_OPENGLES
+	if(major<4 && minor<2){
+		ofStringReplace(shaderSrc,"%extensions%","#extension GL_ARB_texture_rectangle : enable");
+	}else{
+		ofStringReplace(shaderSrc,"%extensions%","");
+	}
+#else
+	ofStringReplace(shaderSrc,"%extensions%","");
+#endif
+	return shaderSrc;
+}
+
+#define STRINGIFY(x) #x
+
+
+#ifdef TARGET_OPENGLES
+static const string vertex_shader_header =
+		"%extensions%\n"
+		"precision highp float;\n"
+		"#define IN attribute\n"
+		"#define OUT varying\n"
+		"#define TEXTURE texture2D\n"
+		"#define TARGET_OPENGLES\n";
+static const string fragment_shader_header =
+		"%extensions%\n"
+		"precision highp float;\n"
+		"#define IN varying\n"
+		"#define OUT\n"
+		"#define TEXTURE texture2D\n"
+		"#define FRAG_COLOR gl_FragColor\n"
+		"#define TARGET_OPENGLES\n";
+#else
+static const string vertex_shader_header =
+		"#version %glsl_version%\n"
+		"%extensions%\n"
+		"#define IN in\n"
+		"#define OUT out\n"
+		"#define TEXTURE texture\n";
+static const string fragment_shader_header =
+		"#version %glsl_version%\n"
+		"%extensions%\n"
+		"#define IN in\n"
+		"#define OUT out\n"
+		"#define TEXTURE texture\n"
+		"#define FRAG_COLOR fragColor\n"
+		"out vec4 fragColor;\n";
+#endif
+
+static const string defaultVertexShader = vertex_shader_header + STRINGIFY(
+	uniform mat4 projectionMatrix;
+	uniform mat4 modelViewMatrix;
+	uniform mat4 textureMatrix;
+	uniform mat4 modelViewProjectionMatrix;
+
+	IN vec4  position;
+	IN vec2  texcoord;
+	IN vec4  color;
+	IN vec3  normal;
+
+	OUT vec4 colorVarying;
+	OUT vec2 texCoordVarying;
+	OUT vec4 normalVarying;
+
+	void main()
+	{
+		colorVarying = color;
+		texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
+		gl_Position = modelViewProjectionMatrix * position;
+	}
+);
+
+
+static const string defaultFragmentShaderTexRectNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2DRect src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying)* globalColor;
+	}
+);
+
+
+
+static const string defaultFragmentShaderTex2DNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2D src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying) * globalColor;
+	}
+);
+
+
+
+
+static const string defaultFragmentShaderNoTexNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = globalColor;
+	}
+);
+
+
+static const string USE_TEXTURE_UNIFORM="usingTexture";
+static const string USE_COLORS_UNIFORM="usingColors";
+static const string BITMAP_STRING_UNIFORM="bitmapText";
+
+
+
+void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int revealageTex_i){
+	ofTexture tex0 = fbo.getTexture(accumTex_i);
+	ofTexture tex1 = fbo.getTexture(revealageTex_i);
+	
+	glm::vec3 pos(0,0,0);
+	// tex0.draw(pos, ofGetWidth(), ofGetHeight());
+	
+	// tex0.draw(pos.x,pos.y,pos.z, tex0.getWidth(), tex0.getHeight());
+	
+	// tex0.drawSubsection(pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
+	                  //   0,0, tex0.getWidth(),tex0.getHeight());
+	
+	
+	
+	// shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	// if(renderer){
+	// 	renderer->draw(tex0,
+	// 	               pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
+	// 						0,0, tex0.getWidth(),tex0.getHeight());
+	// }
+	
+	
+	
+	
+	// void ofGLProgrammableRenderer::draw(const ofTexture & tex, float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) const
+		// void ofGLProgrammableRenderer::setAttributes(bool vertices, bool color, bool tex, bool normals)
+			// void ofGLProgrammableRenderer::beginDefaultShader()
+	
+	
+	shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	ofGLProgrammableRenderer* render_ptr = dynamic_cast<ofGLProgrammableRenderer*>(renderer.get());
+	
+	// render_ptr->setAttributes(true,false,true,false);
+	
+	bool vertices = true;
+	
+	bool texCoordsEnabled = true;
+	bool colorsEnabled = false;
+	bool normalsEnabled = false;
+	
+	const ofShader * nextShader = nullptr;
+		
+		
+		glGetError();
+		int major = render_ptr->getGLVersionMajor();
+		int minor = render_ptr->getGLVersionMinor();
+			
+			
+			ofShader defaultTexRectNoColor;
+			defaultTexRectNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+			
+			defaultTexRectNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTexRectNoColor,major, minor));
+			
+			defaultTexRectNoColor.bindDefaults();
+			defaultTexRectNoColor.linkProgram();
+			
+			
+			
+			ofShader defaultTex2DNoColor;
+			defaultTex2DNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+			
+			defaultTex2DNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTex2DNoColor,major, minor));
+			
+			defaultTex2DNoColor.bindDefaults();
+			defaultTex2DNoColor.linkProgram();
+			
+			
+			ofShader defaultNoTexNoColor;
+			
+			defaultNoTexNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+			
+			defaultNoTexNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderNoTexNoColor,major, minor));
+			
+			defaultNoTexNoColor.bindDefaults();
+			defaultNoTexNoColor.linkProgram();
+			
+			
+			GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
+			
+			
+			switch(currentTextureTarget){
+	#ifndef TARGET_OPENGLES
+			case GL_TEXTURE_RECTANGLE_ARB:
+				nextShader = &defaultTexRectNoColor;
+				break;
+	#endif
+			case GL_TEXTURE_2D:
+				nextShader = &defaultTex2DNoColor;
+				break;
+			case OF_NO_TEXTURE:
+				nextShader = &defaultNoTexNoColor;
+				break;
+			}
+	
+	if(nextShader){
+		render_ptr->bind(*nextShader);
+	}else{
+		ofLogError("custom texture draw") << "no shader";
+	}
+	
+	bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
+	nextShader->setUniform1f(USE_TEXTURE_UNIFORM,usingTexture);	
+	
+	nextShader->setUniform1f(USE_COLORS_UNIFORM, colorsEnabled);	
+	
+	
+	
+	if(tex0.isAllocated()) {
+		render_ptr->bind(tex0,0);
+		
+		render_ptr->draw(
+			tex0.getMeshForSubsection(pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
+											  0,0, tex0.getWidth(),tex0.getHeight(),
+											  renderer->isVFlipped(),renderer->getRectMode()),
+			OF_MESH_FILL,false,true,false);
+		
+		render_ptr->unbind(tex0,0);
+	} else {
+		ofLogWarning("ofGLProgrammableRenderer") << "draw(): texture is not allocated";
+	}
+	
+}
+
+
 
 
 
@@ -1283,6 +1544,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("textureToMesh",
 			                     &textureToMesh)
+		
+		
+		.define_module_function("renderFboToScreen",
+			                     &renderFboToScreen)
 		
 	;
 	
