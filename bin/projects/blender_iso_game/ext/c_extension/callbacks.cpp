@@ -1112,6 +1112,31 @@ void clearFboBuffers(int buffer_idx, ofFloatColor& color){
 }
 
 
+ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
+	ofMesh mesh;
+	
+	shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	// if(!renderer){
+	// 	throw Rice::Exception();
+	// }
+	
+	
+	float width, height;
+	width  = tex.getWidth();
+	height = tex.getHeight();
+	
+	mesh = tex.getMeshForSubsection(pos.x,pos.y,pos.z, width, height,
+										     0,0, width, height,
+										     renderer->isVFlipped(),
+										     renderer->getRectMode());
+	
+	return mesh;
+}
+
+
+
+
 
 
 
@@ -1254,6 +1279,10 @@ void Init_rubyOF_project()
 				
 		.define_module_function("clearFboBuffers",
 			                     &clearFboBuffers)
+		
+		
+		.define_module_function("textureToMesh",
+			                     &textureToMesh)
 		
 	;
 	

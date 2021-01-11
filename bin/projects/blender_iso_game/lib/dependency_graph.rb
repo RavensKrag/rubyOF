@@ -263,7 +263,7 @@ class DependencyGraph
         # v2.1
         # 
         
-        tex0.draw_wh(0,0,0, window.width, window.height)
+        # tex0.draw_wh(0,0,0, window.width, window.height)
         # tex1.draw_wh(0,0,0, window.width, window.height)
         
         
@@ -272,12 +272,15 @@ class DependencyGraph
         # v2.2
         # 
         
-        # shader.begin
-        #   shader.setUniformTexture('accumTexture',     tex0, 0)
-        #   shader.setUniformTexture('revealageTexture', tex1, 1)
+        shader.begin
+          shader.setUniformTexture('accumTexture',     tex0, 0)
+          shader.setUniformTexture('revealageTexture', tex1, 1)
           
-        #   ofDrawRectangle(0,0,0, window.width, window.height)
-        # shader.end
+          mesh = RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
+          mesh.draw()
+          # ofDrawRectangle(0,0,0, window.width, window.height)
+          # tex0.draw_wh(0,0,0, window.width, window.height)
+        shader.end
         
       end
       
