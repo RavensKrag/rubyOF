@@ -182,7 +182,7 @@ class DependencyGraph
                 # s.numSamples     = 0; # no multisampling
                 s.useDepth       = false;
                 s.useStencil     = false;
-                s.depthStencilAsTexture = true;
+                s.depthStencilAsTexture = false;
                 
                 # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
                 
@@ -206,7 +206,7 @@ class DependencyGraph
     
     def render_to_fbo(fbo, accumTex_i, revealageTex_i) # &block
       fbo.begin
-      
+      fbo.activateAllDrawBuffers()
       
       # NOTE: must bind the FBO before you clear it in this way
       
@@ -217,7 +217,7 @@ class DependencyGraph
       # fbo.clearColorBuffer(revealageTex_i, color_one)
       
       RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_one
-      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one
+      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one:
       
       
       # ofBackground(255,255,255, 255/2)
@@ -258,16 +258,16 @@ class DependencyGraph
         tex1 = @transparency_fbo.getTexture(revealageTex_i)
         
         # shader.begin
-          shader.setUniformTexture('accumTexture',     tex0, 0)
-          shader.setUniformTexture('revealageTexture', tex1, 1)
+          # shader.setUniformTexture('accumTexture',     tex0, 0)
+          # shader.setUniformTexture('revealageTexture', tex1, 1)
           
           # ofDrawRectangle(0,0,0, window.width, window.height)
         # shader.end
         
-        tex0.draw_wh(0,0,0, window.width, window.height)
+        # tex0.draw_wh(0,0,0, window.width, window.height)
         # ^ works
         
-        # tex1.draw_wh(0,0,0, window.width, window.height)
+        tex1.draw_wh(0,0,0, window.width, window.height)
         # ^ doesn't work
       end
       

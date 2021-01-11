@@ -195,6 +195,12 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 		// glClearBufferiv(GL_STENCIL...)
 		
 		
+		.define_method("activateAllDrawBuffers",
+			static_cast< void (ofFbo::*)
+			(void)
+			>(&ofFbo::activateAllDrawBuffers)
+		)
+		
 		
 		.define_method("getTexture",
 			static_cast< ofTexture& (ofFbo::*)
