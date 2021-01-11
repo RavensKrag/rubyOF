@@ -227,15 +227,11 @@ class DependencyGraph
       # glEnable(GL_BLEND)
       # glBlendFunci(0, GL_ONE, GL_ONE) # summation
       # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
-      # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
-      
-      # ofDisableAlphaBlending()
+      RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
       yield
       
-      # ofEnableAlphaBlending()
-      
-      # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
+      RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
       
       
       fbo.end
