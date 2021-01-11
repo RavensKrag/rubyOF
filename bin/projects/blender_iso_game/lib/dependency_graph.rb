@@ -210,14 +210,14 @@ class DependencyGraph
       
       # NOTE: must bind the FBO before you clear it in this way
       
-      color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
+      color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
       color_one  = RubyOF::FloatColor.rgba([1,1,1,0.5])
       
       # fbo.clearColorBuffer(accumTex_i,     color_one)
       # fbo.clearColorBuffer(revealageTex_i, color_one)
       
-      RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_one
-      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one:
+      RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_zero
+      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_zero
       
       
       # ofBackground(255,255,255, 255/2)
@@ -257,18 +257,28 @@ class DependencyGraph
         tex0 = @transparency_fbo.getTexture(accumTex_i)
         tex1 = @transparency_fbo.getTexture(revealageTex_i)
         
+        
+        
+        # 
+        # v2.1
+        # 
+        
+        tex0.draw_wh(0,0,0, window.width, window.height)
+        # tex1.draw_wh(0,0,0, window.width, window.height)
+        
+        
+        
+        # 
+        # v2.2
+        # 
+        
         # shader.begin
-          # shader.setUniformTexture('accumTexture',     tex0, 0)
-          # shader.setUniformTexture('revealageTexture', tex1, 1)
+        #   shader.setUniformTexture('accumTexture',     tex0, 0)
+        #   shader.setUniformTexture('revealageTexture', tex1, 1)
           
-          # ofDrawRectangle(0,0,0, window.width, window.height)
+        #   ofDrawRectangle(0,0,0, window.width, window.height)
         # shader.end
         
-        # tex0.draw_wh(0,0,0, window.width, window.height)
-        # ^ works
-        
-        tex1.draw_wh(0,0,0, window.width, window.height)
-        # ^ doesn't work
       end
       
       

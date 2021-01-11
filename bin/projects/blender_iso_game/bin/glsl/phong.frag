@@ -289,12 +289,12 @@
             
             
             // // trivial write to test things:
-            gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
-            gl_FragData[1] = vec4(1,0,1, 1); // magenta silhouettes
+            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
+            // gl_FragData[1] = vec4(1,0,1, 1); // magenta silhouettes
             
             
-            // gl_FragData[0] = localColor;
-            // gl_FragData[1] = localColor;
+            gl_FragData[0] = localColor;
+            gl_FragData[1] = localColor;
             
             // gl_FragColor = localColor;
             
@@ -307,16 +307,14 @@
         
             // ---opaque pass---
             
+            // gl_FragColor = localColor;
+            
+            
+            
             // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
             
-            
-            // gl_FragColor = localColor;
-            
             gl_FragData[0] = localColor;
-            // ^ this might work, but maybe not
             
-            
-            // gl_FragColor = localColor;
             
             
         // #endif
