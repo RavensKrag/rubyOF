@@ -1084,6 +1084,33 @@ void allocateFbo(ofFbo& fbo){
 	fbo.allocate(s);
 }
 
+void clearFboBuffers(int buffer_idx, ofFloatColor& color){
+	// glClearColor(color.r, color.g, color.b, color.a);
+	// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	
+	// ^-- this code above works for the main framebuffer and texture 1
+	//     but not other buffers.
+	// 
+	// v-- the code below doesn't work anywhere... 
+	
+	glClearBufferfv(GL_COLOR, buffer_idx, &color.r);
+	
+	float depth_value = 0;
+	glClearBufferfv(GL_DEPTH, buffer_idx, &depth_value);
+	
+	// int stencil_value = 0;
+	// glClearBufferiv(GL_STENCIL, buffer_idx, &stencil_value);
+	
+	// // glClearDepth()
+	
+	
+	// // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	// // glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0); //Only need to do this once.
+	// glDrawBuffer(GL_COLOR_ATTACHMENT0); //Only need to do this once.
+	// GLuint clearColor[4] = {0, 0, 0, 0};
+	// glClearBufferuiv(GL_COLOR, 0, clearColor);
+}
+
 
 
 
@@ -1224,6 +1251,10 @@ void Init_rubyOF_project()
 		
 		.define_module_function("allocateFbo",
 			                     &allocateFbo)
+				
+		.define_module_function("clearFboBuffers",
+			                     &clearFboBuffers)
+		
 	;
 	
 	

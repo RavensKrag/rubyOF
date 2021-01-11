@@ -98,10 +98,10 @@ class DependencyGraph
     
     
     
-    # init_compositing_shader()
-    # live_reload_compositing_shader_glsl()
+    init_compositing_shader()
+    live_reload_compositing_shader_glsl()
     
-    draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+    draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i, window)
   end
   
   
@@ -180,14 +180,16 @@ class DependencyGraph
                 s.height = window.height#*0.5
                 s.internalformat = GL_RGBA32F_ARB;
                 # s.numSamples     = 0; # no multisampling
-                s.useDepth       = true;
-                # s.useStencil     = true;
+                s.useDepth       = false;
+                s.useStencil     = false;
+                s.depthStencilAsTexture = true;
+                
                 # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
                 
                 # s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
                 
                 
-                # s.numColorbuffers = 1;
+                s.numColorbuffers = 2;
                 # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
               end
             
@@ -208,16 +210,18 @@ class DependencyGraph
       
       # NOTE: must bind the FBO before you clear it in this way
       
-      # color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
-      # color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
+      color_zero = RubyOF::FloatColor.rgba([0.5,0.5,0.7,0.8])
+      color_one  = RubyOF::FloatColor.rgba([1,1,1,0.5])
       
-      # fbo.clearColorBuffer(accumTex_i,     color_zero)
+      # fbo.clearColorBuffer(accumTex_i,     color_one)
       # fbo.clearColorBuffer(revealageTex_i, color_one)
       
+      RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_one
+      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one
       
-      ofBackground(255,255,255, 255/2)
       
-      # ofClear(1,1,0,1)
+      # ofBackground(255,255,255, 255/2)
+      
       
       # glDepthMask(GL_FALSE)
       # glEnable(GL_BLEND)
@@ -239,40 +243,40 @@ class DependencyGraph
     end
     
     
-    def draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+    def draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i, window)
       # blend the two textures into the framebuffer
       
       # glBlendEquation(GL_FUNC_ADD)
       # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
       # RubyOF::CPP_Callbacks.enableScreenspaceBlending()
       
-      # @compositing_shader.tap do |shader|
-        # shader.setUniformTexture('accumTexture',     @accumTexture,     0)
-        # shader.setUniformTexture('revealageTexture', @revealageTexture, 1)
+      # 
+      # v2
+      # 
+      @compositing_shader.tap do |shader|
+        tex0 = @transparency_fbo.getTexture(accumTex_i)
+        tex1 = @transparency_fbo.getTexture(revealageTex_i)
         
         # shader.begin
-          
-          
-          # # 
-          # # v1
-          # # 
-          # tex = @transparency_fbo.getTexture(accumTex_i)
-          # shader.setUniformTexture('accumTexture',     tex, 0)
-          
-          # # tex = @transparency_fbo.getTexture(revealageTex_i)
-          # # shader.setUniformTexture('revealageTexture', tex, 1)
+          shader.setUniformTexture('accumTexture',     tex0, 0)
+          shader.setUniformTexture('revealageTexture', tex1, 1)
           
           # ofDrawRectangle(0,0,0, window.width, window.height)
-          
-          
-          # 
-          # v2
-          # 
-          
-          fbo.draw(0,0)
-        
         # shader.end
-      # end
+        
+        tex0.draw_wh(0,0,0, window.width, window.height)
+        # ^ works
+        
+        # tex1.draw_wh(0,0,0, window.width, window.height)
+        # ^ doesn't work
+      end
+      
+      
+      # 
+      # v1
+      # 
+      
+      # fbo.draw(0,0)
       
       # RubyOF::CPP_Callbacks.disableScreenspaceBlending()
       
