@@ -72,12 +72,10 @@ class DependencyGraph
     end
     
     
-    
     # ofEnableAlphaBlending()
     # # ^ doesn't seem to do anything, at least not right now
     
     # ofEnableBlendMode(:alpha)
-    
     
     
     
@@ -89,9 +87,12 @@ class DependencyGraph
       # that work with colored glass.
     
     
+    # ---------------
+    #   world space
+    # ---------------
+    
     accumTex_i     = 0
     revealageTex_i = 1
-    
     
     
     opaque, transparent = 
@@ -100,11 +101,11 @@ class DependencyGraph
       end
     
     
-    
     lights_and_camera do
       opaque.each{|mesh, mat, batch|  batch.draw }
+      
+      visualize_lights()
     end
-    
     
     
     @transparency_fbo ||= create_transparency_fbo(window)
@@ -116,6 +117,9 @@ class DependencyGraph
     end
     
     
+    # ----------------
+    #   screen space
+    # ----------------
     
     @compositing_shader ||= RubyOF::Shader.new
     
@@ -176,6 +180,24 @@ class DependencyGraph
       end
     end
     
+    # render colored spheres to represent lights
+    def visualize_lights
+      @lights.each do |light|
+        light_pos   = light.position
+        light_color = light.diffuse_color
+        
+        @light_material.tap do |mat|
+          mat.emissive_color = light_color
+          
+          mat.begin()
+          ofPushMatrix()
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+          ofPopMatrix()
+          mat.end()
+        end
+      end
+    end
+    
     def create_transparency_fbo(window)
       RubyOF::Fbo.new.tap do |fbo|
         settings = 
@@ -229,6 +251,12 @@ class DependencyGraph
       
       fbo.end
     end
+    
+    # void ofFbo::updateTexture(int attachmentPoint)
+    
+      # Explicitly resolve MSAA render buffers into textures
+      # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
+      # \note This will get called implicitly upon getTexture();
     
     
     # blend the two textures into the framebuffer
@@ -293,152 +321,10 @@ class DependencyGraph
       RubyOF::CPP_Callbacks.disableScreenspaceBlending()
       
     end
-    
-    
-    def foo
-      
-      
-      
-      
-      
-      # puts ">>>>> batches: #{@batches.keys.size}"
-      
-      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      
-      
-      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-      
-      # dt = t1-t0
-      # puts "time - batch update: #{dt.to_f / 1000} ms"
-      
-      
-      # RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
-      #   print "color test => "
-      #   puts c
-      #   print "\n"
-      # end
-      
-      
-      
-      # ========================
-      # ------------------------
-      # render begin
-      # ------------------------
-        
-        
-        # =====================
-        # (world space)
-        # --------------------
-      begin
-        
-        
-        
-        # 
-        # partition batches into opaque entities and transparent entities
-        # 
-        
-        # 
-        # draw opaque surfaces to framebuffer
-        # 
-        
-        
-        # transparent.each{|mesh, mat, batch|  batch.draw }
-        
-        # 
-        # draw transparent surfaces to fbo
-        # 
-        # @accumTexture     ||= RubyOF::Texture.new
-        # @revealageTexture ||= RubyOF::Texture.new
-        
-        
-        
-        
-        
-        
-        # accumTexture     = RubyOF::Texture.new
-          # TODO: ^ clear to vec4(0)
-        # revealageTexture = RubyOF::Texture.new
-          # TODO: ^ clear to float(1)
-        
-        # bindFramebuffer(@accumTexture, @revealageTexture)
-        
-        
-        
-        
-        
-      # clean up lights and camera whether there is an exception or not
-      # but if there's an exception, you need to re-raise it
-      # (can't just use 'ensure' here)
-      
-      rescue Exception => e 
-        @exception = e # supress exception so we can exit cleanly first
-      ensure
-        
-        
-        # 
-        # after cleaning up, now throw the exception if needed
-        # 
-        unless @exception.nil?
-          e = @exception
-          @exception = nil
-          raise e
-        end
-        
-      end
-        
-        
-        
-        # =======================
-        # (screen space)
-        # ----------------------
-        
-        
-        # ^ fbo no longer exists here... why???
-        
-        
-        # 
-        # blend fbo (transparency data) with framebuffer
-        # 
-        
-        
-        
-        
-        
-        # void ofFbo::updateTexture(int attachmentPoint)
-        
-          # Explicityl resolve MSAA render buffers into textures
-          # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
-          # \note This will get called implicitly upon getTexture();
-        
-        
-        
-        
-        # # 
-        # # render the sphere that represents the light
-        # # 
-        
-        # @lights.each do |light|
-        #   light_pos   = light.position
-        #   light_color = light.diffuse_color
-          
-        #   @light_material.tap do |mat|
-        #     mat.emissive_color = light_color
-            
-            
-        #     mat.begin()
-        #     ofPushMatrix()
-        #       ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-        #     ofPopMatrix()
-        #     mat.end()
-        #   end
-        # end
-        
-        
-      # ------------------------
-      # render end
-      # ------------------------
-      # ========================
-    end
+  
+  
+  
+  
   
   public
   
