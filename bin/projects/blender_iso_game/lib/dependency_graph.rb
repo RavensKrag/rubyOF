@@ -107,9 +107,9 @@ class DependencyGraph
     
     
     
-    fbo = init_fbo(window) # => @transparency_fbo
+    @transparency_fbo ||= create_transparency_fbo(window)
     
-    render_to_fbo(fbo, accumTex_i, revealageTex_i) do
+    render_to_fbo(@transparency_fbo, accumTex_i, revealageTex_i) do
       lights_and_camera do
         transparent.each{|mesh, mat, batch|  batch.draw }
       end
@@ -117,10 +117,16 @@ class DependencyGraph
     
     
     
-    init_compositing_shader()
-    live_reload_compositing_shader_glsl()
+    @compositing_shader ||= RubyOF::Shader.new
     
-    draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+    (PROJECT_DIR/'bin'/'glsl').tap do |shader_src_dir|
+      @compositing_shader.live_load_glsl(
+        shader_src_dir/'alpha_composite.vert',
+        shader_src_dir/'alpha_composite.frag'
+      )
+    end
+    
+    draw_fbo_to_screen(@transparency_fbo, accumTex_i, revealageTex_i)
   end
   
   
@@ -170,37 +176,34 @@ class DependencyGraph
       end
     end
     
-    def init_fbo(window)
-      @transparency_fbo ||= 
-        RubyOF::Fbo.new.tap do |fbo|
-          settings = 
-            RubyOF::Fbo::Settings.new.tap do |s|
-              s.width  = window.width#*0.5
-              s.height = window.height#*0.5
-              s.internalformat = GL_RGBA32F_ARB;
-              # s.numSamples     = 0; # no multisampling
-              s.useDepth       = false;
-              s.useStencil     = false;
-              s.depthStencilAsTexture = false;
-              
-              s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-              
-              
-              
-              s.numColorbuffers = 2;
-              # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
-            end
-          
-          fbo.allocate(settings)
-          
-          
-          # RubyOF::CPP_Callbacks.allocateFbo(fbo);
-        end
-      
-      
-      return @transparency_fbo
+    def create_transparency_fbo(window)
+      RubyOF::Fbo.new.tap do |fbo|
+        settings = 
+          RubyOF::Fbo::Settings.new.tap do |s|
+            s.width  = window.width#*0.5
+            s.height = window.height#*0.5
+            s.internalformat = GL_RGBA32F_ARB;
+            # s.numSamples     = 0; # no multisampling
+            s.useDepth       = false;
+            s.useStencil     = false;
+            s.depthStencilAsTexture = false;
+            
+            s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+            
+            
+            
+            s.numColorbuffers = 2;
+            # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+          end
+        
+        fbo.allocate(settings)
+        
+        
+        # RubyOF::CPP_Callbacks.allocateFbo(fbo);
+      end
     end
     
+    # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
     def render_to_fbo(fbo, accumTex_i, revealageTex_i) # &block
       fbo.begin
         fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
@@ -229,6 +232,7 @@ class DependencyGraph
     
     
     # blend the two textures into the framebuffer
+    # TODO: add exception handling here, so gl state set by binding shader and textures doesn't leak
     def draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
       
       # 
@@ -287,40 +291,6 @@ class DependencyGraph
       end
       
       RubyOF::CPP_Callbacks.disableScreenspaceBlending()
-      
-    end
-    
-    
-    
-    def init_compositing_shader
-      if @compositing_shader.nil?
-        @compositing_shader = RubyOF::Shader.new
-        @shader_timestamp = nil
-      end
-    end
-    
-    def live_reload_compositing_shader_glsl
-      shader_src_dir = PROJECT_DIR/'bin'/'glsl'
-      
-      # dynamic reloading of compositing shader
-      # (code copied from RenderBatch#reload_shaders)
-      
-      # p @shader_timestamp
-      if @shader_timestamp.nil? || [shader_src_dir/'alpha_composite.vert', shader_src_dir/'alpha_composite.frag'].any?{|f| f.mtime > @shader_timestamp }
-        
-        puts "reloading alpha compositing shaders..."
-        
-        
-        @compositing_shader.load_glsl(shader_src_dir/'alpha_composite')
-        # ^ loads vertex shader AND fragment shader
-        #   (.vert and .frag, same basename)
-        
-        # careful - these shaders don't go through the same pre-processing step as the ones in Material, so the '#define's don't apply here.
-        # (the pre-processing is used by ofMaterial and defined in ofGLProgrammableRenderer.cpp)
-        
-        
-        @shader_timestamp = Time.now
-      end
       
     end
     
