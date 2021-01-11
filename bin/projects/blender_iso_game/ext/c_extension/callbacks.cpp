@@ -1214,6 +1214,25 @@ static const string defaultVertexShader = vertex_shader_header + STRINGIFY(
 );
 
 
+static const string defaultFragmentShaderTexRectColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2DRect src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying) * colorVarying;
+	}
+);
+
+// ----------------------------------------------------------------------
+
 static const string defaultFragmentShaderTexRectNoColor = fragment_shader_header + STRINGIFY(
 
 	uniform sampler2DRect src_tex_unit0;
@@ -1230,7 +1249,63 @@ static const string defaultFragmentShaderTexRectNoColor = fragment_shader_header
 	}
 );
 
+// ----------------------------------------------------------------------
 
+static const string alphaMaskFragmentShaderTexRectNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2DRect src_tex_unit0;
+	uniform sampler2DRect src_tex_unit1;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = vec4(TEXTURE(src_tex_unit0, texCoordVarying).rgb,  TEXTURE(src_tex_unit1, texCoordVarying).r)* globalColor;
+	}
+);
+
+// ----------------------------------------------------------------------
+
+static const string alphaMaskFragmentShaderTex2DNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2D src_tex_unit0;
+	uniform sampler2D src_tex_unit1;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = vec4(TEXTURE(src_tex_unit0, texCoordVarying).rgb,  TEXTURE(src_tex_unit1, texCoordVarying).r)* globalColor;
+	}
+);
+
+// ----------------------------------------------------------------------
+
+static const string defaultFragmentShaderTex2DColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2D src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying) * colorVarying;
+	}
+);
+
+// ----------------------------------------------------------------------
 
 static const string defaultFragmentShaderTex2DNoColor = fragment_shader_header + STRINGIFY(
 
@@ -1247,8 +1322,60 @@ static const string defaultFragmentShaderTex2DNoColor = fragment_shader_header +
 	}
 );
 
+// ----------------------------------------------------------------------
 
+static const string defaultFragmentShaderOESTexNoColor = fragment_shader_header + STRINGIFY(
+    
+    uniform samplerExternalOES src_tex_unit0;
+    uniform float usingTexture;
+    uniform float usingColors;
+    uniform vec4 globalColor;
+    
+    IN float depth;
+    IN vec4 colorVarying;
+    IN vec2 texCoordVarying;
+    
+    void main(){
+        FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying) * globalColor;
+    }
+);
 
+// ----------------------------------------------------------------------
+
+static const string defaultFragmentShaderOESTexColor = fragment_shader_header + STRINGIFY(
+																							
+	uniform samplerExternalOES src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+	
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+	
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying) * colorVarying;
+	}
+);
+
+// ----------------------------------------------------------------------
+
+static const string defaultFragmentShaderNoTexColor = fragment_shader_header + STRINGIFY (
+
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = colorVarying;
+	}
+);
+
+// ----------------------------------------------------------------------
 
 static const string defaultFragmentShaderNoTexNoColor = fragment_shader_header + STRINGIFY(
 
@@ -1266,6 +1393,8 @@ static const string defaultFragmentShaderNoTexNoColor = fragment_shader_header +
 );
 
 
+
+
 static const string USE_TEXTURE_UNIFORM="usingTexture";
 static const string USE_COLORS_UNIFORM="usingColors";
 static const string BITMAP_STRING_UNIFORM="bitmapText";
@@ -1273,8 +1402,8 @@ static const string BITMAP_STRING_UNIFORM="bitmapText";
 
 
 void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int revealageTex_i){
-	ofTexture tex0 = fbo.getTexture(accumTex_i);
-	ofTexture tex1 = fbo.getTexture(revealageTex_i);
+	ofTexture& tex0 = fbo.getTexture(accumTex_i);
+	ofTexture& tex1 = fbo.getTexture(revealageTex_i);
 	
 	glm::vec3 pos(0,0,0);
 	// tex0.draw(pos, ofGetWidth(), ofGetHeight());
@@ -1314,74 +1443,97 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	bool normalsEnabled = false;
 	
 	const ofShader * nextShader = nullptr;
-		
-		
-		glGetError();
-		int major = render_ptr->getGLVersionMajor();
-		int minor = render_ptr->getGLVersionMinor();
-			
-			
-			ofShader defaultTexRectNoColor;
-			defaultTexRectNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
-			
-			defaultTexRectNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTexRectNoColor,major, minor));
-			
-			defaultTexRectNoColor.bindDefaults();
-			defaultTexRectNoColor.linkProgram();
-			
-			
-			
-			ofShader defaultTex2DNoColor;
-			defaultTex2DNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
-			
-			defaultTex2DNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTex2DNoColor,major, minor));
-			
-			defaultTex2DNoColor.bindDefaults();
-			defaultTex2DNoColor.linkProgram();
-			
-			
-			ofShader defaultNoTexNoColor;
-			
-			defaultNoTexNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
-			
-			defaultNoTexNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderNoTexNoColor,major, minor));
-			
-			defaultNoTexNoColor.bindDefaults();
-			defaultNoTexNoColor.linkProgram();
-			
-			
-			GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
-			
-			
-			switch(currentTextureTarget){
-	#ifndef TARGET_OPENGLES
-			case GL_TEXTURE_RECTANGLE_ARB:
-				nextShader = &defaultTexRectNoColor;
-				break;
-	#endif
-			case GL_TEXTURE_2D:
-				nextShader = &defaultTex2DNoColor;
-				break;
-			case OF_NO_TEXTURE:
-				nextShader = &defaultNoTexNoColor;
-				break;
-			}
 	
-	if(nextShader){
-		render_ptr->bind(*nextShader);
-	}else{
-		ofLogError("custom texture draw") << "no shader";
-	}
+	glGetError();
+	int major = render_ptr->getGLVersionMajor();
+	int minor = render_ptr->getGLVersionMinor();
+	
+	
+	bool uniqueShader;
+	
+	#ifdef TARGET_RASPBERRY_PI
+		uniqueShader = true;
+	#else
+		uniqueShader = false;
+	#endif
+	
+	ofShader defaultTexRectColor;
+	ofShader defaultTexRectNoColor;
+	ofShader alphaMaskRectShader;
+	ofShader defaultTex2DColor;
+	ofShader defaultNoTexColor;
+	ofShader defaultTex2DNoColor;
+	ofShader defaultNoTexNoColor;
+	ofShader alphaMask2DShader;
+	
+	
+	#ifndef TARGET_OPENGLES
+		defaultTexRectColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		defaultTexRectNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		alphaMaskRectShader.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+	#endif
+		defaultTex2DColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		defaultNoTexColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		defaultTex2DNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		defaultNoTexNoColor.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+		alphaMask2DShader.setupShaderFromSource(GL_VERTEX_SHADER,shaderSource(defaultVertexShader,major, minor));
+
+	#ifndef TARGET_OPENGLES
+		defaultTexRectColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTexRectColor,major, minor));
+		defaultTexRectNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTexRectNoColor,major, minor));
+		alphaMaskRectShader.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(alphaMaskFragmentShaderTexRectNoColor,major, minor));
+	#endif
+		defaultTex2DColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTex2DColor,major, minor));
+		defaultNoTexColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderNoTexColor,major, minor));
+		defaultTex2DNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderTex2DNoColor,major, minor));
+		defaultNoTexNoColor.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(defaultFragmentShaderNoTexNoColor,major, minor));
+		alphaMask2DShader.setupShaderFromSource(GL_FRAGMENT_SHADER,shaderSource(alphaMaskFragmentShaderTex2DNoColor,major, minor));
+		
+		
+		
+#ifndef TARGET_OPENGLES
+		defaultTexRectColor.bindDefaults();
+		defaultTexRectNoColor.bindDefaults();
+		alphaMaskRectShader.bindDefaults();
+#endif
+		defaultTex2DColor.bindDefaults();
+		defaultNoTexColor.bindDefaults();
+		defaultTex2DNoColor.bindDefaults();
+		defaultNoTexNoColor.bindDefaults();
+		alphaMask2DShader.bindDefaults();
+
+#ifndef TARGET_OPENGLES
+		defaultTexRectColor.linkProgram();
+		defaultTexRectNoColor.linkProgram();
+		alphaMaskRectShader.linkProgram();
+#endif
+		defaultTex2DColor.linkProgram();
+		defaultNoTexColor.linkProgram();
+		defaultTex2DNoColor.linkProgram();
+		defaultNoTexNoColor.linkProgram();
+		alphaMask2DShader.linkProgram();
+		
+		
+	
+	ofShader& currentShader = defaultTexRectNoColor;
+	currentShader = shader;
+	
+	GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
+	
+	
+	currentShader.begin();
 	
 	bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
-	nextShader->setUniform1f(USE_TEXTURE_UNIFORM,usingTexture);	
+	currentShader.setUniform1f(USE_TEXTURE_UNIFORM,usingTexture);	
 	
-	nextShader->setUniform1f(USE_COLORS_UNIFORM, colorsEnabled);	
+	currentShader.setUniform1f(USE_COLORS_UNIFORM, colorsEnabled);	
 	
 	
 	
 	if(tex0.isAllocated()) {
 		render_ptr->bind(tex0,0);
+		// ^ a shader is bound in here somewhere
+		// nextShader = &defaultTex2DNoColor;
 		
 		render_ptr->draw(
 			tex0.getMeshForSubsection(pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
@@ -1393,6 +1545,9 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 	} else {
 		ofLogWarning("ofGLProgrammableRenderer") << "draw(): texture is not allocated";
 	}
+	
+	
+	currentShader.end();
 	
 }
 

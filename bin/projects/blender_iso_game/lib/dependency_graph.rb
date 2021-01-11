@@ -184,7 +184,7 @@ class DependencyGraph
                 s.useStencil     = false;
                 s.depthStencilAsTexture = false;
                 
-                # # s.textureTarget  = ofGetUsingArbTex() ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
+                s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
                 
                 # s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
                 
