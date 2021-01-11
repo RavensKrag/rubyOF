@@ -73,6 +73,14 @@ class DependencyGraph
     
     
     
+    # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
+      # Paper assumes transparency encodes occlusion and demonstrates
+      # how OIT works with colored smoke and clear glass.
+      # 
+      # Follow-up paper in 2016 demonstrates improvements
+      # that work with colored glass.
+    
+    
     accumTex_i     = 0
     revealageTex_i = 1
     
@@ -211,13 +219,13 @@ class DependencyGraph
       # NOTE: must bind the FBO before you clear it in this way
       
       color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
-      color_one  = RubyOF::FloatColor.rgba([1,1,1,0.5])
+      color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
       
       # fbo.clearColorBuffer(accumTex_i,     color_one)
       # fbo.clearColorBuffer(revealageTex_i, color_one)
       
       RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_zero
-      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_zero
+      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one
       
       
       # ofBackground(255,255,255, 255/2)
@@ -301,6 +309,8 @@ class DependencyGraph
         # v3
         # 
         
+        RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+        
         @compositing_shader.tap do |shader|
           shader.begin()
           
@@ -317,7 +327,7 @@ class DependencyGraph
           shader.end()
         end
         
-        # RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
+        RubyOF::CPP_Callbacks.disableScreenspaceBlending()
         
         
       

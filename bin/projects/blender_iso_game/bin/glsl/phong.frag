@@ -288,9 +288,9 @@
             
             
             
-            // // trivial write to test things:
-            gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
-            gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
+            // trivial write to test things:
+            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
+            // gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
             
             
             // gl_FragData[0] = localColor;
@@ -300,8 +300,8 @@
             
             
             // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
-            // gl_FragData[0] = vec4(localColor.rgb, ai);
-            // gl_FragData[1] = vec4(localColor.a);
+            gl_FragData[0] = vec4(localColor.rgb, ai);
+            gl_FragData[1] = vec4(localColor.a);
         }else{
         // #else
         
