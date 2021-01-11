@@ -586,6 +586,10 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("setTextureMinMagFilter__cpp",
          &ofTexture_setTextureMinMagFilter__cpp)
+      
+      
+      .define_method("width",  &ofTexture::getWidth)
+      .define_method("height", &ofTexture::getHeight)
    ;
    
    
