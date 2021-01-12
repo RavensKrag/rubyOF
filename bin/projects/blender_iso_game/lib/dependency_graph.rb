@@ -180,17 +180,11 @@ class DependencyGraph
       @main_fbo, @transparency_fbo, :depth_buffer
     )
     
+    # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+    
+    
     
     render_to_fbo(@transparency_fbo) do |fbo|
-      
-      
-      # RubyOF::CPP_Callbacks.clearDepthBuffer()
-      # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
-      
-      
-      # ofDisableDepthTest(); # <-- to test internal transparency
-      
-      
       # ofEnableDepthTest();
       # 
       # glDepthMask(GL_FALSE);
@@ -210,6 +204,8 @@ class DependencyGraph
       RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
       
     end
+    
+    ofDisableDepthTest()
     
     
     # ----------------
@@ -237,7 +233,6 @@ class DependencyGraph
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
-    ofDisableDepthTest()
   end
   
   
