@@ -241,7 +241,27 @@ class BlenderSync
     
     
     if @default_material.nil?
-      @default_material = BlenderMaterial.new('')
+      @default_material = 
+        BlenderMaterial.new('').tap do |mat|
+          mat.shininess = 64
+          
+          
+          # Default values from 
+          # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
+          
+          mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
+          # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
+          # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+          # mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+          
+          
+          # Defaults, but with 0 alpha channel
+          # (all alpha will now come from diffuse, because different components are combined with addition)
+          
+          mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
+          mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
+          mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
+        end
       # ^ default material name needs to be '' (empty string)
       #   because that's the string that the Blender Python script
       #   sends when no material is bound.
@@ -250,9 +270,6 @@ class BlenderSync
       #   If the strings do not match, the default material gets rebound
       #   every frame, which can be very expensive / wasteful.
       
-      
-      @default_material.diffuse_color = RubyOF::FloatColor.rgb([1, 1, 1])
-      @default_material.shininess = 64
     end
     
     
@@ -283,27 +300,9 @@ class BlenderSync
         
         mat.diffuse_color  = color
         
-        
-        
-        # Default values from 
-        # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
-        
-        # mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
-        # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
-        # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-        mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-        
-        
-        # Defaults, but with 0 alpha channel
-        # (all alpha will now come from diffuse, because different components are combined with addition)
-        
-        mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
-        mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-        mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-        
-        
-        
-        
+        mat.ambient_color  = @default_material.ambient_color
+        mat.specular_color = @default_material.specular_color
+        mat.emissive_color = @default_material.emissive_color
         
         # NOTE: how do I link new materials to existing objects?
       end

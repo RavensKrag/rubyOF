@@ -38,6 +38,7 @@ def usec(time)
   (time).to_i
 end
 
+load LIB_DIR/'patches'/'cpp_callbacks.rb'
 
 load LIB_DIR/'entities'/'blender_material.rb'
 load LIB_DIR/'entities'/'blender_object.rb'
