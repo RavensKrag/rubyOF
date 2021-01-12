@@ -1055,6 +1055,55 @@ void depthMask(bool flag){
 	}
 }
 
+// Note: should call this outside of any Fbo context.
+//       If used while an FBO is bound, may get unexpected results.
+//       (see warning below for details)
+// 
+// WARNING: This function does not save / restore the last used framebuffer
+//          it will revert to the default buffer (buffer 0) after it completes.
+void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, int flag){
+	
+	// shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	// renderer->bindForBlitting(src, dst, 0);
+	
+	// renderer->unbind();
+	
+	const int color_bit = (1 << 0);
+	const int depth_bit = (1 << 1);
+	
+	GLbitfield mask = 0;
+	if( flag & color_bit == color_bit ){
+		mask = mask | GL_COLOR_BUFFER_BIT;
+	}
+	if( flag & depth_bit == depth_bit ){
+		mask = mask | GL_DEPTH_BUFFER_BIT;
+	}
+	
+	
+	// default framebuffer controlled by window is 0
+	// OF documentation notes that a window class might
+	// change this, for instance to use MSAA, but
+	// I think using the default should be fine for now.
+	GLuint default_framebuffer = 0;
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, src.getId());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst.getId());
+	
+	float width  = src.getWidth();
+	float height = src.getHeight();
+	glBlitFramebuffer(0,0,width,height,
+	                  0,0,width,height,
+							mask, GL_NEAREST);
+	
+	
+	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
+	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+}
+
+
 void blitDefaultDepthBufferToFbo(ofFbo& fbo){
 	// default framebuffer controlled by window is 0
 	// OF documentation notes that a window class might
@@ -1415,7 +1464,7 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
       .define_method("emissive_color=",&ofxDynamicMaterial__setEmissiveColor)
       .define_method("shininess=",     &ofxDynamicMaterial::setShininess)
       
-      .define_method("ambient_color",  &ofxDynamicMaterial::setAmbientColor)
+      .define_method("ambient_color",  &ofxDynamicMaterial::getAmbientColor)
       .define_method("diffuse_color",  &ofxDynamicMaterial::getDiffuseColor)
       .define_method("specular_color", &ofxDynamicMaterial::getSpecularColor)
       .define_method("emissive_color", &ofxDynamicMaterial::getEmissiveColor)
@@ -1499,6 +1548,11 @@ void Init_rubyOF_project()
 		
 		.define_module_function("blitDefaultDepthBufferToFbo",
 			                     &blitDefaultDepthBufferToFbo)
+		
+		
+		.define_module_function("copyFramebufferByBlit__cpp",
+			                     &copyFramebufferByBlit__cpp)							
+		
 		
 		.define_module_function("enableTransparencyBufferBlending",
 			                     &enableTransparencyBufferBlending)

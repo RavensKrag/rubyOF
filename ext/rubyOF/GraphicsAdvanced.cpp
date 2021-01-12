@@ -686,7 +686,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("emissive_color=",   &ofMaterial__setEmissiveColor)
       .define_method("shininess=",        &ofMaterial::setShininess)
       
-      .define_method("ambient_color",     &ofMaterial::setAmbientColor)
+      .define_method("ambient_color",     &ofMaterial::getAmbientColor)
       .define_method("diffuse_color",     &ofMaterial::getDiffuseColor)
       .define_method("specular_color",    &ofMaterial::getSpecularColor)
       .define_method("emissive_color",    &ofMaterial::getEmissiveColor)
