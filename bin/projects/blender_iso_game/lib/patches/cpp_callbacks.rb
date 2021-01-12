@@ -13,6 +13,8 @@ class << self
 				0b10
 			when :both
 				0b11
+			else
+				0x00
 			end
 		
 		return copyFramebufferByBlit__cpp(src_fbo, dst_fbo, buffer_flag)

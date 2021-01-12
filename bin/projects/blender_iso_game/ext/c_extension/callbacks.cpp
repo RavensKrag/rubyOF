@@ -1061,7 +1061,7 @@ void depthMask(bool flag){
 // 
 // WARNING: This function does not save / restore the last used framebuffer
 //          it will revert to the default buffer (buffer 0) after it completes.
-void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, int flag){
+void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, uint flag){
 	
 	// shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
 	
@@ -1069,14 +1069,19 @@ void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, int flag){
 	
 	// renderer->unbind();
 	
-	const int color_bit = (1 << 0);
-	const int depth_bit = (1 << 1);
+	
+	const uint color_bit = (1 << 0);
+	const uint depth_bit = (1 << 1);
+	
+	// std::cout << "flag: " << flag << std::endl;
 	
 	GLbitfield mask = 0;
-	if( flag & color_bit == color_bit ){
+	if( (flag & color_bit) == color_bit ){
+		// std::cout << "color_bit" << std::endl;
 		mask = mask | GL_COLOR_BUFFER_BIT;
 	}
-	if( flag & depth_bit == depth_bit ){
+	if( (flag & depth_bit) == depth_bit ){
+		// std::cout << "depth_bit" << std::endl;
 		mask = mask | GL_DEPTH_BUFFER_BIT;
 	}
 	
