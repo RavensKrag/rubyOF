@@ -78,6 +78,8 @@ class DependencyGraph
     # ofEnableBlendMode(:alpha)
     
     
+    ofEnableDepthTest()
+    RubyOF::CPP_Callbacks.depthMask(true)
     
     # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
       # Paper assumes transparency encodes occlusion and demonstrates
@@ -87,6 +89,37 @@ class DependencyGraph
       # that work with colored glass.
     
     
+    
+    # 
+    # setup
+    # 
+    
+    @transparency_fbo ||= 
+      RubyOF::Fbo.new.tap do |fbo|
+        settings = 
+          RubyOF::Fbo::Settings.new.tap do |s|
+            s.width  = window.width#*0.5
+            s.height = window.height#*0.5
+            s.internalformat = GL_RGBA32F_ARB;
+            # s.numSamples     = 0; # no multisampling
+            s.useDepth       = true;
+            s.useStencil     = false;
+            s.depthStencilAsTexture = false;
+            
+            s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+            
+            
+            
+            s.numColorbuffers = 2;
+            # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
+          end
+        
+        fbo.allocate(settings)
+        
+        
+        # RubyOF::CPP_Callbacks.allocateFbo(fbo);
+      end
+    
     # ---------------
     #   world space
     # ---------------
@@ -94,12 +127,13 @@ class DependencyGraph
     accumTex_i     = 0
     revealageTex_i = 1
     
+    # RubyOF::CPP_Callbacks.clearDepthBuffer()
+    # RubyOF::CPP_Callbacks.depthMask(true)
     
     opaque, transparent = 
       @batches.partition do |mesh, mat, batch|
         mat.diffuse_color.a == 1
       end
-    
     
     lights_and_camera do
       opaque.each{|mesh, mat, batch|  batch.draw }
@@ -107,13 +141,40 @@ class DependencyGraph
       visualize_lights()
     end
     
-    
-    @transparency_fbo ||= create_transparency_fbo(window)
-    
-    render_to_fbo(@transparency_fbo, accumTex_i, revealageTex_i) do
+    render_to_fbo(@transparency_fbo, accumTex_i, revealageTex_i) do |fbo|
+      # NOTE: must bind the FBO before you clear it in this way
+      color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
+      color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
+      
+      # fbo.clearColorBuffer(accumTex_i,    color_zero)
+      # fbo.clearColorBuffer(revealageTex_i, color_one)
+      
+      RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_zero
+      RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one
+      
+      
+      # RubyOF::CPP_Callbacks.clearDepthBuffer()
+      RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+      
+      
+      # ofEnableDepthTest();
+      # 
+      # glDepthMask(GL_FALSE);
+      # glEnable(GL_BLEND);
+      # glBlendFunci(0, GL_ONE, GL_ONE); // summation
+      # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+      RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+      
       lights_and_camera do
         transparent.each{|mesh, mat, batch|  batch.draw }
       end
+      
+      # glDepthMask(GL_TRUE);
+      # glDisable(GL_BLEND);
+      # 
+      # ofDisableDepthTest();
+      RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
+      
     end
     
     
@@ -130,7 +191,16 @@ class DependencyGraph
       )
     end
     
+    
+    # ofEnableBlendMode(:alpha)
+    RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+    
     draw_fbo_to_screen(@transparency_fbo, accumTex_i, revealageTex_i)
+    
+    RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+    
+    
+    ofDisableDepthTest()
   end
   
   
@@ -144,7 +214,7 @@ class DependencyGraph
         @viewport_camera.begin
         
         # setup GL state
-        ofEnableDepthTest()
+        # ofEnableDepthTest()
         ofEnableLighting() # // enable lighting //
         
         
@@ -167,7 +237,7 @@ class DependencyGraph
         
         # teardown GL state
         ofDisableLighting()
-        ofDisableDepthTest()
+        # ofDisableDepthTest()
         
         # camera end
         @viewport_camera.end
@@ -198,57 +268,28 @@ class DependencyGraph
       end
     end
     
-    def create_transparency_fbo(window)
-      RubyOF::Fbo.new.tap do |fbo|
-        settings = 
-          RubyOF::Fbo::Settings.new.tap do |s|
-            s.width  = window.width#*0.5
-            s.height = window.height#*0.5
-            s.internalformat = GL_RGBA32F_ARB;
-            # s.numSamples     = 0; # no multisampling
-            s.useDepth       = false;
-            s.useStencil     = false;
-            s.depthStencilAsTexture = false;
-            
-            s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-            
-            
-            
-            s.numColorbuffers = 2;
-            # # ^ create 2 textures using createAndAttachTexture(_settings.internalformat, i);
-          end
-        
-        fbo.allocate(settings)
-        
-        
-        # RubyOF::CPP_Callbacks.allocateFbo(fbo);
-      end
-    end
+    # def create_transparency_fbo(window)
+      
+    # end
     
     # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
     def render_to_fbo(fbo, accumTex_i, revealageTex_i) # &block
       fbo.begin
         fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
-        
-        
-        # NOTE: must bind the FBO before you clear it in this way
-        color_zero = RubyOF::FloatColor.rgba([0,0,0,0])
-        color_one  = RubyOF::FloatColor.rgba([1,1,1,1])
-        
-        RubyOF::CPP_Callbacks.clearFboBuffers accumTex_i, color_zero
-        RubyOF::CPP_Callbacks.clearFboBuffers revealageTex_i, color_one
+        # ofEnableDepthTest()
         
         
         # glDepthMask(GL_FALSE)
         # glEnable(GL_BLEND)
         # glBlendFunci(0, GL_ONE, GL_ONE) # summation
         # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
-        RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+        # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
         
-          yield
+          yield fbo
         
-        RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
-      
+        # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
+        
+        # ofDisableDepthTest()
       fbo.end
     end
     
@@ -262,6 +303,46 @@ class DependencyGraph
     # blend the two textures into the framebuffer
     # TODO: add exception handling here, so gl state set by binding shader and textures doesn't leak
     def draw_fbo_to_screen(fbo, accumTex_i, revealageTex_i)
+      # 
+      # v3
+      # 
+      
+      tex0 = @transparency_fbo.getTexture(accumTex_i)
+      tex1 = @transparency_fbo.getTexture(revealageTex_i)
+      
+      # glBlendEquation(GL_FUNC_ADD)
+      # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
+      
+      
+      
+      # RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+      @compositing_shader.tap do |shader|
+        shader.begin()
+        
+          tex0.bind(0)
+          tex1.bind(1)
+          
+          ofSetColor(RubyOF::Color.rgba([255, 255, 255, 255]));  
+          ofPushMatrix();  
+          
+          RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,-fbo.height,0))
+          .tap do |fullscreen_quad|
+            
+            fullscreen_quad.draw()
+            
+          end
+          
+          # ofScale(1, -1, 1);
+          ofPopMatrix();
+
+          
+          tex0.unbind(0)
+          tex1.unbind(1)
+        
+        shader.end()
+      end
+      # RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
       
       # 
       # v1
@@ -288,37 +369,6 @@ class DependencyGraph
       # RubyOF::CPP_Callbacks.renderFboToScreen(@transparency_fbo, shader, accumTex_i, revealageTex_i)
       
       
-      # 
-      # v3
-      # 
-      
-      tex0 = @transparency_fbo.getTexture(accumTex_i)
-      tex1 = @transparency_fbo.getTexture(revealageTex_i)
-      
-      # glBlendEquation(GL_FUNC_ADD)
-      # glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA)
-      RubyOF::CPP_Callbacks.enableScreenspaceBlending()
-      
-      @compositing_shader.tap do |shader|
-        shader.begin()
-        
-          tex0.bind(0)
-          tex1.bind(1)
-          
-          RubyOF::CPP_Callbacks.textureToMesh(tex0, GLM::Vec3.new(0,0,0))
-          .tap do |fullscreen_quad|
-            
-            fullscreen_quad.draw()
-            
-          end
-          
-          tex0.unbind(0)
-          tex1.unbind(1)
-        
-        shader.end()
-      end
-      
-      RubyOF::CPP_Callbacks.disableScreenspaceBlending()
       
     end
   

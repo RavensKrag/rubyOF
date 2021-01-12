@@ -207,6 +207,15 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 			(int attachmentPoint)
 			>(&ofFbo::getTexture)
 		)
+		
+		.define_method("getTexture",
+			static_cast< ofTexture& (ofFbo::*)
+			(int attachmentPoint)
+			>(&ofFbo::getTexture)
+		)
+		
+		.define_method("height", &ofFbo::getHeight)
+		.define_method("width",  &ofFbo::getWidth)
 	;
 	
 	// NOTE: ofFbo.h has been patched to define "ofFbo::allocateRICE", so that I don't have to write an entirely separate wrapper class.

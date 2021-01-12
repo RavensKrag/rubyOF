@@ -209,11 +209,15 @@
     
     
     float w(in float z, in float a){
+        // z = abs(z);
         // if(z<1e-5){
         //     z = 1;
         // }
-        float accum = abs(z*z*z*z*z);
-        return 1/accum;
+        // float accum = pow(z,3);
+        // return 1/accum;
+        
+        
+        return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
     }
     
     
@@ -296,12 +300,14 @@
             // gl_FragData[0] = localColor;
             // gl_FragData[1] = localColor;
             
-            // gl_FragColor = localColor;
             
-            
-            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
             gl_FragData[0] = vec4(localColor.rgb, ai);
-            gl_FragData[1] = vec4(localColor.a);
+            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+            gl_FragData[1] = vec4(ai);
+            
+            
+            // gl_FragData[0] = vec4(vec3(1,1,1), (abs(zi)*0.04));
+            // gl_FragData[0] = vec4(1,1,1,1);
         }else{
         // #else
         

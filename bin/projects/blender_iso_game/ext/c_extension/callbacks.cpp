@@ -1040,7 +1040,47 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
+void clearDepthBuffer(){
+	// glClearDepth(-10000);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void depthMask(bool flag){
+	// std::cout << "depth mask flag (ruby val): " << flag << std::endl;
+	
+	if(flag){
+		glDepthMask(GL_TRUE);
+	}else{
+		glDepthMask(GL_FALSE);
+	}
+}
+
+void blitDefaultDepthBufferToFbo(ofFbo& fbo){
+	// default framebuffer controlled by window is 0
+	// OF documentation notes that a window class might
+	// change this, for instance to use MSAA, but
+	// I think using the default should be fine for now.
+	GLuint default_framebuffer = 0;
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, default_framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo.getId());
+	
+	float width  = fbo.getWidth();
+	float height = fbo.getHeight();
+	glBlitFramebuffer(0,0,width,height,
+	                  0,0,width,height,
+							GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	
+	
+	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
+	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+}
+
 void enableTransparencyBufferBlending(){
+	ofEnableDepthTest();
+	
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunci(0, GL_ONE, GL_ONE); // summation
@@ -1056,7 +1096,7 @@ void disableTransparencyBufferBlending(){
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	
-	
+	ofDisableDepthTest();
 	// ofPopMatrix();
 }
 
@@ -1096,30 +1136,13 @@ void allocateFbo(ofFbo& fbo){
 // so I created this function to allow clearing of the other depth buffers.
 // (not sure if this is strictly necessary - had to change many things to get the transparency working. should test more to see if I need this code or not.)
 void clearFboBuffers(int buffer_idx, ofFloatColor& color){
-	// glClearColor(color.r, color.g, color.b, color.a);
-	// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	// ^-- this code above works for the main framebuffer and texture 1
-	//     but not other buffers.
-	// 
-	// v-- the code below doesn't work anywhere... 
-	
 	glClearBufferfv(GL_COLOR, buffer_idx, &color.r);
 	
-	float depth_value = 0;
-	glClearBufferfv(GL_DEPTH, buffer_idx, &depth_value);
+	// float depth_value = 0;
+	// glClearBufferfv(GL_DEPTH, buffer_idx, &depth_value);
 	
 	// int stencil_value = 0;
 	// glClearBufferiv(GL_STENCIL, buffer_idx, &stencil_value);
-	
-	// // glClearDepth()
-	
-	
-	// // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-	// // glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0); //Only need to do this once.
-	// glDrawBuffer(GL_COLOR_ATTACHMENT0); //Only need to do this once.
-	// GLuint clearColor[4] = {0, 0, 0, 0};
-	// glClearBufferuiv(GL_COLOR, 0, clearColor);
 }
 
 
@@ -1465,6 +1488,17 @@ void Init_rubyOF_project()
 		
 		.define_module_function("pack_transforms",   &pack_transforms)
 		
+		
+		
+		
+		.define_module_function("clearDepthBuffer",
+			                     &clearDepthBuffer)
+		
+		.define_module_function("depthMask",
+			                     &depthMask)
+		
+		.define_module_function("blitDefaultDepthBufferToFbo",
+			                     &blitDefaultDepthBufferToFbo)
 		
 		.define_module_function("enableTransparencyBufferBlending",
 			                     &enableTransparencyBufferBlending)

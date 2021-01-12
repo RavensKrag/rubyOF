@@ -48,4 +48,7 @@ void main(){
     
     // FRAG_COLOR = vec4(TEXTURE(src_tex_unit0, texCoordVarying).rgb,
     //                   TEXTURE(src_tex_unit1, texCoordVarying).r)*globalColor;
+    
+    
+    // FRAG_COLOR = vec4(TEXTURE(src_tex_unit0, texCoordVarying).rgb, 1);
 }
