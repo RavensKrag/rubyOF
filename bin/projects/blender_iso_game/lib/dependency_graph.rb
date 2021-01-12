@@ -94,47 +94,39 @@ class DependencyGraph
     # setup
     # 
     
-    @main_fbo ||= 
-      RubyOF::Fbo.new.tap do |fbo|
-        settings = 
-          RubyOF::Fbo::Settings.new.tap do |s|
-            s.width  = window.width
-            s.height = window.height
-            s.internalformat = GL_RGBA32F_ARB;
-            # s.numSamples     = 0; # no multisampling
-            s.useDepth       = true;
-            s.useStencil     = false;
-            s.depthStencilAsTexture = true;
-            
-            s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-            
-            
-            s.numColorbuffers = 1;
+    settings = 
+      RubyOF::Fbo::Settings.new.tap do |s|
+        s.width  = window.width
+        s.height = window.height
+        s.internalformat = GL_RGBA32F_ARB;
+        # s.numSamples     = 0; # no multisampling
+        s.useDepth       = true;
+        s.useStencil     = false;
+        s.depthStencilAsTexture = true;
+        
+        s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+        
+        @main_fbo ||= 
+          RubyOF::Fbo.new.tap do |fbo|
+            s.clone.tap{ |s|
+              
+              s.numColorbuffers = 1;
+              
+            }.yield_self{ |s| fbo.allocate(s) }
           end
         
-        fbo.allocate(settings)
+        @transparency_fbo ||= 
+          RubyOF::Fbo.new.tap do |fbo|
+            s.clone.tap{ |s|
+              
+              s.numColorbuffers = 2;
+              
+            }.yield_self{ |s| fbo.allocate(s) }
+          end
+        
       end
     
-    @transparency_fbo ||= 
-      RubyOF::Fbo.new.tap do |fbo|
-        settings = 
-          RubyOF::Fbo::Settings.new.tap do |s|
-            s.width  = window.width
-            s.height = window.height
-            s.internalformat = GL_RGBA32F_ARB;
-            # s.numSamples     = 0; # no multisampling
-            s.useDepth       = true;
-            s.useStencil     = false;
-            s.depthStencilAsTexture = true;
-            
-            s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-            
-            
-            s.numColorbuffers = 2;
-          end
-        
-        fbo.allocate(settings)
-      end
+    
     
     # ---------------
     #   world space
