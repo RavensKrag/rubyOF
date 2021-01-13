@@ -1133,7 +1133,7 @@ void blitDefaultDepthBufferToFbo(ofFbo& fbo){
 }
 
 void enableTransparencyBufferBlending(){
-	ofEnableDepthTest();
+	// ofEnableDepthTest();
 	
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
@@ -1150,7 +1150,7 @@ void disableTransparencyBufferBlending(){
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	
-	ofDisableDepthTest();
+	// ofDisableDepthTest();
 	// ofPopMatrix();
 }
 
@@ -1164,39 +1164,6 @@ void enableScreenspaceBlending(){
 
 void disableScreenspaceBlending(){
 	glDisable(GL_BLEND);
-}
-
-
-
-void allocateFbo(ofFbo& fbo){
-	ofFboSettings s;
-
-	s.width = ofGetWidth();
-	s.height = ofGetHeight();
-	s.useDepth = true;
-	s.depthStencilAsTexture = true;
-	
-	s.internalformat = GL_RGBA32F_ARB;
-	
-	fbo.allocate(s);
-}
-
-
-// ofFbo has member functions to clear color buffers by index,
-// as well as clearing the first depth buffer.
-	// void ofFbo::clearColorBuffer(size_t buffer_idx, const ofFloatColor & color)
-	// void ofFbo::clearDepthBuffer(float value)
-// But, you can't clear depth buffers past the first buffer with that interface, 
-// so I created this function to allow clearing of the other depth buffers.
-// (not sure if this is strictly necessary - had to change many things to get the transparency working. should test more to see if I need this code or not.)
-void clearFboBuffers(int buffer_idx, ofFloatColor& color){
-	glClearBufferfv(GL_COLOR, buffer_idx, &color.r);
-	
-	// float depth_value = 0;
-	// glClearBufferfv(GL_DEPTH, buffer_idx, &depth_value);
-	
-	// int stencil_value = 0;
-	// glClearBufferiv(GL_STENCIL, buffer_idx, &stencil_value);
 }
 
 
@@ -1544,7 +1511,6 @@ void Init_rubyOF_project()
 		
 		
 		
-		
 		.define_module_function("clearDepthBuffer",
 			                     &clearDepthBuffer)
 		
@@ -1554,9 +1520,18 @@ void Init_rubyOF_project()
 		.define_module_function("blitDefaultDepthBufferToFbo",
 			                     &blitDefaultDepthBufferToFbo)
 		
-		
 		.define_module_function("copyFramebufferByBlit__cpp",
 			                     &copyFramebufferByBlit__cpp)							
+		
+		
+		
+		.define_module_function("textureToMesh",
+			                     &textureToMesh)
+		
+		
+		.define_module_function("renderFboToScreen",
+			                     &renderFboToScreen)
+		
 		
 		
 		.define_module_function("enableTransparencyBufferBlending",
@@ -1570,20 +1545,6 @@ void Init_rubyOF_project()
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
 		
-		
-		.define_module_function("allocateFbo",
-			                     &allocateFbo)
-				
-		.define_module_function("clearFboBuffers",
-			                     &clearFboBuffers)
-		
-		
-		.define_module_function("textureToMesh",
-			                     &textureToMesh)
-		
-		
-		.define_module_function("renderFboToScreen",
-			                     &renderFboToScreen)
 		
 	;
 	
