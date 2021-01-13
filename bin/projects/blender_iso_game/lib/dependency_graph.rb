@@ -263,12 +263,24 @@ class DependencyGraph
       end
     end
     
-    def blit_framebuffer(buffer, hash={})
+    def blit_framebuffer(buffer_name, hash={})
       src = hash.keys.first
       dst = hash.values.first
       
-      RubyOF::CPP_Callbacks.copyFramebufferByBlit(
-        src, dst, buffer
+      buffer_flag = 
+        case buffer_name
+        when :color_buffer
+          0b01
+        when :depth_buffer
+          0b10
+        when :both
+          0b11
+        else
+          0x00
+        end
+      
+      RubyOF::CPP_Callbacks.copyFramebufferByBlit__cpp(
+        src, dst, buffer_flag
       )
     end
     
