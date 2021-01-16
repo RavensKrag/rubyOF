@@ -25,11 +25,9 @@ class RenderBatch
     
     shader_src_dir = PROJECT_DIR/"bin/glsl"
     
-    @shader_paths = {
-      :vert_instanced => shader_src_dir/"phong_instanced.vert",
-      :vert_single    => shader_src_dir/"phong.vert",
-      :frag           => shader_src_dir/"phong.frag"
-    }
+    @vert_shader = shader_src_dir/"phong_instanced.vert"
+    @frag_shader = shader_src_dir/"phong.frag"
+    
     
     @instance_data = InstancingBuffer.new(max_instances: 4096)
     
@@ -45,13 +43,13 @@ class RenderBatch
   def update
     case @state
     when 'single'
-      reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag]) do
+      reload_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
       
     when 'instanced_set'
-      reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag]) do
+      reload_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
@@ -242,7 +240,7 @@ class RenderBatch
     # 
     # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
     
-    reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag])
+    reload_shaders(@vert_shader, @frag_shader)
     
     
     
