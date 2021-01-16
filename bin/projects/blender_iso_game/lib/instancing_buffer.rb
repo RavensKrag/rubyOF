@@ -2,12 +2,12 @@
 class InstancingBuffer
   attr_reader :pixels, :texture, :width, :height
   
-  def initialize
+  def initialize(max_instances: 4096)
     @pixels = RubyOF::FloatPixels.new
     @texture = RubyOF::Texture.new
     
     @width = 4
-    @height = 4096
+    @height = max_instances
     @pixels.allocate(@width, @height)
     
     @texture.wrap_mode(:vertical => :clamp_to_edge,
@@ -22,6 +22,11 @@ class InstancingBuffer
   # I want to use 1e37 for this, or the nearest power of two.
   # The true float max is a little bigger, but this is enough.
   # This also allows for using one max for both positive and negative.
+  # 
+  # (this encodes positions only, where each pixel encodes one normalized vec3, and the alpha channel encodes magnitude. this is the technique used in the "4000 adams" video - link below. this encoding structure is not currently being used, because it does not account for orientation. however, it is useful for animations, so I may revisit it later)
+  # 
+  # “4,000 Adams at 90 Frames Per Second | Yi Fei Boon”, from the “GameDaily Connect” channel on Youtube. May 26, 2017.
+  # https://www.youtube.com/watch?v=rXqKu9uC0f4
   def pack_positions_with_indicies(positions_with_indicies)
     t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
@@ -88,26 +93,27 @@ class InstancingBuffer
     
   end
   
+  
   def pack_all_transforms(nodes)
-    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     RubyOF::CPP_Callbacks.pack_transforms(
       @pixels, @width, FLOAT_MAX, nodes
     )
     
-    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = t1-t0
-    puts "time - pack instance positions: #{dt.to_f / 1000} ms"
+    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # dt = t1-t0
+    # puts "time - pack instance positions: #{dt.to_f / 1000} ms"
     
     
     
-    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     @texture.load_data(@pixels)
     
-    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = t1-t0
-    puts "time - instance pixels to texture: #{dt.to_f / 1000} ms"
+    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # dt = t1-t0
+    # puts "time - instance pixels to texture: #{dt.to_f / 1000} ms"
     
   end
   

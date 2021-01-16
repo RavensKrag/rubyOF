@@ -31,16 +31,30 @@ class RenderBatch
       :frag           => shader_src_dir/"phong.frag"
     }
     
-    @instance_data = InstancingBuffer.new
+    @instance_data = InstancingBuffer.new(max_instances: 4096)
+    
+    @@identity_transform_data ||=
+      InstancingBuffer.new(max_instances: 1).tap do |buffer|
+        node = RubyOF::Node.new
+        
+        buffer.pack_all_transforms( [node] )
+        
+      end
   end
   
   def update
     case @state
     when 'single'
-      reload_single_shaders()
+      reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag]) do
+        # on reload
+        puts "instancing shaders reloaded" 
+      end
       
     when 'instanced_set'
-      reload_instancing_shaders()
+      reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag]) do
+        # on reload
+        puts "instancing shaders reloaded" 
+      end
       
       # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
       
@@ -93,10 +107,6 @@ class RenderBatch
     end
     
     
-    
-    
-    
-    
   end
   
   def delete(mesh_obj)
@@ -111,18 +121,26 @@ class RenderBatch
     @batch_dirty = true
   end
   
+  # Material uniforms must be set before material is bound,
+  # so material binding can not happen outside the case statement,
+  # even though it is something that must happen for all cases.
   def draw()
-    @mat.begin()
-    
     case @state
     when 'empty'
       # no-op
     when 'single'
-      mesh_obj = @entity_list.first
+      @mat.setCustomUniformTexture(
+        "transform_tex", @@identity_transform_data.texture, 1
+      )
       
-      mesh_obj.node.transformGL()
-      @mesh.draw()
-      mesh_obj.node.restoreTransformGL()
+      using_material @mat do
+        mesh_obj = @entity_list.first
+        
+        mesh_obj.node.transformGL()
+        @mesh.draw_instanced(1)
+        mesh_obj.node.restoreTransformGL()
+      end
+      
     when 'instanced_set'
       # draw instanced (v4.2 - 4x4 full transform matrix in texture)
       
@@ -132,22 +150,22 @@ class RenderBatch
       )
         # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
       
-      # @mat.setInstanceMagnitudeScale(
-      #   InstancingBuffer::FLOAT_MAX
-      # )
-      
-      # @mat.setInstanceTextureWidth(
-      #   @instance_data.width
-      # )
-      
       
       # draw all the instances using one draw call
-      @mesh.draw_instanced(@entity_list.size)
+      using_material @mat do
+        @mesh.draw_instanced(@entity_list.size)
+      end
       
     end
-    # no-op
+  end
+  
+  # do not pass material to block, as material uniforms must all be set before the material is bound
+  def using_material(material) # &block
+    material.begin
     
-    @mat.end()
+    yield
+    
+    material.end
   end
   
   private def transition_to(new_state)
@@ -175,6 +193,10 @@ class RenderBatch
     @entity_list.each do |entity|
       yield entity
     end
+  end
+  
+  def size
+    @entity_list.size
   end
   
   
@@ -219,7 +241,11 @@ class RenderBatch
     # otherwise InstancingBuffer will be messed up.
     # 
     # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
-    reload_instancing_shaders()
+    
+    reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag])
+    
+    
+    
     
     # @entity_list.each{  |entity|  entity.dirty = true }
     # update_packed_entity_positions()
@@ -234,7 +260,7 @@ class RenderBatch
   
   # Reload specified shaders if necessary and return new timestamp.
   # If the shaders were not reloaded, timestamp remains unchanged.
-  def reload_shaders(vert_shader_path, frag_shader_path)
+  def reload_shaders(vert_shader_path, frag_shader_path) # &block
     # load shaders if they have never been loaded before,
     # or if the files have been updated
     if @shader_timestamp.nil? || [vert_shader_path, frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
@@ -254,20 +280,8 @@ class RenderBatch
       
       
       @shader_timestamp = Time.now
-    end
-  end
-  
-  def reload_single_shaders
-    reload_shaders(@shader_paths[:vert_single], @shader_paths[:frag]) do
-      # on reload
-      puts "single object shaders reloaded" 
-    end
-  end
-  
-  def reload_instancing_shaders
-    reload_shaders(@shader_paths[:vert_instanced], @shader_paths[:frag]) do
-      # on reload
-      puts "instancing shaders reloaded" 
+      
+      yield if block_given?
     end
   end
   
@@ -278,7 +292,7 @@ class RenderBatch
     
     t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     dt = t1-t0
-    puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
+    # puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
     
     
     @instance_data.pack_all_transforms(nodes)
