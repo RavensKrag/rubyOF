@@ -377,6 +377,10 @@ class DependencyGraph
   public
   
   
+  def batches
+    @batches
+  end
+  
   # def pack_entities
   #   @entities.to_a.collect{ |key, val|
   #     val.data_dump

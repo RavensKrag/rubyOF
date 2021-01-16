@@ -417,7 +417,78 @@ class Core
       
     end
     
+    
+    # 
+    # draw the scene
+    # 
     @depsgraph.draw(@w)
+    
+    
+    # 
+    # draw UI
+    # 
+    p1 = CP::Vec2.new(500,500)
+    @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
+    
+    
+    
+    p2 = CP::Vec2.new(500,600)
+    if @mouse_pos
+      
+      @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
+    end
+    
+    
+    line_height = 35
+    p3 = CP::Vec2.new(500,650)
+    str_out = []
+    @depsgraph.batches.tap do |batches|
+      
+      
+        data = [
+          "i".rjust(3),
+          "mesh".ljust(10), # BlenderMeshData
+          
+          "mat".ljust(15), # BlenderMaterial
+          # ^ use #inspect to visualize empty string
+          
+          "batch size" # RenderBatch
+          
+        ].join('| ')
+        
+        str_out << "#{data}"
+      
+      batches.each_with_index do |batch_line, i|
+        a,b,c = batch_line
+        # data = [
+        #   a.class.to_s.each_char.first(20).join(''),
+        #   b.class.to_s.each_char.first(20).join(''),
+        #   c.class.to_s.each_char.first(20).join('')
+        # ].join(', ')
+        
+        
+        data = [
+          "#{i}".rjust(3),
+          a.name.ljust(10), # BlenderMeshData
+          
+          b.name.inspect.ljust(15), # BlenderMaterial
+          # ^ use #inspect to visualize empty string
+          
+          c.size.to_s # RenderBatch
+          
+        ].join('| ')
+        
+        
+        
+        str_out << "#{data}"
+      end
+      
+    end
+    
+    str_out.each_with_index do |line, i|
+      @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
+    end
+    
     
   end
   
@@ -440,6 +511,7 @@ class Core
   # 
   
   def mouse_moved(x,y)
+    @mouse_pos = CP::Vec2.new(x,y)
     # p "mouse position: #{[x,y]}.inspect"
   end
   
