@@ -241,28 +241,6 @@ class DependencyGraph
   
   private
     
-    # TODO: add exception handling here, so gl state set by binding shader and textures doesn't leak
-    def using_shader(shader) # &block
-      shader.begin
-      
-      yield shader
-      
-      shader.end
-    end
-    
-    # TODO: add exception handling here, so gl state set by binding shader and textures doesn't leak
-    def using_textures(*texture_list)
-      texture_list.each_with_index do |tex,i|
-        tex.bind(i) unless tex.nil?
-      end
-      
-      yield *texture_list
-      
-      texture_list.each_with_index do |tex,i|
-        tex.unbind(i) unless tex.nil?
-      end
-    end
-    
     def blit_framebuffer(buffer_name, hash={})
       src = hash.keys.first
       dst = hash.values.first

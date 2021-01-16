@@ -1,5 +1,7 @@
 
 class RenderBatch
+  include RubyOF::Graphics
+  
   # NOTE: can't use state machine because it requires super() in initialize
   # and I need to bypass initialize() when loading from YAML
   attr_reader :state # read only: state is always managed interally
@@ -155,15 +157,6 @@ class RenderBatch
       end
       
     end
-  end
-  
-  # do not pass material to block, as material uniforms must all be set before the material is bound
-  def using_material(material) # &block
-    material.begin
-    
-    yield
-    
-    material.end
   end
   
   private def transition_to(new_state)
