@@ -150,7 +150,9 @@ class DependencyGraph
       @compositing_shader.live_load_glsl(
         shader_src_dir/'alpha_composite.vert',
         shader_src_dir/'alpha_composite.frag'
-      )
+      ) do
+        puts "alpha compositing shaders reloaded"
+      end
     end
     
     
@@ -558,11 +560,10 @@ class DependencyGraph
       'viewport_camera' => @viewport_camera,
       
       'lights'          => @lights,
-      'light_material'  => @light_material,
       
       'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
       'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
-      'mesh_objects'    => @mesh_objects,
+      'mesh_objects'    => @mesh_objects.values,
       # 'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
@@ -581,29 +582,16 @@ class DependencyGraph
     
     @viewport_camera = coder.map['viewport_camera']
     
-    @light_material  = coder.map['light_material']
-    
-    
-    
-    # all batches using GPU instancing are forced to refresh position on load
-    @batches = Hash.new
-      coder.map['batch_list'].each do |batch|
-        @batches[batch.mesh.name] = batch
-      end
-    
-    # @entities = Hash.new
-    #   coder.map['entity_list'].each do |entity|
-    #     @entities[entity.name] = entity
-    #   end
-    #   @batches.each_value do |batch|
-    #     batch.each do |entity|
-    #       @entities[entity.name] = entity
-    #     end
-    #   end
-    
-    # Hash#values returns copy, not reference
-    # @meshes = @batches.values.collect{ |batch|  batch.mesh } 
     @lights = coder.map['lights']
+    
+    
+    
+    puts "loading #{coder.map['mesh_objects'].size} entities"
+    coder.map['mesh_objects'].each do |entity|
+      # entity.dirty = true
+      
+      # self.add entity
+    end
   end
   
 end

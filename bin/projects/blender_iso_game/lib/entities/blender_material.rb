@@ -12,7 +12,12 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
   def data_dump
     {
         'type' => 'MATERIAL',
-        
+        'name' => @name,
+        'ambient_color'  => self.ambient_color,
+        'diffuse_color'  => self.diffuse_color,
+        'specular_color' => self.specular_color,
+        'emissive_color' => self.emissive_color,
+        'shininess'      => self.shininess
     }
   end
   
@@ -21,23 +26,17 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
   end
   
   def encode_with(coder)
-    data = {
-      :name => @name,
-      :ambient_color  => self.ambient_color,
-      :diffuse_color  => self.diffuse_color,
-      :specular_color => self.specular_color,
-      :emissive_color => self.emissive_color,
-      :shininess      => self.shininess
-    }
-    
-    coder.represent_map to_yaml_type, data
+    coder.represent_map to_yaml_type, self.data_dump
   end
   
   def init_with(coder)
-    initialize(coder.map['mesh_name'])
+    initialize(coder.map['name'])
     
-    self.load_data(coder.map)
+    self.ambient_color  = coder.map['ambient_color']
+    self.diffuse_color  = coder.map['diffuse_color']
+    self.specular_color = coder.map['specular_color']
+    self.emissive_color = coder.map['emissive_color']
+    self.shininess      = coder.map['shininess']
     
-    self.generate_mesh()
   end
 end

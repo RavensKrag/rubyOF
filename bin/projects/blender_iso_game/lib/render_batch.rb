@@ -191,63 +191,10 @@ class RenderBatch
   end
   
   
-  # 
-  # YAML serialization interface
-  # 
-  def to_yaml_type
-    "!ruby/object:#{self.class}"
-  end
-  
-  def encode_with(coder)
-    entity_data = 
-      @entity_list.collect do |entity|
-        [entity.name, entity.encode_transform_to_base64].join("\n")
-        # (don't need entity.mesh.name, because we're inside of a batch, where @mesh points to the shared mesh)
-      end
-    
-    data_hash = {
-      'count'       => entity_data.size, # for human reading of YAML
-      'state'       => @state,
-      'mesh'        => @mesh,
-      'entity_list' => entity_data
-    }
-    coder.represent_map to_yaml_type, data_hash
-  end
-  
-  def init_with(coder)
-    setup()
-    
-    @state       = coder.map['state']
-    @mesh        = coder.map['mesh']
-    
-    @entity_list = 
-      coder.map['entity_list']
-      .collect{|data_string| data_string.split("\n") }
-      .collect do |name, base64_transform|
-        entity = BlenderMesh.new(name, @mesh)
-        entity.load_transform_from_base64(base64_transform)
-      end
-    
-    # force update on all batches using GPU instancing
-    # otherwise InstancingBuffer will be messed up.
-    # 
-    # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
-    
-    reload_shaders(@vert_shader, @frag_shader)
-    
-    
-    
-    
-    # @entity_list.each{  |entity|  entity.dirty = true }
-    # update_packed_entity_positions()
-    
-    nodes = @entity_list.collect{  |entity| entity.node}
-    @instance_data.pack_all_transforms(nodes)
-    
-  end
-  
-  
   private
+  
+  
+  # TODO: move this function into the appropriate material class
   
   # Reload specified shaders if necessary and return new timestamp.
   # If the shaders were not reloaded, timestamp remains unchanged.

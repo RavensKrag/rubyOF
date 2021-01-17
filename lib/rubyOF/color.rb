@@ -66,13 +66,13 @@ class Color
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['rgba'] = self.to_a
   end
   
   def init_with(coder)
     initialize()
     
-    self.rgba = coder.seq
+    self.rgba = coder['rgba']
   end
 end
 
@@ -142,13 +142,13 @@ class FloatColor
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['rgba'] = self.to_a
   end
   
   def init_with(coder)
     initialize()
     
-    self.rgba = coder.seq
+    self.rgba = coder['rgba']
   end
 end
 
@@ -220,13 +220,13 @@ class ShortColor
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['rgba'] = self.to_a
   end
   
   def init_with(coder)
     initialize()
     
-    self.rgba = coder.seq
+    self.rgba = coder['rgba']
   end
 end
 

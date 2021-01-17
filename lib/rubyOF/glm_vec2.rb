@@ -65,11 +65,11 @@ class Vec2
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['xy'] = self.to_a
   end
   
   def init_with(coder)
-    x,y = coder.seq
+    x,y = coder['xy']
     
     initialize(x,y)
   end

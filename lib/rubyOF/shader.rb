@@ -49,8 +49,6 @@ class Shader
 		if(@livecoding_timestamp.nil? || 
 			paths.any?{|f| f.mtime > @livecoding_timestamp }
 		)
-			puts "reloading alpha compositing shaders..."
-			
 			self.load_glsl(*paths)
 			
 			# careful - these shaders don't go through the same pre-processing step as the ones in Material, so special directives like these:
@@ -67,6 +65,8 @@ class Shader
 			# (search for regex_replace)
 			
 			@livecoding_timestamp = Time.now
+			
+			yield if block_given?
 		end
 		
 	end

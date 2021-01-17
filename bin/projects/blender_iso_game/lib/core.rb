@@ -234,8 +234,6 @@ class Core
   end
   
   def load_world_state
-    return false
-    
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
       

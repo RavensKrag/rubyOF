@@ -67,14 +67,11 @@ class Vec3
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['xyz'] = self.to_a
   end
   
   def init_with(coder)
-    x,y,z = coder.seq
-    self.x = x
-    self.y = y
-    self.z = z
+    x,y,z = coder['xyz']
     
     initialize(x,y,z)
   end

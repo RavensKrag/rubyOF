@@ -4,15 +4,15 @@ viewport_camera: !ruby/object:ViewportCamera
   view_perspective: PERSP
   rotation:
   - Quat
-  - -0.7874221801757812
-  - -0.5525174736976624
-  - -0.17873305082321167
-  - -0.20674863457679749
+  - -0.8724583387374878
+  - -0.40055856108665466
+  - -0.1351519674062729
+  - -0.2451591044664383
   position:
   - Vec3
-  - 11.017546653747559
-  - -22.354475021362305
-  - 8.043896675109863
+  - 11.837786674499512
+  - -22.479949951171875
+  - 18.895822525024414
   fov:
   - deg
   - 43.25316057937192
@@ -62,9 +62,55 @@ lights:
     size_y:
     - float
     - 
-light_material: !ruby/object:RubyOF::Material {}
 mesh_datablocks:
 - &1 !ruby/object:BlenderMeshData
+  mesh_name: Cube.001
+  verts:
+  - double
+  - 24
+  - "/dev/shm/Blender_RubyOF/b4f45dc44e6dd8bd1abc243379f5950a925d4030.txt"
+  normals:
+  - double
+  - 108
+  - "/dev/shm/Blender_RubyOF/a7b0df1bcc67ec83bb4353a7ad211b3a824affe1.txt"
+  tris:
+  - - 0
+    - 1
+    - 3
+  - - 0
+    - 3
+    - 2
+  - - 2
+    - 3
+    - 7
+  - - 2
+    - 7
+    - 6
+  - - 6
+    - 7
+    - 5
+  - - 6
+    - 5
+    - 4
+  - - 4
+    - 5
+    - 1
+  - - 4
+    - 1
+    - 0
+  - - 2
+    - 6
+    - 4
+  - - 2
+    - 4
+    - 0
+  - - 7
+    - 3
+    - 1
+  - - 7
+    - 1
+    - 5
+- &3 !ruby/object:BlenderMeshData
   mesh_name: Cube
   verts:
   - double
@@ -111,7 +157,7 @@ mesh_datablocks:
   - - 7
     - 1
     - 5
-- &3 !ruby/object:BlenderMeshData
+- &4 !ruby/object:BlenderMeshData
   mesh_name: Cube.002
   verts:
   - double
@@ -158,7 +204,7 @@ mesh_datablocks:
   - - 7
     - 1
     - 5
-- &4 !ruby/object:BlenderMeshData
+- &5 !ruby/object:BlenderMeshData
   mesh_name: Cube.004
   verts:
   - double
@@ -205,7 +251,7 @@ mesh_datablocks:
   - - 7
     - 1
     - 5
-- &6 !ruby/object:BlenderMeshData
+- &7 !ruby/object:BlenderMeshData
   mesh_name: Cube.005
   verts:
   - double
@@ -215,53 +261,6 @@ mesh_datablocks:
   - double
   - 108
   - "/dev/shm/Blender_RubyOF/f40b7a1828344d0082a8d3e4f1397a749ee56274.txt"
-  tris:
-  - - 0
-    - 1
-    - 3
-  - - 0
-    - 3
-    - 2
-  - - 2
-    - 3
-    - 7
-  - - 2
-    - 7
-    - 6
-  - - 6
-    - 7
-    - 5
-  - - 6
-    - 5
-    - 4
-  - - 4
-    - 5
-    - 1
-  - - 4
-    - 1
-    - 0
-  - - 2
-    - 6
-    - 4
-  - - 2
-    - 4
-    - 0
-  - - 7
-    - 3
-    - 1
-  - - 7
-    - 1
-    - 5
-- &8 !ruby/object:BlenderMeshData
-  mesh_name: Cube.001
-  verts:
-  - double
-  - 24
-  - "/dev/shm/Blender_RubyOF/b4f45dc44e6dd8bd1abc243379f5950a925d4030.txt"
-  normals:
-  - double
-  - 108
-  - "/dev/shm/Blender_RubyOF/a7b0df1bcc67ec83bb4353a7ad211b3a824affe1.txt"
   tris:
   - - 0
     - 1
@@ -1650,122 +1649,451 @@ mesh_datablocks:
     - 14
 mesh_materials:
 - &2 !ruby/object:BlenderMaterial
-  :name: Material
-  :ambient_color: !ruby/object:RubyOF::FloatColor {}
-  :diffuse_color: !ruby/object:RubyOF::FloatColor {}
-  :specular_color: !ruby/object:RubyOF::FloatColor {}
-  :emissive_color: !ruby/object:RubyOF::FloatColor {}
-  :shininess: 0.20000000298023224
-- &5 !ruby/object:BlenderMaterial
-  :name: Material.003
-  :ambient_color: !ruby/object:RubyOF::FloatColor {}
-  :diffuse_color: !ruby/object:RubyOF::FloatColor {}
-  :specular_color: !ruby/object:RubyOF::FloatColor {}
-  :emissive_color: !ruby/object:RubyOF::FloatColor {}
-  :shininess: 0.20000000298023224
-- &7 !ruby/object:BlenderMaterial
-  :name: ''
-  :ambient_color: !ruby/object:RubyOF::FloatColor {}
-  :diffuse_color: !ruby/object:RubyOF::FloatColor {}
-  :specular_color: !ruby/object:RubyOF::FloatColor {}
-  :emissive_color: !ruby/object:RubyOF::FloatColor {}
-  :shininess: 64.0
+  type: MATERIAL
+  name: Material
+  ambient_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.0
+  diffuse_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 1.0
+    - 0.40994352102279663
+    - 0.5361834168434143
+    - 1.0
+  specular_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  emissive_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  shininess: 0.20000000298023224
+- &6 !ruby/object:BlenderMaterial
+  type: MATERIAL
+  name: Material.003
+  ambient_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.0
+  diffuse_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.03512595593929291
+    - 0.4947000741958618
+    - 0.023280613124370575
+    - 0.4947000741958618
+  specular_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  emissive_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  shininess: 0.20000000298023224
+- &8 !ruby/object:BlenderMaterial
+  type: MATERIAL
+  name: ''
+  ambient_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.0
+  diffuse_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.800000011920929
+    - 0.800000011920929
+    - 0.800000011920929
+    - 1.0
+  specular_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  emissive_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  shininess: 64.0
 - &10 !ruby/object:BlenderMaterial
-  :name: Material.002
-  :ambient_color: !ruby/object:RubyOF::FloatColor {}
-  :diffuse_color: !ruby/object:RubyOF::FloatColor {}
-  :specular_color: !ruby/object:RubyOF::FloatColor {}
-  :emissive_color: !ruby/object:RubyOF::FloatColor {}
-  :shininess: 0.20000000298023224
+  type: MATERIAL
+  name: Material.002
+  ambient_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.0
+  diffuse_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.025988345965743065
+    - 0.21723151206970215
+    - 0.5254999995231628
+    - 0.5254999995231628
+  specular_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  emissive_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  shininess: 0.20000000298023224
 - &14 !ruby/object:BlenderMaterial
-  :name: Material.001
-  :ambient_color: !ruby/object:RubyOF::FloatColor {}
-  :diffuse_color: !ruby/object:RubyOF::FloatColor {}
-  :specular_color: !ruby/object:RubyOF::FloatColor {}
-  :emissive_color: !ruby/object:RubyOF::FloatColor {}
-  :shininess: 0.20000000298023224
+  type: MATERIAL
+  name: Material.001
+  ambient_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.20000000298023224
+    - 0.0
+  diffuse_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.19547322392463684
+    - 1.0
+    - 0.21622592210769653
+    - 1.0
+  specular_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  emissive_color: !ruby/object:RubyOF::FloatColor
+    rgba:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  shininess: 0.20000000298023224
 mesh_objects:
-  Cube: !ruby/object:BlenderMesh
-    name: Cube
-    dirty: true
-    mesh: *1
-    node: !ruby/object:RubyOF::Node {}
-    material: *2
-  Cube.001: !ruby/object:BlenderMesh
-    name: Cube.001
-    dirty: true
-    mesh: *3
-    node: !ruby/object:RubyOF::Node {}
-    material: *2
-  Cube.002: !ruby/object:BlenderMesh
-    name: Cube.002
-    dirty: true
-    mesh: *4
-    node: !ruby/object:RubyOF::Node {}
-    material: *5
-  Cube.003: !ruby/object:BlenderMesh
-    name: Cube.003
-    dirty: true
-    mesh: *6
-    node: !ruby/object:RubyOF::Node {}
-    material: *7
-  Cube.004: !ruby/object:BlenderMesh
-    name: Cube.004
-    dirty: true
-    mesh: *8
-    node: !ruby/object:RubyOF::Node {}
-    material: *2
-  CubeInstance.001: !ruby/object:BlenderMesh
-    name: CubeInstance.001
-    dirty: false
-    mesh: *9
-    node: !ruby/object:RubyOF::Node {}
-    material: *10
-  CubeInstance.002: !ruby/object:BlenderMesh
-    name: CubeInstance.002
-    dirty: false
-    mesh: *9
-    node: !ruby/object:RubyOF::Node {}
-    material: *10
-  CubeInstance.003: !ruby/object:BlenderMesh
-    name: CubeInstance.003
-    dirty: true
-    mesh: *11
-    node: !ruby/object:RubyOF::Node {}
-    material: *2
-  CubeInstance.4097: !ruby/object:BlenderMesh
-    name: CubeInstance.4097
-    dirty: true
-    mesh: *12
-    node: !ruby/object:RubyOF::Node {}
-    material: *7
-  CubeInstance.4098: !ruby/object:BlenderMesh
-    name: CubeInstance.4098
-    dirty: true
-    mesh: *13
-    node: !ruby/object:RubyOF::Node {}
-    material: *14
-  CubeInstance.4099: !ruby/object:BlenderMesh
-    name: CubeInstance.4099
-    dirty: false
-    mesh: *15
-    node: !ruby/object:RubyOF::Node {}
-    material: *5
-  CubeInstance.4100: !ruby/object:BlenderMesh
-    name: CubeInstance.4100
-    dirty: false
-    mesh: *15
-    node: !ruby/object:RubyOF::Node {}
-    material: *5
-  Cylinder: !ruby/object:BlenderMesh
-    name: Cylinder
-    dirty: true
-    mesh: *16
-    node: !ruby/object:RubyOF::Node {}
-    material: *7
-  Icosphere: !ruby/object:BlenderMesh
-    name: Icosphere
-    dirty: true
-    mesh: *17
-    node: !ruby/object:RubyOF::Node {}
-    material: *7
+- !ruby/object:BlenderMesh
+  name: Cube.004
+  dirty: true
+  mesh: *1
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - 6.0
+      - -3.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *2
+- !ruby/object:BlenderMesh
+  name: Cube
+  dirty: true
+  mesh: *3
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -20.928848266601562
+      - -5.0
+      - 0.25453758239746094
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *2
+- !ruby/object:BlenderMesh
+  name: Cube.001
+  dirty: true
+  mesh: *4
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -6.0
+      - -3.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *2
+- !ruby/object:BlenderMesh
+  name: Cube.002
+  dirty: true
+  mesh: *5
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - 0.0
+      - -5.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *6
+- !ruby/object:BlenderMesh
+  name: Cube.003
+  dirty: true
+  mesh: *7
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -15.92884635925293
+      - -5.0
+      - 0.25453758239746094
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *8
+- !ruby/object:BlenderMesh
+  name: CubeInstance.001
+  dirty: false
+  mesh: *9
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - 4.0
+      - 5.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *10
+- !ruby/object:BlenderMesh
+  name: CubeInstance.002
+  dirty: false
+  mesh: *9
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - 9.0
+      - 5.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *10
+- !ruby/object:BlenderMesh
+  name: CubeInstance.003
+  dirty: true
+  mesh: *11
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - 0.0
+      - 1.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *2
+- !ruby/object:BlenderMesh
+  name: CubeInstance.4097
+  dirty: true
+  mesh: *12
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -11.0
+      - 9.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *8
+- !ruby/object:BlenderMesh
+  name: CubeInstance.4098
+  dirty: true
+  mesh: *13
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -10.0
+      - 9.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 0.7071068286895752
+      - 0.0
+      - 0.0
+      - 0.7071067690849304
+  material: *14
+- !ruby/object:BlenderMesh
+  name: CubeInstance.4099
+  dirty: false
+  mesh: *15
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -11.0
+      - 7.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *6
+- !ruby/object:BlenderMesh
+  name: CubeInstance.4100
+  dirty: false
+  mesh: *15
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -10.0
+      - 7.0
+      - 0.0
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 0.7071068286895752
+      - 0.0
+      - 0.0
+      - 0.7071067094802856
+  material: *6
+- !ruby/object:BlenderMesh
+  name: Cylinder
+  dirty: true
+  mesh: *16
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -10.92884635925293
+      - -14.0
+      - 0.25453752279281616
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *8
+- !ruby/object:BlenderMesh
+  name: Icosphere
+  dirty: true
+  mesh: *17
+  node: !ruby/object:RubyOF::Node
+    position: !ruby/object:GLM::Vec3
+      xyz:
+      - -17.92884635925293
+      - -12.0
+      - 0.25453752279281616
+    scale: !ruby/object:GLM::Vec3
+      xyz:
+      - 1.0
+      - 1.0
+      - 1.0
+    orientation: !ruby/object:GLM::Quat
+      wxyz:
+      - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+  material: *8

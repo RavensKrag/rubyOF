@@ -9,9 +9,9 @@ class Node
   def encode_with(coder)
     data = {
       # :name => @name,
-      :position    => self.position,
-      :scale       => self.scale,
-      :orientation => self.orientation
+      'position'    => self.position,
+      'scale'       => self.scale,
+      'orientation' => self.orientation
     }
     
     # TODO: encode position, orientation, scale, and anything else critical to the reconstruction of the transform (can't just encode the matrix I don't think, b/c these pieces of the transform are cached individually)
@@ -25,11 +25,11 @@ class Node
   end
   
   def init_with(coder)
-    # initialize(coder.map['mesh_name'])
+    initialize()
     
-    self.load_data(coder.map)
-    
-    self.generate_mesh()
+    self.position    = coder['position']
+    self.scale       = coder['scale']
+    self.orientation = coder['orientation']
   end
 end
 

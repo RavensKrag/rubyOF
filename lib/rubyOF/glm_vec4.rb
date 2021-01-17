@@ -72,11 +72,11 @@ class Vec4
   end
   
   def encode_with(coder)
-    coder.represent_seq to_yaml_type, self.to_a
+    coder['wxyz'] = self.to_a
   end
   
   def init_with(coder)
-    w,x,y,z = coder.seq
+    w,x,y,z = coder['wxyz']
     
     initialize(w,x,y,z)
   end
