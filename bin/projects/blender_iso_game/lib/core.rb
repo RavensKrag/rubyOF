@@ -229,8 +229,8 @@ class Core
     
     # RubyProf.start
     
-    # dump_yaml @depsgraph => @world_save_file
-    # puts "world saved!"
+    dump_yaml @depsgraph => @world_save_file
+    puts "world saved!"
   end
   
   def load_world_state

@@ -574,7 +574,7 @@
 			"file": "lib/dependency_graph.rb",
 			"settings":
 			{
-				"buffer_size": 16836,
+				"buffer_size": 16237,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -583,27 +583,33 @@
 			"file": "lib/render_batch.rb",
 			"settings":
 			{
-				"buffer_size": 8210,
+				"buffer_size": 8348,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 34897 files for \"pack instance\"\n\n/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/instancing_buffer.rb:\n   70      \n   71      dt = t1-t0\n   72:     puts \"time - pack instances: #{dt.to_f / 1000} ms\"\n   73      \n   74      \n   ..\n   98      t1 = RubyOF::Utils.ofGetElapsedTimeMicros\n   99      dt = t1-t0\n  100:     puts \"time - pack instance positions: #{dt.to_f / 1000} ms\"\n  101      \n  102      \n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.10.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n/home/ravenskrag/Desktop/gem_structure/vendor/OpenFrameworks/of_v0.11.0_linux64gcc6_release.tar.gz:\n    File too large, skipping\n\n2 matches in 1 file\n",
-			"settings":
-			{
-				"buffer_size": 715,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
 			}
 		},
 		{
 			"file": "lib/instancing_buffer.rb",
 			"settings":
 			{
-				"buffer_size": 3210,
+				"buffer_size": 3784,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/glsl/phong_instanced.vert",
+			"settings":
+			{
+				"buffer_size": 5764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/glsl/phong.vert",
+			"settings":
+			{
+				"buffer_size": 1086,
 				"line_ending": "Unix"
 			}
 		},
@@ -781,7 +787,7 @@
 			"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
 			"settings":
 			{
-				"buffer_size": 12164,
+				"buffer_size": 12884,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1532,7 +1538,7 @@
 	],
 	"find":
 	{
-		"height": 48.0
+		"height": 104.0
 	},
 	"find_in_files":
 	{
@@ -1582,6 +1588,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"using_",
+			"reload_shader",
+			"vert_shader",
+			"reload_shaders",
+			"instance_data",
+			"max_instances",
+			".pack_",
+			"pack_positions_with_indicies",
+			"instance_data",
+			"reload_single_shaders",
+			"ofVboMesh_draw_instanced__cpp",
+			"draw_instanced",
+			"vert_instanced",
+			".vert",
 			"uniform",
 			"pack instance",
 			"time -",
@@ -1695,21 +1715,7 @@
 			"FRAG_COLOR",
 			"bind",
 			"oftexture",
-			"glclear",
-			"gl",
-			"ofEnableDepthTest",
-			"depth",
-			"glDepthMask",
-			"gldepthmask",
-			"non_transparent",
-			"@batches =",
-			"define_class_under<ofFbo",
-			"offbo",
-			"ofFbo",
-			"fbo",
-			"color =",
-			"blend",
-			"shader_paths"
+			"glclear"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1730,7 +1736,7 @@
 	"groups":
 	[
 		{
-			"selected": 11,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -1835,7 +1841,7 @@
 						"translation.y": 24566.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -1939,7 +1945,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -1969,7 +1975,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
@@ -2087,7 +2093,7 @@
 						"translation.y": 31.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -2207,7 +2213,7 @@
 						"translation.y": 118.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -2223,8 +2229,8 @@
 						"selection":
 						[
 							[
-								38087,
-								38087
+								24582,
+								24582
 							]
 						],
 						"settings":
@@ -2236,24 +2242,24 @@
 								{
 									"1":
 									[
-										38098,
-										38099
+										24652,
+										24653
 									]
 								},
 								"icon":
 								{
 									"1":
 									[
-										"Packages/BracketHighlighter/icons/double_quote.png",
-										"region.greenish"
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
 									]
 								},
 								"open":
 								{
 									"1":
 									[
-										38082,
-										38083
+										24554,
+										24555
 									]
 								},
 								"unmatched":
@@ -2323,10 +2329,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 47672.0,
+						"translation.y": 31846.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -2335,15 +2341,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16836,
+						"buffer_size": 16237,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9505,
-								9505
+								2029,
+								2029
 							]
 						],
 						"settings":
@@ -2362,6 +2368,11 @@
 								},
 								"unmatched":
 								{
+									"1":
+									[
+										0,
+										5
+									]
 								}
 							},
 							"bracket_highlighter.regions":
@@ -2428,10 +2439,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 10063.0,
+						"translation.y": 1301.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -2440,15 +2451,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8210,
+						"buffer_size": 8348,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7913,
-								7913
+								510,
+								510
 							]
 						],
 						"settings":
@@ -2460,8 +2471,8 @@
 								{
 									"1":
 									[
-										8202,
-										8205
+										525,
+										528
 									]
 								},
 								"icon":
@@ -2476,8 +2487,8 @@
 								{
 									"1":
 									[
-										7879,
-										7882
+										327,
+										330
 									]
 								},
 								"unmatched":
@@ -2546,154 +2557,29 @@
 							"syntax": "Packages/User/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 6349.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 715,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										196,
-										209
-									],
-									[
-										363,
-										376
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								52,
-								52
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-								},
-								"icon":
-								{
-								},
-								"open":
-								{
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"rainbowth.lispy": false,
-							"result_base_dir": "",
-							"result_file_regex": "^([^ \t].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 8,
 					"file": "lib/instancing_buffer.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3210,
+						"buffer_size": 3784,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2527,
-								2527
+								3267,
+								3267
 							]
 						],
 						"settings":
@@ -2705,24 +2591,24 @@
 								{
 									"1":
 									[
-										2524,
-										2527
+										3266,
+										3267
 									]
 								},
 								"icon":
 								{
 									"1":
 									[
-										"Packages/BracketHighlighter/icons/dot.png",
-										"region.yellowish brackethighlighter.default"
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
 									]
 								},
 								"open":
 								{
 									"1":
 									[
-										787,
-										790
+										3220,
+										3221
 									]
 								},
 								"unmatched":
@@ -2793,27 +2679,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1730.0,
+						"translation.y": 837.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "bin/glsl/phong.frag",
+					"buffer": 9,
+					"file": "bin/glsl/phong_instanced.vert",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12804,
+						"buffer_size": 5764,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8304,
-								8304
+								5091,
+								5091
 							]
 						],
 						"settings":
@@ -2823,12 +2709,27 @@
 							{
 								"close":
 								{
+									"1":
+									[
+										5762,
+										5763
+									]
 								},
 								"icon":
 								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
 								},
 								"open":
 								{
+									"1":
+									[
+										2049,
+										2050
+									]
 								},
 								"unmatched":
 								{
@@ -2898,14 +2799,254 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6346.0,
+						"translation.y": 4371.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "bin/glsl/phong.vert",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1086,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								936,
+								936
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										968,
+										969
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										922,
+										923
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
 					"buffer": 11,
+					"file": "bin/glsl/phong.frag",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12804,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8589,
+								8589
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										8588,
+										8589
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										8340,
+										8341
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 6718.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
 					"file": "bin/glsl/alpha_composite.frag",
 					"semi_transient": false,
 					"settings":
@@ -3006,11 +3147,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 13,
 					"semi_transient": false,
 					"settings":
 					{
@@ -3109,11 +3250,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 38,
+					"stack_index": 39,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "ext/c_extension/ofxDynamicMaterial.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3229,11 +3370,11 @@
 						"translation.y": 8178.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "ext/c_extension/ofxDynamicMaterial.h",
 					"semi_transient": false,
 					"settings":
@@ -3348,11 +3489,11 @@
 						"translation.y": 11.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"semi_transient": false,
 					"settings":
 					{
@@ -3378,11 +3519,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "lib/entities/blender_light.rb",
 					"semi_transient": false,
 					"settings":
@@ -3498,11 +3639,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
 					"file": "lib/entities/blender_object.rb",
 					"semi_transient": false,
 					"settings":
@@ -3618,11 +3759,11 @@
 						"translation.y": 186.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 19,
 					"file": "lib/entities/blender_mesh.rb",
 					"semi_transient": false,
 					"settings":
@@ -3634,8 +3775,8 @@
 						"selection":
 						[
 							[
-								4198,
-								4198
+								4202,
+								4202
 							]
 						],
 						"settings":
@@ -3735,14 +3876,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3993.0,
+						"translation.y": 4029.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 20,
 					"file": "lib/entities/blender_material.rb",
 					"semi_transient": false,
 					"settings":
@@ -3856,11 +3997,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 21,
 					"file": "lib/entities/viewport_camera.rb",
 					"semi_transient": false,
 					"settings":
@@ -3976,11 +4117,11 @@
 						"translation.y": 93.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 22,
 					"semi_transient": false,
 					"settings":
 					{
@@ -4079,11 +4220,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 36,
+					"stack_index": 37,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 23,
 					"file": "lib/core.rb",
 					"semi_transient": false,
 					"settings":
@@ -4199,11 +4340,11 @@
 						"translation.y": 13231.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 24,
 					"semi_transient": false,
 					"settings":
 					{
@@ -4229,11 +4370,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 37,
+					"stack_index": 38,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 25,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/rubyOF.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4338,11 +4479,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 28,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 26,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4354,8 +4495,8 @@
 						"selection":
 						[
 							[
-								18842,
-								18842
+								5954,
+								5954
 							]
 						],
 						"settings":
@@ -4367,24 +4508,24 @@
 								{
 									"1":
 									[
-										18849,
-										18850
+										6007,
+										6008
 									]
 								},
 								"icon":
 								{
 									"1":
 									[
-										"Packages/BracketHighlighter/icons/round_bracket.png",
-										"region.yellowish"
+										"Packages/BracketHighlighter/icons/curly_bracket.png",
+										"region.purplish"
 									]
 								},
 								"open":
 								{
 									"1":
 									[
-										18799,
-										18800
+										5827,
+										5828
 									]
 								},
 								"unmatched":
@@ -4455,14 +4596,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 21167.0,
+						"translation.y": 7749.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 26,
+					"buffer": 27,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4577,11 +4718,11 @@
 						"translation.y": 8054.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 27,
+					"buffer": 28,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Fbo.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4696,11 +4837,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 28,
+					"buffer": 29,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4815,11 +4956,11 @@
 						"translation.y": 9831.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 29,
+					"buffer": 30,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofFbo.h",
 					"semi_transient": false,
 					"settings":
@@ -4933,24 +5074,24 @@
 						"translation.y": 125.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 27,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 30,
+					"buffer": 31,
 					"file": "/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12164,
+						"buffer_size": 12884,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11074,
-								11074
+								2670,
+								2670
 							]
 						],
 						"settings":
@@ -4962,24 +5103,24 @@
 								{
 									"1":
 									[
-										11468,
-										11469
+										2672,
+										2675
 									]
 								},
 								"icon":
 								{
 									"1":
 									[
-										"Packages/BracketHighlighter/icons/curly_bracket.png",
-										"region.purplish"
+										"Packages/BracketHighlighter/icons/dot.png",
+										"region.yellowish brackethighlighter.default"
 									]
 								},
 								"open":
 								{
 									"1":
 									[
-										11014,
-										11015
+										1106,
+										1112
 									]
 								},
 								"unmatched":
@@ -4988,11 +5129,21 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -5003,60 +5154,50 @@
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
 							],
 							"rainbowth.lispy": false,
 							"syntax": "Packages/User/Ruby.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 16548.0,
+						"translation.y": 3718.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 31,
+					"buffer": 32,
 					"file": "/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/launcher.cpp",
 					"semi_transient": false,
 					"settings":
@@ -5161,11 +5302,11 @@
 						"translation.y": 1116.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 35,
+					"stack_index": 36,
 					"type": "text"
 				},
 				{
-					"buffer": 32,
+					"buffer": 33,
 					"semi_transient": false,
 					"settings":
 					{
@@ -5264,11 +5405,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 34,
+					"stack_index": 35,
 					"type": "text"
 				},
 				{
-					"buffer": 33,
+					"buffer": 34,
 					"file": "Gemfile",
 					"semi_transient": false,
 					"settings":
@@ -5367,11 +5508,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 30,
 					"type": "text"
 				},
 				{
-					"buffer": 34,
+					"buffer": 35,
 					"file": "/home/ravenskrag/Desktop/gem_structure/Gemfile",
 					"semi_transient": false,
 					"settings":
@@ -5470,11 +5611,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 30,
+					"stack_index": 31,
 					"type": "text"
 				},
 				{
-					"buffer": 35,
+					"buffer": 36,
 					"file": "/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl.rb",
 					"semi_transient": false,
 					"settings":
@@ -5575,11 +5716,11 @@
 						"translation.y": 837.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 31,
+					"stack_index": 32,
 					"type": "text"
 				},
 				{
-					"buffer": 36,
+					"buffer": 37,
 					"file": "/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/test_case.rb",
 					"semi_transient": false,
 					"settings":
@@ -5680,11 +5821,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 33,
+					"stack_index": 34,
 					"type": "text"
 				},
 				{
-					"buffer": 37,
+					"buffer": 38,
 					"file": "/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/gl.rb",
 					"semi_transient": false,
 					"settings":
@@ -5783,11 +5924,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 32,
+					"stack_index": 33,
 					"type": "text"
 				},
 				{
-					"buffer": 38,
+					"buffer": 39,
 					"file": "/home/ravenskrag/Desktop/gem_structure/profiler.callgrind",
 					"semi_transient": true,
 					"settings":
@@ -5886,7 +6027,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 27,
 					"type": "text"
 				}
 			]

@@ -557,14 +557,13 @@ class DependencyGraph
     data_hash = {
       'viewport_camera' => @viewport_camera,
       
-      'lights' => @lights,
-      'light_material' => @light_material,
+      'lights'          => @lights,
+      'light_material'  => @light_material,
       
-      'mesh_objects'    => @mesh_objects,
       'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
       'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
-      
-      'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
+      'mesh_objects'    => @mesh_objects,
+      # 'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
     
@@ -578,30 +577,13 @@ class DependencyGraph
   end
   
   def init_with(coder)
-    # initialize()
+    initialize()
     
-    # @viewport_camera = ViewportCamera.new
+    @viewport_camera = coder.map['viewport_camera']
     
-    @cameras = Hash.new
-    
-    
-    @lights = Array.new
-    # @light_material = RubyOF::Material.new
-    
-    @mesh_objects    = Hash.new # {name => mesh }
-    
-    @batches   = Hash.new  # single entities and instanced copies go here
-                           # grouped by the mesh they use
+    @light_material  = coder.map['light_material']
     
     
-    
-    
-    
-    
-    
-    
-      @light_material = RubyOF::Material.new
-      
     
     # all batches using GPU instancing are forced to refresh position on load
     @batches = Hash.new
