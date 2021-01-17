@@ -73,7 +73,7 @@ class BlenderSync
     puts "fifo closed"
   end
   
-  def update    
+  def update
     update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     [MAX_READS, @msg_queue.length].min.times do

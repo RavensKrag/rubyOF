@@ -249,9 +249,10 @@ class Core
       # dt = t1-t0
       # puts "file load time: #{dt / 1000} ms"
       
+      @sync.stop
+      
       @depsgraph = YAML.load_file @world_save_file
       
-      @sync.stop
       @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
       puts "load complete!"
       

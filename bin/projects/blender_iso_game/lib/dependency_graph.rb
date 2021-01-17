@@ -563,7 +563,7 @@ class DependencyGraph
       
       'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
       'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
-      'mesh_objects'    => @mesh_objects.values,
+      'mesh_objects'    => @mesh_objects, # {name => mesh }
       # 'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
@@ -586,11 +586,12 @@ class DependencyGraph
     
     
     
-    puts "loading #{coder.map['mesh_objects'].size} entities"
-    coder.map['mesh_objects'].each do |entity|
-      # entity.dirty = true
+    puts "loading #{coder.map['mesh_objects'].values.size} entities"
+    
+    coder.map['mesh_objects'].each do |name, entity|
+      p [entity.name, entity.mesh.name, entity.material.name]
       
-      # self.add entity
+      self.add entity
     end
   end
   

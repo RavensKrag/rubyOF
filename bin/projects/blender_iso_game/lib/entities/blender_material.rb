@@ -30,13 +30,13 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
   end
   
   def init_with(coder)
-    initialize(coder.map['name'])
+    initialize(coder['name'])
     
-    self.ambient_color  = coder.map['ambient_color']
-    self.diffuse_color  = coder.map['diffuse_color']
-    self.specular_color = coder.map['specular_color']
-    self.emissive_color = coder.map['emissive_color']
-    self.shininess      = coder.map['shininess']
+    self.ambient_color  = coder['ambient_color']
+    self.diffuse_color  = coder['diffuse_color']
+    self.specular_color = coder['specular_color']
+    self.emissive_color = coder['emissive_color']
+    self.shininess      = coder['shininess']
     
   end
 end
