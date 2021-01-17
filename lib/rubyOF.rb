@@ -62,6 +62,7 @@ base_path = lib_dir/'rubyOF'
 	'mesh',
 	'fbo',
 	'shader',
+	'node',
 	
 	
 	'window',
