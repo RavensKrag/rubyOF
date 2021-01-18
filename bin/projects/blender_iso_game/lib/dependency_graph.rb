@@ -394,6 +394,8 @@ class DependencyGraph
   end
   
   
+  
+  
   # DependencyGraph#add(o) returns self
   # comparison with other collections in Ruby:
   #   Array#<<(o) returns self
@@ -460,6 +462,14 @@ class DependencyGraph
     
     
     return self
+  end
+  
+  # reset everything back to the default condition
+  def clear
+    # @lights.each{ |light|  light.disable() }
+    
+    # initialize()
+    gc(active: [])
   end
   
   

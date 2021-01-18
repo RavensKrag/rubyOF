@@ -2,9 +2,10 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph)
+  def initialize(window, depsgraph, history)
     @window = window
     @depsgraph = depsgraph
+    @history = history
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -74,7 +75,7 @@ class BlenderSync
   end
   
   def update
-    update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     [MAX_READS, @msg_queue.length].min.times do
       data_string = @msg_queue.pop
@@ -93,15 +94,24 @@ class BlenderSync
       puts "time - parse json: #{dt}"
       
       
-      
-      # TODO: need to send over type info instead of just the object name, but this works for now
-      parse_blender_data(blender_data)
+      # send all of this data to history
+      @history.write(blender_data)
       
     end
     
-    update_t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = update_t1 - update_t0
-    puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
+    # retrieve the relevant slice of history
+    # (might be the things we just processed, or might be a replay of the past)
+    @history.read&.tap do |blender_data|
+      # TODO: need to send over type info instead of just the object name, but this works for now
+      parse_blender_data(blender_data)
+    end
+    
+    
+    
+    
+    # update_t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # dt = update_t1 - update_t0
+    # puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
   end
   
@@ -109,7 +119,7 @@ class BlenderSync
   # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(blender_data)
     
-    t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     # data = {
     #     'timestamps' : {
@@ -126,7 +136,7 @@ class BlenderSync
     
     if blender_data['interrupt'] == 'RESET '
       # blender has reset, so reset all RubyOF data
-      @depsgraph.gc(active: [])
+      @depsgraph.clear
       
       return
     end
@@ -225,8 +235,10 @@ class BlenderSync
             
             object_list
             .select{|o| o['type'] == 'LIGHT' }
-            .find{  |o| o['data'] == data['light_name'] }
+            .find{  |o| o['name'] == data['light_name'] }
             .tap{   |o| o['data'] = data }
+            # links data even if data field is already set
+            # (the data stored in history seems to already be linked, but I'm not sure how that happens)
             
           end
           
@@ -330,7 +342,7 @@ class BlenderSync
         
     # Hash mapping {mesh object name => material name}
     material_map = blender_data['material_map']
-    p material_map
+    # p material_map
     
     
     
@@ -437,10 +449,10 @@ class BlenderSync
     
     
     
-    t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    dt = t1-t0;
-    puts "time - parse data: #{dt} us"
+    # dt = t1-t0;
+    # puts "time - parse data: #{dt} us"
     
     
     # process this last for proper timing

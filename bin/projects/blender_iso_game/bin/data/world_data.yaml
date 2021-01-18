@@ -4,15 +4,15 @@ viewport_camera: !ruby/object:ViewportCamera
   view_perspective: PERSP
   rotation:
   - Quat
-  - -0.7578586339950562
-  - -0.4737035036087036
-  - -0.2838613986968994
-  - -0.3473869264125824
+  - -0.7709442377090454
+  - -0.5020962953567505
+  - -0.23502513766288757
+  - -0.31354010105133057
   position:
   - Vec3
-  - 17.00957679748535
-  - -17.90564727783203
-  - 9.446343421936035
+  - 29.12013053894043
+  - -33.00994110107422
+  - 17.909399032592773
   fov:
   - deg
   - 43.253168001516435
@@ -1818,7 +1818,7 @@ mesh_objects:
     name: Cube.004
     mesh_data: *8
     material: *2
-    transform: AACAPwAAAAAAAAAAAAAAAAAAwEAAAEDAAAAAAAAAgD8AAIA/AACAPw==
+    transform: AACAPwAAAAAAAAAAAAAAAAAAoEAAAEDAAAAAAAAAgD8AAIA/AACAPw==
   CubeInstance.001: !ruby/object:BlenderMesh
     type: MESH
     name: CubeInstance.001
