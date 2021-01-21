@@ -433,6 +433,10 @@ class BlenderSync
             end
           
           light.disable()
+          # ^ this call is messing up everything
+          # ... I think? may need more testing to be sure of this
+          # the first blacked-out call is very reproducible
+          # but whatever happens downstream of that is chaotic
           
           data['transform']&.tap do |transform_data|
             light.load_transform(transform_data)
@@ -441,6 +445,8 @@ class BlenderSync
           data['data']&.tap do |core_data|
             light.load_data(core_data)
           end
+          
+          light.enable()
         end
         
       end

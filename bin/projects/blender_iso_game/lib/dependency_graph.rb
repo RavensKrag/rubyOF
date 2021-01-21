@@ -467,9 +467,18 @@ class DependencyGraph
   # reset everything back to the default condition
   def clear
     # @lights.each{ |light|  light.disable() }
+    # lights = @lights
     
-    # initialize()
-    gc(active: [])
+    initialize()
+    
+    # @lights = lights
+    
+    # ^ If you just copy the lights over, then everything reloads fine
+    #   but I think I want to re-load the lights too, so I need to
+    #   figure out why the lights are not reloading as expected
+    
+    
+    # gc(active: [])
   end
   
   

@@ -87,6 +87,11 @@ class History
       @diff.delete('interrupt')
     end
     
+    # also remove the timestamps
+    if @diff.has_key? 'timestamps'
+      @diff.delete('timestamps')
+    end
+    
     
     File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'w') do |f|
       f.puts JSON.pretty_generate @diff
