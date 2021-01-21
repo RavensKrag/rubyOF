@@ -38,6 +38,7 @@ def usec(time)
   (time).to_i
 end
 
+load LIB_DIR/'patches'/'cpp_callbacks.rb'
 
 load LIB_DIR/'entities'/'blender_material.rb'
 load LIB_DIR/'entities'/'blender_object.rb'
@@ -47,8 +48,59 @@ load LIB_DIR/'entities'/'blender_light.rb'
 
 load LIB_DIR/'instancing_buffer.rb'
 
+load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
+
+
+class History
+  def initialize
+    @@empty ||= {}.freeze
+    
+    @data = @@empty
+    @diff = @@empty
+  end
+  
+  def write(data)
+    @diff = @diff.merge data # merge with existing diff
+    
+    return self
+  end
+  
+  def read
+    @data = @data.merge @diff
+    
+    out = @diff
+    @diff = @@empty # or equivalent empty collection
+    
+    return out
+  end
+  
+  def on_reload
+    # new diff must progress from nothing to current point
+    # in order to fully restore the state
+    @diff = @data.merge @diff
+    
+    # merge data with existing diff
+    # but ignore the interrupt commands
+    if @diff.has_key? 'interrupt'
+      @diff.delete('interrupt')
+    end
+    
+    # also remove the timestamps
+    if @diff.has_key? 'timestamps'
+      @diff.delete('timestamps')
+    end
+    
+    
+    File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'w') do |f|
+      f.puts JSON.pretty_generate @diff
+    end
+    
+    
+    return self
+  end
+end
 
 
 class Core
@@ -62,7 +114,7 @@ class Core
     puts "core: setup"
     
     ofBackground(200, 200, 200, 255)
-    ofEnableBlendMode(:alpha)
+    # ofEnableBlendMode(:alpha)
     
     
     @draw_durations = Array.new # stores profiler data for #draw
@@ -74,7 +126,7 @@ class Core
     
     
     @midi_msg_memory = SequenceMemory.new
-    @input_handler = InputHandler.new
+    # @input_handler = InputHandler.new
     
     
     
@@ -134,9 +186,9 @@ class Core
     
     
     
-    
+    @history = History.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph)
+    @sync = BlenderSync.new(@w, @depsgraph, @history)
     
     
     
@@ -188,17 +240,32 @@ class Core
       # to prevent discontinuities. Otherwise, you would
       # need to manually refresh the Blender viewport
       # just to see the same state that you had before reload.
-      save_world_state()
+      # save_world_state()
     end
     
     @crash_detected = false
     
     @update_scheduler = nil
     
-    setup()
+    # setup()
+      # @history = History.new
+      # @depsgraph = DependencyGraph.new
+      
+      puts "clearing"
+      @depsgraph.clear
+      
+      puts "reloading history"
+      @history.on_reload
+      
+      puts "start up sync"
+      @sync = BlenderSync.new(@w, @depsgraph, @history)
+      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
+      
+      puts "reload complete"
     
     
-    load_world_state()
+    
+    # load_world_state()
   end
   
   # always run on exit, with or without exception
@@ -227,13 +294,11 @@ class Core
     
     # RubyProf.start
     
-    # dump_yaml @depsgraph => @world_save_file
-    # puts "world saved!"
+    dump_yaml @depsgraph => @world_save_file
+    puts "world saved!"
   end
   
   def load_world_state
-    return false
-    
     if @world_save_file.exist?
       puts "loading 3D graphics data..."
       
@@ -249,9 +314,10 @@ class Core
       # dt = t1-t0
       # puts "file load time: #{dt / 1000} ms"
       
+      @sync.stop
+      
       @depsgraph = YAML.load_file @world_save_file
       
-      @sync.stop
       @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
       puts "load complete!"
       
@@ -305,29 +371,6 @@ class Core
       # load_world_state
       
       @first_update = false
-    end
-    
-    
-    if @debugging
-      
-      # scheduler.section name: "debug setup", budget: msec(0.5)
-      # @debug_mode ||= DebugDisplayClipping.new
-      
-      # scheduler.section name: "debug run", budget: msec(1.0)
-      
-      # @debug_mode.update
-      
-      
-      scheduler.section name: "profiler init", budget: msec(1)
-      puts "profiler" if Scheduler::DEBUG
-      
-      @main_modes[1] ||= ProfilerState.new(@update_scheduler, @draw_durations)
-      
-      
-      scheduler.section name: "profiler run", budget: msec(4)
-      
-      @main_modes[1].update(@whole_iter_dt)
-      
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -415,7 +458,78 @@ class Core
       
     end
     
-    @depsgraph.draw
+    
+    # 
+    # draw the scene
+    # 
+    @depsgraph.draw(@w)
+    
+    
+    # 
+    # draw UI
+    # 
+    p1 = CP::Vec2.new(500,500)
+    @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
+    
+    
+    
+    p2 = CP::Vec2.new(500,600)
+    if @mouse_pos
+      
+      @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
+    end
+    
+    
+    line_height = 35
+    p3 = CP::Vec2.new(500,650)
+    str_out = []
+    @depsgraph.batches.tap do |batches|
+      
+      
+        data = [
+          "i".rjust(3),
+          "mesh".ljust(10), # BlenderMeshData
+          
+          "mat".ljust(15), # BlenderMaterial
+          # ^ use #inspect to visualize empty string
+          
+          "batch size" # RenderBatch
+          
+        ].join('| ')
+        
+        str_out << "#{data}"
+      
+      batches.each_with_index do |batch_line, i|
+        a,b,c = batch_line
+        # data = [
+        #   a.class.to_s.each_char.first(20).join(''),
+        #   b.class.to_s.each_char.first(20).join(''),
+        #   c.class.to_s.each_char.first(20).join('')
+        # ].join(', ')
+        
+        
+        data = [
+          "#{i}".rjust(3),
+          a.name.ljust(10), # BlenderMeshData
+          
+          b.name.inspect.ljust(15), # BlenderMaterial
+          # ^ use #inspect to visualize empty string
+          
+          c.size.to_s # RenderBatch
+          
+        ].join('| ')
+        
+        
+        
+        str_out << "#{data}"
+      end
+      
+    end
+    
+    str_out.each_with_index do |line, i|
+      @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
+    end
+    
     
   end
   
@@ -424,11 +538,11 @@ class Core
   
   
   def key_pressed(key)
-    @input_handler.key_pressed(key)
+    # @input_handler.key_pressed(key)
   end
   
   def key_released(key)
-    @input_handler.key_released(key)
+    # @input_handler.key_released(key)
   end
   
   
@@ -438,6 +552,7 @@ class Core
   # 
   
   def mouse_moved(x,y)
+    @mouse_pos = CP::Vec2.new(x,y)
     # p "mouse position: #{[x,y]}.inspect"
   end
   

@@ -172,8 +172,17 @@ bool shader_load(ofShader &shader, Rice::Array args){
       Rice::Object x = args[0];
       std::string path = from_ruby<std::string>(x);
       return shader.load(path);
-   }else if(args.size() == 2 || args.size() == 3){
+      
+   }else if(args.size() == 2){
+      std::string vert_shader = from_ruby<std::string>(args[0]);
+      std::string frag_shader = from_ruby<std::string>(args[1]);
+      
+      return shader.load(vert_shader, frag_shader, "");
+      
+   }else if(args.size() == 3){
+      // shader.load(vert_shader, frag_shader, geom_shader);
       return false;
+      
    }
    
    return false;
@@ -577,6 +586,10 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("setTextureMinMagFilter__cpp",
          &ofTexture_setTextureMinMagFilter__cpp)
+      
+      
+      .define_method("width",  &ofTexture::getWidth)
+      .define_method("height", &ofTexture::getHeight)
    ;
    
    
@@ -592,7 +605,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("end",   &ofShader::end)
       
       
-      .define_method("load",  &shader_load)
+      .define_method("load_shaders__cpp",  &shader_load)
       // either 1 string if the fragment shaders have the same name
       //    i.e. "dof.vert" and "dof.frag"
       // or up to 3 strings if the shaders have different names
@@ -673,7 +686,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("emissive_color=",   &ofMaterial__setEmissiveColor)
       .define_method("shininess=",        &ofMaterial::setShininess)
       
-      .define_method("ambient_color",     &ofMaterial::setAmbientColor)
+      .define_method("ambient_color",     &ofMaterial::getAmbientColor)
       .define_method("diffuse_color",     &ofMaterial::getDiffuseColor)
       .define_method("specular_color",    &ofMaterial::getSpecularColor)
       .define_method("emissive_color",    &ofMaterial::getEmissiveColor)

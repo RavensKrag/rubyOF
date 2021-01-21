@@ -1,4 +1,3 @@
-static const string vertexShader = R"(
 OUT vec2 v_texcoord; // pass the texCoord if needed
 OUT vec3 v_transformedNormal;
 OUT vec3 v_normal;
@@ -38,4 +37,3 @@ void main (void){
     #endif
     gl_Position = modelViewProjectionMatrix * position;
 }
-)";

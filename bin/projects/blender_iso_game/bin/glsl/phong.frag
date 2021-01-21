@@ -8,7 +8,7 @@
     IN vec4 v_color;
 #endif
 
-
+#define TRANSPARENT_PASS 1
     struct lightData
     {
         float enabled;
@@ -206,7 +206,21 @@
 
 
     %postFragment%
-
+    
+    
+    float w(in float z, in float a){
+        // z = abs(z);
+        // if(z<1e-5){
+        //     z = 1;
+        // }
+        // float accum = pow(z,3);
+        // return 1/accum;
+        
+        
+        return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
+    }
+    
+    
     //////////////////////////////////////////////////////
     // here's the main method
     //////////////////////////////////////////////////////
@@ -243,9 +257,73 @@
         #elif HAS_COLOR
             vec4 localColor = vec4(ambient,1.0) * v_color + vec4(diffuse,1.0) * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
         #else
-            vec4 localColor = vec4(ambient,1.0) * mat_ambient + vec4(diffuse,1.0) * mat_diffuse + vec4(specular,1.0) * mat_specular + mat_emissive;
+            vec4 localColor = 
+                vec4(ambient, 1.0) * mat_ambient  + 
+                vec4(diffuse, 1.0) * mat_diffuse  + 
+                vec4(specular,1.0) * mat_specular + 
+                                     mat_emissive;
+            
         #endif
-        FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         
-        // FRAG_COLOR = vec4(1,0,0,1);
+        // FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
+        
+        // FRAG_COLOR = vec4(1,0,0,0.5);
+        // ^ alpha blending works, but alpha is not correctly being applied to to the objects
+        
+        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, v_color.a);
+        //     // "v_color undeclared" ??? then how is there any color at all???
+        
+        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, mat_diffuse.a);
+        
+        
+        // TODO: call clamp later
+        // TODO: make sure zi and ai variables get set
+        
+        // HDR-style : will clamp in the final compositing phase later
+        
+        // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
+        
+        // #if TRANSPARENT_PASS
+        if(mat_diffuse.a != 1){
+            // ---transparent pass---
+            
+            float ai = mat_diffuse.a; // no alpha map, so all fragments have same alpha
+            float zi = v_eyePosition.z; // relative to the camera
+            
+            
+            
+            // trivial write to test things:
+            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
+            // gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
+            
+            
+            // gl_FragData[0] = localColor;
+            // gl_FragData[1] = localColor;
+            
+            
+            gl_FragData[0] = vec4(localColor.rgb, ai);
+            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+            gl_FragData[1] = vec4(ai);
+            
+            
+            // gl_FragData[0] = vec4(vec3(1,1,1), (abs(zi)*0.04));
+            // gl_FragData[0] = vec4(1,1,1,1);
+        }else{
+        // #else
+        
+            // ---opaque pass---
+            
+            // gl_FragColor = localColor;
+            
+            
+            
+            // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
+            
+            gl_FragData[0] = localColor;
+            
+            
+            
+        // #endif
+        
+        }
     }

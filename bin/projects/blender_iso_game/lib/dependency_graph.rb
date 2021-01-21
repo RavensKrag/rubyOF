@@ -1,4 +1,8 @@
 class DependencyGraph
+  
+  COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
+  COLOR_ONE  = RubyOF::FloatColor.rgba([1,1,1,1])
+  
   def initialize()
     
     @viewport_camera = ViewportCamera.new
@@ -54,6 +58,8 @@ class DependencyGraph
       #   [entity.mesh, entity.material,  RenderBatch.new]
       # ]
     
+    
+    
   end
   
   # 
@@ -61,138 +67,305 @@ class DependencyGraph
   # 
   
   include RubyOF::Graphics
-  def draw
-    # puts ">>>>> batches: #{@batches.keys.size}"
-    
-    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+  include Gl
+  def draw(window)
     
     @batches.each do |mesh, mat, batch|
       # puts "batch id #{batch.__id__}"
       batch.update
     end
     
-    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    # dt = t1-t0
-    # puts "time - batch update: #{dt.to_f / 1000} ms"
+    # ofEnableAlphaBlending()
+    # # ^ doesn't seem to do anything, at least not right now
     
-    
-    # RubyOF::FloatColor.rgb([5, 1, 1]).tap do |c|
-    #   print "color test => "
-    #   puts c
-    #   print "\n"
-    # end
+    # ofEnableBlendMode(:alpha)
     
     
     
-    # ========================
-    # render begin
-    # ------------------------
-    begin
-      setup_lights_and_camera()
+    # 
+    # parameters
+    # 
+    
+    accumTex_i     = 0
+    revealageTex_i = 1
+    
+    
+    # 
+    # setup
+    # 
+    
+    settings = 
+      RubyOF::Fbo::Settings.new.tap do |s|
+        s.width  = window.width
+        s.height = window.height
+        s.internalformat = GL_RGBA32F_ARB;
+        # s.numSamples     = 0; # no multisampling
+        s.useDepth       = true;
+        s.useStencil     = false;
+        s.depthStencilAsTexture = true;
+        
+        s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+        
+        @main_fbo ||= 
+          RubyOF::Fbo.new.tap do |fbo|
+            s.clone.tap{ |s|
+              
+              s.numColorbuffers = 1;
+              
+            }.yield_self{ |s| fbo.allocate(s) }
+          end
+        
+        @transparency_fbo ||= 
+          RubyOF::Fbo.new.tap do |fbo|
+            s.clone.tap{ |s|
+              
+              s.numColorbuffers = 2;
+              
+            }.yield_self{ |s| fbo.allocate(s) }
+          end
+        
+      end
+    
+    @compositing_shader ||= RubyOF::Shader.new
+    
+    
+    if @tex0.nil?
+      @tex0 = @transparency_fbo.getTexture(accumTex_i)
+      @tex1 = @transparency_fbo.getTexture(revealageTex_i)
       
-      render_scene()
-      
-    
-    # clean up lights and camera whether there is an exception or not
-    # but if there's an exception, you need to re-raise it
-    # (can't just use 'ensure' here)
-    rescue Exception => e 
-      finish_lights_and_camera()
-      raise e
-      
-    else
-      finish_lights_and_camera()
-      
+      @fullscreen_quad = 
+        @tex0.yield_self{ |texure|
+          RubyOF::CPP_Callbacks.textureToMesh(texure, GLM::Vec3.new(0,0,0))
+        }
     end
-    # ------------------------
-    # render end
-    # ========================
+    
+    
+    # 
+    # update
+    # 
+    
+    
+    (PROJECT_DIR/'bin'/'glsl').tap do |shader_src_dir|
+      @compositing_shader.live_load_glsl(
+        shader_src_dir/'alpha_composite.vert',
+        shader_src_dir/'alpha_composite.frag'
+      ) do
+        puts "alpha compositing shaders reloaded"
+      end
+    end
+    
+    
+    
+    # ---------------
+    #   world space
+    # ---------------
+    
+    
+    # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
+      # Paper assumes transparency encodes occlusion and demonstrates
+      # how OIT works with colored smoke and clear glass.
+      # 
+      # Follow-up paper in 2016 demonstrates improvements,
+      # including work with colored glass.
+    
+    
+    ofEnableDepthTest()
+    
+    opaque, transparent = 
+      @batches.partition do |mesh, mat, batch|
+        mat.diffuse_color.a == 1
+      end
+    
+    
+    using_framebuffer @main_fbo do |fbo|
+      # NOTE: must bind the FBO before you clear it in this way
+      fbo.clearDepthBuffer(1.0) # default is 1.0
+      fbo.clearColorBuffer(0, COLOR_ZERO)
+      
+      lights_and_camera do
+        opaque.each{|mesh, mat, batch|  batch.draw }
+        
+        visualize_lights()
+      end
+    end
+    
+    
+    blit_framebuffer :depth_buffer, @main_fbo => @transparency_fbo
+    # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+    
+    
+    using_framebuffer @transparency_fbo do |fbo|
+      # NOTE: must bind the FBO before you clear it in this way
+      fbo.clearColorBuffer(accumTex_i,     COLOR_ZERO)
+      fbo.clearColorBuffer(revealageTex_i, COLOR_ONE)
+      
+      RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+      
+      lights_and_camera do
+        transparent.each{|mesh, mat, batch|  batch.draw }
+      end
+      
+      RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()      
+    end
+    
+    ofDisableDepthTest()
+    
+    
+    # ----------------
+    #   screen space
+    # ----------------
+    
+    
+    # RubyOF::CPP_Callbacks.clearDepthBuffer()
+    # RubyOF::CPP_Callbacks.depthMask(true)
+    
+    # ofEnableBlendMode(:alpha)
+    
+    @main_fbo.draw(0,0)
+    
+    
+    RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+    
+    using_shader @compositing_shader do
+      using_textures @tex0, @tex1 do
+        @fullscreen_quad.draw()
+      end
+    end
+    # draw_fbo_to_screen(@transparency_fbo, accumTex_i, revealageTex_i)
+    # @transparency_fbo.draw(0,0)
+    
+    RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+    
+    
   end
   
+  
+  private
+    
+    def blit_framebuffer(buffer_name, hash={})
+      src = hash.keys.first
+      dst = hash.values.first
+      
+      buffer_flag = 
+        case buffer_name
+        when :color_buffer
+          0b01
+        when :depth_buffer
+          0b10
+        when :both
+          0b11
+        else
+          0x00
+        end
+      
+      RubyOF::CPP_Callbacks.copyFramebufferByBlit__cpp(
+        src, dst, buffer_flag
+      )
+    end
+    
+    def lights_and_camera # &block
+      exception = nil
+      
+      begin
+        # camera begin
+        @viewport_camera.begin
+        
+        # setup GL state
+        # ofEnableDepthTest()
+        ofEnableLighting() # // enable lighting //
+        
+        
+        # enable lights
+          # the position of the light must be updated every frame,
+          # call enable() so that it can update itself
+        @lights.each{ |light|  light.enable() }
+        
+        
+        # (world space rendering block)
+        yield
+        
+        
+      rescue Exception => e 
+        exception = e # supress exception so we can exit cleanly first
+      ensure
+        # disable lights
+          # // turn off lighting //
+        @lights.each{ |light|  light.disable() }
+        
+        # teardown GL state
+        ofDisableLighting()
+        # ofDisableDepthTest()
+        
+        # camera end
+        @viewport_camera.end
+        
+        # after cleaning up, now throw the exception if needed
+        unless exception.nil?
+          raise exception
+        end
+        
+      end
+    end
+    
+    # render colored spheres to represent lights
+    def visualize_lights
+      @lights.each do |light|
+        light_pos   = light.position
+        light_color = light.diffuse_color
+        
+        @light_material.tap do |mat|
+          mat.emissive_color = light_color
+          
+          mat.begin()
+          ofPushMatrix()
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+          ofPopMatrix()
+          mat.end()
+        end
+      end
+    end
+    
+    # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
+    def using_framebuffer fbo # &block
+      fbo.begin
+        fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
+        # ofEnableDepthTest()
+        
+        
+        # glDepthMask(GL_FALSE)
+        # glEnable(GL_BLEND)
+        # glBlendFunci(0, GL_ONE, GL_ONE) # summation
+        # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
+        # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+        
+          yield fbo
+        
+        # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
+        
+        # ofDisableDepthTest()
+      fbo.end
+    end
+    
+    # void ofFbo::updateTexture(int attachmentPoint)
+    
+      # Explicitly resolve MSAA render buffers into textures
+      # \note if using MSAA, we will have rendered into a colorbuffer, not directly into the texture call this to blit from the colorbuffer into the texture so we can use the results for rendering, or input to a shader etc.
+      # \note This will get called implicitly upon getTexture();
+    
+  
+  public
+  
+  
+  def batches
+    @batches
+  end
   
   # def pack_entities
   #   @entities.to_a.collect{ |key, val|
   #     val.data_dump
   #   }
   # end
-  
-  
-  private
-  
-  
-  def setup_lights_and_camera
-    # camera begin
-    @viewport_camera.begin
-    # 
-    # setup GL state
-    # 
-    
-    ofEnableDepthTest()
-    ofEnableLighting() # // enable lighting //
-    
-    # 
-    # enable lights
-    # 
-    
-    # the position of the light must be updated every frame,
-    # call enable() so that it can update itself
-    @lights.each{ |light|  light.enable() }
-  end
-  
-  def render_scene
-    # 
-    # render entities
-    # 
-    
-    
-    # render by batches
-    # (RenderBatch automatically uses GPU instancing when necessary)
-    @batches.each{|mesh, mat, batch|  batch.draw }
-    
-    # 
-    # render the sphere that represents the light
-    # 
-    
-    @lights.each do |light|
-      light_pos   = light.position
-      light_color = light.diffuse_color
-      
-      @light_material.tap do |mat|
-        mat.emissive_color = light_color
-        
-        
-        mat.begin()
-        ofPushMatrix()
-          ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-        ofPopMatrix()
-        mat.end()
-      end
-    end
-  end
-  
-  def finish_lights_and_camera
-    # 
-    # disable lights
-    # 
-    
-    # // turn off lighting //
-    @lights.each{ |light|  light.disable() }
-    
-    
-    # 
-    # teardown GL state
-    # 
-    
-    ofDisableLighting()
-    ofDisableDepthTest()
-    
-    # camera end
-    @viewport_camera.end
-  end
-  
-  
-  public
   
   
   
@@ -219,6 +392,8 @@ class DependencyGraph
       end
     end
   end
+  
+  
   
   
   # DependencyGraph#add(o) returns self
@@ -281,18 +456,6 @@ class DependencyGraph
       @mesh_objects.delete entity.name
       
       
-      
-      # TODO: remove material if unused
-        # if no batches include the material, it will drop out of triple store.
-        # This should just happen automatically,
-        # so I don't think I need to do any further work.
-      # TODO: remove mesh if unused
-        # Mesh datablocks are referenced by mesh objects, Batches, and triples.
-        # If there are no mesh objects that need that datablock,
-        # then there should also not be any batches ore triples that use it,
-        # so it should drop out on it's own.
-      
-      # ^ for these two reasons, it is better to not have additional collections for these things. waiting a little bit to extract by name might not actually be that bad.
     when 'LIGHT'
       @lights.delete_if{ |light|  light.name == entity_name }
     end
@@ -301,10 +464,24 @@ class DependencyGraph
     return self
   end
   
+  # reset everything back to the default condition
+  def clear
+    # @lights.each{ |light|  light.disable() }
+    # lights = @lights
+    
+    initialize()
+    
+    # @lights = lights
+    
+    # ^ If you just copy the lights over, then everything reloads fine
+    #   but I think I want to re-load the lights too, so I need to
+    #   figure out why the lights are not reloading as expected
+    
+    
+    # gc(active: [])
+  end
   
   
-  # TODO: change batch initalizer to take 0 argument
-  # TODO: batch should initialize as empty
   
   # assuming batches are stored as triples:
   private def find_batch_with_index(batches, entity)
@@ -401,14 +578,12 @@ class DependencyGraph
     data_hash = {
       'viewport_camera' => @viewport_camera,
       
-      'lights' => @lights,
-      'light_material' => @light_material,
+      'lights'          => @lights,
       
-      'mesh_objects'    => @mesh_objects,
       'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
       'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
-      
-      'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
+      'mesh_objects'    => @mesh_objects, # {name => mesh }
+      # 'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
     
@@ -422,333 +597,21 @@ class DependencyGraph
   end
   
   def init_with(coder)
-    # initialize()
+    initialize()
     
-    # @viewport_camera = ViewportCamera.new
+    @viewport_camera = coder.map['viewport_camera']
     
-    @cameras = Hash.new
-    
-    
-    @lights = Array.new
-    # @light_material = RubyOF::Material.new
-    
-    @mesh_objects    = Hash.new # {name => mesh }
-    
-    @batches   = Hash.new  # single entities and instanced copies go here
-                           # grouped by the mesh they use
-    
-    
-    
-    
-    
-    
-    
-    
-      @light_material = RubyOF::Material.new
-      
-    
-    # all batches using GPU instancing are forced to refresh position on load
-    @batches = Hash.new
-      coder.map['batch_list'].each do |batch|
-        @batches[batch.mesh.name] = batch
-      end
-    
-    # @entities = Hash.new
-    #   coder.map['entity_list'].each do |entity|
-    #     @entities[entity.name] = entity
-    #   end
-    #   @batches.each_value do |batch|
-    #     batch.each do |entity|
-    #       @entities[entity.name] = entity
-    #     end
-    #   end
-    
-    # Hash#values returns copy, not reference
-    # @meshes = @batches.values.collect{ |batch|  batch.mesh } 
     @lights = coder.map['lights']
+    
+    
+    
+    puts "loading #{coder.map['mesh_objects'].values.size} entities"
+    
+    coder.map['mesh_objects'].each do |name, entity|
+      p [entity.name, entity.mesh.name, entity.material.name]
+      
+      self.add entity
+    end
   end
   
 end
-
-class BatchKey
-  attr_reader :mesh, :mat
-  
-  def initialize(mesh, mat)
-    @mesh = mesh
-    @mat = mat
-  end
-  
-  def hash
-    [@mesh.__id__, @mat.__id__].hash
-  end
-  
-  def ==(other)
-    self.class == other.class and 
-      @mesh == other.mesh and @mat == other.mat
-  end
-  
-  alias :eql? :==
-end
-
-  class RenderBatch
-    # NOTE: can't use state machine because it requires super() in initialize
-    # and I need to bypass initialize() when loading from YAML
-    attr_reader :state # read only: state is always managed interally
-    attr_reader :mesh  # read only: once you assign a mesh, it's done
-    
-    def initialize()
-      @mesh = nil
-      @mat1 = nil
-      
-      @entity_list = nil
-      
-      @state = 'empty' # ['single', 'instanced_set', 'empty']
-      
-      setup()
-    end
-    
-    # setup is called by the YAML loader, and bypasses initialize
-    def setup()
-      @batch_dirty = false
-      
-      # @mat1 and @mat_instanced should have the same apperance
-      @mat_instanced = RubyOF::OFX::InstancingMaterial.new
-      
-      # TODO: eventually want to unify the materials, so you can use the same material object for single objects and instanced draw, but this setup will work for the time being. (Not sure if it will collapse into a single shader, but at least can be one material)
-      
-      
-      
-      @shader_timestamp = nil
-      
-      shader_src_dir = PROJECT_DIR/"ext/c_extension/shaders"
-      @vert_shader_path = shader_src_dir/"phong_instanced.vert"
-      @frag_shader_path = shader_src_dir/"phong.frag"
-      
-      
-      @instance_data = InstancingBuffer.new
-    end
-    
-    def update
-      if @state == 'instanced_set'
-        reload_instancing_shaders()
-        
-        # NOTE: If this is the style I eventually settle on, the dirty flag should ideally be moved to a single flag on the entire batch, rather than one flag on each entity.
-        
-        if @batch_dirty or @entity_list.any?{|entity| entity.dirty }
-          update_packed_entity_positions
-          
-          # update_instanced_material_properties
-          #   # ^ calling this on update seems to cause segfault???
-          #   # (was getting many weird segfaults before. I think it was a synchronization with Blender problem, but I'll keep this note here just in case.)
-          
-          @entity_list.each{|entity| entity.dirty = false }
-          @batch_dirty = false
-        end
-        
-        
-      end
-    end
-    
-    def add(mesh_obj)
-      # TODO: may want to double-check that the entity being added uses the mesh that is managed by this batch
-      
-      case @state
-      when 'empty'
-        @mesh = mesh_obj.mesh
-        @mat1 = mesh_obj.material
-        
-        @entity_list = [mesh_obj]
-        
-        @state = 'single'
-      else
-        @entity_list << mesh_obj
-        
-        if @entity_list.size > 1
-          @state = 'instanced_set'
-          
-        elsif @entity_list.size > @instance_data.max_instances
-          # raise exception if current texture size is too small
-          # to hold packed position information.
-          
-          # NOTE: can't currently set size dynamically, because shader must be compiled with correct dimensions. may want to update dynamic shader compilation pipeline in OFX::InstancingMaterial
-          # ^ actually, shaders are now loaded in this very file
-          #   see: reload_instancing_shaders()
-          
-          
-          msg = [
-            "ERROR: Too many instances to draw using one position texture. Need to implement spltting them into separate batches, or something like that.",
-            "Current maximum: #{@instance_data.max_instances}",
-            "Instances requested: #{@entity_list.size}"
-          ]
-          
-          raise msg.join("\n")
-        end
-        
-      end
-      
-      
-      
-      
-      
-      
-    end
-    
-    def delete(mesh_obj)
-      @entity_list.delete_if{|x| x.equal? mesh_obj }
-      
-      if @entity_list.size == 1
-        @state = 'single'
-      elsif @entity_list.size == 0
-        @state = 'empty'
-      end
-      
-      @batch_dirty = true
-    end
-    
-    def draw()
-      case @state
-      when 'empty'
-        # no-op
-      when 'single'
-        mesh_obj = @entity_list.first
-        
-        @mat1.begin()
-          mesh_obj.node.transformGL()
-          @mesh.draw()
-          mesh_obj.node.restoreTransformGL()
-        @mat1.end()
-      when 'instanced_set'
-        # draw instanced (v4.2 - 4x4 full transform matrix in texture)
-        
-        update_instanced_material_properties
-        
-        # set uniforms
-        @mat_instanced.setCustomUniformTexture(
-          "transform_tex", @instance_data.texture, 1
-        )
-          # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
-        
-        # @mat_instanced.setInstanceMagnitudeScale(
-        #   InstancingBuffer::FLOAT_MAX
-        # )
-        
-        # @mat_instanced.setInstanceTextureWidth(
-        #   @instance_data.width
-        # )
-        
-        
-        # draw all the instances using one draw call
-        @mat_instanced.begin()
-          @mesh.draw_instanced(@entity_list.size)
-        @mat_instanced.end()
-        
-      end
-      # no-op
-    end
-    
-    def to_s
-      return "(#{@mesh.name} => [#{@entity_list.size} :: #{@entity_list.collect{|x| x.name }.join(',')}] )"
-    end
-    
-    # define each instead of exposing @entity_list
-    def each() # &block
-      @entity_list.each do |entity|
-        yield entity
-      end
-    end
-    
-    
-    # 
-    # YAML serialization interface
-    # 
-    def to_yaml_type
-      "!ruby/object:#{self.class}"
-    end
-    
-    def encode_with(coder)
-      entity_data = 
-        @entity_list.collect do |entity|
-          [entity.name, entity.encode_transform_to_base64].join("\n")
-          # (don't need entity.mesh.name, because we're inside of a batch, where @mesh points to the shared mesh)
-        end
-      
-      data_hash = {
-        'count'       => entity_data.size, # for human reading of YAML
-        'state'       => @state,
-        'mesh'        => @mesh,
-        'entity_list' => entity_data
-      }
-      coder.represent_map to_yaml_type, data_hash
-    end
-    
-    def init_with(coder)
-      setup()
-      
-      @state       = coder.map['state']
-      @mesh        = coder.map['mesh']
-      
-      @entity_list = 
-        coder.map['entity_list']
-        .collect{|data_string| data_string.split("\n") }
-        .collect do |name, base64_transform|
-          entity = BlenderMesh.new(name, @mesh)
-          entity.load_transform_from_base64(base64_transform)
-        end
-      
-      # force update on all batches using GPU instancing
-      # otherwise InstancingBuffer will be messed up.
-      # 
-      # (can't do it from the outside - will need to force this from within BatchInstancing, otherwise we have to expose variables in the public interface, which is bad.)
-      reload_instancing_shaders()
-      
-      # @entity_list.each{  |entity|  entity.dirty = true }
-      # update_packed_entity_positions()
-      
-      nodes = @entity_list.collect{  |entity| entity.node}
-      @instance_data.pack_all_transforms(nodes)
-      
-    end
-    
-    
-    private
-    
-    def reload_instancing_shaders
-      # load shaders if they have never been loaded before,
-      # or if the files have been updated
-      if @shader_timestamp.nil? || [@vert_shader_path, @frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
-        
-        
-        vert_shader = File.readlines(@vert_shader_path).join("\n")
-        frag_shader = File.readlines(@frag_shader_path).join("\n")
-        
-        @mat_instanced.setVertexShaderSource vert_shader
-        @mat_instanced.setFragmentShaderSource frag_shader
-        
-        # NOTE: the shader source strings *will* be effected by the shader preprocessing pipeline in ofShader.cpp
-        
-        
-        @shader_timestamp = Time.now
-        
-        puts "shader reloaded"
-      end
-    end
-    
-    def update_instanced_material_properties
-      @mat_instanced.diffuse_color = @mat1.diffuse_color
-      @mat_instanced.shininess = @mat1.shininess
-    end
-    
-    # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
-    def update_packed_entity_positions
-      t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      nodes = @entity_list.collect{|entity| entity.node}
-      
-      t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-      dt = t1-t0
-      puts "time - gather mesh entities: #{dt.to_f / 1000} ms"
-      
-      
-      @instance_data.pack_all_transforms(nodes)
-    end
-  end
-  

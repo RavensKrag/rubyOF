@@ -1040,37 +1040,426 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
+void clearDepthBuffer(){
+	// glClearDepth(-10000);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void depthMask(bool flag){
+	// std::cout << "depth mask flag (ruby val): " << flag << std::endl;
+	
+	if(flag){
+		glDepthMask(GL_TRUE);
+	}else{
+		glDepthMask(GL_FALSE);
+	}
+}
+
+// Note: should call this outside of any Fbo context.
+//       If used while an FBO is bound, may get unexpected results.
+//       (see warning below for details)
+// 
+// WARNING: This function does not save / restore the last used framebuffer
+//          it will revert to the default buffer (buffer 0) after it completes.
+void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, uint flag){
+	
+	// shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	// renderer->bindForBlitting(src, dst, 0);
+	
+	// renderer->unbind();
+	
+	
+	const uint color_bit = (1 << 0);
+	const uint depth_bit = (1 << 1);
+	
+	// std::cout << "flag: " << flag << std::endl;
+	
+	GLbitfield mask = 0;
+	if( (flag & color_bit) == color_bit ){
+		// std::cout << "color_bit" << std::endl;
+		mask = mask | GL_COLOR_BUFFER_BIT;
+	}
+	if( (flag & depth_bit) == depth_bit ){
+		// std::cout << "depth_bit" << std::endl;
+		mask = mask | GL_DEPTH_BUFFER_BIT;
+	}
+	
+	
+	// default framebuffer controlled by window is 0
+	// OF documentation notes that a window class might
+	// change this, for instance to use MSAA, but
+	// I think using the default should be fine for now.
+	GLuint default_framebuffer = 0;
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, src.getId());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst.getId());
+	
+	float width  = src.getWidth();
+	float height = src.getHeight();
+	glBlitFramebuffer(0,0,width,height,
+	                  0,0,width,height,
+							mask, GL_NEAREST);
+	
+	
+	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
+	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+}
+
+
+void blitDefaultDepthBufferToFbo(ofFbo& fbo){
+	// default framebuffer controlled by window is 0
+	// OF documentation notes that a window class might
+	// change this, for instance to use MSAA, but
+	// I think using the default should be fine for now.
+	GLuint default_framebuffer = 0;
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, default_framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo.getId());
+	
+	float width  = fbo.getWidth();
+	float height = fbo.getHeight();
+	glBlitFramebuffer(0,0,width,height,
+	                  0,0,width,height,
+							GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	
+	
+	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
+	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+}
+
+void enableTransparencyBufferBlending(){
+	// ofEnableDepthTest();
+	
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunci(0, GL_ONE, GL_ONE); // summation
+	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+	
+	
+	// ofPushMatrix();
+	// ofScale(1,-1,1);
+	// ofLoadIdentityMatrix();
+}
+
+void disableTransparencyBufferBlending(){
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+	
+	// ofDisableDepthTest();
+	// ofPopMatrix();
+}
 
 
 
-#include "ofxInstancingMaterial.h"
+void enableScreenspaceBlending(){
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+}
 
-void ofxInstancingMaterial__setDiffuseColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void disableScreenspaceBlending(){
+	glDisable(GL_BLEND);
+}
+
+
+ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
+	ofMesh mesh;
+	
+	shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	// if(!renderer){
+	// 	throw Rice::Exception();
+	// }
+	
+	
+	float width, height;
+	width  = tex.getWidth();
+	height = tex.getHeight();
+	
+	mesh = tex.getMeshForSubsection(pos.x,pos.y,pos.z, width, height,
+										     0,0, width, height,
+										     renderer->isVFlipped(),
+										     renderer->getRectMode());
+	
+	return mesh;
+}
+
+
+
+#include "ofGLProgrammableRenderer.h"
+
+
+static string shaderSource(const string & src, int major, int minor){
+	string shaderSrc = src;
+	ofStringReplace(shaderSrc,"%glsl_version%",ofGLSLVersionFromGL(major,minor));
+#ifndef TARGET_OPENGLES
+	if(major<4 && minor<2){
+		ofStringReplace(shaderSrc,"%extensions%","#extension GL_ARB_texture_rectangle : enable");
+	}else{
+		ofStringReplace(shaderSrc,"%extensions%","");
+	}
+#else
+	ofStringReplace(shaderSrc,"%extensions%","");
+#endif
+	return shaderSrc;
+}
+
+#define STRINGIFY(x) #x
+
+
+#ifdef TARGET_OPENGLES
+static const string vertex_shader_header =
+		"%extensions%\n"
+		"precision highp float;\n"
+		"#define IN attribute\n"
+		"#define OUT varying\n"
+		"#define TEXTURE texture2D\n"
+		"#define TARGET_OPENGLES\n";
+static const string fragment_shader_header =
+		"%extensions%\n"
+		"precision highp float;\n"
+		"#define IN varying\n"
+		"#define OUT\n"
+		"#define TEXTURE texture2D\n"
+		"#define FRAG_COLOR gl_FragColor\n"
+		"#define TARGET_OPENGLES\n";
+#else
+static const string vertex_shader_header =
+		"#version %glsl_version%\n"
+		"%extensions%\n"
+		"#define IN in\n"
+		"#define OUT out\n"
+		"#define TEXTURE texture\n";
+static const string fragment_shader_header =
+		"#version %glsl_version%\n"
+		"%extensions%\n"
+		"#define IN in\n"
+		"#define OUT out\n"
+		"#define TEXTURE texture\n"
+		"#define FRAG_COLOR fragColor\n"
+		"out vec4 fragColor;\n";
+#endif
+
+static const string defaultVertexShader = vertex_shader_header + STRINGIFY(
+	uniform mat4 projectionMatrix;
+	uniform mat4 modelViewMatrix;
+	uniform mat4 textureMatrix;
+	uniform mat4 modelViewProjectionMatrix;
+
+	IN vec4  position;
+	IN vec2  texcoord;
+	IN vec4  color;
+	IN vec3  normal;
+
+	OUT vec4 colorVarying;
+	OUT vec2 texCoordVarying;
+	OUT vec4 normalVarying;
+
+	void main()
+	{
+		colorVarying = color;
+		texCoordVarying = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
+		gl_Position = modelViewProjectionMatrix * position;
+	}
+);
+
+// ----------------------------------------------------------------------
+
+static const string defaultFragmentShaderTexRectNoColor = fragment_shader_header + STRINGIFY(
+
+	uniform sampler2DRect src_tex_unit0;
+	uniform float usingTexture;
+	uniform float usingColors;
+	uniform vec4 globalColor;
+
+	IN float depth;
+	IN vec4 colorVarying;
+	IN vec2 texCoordVarying;
+
+	void main(){
+		FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying)* globalColor;
+	}
+);
+
+
+
+void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int revealageTex_i){
+	ofTexture& tex0 = fbo.getTexture(accumTex_i);
+	ofTexture& tex1 = fbo.getTexture(revealageTex_i);
+	
+	glm::vec3 pos(0,0,0);
+	
+	// void ofGLProgrammableRenderer::draw(const ofTexture & tex, float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) const
+		// void ofGLProgrammableRenderer::setAttributes(bool vertices, bool color, bool tex, bool normals)
+			// void ofGLProgrammableRenderer::beginDefaultShader()
+	
+	shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
+	
+	ofGLProgrammableRenderer* render_ptr = dynamic_cast<ofGLProgrammableRenderer*>(renderer.get());
+	
+	// render_ptr->setAttributes(true,false,true,false);
+		bool vertices = true;
+		
+		bool texCoordsEnabled = true;
+		bool colorsEnabled = false;
+		bool normalsEnabled = false;
+	
+	// const ofShader * nextShader = nullptr;
+	
+	glGetError();
+	int major = render_ptr->getGLVersionMajor();
+	int minor = render_ptr->getGLVersionMinor();
+	
+	
+	ofShader defaultTexRectNoColor;
+	
+	defaultTexRectNoColor.setupShaderFromSource(
+		GL_VERTEX_SHADER,
+		shaderSource(defaultVertexShader,major, minor)
+	);
+	
+	defaultTexRectNoColor.setupShaderFromSource(
+		GL_FRAGMENT_SHADER,
+		shaderSource(defaultFragmentShaderTexRectNoColor,major, minor)
+	);
+	
+	defaultTexRectNoColor.bindDefaults();
+	defaultTexRectNoColor.linkProgram();
+	
+	
+	
+	
+	ofShader& currentShader = defaultTexRectNoColor;
+	currentShader = shader;
+	
+	
+	
+	currentShader.begin();
+	
+	
+	// GLenum currentTextureTarget = render_ptr->getCurrentTextureTarget();
+	
+	// bool usingTexture = texCoordsEnabled & (currentTextureTarget!=OF_NO_TEXTURE);
+	// currentShader.setUniform1f("usingTexture",usingTexture);	
+	
+	// currentShader.setUniform1f("usingColors", colorsEnabled);
+	
+	
+	if(tex0.isAllocated()) {
+		// render_ptr->bind(tex0,0);
+		// // ^ a shader is bound in here somewhere
+		// // nextShader = &defaultTexRectNoColor;
+		tex0.bind(0);
+		
+		ofMesh fullscreen_quad = 
+			tex0.getMeshForSubsection(pos.x,pos.y,pos.z, tex0.getWidth(),tex0.getHeight(),
+			                          0,0, tex0.getWidth(),tex0.getHeight(),
+			                          renderer->isVFlipped(),renderer->getRectMode());
+		
+		// render_ptr->draw(fullscreen_quad,
+		//                  OF_MESH_FILL,
+		//                  colorsEnabled,texCoordsEnabled,normalsEnabled);
+		
+			colorsEnabled    ? fullscreen_quad.enableColors()   : fullscreen_quad.disableColors();
+			texCoordsEnabled ? fullscreen_quad.enableTextures() : fullscreen_quad.disableTextures();
+			normalsEnabled   ? fullscreen_quad.enableNormals()  : fullscreen_quad.disableNormals();
+			
+			fullscreen_quad.draw();
+		
+		
+		// render_ptr->unbind(tex0,0);
+		tex0.unbind(0);
+	} else {
+		ofLogWarning("ofGLProgrammableRenderer") << "draw(): texture is not allocated";
+	}
+	
+	
+	currentShader.end();
+	
+}
+
+
+
+
+
+
+
+
+
+#include "ofxDynamicMaterial.h"
+
+void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setDiffuseColor(c);
 }
 
 
-void ofxInstancingMaterial__setSpecularColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setSpecularColor(c);
 }
 
-void ofxInstancingMaterial__setAmbientColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setAmbientColor(c);
 }
 
-void ofxInstancingMaterial__setEmissiveColor(ofxInstancingMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, ofFloatColor c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setEmissiveColor(c);
 }
 
-
+void wrap_ofxDynamicMaterial(Module rb_mOFX){
+	// NOTE: both ofxDynamicMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxDynamicMaterial AGAIN.
+	
+	Data_Type<ofxDynamicMaterial> rb_c_ofxDynamicMaterial = 
+		define_class_under<ofxDynamicMaterial>(rb_mOFX, "DynamicMaterial");
+	
+	rb_c_ofxDynamicMaterial
+      .define_constructor(Constructor<ofxDynamicMaterial>())
+      
+      .define_method("begin", &ofxDynamicMaterial::begin)
+      .define_method("end",   &ofxDynamicMaterial::end)
+      
+      .define_method("ambient_color=", &ofxDynamicMaterial__setAmbientColor)
+      .define_method("diffuse_color=", &ofxDynamicMaterial__setDiffuseColor)
+      .define_method("specular_color=",&ofxDynamicMaterial__setSpecularColor)
+      .define_method("emissive_color=",&ofxDynamicMaterial__setEmissiveColor)
+      .define_method("shininess=",     &ofxDynamicMaterial::setShininess)
+      
+      .define_method("ambient_color",  &ofxDynamicMaterial::getAmbientColor)
+      .define_method("diffuse_color",  &ofxDynamicMaterial::getDiffuseColor)
+      .define_method("specular_color", &ofxDynamicMaterial::getSpecularColor)
+      .define_method("emissive_color", &ofxDynamicMaterial::getEmissiveColor)
+      .define_method("shininess",      &ofxDynamicMaterial::getShininess)
+      
+      .define_method("setCustomUniformTexture",
+         static_cast< void (ofxDynamicMaterial::*)
+         (const std::string & name, const ofTexture & value, int textureLocation)
+         >(&ofxDynamicMaterial::setCustomUniformTexture)
+      )
+      
+      
+      .define_method("setVertexShaderSource", 
+      	&ofxDynamicMaterial::setVertexShaderSource)
+      
+      .define_method("setFragmentShaderSource",
+      	&ofxDynamicMaterial::setFragmentShaderSource)
+      
+      .define_method("forceShaderRecompilation", 
+      	&ofxDynamicMaterial::forceShaderRecompilation)
+   ;
+	
+}
 
 
 
@@ -1119,6 +1508,44 @@ void Init_rubyOF_project()
 		
 		
 		.define_module_function("pack_transforms",   &pack_transforms)
+		
+		
+		
+		.define_module_function("clearDepthBuffer",
+			                     &clearDepthBuffer)
+		
+		.define_module_function("depthMask",
+			                     &depthMask)
+		
+		.define_module_function("blitDefaultDepthBufferToFbo",
+			                     &blitDefaultDepthBufferToFbo)
+		
+		.define_module_function("copyFramebufferByBlit__cpp",
+			                     &copyFramebufferByBlit__cpp)							
+		
+		
+		
+		.define_module_function("textureToMesh",
+			                     &textureToMesh)
+		
+		
+		.define_module_function("renderFboToScreen",
+			                     &renderFboToScreen)
+		
+		
+		
+		.define_module_function("enableTransparencyBufferBlending",
+			                     &enableTransparencyBufferBlending)
+		.define_module_function("disableTransparencyBufferBlending",
+			                     &disableTransparencyBufferBlending)
+		
+		
+		.define_module_function("enableScreenspaceBlending",
+			                     &enableScreenspaceBlending)
+		.define_module_function("disableScreenspaceBlending",
+			                     &disableScreenspaceBlending)
+		
+		
 	;
 	
 	
@@ -1209,58 +1636,7 @@ void Init_rubyOF_project()
 	
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
 	
-	
-	
-	
-	
-	// NOTE: both ofxInstancingMaterial and ofMaterial are subclasses of ofBaseMaterial, but ofBaseMaterial is not bound by RubyOF. Thus, the key material interface member functions need to be bound on ofxInstancingMaterial AGAIN.
-	
-	Data_Type<ofxInstancingMaterial> rb_c_ofxInstancingMaterial = 
-		define_class_under<ofxInstancingMaterial>(rb_mOFX, "InstancingMaterial");
-	
-	rb_c_ofxInstancingMaterial
-      .define_constructor(Constructor<ofxInstancingMaterial>())
-      
-      .define_method("begin", &ofxInstancingMaterial::begin)
-      .define_method("end",   &ofxInstancingMaterial::end)
-      
-      .define_method("ambient_color=", &ofxInstancingMaterial__setAmbientColor)
-      .define_method("diffuse_color=", &ofxInstancingMaterial__setDiffuseColor)
-      .define_method("specular_color=",&ofxInstancingMaterial__setSpecularColor)
-      .define_method("emissive_color=",&ofxInstancingMaterial__setEmissiveColor)
-      .define_method("shininess=",     &ofxInstancingMaterial::setShininess)
-      
-      .define_method("ambient_color",  &ofxInstancingMaterial::setAmbientColor)
-      .define_method("diffuse_color",  &ofxInstancingMaterial::getDiffuseColor)
-      .define_method("specular_color", &ofxInstancingMaterial::getSpecularColor)
-      .define_method("emissive_color", &ofxInstancingMaterial::getEmissiveColor)
-      .define_method("shininess",      &ofxInstancingMaterial::getShininess)
-      
-      .define_method("setCustomUniformTexture",
-         static_cast< void (ofxInstancingMaterial::*)
-         (const std::string & name, const ofTexture & value, int textureLocation)
-         >(&ofxInstancingMaterial::setCustomUniformTexture)
-      )
-      
-      // .define_method("setInstanceMagnitudeScale", 
-      // 	&ofxInstancingMaterial::setInstanceMagnitudeScale)
-      // .define_method("getInstanceMagnitudeScale", 
-      // 	&ofxInstancingMaterial::getInstanceMagnitudeScale)
-      
-      // .define_method("setInstanceTextureWidth", 
-      // 	&ofxInstancingMaterial::setInstanceTextureWidth)
-      // .define_method("getInstanceTextureWidth", 
-      // 	&ofxInstancingMaterial::getInstanceTextureWidth)
-      
-      
-      .define_method("setVertexShaderSource", 
-      	&ofxInstancingMaterial::setVertexShaderSource)
-      
-      .define_method("setFragmentShaderSource",
-      	&ofxInstancingMaterial::setFragmentShaderSource)
-   ;
-	
-	
+	wrap_ofxDynamicMaterial(rb_mOFX);
 	
 	
 	

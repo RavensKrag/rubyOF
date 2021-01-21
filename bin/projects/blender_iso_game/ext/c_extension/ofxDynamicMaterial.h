@@ -18,7 +18,7 @@
 	// ^ forward declaration already in ofMaterial.h
 
 
-/// \class ofxInstancingMaterialSettings
+/// \class ofxDynamicMaterialSettings
 /// wrapper for material color properties and other settings
 ///
 /// customUniforms: adds some uniforms to the shader so they can be accessed
@@ -96,7 +96,7 @@
 ///     vec3 lights[i].right;
 ///     vec3 lights[i].up;
 ///
-struct ofxInstancingMaterialSettings {
+struct ofxDynamicMaterialSettings {
     ofFloatColor diffuse{ 0.8f, 0.8f, 0.8f, 1.0f }; ///< diffuse reflectance
     ofFloatColor ambient{ 0.2f, 0.2f, 0.2f, 1.0f }; ///< ambient reflectance
     ofFloatColor specular{ 0.0f, 0.0f, 0.0f, 1.0f }; ///< specular reflectance
@@ -106,18 +106,18 @@ struct ofxInstancingMaterialSettings {
     std::string customUniforms;
 };
 
-/// \class ofxInstancingMaterial
+/// \class ofxDynamicMaterial
 /// \brief material parameter properties that can be applied to vertices in the OpenGL lighting model
 /// used in determining both the intensity and color of reflected light based on the lighting model in use
 /// and if the vertices are on a front or back sided face
-class ofxInstancingMaterial: public ofBaseMaterial {
+class ofxDynamicMaterial: public ofBaseMaterial {
 public:
-	ofxInstancingMaterial();
-	virtual ~ofxInstancingMaterial(){};
+	ofxDynamicMaterial();
+	virtual ~ofxDynamicMaterial(){};
 
 	/// \brief setup using settings struct
 	/// \param settings color & other properties struct
-	void setup(const ofxInstancingMaterialSettings & settings);
+	void setup(const ofxDynamicMaterialSettings & settings);
 	
 	/// \brief set all material colors: reflectance type & light intensity
 	/// \param oDiffuse the diffuse reflectance
@@ -153,12 +153,12 @@ public:
 	float getShininess() const;
 	
 	/// \return material color properties data struct
-	typedef ofxInstancingMaterialSettings Data;
+	typedef ofxDynamicMaterialSettings Data;
 	OF_DEPRECATED_MSG("Use getSettings() instead", Data getData() const);
-	ofxInstancingMaterialSettings getSettings() const;
+	ofxDynamicMaterialSettings getSettings() const;
 	
 	/// \brief set the material color properties data struct
-	OF_DEPRECATED_MSG("Use setup(settings) instead", void setData(const ofxInstancingMaterial::Data& data));
+	OF_DEPRECATED_MSG("Use setup(settings) instead", void setData(const ofxDynamicMaterial::Data& data));
 	
 	// documented in ofBaseMaterial
 	void begin() const;
@@ -168,16 +168,11 @@ public:
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	
-	// void setInstanceMagnitudeScale(float scale);
-	// float getInstanceMagnitudeScale();
-	
-	// void setInstanceTextureWidth(int width);
-	// float getInstanceTextureWidth();
-
-
 	
 	void setVertexShaderSource(const std::string &source);
 	void setFragmentShaderSource(const std::string &source);
+	
+	bool forceShaderRecompilation();
 
 
 
@@ -186,12 +181,12 @@ private:
 	std::string fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const;
 
 	
-	void initShaders(ofGLProgrammableRenderer & renderer) const;
+	bool initShaders(ofGLProgrammableRenderer & renderer) const;
 	const ofShader & getShader(int textureTarget, bool geometryHasColor, ofGLProgrammableRenderer & renderer) const;
 	void updateMaterial(const ofShader & shader,ofGLProgrammableRenderer & renderer) const;
 	void updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const;
 
-	ofxInstancingMaterialSettings data;
+	ofxDynamicMaterialSettings data;
 
 	struct Shaders{
 		ofShader noTexture;
@@ -215,8 +210,18 @@ private:
 	
 	
 	
+	
+	std::map<std::string, float> uniforms1f;
+	std::map<std::string, glm::vec2> uniforms2f;
+	std::map<std::string, glm::vec3> uniforms3f;
+	std::map<std::string, glm::vec4> uniforms4f;
+	std::map<std::string, float> uniforms1i;
+	std::map<std::string, glm::vec<2, int, glm::precision::defaultp>> uniforms2i;
+	std::map<std::string, glm::vec<3, int, glm::precision::defaultp>> uniforms3i;
+	std::map<std::string, glm::vec<4, int, glm::precision::defaultp>> uniforms4i;
+	std::map<std::string, glm::mat4> uniforms4m;
+	std::map<std::string, glm::mat3> uniforms3m;
+	
 	std::map<std::string, TextureUnifom> uniformstex;
-	// float mScale;
-	// int mWidth;
 	
 };
