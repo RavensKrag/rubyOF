@@ -67,7 +67,7 @@ class LiveCode
             return update_signal
           rescue StandardError => e
             puts "Error handler in LiveCode:"
-            puts e.full_message
+            puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
             
             self.runtime_error_detected
             return :error
