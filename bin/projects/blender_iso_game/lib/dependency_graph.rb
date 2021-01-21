@@ -150,7 +150,9 @@ class DependencyGraph
       @compositing_shader.live_load_glsl(
         shader_src_dir/'alpha_composite.vert',
         shader_src_dir/'alpha_composite.frag'
-      )
+      ) do
+        puts "alpha compositing shaders reloaded"
+      end
     end
     
     
@@ -392,6 +394,8 @@ class DependencyGraph
   end
   
   
+  
+  
   # DependencyGraph#add(o) returns self
   # comparison with other collections in Ruby:
   #   Array#<<(o) returns self
@@ -458,6 +462,23 @@ class DependencyGraph
     
     
     return self
+  end
+  
+  # reset everything back to the default condition
+  def clear
+    # @lights.each{ |light|  light.disable() }
+    # lights = @lights
+    
+    initialize()
+    
+    # @lights = lights
+    
+    # ^ If you just copy the lights over, then everything reloads fine
+    #   but I think I want to re-load the lights too, so I need to
+    #   figure out why the lights are not reloading as expected
+    
+    
+    # gc(active: [])
   end
   
   
@@ -557,14 +578,12 @@ class DependencyGraph
     data_hash = {
       'viewport_camera' => @viewport_camera,
       
-      'lights' => @lights,
-      'light_material' => @light_material,
+      'lights'          => @lights,
       
-      'mesh_objects'    => @mesh_objects,
       'mesh_datablocks' => @batches.collect{ |mesh, mat, batch| mesh  }.uniq,
       'mesh_materials'  => @batches.collect{ |mesh, mat, batch| mat   }.uniq,
-      
-      'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
+      'mesh_objects'    => @mesh_objects, # {name => mesh }
+      # 'batches'         => @batches.collect{ |mesh, mat, batch| batch }.uniq
     }
     coder.represent_map to_yaml_type, data_hash
     
@@ -578,50 +597,21 @@ class DependencyGraph
   end
   
   def init_with(coder)
-    # initialize()
+    initialize()
     
-    # @viewport_camera = ViewportCamera.new
+    @viewport_camera = coder.map['viewport_camera']
     
-    @cameras = Hash.new
-    
-    
-    @lights = Array.new
-    # @light_material = RubyOF::Material.new
-    
-    @mesh_objects    = Hash.new # {name => mesh }
-    
-    @batches   = Hash.new  # single entities and instanced copies go here
-                           # grouped by the mesh they use
-    
-    
-    
-    
-    
-    
-    
-    
-      @light_material = RubyOF::Material.new
-      
-    
-    # all batches using GPU instancing are forced to refresh position on load
-    @batches = Hash.new
-      coder.map['batch_list'].each do |batch|
-        @batches[batch.mesh.name] = batch
-      end
-    
-    # @entities = Hash.new
-    #   coder.map['entity_list'].each do |entity|
-    #     @entities[entity.name] = entity
-    #   end
-    #   @batches.each_value do |batch|
-    #     batch.each do |entity|
-    #       @entities[entity.name] = entity
-    #     end
-    #   end
-    
-    # Hash#values returns copy, not reference
-    # @meshes = @batches.values.collect{ |batch|  batch.mesh } 
     @lights = coder.map['lights']
+    
+    
+    
+    puts "loading #{coder.map['mesh_objects'].values.size} entities"
+    
+    coder.map['mesh_objects'].each do |name, entity|
+      p [entity.name, entity.mesh.name, entity.material.name]
+      
+      self.add entity
+    end
   end
   
 end
