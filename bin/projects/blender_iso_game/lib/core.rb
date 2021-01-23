@@ -446,17 +446,11 @@ class Core
     # 
     # setup materials, etc
     # 
-    if @first_draw
-      # ofBackground(10, 10, 10, 255);
-      # // turn on smooth lighting //
-      ofSetSmoothLighting(true)
+    # if @first_draw
       
-      ofSetSphereResolution(32) # want higher resoultion than the default 20
-      # ^ this is used to visualize the color and position of the lights
+    #   @first_draw = false
       
-      @first_draw = false
-      
-    end
+    # end
     
     
     # 
@@ -465,9 +459,12 @@ class Core
     @depsgraph.draw(@w)
     
     
+    
+    
     # 
     # draw UI
     # 
+    
     p1 = CP::Vec2.new(500,500)
     @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
     

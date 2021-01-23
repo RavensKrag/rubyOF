@@ -81,6 +81,13 @@ class DependencyGraph
     
     # ofEnableBlendMode(:alpha)
     
+    # ofBackground(10, 10, 10, 255);
+    # // turn on smooth lighting //
+    ofSetSmoothLighting(true)
+    
+    ofSetSphereResolution(32) # want higher resoultion than the default 20
+    # ^ this is used to visualize the color and position of the lights
+    
     
     
     # 
@@ -95,37 +102,35 @@ class DependencyGraph
     # setup
     # 
     
-    settings = 
-      RubyOF::Fbo::Settings.new.tap do |s|
-        s.width  = window.width
-        s.height = window.height
-        s.internalformat = GL_RGBA32F_ARB;
-        # s.numSamples     = 0; # no multisampling
-        s.useDepth       = true;
-        s.useStencil     = false;
-        s.depthStencilAsTexture = true;
-        
-        s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-        
-        @main_fbo ||= 
-          RubyOF::Fbo.new.tap do |fbo|
-            s.clone.tap{ |s|
-              
-              s.numColorbuffers = 1;
-              
-            }.yield_self{ |s| fbo.allocate(s) }
-          end
-        
-        @transparency_fbo ||= 
-          RubyOF::Fbo.new.tap do |fbo|
-            s.clone.tap{ |s|
-              
-              s.numColorbuffers = 2;
-              
-            }.yield_self{ |s| fbo.allocate(s) }
-          end
-        
-      end
+    RubyOF::Fbo::Settings.new.tap do |s|
+      s.width  = window.width
+      s.height = window.height
+      s.internalformat = GL_RGBA32F_ARB;
+      # s.numSamples     = 0; # no multisampling
+      s.useDepth       = true;
+      s.useStencil     = false;
+      s.depthStencilAsTexture = true;
+      
+      s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+      
+      @main_fbo ||= 
+        RubyOF::Fbo.new.tap do |fbo|
+          s.clone.tap{ |s|
+            
+            s.numColorbuffers = 1;
+            
+          }.yield_self{ |s| fbo.allocate(s) }
+        end
+      
+      @transparency_fbo ||= 
+        RubyOF::Fbo.new.tap do |fbo|
+          s.clone.tap{ |s|
+            
+            s.numColorbuffers = 2;
+            
+          }.yield_self{ |s| fbo.allocate(s) }
+        end
+    end
     
     @compositing_shader ||= RubyOF::Shader.new
     
