@@ -80,12 +80,15 @@ class BlenderSync
     [MAX_READS, @msg_queue.length].min.times do
       data_string = @msg_queue.pop
       
+      # --- This write is only needed for debugging
+      File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'w') do |f|
+        f.puts data_string
+      end
+      # ---
+      
       t0 = RubyOF::Utils.ofGetElapsedTimeMicros
       blender_data = JSON.parse(data_string)
       
-      # File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'a+') do |f|
-      #   f.puts data_string
-      # end
       
       # p list
       t1 = RubyOF::Utils.ofGetElapsedTimeMicros
@@ -97,6 +100,8 @@ class BlenderSync
       # send all of this data to history
       @history.write(blender_data)
       
+      
+      # parse_blender_data(blender_data)
     end
     
     # retrieve the relevant slice of history
