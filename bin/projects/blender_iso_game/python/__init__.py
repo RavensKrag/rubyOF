@@ -115,11 +115,11 @@ class RubyOF(bpy.types.RenderEngine):
         self.to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
         
         
-        data = {
-            'interrupt': 'RESET'
-        }
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
+        # data = {
+        #     "interrupt": "RESET"
+        # }
+        # output_string = json.dumps(data)
+        # self.to_ruby.write(output_string)
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
