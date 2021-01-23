@@ -906,6 +906,47 @@ class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
         # max = 1.0
         )
     
+    
+    specular: FloatVectorProperty(
+        name = "specular color",
+        description = "the color of highlights on a material",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    diffuse: FloatVectorProperty(
+        name = "diffuse color",
+        description = "the color of the material when it is illuminated",
+        subtype = 'COLOR',
+        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    ambient: FloatVectorProperty(
+        name = "ambient color",
+        description = "the color of the material when it is not illuminated",
+        subtype = 'COLOR',
+        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    emissive: FloatVectorProperty(
+        name = "emissive color",
+        description = "the color the material illuminated from within",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
     alpha: FloatProperty(
         name = "alpha",
         description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
@@ -1159,8 +1200,14 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
         # or you get a Python error.
         # (Blender won't crash, but this is still not good behavior.)
         if mat:
+            layout.prop(mat.rb_mat, "color")
+            
+            layout.prop(mat.rb_mat, "specular")
+            layout.prop(mat.rb_mat, "diffuse")
+            layout.prop(mat.rb_mat, "ambient")
+            layout.prop(mat.rb_mat, "emissive")
+            
             col = layout.column()
-            col.prop(mat.rb_mat, "color",)
             col.prop(mat.rb_mat, "alpha")
             col.prop(mat.rb_mat, "shininess")
 
