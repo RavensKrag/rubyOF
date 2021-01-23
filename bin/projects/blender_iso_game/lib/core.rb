@@ -38,6 +38,58 @@ def usec(time)
   (time).to_i
 end
 
+
+# Do not call this "Time" to avoid collision with Kernel::Time
+module RubyOF
+  class TimeCounter
+    class << self
+      def reset
+        ofResetElapsedTimeCounter()
+      end
+      
+      def delta(t1, t0)
+        return t1 - t0
+      end
+      
+      def now
+        return new(RubyOF::Utils.ofGetElapsedTimeMicros)
+      end
+    end
+    
+    attr_accessor :t
+    
+    def initialize(t)
+      @t = t # store time in microseconds
+    end
+    
+    
+    
+    def -(other)
+      raise "ERROR: can't subtract #{other.class} from #{self.class}" unless other.is_a? self.class
+      
+      
+      # TODO: how to deal with rollover?
+      return self.class.new(@t - other.t)
+    end
+    
+    # convert to milliseconds (usec -> msec)
+    def to_ms
+      return @t.to_f / 1000
+    end
+    
+    # convert to microseconds (usec -> usec)
+    def to_us
+      return @t
+    end
+    
+    def to_s
+      return "#{@t} microseconds"
+    end
+  end
+end
+
+
+
 load LIB_DIR/'patches'/'cpp_callbacks.rb'
 
 load LIB_DIR/'entities'/'blender_material.rb'
@@ -456,14 +508,21 @@ class Core
     # 
     # draw the scene
     # 
+    # t0 = RubyOF::TimeCounter.now
+    
     @depsgraph.draw(@w)
     
     
+    # t1 = RubyOF::TimeCounter.now
+    # puts "=> scene : #{(t1 - t0).to_ms} ms"
     
     
     # 
     # draw UI
     # 
+    
+    # t0 = RubyOF::TimeCounter.now
+    
     
     p1 = CP::Vec2.new(500,500)
     @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
@@ -480,23 +539,21 @@ class Core
     line_height = 35
     p3 = CP::Vec2.new(500,650)
     str_out = []
-    @depsgraph.batches.tap do |batches|
+    
+    batches = @depsgraph.batches
+    header = [
+      "i".rjust(3),
+      "mesh".ljust(10), # BlenderMeshData
       
+      "mat".ljust(15), # BlenderMaterial
+      # ^ use #inspect to visualize empty string
       
-        data = [
-          "i".rjust(3),
-          "mesh".ljust(10), # BlenderMeshData
-          
-          "mat".ljust(15), # BlenderMaterial
-          # ^ use #inspect to visualize empty string
-          
-          "batch size" # RenderBatch
-          
-        ].join('| ')
-        
-        str_out << "#{data}"
+      "batch size" # RenderBatch
       
-      batches.each_with_index do |batch_line, i|
+    ].join('| ')
+    
+    str_out = 
+      batches.each_with_index.collect do |batch_line, i|
         a,b,c = batch_line
         # data = [
         #   a.class.to_s.each_char.first(20).join(''),
@@ -515,18 +572,14 @@ class Core
           c.size.to_s # RenderBatch
           
         ].join('| ')
-        
-        
-        
-        str_out << "#{data}"
       end
-      
-    end
     
-    str_out.each_with_index do |line, i|
+    ([header] + str_out).each_with_index do |line, i|
       @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
     end
     
+    # t1 = RubyOF::TimeCounter.now
+    # puts "=> UI    : #{(t1 - t0).to_ms} ms"
     
   end
   

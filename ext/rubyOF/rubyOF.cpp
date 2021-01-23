@@ -189,10 +189,16 @@ void Init_rubyOF()
 		define_module_under(rb_mRubyOF, "Utils");
 	
 	rb_cUtils
-		.define_module_function("ofGetElapsedTimeMicros",   &ofGetElapsedTimeMicros)
-		.define_module_function("ofGetElapsedTimeMillis",   &ofGetElapsedTimeMillis)
-		.define_module_function("ofGetElapsedTimef",        &ofGetElapsedTimef)
-		.define_module_function("ofGetFrameNum",            &ofGetFrameNum)
+		.define_module_function("ofResetElapsedTimeCounter",
+		                        &ofResetElapsedTimeCounter)
+		.define_module_function("ofGetElapsedTimeMicros",
+			                     &ofGetElapsedTimeMicros)
+		.define_module_function("ofGetElapsedTimeMillis",
+		                        &ofGetElapsedTimeMillis)
+		.define_module_function("ofGetElapsedTimef",
+		                        &ofGetElapsedTimef)
+		.define_module_function("ofGetFrameNum",
+		                        &ofGetFrameNum)
 	;
 }
 
