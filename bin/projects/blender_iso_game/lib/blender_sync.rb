@@ -231,21 +231,21 @@ class BlenderSync
           
           
         when 'bpy.types.Light'
-          # I don't want to have linked lights in RubyOF.
-          # Thus, rather than create light datablocks here,
-          # link the deserialized JSON message into the object 'data' field
-          # so it all can be unpacked together in a later phase
+          # # I don't want to have linked lights in RubyOF.
+          # # Thus, rather than create light datablocks here,
+          # # link the deserialized JSON message into the object 'data' field
+          # # so it all can be unpacked together in a later phase
           
-          blender_data['objects']&.tap do |object_list|
+          # blender_data['objects']&.tap do |object_list|
             
-            object_list
-            .select{|o| o['type'] == 'LIGHT' }
-            .find{  |o| o['name'] == data['light_name'] }
-            .tap{   |o| o['data'] = data }
-            # links data even if data field is already set
-            # (the data stored in history seems to already be linked, but I'm not sure how that happens)
+          #   object_list
+          #   .select{|o| o['type'] == 'LIGHT' }
+          #   .find{  |o| o['name'] == data['light_name'] }
+          #   .tap{   |o| o['data'] = data }
+          #   # links data even if data field is already set
+          #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
             
-          end
+          # end
           
           
         end

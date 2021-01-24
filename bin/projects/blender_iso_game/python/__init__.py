@@ -277,7 +277,11 @@ class RubyOF(bpy.types.RenderEngine):
                 }
                 
                 obj_data['transform'] = self.pack_transform(obj)
-                obj_data['data'] = obj.data.name
+                
+                if isinstance(obj.data, bpy.types.Light):
+                    obj_data['data'] = self.__pack_light(obj.data)
+                else:
+                    obj_data['data'] = obj.data.name
                 
                 obj_export.append(obj_data)
             
@@ -353,9 +357,12 @@ class RubyOF(bpy.types.RenderEngine):
                     if update.is_updated_transform:
                         obj_data['transform'] = self.pack_transform(obj)
                     
-                    if update.is_updated_geometry:
+                    if isinstance(obj.data, bpy.types.Light):
+                        obj_data['data'] = self.__pack_light(obj.data)
+                    elif update.is_updated_geometry:
                         obj_data['data'] = obj.data.name
                         datablock_list.append(obj.data)
+                        
                     
                     obj_export.append(obj_data)
                 
@@ -438,8 +445,8 @@ class RubyOF(bpy.types.RenderEngine):
         for datablock in unique_datablocks:
             if isinstance(datablock, bpy.types.Mesh):
                 datablock_export.append( self.pack_mesh_data(datablock) )
-            elif isinstance(datablock, bpy.types.Light):
-                datablock_export.append( self.__pack_light(datablock) )
+            # elif isinstance(datablock, bpy.types.Light):
+                # datablock_export.append( self.__pack_light(datablock) )
             else:
                 continue
         
