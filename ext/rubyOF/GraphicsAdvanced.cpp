@@ -826,6 +826,12 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       // there's another variation where you can specify up vector
       // but I don't understand the coordinate system right now so...
+      
+      
+      
+      .define_method("draw", &ofNode::draw)
+      // calls the virtual function customDraw
+      // which is used by some OF core classes, such as ofLight.
    ;
    
    

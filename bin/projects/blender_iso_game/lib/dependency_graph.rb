@@ -354,6 +354,8 @@ class DependencyGraph
         @light_material.tap do |mat|
           mat.emissive_color = light_color
           
+          
+          # light.draw
           mat.begin()
           ofPushMatrix()
             ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
