@@ -100,59 +100,11 @@ load LIB_DIR/'entities'/'blender_light.rb'
 
 load LIB_DIR/'instancing_buffer.rb'
 
+load LIB_DIR/'blender_history.rb'
 load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
-
-class History
-  def initialize
-    @@empty ||= {}.freeze
-    
-    @data = @@empty
-    @diff = @@empty
-  end
-  
-  def write(data)
-    @diff = @diff.merge data # merge with existing diff
-    
-    return self
-  end
-  
-  def read
-    @data = @data.merge @diff
-    
-    out = @diff
-    @diff = @@empty # or equivalent empty collection
-    
-    return out
-  end
-  
-  def on_reload
-    # new diff must progress from nothing to current point
-    # in order to fully restore the state
-    @diff = @data.merge @diff
-    
-    # merge data with existing diff
-    # but ignore the interrupt commands
-    if @diff.has_key? 'interrupt'
-      @diff.delete('interrupt')
-    end
-    
-    # also remove the timestamps
-    if @diff.has_key? 'timestamps'
-      @diff.delete('timestamps')
-    end
-    
-    
-    File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'w') do |f|
-      f.puts JSON.pretty_generate @diff
-    end
-    
-    
-    return self
-  end
-end
 
 
 class Core
@@ -238,7 +190,7 @@ class Core
     
     
     
-    @history = History.new
+    @history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
     @sync = BlenderSync.new(@w, @depsgraph, @history)
     
