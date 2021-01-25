@@ -7,7 +7,7 @@ class BlenderLight < BlenderObject
   def initialize(name)
     super(name)
     
-    @light = RubyOF::Light.new
+    @light = RubyOF::OFX::DynamicLight.new
     
     setPointLight()
     

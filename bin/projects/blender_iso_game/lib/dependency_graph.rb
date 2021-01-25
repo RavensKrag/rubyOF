@@ -174,8 +174,13 @@ class DependencyGraph
       # Follow-up paper in 2016 demonstrates improvements,
       # including work with colored glass.
     
-    
+    # 
+    # setup GL state
+    # ofEnableDepthTest()
+    ofEnableLighting() # // enable lighting //
     ofEnableDepthTest()
+    
+    @lights.each{ |light|  light.enable() }
     
     opaque, transparent = 
       @batches.partition do |mesh, mat, batch|
@@ -188,7 +193,9 @@ class DependencyGraph
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      lights_and_camera do
+      using_camera @viewport_camera do
+        # puts "light on?: #{@lights[0]&.enabled?}" 
+        
         opaque.each{|mesh, mat, batch|  batch.draw }
         
         visualize_lights()
@@ -207,15 +214,19 @@ class DependencyGraph
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
-      lights_and_camera do
+      using_camera @viewport_camera do
         transparent.each{|mesh, mat, batch|  batch.draw }
       end
       
       RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()      
     end
     
-    ofDisableDepthTest()
     
+    @lights.each{ |light|  light.disable() }
+    
+    # teardown GL state
+    ofDisableDepthTest()
+    ofDisableLighting()
     
     # ----------------
     #   screen space
@@ -269,22 +280,49 @@ class DependencyGraph
       )
     end
     
-    def lights_and_camera # &block
+    # def lights_and_camera # &block
+    #   exception = nil
+      
+    #   begin
+    #     # camera begin
+    #     @viewport_camera.begin
+        
+        
+    #     # enable lights
+    #       # the position of the light must be updated every frame,
+    #       # call enable() so that it can update itself
+    #     @lights.each{ |light|  light.enable() }
+        
+        
+    #     # (world space rendering block)
+    #     yield
+        
+        
+    #   rescue Exception => e 
+    #     exception = e # supress exception so we can exit cleanly first
+    #   ensure
+    #     # disable lights
+    #       # // turn off lighting //
+    #     # @lights.each{ |light|  light.disable() }
+        
+        
+    #     # camera end
+    #     @viewport_camera.end
+        
+    #     # after cleaning up, now throw the exception if needed
+    #     unless exception.nil?
+    #       raise exception
+    #     end
+        
+    #   end
+    # end
+    
+    def using_camera(camera) # &block
       exception = nil
       
       begin
         # camera begin
-        @viewport_camera.begin
-        
-        # setup GL state
-        # ofEnableDepthTest()
-        ofEnableLighting() # // enable lighting //
-        
-        
-        # enable lights
-          # the position of the light must be updated every frame,
-          # call enable() so that it can update itself
-        @lights.each{ |light|  light.enable() }
+        camera.begin
         
         
         # (world space rendering block)
@@ -294,16 +332,10 @@ class DependencyGraph
       rescue Exception => e 
         exception = e # supress exception so we can exit cleanly first
       ensure
-        # disable lights
-          # // turn off lighting //
-        @lights.each{ |light|  light.disable() }
         
-        # teardown GL state
-        ofDisableLighting()
-        # ofDisableDepthTest()
         
         # camera end
-        @viewport_camera.end
+        camera.end
         
         # after cleaning up, now throw the exception if needed
         unless exception.nil?
@@ -428,6 +460,7 @@ class DependencyGraph
     when 'LIGHT'
       # => add to list of lights
       @lights << entity
+      # entity.enable()
     end
     
     
@@ -462,7 +495,12 @@ class DependencyGraph
       
       
     when 'LIGHT'
-      @lights.delete_if{ |light|  light.name == entity_name }
+      # pass, fail = @lights.partition{|light| light.name == entity_name }
+      # pass.each{|light| light.disable }
+      
+      # @lights = fail
+      
+      @lights.delete_if{|light| light.name == entity_name}
     end
     
     

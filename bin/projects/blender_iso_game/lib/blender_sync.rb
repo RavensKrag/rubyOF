@@ -430,6 +430,8 @@ class BlenderSync
           # load transform AND data for lights here as necessary
           # ('data' field has already been linked to necessary data)
           
+          puts "loading light: #{data['name']}"
+          
           light =
             @depsgraph.fetch_light(data['name']) do |name|
               BlenderLight.new(name).tap do |light|
@@ -437,21 +439,16 @@ class BlenderSync
               end
             end
           
-          light.disable()
-          # ^ this call is messing up everything
-          # ... I think? may need more testing to be sure of this
-          # the first blacked-out call is very reproducible
-          # but whatever happens downstream of that is chaotic
-          
           data['transform']&.tap do |transform_data|
             light.load_transform(transform_data)
           end
           
           data['data']&.tap do |core_data|
+            # puts ">> light data"
+            # p core_data
             light.load_data(core_data)
           end
           
-          light.enable()
         end
         
       end

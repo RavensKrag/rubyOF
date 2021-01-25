@@ -9,6 +9,8 @@ using std::endl;
 
 #include "Null_Free_Function.h"
 
+#include "ofxDynamicLight.h"
+
 
 
 
@@ -410,6 +412,8 @@ void rbApp::draw(){
 	// ========================================
 	// ========================================
 	
+	
+	// std::cout << "num lights:" << ofxDynamicLightsData().size() << std::endl;
 	
 	
 	// bool cpp_render = true;

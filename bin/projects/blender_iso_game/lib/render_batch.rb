@@ -210,6 +210,8 @@ class RenderBatch
       @mat.setVertexShaderSource vert_shader
       @mat.setFragmentShaderSource frag_shader
       
+      puts "reloading vertex and frag shaders for #{self.class}"
+      
       bShadersLoaded = @mat.forceShaderRecompilation()
       
       raise "ERROR: One of the GLSL shaders in the material failed to load. Check logs for details." unless bShadersLoaded

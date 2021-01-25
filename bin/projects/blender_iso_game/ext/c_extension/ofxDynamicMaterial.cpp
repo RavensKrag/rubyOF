@@ -1,6 +1,7 @@
 #include "ofxDynamicMaterial.h"
 #include "ofConstants.h"
-#include "ofLight.h"
+// #include "ofLight.h"
+#include "ofxDynamicLight.h"
 #include "ofGLProgrammableRenderer.h"
 
 using namespace std;
@@ -89,10 +90,10 @@ void ofxDynamicMaterial::end() const{
 
 bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
     auto rendererShaders = shaders.find(&renderer);
-    if(rendererShaders == shaders.end() || rendererShaders->second->numLights != ofLightsData().size()){
+    if(rendererShaders == shaders.end()){
         if(shadersMap[&renderer].find(data.postFragment)!=shadersMap[&renderer].end()){
             auto newShaders = shadersMap[&renderer][data.postFragment].lock();
-            if(newShaders == nullptr || newShaders->numLights != ofLightsData().size()){
+            if(newShaders == nullptr){
                 shadersMap[&renderer].erase(data.postFragment);
                 shaders[&renderer] = nullptr;
             }else{
@@ -110,14 +111,12 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         #endif
         string vertex2DHeader = renderer.defaultVertexShaderHeader(GL_TEXTURE_2D);
         string fragment2DHeader = renderer.defaultFragmentShaderHeader(GL_TEXTURE_2D);
-        auto numLights = ofLightsData().size();
         shaders[&renderer].reset(new Shaders);
-        shaders[&renderer]->numLights = numLights;
         
         
         // noTexture
-        b1 = shaders[&renderer]->noTexture.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,false,false));
-        b2 = shaders[&renderer]->noTexture.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,false,false));
+        b1 = shaders[&renderer]->noTexture.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,false,false));
+        b2 = shaders[&renderer]->noTexture.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,false,false));
         b3 = shaders[&renderer]->noTexture.bindDefaults();
         b4 = shaders[&renderer]->noTexture.linkProgram();
         if(!(b1 && b2 && b3 && b4)){
@@ -126,8 +125,8 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         }
         
         // texture2D
-        b1 = shaders[&renderer]->texture2D.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,true,false));
-        b2 = shaders[&renderer]->texture2D.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,true,false));
+        b1 = shaders[&renderer]->texture2D.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,true,false));
+        b2 = shaders[&renderer]->texture2D.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,true,false));
         b3 = shaders[&renderer]->texture2D.bindDefaults();
         b4 = shaders[&renderer]->texture2D.linkProgram();
         if(!(b1 && b2 && b3 && b4)){
@@ -137,8 +136,8 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         
         // textureRect
         #ifndef TARGET_OPENGLES
-            b1 = shaders[&renderer]->textureRect.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertexRectHeader,numLights,true,false));
-            b2 = shaders[&renderer]->textureRect.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragmentRectHeader, data.customUniforms, data.postFragment,numLights,true,false));
+            b1 = shaders[&renderer]->textureRect.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertexRectHeader,true,false));
+            b2 = shaders[&renderer]->textureRect.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragmentRectHeader, data.customUniforms, data.postFragment,true,false));
             b3 = shaders[&renderer]->textureRect.bindDefaults();
             b4 = shaders[&renderer]->textureRect.linkProgram();
             if(!(b1 && b2 && b3 && b4)){
@@ -148,8 +147,8 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         #endif
         
         // color
-        b1 = shaders[&renderer]->color.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,false,true));
-        b2 = shaders[&renderer]->color.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,false,true));
+        b1 = shaders[&renderer]->color.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,false,true));
+        b2 = shaders[&renderer]->color.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,false,true));
         b3 = shaders[&renderer]->color.bindDefaults();
         b4 = shaders[&renderer]->color.linkProgram();
         if(!(b1 && b2 && b3 && b4)){
@@ -158,8 +157,8 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         }
         
         // texture2DColor
-        b1 = shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,numLights,true,true));
-        b2 = shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,numLights,true,true));
+        b1 = shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertex2DHeader,true,true));
+        b2 = shaders[&renderer]->texture2DColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragment2DHeader, data.customUniforms, data.postFragment,true,true));
         b3 = shaders[&renderer]->texture2DColor.bindDefaults();
         b4 = shaders[&renderer]->texture2DColor.linkProgram();
         if(!(b1 && b2 && b3 && b4)){
@@ -170,8 +169,8 @@ bool ofxDynamicMaterial::initShaders(ofGLProgrammableRenderer & renderer) const{
         
         // textureRectColor
         #ifndef TARGET_OPENGLES
-            b1 = shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertexRectHeader,numLights,true,true));
-            b2 = shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragmentRectHeader, data.customUniforms, data.postFragment,numLights,true,true));
+            b1 = shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_VERTEX_SHADER,vertexSource(vertexRectHeader,true,true));
+            b2 = shaders[&renderer]->textureRectColor.setupShaderFromSource(GL_FRAGMENT_SHADER,fragmentSource(fragmentRectHeader, data.customUniforms, data.postFragment,true,true));
             b3 = shaders[&renderer]->textureRectColor.bindDefaults();
             b4 = shaders[&renderer]->textureRectColor.linkProgram();
             if(!(b1 && b2 && b3 && b4)){
@@ -264,9 +263,11 @@ void ofxDynamicMaterial::updateMaterial(const ofShader & shader,ofGLProgrammable
 }
 
 void ofxDynamicMaterial::updateLights(const ofShader & shader,ofGLProgrammableRenderer & renderer) const{
-	for(size_t i=0;i<ofLightsData().size();i++){
+    shader.setUniform1i("num_lights", ofxDynamicLightsData().size());
+    
+	for(size_t i=0;i<ofxDynamicLightsData().size();i++){
 		string idx = ofToString(i);
-		shared_ptr<ofLight::Data> light = ofLightsData()[i].lock();
+		ofxDynamicLight::Data* light = ofxDynamicLightsData()[i];
 		if(!light || !light->isEnabled){
 			shader.setUniform1f("lights["+idx+"].enabled",0);
 			continue;
@@ -391,8 +392,7 @@ bool ofxDynamicMaterial::forceShaderRecompilation(){
 
 
 
-string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor){
-    header += "#define MAX_LIGHTS " + ofToString(max(1,maxLights)) + "\n";
+string shaderHeader(string header, bool hasTexture, bool hasColor){
     if(hasTexture){
         header += "#define HAS_TEXTURE 1\n";
 	} else {
@@ -406,11 +406,11 @@ string shaderHeader(string header, int maxLights, bool hasTexture, bool hasColor
     return header;
 }
 
-std::string ofxDynamicMaterial::vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const{
-    return shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + vertexShader;
+std::string ofxDynamicMaterial::vertexSource(std::string defaultHeader, bool hasTexture, bool hasColor) const{
+    return shaderHeader(defaultHeader, hasTexture, hasColor) + vertexShader;
 }
 
-std::string ofxDynamicMaterial::fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const{
+std::string ofxDynamicMaterial::fragmentSource(std::string defaultHeader, std::string customUniforms, std::string postFragment, bool hasTexture, bool hasColor) const{
     auto source = fragmentShader;
     if(postFragment.empty()){
         postFragment = "vec4 postFragment(vec4 localColor){ return localColor; }";
@@ -418,6 +418,6 @@ std::string ofxDynamicMaterial::fragmentSource(std::string defaultHeader, std::s
 	ofStringReplace(source, "%postFragment%", postFragment);
 	ofStringReplace(source, "%custom_uniforms%", customUniforms);
 
-    source = shaderHeader(defaultHeader, maxLights, hasTexture, hasColor) + source;
+    source = shaderHeader(defaultHeader, hasTexture, hasColor) + source;
     return source;
 }

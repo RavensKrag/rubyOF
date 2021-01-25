@@ -177,8 +177,8 @@ public:
 
 
 private:
-	std::string vertexSource(std::string defaultHeader, int maxLights, bool hasTexture, bool hasColor) const;
-	std::string fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, int maxLights, bool hasTexture, bool hasColor) const;
+	std::string vertexSource(std::string defaultHeader, bool hasTexture, bool hasColor) const;
+	std::string fragmentSource(std::string defaultHeader, std::string customUniforms,  std::string postFragment, bool hasTexture, bool hasColor) const;
 
 	
 	bool initShaders(ofGLProgrammableRenderer & renderer) const;
@@ -195,7 +195,6 @@ private:
 		ofShader textureRectColor;
 		ofShader texture2D;
 		ofShader textureRect;
-		size_t numLights;
 	};
 	struct TextureUnifom{
 		int textureTarget;

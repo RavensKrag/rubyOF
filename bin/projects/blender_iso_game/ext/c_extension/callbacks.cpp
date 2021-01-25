@@ -1469,6 +1469,55 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
 
 
 
+#include "ofxDynamicLight.h"
+
+void wrap_ofxDynamicLight(Module rb_mOFX){
+	
+   Data_Type<ofxDynamicLight> rb_c_ofxDynamicLight = 
+      define_class_under<ofxDynamicLight, ofNode>(rb_mOFX, "DynamicLight");
+   
+   rb_c_ofxDynamicLight
+      .define_constructor(Constructor<ofxDynamicLight>())
+		
+      .define_method("enable",        &ofxDynamicLight::enable)
+      .define_method("disable",       &ofxDynamicLight::disable)
+      .define_method("enabled?",      &ofxDynamicLight::getIsEnabled)
+      
+      
+      // point
+      // spot
+      // directional
+      // area
+      .define_method("getIsAreaLight",    &ofxDynamicLight::getIsAreaLight)
+      .define_method("getIsDirectional",  &ofxDynamicLight::getIsDirectional)
+      .define_method("getIsPointLight",   &ofxDynamicLight::getIsPointLight)
+      .define_method("getIsSpotlight",    &ofxDynamicLight::getIsSpotlight)
+      
+      .define_method("setAreaLight",      &ofxDynamicLight::setAreaLight)
+      .define_method("setDirectional",    &ofxDynamicLight::setDirectional)
+      .define_method("setPointLight",     &ofxDynamicLight::setPointLight)
+      .define_method("setSpotlight",      &ofxDynamicLight::setSpotlight)
+      
+      .define_method("getLightID",        &ofxDynamicLight::getLightID)
+      
+      
+      .define_method("diffuse_color=",    &ofxDynamicLight::setDiffuseColor)
+      .define_method("specular_color=",   &ofxDynamicLight::setSpecularColor)
+      .define_method("ambient_color=",    &ofxDynamicLight::setAmbientColor)
+      
+      .define_method("diffuse_color",     &ofxDynamicLight::getDiffuseColor)
+		.define_method("specular_color",     &ofxDynamicLight::getSpecularColor)
+		.define_method("ambient_color",     &ofxDynamicLight::getAmbientColor)
+   ;
+}
+
+
+
+
+
+
+
+
 // "main" section
 extern "C"
 void Init_rubyOF_project()
@@ -1637,7 +1686,7 @@ void Init_rubyOF_project()
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
 	
 	wrap_ofxDynamicMaterial(rb_mOFX);
-	
+	wrap_ofxDynamicLight(rb_mOFX);
 	
 	
 	

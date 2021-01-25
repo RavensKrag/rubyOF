@@ -50,8 +50,9 @@
     uniform mat4 projectionMatrix;
     uniform mat4 textureMatrix;
     uniform mat4 modelViewProjectionMatrix;
-
-    uniform lightData lights[MAX_LIGHTS];
+    
+    uniform int num_lights;
+    uniform lightData lights[10];
 
 	%custom_uniforms%
 
@@ -233,7 +234,7 @@
 
 		vec3 transformedNormal = normalize(v_transformedNormal);
 
-        for( int i = 0; i < MAX_LIGHTS; i++ ){
+        for( int i = 0; i < num_lights; i++ ){
             if(lights[i].enabled<0.5) continue;
             if(lights[i].type<0.5){
                 pointLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
