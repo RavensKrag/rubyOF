@@ -94,6 +94,11 @@ class BlenderHistory
         out['viewport_camera'] = new_data['viewport_camera']
       end
       
+      # viewport for window sync
+      if new_data.has_key? 'viewport_region'
+        out['viewport_region'] = new_data['viewport_region']
+      end
+      
       
       # merge lists
       if new_data.has_key? 'all_entity_names'
