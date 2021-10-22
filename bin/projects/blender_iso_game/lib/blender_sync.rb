@@ -255,7 +255,7 @@ class BlenderSync
       
       # get material
       mat_name = message['material_name']
-      # mat = get_material(mat_name)
+      
       
       # debug print
       puts ">> entity name: #{obj.name}"
@@ -264,8 +264,7 @@ class BlenderSync
       
       # perform mapping
       if mat_name != obj.material.name
-        # find material
-        material = get_material(mat_name)
+        material = find_material(mat_name)
         # ^ get material first just in case there is an error
         #   Thus, if the material does not exist
         #   then the exception hits here and the depsgraph is preserved.
@@ -274,7 +273,6 @@ class BlenderSync
         @depsgraph.delete obj.name, 'MESH'
         
         # bind new material
-        puts "bind"
         obj.material = material
         
         # assign to new batch
@@ -309,7 +307,6 @@ class BlenderSync
       mat.specular_color = @default_material.specular_color
       mat.emissive_color = @default_material.emissive_color
       
-      # NOTE: how do I link new materials to existing objects?
       
       @new_materials[message['name']] = mat
       
@@ -466,11 +463,11 @@ class BlenderSync
   
   private
   
-  def get_material(material_name)
+  def find_material(material_name)
     puts "material name: #{material_name.inspect}"
     
     # p @depsgraph
-    p @new_materials
+    # p @new_materials
     
     if material_name == ''
       # (can't use nil, b/c nil means this field was not set)
