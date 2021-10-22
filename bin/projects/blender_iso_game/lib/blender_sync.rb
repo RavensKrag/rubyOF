@@ -182,6 +182,9 @@ class BlenderSync
     end
     
     # sent on some updates, when window link enabled
+    # puts "viewport_region"
+    # p blender_data
+    # p blender_data.keys
     blender_data['viewport_region']&.tap do |region_data|
       # 
       # sync window size
@@ -200,6 +203,7 @@ class BlenderSync
       # - trying to match pid_query with pid_hit
       # 
       
+      puts "trying to sync"
       sync_window_position(blender_pid: region_data['pid'])
     end
     

@@ -77,7 +77,7 @@ class IPC_Helper():
             
             pipe.write(message + "\n")
             
-            
+            print(message)
             print("=> msg len:", len(message))
         except IOError as e:
             print("broken pipe error (suppressed exception)")
@@ -179,44 +179,7 @@ class RubyOF(bpy.types.RenderEngine):
     # 
     # NOTE: if this function is too slow it causes viewport flicker
     def view_draw(self, context, depsgraph):
-        #
-        # Update the viewport camera
-        #
-        region = context.region
-        rv3d = context.region_data # RegionView3D(bpy_struct)
-        coord = (region.width/2.0, region.height/2.0)
-        
-        v3du = bpy_extras.view3d_utils
-        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
-        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
-        
-        space = context.space_data # SpaceView3D(Space)
-        
-        # print(camera_direction)
-        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
-        
-        data = self.__pack_viewport_camera(
-            rotation         = rv3d.view_rotation,
-            position         = camera_origin,
-            lens             = space.lens,
-            perspective_fov  = self.__viewport_fov(rv3d),
-            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
-            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
-            near_clip        = space.clip_start,
-            far_clip         = space.clip_end,
-            view_perspective = rv3d.view_perspective
-        )
-        
-        if context.scene.my_custom_props.b_windowLink:
-            data['viewport_region'] = {
-                'width':  region.width,
-                'height': region.height,
-                'pid': os.getpid()
-            }
-        
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
+        self.__update_viewport(context, depsgraph)
         
         #
         # Render the viewport
@@ -241,6 +204,7 @@ class RubyOF(bpy.types.RenderEngine):
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
     
+    
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
     # should be read from Blender in the same thread. Typically a render
@@ -249,6 +213,64 @@ class RubyOF(bpy.types.RenderEngine):
         region = context.region
         view3d = context.space_data
         scene = depsgraph.scene
+        
+        self.__update_scene(context, depsgraph)
+    
+    
+    
+    
+    
+    # ---- private helper methods ----
+    
+    def __update_viewport(self, context, depsgraph):
+        #
+        # Update the viewport camera
+        #
+        region = context.region
+        rv3d = context.region_data # RegionView3D(bpy_struct)
+        coord = (region.width/2.0, region.height/2.0)
+        
+        v3du = bpy_extras.view3d_utils
+        camera_direction = v3du.region_2d_to_vector_3d(region, rv3d, coord)
+        camera_origin    = v3du.region_2d_to_origin_3d(region, rv3d, coord)
+        
+        space = context.space_data # SpaceView3D(Space)
+        
+        # print(camera_direction)
+        # # ^ note: camera objects have both lens (mm) and angle (fov degrees)
+        
+        
+        
+        
+        data = self.__pack_viewport_camera(
+            rotation         = rv3d.view_rotation,
+            position         = camera_origin,
+            lens             = space.lens,
+            perspective_fov  = self.__viewport_fov(rv3d),
+            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
+            # ortho_scale      = context.scene.my_custom_props.ortho_scale,
+            near_clip        = space.clip_start,
+            far_clip         = space.clip_end,
+            view_perspective = rv3d.view_perspective
+        )
+        
+        if context.scene.my_custom_props.b_windowLink:
+            data['viewport_region'] = {
+                'width':  region.width,
+                'height': region.height,
+                'pid': os.getpid()
+            }
+        
+        output_string = json.dumps(data)
+        self.to_ruby.write(output_string)
+        
+        
+    
+    def __update_scene(self, context, depsgraph):
+        region = context.region
+        view3d = context.space_data
+        scene = depsgraph.scene
+        
         
         print("view update ---")
         
@@ -434,8 +456,6 @@ class RubyOF(bpy.types.RenderEngine):
         # TODO: send information on which objects are using which materials
         
         # note: in blender, one object can have many material slots
-    
-    # ---- private helper methods ----
     
     
     def export_unique_datablocks(self, datablock_list):
