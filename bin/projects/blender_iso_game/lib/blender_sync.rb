@@ -78,18 +78,18 @@ class BlenderSync
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     puts "queue length: #{@msg_queue.length}" if @msg_queue.length != 0
-    [MAX_READS, @msg_queue.length].min.times do
+    @msg_queue.length.times do
       data_string = @msg_queue.pop
       
       
       # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      blender_data = JSON.parse(data_string)
+      blender_message = JSON.parse(data_string)
       
-      # --- This write is only needed for debugging
-      File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
-        f.puts JSON.pretty_generate blender_data
-      end
-      # ---
+      # # --- This write is only needed for debugging
+      # File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
+      #   f.puts JSON.pretty_generate blender_message
+      # end
+      # # ---
       
       # p list
       # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
@@ -98,21 +98,25 @@ class BlenderSync
       # puts "time - parse json: #{dt}"
       
       
-      # # send all of this data to history
-      # @history.write(blender_data)
+      # send all of this data to history
+      @history.write blender_message
       
-      parse_blender_data(blender_data)
-      
-      # parse_blender_data(blender_data)
     end
     
-    # # retrieve the relevant slice of history
-    # # (might be the things we just processed, or might be a replay of the past)
-    # @history.read&.tap do |blender_data|
-    #   # TODO: need to send over type info instead of just the object name, but this works for now
-    #   parse_blender_data(blender_data)
-    # end
+    # TODO: reactivate / reimplement history so state is maintained when code reloads
     
+    # TODO: merge messages in order to catch up if possible?
+      # like, responding to linked window mode is slow, but if we can drop some of the older messages (they're superceeded by the newer messages anyway) then we can maybe stop the framerate from tanking.
+    
+    # TODO: why can't the viewport be made about 1/4 of my screen size? why does it have to be large to sync with the RubyOF window?
+    
+    
+    @history.read do |message|
+      parse_blender_data message
+    end
+    # ^ this method of merging history can't prevent spikes due to
+    #   expensive operations like window sync that take more than 1 frame,
+    #   but the old way couldn't deal with that either.
     
     
     
@@ -235,7 +239,7 @@ class BlenderSync
       # - trying to match pid_query with pid_hit
       # 
       
-      puts "trying to sync"
+      # puts "trying to sync"
       sync_window_position(blender_pid: message['pid'])
       
     when 'material_mapping'
@@ -502,7 +506,7 @@ class BlenderSync
       # 
       
       delta = blender_pos - rubyof_pos
-      puts "delta: #{delta}"
+      # puts "delta: #{delta}"
       
       # measurements of manually positioned windows:
       # dx = 0 to 3  (unsure of exact value)
@@ -527,7 +531,7 @@ class BlenderSync
   end
   
   def find_window_position(query_title_string, query_pid)
-    puts "trying to sync window position ---"
+    # puts "trying to sync window position ---"
     
     
     # 
@@ -549,7 +553,7 @@ class BlenderSync
       .collect{ |id_string|  id_string.to_i }
     
     hit_wm_id = pids.zip(wm_ids).assoc(query_pid).last
-    puts "wm_id: #{hit_wm_id}"
+    # puts "wm_id: #{hit_wm_id}"
     
     
     # 
@@ -576,7 +580,7 @@ class BlenderSync
     hit_py = info_hash['Absolute upper-left Y'].to_i
     
     
-    puts "-------"
+    # puts "-------"
     
     return CP::Vec2.new(hit_px, hit_py)
   end
