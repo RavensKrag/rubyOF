@@ -48,6 +48,10 @@ import hashlib
 import math
 
 
+def typestring(obj):
+    klass = type(obj)
+    return f'{klass.__module__}.{klass.__qualname__}'
+
 
 def focallength_to_fov(focal_length, sensor):
     return 2.0 * math.atan((sensor / 2.0) / focal_length)
@@ -57,7 +61,404 @@ def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
         return sensor_y;
     
     return sensor_x;
+
+
+
+
+
+
+
     
+    
+    
+def pack_light(obj):
+    data = {
+        'type': typestring(obj), # 'bpy.types.Object'
+        'name': obj.name_full,
+        '.type': obj.type, # 'LIGHT'
+        '.data.type': obj.data.type,  # 'POINT', etc
+        
+        'transform': pack_transform(obj),
+        
+        'color': [
+            'rgb',
+            obj.data.color[0],
+            obj.data.color[1],
+            obj.data.color[2]
+        ],
+        'ambient_color': [
+            'rgb',
+        ],
+        'diffuse_color': [
+            'rgb'
+        ],
+        'attenuation':[
+            'rgb'
+        ]
+    }
+    
+    if data['.data.type'] == 'AREA':
+        data.update({
+            'size_x': ['float', obj.data.size],
+            'size_y': ['float', obj.data.size_y]
+        })
+    elif data['.data.type'] == 'SPOT':
+        data.update({
+            'size': ['radians', obj.data.spot_size]
+        })
+    
+    return data
+
+
+def pack_mesh(obj):
+    obj_data = {
+        'type': typestring(obj), # 'bpy.types.Object'
+        'name': obj.name_full,
+        '.type' : obj.type, # 'MESH'
+        'transform': pack_transform(obj),
+        '.data.name': obj.data.name
+    }
+    
+    return obj_data
+
+def pack_mesh_data(mesh, shm_dir):
+    mesh.calc_loop_triangles()
+    # ^ need to call this to populate the mesh.loop_triangles() cache
+    
+    mesh.calc_normals_split()
+    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+    # ^ normals stored on the tri / face
+    
+    
+    # 
+    # vert positions
+    # 
+    
+    start_time = time.time()
+    
+    # number of actual verts likely to be less than maximum
+    # so just measure the list
+    num_verts = len(mesh.vertices)*3 # TODO: rename this variable
+    vert_data = [None] * num_verts
+    
+    
+    for i in range(len(mesh.vertices)):
+        vert = mesh.vertices[i]
+        
+        vert_data[i*3+0] = vert.co[0]
+        vert_data[i*3+1] = vert.co[1]
+        vert_data[i*3+2] = vert.co[2]
+    
+    
+    stop_time = time.time()
+    dt = (stop_time - start_time) * 1000
+    print("vertex export: ", dt, " msec" )
+    
+    
+    # 
+    # index buffer
+    # 
+    
+    start_time = time.time()
+    
+    
+    index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
+    
+    stop_time = time.time()
+    dt = (stop_time - start_time) * 1000
+    print("index export: ", dt, " msec" )
+    
+    
+    # 
+    # normal vectors
+    # 
+    
+    start_time = time.time()
+    
+    num_tris = len(mesh.loop_triangles)
+    
+    num_normals = (num_tris * 3 * 3)
+    normal_data = [None] * num_normals
+    
+    # iter3 = range(3)
+    
+    for i in range(num_tris):
+        tri = mesh.loop_triangles[i]
+        for j in range(3):
+            normal = tri.split_normals[j]
+            for k in range(3):
+                idx = 9*i+3*j+k
+                # print(idx)
+                # print(i, ' ', j, ' ', k)
+                normal_data[idx] = normal[k]
+    
+    
+    
+    stop_time = time.time()
+    dt = (stop_time - start_time) * 1000
+    print("normal export: ", dt, " msec" )
+    
+    
+    # 
+    # pack Base64 normal vector data
+    # 
+    
+    start_time = time.time()
+    
+    # array -> binary blob
+    binary_data = struct.pack('%df' % num_normals, *normal_data)
+    
+    # normal binary -> base 64 encoded binary -> ascii
+    binary_string = base64.b64encode(binary_data).decode('ascii')
+    
+    
+    sha = hashlib.sha1(binary_data).hexdigest()
+    tmp_normal_file_path = os.path.join(shm_dir, "%s.txt" % sha)
+    
+    
+    # tmp_normal_file_path = os.path.join(shm_dir, "normals.txt")
+    
+    if not os.path.exists(tmp_normal_file_path):
+        with open(tmp_normal_file_path, 'w') as f:
+            f.write(binary_string)
+        
+    stop_time = time.time()
+    dt = (stop_time - start_time) * 1000
+    print("shm file io (normals): ", dt, " msec" )
+    
+    
+    # 
+    # pack Base64 vertex data
+    # 
+    
+    start_time = time.time()
+    
+    # array -> binary blob
+    binary_data = struct.pack('%df' % num_verts, *vert_data)
+    
+    # normal binary -> base 64 encoded binary -> ascii
+    binary_string = base64.b64encode(binary_data).decode('ascii')
+    
+    
+    sha = hashlib.sha1(binary_data).hexdigest()
+    tmp_vert_file_path = os.path.join(shm_dir, "%s.txt" % sha)
+    
+    
+    # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
+    
+    if not os.path.exists(tmp_vert_file_path):
+        with open(tmp_vert_file_path, 'w') as f:
+            f.write(binary_string)
+        
+    stop_time = time.time()
+    dt = (stop_time - start_time) * 1000
+    print("shm file io (verts): ", dt, " msec" )
+    
+    
+    # 
+    # Pack final mesh datablock data for FIFO transmission
+    # 
+    
+    data = {
+        'type': typestring(mesh),
+        'name': mesh.name, # name of the data, not the object
+        'verts': [
+            'float', num_verts, tmp_vert_file_path
+        ],
+        'normals': [
+            'float', num_normals, tmp_normal_file_path
+        ],
+        'tris' : index_buffer
+    }
+    
+    return data
+
+
+
+def pack_material(mat):
+    data = {
+        'type': typestring(mat),
+        'name': mat.name,
+        'color': [
+            'FloatColor_rgb',
+            mat.rb_mat.color[0],
+            mat.rb_mat.color[1],
+            mat.rb_mat.color[2],
+        ],
+        'alpha': [
+            'float',
+            mat.rb_mat.alpha
+        ],
+        'shininess': [
+            'float',
+            mat.rb_mat.shininess
+        ]
+    }
+    
+    return data
+
+
+def pack_transform(obj):
+    # 
+    # set transform properties
+    # 
+    
+    pos   = obj.location
+    rot   = obj.rotation_quaternion
+    scale = obj.scale
+    
+    transform = {
+        'position':[
+            "Vec3",
+            pos.x,
+            pos.y,
+            pos.z
+        ],
+        'rotation':[
+            "Quat",
+            rot.w,
+            rot.x,
+            rot.y,
+            rot.z
+        ],
+        'scale':[
+            "Vec3",
+            scale.x,
+            scale.y,
+            scale.z
+        ]
+    }
+    
+    return transform
+    
+
+    
+#  sub.prop(light, "size", text="Size X")
+# sub.prop(light, "size_y", text="Y")
+
+# col.prop(light, "spot_size", text="Size")
+# ^ angle of spotlight
+
+
+
+# col.prop(light, "color")
+# col.prop(light, "energy")
+
+# blender EEVEE properties:
+    # color
+    # power (wats)
+    # specular
+    # radius
+    # shadow
+# OpenFrameworks properties:
+    # setAmbientColor()
+    # setDiffuseColor()
+    # setSpecularColor()
+    # setAttenuation()
+        # 3 args: const, linear, quadratic
+    # setup() 
+    # setAreaLight()
+    # setDirectional()
+    # setPointLight()
+    # setSpotlight() # 2 args to set the following:
+        # setSpotlightCutOff()
+            # 0 to 90 degs, default 45
+        # setSpotConcentration()
+            # 0 to 128 exponent, default 16
+
+
+def pack_viewport_camera(rotation, position,
+                        lens, perspective_fov, ortho_scale,
+                        near_clip, far_clip,
+                        view_perspective):
+    return {
+        'type': 'viewport_camera',
+        'rotation':[
+            "Quat",
+            rotation.w,
+            rotation.x,
+            rotation.y,
+            rotation.z
+        ],
+        'position':[
+            "Vec3",
+            position.x,
+            position.y,
+            position.z
+        ],
+        'lens':[
+            "mm",
+            lens
+        ],
+        'fov':[
+            "deg",
+            perspective_fov
+        ],
+        'near_clip':[
+            'm',
+            near_clip
+        ],
+        'far_clip':[
+            'm',
+            far_clip
+        ],
+        # 'aspect_ratio':[
+        #     "???",
+        #     context.scene.my_custom_props.aspect_ratio
+        # ],
+        'ortho_scale':[
+            "factor",
+            ortho_scale
+        ],
+        'view_perspective': view_perspective,
+    }
+
+
+def calc_ortho_scale(scene, space, rv3d):
+    # 
+    # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
+    # 
+    
+    # rv3d->dist * sensor_size / v3d->lens
+    # ortho_scale = rv3d.view_distance * sensor_size / space.lens;
+    
+        # (ortho_scale * space.lens) / rv3d.view_distance = sensor_size
+    
+    # with estimated ortho scale, compute sensor size
+    ortho_scale = scene.my_custom_props.ortho_scale
+    print('ortho scale -> sensor size')
+    sensor_size = ortho_scale * space.lens / rv3d.view_distance
+    print(sensor_size)
+    
+    # then, with that constant sensor size, compute the dynamic ortho scale
+    print('that sensor size -> ortho scale')
+    sensor_size = 71.98320027323571
+    ortho_scale = rv3d.view_distance * sensor_size / space.lens
+    print(ortho_scale)
+    
+    # ^ this works now!
+    #   but now I need to be able to automatically compute the sensor size...
+    
+    # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
+    
+    return ortho_scale
+
+def calc_viewport_fov(rv3d):
+    # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
+    vmat_inv = rv3d.view_matrix.inverted()
+    pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
+    fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
+    print('rv3d fov:')
+    print(fov)
+    
+    return fov
+    
+
+
+
+
+
+
 class IPC_Helper():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
@@ -116,10 +517,10 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         # data = {
-        #     "interrupt": "RESET"
+        #     'type':"interrupt"
+        #     'value': "RESET"
         # }
-        # output_string = json.dumps(data)
-        # self.to_ruby.write(output_string)
+        # self.to_ruby.write(json.dumps(data))
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
@@ -179,6 +580,7 @@ class RubyOF(bpy.types.RenderEngine):
     # 
     # NOTE: if this function is too slow it causes viewport flicker
     def view_draw(self, context, depsgraph):
+        # send data to RubyOF about the viewport / camera
         self.__update_viewport(context, depsgraph)
         
         #
@@ -214,12 +616,10 @@ class RubyOF(bpy.types.RenderEngine):
         view3d = context.space_data
         scene = depsgraph.scene
         
+        # send info to RubyOF about the data in the scene
         self.__update_scene(context, depsgraph)
     
-    
-    
-    
-    
+        
     # ---- private helper methods ----
     
     def __update_viewport(self, context, depsgraph):
@@ -241,28 +641,31 @@ class RubyOF(bpy.types.RenderEngine):
         
         
         
-        
-        data = self.__pack_viewport_camera(
+        data = pack_viewport_camera(
             rotation         = rv3d.view_rotation,
             position         = camera_origin,
             lens             = space.lens,
-            perspective_fov  = self.__viewport_fov(rv3d),
-            ortho_scale      = self.__ortho_scale(context.scene, space, rv3d),
+            perspective_fov  = calc_viewport_fov(rv3d),
+            ortho_scale      = calc_ortho_scale(context.scene, space, rv3d),
             # ortho_scale      = context.scene.my_custom_props.ortho_scale,
             near_clip        = space.clip_start,
             far_clip         = space.clip_end,
             view_perspective = rv3d.view_perspective
         )
         
+        self.to_ruby.write(json.dumps(data))
+        
+        
+        
         if context.scene.my_custom_props.b_windowLink:
-            data['viewport_region'] = {
+            data = {
+                'type': 'viewport_region',
                 'width':  region.width,
                 'height': region.height,
                 'pid': os.getpid()
             }
-        
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
+            
+            self.to_ruby.write(json.dumps(data))
         
         
     
@@ -274,11 +677,19 @@ class RubyOF(bpy.types.RenderEngine):
         
         print("view update ---")
         
-        total_t0 = time.time()
+        data = {
+            'type': 'timestamp',
+            'value': time.time(),
+            'memo': 'start',
+        }
         
-        obj_export = []
-        datablock_export = []
-        material_export = []
+        self.to_ruby.write(json.dumps(data))
+        
+        # collect up two different categories of messages
+        # the datablock messages must be sent before entity messages
+        # otherwise there will be issues with dependencies
+        message_queue   = [] # list of dict
+        mesh_datablocks = [] # list of datablock objects (various types)
         
         active_object = context.active_object
         
@@ -286,34 +697,22 @@ class RubyOF(bpy.types.RenderEngine):
             # First time initialization
             self.first_time = False
             
-            
             # Loop over all datablocks used in the scene.
             # for datablock in depsgraph.ids:
             
-            
             # loop over all objects
             for obj in bpy.data.objects:
-                obj_data = {
-                    'name': obj.name_full,
-                    'type': obj.type,
-                }
-                
-                obj_data['transform'] = self.pack_transform(obj)
-                
-                if isinstance(obj.data, bpy.types.Light):
-                    obj_data['data'] = self.__pack_light(obj.data)
-                else:
-                    obj_data['data'] = obj.data.name
-                
-                obj_export.append(obj_data)
+                if obj.type == 'LIGHT':
+                    message_queue.append(pack_light(obj))
+                    
+                elif obj.type == 'MESH':
+                    mesh_datablocks.append(obj.data)
+                    message_queue.append(pack_mesh(obj))
             
             # loop over all materials
             for mat in bpy.data.materials:
                 if mat.users > 0:
-                    material_export.append(self.__pack_material(mat))
-            
-            datablock_list = [ obj.data for obj in bpy.data.objects ]
-            datablock_export = self.export_unique_datablocks(datablock_list)
+                    message_queue.append(pack_material(mat))
             
             # TODO: want to separate out lights from meshes (objects)
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
@@ -329,26 +728,19 @@ class RubyOF(bpy.types.RenderEngine):
             print("mesh edit detected")
             print(active_object)
             
-            obj_data = {
-                    'name': active_object.name_full,
-                    'type': active_object.type,
-                    'data': active_object.data.name
-                }
             
-            obj_export = [ obj_data ]
+            mesh_datablocks.append(active_object.data)
+            message_queue.append(pack_mesh(active_object))
+            # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
             
-            datablock_export = [
-                self.pack_mesh_data(active_object.data)
-            ]
             
             # send material data if any material was changed
             # (maybe it was this material? no way to be sure, so just send it)
             if(depsgraph.id_type_updated('MATERIAL')):
                 if(len(active_object.material_slots) > 0):
                     mat = active_object.material_slots[0].material
-                    material_export = [
-                        self.__pack_material(mat)
-                    ]
+                    message_queue.append(pack_material(mat))
+            
             
             bpy.ops.object.editmode_toggle()
             bpy.ops.object.editmode_toggle()
@@ -356,62 +748,69 @@ class RubyOF(bpy.types.RenderEngine):
             
         else:
             # It is possible multiple things have been updated.
-            # Could by a mixture of objects and/or materials.
+            # Could be a mixture of objects and/or materials.
             # Only send the data that has changed.
-            
-            datablock_list = [] # datablocks that need to be packed up
             
             print("there are", len(depsgraph.updates), "updates to process")
             
             # Loop over all object instances in the scene.
-            updated_objects   = []
-            updated_materials = []
-            
             for update in depsgraph.updates:
                 obj = update.id
                 
                 if isinstance(obj, bpy.types.Object):
-                    obj_data = {
-                        'name': obj.name_full,
-                        'type': obj.type,
-                    }
-                    
-                    if update.is_updated_transform:
-                        obj_data['transform'] = self.pack_transform(obj)
-                    
-                    if isinstance(obj.data, bpy.types.Light):
-                        obj_data['data'] = self.__pack_light(obj.data)
-                    elif update.is_updated_geometry:
-                        obj_data['data'] = obj.data.name
-                        datablock_list.append(obj.data)
+                    if obj.type == 'LIGHT':
+                        message_queue.append(pack_light(obj))
                         
+                    elif obj.type == 'MESH':
+                        if update.is_updated_geometry:
+                            mesh_datablocks.append(obj.data)
+                        message_queue.append(pack_mesh(obj))
                     
-                    obj_export.append(obj_data)
+                    # if update.is_updated_transform:
+                    #     obj_data['transform'] = pack_transform(obj)
+                    
+                    # if isinstance(obj.data, bpy.types.Light):
+                    #     obj_data['data'] = self.__pack_light(obj.data)
                 
                 # only send data for updated materials
                 if isinstance(obj, bpy.types.Material):
                     mat = obj
-                    material_export.append(self.__pack_material(mat))
+                    message_queue(pack_material(mat))
             
             # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
             
-            datablock_export = self.export_unique_datablocks(datablock_list)
         # ----------
+        # TODO: if many objects use one mesh datablock, should only need to send that datablock once. old style did this, but the new style does not.
         
+        # If many objects use one mesh datablock, 
+        # should only send that datablock once.
+        # That is why we need to group them all up before sending
+        unique_datablocks = list(set(mesh_datablocks))
+        for datablock in unique_datablocks:
+            msg = pack_mesh_data(datablock, self.shm_dir)
+            self.to_ruby.write(json.dumps(msg))
+        
+        # send out all the regular messages after the datablocks
+        # to prevent dependency issues
+        for msg in message_queue:
+            self.to_ruby.write(json.dumps(msg))
         
         # full list of all objects, by name (helps Ruby delete old objects)
-        object_list = [ instance.object.name_full for instance 
+        data = {
+            'type': 'all_entity_names',
+            'list': [ instance.object.name_full for instance 
                         in depsgraph.object_instances ]
+        }
         
+        self.to_ruby.write(json.dumps(data))
         
         
         # information about material linkages
         # (send all info every frame)
         # (RubyOF will figure out whether to rebind or not)
-        material_map = {}
         for obj in bpy.data.objects:
             if isinstance(obj.data, bpy.types.Mesh):
-                print("found mesh")
+                print("found object with mesh")
                 
                 material_name = ''
                 # ^ default material name
@@ -422,432 +821,26 @@ class RubyOF(bpy.types.RenderEngine):
                     mat = obj.material_slots[0].material
                     material_name = mat.name
                 
-                # map { mesh object => material }
-                material_map[obj.name_full] = material_name
-        
-        
-        total_t1 = time.time()
-        dt = (total_t1 - total_t0) * 1000
-        print("TOTAL TIME: ", dt, " msec" )
-        
+                data = {
+                    'type': 'material_mapping',
+                    'object_name': obj.name_full,
+                    'material_name': material_name
+                }
+                
+                self.to_ruby.write(json.dumps(data))
         
         data = {
-            'timestamps' : {
-                'start_time': total_t0,
-                'end_time':   total_t1
-            },
-            
-            'all_entity_names' : object_list,
-            
-            'objects' : obj_export,
-            'datablocks' : datablock_export,
-            
-            'materials' : material_export,
-            'material_map' : material_map
+            'type': 'timestamp',
+            'value': time.time(),
+            'memo': 'end',
         }
         
-        output_string = json.dumps(data)
-        self.to_ruby.write(output_string)
-        
-        
+        self.to_ruby.write(json.dumps(data))
         
         
         # TODO: serialize and send materials that have changed
-        # TODO: send information on which objects are using which materials
         
         # note: in blender, one object can have many material slots
-    
-    
-    def export_unique_datablocks(self, datablock_list):
-        datablock_export = []
-        
-        unique_datablocks = list(set(datablock_list))
-        for datablock in unique_datablocks:
-            if isinstance(datablock, bpy.types.Mesh):
-                datablock_export.append( self.pack_mesh_data(datablock) )
-            # elif isinstance(datablock, bpy.types.Light):
-                # datablock_export.append( self.__pack_light(datablock) )
-            else:
-                continue
-        
-        return datablock_export
-        
-    
-    def pack_transform(self, obj):
-        # 
-        # set transform properties
-        # 
-        
-        pos   = obj.location
-        rot   = obj.rotation_quaternion
-        scale = obj.scale
-        
-        transform = {
-            'position':[
-                "Vec3",
-                pos.x,
-                pos.y,
-                pos.z
-            ],
-            'rotation':[
-                "Quat",
-                rot.w,
-                rot.x,
-                rot.y,
-                rot.z
-            ],
-            'scale':[
-                "Vec3",
-                scale.x,
-                scale.y,
-                scale.z
-            ]
-        }
-        
-        return transform
-        
-    
-    def pack_mesh_data(self, mesh):
-        mesh.calc_loop_triangles()
-        # ^ need to call this to populate the mesh.loop_triangles() cache
-        
-        mesh.calc_normals_split()
-        # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-        # ^ normals stored on the tri / face
-        
-        
-        # 
-        # vert positions
-        # 
-        
-        start_time = time.time()
-        
-        # number of actual verts likely to be less than maximum
-        # so just measure the list
-        num_verts = len(mesh.vertices)*3 # TODO: rename this variable
-        vert_data = [None] * num_verts
-        
-        
-        for i in range(len(mesh.vertices)):
-            vert = mesh.vertices[i]
-            
-            vert_data[i*3+0] = vert.co[0]
-            vert_data[i*3+1] = vert.co[1]
-            vert_data[i*3+2] = vert.co[2]
-        
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("vertex export: ", dt, " msec" )
-        
-        
-        # 
-        # index buffer
-        # 
-        
-        start_time = time.time()
-        
-        
-        index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("index export: ", dt, " msec" )
-        
-        
-        # 
-        # normal vectors
-        # 
-        
-        start_time = time.time()
-        
-        num_tris = len(mesh.loop_triangles)
-        
-        num_normals = (num_tris * 3 * 3)
-        normal_data = [None] * num_normals
-        
-        # iter3 = range(3)
-        
-        for i in range(num_tris):
-            tri = mesh.loop_triangles[i]
-            for j in range(3):
-                normal = tri.split_normals[j]
-                for k in range(3):
-                    idx = 9*i+3*j+k
-                    # print(idx)
-                    # print(i, ' ', j, ' ', k)
-                    normal_data[idx] = normal[k]
-        
-        
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("normal export: ", dt, " msec" )
-        
-        
-        # 
-        # pack Base64 normal vector data
-        # 
-        
-        start_time = time.time()
-        
-        # array -> binary blob
-        binary_data = struct.pack('%df' % num_normals, *normal_data)
-        
-        # normal binary -> base 64 encoded binary -> ascii
-        binary_string = base64.b64encode(binary_data).decode('ascii')
-        
-        
-        sha = hashlib.sha1(binary_data).hexdigest()
-        tmp_normal_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
-        
-        
-        # tmp_normal_file_path = os.path.join(self.shm_dir, "normals.txt")
-        
-        if not os.path.exists(tmp_normal_file_path):
-            with open(tmp_normal_file_path, 'w') as f:
-                f.write(binary_string)
-            
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("shm file io (normals): ", dt, " msec" )
-        
-        
-        # 
-        # pack Base64 vertex data
-        # 
-        
-        start_time = time.time()
-        
-        # array -> binary blob
-        binary_data = struct.pack('%df' % num_verts, *vert_data)
-        
-        # normal binary -> base 64 encoded binary -> ascii
-        binary_string = base64.b64encode(binary_data).decode('ascii')
-        
-        
-        sha = hashlib.sha1(binary_data).hexdigest()
-        tmp_vert_file_path = os.path.join(self.shm_dir, "%s.txt" % sha)
-        
-        
-        # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
-        
-        if not os.path.exists(tmp_vert_file_path):
-            with open(tmp_vert_file_path, 'w') as f:
-                f.write(binary_string)
-            
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("shm file io (verts): ", dt, " msec" )
-        
-        
-        # 
-        # Pack final mesh datablock data for FIFO transmission
-        # 
-        
-        data = {
-            'type': 'bpy.types.Mesh',
-            'mesh_name': mesh.name, # name of the data, not the object
-            'verts': [
-                'float', num_verts, tmp_vert_file_path
-            ],
-            'normals': [
-                'float', num_normals, tmp_normal_file_path
-            ],
-            'tris' : index_buffer
-        }
-        
-        return data
-    
-        
-    #  sub.prop(light, "size", text="Size X")
-    # sub.prop(light, "size_y", text="Y")
-    
-    # col.prop(light, "spot_size", text="Size")
-    # ^ angle of spotlight
-    
-    
-    
-    # col.prop(light, "color")
-    # col.prop(light, "energy")
-    
-    # blender EEVEE properties:
-        # color
-        # power (wats)
-        # specular
-        # radius
-        # shadow
-    # OpenFrameworks properties:
-        # setAmbientColor()
-        # setDiffuseColor()
-        # setSpecularColor()
-        # setAttenuation()
-            # 3 args: const, linear, quadratic
-        # setup() 
-        # setAreaLight()
-        # setDirectional()
-        # setPointLight()
-        # setSpotlight() # 2 args to set the following:
-            # setSpotlightCutOff()
-                # 0 to 90 degs, default 45
-            # setSpotConcentration()
-                # 0 to 128 exponent, default 16
-    
-    
-    
-    
-    
-    
-    
-    @staticmethod
-    def __pack_light(light):
-        data = {
-            'light_name': light.name,
-            'type': 'bpy.types.Light', 
-            'color': [
-                'rgb',
-                light.color[0],
-                light.color[1],
-                light.color[2]
-            ],
-            'light_type': light.type,
-            'ambient_color': [
-                'rgb',
-            ],
-            'diffuse_color': [
-                'rgb'
-            ],
-            'attenuation':[
-                'rgb'
-            ]
-        }
-        
-        if light.type == 'AREA':
-            data.update({
-                'size_x': ['float', light.size],
-                'size_y': ['float', light.size_y]
-            })
-        elif light.type == 'SPOT':
-            data.update({
-                'size': ['radians', light.spot_size]
-            })
-        
-        return data
-    
-    
-    @staticmethod
-    def __pack_material(material):
-        return {
-            'type': 'bpy.types.Material',
-            'name': material.name,
-            'color': [
-                'FloatColor_rgb',
-                material.rb_mat.color[0],
-                material.rb_mat.color[1],
-                material.rb_mat.color[2],
-            ],
-            'alpha': [
-                'float',
-                material.rb_mat.alpha
-            ],
-            'shininess': [
-                'float',
-                material.rb_mat.shininess
-            ]
-        }
-    
-    
-    @staticmethod
-    def __pack_viewport_camera(rotation, position,
-                            lens, perspective_fov, ortho_scale,
-                            near_clip, far_clip,
-                            view_perspective):
-        return {
-            'viewport_camera' : {
-                'rotation':[
-                    "Quat",
-                    rotation.w,
-                    rotation.x,
-                    rotation.y,
-                    rotation.z
-                ],
-                'position':[
-                    "Vec3",
-                    position.x,
-                    position.y,
-                    position.z
-                ],
-                'lens':[
-                    "mm",
-                    lens
-                ],
-                'fov':[
-                    "deg",
-                    perspective_fov
-                ],
-                'near_clip':[
-                    'm',
-                    near_clip
-                ],
-                'far_clip':[
-                    'm',
-                    far_clip
-                ],
-                # 'aspect_ratio':[
-                #     "???",
-                #     context.scene.my_custom_props.aspect_ratio
-                # ],
-                'ortho_scale':[
-                    "factor",
-                    ortho_scale
-                ],
-                'view_perspective': view_perspective,
-            }
-        }
-    
-    
-    @staticmethod
-    def __ortho_scale(scene, space, rv3d):
-        # 
-        # blender-git/blender/source/blender/blenkernel/intern/camera.c:293
-        # 
-        
-        # rv3d->dist * sensor_size / v3d->lens
-        # ortho_scale = rv3d.view_distance * sensor_size / space.lens;
-        
-            # (ortho_scale * space.lens) / rv3d.view_distance = sensor_size
-        
-        # with estimated ortho scale, compute sensor size
-        ortho_scale = scene.my_custom_props.ortho_scale
-        print('ortho scale -> sensor size')
-        sensor_size = ortho_scale * space.lens / rv3d.view_distance
-        print(sensor_size)
-        
-        # then, with that constant sensor size, compute the dynamic ortho scale
-        print('that sensor size -> ortho scale')
-        sensor_size = 71.98320027323571
-        ortho_scale = rv3d.view_distance * sensor_size / space.lens
-        print(ortho_scale)
-        
-        # ^ this works now!
-        #   but now I need to be able to automatically compute the sensor size...
-        
-        # (in the link below, there's supposed to be a factor of 2 involved in converting lens to FOV. Perhaps the true value of sensor size is 72, which differs from the expected 36mm by a factor of 2 ???)
-        
-        return ortho_scale
-    
-    @staticmethod
-    def __viewport_fov(rv3d):
-        # src: https://blender.stackexchange.com/questions/46391/how-to-convert-spaceview3d-lens-to-field-of-view
-        vmat_inv = rv3d.view_matrix.inverted()
-        pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
-        fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
-        print('rv3d fov:')
-        print(fov)
-        
-        return fov
-        
-    
     
     # --------------------------------
 

@@ -77,6 +77,7 @@ class BlenderSync
   def update
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
+    puts "queue length: #{@msg_queue.length}" if @msg_queue.length != 0
     [MAX_READS, @msg_queue.length].min.times do
       data_string = @msg_queue.pop
       
@@ -85,7 +86,7 @@ class BlenderSync
       blender_data = JSON.parse(data_string)
       
       # --- This write is only needed for debugging
-      File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'w') do |f|
+      File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
         f.puts JSON.pretty_generate blender_data
       end
       # ---
@@ -97,19 +98,20 @@ class BlenderSync
       # puts "time - parse json: #{dt}"
       
       
-      # send all of this data to history
-      @history.write(blender_data)
+      # # send all of this data to history
+      # @history.write(blender_data)
       
+      parse_blender_data(blender_data)
       
       # parse_blender_data(blender_data)
     end
     
-    # retrieve the relevant slice of history
-    # (might be the things we just processed, or might be a replay of the past)
-    @history.read&.tap do |blender_data|
-      # TODO: need to send over type info instead of just the object name, but this works for now
-      parse_blender_data(blender_data)
-    end
+    # # retrieve the relevant slice of history
+    # # (might be the things we just processed, or might be a replay of the past)
+    # @history.read&.tap do |blender_data|
+    #   # TODO: need to send over type info instead of just the object name, but this works for now
+    #   parse_blender_data(blender_data)
+    # end
     
     
     
@@ -122,8 +124,7 @@ class BlenderSync
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
-  def parse_blender_data(blender_data)
-    
+  def parse_blender_data(message)
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     # data = {
@@ -139,126 +140,15 @@ class BlenderSync
     # }
     
     
-    if blender_data['interrupt'] == 'RESET '
-      # blender has reset, so reset all RubyOF data
-      @depsgraph.clear
-      
-      return
-    end
+    # Temporary storage for Blender backend datablocks, like mesh data,
+    # before they become attached to an entity.
+    @new_datablocks ||= Hash.new
+    
+    # depsgraph only stores materials that are associated with a batch, so we need to temporarily store materials here as they are loaded
+    @new_materials ||= Hash.new
     
     
-    
-    # process timestamps twice:
-    # + calculate transmission time at the start of this function
-    # + calculate roundtrip time at the end of this function
-    timestamps = blender_data['timestamps']
-    unless timestamps.nil?
-      time = timestamps['end_time']
-      dt = Time.now.strftime('%s.%N').to_f - time
-      puts "transmision time: #{dt*1000} ms"
-    end
-    
-    
-    
-    
-    # only sent on update, not on initial
-    blender_data['all_entity_names']&.tap do |entity_names|
-      # The viewport camera is an object in RubyOF, but not in Blender
-      # Need to remove it from the entity list or the camera
-      # will be deleted.
-      @depsgraph.gc(active: entity_names)
-    end
-    
-    
-    # sent on viewport update, not every frame
-    blender_data['viewport_camera']&.tap do |camera_data|
-      # puts "update viewport"
-      
-      @depsgraph.viewport_camera.tap do |camera|
-        camera.dirty = true
-        
-        camera.load(camera_data)
-      end
-    end
-    
-    # sent on some updates, when window link enabled
-    # puts "viewport_region"
-    # p blender_data
-    # p blender_data.keys
-    blender_data['viewport_region']&.tap do |region_data|
-      # 
-      # sync window size
-      # 
-      
-      w = region_data['width']
-      h = region_data['height']
-      @window.set_window_shape(w,h)
-      
-      # @camera.aspectRatio = w.to_f/h.to_f
-      
-      
-      # 
-      # sync window position
-      # (assuming running on Linux)
-      # - trying to match pid_query with pid_hit
-      # 
-      
-      puts "trying to sync"
-      sync_window_position(blender_pid: region_data['pid'])
-    end
-    
-    
-    
-    
-    
-    # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
-    
-    new_datablocks = Hash.new
-    
-    blender_data['datablocks']&.tap do |datablock_list|
-      datablock_list.each do |data|
-        case data['type']
-        when 'bpy.types.Mesh'
-          # create underlying mesh data (verts)
-          # to later associate with mesh objects (transform)
-          # which sets the foundation for instanced geometry
-          
-          mesh_datablock =
-            @depsgraph.fetch_mesh_datablock(data['mesh_name']) do |name|
-              BlenderMeshData.new(name).tap do |mesh_datablock|
-                new_datablocks[name] = mesh_datablock
-              end
-            end
-          
-          puts "load: #{data.inspect}"
-          mesh_datablock.load_data(data)
-          
-          
-        when 'bpy.types.Light'
-          # # I don't want to have linked lights in RubyOF.
-          # # Thus, rather than create light datablocks here,
-          # # link the deserialized JSON message into the object 'data' field
-          # # so it all can be unpacked together in a later phase
-          
-          # blender_data['objects']&.tap do |object_list|
-            
-          #   object_list
-          #   .select{|o| o['type'] == 'LIGHT' }
-          #   .find{  |o| o['name'] == data['light_name'] }
-          #   .tap{   |o| o['data'] = data }
-          #   # links data even if data field is already set
-          #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
-            
-          # end
-          
-          
-        end
-      end
-    end
-    
-    # p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
-    
-    
+    # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
     
     
     if @default_material.nil?
@@ -293,187 +183,277 @@ class BlenderSync
       
     end
     
+    # p @depsgraph.instance_variable_get("@mesh_objects")
+    # p @new_datablocks
+    puts "--- #{message['type']} ---"
+    # puts message['type'] === 'bpy.types.Mesh'
     
     
-    new_materials = Hash.new
-    
-    blender_data['materials']&.tap do |material_list|
-      material_list.each do |data|
-        # (same pattern as mesh datablock manipulation)
-        # retrieve existing material and edit its properties
-        
-        mat =
-          @depsgraph.fetch_material_datablock(data['name']) do
-            BlenderMaterial.new(data['name']).tap do |mat|
-              new_materials[mat.name] = mat
-            end
-          end
-        
-        # p data['color'][1..3] # => data is already an array of floats
-        # convert to premultiplied alpha format
-        alpha = data['alpha'][1]
-        color = RubyOF::FloatColor.rgb(data['color'][1..3].map{|i| i * alpha})
-        color.a = alpha
-        
-        
-        puts color
-        
-        
-        mat.diffuse_color  = color
-        
-        mat.ambient_color  = @default_material.ambient_color
-        mat.specular_color = @default_material.specular_color
-        mat.emissive_color = @default_material.emissive_color
-        
-        # NOTE: how do I link new materials to existing objects?
+    case message['type']
+    when 'interrupt'
+      if message['value'] == 'RESET'
+        # blender has reset, so reset all RubyOF data
+        @depsgraph.clear
       end
-    end
-    
-    
-    
-    # (lambda closes on the new_materials Hash, so it is passed implicity)
-    get_material = ->(material_name) do 
-      puts "material name: #{material_name.inspect}"
       
-      if material_name == ''
-        # (can't use nil, b/c nil means this field was not set)
-        @default_material
-      else
-        @depsgraph.fetch_material_datablock(material_name) do
-          new_materials.fetch(material_name) do
-            raise "Could not find material '#{material_name}'"
+    when 'all_entity_names'
+      # The viewport camera is an object in RubyOF, but not in Blender
+      # Need to remove it from the entity list or the camera
+      # will be deleted.
+      @depsgraph.gc(active: message['list'])
+      
+    when 'viewport_camera'
+      # sent on viewport update, not every frame
+      # puts "update viewport"
+      
+      @depsgraph.viewport_camera.tap do |camera|
+        camera.dirty = true
+        
+        camera.load(message)
+      end
+      
+    when 'viewport_region'
+      # sent on some updates, when window link enabled
+      # puts "viewport_region"
+      # p blender_data
+      # p blender_data.keys
+      
+      # 
+      # sync window size
+      # 
+      
+      w = message['width']
+      h = message['height']
+      @window.set_window_shape(w,h)
+      
+      # @camera.aspectRatio = w.to_f/h.to_f
+      
+      
+      # 
+      # sync window position
+      # (assuming running on Linux)
+      # - trying to match pid_query with pid_hit
+      # 
+      
+      puts "trying to sync"
+      sync_window_position(blender_pid: message['pid'])
+      
+    when 'material_mapping'
+      
+      # Rebind materials for existing objects
+      # 
+      # All meshes are assigned the default material on init
+      # and then they are rebound here when the material mapping is recieved.
+      # Mappings should be sent every update for every mesh obj.
+      
+      # get object
+      obj_name = message['object_name']
+      obj = 
+        @depsgraph.fetch_mesh_object(obj_name) do
+          raise "Mesh entity '#{obj_name}' not found."
+        end
+      
+      # get material
+      mat_name = message['material_name']
+      # mat = get_material(mat_name)
+      
+      # debug print
+      puts ">> entity name: #{obj.name}"
+      puts ">> current mat name: #{obj.material.name}"
+      puts ">> material name: #{mat_name.inspect}"
+      
+      # perform mapping
+      if mat_name != obj.material.name
+        # find material
+        material = get_material(mat_name)
+        # ^ get material first just in case there is an error
+        #   Thus, if the material does not exist
+        #   then the exception hits here and the depsgraph is preserved.
+        
+        # remove from existing batch
+        @depsgraph.delete obj.name, 'MESH'
+        
+        # bind new material
+        puts "bind"
+        obj.material = material
+        
+        # assign to new batch
+        @depsgraph.add obj
+        
+      end
+      
+    when 'bpy.types.Material'
+      # (same pattern as mesh datablock manipulation)
+      # retrieve existing material and edit its properties
+      
+      puts "create material: #{message['name']}"
+      
+      mat =
+        @depsgraph.fetch_material_datablock(message['name']) do
+          BlenderMaterial.new(message['name'])
+        end
+      
+      # p message['color'][1..3] # => data is already an array of floats
+      # convert to premultiplied alpha format
+      alpha = message['alpha'][1]
+      color = RubyOF::FloatColor.rgb(message['color'][1..3].map{|i| i * alpha})
+      color.a = alpha
+      
+      
+      puts color
+      
+      
+      mat.diffuse_color  = color
+      
+      mat.ambient_color  = @default_material.ambient_color
+      mat.specular_color = @default_material.specular_color
+      mat.emissive_color = @default_material.emissive_color
+      
+      # NOTE: how do I link new materials to existing objects?
+      
+      @new_materials[message['name']] = mat
+      
+    when 'bpy.types.Light'
+      # # I don't want to have linked lights in RubyOF.
+      # # Thus, rather than create light datablocks here,
+      # # link the deserialized JSON message into the object 'data' field
+      # # so it all can be unpacked together in a later phase
+      
+      # blender_data['objects']&.tap do |object_list|
+        
+      #   object_list
+      #   .select{|o| o['type'] == 'LIGHT' }
+      #   .find{  |o| o['name'] == data['light_name'] }
+      #   .tap{   |o| o['data'] = data }
+      #   # links data even if data field is already set
+      #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
+        
+      # end
+      
+    when 'bpy_types.Mesh'
+      # create underlying mesh data (verts)
+      # to later associate with mesh objects (transform)
+      # which sets the foundation for instanced geometry
+      
+      puts 'new mesh datablock'
+      
+      
+      mesh_datablock =
+        @depsgraph.fetch_mesh_datablock(message['name']) do |name|
+          BlenderMeshData.new(name).tap do |mesh_datablock|
+            @new_datablocks[name] = mesh_datablock
           end
         end
-      end
-    end
-    
-    
+      
+      puts "load: #{message.inspect}"
+      mesh_datablock.load_data(message)
+      
+    when 'bpy_types.Object'
+      case message['.type']
+      when 'MESH'
+        puts "create mesh entity"
+        # associate mesh object (transform) with underlying mesh data (verts)
         
-    # Hash mapping {mesh object name => material name}
-    material_map = blender_data['material_map']
-    # p material_map
-    
-    
-    
-    blender_data['objects']&.tap do |object_list|
-      object_list.each do |data|
-        # set type-specific properties
-        case data['type']
-        when 'MESH'
-          # associate mesh object (transform) with underlying mesh data (verts)
-          
-          # TODO: how do you handle an existing object being linked to a different mesh?
-          
-          
-          # if 'data' field is set, assume that linkage must be updated
-          
-          mesh_entity =
-            @depsgraph.fetch_mesh_object(data['name']) do |name|
-              
-              mesh_datablock = 
-                data['data'].yield_self do |datablock_name|
-                  
-                  @depsgraph.fetch_mesh_datablock(datablock_name) do
-                    new_datablocks.fetch(datablock_name) do
-                      raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
-                    end
+        # TODO: how do you handle an existing object being linked to a different mesh?
+        
+        # if 'data' field is set, assume that linkage must be updated
+        
+        mesh_entity =
+          @depsgraph.fetch_mesh_object(message['name']) do |name|
+            
+            mesh_datablock = 
+              message['.data.name'].yield_self do |datablock_name|
+                
+                @depsgraph.fetch_mesh_datablock(datablock_name) do
+                  datablock = @new_datablocks.delete(datablock_name)
+                    # ^ retrieve and delete in one line
+                  if datablock.nil?
+                    raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
+                  else
+                    datablock # pseudoreturn for #fetch block
                   end
-                  
                 end
-              
-              material = get_material[material_map[name]]
-              
-              BlenderMesh.new(name, mesh_datablock, material).tap do |entity|
-                @depsgraph.add entity
+                
               end
-            end
-          
-          
-          # 
-          # rebind materials for existing objects
-          # 
-          
-          # (material mappings should be sent every update for every mesh obj)
-          
-          material_map[mesh_entity.name].tap do |material_name|
-            puts ">> entity name: #{mesh_entity.name}"
-            puts ">> current mat name: #{mesh_entity.material.name}"
-            puts ">> material name: #{material_name.inspect}"
             
-            if material_name.nil?
-              raise "ERROR: Material name for mesh entity '#{mesh_entity.name}' not recieved from Blender. Can not specify material. Please at least specify '' (empty string) to denote use of default material. "
-            end
+            material = @default_material
             
-            if material_name != mesh_entity.material.name
-              # find material
-              material = get_material[material_name]
-              # ^ get material first just in case there is an error
-              #   Thus, if the material does not exist
-              #   then the exception hits here and the depsgraph is preserved.
-              
-              # remove from existing batch
-              @depsgraph.delete mesh_entity.name, 'MESH'
-              
-              # bind new material
-              mesh_entity.material = material
-              
-              # assign to new batch
-              @depsgraph.add mesh_entity
-              
+            BlenderMesh.new(name, mesh_datablock, material).tap do |entity|
+              @depsgraph.add entity
             end
-          end
-          
-          
-          
-          data['transform']&.tap do |transform_data|
-            mesh_entity.load_transform(transform_data)
           end
         
+        message['transform']&.tap do |transform_data|
+          mesh_entity.load_transform(transform_data)
+        end
         
-        when 'LIGHT'
-          # load transform AND data for lights here as necessary
-          # ('data' field has already been linked to necessary data)
-          
-          puts "loading light: #{data['name']}"
-          
-          light =
-            @depsgraph.fetch_light(data['name']) do |name|
-              BlenderLight.new(name).tap do |light|
-                @depsgraph.add light
-              end
+      when 'LIGHT'
+        # load transform AND data for lights here as necessary
+        # ('data' field has already been linked to necessary data)
+        
+        puts "loading light: #{message['name']}"
+        
+        light =
+          @depsgraph.fetch_light(message['name']) do |name|
+            BlenderLight.new(name).tap do |light|
+              @depsgraph.add light
             end
-          
-          data['transform']&.tap do |transform_data|
-            light.load_transform(transform_data)
           end
-          
-          data['data']&.tap do |core_data|
-            # puts ">> light data"
-            # p core_data
-            light.load_data(core_data)
-          end
-          
+        
+        message['transform']&.tap do |transform_data|
+          light.load_transform(transform_data)
+        end
+        
+        message.tap do |core_data|
+          # puts ">> light data"
+          # p core_data
+          light.load_data(core_data)
         end
         
       end
+      
+    else
       
     end
     
     
     
-    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    # dt = t1-t0;
-    # puts "time - parse data: #{dt} us"
     
     
-    # process this last for proper timing
-    unless timestamps.nil?
-      # t0 = data['time']
-      # t1 = Time.now.strftime('%s.%N').to_f
-      dt = Time.now.strftime('%s.%N').to_f - timestamps['start_time']
-      puts "roundtrip time: #{dt*1000} ms"
-    end
+    # # process timestamps twice:
+    # # + calculate transmission time at the start of this function
+    # # + calculate roundtrip time at the end of this function
+    # timestamps = blender_data['timestamps']
+    # unless timestamps.nil?
+    #   time = timestamps['end_time']
+    #   dt = Time.now.strftime('%s.%N').to_f - time
+    #   puts "transmision time: #{dt*1000} ms"
+    # end
+    
+    
+    
+    
+    
+    
+    # # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
+    
+    
+    
+    
+    
+    # # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # # dt = t1-t0;
+    # # puts "time - parse data: #{dt} us"
+    
+    
+    # # process this last for proper timing
+    # unless timestamps.nil?
+    #   # t0 = data['time']
+    #   # t1 = Time.now.strftime('%s.%N').to_f
+    #   dt = Time.now.strftime('%s.%N').to_f - timestamps['start_time']
+    #   puts "roundtrip time: #{dt*1000} ms"
+    # end
     
     
     
@@ -485,6 +465,28 @@ class BlenderSync
   
   
   private
+  
+  def get_material(material_name)
+    puts "material name: #{material_name.inspect}"
+    
+    # p @depsgraph
+    p @new_materials
+    
+    if material_name == ''
+      # (can't use nil, b/c nil means this field was not set)
+      @default_material
+    else
+      @depsgraph.fetch_material_datablock(material_name) do
+        mat = @new_materials.delete(material_name)
+          # ^ retrieve and delete in one line
+        if mat.nil?
+          raise "Could not find material '#{material_name}'"
+        else
+          mat # pseudoreturn for #fetch block
+        end
+      end
+    end
+  end
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
