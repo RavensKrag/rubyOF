@@ -15,19 +15,16 @@ class BlenderHistory
   def read # &block
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros/1000.0
     
-    @buffer = compress_history(@buffer)
+    @buffer = compress_history(@buffer)    
     
-    # yield messages
     @buffer.each do |message|
       yield message
       
       @state << message
     end
     
-    # compress the state
     @state = compress_history(@state)
     
-    # clear buffer
     @buffer.clear
     
     # t1 = RubyOF::Utils.ofGetElapsedTimeMicros/1000.0
