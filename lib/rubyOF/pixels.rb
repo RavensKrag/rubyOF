@@ -10,6 +10,10 @@ class Pixels
 	def []=(i, c)
 		setColor_i(i, c)
 	end
+	
+	def color_at(x,y)
+		getColor_xy(x,y)
+	end
 end
 
 class FloatPixels
@@ -21,6 +25,10 @@ class FloatPixels
 	
 	def []=(i, c)
 		setColor_i(i, c)
+	end
+	
+	def color_at(x,y)
+		getColor_xy(x,y)
 	end
 end
 
