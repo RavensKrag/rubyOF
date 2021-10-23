@@ -216,6 +216,34 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLitt
     }
 }
 
+template<typename PixelType>
+void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, bool horizontal, bool vertical){
+   // based on this extension of ofImage:
+   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
+   
+   if(!horizontal && !vertical){
+      return;
+   }
+   
+   FIBITMAP * bmp               = getBmpFromPixels(pix);
+   bool horSuccess = false, vertSuccess = false;
+   
+   if(horizontal){
+      horSuccess = FreeImage_FlipHorizontal(bmp);
+   }
+   if(vertical){
+      vertSuccess = FreeImage_FlipVertical(bmp);
+   }
+   
+   if(horSuccess || vertSuccess){
+      putBmpIntoPixels(bmp, pix);
+   }
+   
+   if (bmp != NULL)            FreeImage_Unload(bmp);
+   
+   return;
+}
+
 
 // 
 // Pixels
@@ -234,31 +262,8 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
    pixels.setColor(i,color);
 }
 
-void ofPixels_flip(ofPixels &pixels, bool horizontal, bool vertical){
-   // based on this extension of ofImage:
-   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
-   
-   if(!horizontal && !vertical){
-      return;
-   }
-   
-   FIBITMAP * bmp               = getBmpFromPixels(pixels);
-   bool horSuccess = false, vertSuccess = false;
-   
-   if(horizontal){
-      horSuccess = FreeImage_FlipHorizontal(bmp);
-   }
-   if(vertical){
-      vertSuccess = FreeImage_FlipVertical(bmp);
-   }
-   
-   if(horSuccess || vertSuccess){
-      putBmpIntoPixels(bmp, pixels);
-   }
-   
-   if (bmp != NULL)            FreeImage_Unload(bmp);
-   
-   return;
+void ofPixels_flip(ofPixels &pixels, const bool horizontal, const bool vertical){
+   ofPixels__flip_pixels(pixels, horizontal, vertical);
 }
 
 // ----------------------
@@ -280,31 +285,8 @@ void ofFloatPixels__setColor_i(ofFloatPixels &pixels, size_t i, const ofFloatCol
    pixels.setColor(i,color);
 }
 
-void ofFloatPixels_flip(ofFloatPixels &pixels, bool horizontal, bool vertical){
-   // based on this extension of ofImage:
-   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
-   
-   if(!horizontal && !vertical){
-      return;
-   }
-   
-   FIBITMAP * bmp               = getBmpFromPixels(pixels);
-   bool horSuccess = false, vertSuccess = false;
-   
-   if(horizontal){
-      horSuccess = FreeImage_FlipHorizontal(bmp);
-   }
-   if(vertical){
-      vertSuccess = FreeImage_FlipVertical(bmp);
-   }
-   
-   if(horSuccess || vertSuccess){
-      putBmpIntoPixels(bmp, pixels);
-   }
-   
-   if (bmp != NULL)            FreeImage_Unload(bmp);
-   
-   return;
+void ofFloatPixels_flip(ofFloatPixels &pixels, const bool horizontal, const bool vertical){
+   ofPixels__flip_pixels(pixels, horizontal, vertical);
 }
 
 
