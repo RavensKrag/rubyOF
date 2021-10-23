@@ -396,9 +396,17 @@ class Core
       #     # x.enable_separateCMYK
       #   end
       if @pixels.nil?
+        # # 
+        # # jpg test
+        # # 
+        
         # @pixels = RubyOF::Pixels.new
         # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
         
+        
+        # 
+        # exr test
+        # 
         
         @pixels = RubyOF::FloatPixels.new
         ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
@@ -411,12 +419,17 @@ class Core
         
         puts @pixels.color_at(0,2)
         
+        
+        
         # puts @pixels.size
         
         @texture_out = RubyOF::Texture.new
         @texture_out.load_data(@pixels)
       end
       
+      1.times do 
+        @pixels.flip_vertical
+      end
       
     scheduler.section name: "end", budget: msec(0.1)
     # ^ this section does literally nothing,
@@ -571,7 +584,7 @@ class Core
     # puts "=> UI    : #{(t1 - t0).to_ms} ms"
     
     
-    # @image.draw(500,50,0)
+    # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
     @texture_out.draw_wh(500,50,0, @pixels.width, -@pixels.height)
   end
   

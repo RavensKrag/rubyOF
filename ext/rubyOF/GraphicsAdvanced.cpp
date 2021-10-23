@@ -217,7 +217,7 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLitt
 }
 
 template<typename PixelType>
-void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, bool horizontal, bool vertical){
+void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, const bool horizontal, const bool vertical){
    // based on this extension of ofImage:
    // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
    
@@ -225,19 +225,86 @@ void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, bool horizontal, bool vert
       return;
    }
    
-   FIBITMAP * bmp               = getBmpFromPixels(pix);
+   
+   // 
+   // load into free image format
+   // 
+   const PixelType* pixels = pix.getData();
+   unsigned int width = pix.getWidth();
+   unsigned int height = pix.getHeight();
+   unsigned int bpp = pix.getBitsPerPixel();
+
+   FREE_IMAGE_TYPE freeImageType = getFreeImageType(pix);
+   FIBITMAP* bmp = FreeImage_AllocateT(freeImageType, width, height, bpp);
+   unsigned char* bmpBits = FreeImage_GetBits(bmp);
+   if(bmpBits != nullptr) {
+      int srcStride = width * pix.getBytesPerPixel();
+      int dstStride = FreeImage_GetPitch(bmp);
+      unsigned char* src = (unsigned char*) pixels;
+      unsigned char* dst = bmpBits;
+      if(srcStride != dstStride){
+         for(int i = 0; i < (int)height; i++) {
+            memcpy(dst, src, srcStride);
+            src += srcStride;
+            dst += dstStride;
+         }
+      }else{
+         memcpy(dst,src,dstStride*height);
+      }
+   } else {
+      ofLogError("ofImage") << "getBmpFromPixels(): unable to get FIBITMAP from ofPixels";
+   }
+
+   // ofPixels are top left, FIBITMAP is bottom left
+   // FreeImage_FlipVertical(bmp);
+   
+   
+   // 
+   // flip the image as necessary
+   // 
+   
    bool horSuccess = false, vertSuccess = false;
+   
+   if(vertical){
+      // FreeImage_FlipVertical(bmp);
+      vertSuccess = FreeImage_FlipVertical(bmp);
+   }else{
+      // // ofPixels are top left, FIBITMAP is bottom left
+      // FreeImage_FlipVertical(bmp);
+   }
    
    if(horizontal){
       horSuccess = FreeImage_FlipHorizontal(bmp);
    }
-   if(vertical){
-      vertSuccess = FreeImage_FlipVertical(bmp);
-   }
    
+   
+   // 
+   // if transformation was made, convert back to ofPixels format
+   // 
    if(horSuccess || vertSuccess){
-      putBmpIntoPixels(bmp, pix);
+      // convert to correct type depending on type of input bmp and PixelType
+      unsigned int channels = (bpp / sizeof(PixelType)) / 8;
+      unsigned int pitch = FreeImage_GetPitch(bmp);
+   #ifdef TARGET_LITTLE_ENDIAN
+      bool swapRG = channels && (bpp/channels == 8);
+   #else
+      bool swapRG = false;
+   #endif
       
+      
+      ofPixelFormat pixFormat = pix.getPixelFormat();
+      
+      
+      unsigned char* bmpBits = FreeImage_GetBits(bmp);
+      if(bmpBits != nullptr) {
+         pix.setFromAlignedPixels((PixelType*) bmpBits, width, height, pixFormat, pitch);
+      } else {
+         ofLogError("ofImage") << "putBmpIntoPixels(): unable to set ofPixels from FIBITMAP";
+      }
+      
+      if(swapRG && channels >=3 ) {
+         pix.swapRgb();
+      }
    }
    
    if (bmp != NULL)            FreeImage_Unload(bmp);
