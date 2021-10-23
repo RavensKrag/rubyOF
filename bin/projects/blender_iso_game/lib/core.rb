@@ -428,12 +428,15 @@ class Core
       @texture_out.load_data(@pixels)
       
       
-      # @mesh = RubyOF::VboMesh.new
-      # @node = RubyOF::Node.new
+      @mesh = RubyOF::VboMesh.new
+      @node = RubyOF::Node.new
       
-      # # @mesh.setMode(:triangles)
-      # # # ^ TODO: maybe change ruby interface to mode= or similar?
-      # # # @mesh.addVertex()
+      @mesh.setMode(:triangles)
+      # ^ TODO: maybe change ruby interface to mode= or similar?
+      
+      @mesh.addVertex(GLM::Vec3.new(0,0,0))
+      @mesh.addVertex(GLM::Vec3.new(300,0,0))
+      @mesh.addVertex(GLM::Vec3.new(0,300,0))
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -639,6 +642,8 @@ class Core
     # using_material @mat do
     #   @mesh.draw_instanced(@entity_list.size)
     # end
+    
+    @mesh.draw
     
   end
   
