@@ -45,7 +45,7 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
   
   # Reload specified shaders if necessary and return new timestamp.
   # If the shaders were not reloaded, timestamp remains unchanged.
-  def reload_shaders(vert_shader_path, frag_shader_path) # &block
+  def load_shaders(vert_shader_path, frag_shader_path) # &block
     # load shaders if they have never been loaded before,
     # or if the files have been updated
     if @shader_timestamp.nil? || [vert_shader_path, frag_shader_path].any?{|f| f.mtime > @shader_timestamp }

@@ -43,13 +43,13 @@ class RenderBatch
   def update
     case @state
     when 'single'
-      @mat.reload_shaders(@vert_shader, @frag_shader) do
+      @mat.load_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
       
     when 'instanced_set'
-      @mat.reload_shaders(@vert_shader, @frag_shader) do
+      @mat.load_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
