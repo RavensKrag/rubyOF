@@ -407,7 +407,7 @@ class Core
         # y axis is flipped relative to Blender???
         # openframeworks uses 0,0 top left, y+ down
         # blender uses 0,0 bottom left, y+ up
-        @pixels.flip(false, true)
+        @pixels.flip_vertical
         
         puts @pixels.color_at(0,2)
         
@@ -417,7 +417,6 @@ class Core
         @texture_out.load_data(@pixels)
       end
       
-      @pixels
       
     scheduler.section name: "end", budget: msec(0.1)
     # ^ this section does literally nothing,
