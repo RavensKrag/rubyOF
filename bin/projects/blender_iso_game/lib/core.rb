@@ -397,11 +397,11 @@ class Core
       #   end
       if @pixels.nil?
         # @pixels = RubyOF::Pixels.new
-        # ofLoadImage_path_to_ofPixels(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+        # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
         
         
         @pixels = RubyOF::FloatPixels.new
-        ofLoadImage_path_to_ofFloatPixels(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
+        ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
         
         # puts @pixels.size
         
