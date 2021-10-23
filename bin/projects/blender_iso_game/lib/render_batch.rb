@@ -23,8 +23,6 @@ class RenderBatch
     @batch_dirty = false
     
     
-    @shader_timestamp = nil
-    
     shader_src_dir = PROJECT_DIR/"bin/glsl"
     
     @vert_shader = shader_src_dir/"phong_instanced.vert"
@@ -45,13 +43,13 @@ class RenderBatch
   def update
     case @state
     when 'single'
-      reload_shaders(@vert_shader, @frag_shader) do
+      @mat.reload_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
       
     when 'instanced_set'
-      reload_shaders(@vert_shader, @frag_shader) do
+      @mat.reload_shaders(@vert_shader, @frag_shader) do
         # on reload
         puts "instancing shaders reloaded" 
       end
@@ -164,9 +162,9 @@ class RenderBatch
     
     case new_state
     when 'single'
-      @shader_timestamp = nil
+      @mat.reset_shaders
     when 'instanced_set'
-      @shader_timestamp = nil
+      @mat.reset_shaders
     end
     
     
@@ -193,37 +191,6 @@ class RenderBatch
   
   private
   
-  
-  # TODO: move this function into the appropriate material class
-  
-  # Reload specified shaders if necessary and return new timestamp.
-  # If the shaders were not reloaded, timestamp remains unchanged.
-  def reload_shaders(vert_shader_path, frag_shader_path) # &block
-    # load shaders if they have never been loaded before,
-    # or if the files have been updated
-    if @shader_timestamp.nil? || [vert_shader_path, frag_shader_path].any?{|f| f.mtime > @shader_timestamp }
-      
-      
-      vert_shader = File.readlines(vert_shader_path).join("\n")
-      frag_shader = File.readlines(frag_shader_path).join("\n")
-      
-      @mat.setVertexShaderSource vert_shader
-      @mat.setFragmentShaderSource frag_shader
-      
-      puts "reloading vertex and frag shaders for #{self.class}"
-      
-      bShadersLoaded = @mat.forceShaderRecompilation()
-      
-      raise "ERROR: One of the GLSL shaders in the material failed to load. Check logs for details." unless bShadersLoaded
-      
-      # NOTE: the shader source strings *will* be effected by the shader preprocessing pipeline in ofShader.cpp
-      
-      
-      @shader_timestamp = Time.now
-      
-      yield if block_given?
-    end
-  end
   
   # get all the nodes marked 'dirty' and update their positions in the instance data texture. only need to do this when @state == 'instanced_set'
   def update_packed_entity_positions
