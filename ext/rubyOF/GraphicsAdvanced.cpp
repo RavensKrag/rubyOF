@@ -216,10 +216,10 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLitt
    }
 }
 
+// ofPixels__flip_pixels is based on this extension of ofImage:
+// https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
 template<typename PixelType>
 void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, const bool horizontal, const bool vertical){
-   // based on this extension of ofImage:
-   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
    
    if(!horizontal && !vertical){
       return;
