@@ -443,14 +443,16 @@ class Core
         c = i*3+3
         p [a,b,c]
         
+        y_offset = 0.5
+        
         @mesh.addVertex(GLM::Vec3.new(size*i,0,0))
-        @mesh.addTexCoord(GLM::Vec2.new(a,0))
+        @mesh.addTexCoord(GLM::Vec2.new(a, y_offset))
         
         @mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
-        @mesh.addTexCoord(GLM::Vec2.new(b,0))
+        @mesh.addTexCoord(GLM::Vec2.new(b, y_offset))
         
         @mesh.addVertex(GLM::Vec3.new(size*i,size,0))
-        @mesh.addTexCoord(GLM::Vec2.new(c,0))
+        @mesh.addTexCoord(GLM::Vec2.new(c, y_offset))
         
       end
     end
