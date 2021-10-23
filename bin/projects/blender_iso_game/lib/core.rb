@@ -402,6 +402,14 @@ class Core
         
         @pixels = RubyOF::FloatPixels.new
         ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
+        # puts @pixels.getPixelIndex(0, 1)
+        
+        # y axis is flipped relative to Blender???
+        # openframeworks uses 0,0 top left, y+ down
+        # blender uses 0,0 bottom left, y+ up
+        @pixels.flip(false, true)
+        
+        puts @pixels.color_at(0,2)
         
         # puts @pixels.size
         
@@ -565,7 +573,7 @@ class Core
     
     
     # @image.draw(500,50,0)
-    @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+    @texture_out.draw_wh(500,50,0, @pixels.width, -@pixels.height)
   end
   
   

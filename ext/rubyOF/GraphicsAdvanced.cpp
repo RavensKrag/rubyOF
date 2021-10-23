@@ -91,6 +91,132 @@ ofImageLoadSettings_isSeparateCMYK
 }
 
 
+
+// ----------------------
+// from ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp
+
+#include "FreeImage.h"
+
+template <typename T>
+FREE_IMAGE_TYPE getFreeImageType(const ofPixels_<T>& pix);
+
+template <>
+FREE_IMAGE_TYPE getFreeImageType(const ofPixels& pix);
+
+template <>
+FREE_IMAGE_TYPE getFreeImageType(const ofShortPixels& pix);
+template <>
+FREE_IMAGE_TYPE getFreeImageType(const ofFloatPixels& pix);
+
+//----------------------------------------------------
+template<typename PixelType>
+FIBITMAP* getBmpFromPixels(const ofPixels_<PixelType> &pix){
+   const PixelType* pixels = pix.getData();
+   unsigned int width = pix.getWidth();
+   unsigned int height = pix.getHeight();
+    unsigned int bpp = pix.getBitsPerPixel();
+
+   FREE_IMAGE_TYPE freeImageType = getFreeImageType(pix);
+   FIBITMAP* bmp = FreeImage_AllocateT(freeImageType, width, height, bpp);
+   unsigned char* bmpBits = FreeImage_GetBits(bmp);
+   if(bmpBits != nullptr) {
+      int srcStride = width * pix.getBytesPerPixel();
+      int dstStride = FreeImage_GetPitch(bmp);
+      unsigned char* src = (unsigned char*) pixels;
+      unsigned char* dst = bmpBits;
+      if(srcStride != dstStride){
+         for(int i = 0; i < (int)height; i++) {
+            memcpy(dst, src, srcStride);
+            src += srcStride;
+            dst += dstStride;
+         }
+      }else{
+         memcpy(dst,src,dstStride*height);
+      }
+   } else {
+      ofLogError("ofImage") << "getBmpFromPixels(): unable to get FIBITMAP from ofPixels";
+   }
+
+   // ofPixels are top left, FIBITMAP is bottom left
+   FreeImage_FlipVertical(bmp);
+
+   return bmp;
+}
+
+//----------------------------------------------------
+template<typename PixelType>
+void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLittleEndian = true) {
+
+   // convert to correct type depending on type of input bmp and PixelType
+   FIBITMAP* bmpConverted = nullptr;
+   FREE_IMAGE_TYPE imgType = FreeImage_GetImageType(bmp);
+   if(sizeof(PixelType)==1 &&
+      (FreeImage_GetColorType(bmp) == FIC_PALETTE || FreeImage_GetBPP(bmp) < 8
+      ||  imgType!=FIT_BITMAP)) {
+      if(FreeImage_IsTransparent(bmp)) {
+         bmpConverted = FreeImage_ConvertTo32Bits(bmp);
+      } else {
+         bmpConverted = FreeImage_ConvertTo24Bits(bmp);
+      }
+      bmp = bmpConverted;
+   }else if(sizeof(PixelType)==2 && imgType!=FIT_UINT16 && imgType!=FIT_RGB16 && imgType!=FIT_RGBA16){
+      if(FreeImage_IsTransparent(bmp)) {
+         bmpConverted = FreeImage_ConvertToType(bmp,FIT_RGBA16);
+      } else {
+         bmpConverted = FreeImage_ConvertToType(bmp,FIT_RGB16);
+      }
+      bmp = bmpConverted;
+   }else if(sizeof(PixelType)==4 && imgType!=FIT_FLOAT && imgType!=FIT_RGBF && imgType!=FIT_RGBAF){
+      if(FreeImage_IsTransparent(bmp)) {
+         bmpConverted = FreeImage_ConvertToType(bmp,FIT_RGBAF);
+      } else {
+         bmpConverted = FreeImage_ConvertToType(bmp,FIT_RGBF);
+      }
+      bmp = bmpConverted;
+   }
+
+   unsigned int width = FreeImage_GetWidth(bmp);
+   unsigned int height = FreeImage_GetHeight(bmp);
+   unsigned int bpp = FreeImage_GetBPP(bmp);
+   unsigned int channels = (bpp / sizeof(PixelType)) / 8;
+    unsigned int pitch = FreeImage_GetPitch(bmp);
+#ifdef TARGET_LITTLE_ENDIAN
+    bool swapRG = channels && swapOnLittleEndian && (bpp/channels == 8);
+#else
+    bool swapRG = false;
+#endif
+
+
+   ofPixelFormat pixFormat;
+    if(channels==1) pixFormat=OF_PIXELS_GRAY;
+    if(swapRG){
+      if(channels==3) pixFormat=OF_PIXELS_BGR;
+      if(channels==4) pixFormat=OF_PIXELS_BGRA;
+   }else{
+      if(channels==3) pixFormat=OF_PIXELS_RGB;
+      if(channels==4) pixFormat=OF_PIXELS_RGBA;
+    }
+
+   // ofPixels are top left, FIBITMAP is bottom left
+   FreeImage_FlipVertical(bmp);
+
+   unsigned char* bmpBits = FreeImage_GetBits(bmp);
+   if(bmpBits != nullptr) {
+      pix.setFromAlignedPixels((PixelType*) bmpBits, width, height, pixFormat, pitch);
+   } else {
+      ofLogError("ofImage") << "putBmpIntoPixels(): unable to set ofPixels from FIBITMAP";
+   }
+
+   if(bmpConverted != nullptr) {
+      FreeImage_Unload(bmpConverted);
+   }
+
+    if(swapRG && channels >=3 ) {
+      pix.swapRgb();
+    }
+}
+
+
 // 
 // Pixels
 // Pixels_<unsigned char>
@@ -108,6 +234,35 @@ void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
    pixels.setColor(i,color);
 }
 
+void ofPixels_flip(ofPixels &pixels, bool horizontal, bool vertical){
+   // based on this extension of ofImage:
+   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
+   
+   if(!horizontal && !vertical){
+      return;
+   }
+   
+   FIBITMAP * bmp               = getBmpFromPixels(pixels);
+   bool horSuccess = false, vertSuccess = false;
+   
+   if(horizontal){
+      horSuccess = FreeImage_FlipHorizontal(bmp);
+   }
+   if(vertical){
+      vertSuccess = FreeImage_FlipVertical(bmp);
+   }
+   
+   if(horSuccess || vertSuccess){
+      putBmpIntoPixels(bmp, pixels);
+   }
+   
+   if (bmp != NULL)            FreeImage_Unload(bmp);
+   
+   return;
+}
+
+// ----------------------
+
 // 
 // FloatPixels
 // Pixels_<float>
@@ -123,6 +278,33 @@ void ofFloatPixels__setColor_xy(ofFloatPixels &pixels, size_t x, size_t y, const
 
 void ofFloatPixels__setColor_i(ofFloatPixels &pixels, size_t i, const ofFloatColor &color){
    pixels.setColor(i,color);
+}
+
+void ofFloatPixels_flip(ofFloatPixels &pixels, bool horizontal, bool vertical){
+   // based on this extension of ofImage:
+   // https://github.com/diederickh/ofxImage/blob/master/src/ofxImage.cpp
+   
+   if(!horizontal && !vertical){
+      return;
+   }
+   
+   FIBITMAP * bmp               = getBmpFromPixels(pixels);
+   bool horSuccess = false, vertSuccess = false;
+   
+   if(horizontal){
+      horSuccess = FreeImage_FlipHorizontal(bmp);
+   }
+   if(vertical){
+      vertSuccess = FreeImage_FlipVertical(bmp);
+   }
+   
+   if(horSuccess || vertSuccess){
+      putBmpIntoPixels(bmp, pixels);
+   }
+   
+   if (bmp != NULL)            FreeImage_Unload(bmp);
+   
+   return;
 }
 
 
@@ -492,8 +674,10 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("getTotalBytes", &ofPixels::getTotalBytes)
       
       .define_method("size",          &ofPixels::size) // total num pixels
-      .define_method("width",          &ofPixels::getWidth)
-      .define_method("height",          &ofPixels::getHeight)
+      .define_method("width",         &ofPixels::getWidth)
+      .define_method("height",        &ofPixels::getHeight)
+      
+      .define_method("flip",          &ofPixels_flip)
    ;
    
    
@@ -529,6 +713,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("size",          &ofFloatPixels::size) // total num pixels
       .define_method("width",         &ofFloatPixels::getWidth)
       .define_method("height",        &ofFloatPixels::getHeight)
+      
+      .define_method("flip",          &ofFloatPixels_flip)
    ;
    
    
