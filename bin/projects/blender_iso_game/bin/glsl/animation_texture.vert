@@ -29,6 +29,7 @@ uniform mat4 normalMatrix;
 
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
+uniform sampler2DRect object_transform_tex;
 
 // there are two types for textures:
 // sampler2DRect        non-normalized coordinates
@@ -71,28 +72,85 @@ return multQuat( qv, vec4(-quat.x, -quat.y, -quat.z, quat.w) ).xyz;
 
 
 void main (void){
+    // 
+    // GPU instancing - transform the entire object
+    // 
+    
+    
+    // 
+    // v4.2
+    // instancing data texture + lighting, scale magnitude by uniform
+    // + width of texture comes from uniform
+    // + transform matrix encoded in texture
+    // ???
+    
+    // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material
+    
+    
+    // https://stackoverflow.com/questions/13633395/how-do-you-access-the-individual-elements-of-a-glsl-mat4
+    
+    
+    vec2 texCoord0 = vec2(0, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord1 = vec2(1, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord2 = vec2(2, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord3 = vec2(3, gl_InstanceID) + vec2(0.5, 0.5);
+    vec2 texCoord4 = vec2(4, gl_InstanceID) + vec2(0.5, 0.5);
+    
+    // mat4 transform = mat4(vec4(1,0,0,0),
+    //                       vec4(0,1,0,0),
+    //                       vec4(0,0,1,0),
+    //                       vec4(1,1,1,1));
+    
+    // ^ yes indeed, matricies are column major
+    // https://stackoverflow.com/questions/33807535/translation-in-glsl-shader
+    
+    vec4 v1 = TEXTURE(object_transform_tex, texCoord1);
+    vec4 v2 = TEXTURE(object_transform_tex, texCoord2);
+    vec4 v3 = TEXTURE(object_transform_tex, texCoord3);
+    vec4 v4 = TEXTURE(object_transform_tex, texCoord4);
+    
+    
+    mat4 transform = mat4(vec4(v1.r, v2.r, v3.r, v4.r),
+                          vec4(v1.g, v2.g, v3.g, v4.g),
+                          vec4(v1.b, v2.b, v3.b, v4.b),
+                          vec4(v1.a, v2.a, v3.a, v4.a));
+    
+    vec4 object_data = TEXTURE(object_transform_tex, texCoord0);
+    
+    // vec4 finalPos = transform * position;
+    
+    
+    // 
+    // OpenEXR: vertex positions
+    // 
+    
     // vec4 finalPos = position;
     // vec4 finalNormal = normal;
     
     // vec2 texCoord0 = texcoord;
-    vec2 texCoord0 = texcoord + vec2(0.5,0.5) + vec2(0,1);
-    vec4 color_info = TEXTURE(vert_pos_tex, texCoord0);
+    vec2 vert_data_texcoord = texcoord + vec2(0.5,0.5) + vec2(0,object_data.r);
+    vec4 pos_data  = TEXTURE(vert_pos_tex, vert_data_texcoord);
     
-    // vec3 position = color_info.rgb;
+    // vec3 position = pos_data .rgb;
     // vec3 position = vec3(0,0,0);
     
-    vec4 finalPos = vec4(color_info.rgb, 1.0);
+    // vec4 finalPos = vec4(pos_data .rgb, 1.0);
+     vec4 finalPos = transform * vec4(pos_data .rgb, 1.0);
     
     
-    vec4 normal_data = TEXTURE(vert_norm_tex, texCoord0);
+    
+    vec4 normal_data = TEXTURE(vert_norm_tex, vert_data_texcoord);
     vec4 finalNormal = vec4(normal_data.rgb, 0);
     
     // vec4 finalNormal = vec4(1,0,0,0);
     
     
-    v_color = vec4(color_info.rgb, 1.0);
+    v_color = vec4(pos_data .rgb, 1.0);
     // v_color = vec4(finalNormal.rgb, 1.0);
     // v_color = vec4(1,1,1,1);
+    
+    // float x = object_data.r/3;
+    // v_color = vec4(x,x,x, 1.0);
     
     
     // NOTE: may have to transform normals because of rotation? unclear
