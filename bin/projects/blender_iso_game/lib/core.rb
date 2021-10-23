@@ -434,14 +434,15 @@ class Core
       @mesh.setMode(:triangles)
       # ^ TODO: maybe change ruby interface to mode= or similar?
       
-      num_tris = 10
+      num_verts = @texture_out.width.to_i
+      num_tris = num_verts / 3
       
-      size = 100
+      size = 20
       num_tris.times do |i|
         a = i*3+1
         b = i*3+2
         c = i*3+3
-        p [a,b,c]
+        p [i, [a,b,c]]
         
         y_offset = 0.5
         
@@ -455,6 +456,9 @@ class Core
         @mesh.addTexCoord(GLM::Vec2.new(c, y_offset))
         
       end
+      
+      
+      @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -645,15 +649,11 @@ class Core
     
     
     
-    
-    # @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
-    
-    
-    # # set uniforms
-    # @mat.setCustomUniformTexture(
-    #   "transform_tex", @instance_data.texture, 1
-    # )
-    #   # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+    # set uniforms
+    @mat.setCustomUniformTexture(
+      "geometry_texture", @texture_out, 1
+    )
+      # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
     
     
     # # draw all the instances using one draw call
