@@ -434,9 +434,12 @@ class Core
       @mesh.setMode(:triangles)
       # ^ TODO: maybe change ruby interface to mode= or similar?
       
-      @mesh.addVertex(GLM::Vec3.new(0,0,0))
-      @mesh.addVertex(GLM::Vec3.new(300,0,0))
-      @mesh.addVertex(GLM::Vec3.new(0,300,0))
+      size = 100
+      10.times do |i|
+        @mesh.addVertex(GLM::Vec3.new(size*i,0,0))
+        @mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
+        @mesh.addVertex(GLM::Vec3.new(size*i,size,0))
+      end
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
