@@ -416,7 +416,7 @@ class Core
       
       puts @pixels.color_at(0,2)
       
-      puts @pixels.size
+      # puts @pixels.size
       
       @texture_out = RubyOF::Texture.new
       
@@ -434,11 +434,24 @@ class Core
       @mesh.setMode(:triangles)
       # ^ TODO: maybe change ruby interface to mode= or similar?
       
+      num_tris = 10
+      
       size = 100
-      10.times do |i|
+      num_tris.times do |i|
+        a = i*3+1
+        b = i*3+2
+        c = i*3+3
+        p [a,b,c]
+        
         @mesh.addVertex(GLM::Vec3.new(size*i,0,0))
+        @mesh.addTexCoord(GLM::Vec2.new(a,0))
+        
         @mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
+        @mesh.addTexCoord(GLM::Vec2.new(b,0))
+        
         @mesh.addVertex(GLM::Vec3.new(size*i,size,0))
+        @mesh.addTexCoord(GLM::Vec2.new(c,0))
+        
       end
     end
     
