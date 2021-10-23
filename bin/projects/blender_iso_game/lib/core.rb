@@ -362,6 +362,8 @@ class Core
     #   puts "\n"*7
     # end
     
+    
+    
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -381,6 +383,30 @@ class Core
       @sync.update
     
     
+    scheduler.section name: "main", budget: msec(6.0)
+      # @image ||=
+      #   RubyOF::Image.new.dsl_load do |x|
+      #     # x.path = "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg"
+          
+      #     x.path = "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr"
+          
+      #     # x.enable_accurate
+      #     # x.enable_exifRotate
+      #     # x.enable_grayscale
+      #     # x.enable_separateCMYK
+      #   end
+      if @pixels.nil?
+        @pixels = RubyOF::Pixels.new
+        ofLoadImage_path_to_ofPixels(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+        
+        # puts @pixels.size
+        
+        @texture_out = RubyOF::Texture.new
+        @texture_out.load_data(@pixels)
+      end
+      
+      @pixels
+      
     scheduler.section name: "end", budget: msec(0.1)
     # ^ this section does literally nothing,
     #   but if I set the budget to 1000 us, it can take as much as 925 us
@@ -533,6 +559,9 @@ class Core
     # t1 = RubyOF::TimeCounter.now
     # puts "=> UI    : #{(t1 - t0).to_ms} ms"
     
+    
+    # @image.draw(500,50,0)
+    @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
   end
   
   

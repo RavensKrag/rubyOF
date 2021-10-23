@@ -469,7 +469,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1633,unix/ravensnest:/tmp/.ICE-unix/1633
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1701,unix/ravensnest:/tmp/.ICE-unix/1701
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -603,7 +603,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-Yeov7Z71NDmN/agent.1431
+- 'SSH_AUTH_SOCK = /tmp/ssh-xCOvu6iBio26/agent.1493
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
@@ -694,7 +694,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1554
+- 'SSH_AGENT_PID = 1606
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -1659,7 +1659,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/0c912d8e_533c_489d_b385_5a8d5661a10b
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/47f6fbdf_7db2_425d_ace9_19cc2c36ab6b
 
   '
 - "^F = \n"
@@ -1675,7 +1675,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.149
+- 'GNOME_TERMINAL_SERVICE = :1.551
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1766,7 +1766,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/1
+- 'MAKE_TERMERR = /dev/pts/3
 
   '
 - 'OBJC = cc
