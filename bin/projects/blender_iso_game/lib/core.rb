@@ -265,6 +265,8 @@ class Core
       @sync = BlenderSync.new(@w, @depsgraph, @history)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
+      @first_update = true
+      
       puts "reload complete"
     
     
@@ -377,6 +379,61 @@ class Core
       # load_world_state
       
       @first_update = false
+      
+      
+      
+      
+      
+      # # 
+      # # jpg test
+      # # 
+      
+      # @pixels = RubyOF::Pixels.new
+      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+      
+      # @texture_out = RubyOF::Texture.new
+      
+      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
+      #                      :horizontal => :clamp_to_edge)
+      
+      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      # @texture_out.load_data(@pixels)
+      
+      
+      # 
+      # exr test
+      # 
+      
+      @pixels = RubyOF::FloatPixels.new
+      ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
+      # puts @pixels.getPixelIndex(0, 1)
+      
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      @pixels.flip_vertical
+      
+      puts @pixels.color_at(0,2)
+      
+      puts @pixels.size
+      
+      @texture_out = RubyOF::Texture.new
+      
+      @texture_out.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      @texture_out.load_data(@pixels)
+      
+      
+      # @mesh = RubyOF::VboMesh.new
+      # @node = RubyOF::Node.new
+      
+      # # @mesh.setMode(:triangles)
+      # # # ^ TODO: maybe change ruby interface to mode= or similar?
+      # # # @mesh.addVertex()
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -396,40 +453,9 @@ class Core
       #     # x.enable_separateCMYK
       #   end
       if @pixels.nil?
-        # # 
-        # # jpg test
-        # # 
         
-        # @pixels = RubyOF::Pixels.new
-        # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
-        
-        
-        # 
-        # exr test
-        # 
-        
-        @pixels = RubyOF::FloatPixels.new
-        ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
-        # puts @pixels.getPixelIndex(0, 1)
-        
-        # y axis is flipped relative to Blender???
-        # openframeworks uses 0,0 top left, y+ down
-        # blender uses 0,0 bottom left, y+ up
-        @pixels.flip_vertical
-        
-        puts @pixels.color_at(0,2)
-        
-        
-        
-        # puts @pixels.size
-        
-        @texture_out = RubyOF::Texture.new
-        @texture_out.load_data(@pixels)
       end
-      
-      1.times do 
-        @pixels.flip_vertical
-      end
+          
       
     scheduler.section name: "end", budget: msec(0.1)
     # ^ this section does literally nothing,
@@ -586,6 +612,34 @@ class Core
     
     # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
     @texture_out.draw_wh(500,50,0, @pixels.width, -@pixels.height)
+    
+    
+    # stuff we need to render with this
+      # + a programatically created mesh with triangles to mutate
+      # + a material to hold the vertex and fragment shaders
+      # + vertex shader <---  this is what does the heavy lifting
+      # + frag shader (just load the default one)
+    
+    # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+    
+    
+    
+    
+    # @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
+    
+    
+    # # set uniforms
+    # @mat.setCustomUniformTexture(
+    #   "transform_tex", @instance_data.texture, 1
+    # )
+    #   # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+    
+    
+    # # draw all the instances using one draw call
+    # using_material @mat do
+    #   @mesh.draw_instanced(@entity_list.size)
+    # end
+    
   end
   
   
