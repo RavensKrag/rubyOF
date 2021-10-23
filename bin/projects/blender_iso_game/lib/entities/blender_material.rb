@@ -54,21 +54,35 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
       vert_shader = File.readlines(vert_shader_path).join("\n")
       frag_shader = File.readlines(frag_shader_path).join("\n")
       
+      puts "\n"*2
+      puts "-------------"
+      puts "reloading vertex and frag shaders for #{@name}"
       self.setVertexShaderSource vert_shader
       self.setFragmentShaderSource frag_shader
       
-      puts "reloading vertex and frag shaders for #{@name}"
       
       bShadersLoaded = self.forceShaderRecompilation()
       
-      raise "ERROR: One of the GLSL shaders in the material failed to load. Check logs for details." unless bShadersLoaded
+      if bShadersLoaded
+        @shader_timestamp = Time.now
+        # NOTE: the shader source strings *will* be effected by the shader preprocessing pipeline in ofShader.cpp
+        
+        yield if block_given?
+      else
+        shader_src_dir = PROJECT_DIR/"bin/glsl"
+        
+        vert_shader = File.readlines(shader_src_dir/"phong_error.vert").join("\n")
+        frag_shader = File.readlines(shader_src_dir/"phong_error.frag").join("\n")
+        
+        self.setVertexShaderSource vert_shader
+        self.setFragmentShaderSource frag_shader
+        
+        
+        puts "using fallback shaders"
+        
+        @shader_timestamp = Time.now
+      end
       
-      # NOTE: the shader source strings *will* be effected by the shader preprocessing pipeline in ofShader.cpp
-      
-      
-      @shader_timestamp = Time.now
-      
-      yield if block_given?
     end
   end
   
