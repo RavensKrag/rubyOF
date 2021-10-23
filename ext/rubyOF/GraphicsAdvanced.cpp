@@ -114,7 +114,7 @@ FIBITMAP* getBmpFromPixels(const ofPixels_<PixelType> &pix){
    const PixelType* pixels = pix.getData();
    unsigned int width = pix.getWidth();
    unsigned int height = pix.getHeight();
-    unsigned int bpp = pix.getBitsPerPixel();
+   unsigned int bpp = pix.getBitsPerPixel();
 
    FREE_IMAGE_TYPE freeImageType = getFreeImageType(pix);
    FIBITMAP* bmp = FreeImage_AllocateT(freeImageType, width, height, bpp);
@@ -181,21 +181,21 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLitt
    unsigned int channels = (bpp / sizeof(PixelType)) / 8;
     unsigned int pitch = FreeImage_GetPitch(bmp);
 #ifdef TARGET_LITTLE_ENDIAN
-    bool swapRG = channels && swapOnLittleEndian && (bpp/channels == 8);
+   bool swapRG = channels && swapOnLittleEndian && (bpp/channels == 8);
 #else
-    bool swapRG = false;
+   bool swapRG = false;
 #endif
 
 
    ofPixelFormat pixFormat;
-    if(channels==1) pixFormat=OF_PIXELS_GRAY;
-    if(swapRG){
+   if(channels==1) pixFormat=OF_PIXELS_GRAY;
+   if(swapRG){
       if(channels==3) pixFormat=OF_PIXELS_BGR;
       if(channels==4) pixFormat=OF_PIXELS_BGRA;
    }else{
       if(channels==3) pixFormat=OF_PIXELS_RGB;
       if(channels==4) pixFormat=OF_PIXELS_RGBA;
-    }
+   }
 
    // ofPixels are top left, FIBITMAP is bottom left
    FreeImage_FlipVertical(bmp);
@@ -211,9 +211,9 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType>& pix, bool swapOnLitt
       FreeImage_Unload(bmpConverted);
    }
 
-    if(swapRG && channels >=3 ) {
+   if(swapRG && channels >=3 ) {
       pix.swapRgb();
-    }
+   }
 }
 
 template<typename PixelType>
@@ -237,6 +237,7 @@ void ofPixels__flip_pixels(ofPixels_<PixelType> &pix, bool horizontal, bool vert
    
    if(horSuccess || vertSuccess){
       putBmpIntoPixels(bmp, pix);
+      
    }
    
    if (bmp != NULL)            FreeImage_Unload(bmp);
