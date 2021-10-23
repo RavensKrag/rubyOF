@@ -385,6 +385,15 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			)
 		)
 		
+		.define_method(
+			"ofLoadImage_path_to_ofFloatPixels",
+			&ofLoadImage_path_to_ofFloatPixels,
+			(
+				Arg("pix"),
+				Arg("path")
+			)
+		)
+		
 // 		.define_method(
 // 			"ofLoadImage_path_to_ofFloatPixels",
 // 			static_cast< bool (*)
