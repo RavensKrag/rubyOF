@@ -5,6 +5,24 @@ class BlenderMaterial < RubyOF::OFX::DynamicMaterial
     super()
     @name = name
     @shader_timestamp = nil
+    
+    self.shininess = 64
+    
+    # Default values from 
+    # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
+    
+    self.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
+    # self.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
+    # self.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+    # self.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+    
+    
+    # Defaults, but with 0 alpha channel
+    # (all alpha will now come from diffuse, because different components are combined with addition)
+    
+    self.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
+    self.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
+    self.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
   end
   
   

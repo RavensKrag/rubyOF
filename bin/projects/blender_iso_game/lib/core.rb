@@ -519,21 +519,14 @@ class Core
       
       shader_src_dir = PROJECT_DIR/"bin/glsl"
       @vert_shader_path = shader_src_dir/"animation_texture.vert"
-      @frag_shader_path = shader_src_dir/"phong_test.frag"
-      # @frag_shader_path = shader_src_dir/"phong.frag"
+      # @frag_shader_path = shader_src_dir/"phong_test.frag"
+      @frag_shader_path = shader_src_dir/"phong.frag"
       
       
-      @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
-      @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
-      @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
-      @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
-      
-      # self.ambient_color  = coder['ambient_color']
-      # self.diffuse_color  = coder['diffuse_color']
-      # self.specular_color = coder['specular_color']
-      # self.emissive_color = coder['emissive_color']
-      # self.shininess      = coder['shininess']
-      
+      # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+      # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+      # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+      # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)

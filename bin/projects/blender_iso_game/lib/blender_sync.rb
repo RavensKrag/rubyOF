@@ -156,34 +156,16 @@ class BlenderSync
     
     
     if @default_material.nil?
-      @default_material = 
-        BlenderMaterial.new('').tap do |mat|
-          mat.shininess = 64
-          
-          
-          # Default values from 
-          # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
-          
-          mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
-          # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
-          # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          # mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          
-          
-          # Defaults, but with 0 alpha channel
-          # (all alpha will now come from diffuse, because different components are combined with addition)
-          
-          mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
-          mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-          mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-        end
-      # ^ default material name needs to be '' (empty string)
-      #   because that's the string that the Blender Python script
-      #   sends when no material is bound.
-      #   (I could change it something else, but this seems ok for now)
+      @default_material = BlenderMaterial.new('')
+      # ^ use default material settings
+      
+      # default material name needs to be '' (empty string)
+      # because that's the string that the Blender Python script
+      # sends when no material is bound.
+      # (I could change it something else, but this seems ok for now)
       # 
-      #   If the strings do not match, the default material gets rebound
-      #   every frame, which can be very expensive / wasteful.
+      # If the strings do not match, the default material gets rebound
+      # every frame, which can be very expensive / wasteful.
       
     end
     
