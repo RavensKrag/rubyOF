@@ -621,13 +621,16 @@ class Core
     scheduler.section name: "main", budget: msec(6.0)
       i = 1
     
-      transform = @environment.get_entity_transform(i)
-      
-      # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-      v = GLM::Vec3.new(0.01, 0.0, 0.0)
-      transform = GLM.translate(transform, v)
-      
-      @environment.set_entity_transform(i, transform)
+      100.times do 
+        transform = @environment.get_entity_transform(i)
+        
+        # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+        v = GLM::Vec3.new(0.01, 0.0, 0.0)
+        
+          transform = GLM.translate(transform, v)
+        
+        @environment.set_entity_transform(i, transform)
+      end
       
           
       
