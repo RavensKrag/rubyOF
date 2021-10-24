@@ -128,19 +128,19 @@ public:
 	
 	/// \brief set the diffuse reflectance
 	/// \param oDiffuse the diffuse reflectance
-	void setDiffuseColor(ofFloatColor oDiffuse);
+	void setDiffuseColor(const ofFloatColor &oDiffuse);
 	
 	/// \brief set the ambient reflectance
 	/// \param oAmbient the ambient reflectance
-	void setAmbientColor(ofFloatColor oAmbient);
+	void setAmbientColor(const ofFloatColor &oAmbient);
 	
 	/// \brief set the specular reflectance
 	/// \param oSpecular the specular reflectance
-	void setSpecularColor(ofFloatColor oSpecular);
+	void setSpecularColor(const ofFloatColor &oSpecular);
 	
 	/// \brief set the emitted light intensity
 	/// \param oEmmissive the emitted light intensity
-	void setEmissiveColor(ofFloatColor oEmmisive);
+	void setEmissiveColor(const ofFloatColor &oEmmisive);
 	
 	/// \brief set the specular exponent
 	void setShininess(float nShininess);
