@@ -159,12 +159,12 @@ void main (void){
     // 
     
     // v_color = vec4(pos_data.rgb, 1.0);
-    // v_color = vec4(finalNormal.rgb, 1.0);
+    v_color = vec4(finalNormal.rgb, 1.0);
     
     // float x = object_data.r/3;
     // v_color = vec4(x,x,x, 1.0);
     
-    v_color = vec4(1,1,1,1);
+    // v_color = vec4(1,1,1,1);
     
     // NOTE: may have to transform normals because of rotation? unclear
     
