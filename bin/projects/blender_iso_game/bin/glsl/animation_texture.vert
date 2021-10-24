@@ -110,17 +110,30 @@ void main (void){
     // ^ yes indeed, matricies are column major
     // https://stackoverflow.com/questions/33807535/translation-in-glsl-shader
     
-    vec4 loc   = TEXTURE(object_transform_tex, texCoord1);
-    vec4 rot   = TEXTURE(object_transform_tex, texCoord2);
-    vec4 scale = TEXTURE(object_transform_tex, texCoord3);
+    // vec4 loc   = TEXTURE(object_transform_tex, texCoord1);
+    // vec4 rot   = TEXTURE(object_transform_tex, texCoord2);
+    // vec4 scale = TEXTURE(object_transform_tex, texCoord3);
     
     
-    mat4 transform = mat4(vec4(scale.r, 0, 0, 0),
-                          vec4(0, scale.g, 0, 0),
-                          vec4(0, 0, scale.b, 0),
-                          vec4(loc.r, loc.g, loc.b, 1));
+    // mat4 transform = mat4(vec4(scale.r, 0, 0, 0),
+    //                       vec4(0, scale.g, 0, 0),
+    //                       vec4(0, 0, scale.b, 0),
+    //                       vec4(loc.r, loc.g, loc.b, 1));
     
     vec4 object_data = TEXTURE(object_transform_tex, texCoord0);
+    
+    
+    vec4 v1 = TEXTURE(object_transform_tex, texCoord1);
+    vec4 v2 = TEXTURE(object_transform_tex, texCoord2);
+    vec4 v3 = TEXTURE(object_transform_tex, texCoord3);
+    vec4 v4 = TEXTURE(object_transform_tex, texCoord4);
+    
+    
+    mat4 transform = mat4(vec4(v1.r, v2.r, v3.r, v4.r),
+                          vec4(v1.g, v2.g, v3.g, v4.g),
+                          vec4(v1.b, v2.b, v3.b, v4.b),
+                          vec4(v1.a, v2.a, v3.a, v4.a));
+    
     
     // vec4 finalPos = transform * position;
     
