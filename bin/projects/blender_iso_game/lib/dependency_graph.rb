@@ -198,6 +198,10 @@ class DependencyGraph
         
         opaque.each{|mesh, mat, batch|  batch.draw }
         
+        # glCullFace(GL_BACK)
+        # glDisable(GL_CULL_FACE)
+        yield if block_given?
+        
         visualize_lights()
       end
     end
@@ -218,6 +222,7 @@ class DependencyGraph
         transparent.each{|mesh, mat, batch|  batch.draw }
       end
       
+      
       RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()      
     end
     
@@ -237,6 +242,9 @@ class DependencyGraph
     # RubyOF::CPP_Callbacks.depthMask(true)
     
     # ofEnableBlendMode(:alpha)
+    
+    
+    
     
     @main_fbo.draw(0,0)
     

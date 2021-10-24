@@ -420,13 +420,14 @@ class Core
       
       @texture_out = RubyOF::Texture.new
       
+      @texture_out.disableMipmap() # resets min mag filter
+      
       @texture_out.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)
       
       @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
       
       @texture_out.load_data(@pixels)
-      
       
       
       
@@ -445,12 +446,41 @@ class Core
       
       @texture_out2 = RubyOF::Texture.new
       
+      @texture_out2.disableMipmap() # resets min mag filter
+      
       @texture_out2.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)
       
       @texture_out2.filter_mode(:min => :nearest, :mag => :nearest)
       
+      
       @texture_out2.load_data(@pixels2)
+      
+      
+      
+      @transform_pixels = RubyOF::FloatPixels.new
+      ofLoadImage(@transform_pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr")
+      # puts @transform_pixels.getPixelIndex(0, 1)
+      
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      @transform_pixels.flip_vertical
+      
+      puts @transform_pixels.color_at(0,2)
+      
+      # puts @transform_pixels.size
+      
+      @transform_texture = RubyOF::Texture.new
+      
+      @transform_texture.disableMipmap() # resets min mag filter
+      
+      @transform_texture.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      @transform_texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      @transform_texture.load_data(@transform_pixels)
       
       
       
@@ -490,6 +520,20 @@ class Core
       shader_src_dir = PROJECT_DIR/"bin/glsl"
       @vert_shader_path = shader_src_dir/"animation_texture.vert"
       @frag_shader_path = shader_src_dir/"phong_test.frag"
+      # @frag_shader_path = shader_src_dir/"phong.frag"
+      
+      
+      @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+      @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+      @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+      @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+      
+      # self.ambient_color  = coder['ambient_color']
+      # self.diffuse_color  = coder['diffuse_color']
+      # self.specular_color = coder['specular_color']
+      # self.emissive_color = coder['emissive_color']
+      # self.shininess      = coder['shininess']
+      
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -610,13 +654,18 @@ class Core
         "vert_norm_tex", @texture_out2, 2
       )
       
+      @mat.setCustomUniformTexture(
+        "object_transform_tex", @transform_texture, 3
+      )
+      
 
         # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
       
       
       # draw all the instances using one draw call
       using_material @mat do
-        @mesh.draw_instanced(1)
+        @mesh.draw_instanced(3)
+        
         # @mesh.draw
       end
       
