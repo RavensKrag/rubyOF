@@ -41,16 +41,7 @@ class BlenderHistory
       f.puts JSON.pretty_generate @state
     end
     
-    # File.open(PROJECT_DIR/'bin'/'data'/'tmp_delta.json', 'w') do |f|
-    #   f.puts JSON.pretty_generate @last_delta
-    # end
-    
     @buffer = @state.clone
-    
-    
-    # File.open(PROJECT_DIR/'bin'/'data'/'blender_data.json', 'w') do |f|
-    #   f.puts JSON.pretty_generate @last_delta
-    # end
     
     
     return self

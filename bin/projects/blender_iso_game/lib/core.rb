@@ -299,15 +299,14 @@ class VertexAnimationBatch
     # v3 = @pixels[:transforms].setColor(3, i, c3)
     # v4 = @pixels[:transforms].setColor(4, i, c4)
     
-    RubyOF::CPP_Callbacks.set_entity_transform(
-      @pixels[:transforms], i, mat, @textures[:transforms]
-    )
-    
     # # 
     # # transfer color data to the GPU
     # # 
     # @textures[:transforms].load_data(@pixels[:transforms])
     
+    RubyOF::CPP_Callbacks.set_entity_transform(
+      @pixels[:transforms], i, mat, @textures[:transforms]
+    )
     
     return self
   end
@@ -619,10 +618,10 @@ class Core
       @sync.update
     
     
-    scheduler.section name: "main", budget: msec(6.0)
+    scheduler.section name: "main", budget: msec(10.0)
       i = 1
-    
-      400.times do 
+      
+      500.times do 
         transform = @environment.get_entity_transform(i)
         
         # v = GLM::Vec3.new(0.0, 0.0, 0.0)
