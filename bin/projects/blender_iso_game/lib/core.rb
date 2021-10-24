@@ -253,59 +253,60 @@ class VertexAnimationBatch
   
   
   def get_entity_transform(i)
-    # pull colors out of image on CPU side
-    # similar to how the shader pulls data out on the GPU side
+    # # pull colors out of image on CPU side
+    # # similar to how the shader pulls data out on the GPU side
     
-    v1 = @pixels[:transforms].color_at(1, i)
-    v2 = @pixels[:transforms].color_at(2, i)
-    v3 = @pixels[:transforms].color_at(3, i)
-    v4 = @pixels[:transforms].color_at(4, i)
+    # v1 = @pixels[:transforms].color_at(1, i)
+    # v2 = @pixels[:transforms].color_at(2, i)
+    # v3 = @pixels[:transforms].color_at(3, i)
+    # v4 = @pixels[:transforms].color_at(4, i)
     
-    mat = GLM::Mat4.new(GLM::Vec4.new(v1.r, v2.r, v3.r, v4.r),
-                        GLM::Vec4.new(v1.g, v2.g, v3.g, v4.g),
-                        GLM::Vec4.new(v1.b, v2.b, v3.b, v4.b),
-                        GLM::Vec4.new(v1.a, v2.a, v3.a, v4.a));
+    # mat = GLM::Mat4.new(GLM::Vec4.new(v1.r, v2.r, v3.r, v4.r),
+    #                     GLM::Vec4.new(v1.g, v2.g, v3.g, v4.g),
+    #                     GLM::Vec4.new(v1.b, v2.b, v3.b, v4.b),
+    #                     GLM::Vec4.new(v1.a, v2.a, v3.a, v4.a));
+    
+    mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels[:transforms], i)
     
     return mat
   end
   
   def set_entity_transform(i, mat)
+    # # 
+    # # convert mat4 transform data back to color data
+    # # 
+    # mv0 = mat[0]
+    # mv1 = mat[1]
+    # mv2 = mat[2]
+    # mv3 = mat[3]
     
-    # mat = GLM.translate(mat, GLM::Vec3.new(0.01, 0, 0))
-    # mat = GLM.translate(mat, GLM::Vec3.new(0, 0.01, 0))
-    # mat = GLM.translate(mat, GLM::Vec3.new(0, 0, 0.01))
+    # # v1.r = mat[0][0]
+    # # v1.g = mat[1][0]
+    # # v1.b = mat[2][0]
+    # # v1.a = mat[3][0]
     
-    # 
-    # convert mat4 transform data back to color data
-    # 
-    mv0 = mat[0]
-    mv1 = mat[1]
-    mv2 = mat[2]
-    mv3 = mat[3]
-    
-    # v1.r = mat[0][0]
-    # v1.g = mat[1][0]
-    # v1.b = mat[2][0]
-    # v1.a = mat[3][0]
-    
-    c1 = RubyOF::FloatColor.rgba([mv0[0], mv1[0], mv2[0], mv3[0]])
-    c2 = RubyOF::FloatColor.rgba([mv0[1], mv1[1], mv2[1], mv3[1]])
-    c3 = RubyOF::FloatColor.rgba([mv0[2], mv1[2], mv2[2], mv3[2]])
-    c4 = RubyOF::FloatColor.rgba([mv0[3], mv1[3], mv2[3], mv3[3]])
+    # c1 = RubyOF::FloatColor.rgba([mv0[0], mv1[0], mv2[0], mv3[0]])
+    # c2 = RubyOF::FloatColor.rgba([mv0[1], mv1[1], mv2[1], mv3[1]])
+    # c3 = RubyOF::FloatColor.rgba([mv0[2], mv1[2], mv2[2], mv3[2]])
+    # c4 = RubyOF::FloatColor.rgba([mv0[3], mv1[3], mv2[3], mv3[3]])
     
     
-    # 
-    # write colors on the CPU
-    # 
-    v1 = @pixels[:transforms].setColor(1, i, c1)
-    v2 = @pixels[:transforms].setColor(2, i, c2)
-    v3 = @pixels[:transforms].setColor(3, i, c3)
-    v4 = @pixels[:transforms].setColor(4, i, c4)
+    # # 
+    # # write colors on the CPU
+    # # 
+    # v1 = @pixels[:transforms].setColor(1, i, c1)
+    # v2 = @pixels[:transforms].setColor(2, i, c2)
+    # v3 = @pixels[:transforms].setColor(3, i, c3)
+    # v4 = @pixels[:transforms].setColor(4, i, c4)
     
-    # 
-    # transfer color data to the GPU
-    # 
-    @textures[:transforms].load_data(@pixels[:transforms])
+    RubyOF::CPP_Callbacks.set_entity_transform(
+      @pixels[:transforms], i, mat, @textures[:transforms]
+    )
+    
+    # # 
+    # # transfer color data to the GPU
+    # # 
+    # @textures[:transforms].load_data(@pixels[:transforms])
     
     
     return self
@@ -621,7 +622,7 @@ class Core
     scheduler.section name: "main", budget: msec(6.0)
       i = 1
     
-      100.times do 
+      400.times do 
         transform = @environment.get_entity_transform(i)
         
         # v = GLM::Vec3.new(0.0, 0.0, 0.0)
