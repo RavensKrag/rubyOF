@@ -110,41 +110,41 @@ class VertexAnimationBatch
   include RubyOF::Graphics
   
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
-    @pixels = [
-      RubyOF::FloatPixels.new,
-      RubyOF::FloatPixels.new,
-      RubyOF::FloatPixels.new
-    ]
+    @pixels = {
+      :positions  => RubyOF::FloatPixels.new,
+      :normals    => RubyOF::FloatPixels.new,
+      :transforms => RubyOF::FloatPixels.new
+    }
     
-    @textures = [
-      RubyOF::Texture.new,
-      RubyOF::Texture.new,
-      RubyOF::Texture.new
-    ]
+    @textures = {
+      :positions  => RubyOF::Texture.new,
+      :normals    => RubyOF::Texture.new,
+      :transforms => RubyOF::Texture.new
+    }
     
-    ofLoadImage(@pixels[0], position_tex_path)
-    ofLoadImage(@pixels[1], normal_tex_path)
-    ofLoadImage(@pixels[2], transform_tex_path)
+    ofLoadImage(@pixels[:positions],  position_tex_path)
+    ofLoadImage(@pixels[:normals],    normal_tex_path)
+    ofLoadImage(@pixels[:transforms], transform_tex_path)
     
     # 
-    # configure all 3 sets of pixels (CPU data) and textures (GPU data)
+    # configure all sets of pixels (CPU data) and textures (GPU data)
     # 
-    3.times do |i|
+    @pixels.values.zip(@textures.values).each do |pixels, texture|
       # y axis is flipped relative to Blender???
       # openframeworks uses 0,0 top left, y+ down
       # blender uses 0,0 bottom left, y+ up
-      @pixels[i].flip_vertical
+      pixels.flip_vertical
       
-      puts @pixels[i].color_at(0,2)
+      puts pixels.color_at(0,2)
       
-      @textures[i].disableMipmap() # resets min mag filter
+      texture.disableMipmap() # resets min mag filter
       
-      @textures[i].wrap_mode(:vertical => :clamp_to_edge,
+      texture.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)
       
-      @textures[i].filter_mode(:min => :nearest, :mag => :nearest)
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
       
-      @textures[i].load_data(@pixels[i])
+      texture.load_data(pixels)
     end
     
     @node = RubyOF::Node.new
@@ -159,7 +159,7 @@ class VertexAnimationBatch
     @mesh.setMode(:triangles)
     # ^ TODO: maybe change ruby interface to mode= or similar?
     
-    num_verts = @textures[0].width.to_i
+    num_verts = @textures[:positions].width.to_i
     num_tris = num_verts / 3
     
     size = 1 # useful when prototyping to increase this for visualization
@@ -212,15 +212,15 @@ class VertexAnimationBatch
     
     # set uniforms
     @mat.setCustomUniformTexture(
-      "vert_pos_tex",  @textures[0], 1
+      "vert_pos_tex",  @textures[:positions], 1
     )
     
     @mat.setCustomUniformTexture(
-      "vert_norm_tex", @textures[1], 2
+      "vert_norm_tex", @textures[:normals], 2
     )
     
     @mat.setCustomUniformTexture(
-      "object_transform_tex", @textures[2], 3
+      "object_transform_tex", @textures[:transforms], 3
     )
       # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
     
@@ -230,13 +230,18 @@ class VertexAnimationBatch
     # (one row is just a human-readable visual marker - it is not data)
     # 
     using_material @mat do
-      @mesh.draw_instanced(@pixels[2].height-1)
+      @mesh.draw_instanced(@pixels[:transforms].height-1)
     end
   end
   
   def draw_ui
-    @textures[0].draw_wh(500,50,0, @textures[0].width, -@textures[0].height)
-    @textures[2].draw_wh(500,100,0, @textures[2].width, -@textures[2].height)
+    @textures[:positions].tap do |texture| 
+      texture.draw_wh(500,50,0, texture.width, -texture.height)
+    end
+    
+    @textures[:transforms].tap do |texture| 
+      texture.draw_wh(500,100,0, texture.width, -texture.height)
+    end
   end
 end
 
@@ -646,7 +651,7 @@ class Core
     
     @depsgraph.draw(@w) do
     
-      @environment.draw
+      @environment.draw_scene
       
     end
     
