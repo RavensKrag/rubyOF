@@ -420,13 +420,14 @@ class Core
       
       @texture_out = RubyOF::Texture.new
       
+      @texture_out.disableMipmap() # resets min mag filter
+      
       @texture_out.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)
       
       @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
       
       @texture_out.load_data(@pixels)
-      
       
       
       
@@ -445,10 +446,13 @@ class Core
       
       @texture_out2 = RubyOF::Texture.new
       
+      @texture_out2.disableMipmap() # resets min mag filter
+      
       @texture_out2.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)
       
       @texture_out2.filter_mode(:min => :nearest, :mag => :nearest)
+      
       
       @texture_out2.load_data(@pixels2)
       
@@ -468,6 +472,8 @@ class Core
       # puts @transform_pixels.size
       
       @transform_texture = RubyOF::Texture.new
+      
+      @transform_texture.disableMipmap() # resets min mag filter
       
       @transform_texture.wrap_mode(:vertical => :clamp_to_edge,
                            :horizontal => :clamp_to_edge)

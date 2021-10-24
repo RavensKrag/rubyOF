@@ -826,6 +826,9 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("width",  &ofTexture::getWidth)
       .define_method("height", &ofTexture::getHeight)
+      
+      .define_method("enableMipmap", &ofTexture::enableMipmap)
+      .define_method("disableMipmap", &ofTexture::disableMipmap)
    ;
    
    
