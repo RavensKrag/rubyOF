@@ -1451,26 +1451,26 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 
 #include "ofxDynamicMaterial.h"
 
-void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setDiffuseColor(c);
 }
 
 
-void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setSpecularColor(c);
 }
 
-void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setAmbientColor(c);
 }
 
-void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setEmissiveColor(c);
