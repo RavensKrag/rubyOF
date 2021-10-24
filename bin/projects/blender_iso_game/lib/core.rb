@@ -106,7 +106,7 @@ load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
 
-class VertexAnimationConfig
+class VertexAnimationBatch
   include RubyOF::Graphics
   
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
@@ -535,7 +535,7 @@ class Core
       # 
       # OpenEXR animation texture test
       # 
-      @environment = VertexAnimationConfig.new(
+      @environment = VertexAnimationBatch.new(
         "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
         "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
         "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
