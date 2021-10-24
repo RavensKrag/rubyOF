@@ -644,7 +644,10 @@ class Core
       
       # draw all the instances using one draw call
       using_material @mat do
-        @mesh.draw_instanced(3)
+        @mesh.draw_instanced(4)
+        # 1st object is the bottom row - the dummy object
+        # so you must always draw at least 2 instances
+        
         # @mesh.draw
       end
       
