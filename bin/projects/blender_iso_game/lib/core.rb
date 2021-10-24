@@ -253,64 +253,58 @@ class VertexAnimationBatch
   
   
   def get_entity_transform(i)
+    # pull colors out of image on CPU side
+    # similar to how the shader pulls data out on the GPU side
+    
     v1 = @pixels[:transforms].color_at(1, i)
     v2 = @pixels[:transforms].color_at(2, i)
     v3 = @pixels[:transforms].color_at(3, i)
     v4 = @pixels[:transforms].color_at(4, i)
     
-    # mat = GLM::Mat4.new(1.0)
-    # mat = GLM::Mat4.new(GLM::Vec4.new(*v1.to_a),
-    #                     GLM::Vec4.new(*v2.to_a),
-    #                     GLM::Vec4.new(*v3.to_a),
-    #                     GLM::Vec4.new(*v4.to_a))
-        
     mat = GLM::Mat4.new(GLM::Vec4.new(v1.r, v2.r, v3.r, v4.r),
                         GLM::Vec4.new(v1.g, v2.g, v3.g, v4.g),
                         GLM::Vec4.new(v1.b, v2.b, v3.b, v4.b),
                         GLM::Vec4.new(v1.a, v2.a, v3.a, v4.a));
     
-    
     return mat
   end
   
   def set_entity_transform(i, mat)
+    
     # mat = GLM.translate(mat, GLM::Vec3.new(0.01, 0, 0))
     # mat = GLM.translate(mat, GLM::Vec3.new(0, 0.01, 0))
     # mat = GLM.translate(mat, GLM::Vec3.new(0, 0, 0.01))
     
+    # 
+    # convert mat4 transform data back to color data
+    # 
     mv0 = mat[0]
     mv1 = mat[1]
     mv2 = mat[2]
     mv3 = mat[3]
-    
-    
-    
-    # c1 = RubyOF::FloatColor.rgba([1,0,0,0])
-    # c2 = RubyOF::FloatColor.rgba([0,1,0,0])
-    # c3 = RubyOF::FloatColor.rgba([0,0,1,0])
-    # c4 = RubyOF::FloatColor.rgba([0,0,0,1])
     
     # v1.r = mat[0][0]
     # v1.g = mat[1][0]
     # v1.b = mat[2][0]
     # v1.a = mat[3][0]
     
+    c1 = RubyOF::FloatColor.rgba([mv0[0], mv1[0], mv2[0], mv3[0]])
+    c2 = RubyOF::FloatColor.rgba([mv0[1], mv1[1], mv2[1], mv3[1]])
+    c3 = RubyOF::FloatColor.rgba([mv0[2], mv1[2], mv2[2], mv3[2]])
+    c4 = RubyOF::FloatColor.rgba([mv0[3], mv1[3], mv2[3], mv3[3]])
     
-    c1 = RubyOF::FloatColor.rgba([mat[0][0], mat[1][0], mat[2][0], mat[3][0]])
-    c2 = RubyOF::FloatColor.rgba([mat[0][1], mat[1][1], mat[2][1], mat[3][1]])
-    c3 = RubyOF::FloatColor.rgba([mat[0][2], mat[1][2], mat[2][2], mat[3][2]])
-    c4 = RubyOF::FloatColor.rgba([mat[0][3], mat[1][3], mat[2][3], mat[3][3]])
     
-    # c1.a = 1 # x translation
-    # c2.a = 0 # y translation
-    # c3.a = 0 # z translation
-    
+    # 
+    # write colors on the CPU
+    # 
     v1 = @pixels[:transforms].setColor(1, i, c1)
     v2 = @pixels[:transforms].setColor(2, i, c2)
     v3 = @pixels[:transforms].setColor(3, i, c3)
     v4 = @pixels[:transforms].setColor(4, i, c4)
     
-    
+    # 
+    # transfer color data to the GPU
+    # 
     @textures[:transforms].load_data(@pixels[:transforms])
     
     
@@ -629,7 +623,8 @@ class Core
     
       transform = @environment.get_entity_transform(i)
       
-      v = GLM::Vec3.new(0.0, 0.0, 0.0)
+      # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+      v = GLM::Vec3.new(0.01, 0.0, 0.0)
       transform = GLM.translate(transform, v)
       
       @environment.set_entity_transform(i, transform)
