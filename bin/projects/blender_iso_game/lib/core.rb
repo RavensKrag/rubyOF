@@ -106,6 +106,145 @@ load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
 
+class VertexAnimationBatch
+  include RubyOF::Graphics
+  
+  def initialize(position_tex_path, normal_tex_path, transform_tex_path)
+    @pixels = {
+      :positions  => RubyOF::FloatPixels.new,
+      :normals    => RubyOF::FloatPixels.new,
+      :transforms => RubyOF::FloatPixels.new
+    }
+    
+    @textures = {
+      :positions  => RubyOF::Texture.new,
+      :normals    => RubyOF::Texture.new,
+      :transforms => RubyOF::Texture.new
+    }
+    
+    ofLoadImage(@pixels[:positions],  position_tex_path)
+    ofLoadImage(@pixels[:normals],    normal_tex_path)
+    ofLoadImage(@pixels[:transforms], transform_tex_path)
+    
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    @pixels.values.zip(@textures.values).each do |pixels, texture|
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+    
+    @node = RubyOF::Node.new
+    
+    # 
+    # Create a mesh consiting of a line of unconnected triangles
+    # the verticies in this mesh will be transformed by the textures
+    # so it doesn't matter what their exact positons are.
+    # 
+    @mesh = RubyOF::VboMesh.new
+    
+    @mesh.setMode(:triangles)
+    # ^ TODO: maybe change ruby interface to mode= or similar?
+    
+    num_verts = @textures[:positions].width.to_i
+    num_tris = num_verts / 3
+    
+    size = 1 # useful when prototyping to increase this for visualization
+    num_tris.times do |i|
+      a = i*3+0
+      b = i*3+1
+      c = i*3+2
+      # DEBUG PRINT: show indicies assigned to tris an verts
+      # p [i, [a,b,c]]
+      
+      
+      # UV coordinates specified in pixel indicies
+      # will offset by half a pixel in the shader
+      # to sample at the center of each pixel
+      
+      @mesh.addVertex(GLM::Vec3.new(size*i,0,0))
+      @mesh.addTexCoord(GLM::Vec2.new(a, 0))
+      
+      @mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
+      @mesh.addTexCoord(GLM::Vec2.new(b, 0))
+      
+      @mesh.addVertex(GLM::Vec3.new(size*i,size,0))
+      @mesh.addTexCoord(GLM::Vec2.new(c, 0))
+      
+    end
+    
+    
+    # 
+    # material invokes shaders
+    # 
+    @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
+    
+    shader_src_dir = PROJECT_DIR/"bin/glsl"
+    @vert_shader_path = shader_src_dir/"animation_texture.vert"
+    # @frag_shader_path = shader_src_dir/"phong_test.frag"
+    @frag_shader_path = shader_src_dir/"phong.frag"
+    
+    
+    # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+    # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+  end
+  
+  def draw_scene
+    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
+      # on reload
+      
+    end
+    
+    # set uniforms
+    @mat.setCustomUniformTexture(
+      "vert_pos_tex",  @textures[:positions], 1
+    )
+    
+    @mat.setCustomUniformTexture(
+      "vert_norm_tex", @textures[:normals], 2
+    )
+    
+    @mat.setCustomUniformTexture(
+      "object_transform_tex", @textures[:transforms], 3
+    )
+      # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
+    
+    # 
+    # draw all the instances using one draw call
+    # number of instances is the height of the transform texture - 1
+    # (one row is just a human-readable visual marker - it is not data)
+    # 
+    using_material @mat do
+      @mesh.draw_instanced(@pixels[:transforms].height-1)
+    end
+  end
+  
+  def draw_ui
+    @textures[:positions].tap do |texture| 
+      texture.draw_wh(500,50,0, texture.width, -texture.height)
+    end
+    
+    @textures[:transforms].tap do |texture| 
+      texture.draw_wh(500,100,0, texture.width, -texture.height)
+    end
+  end
+end
+
 
 class Core
   include HelperFunctions
@@ -381,9 +520,6 @@ class Core
       @first_update = false
       
       
-      
-      
-      
       # # 
       # # jpg test
       # # 
@@ -402,131 +538,13 @@ class Core
       
       
       # 
-      # exr test
+      # OpenEXR animation texture test
       # 
-      
-      @pixels = RubyOF::FloatPixels.new
-      ofLoadImage(@pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr")
-      # puts @pixels.getPixelIndex(0, 1)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      @pixels.flip_vertical
-      
-      puts @pixels.color_at(0,2)
-      
-      # puts @pixels.size
-      
-      @texture_out = RubyOF::Texture.new
-      
-      @texture_out.disableMipmap() # resets min mag filter
-      
-      @texture_out.wrap_mode(:vertical => :clamp_to_edge,
-                           :horizontal => :clamp_to_edge)
-      
-      @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      @texture_out.load_data(@pixels)
-      
-      
-      
-      @pixels2 = RubyOF::FloatPixels.new
-      ofLoadImage(@pixels2, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr")
-      # puts @pixels2.getPixelIndex(0, 1)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      @pixels2.flip_vertical
-      
-      puts @pixels2.color_at(0,2)
-      
-      # puts @pixels2.size
-      
-      @texture_out2 = RubyOF::Texture.new
-      
-      @texture_out2.disableMipmap() # resets min mag filter
-      
-      @texture_out2.wrap_mode(:vertical => :clamp_to_edge,
-                           :horizontal => :clamp_to_edge)
-      
-      @texture_out2.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      
-      @texture_out2.load_data(@pixels2)
-      
-      
-      
-      @transform_pixels = RubyOF::FloatPixels.new
-      ofLoadImage(@transform_pixels, "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr")
-      # puts @transform_pixels.getPixelIndex(0, 1)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      @transform_pixels.flip_vertical
-      
-      puts @transform_pixels.color_at(0,2)
-      
-      # puts @transform_pixels.size
-      
-      @transform_texture = RubyOF::Texture.new
-      
-      @transform_texture.disableMipmap() # resets min mag filter
-      
-      @transform_texture.wrap_mode(:vertical => :clamp_to_edge,
-                           :horizontal => :clamp_to_edge)
-      
-      @transform_texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      @transform_texture.load_data(@transform_pixels)
-      
-      
-      
-      
-      @mesh = RubyOF::VboMesh.new
-      @node = RubyOF::Node.new
-      
-      @mesh.setMode(:triangles)
-      # ^ TODO: maybe change ruby interface to mode= or similar?
-      
-      num_verts = @texture_out.width.to_i
-      num_tris = num_verts / 3
-      
-      size = 1
-      num_tris.times do |i|
-        a = i*3+0
-        b = i*3+1
-        c = i*3+2
-        p [i, [a,b,c]]
-        
-        y_offset = 0.0 # will offset in shader instead
-        
-        @mesh.addVertex(GLM::Vec3.new(size*i,0,0))
-        @mesh.addTexCoord(GLM::Vec2.new(a, y_offset))
-        
-        @mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
-        @mesh.addTexCoord(GLM::Vec2.new(b, y_offset))
-        
-        @mesh.addVertex(GLM::Vec3.new(size*i,size,0))
-        @mesh.addTexCoord(GLM::Vec2.new(c, y_offset))
-        
-      end
-      
-      
-      @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
-      
-      shader_src_dir = PROJECT_DIR/"bin/glsl"
-      @vert_shader_path = shader_src_dir/"animation_texture.vert"
-      # @frag_shader_path = shader_src_dir/"phong_test.frag"
-      @frag_shader_path = shader_src_dir/"phong.frag"
-      
-      
-      # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
-      # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
-      # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
-      # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+      @environment = VertexAnimationBatch.new(
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
+      )
     end
     
     scheduler.section name: "sync ", budget: msec(5.0)
@@ -633,35 +651,7 @@ class Core
     
     @depsgraph.draw(@w) do
     
-      @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
-        # on reload
-        
-      end
-      
-      # set uniforms
-      @mat.setCustomUniformTexture(
-        "vert_pos_tex",  @texture_out,  1
-      )
-      
-      @mat.setCustomUniformTexture(
-        "vert_norm_tex", @texture_out2, 2
-      )
-      
-      @mat.setCustomUniformTexture(
-        "object_transform_tex", @transform_texture, 3
-      )
-      
-
-        # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
-      
-      
-      # draw all the instances using one draw call
-      using_material @mat do
-        @mesh.draw_instanced(3)
-        
-        # @mesh.draw
-      end
-      
+      @environment.draw_scene
       
     end
     
@@ -736,8 +726,7 @@ class Core
     
     
     # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-    @texture_out.draw_wh(500,50,0, @pixels.width, -@pixels.height)
-    
+    @environment.draw_ui
     
     # stuff we need to render with this
       # + a programatically created mesh with triangles to mutate
