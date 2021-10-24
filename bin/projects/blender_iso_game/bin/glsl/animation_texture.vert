@@ -90,11 +90,17 @@ void main (void){
     // https://stackoverflow.com/questions/13633395/how-do-you-access-the-individual-elements-of-a-glsl-mat4
     
     
-    vec2 texCoord0 = vec2(0, gl_InstanceID) + vec2(0.5, 0.5);
-    vec2 texCoord1 = vec2(1, gl_InstanceID) + vec2(0.5, 0.5);
-    vec2 texCoord2 = vec2(2, gl_InstanceID) + vec2(0.5, 0.5);
-    vec2 texCoord3 = vec2(3, gl_InstanceID) + vec2(0.5, 0.5);
-    vec2 texCoord4 = vec2(4, gl_InstanceID) + vec2(0.5, 0.5);
+    // Bottom row, y=0 is a line of magenta pixels.
+    // This is used only as a visual indicator
+    // of where the bottom of the texture is
+    // it is not intended to be read as data.
+    // Thus, the shader must +1 to the index.
+    
+    vec2 texCoord0 = vec2(0, gl_InstanceID+1) + vec2(0.5, 0.5);
+    vec2 texCoord1 = vec2(1, gl_InstanceID+1) + vec2(0.5, 0.5);
+    vec2 texCoord2 = vec2(2, gl_InstanceID+1) + vec2(0.5, 0.5);
+    vec2 texCoord3 = vec2(3, gl_InstanceID+1) + vec2(0.5, 0.5);
+    vec2 texCoord4 = vec2(4, gl_InstanceID+1) + vec2(0.5, 0.5);
     
     // mat4 transform = mat4(vec4(1,0,0,0),
     //                       vec4(0,1,0,0),
