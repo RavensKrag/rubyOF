@@ -1041,7 +1041,7 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
-glm::mat4 get_entity_transform(ofFloatPixels &pixels, const int i){
+glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
 	// glm::mat4 mat(1);
 	
 	// pull colors out of image on CPU side
@@ -1052,10 +1052,10 @@ glm::mat4 get_entity_transform(ofFloatPixels &pixels, const int i){
 	ofFloatColor v3 = pixels.getColor(3, i);
 	ofFloatColor v4 = pixels.getColor(4, i);
 
-	glm::mat4x4 mat(glm::vec4(v1.r, v2.r, v3.r, v4.r),
-	                glm::vec4(v1.g, v2.g, v3.g, v4.g),
-	                glm::vec4(v1.b, v2.b, v3.b, v4.b),
-	                glm::vec4(v1.a, v2.a, v3.a, v4.a));
+	glm::mat4x4 mat(v1.r, v2.r, v3.r, v4.r,
+	                v1.g, v2.g, v3.g, v4.g,
+	                v1.b, v2.b, v3.b, v4.b,
+	                v1.a, v2.a, v3.a, v4.a);
 	
 	
 	return mat;
