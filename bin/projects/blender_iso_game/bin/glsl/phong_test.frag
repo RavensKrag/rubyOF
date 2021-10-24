@@ -247,7 +247,18 @@
 
         ////////////////////////////////////////////////////////////
         // now add the material info
-        vec4 localColor = vec4(ambient,1.0) * v_color + vec4(diffuse,1.0) * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
+        
+        
+        vec4 localColor = 
+                vec4(ambient, 1.0) * mat_ambient  + 
+                vec4(diffuse, 1.0) * v_color  + 
+                vec4(specular,1.0) * mat_specular + 
+                                     mat_emissive;
+        
+        // vec4 localColor = v_color;
+        
+        
+        
         
         // FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         
