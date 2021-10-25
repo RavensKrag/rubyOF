@@ -775,7 +775,7 @@ class RubyOF(bpy.types.RenderEngine):
                 # only send data for updated materials
                 if isinstance(obj, bpy.types.Material):
                     mat = obj
-                    message_queue(pack_material(mat))
+                    message_queue.append(pack_material(mat))
             
             # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
             
