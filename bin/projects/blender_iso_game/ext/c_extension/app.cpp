@@ -34,10 +34,20 @@ void rbApp::setup(){
 	// ofSetBackgroundAuto(false);  
 	
 	
-	mUI_InputCapture = false;
-	
 	// ========================================
 	// ========== add new stuff here ==========
+	
+	
+	// // setup color picker gui
+	// // and pass color pointer to Ruby
+	// setup_color_picker_gui();
+	
+	
+	
+	
+	
+	mUI_InputCapture = false;
+	
 	// mDatGui = new ofxDatGui(0, 300);
 	
 	// --- Track seconds / frame over time to see performance.
@@ -45,139 +55,6 @@ void rbApp::setup(){
 	
 	// initialize timestamp for time plot
 	timestamp_us = 0;
-	
-	
-	
-	
-	gui.setup("", ofxPanelDefaultFilename, 25, 755);
-	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
-	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
-	
-	// mDatGui->addSlider("ofGui w", 0, 800);
-	// mDatGui->addSlider("ofGui h", 0, 800);
-	float w = 280;
-	float h = 500;
-	gui.setSize(w, h);
-	gui.setWidthElements(w);
-	// gui.setDefaultWidth(float w);
-	// gui.setDefaultHeight(float h);
-	// https://forum.openframeworks.cc/t/how-to-make-ofxgui-objects-width-smaller/14047
-	
-	
-	
-	// give ruby access to the midiOut object
-	
-	
-	
-	
-	
-	
-	
-	// ofParameter::get() returns reference to value,
-	// and that is wrapped in a ruby object that acts as a "pointer" to C++ data.
-	// Like a pointer, this data only needs to be passed once for changes to propagate.
-	Rice::Data_Object<ofColor> rb_color_ptr(
-		&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),
-		Rice::Data_Type< ofColor >::klass(),
-		Rice::Default_Mark_Function< ofColor >::mark,
-		Null_Free_Function< ofColor >::free
-	);
-	// ^ This works, but is not sufficient to draw colored strings fast.
-	//   Make sure to also convert string -> mesh if you must draw many strings.
-	
-	
-	// Null_Free_Function< T > is declared at the top of this file.
-	// By creating this stubbed callback, the Ruby interpreter has
-	// no mechanism to release the memory that has been declared.
-	// In this way, memory management can be completely controlled
-	// through C++ code (which is what I want for this project).
-	
-	
-	// // NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
-	// mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
-	
-	
-	
-	// // -- More complex way to pass a pointer from C++ to Ruby
-	// //    Allows C++ code to maintain full control of memory management.
-	
-	// // This is how you can pass a pointer to a C++ type to Ruby-land.
-	// // 'Rice::Data_Object' functions basically like a C++ smart pointer,
-	// // but allows for data to be sent to Ruby.
-	// // NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
-	
-	
-	// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();
-	// // ^ NOTE: This function is of type 'const void*'
-	// //         so you must not write to this data location
-	
-	// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));
-	// // strip away the const qualifier
-	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
-	
-	// Rice::Data_Object<ofColor> rb_color_ptr(
-	// 	color_ptr,
-	// 	Rice::Data_Type< ofColor >::klass(),
-	// 	Rice::Default_Mark_Function< ofColor >::mark,
-	// 	Null_Free_Function< ofColor >::free
-	// );
-	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
-	
-	// rb_color_ptr.call("freeze");
-	// // Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
-	
-	// // https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
-	
-	
-	mSelf.call("recieve_cpp_pointer", "colorPicker_color", rb_color_ptr);
-	
-	
-	
-	
-	
-	mColorPicker_iterface_ptr = new ColorPickerInterface(&mColorPicker_Widget);
-	
-	Rice::Data_Object<ColorPickerInterface> rb_colorPicker_ptr(
-		mColorPicker_iterface_ptr,
-		Rice::Data_Type< ColorPickerInterface >::klass(),
-		Rice::Default_Mark_Function< ColorPickerInterface >::mark,
-		Null_Free_Function< ColorPickerInterface >::free
-	);
-	
-	mSelf.call("recieve_cpp_pointer", "color_picker", rb_colorPicker_ptr);
-	
-	rb_colorPicker_ptr.call("setup"); // ruby-level setup function
-	
-	
-	
-	
-	
-	
-	// // NOTE: can't do this - have not bound the type ofParameter, so trying to pass the pointer like this will fail.
-	
-	
-	// Rice::Data_Object<ColorPickerInterface> rb_c_colorPicker(
-	// 	&mColorPicker_Parameter,
-	// 	Rice::Data_Type< ColorPickerInterface >::klass(),
-	// 	Rice::Default_Mark_Function< ColorPickerInterface >::mark,
-	// 	Null_Free_Function< ColorPickerInterface >::free
-	// );
-	
-	// mSelf.call("recieve_cpp_pointer", "colorPicker", rb_c_colorPicker);
-	
-	
-	// // 
-	// mColorPicker_Parameter = ofColor(255,0,0);
-	// // ^ ofParameter overloads the = operator, so to set values
-	// //   just use equals (feels really weird, I would assume
-	// //   it should set the outer variable but it doesn't... but ok)
-	
-	// // Need to wrap that interface in order to set the color from Ruby
-	
-	// // Q: can I wrap the color picker in such a way that I can get the color? or is it stil better to pass the pointer from the c++ layer the way I currently do it?
-	
-	// // (pointer to color picker sent below)
-	// // TODO: re-order code, and clean up unused commented out stuff
 	
 	
 	
@@ -240,96 +117,64 @@ void rbApp::setup(){
 	
 	
 	
+	
+	
+	
+	// 
+	// No longer need to create a custom material editor GUI,
+	// as I can use Blender's GUI instead
+	// 
+	
+	// // material editor needs a single quad as a mesh (two tris)
+	// _materialEditor_mesh.addVertex(glm::vec3(0,0, 0));
+	// _materialEditor_mesh.addVertex(glm::vec3(1,0, 0));
+	// _materialEditor_mesh.addVertex(glm::vec3(0,1, 0));
+	// _materialEditor_mesh.addVertex(glm::vec3(1,1, 0));
+	
+	
+	// _materialEditor_mesh.addIndex(2);
+	// _materialEditor_mesh.addIndex(1);
+	// _materialEditor_mesh.addIndex(0);
+	
+	// _materialEditor_mesh.addIndex(2);
+	// _materialEditor_mesh.addIndex(3);
+	// _materialEditor_mesh.addIndex(1);
+	
+	
+	
+	// Rice::Data_Object<ofMesh> rb_c_matEd_mesh(
+	// 	&_materialEditor_mesh,
+	// 	Rice::Data_Type< ofMesh >::klass(),
+	// 	Rice::Default_Mark_Function< ofMesh >::mark,
+	// 	Null_Free_Function< ofMesh >::free
+	// );
+	
+	// mSelf.call("recieve_cpp_pointer", "materialEditor_mesh", rb_c_matEd_mesh);
+	
+	
+	// Rice::Data_Object<ofShader> rb_c_matEd_shd(
+	// 	&_materialEditor_shader,
+	// 	Rice::Data_Type< ofShader >::klass(),
+	// 	Rice::Default_Mark_Function< ofShader >::mark,
+	// 	Null_Free_Function< ofShader >::free
+	// );
+	
+	// mSelf.call("recieve_cpp_pointer", "materialEditor_shader", rb_c_matEd_shd);
+	
+	
+	
+	
+	
+	
+	
+	
 	// ========================================
 	// ========================================
-	
-	
-	
-	
-	
-	
-	
-	
-	// material editor needs a single quad as a mesh (two tris)
-	_materialEditor_mesh.addVertex(glm::vec3(0,0, 0));
-	_materialEditor_mesh.addVertex(glm::vec3(1,0, 0));
-	_materialEditor_mesh.addVertex(glm::vec3(0,1, 0));
-	_materialEditor_mesh.addVertex(glm::vec3(1,1, 0));
-	
-	
-	_materialEditor_mesh.addIndex(2);
-	_materialEditor_mesh.addIndex(1);
-	_materialEditor_mesh.addIndex(0);
-	
-	_materialEditor_mesh.addIndex(2);
-	_materialEditor_mesh.addIndex(3);
-	_materialEditor_mesh.addIndex(1);
-	
-	
-	
-	Rice::Data_Object<ofMesh> rb_c_matEd_mesh(
-		&_materialEditor_mesh,
-		Rice::Data_Type< ofMesh >::klass(),
-		Rice::Default_Mark_Function< ofMesh >::mark,
-		Null_Free_Function< ofMesh >::free
-	);
-	
-	mSelf.call("recieve_cpp_pointer", "materialEditor_mesh", rb_c_matEd_mesh);
-	
-	
-	Rice::Data_Object<ofShader> rb_c_matEd_shd(
-		&_materialEditor_shader,
-		Rice::Data_Type< ofShader >::klass(),
-		Rice::Default_Mark_Function< ofShader >::mark,
-		Null_Free_Function< ofShader >::free
-	);
-	
-	mSelf.call("recieve_cpp_pointer", "materialEditor_shader", rb_c_matEd_shd);
-	
-	
-	
-	
-	
-	
 	
 	
 	
 	// // TODO: should only call ruby-level setup function if C++ level setup finishes successfully. If there is some sort of error at this stage, any ruby-level actions will result in a segfault.
-	mSelf.call("setup");
-	
-	
-	// -- More complex way to pass a pointer from C++ to Ruby
-	//    Allows C++ code to maintain full control of memory management.
-	
-	// This is how you can pass a pointer to a C++ type to Ruby-land.
-	// 'Rice::Data_Object' functions basically like a C++ smart pointer,
-	// but allows for data to be sent to Ruby.
-	// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
-	
-	
-	// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();
-	// // ^ NOTE: This function is of type 'const void*'
-	// //         so you must not write to this data location
-	
-	// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));
-	// // strip away the const qualifier
-	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
-	
-	// Rice::Data_Object<ofColor> rb_color_ptr(
-	// 	color_ptr,
-	// 	Rice::Data_Type< ofColor >::klass(),
-	// 	Rice::Default_Mark_Function< ofColor >::mark,
-	// 	Null_Free_Function< ofColor >::free
-	// );
-	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
-	
-	// rb_color_ptr.call("freeze");
-	// Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
-	
-	// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
-	
-	
-	
+	mSelf.call("setup");	
 }
 
 void rbApp::update(){
@@ -812,3 +657,120 @@ void rbApp::gotMessage(ofMessage msg){
 }
 
 
+// DO NOT DELETE THIS FUNCTION
+// This function contains a lot of notes on how to pass a pointer
+// from C++ to Ruby. Should keep it for documentation even if
+// the function itself is disabled.
+// In fact, the code was moved into a helper function specificially
+// to make it easier to disable it.
+// Instead of deleting this, just comment out the function call in setup()
+void rbApp::setup_color_picker_gui(){
+	gui.setup("", ofxPanelDefaultFilename, 25, 755);
+	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
+	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
+	
+	// mDatGui->addSlider("ofGui w", 0, 800);
+	// mDatGui->addSlider("ofGui h", 0, 800);
+	float w = 280;
+	float h = 500;
+	gui.setSize(w, h);
+	gui.setWidthElements(w);
+	// gui.setDefaultWidth(float w);
+	// gui.setDefaultHeight(float h);
+	// https://forum.openframeworks.cc/t/how-to-make-ofxgui-objects-width-smaller/14047
+	
+	
+	
+	
+	// ofParameter::get() returns reference to value,
+	// and that is wrapped in a ruby object that acts as a "pointer" to C++ data.
+	// Like a pointer, this data only needs to be passed once for changes to propagate.
+	Rice::Data_Object<ofColor> rb_color_ptr(
+		&const_cast<ofColor_<unsigned char>&>(mColorPicker_Parameter.get()),
+		Rice::Data_Type< ofColor >::klass(),
+		Rice::Default_Mark_Function< ofColor >::mark,
+		Null_Free_Function< ofColor >::free
+	);
+	// ^ This works, but is not sufficient to draw colored strings fast.
+	//   Make sure to also convert string -> mesh if you must draw many strings.
+	
+	// // ^ NOTE: .get() has return type 'const void*'
+	// //         so you must not write to this data location
+	// // strip away the const qualifier
+	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
+	
+	
+	// Null_Free_Function< T > is declared at the top of this file.
+	// By creating this stubbed callback, the Ruby interpreter has
+	// no mechanism to release the memory that has been declared.
+	// In this way, memory management can be completely controlled
+	// through C++ code (which is what I want for this project).
+	
+	
+	// // NOTE: may not need to use 'to_ruby()' on the Rice::Data_Object
+	// mSelf.call("set_gui_parameter", "color", to_ruby(rb_color_ptr));
+	
+	
+	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
+	
+	// rb_color_ptr.call("freeze");
+	// // Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
+	
+	// // https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
+	
+	
+	mSelf.call("recieve_cpp_pointer", "colorPicker_color", rb_color_ptr);
+	
+	
+	mColorPicker_iterface_ptr = new ColorPickerInterface(&mColorPicker_Widget);
+	
+	Rice::Data_Object<ColorPickerInterface> rb_colorPicker_ptr(
+		mColorPicker_iterface_ptr,
+		Rice::Data_Type< ColorPickerInterface >::klass(),
+		Rice::Default_Mark_Function< ColorPickerInterface >::mark,
+		Null_Free_Function< ColorPickerInterface >::free
+	);
+	
+	mSelf.call("recieve_cpp_pointer", "color_picker", rb_colorPicker_ptr);
+	
+	rb_colorPicker_ptr.call("setup"); // ruby-level setup function
+	
+	
+	// NOTE: can't just pass ofParameter because Rice does not bind that type
+	
+	
+	
+	
+	
+	
+	// -- More complex way to pass a pointer from C++ to Ruby
+	//    Allows C++ code to maintain full control of memory management.
+	
+	// This is how you can pass a pointer to a C++ type to Ruby-land.
+	// 'Rice::Data_Object' functions basically like a C++ smart pointer,
+	// but allows for data to be sent to Ruby.
+	// NOTE: Like a smart pointer, when this falls out of scope, free() will be called. Thus, make sure the target data is heap allocated.
+	
+	
+	// const void* temp_ptr = mColorPicker_Parameter.getInternalObject();
+	// // ^ NOTE: This function is of type 'const void*'
+	// //         so you must not write to this data location
+	
+	// ofColor_<unsigned char> * color_ptr = static_cast<ofColor_<unsigned char> *>(const_cast<void*>(temp_ptr));
+	// // strip away the const qualifier
+	// // otherwise, can't pass this pointer to Rice::Data_Object< T >()
+	
+	// Rice::Data_Object<ofColor> rb_color_ptr(
+	// 	color_ptr,
+	// 	Rice::Data_Type< ofColor >::klass(),
+	// 	Rice::Default_Mark_Function< ofColor >::mark,
+	// 	Null_Free_Function< ofColor >::free
+	// );
+	// // NOTE: The rice data type must be ofColor, and not ofColor_<unsigned char>. These two types are equivalent at the level of bits, but only ofColor is wrapped by Rice. As such, Ruby will only understand this specific type, and not the more general form.
+	
+	// rb_color_ptr.call("freeze");
+	// Freeze rb_color_ptr, so that you can not write to this object at the Ruby level. This preserves the guarantee of 'const' even though 'const' has been stripped away.
+	
+	// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
+	
+}

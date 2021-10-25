@@ -234,21 +234,21 @@ class VertexAnimationBatch
   
   def draw_ui
     @textures[:positions].tap do |texture| 
-      texture.draw_wh(500,50,0, texture.width, -texture.height)
+      texture.draw_wh(12,300,0, texture.width, -texture.height)
     end
     
-    
-    @node ||= RubyOF::Node.new
-    @node.scale    = GLM::Vec3.new(15, 15, 1)
-    @node.position = GLM::Vec3.new(500, 400, 1)
-    
-    @node.transformGL
-    
-      @textures[:transforms].tap do |texture| 
-        texture.draw_wh(0,0,0, texture.width, -texture.height)
-      end
+    @textures[:transforms].tap do |texture| 
+      @node ||= RubyOF::Node.new
+      @node.scale    = GLM::Vec3.new(10, 10, 1)
+      @node.position = GLM::Vec3.new(12, 320, 1)
       
-    @node.restoreTransformGL
+      @node.transformGL
+      
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
+        
+      @node.restoreTransformGL
+    end
   end
   
   

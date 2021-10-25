@@ -50,6 +50,8 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 	
 		void newMidiMessage(ofxMidiMessage& msg);
 		
+		void setup_color_picker_gui();
+		
 	protected:
 		Rice::Object mSelf;
 		
