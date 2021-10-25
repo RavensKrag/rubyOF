@@ -38,9 +38,11 @@ void rbApp::setup(){
 	// ========== add new stuff here ==========
 	
 	
-	// // setup color picker gui
-	// // and pass color pointer to Ruby
-	// setup_color_picker_gui();
+	#ifdef RUBYOF_COLOR_PICKER_ENABLED
+		// setup color picker gui
+		// and pass color pointer to Ruby
+		setup_color_picker_gui();
+	#endif
 	
 	
 	
@@ -377,8 +379,9 @@ void rbApp::draw(){
 	}
 	
 	
-	
-	gui.draw(); // ofxGui - for color picker
+	#ifdef RUBYOF_COLOR_PICKER_ENABLED
+		gui.draw(); // ofxGui - for color picker
+	#endif
 	
 	
 	
@@ -465,7 +468,9 @@ void rbApp::exit(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
-	delete mColorPicker_iterface_ptr;
+	#ifdef RUBYOF_COLOR_PICKER_ENABLED
+		destroy_color_picker_gui();
+	#endif
 	
 	// delete mDatGui;
 	
@@ -657,13 +662,16 @@ void rbApp::gotMessage(ofMessage msg){
 }
 
 
+#ifdef RUBYOF_COLOR_PICKER_ENABLED
+
 // DO NOT DELETE THIS FUNCTION
 // This function contains a lot of notes on how to pass a pointer
 // from C++ to Ruby. Should keep it for documentation even if
 // the function itself is disabled.
 // In fact, the code was moved into a helper function specificially
 // to make it easier to disable it.
-// Instead of deleting this, just comment out the function call in setup()
+// Instead of deleting this, just comment out
+// the RUBYOF_COLOR_PICKER_ENABLED #define in the header
 void rbApp::setup_color_picker_gui(){
 	gui.setup("", ofxPanelDefaultFilename, 25, 755);
 	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
@@ -774,3 +782,16 @@ void rbApp::setup_color_picker_gui(){
 	// https://stackoverflow.com/questions/3064509/cast-from-void-to-type-using-c-style-cast-static-cast-or-reinterpret-cast
 	
 }
+
+// DO NOT DELETE
+// comment out RUBYOF_COLOR_PICKER_ENABLED #define instead
+// 
+// this needs to be toggled along with
+// setup_destroy_color_picker_gui(), 
+// or the program will segfault
+void rbApp::destroy_color_picker_gui(){
+	delete mColorPicker_iterface_ptr;
+}
+
+#endif
+
