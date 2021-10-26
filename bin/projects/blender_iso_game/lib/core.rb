@@ -613,31 +613,106 @@ class Core
       
       
       
+      
+      # TODO: how do I write code that looks sorta like this, but also allows going back? I'm willing to mark the end of a frame, but not give each frame an explict "number", at least not in the block defined here.
       @f2 = Fiber.new do
         dt = 1/60.0
         
-        5.times do 
-          # step every x frames
+        # 5.times do 
+        #   # step every x frames
           
-          x = 20
+        #   x = 20
+          
+        #   x.times do 
+        #     # NO-OP
+        #     Fiber.yield
+        #   end
+          
+        #   @environment.mutate_entity_transform(74) do |mat|
+        #     # NOTE: units of transform are effected by object scaling
+            
+        #     # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+        #     v = GLM::Vec3.new(1, 0.0, 0.0)
+            
+        #     GLM.translate(mat, v)
+        #   end
+          
+        #   Fiber.yield
+          
+        # end
+        
+        # step every x frames
+        
+        x = 8
+        
+        x.times do 
+          # NO-OP
+          Fiber.yield
+        end
+        
+        2.times do
+          # must exit the mutate block to set the value back
+          @environment.mutate_entity_transform(74) do |mat|
+            # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+            v = GLM::Vec3.new(0.5, 0.0, 0.0)
+            
+            GLM.translate(mat, v)
+          end
+          
+          
+          Fiber.yield
+          
           
           x.times do 
             # NO-OP
             Fiber.yield
           end
-          
+        end
+        
+        
+        
+        
+        2.times do
+          # must exit the mutate block to set the value back
           @environment.mutate_entity_transform(74) do |mat|
-            # NOTE: units of transform are effected by object scaling
-            
             # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-            v = GLM::Vec3.new(1, 0.0, 0.0)
+            v = GLM::Vec3.new(0.5, 0.0, 0.0)
             
             GLM.translate(mat, v)
           end
           
+          
           Fiber.yield
           
+          
+          x.times do 
+            # NO-OP
+            Fiber.yield
+          end
         end
+        
+        
+        
+        2.times do
+          # must exit the mutate block to set the value back
+          @environment.mutate_entity_transform(74) do |mat|
+            # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+            v = GLM::Vec3.new(0.0, 0.5, 0.0)
+            
+            GLM.translate(mat, v)
+          end
+          
+          
+          Fiber.yield
+          
+          
+          x.times do 
+            # NO-OP
+            Fiber.yield
+          end
+        end
+        
+        
       end
       
       @f1 = Fiber.new do
