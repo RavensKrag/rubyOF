@@ -1333,9 +1333,11 @@ def unregister():
     
     for c in classes:
         bpy.utils.unregister_class(c)
-    
 
 
-if __name__ == "__main__":
+
+def main():
     print("hello world")
     register()
+    
+    
