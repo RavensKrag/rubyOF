@@ -557,27 +557,109 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
-    @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
+    # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
     
-    # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
+    # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    # @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    # puts "update thread: #{Thread.current.object_id}" 
+    # # puts "update thread: #{Thread.current.object_id}" 
     
-    # if SPIKE_PROFILER_ON
-    #   RB_SPIKE_PROFILER.enable
-    # end
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.enable
+    # # end
     
-    # puts "--> start update"
-    signal = @update_scheduler.resume
-    # puts signal
-    # puts "<-- end update"
+    # # puts "--> start update"
+    # signal = @update_scheduler.resume
+    # # puts signal
+    # # puts "<-- end update"
     
-    # if SPIKE_PROFILER_ON
-    #   RB_SPIKE_PROFILER.disable
-    #   puts "\n"*7
-    # end
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.disable
+    # #   puts "\n"*7
+    # # end
     
+    
+    if @first_update
+      # load_world_state
+      
+      @first_update = false
+      
+      
+      # # 
+      # # jpg test
+      # # 
+      
+      # @pixels = RubyOF::Pixels.new
+      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+      
+      # @texture_out = RubyOF::Texture.new
+      
+      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
+      #                      :horizontal => :clamp_to_edge)
+      
+      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      # @texture_out.load_data(@pixels)
+      
+      
+      # 
+      # OpenEXR animation texture test
+      # 
+      @environment = VertexAnimationBatch.new(
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
+        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
+      )
+      
+      
+      
+      @f2 = Fiber.new do
+        dt = 1/60.0
+        
+        5.times do 
+          # step every x frames
+          
+          x = 20
+          
+          x.times do 
+            # NO-OP
+            Fiber.yield
+          end
+          
+          @environment.mutate_entity_transform(74) do |mat|
+            # NOTE: units of transform are effected by object scaling
+            
+            # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+            v = GLM::Vec3.new(1, 0.0, 0.0)
+            
+            GLM.translate(mat, v)
+          end
+          
+          Fiber.yield
+          
+        end
+      end
+      
+      @f1 = Fiber.new do
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+    end
+    
+    
+    
+    @sync.update
+    
+    
+    
+    
+    if @f1.alive?
+      @f1.resume() 
+    end
+      
+      
     
     
   end
@@ -637,7 +719,7 @@ class Core
         end
       # end
       
-          
+      
       
     scheduler.section name: "end", budget: msec(0.1)
     # ^ this section does literally nothing,
