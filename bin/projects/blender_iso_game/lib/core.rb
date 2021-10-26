@@ -616,148 +616,7 @@ class Core
       
       # TODO: how do I write code that looks sorta like this, but also allows going back? I'm willing to mark the end of a frame, but not give each frame an explict "number", at least not in the block defined here.
       @f2 = Fiber.new do
-        # 5.times do 
-        #   # step every x frames
-          
-        #   x = 20
-          
-        #   x.times do 
-        #     # NO-OP
-        #     Fiber.yield
-        #   end
-          
-        #   @environment.mutate_entity_transform(74) do |mat|
-        #     # NOTE: units of transform are effected by object scaling
-            
-        #     # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-        #     v = GLM::Vec3.new(1, 0.0, 0.0)
-            
-        #     GLM.translate(mat, v)
-        #   end
-          
-        #   Fiber.yield
-          
-        # end
-        
-        
-        
-        # step every x frames
-        
-        x = 8
-        
-        
-        
-        moves = [
-          GLM::Vec3.new(1, 0, 0),
-          GLM::Vec3.new(1, 0, 0),
-          GLM::Vec3.new(0, 1, 0),
-          GLM::Vec3.new(0, 1, 0),
-          GLM::Vec3.new(0, 1, 0),
-          GLM::Vec3.new(0, 1, 0),
-          GLM::Vec3.new(-1, 0, 0),
-          GLM::Vec3.new(-1, 0, 0),
-          GLM::Vec3.new(0, 1, 0),
-        ]
-        
-        
-        # TODO: wrap GLM::Vec3 multiply by a scalar
-        # TODO: how can I step this execution forward frame-by-frame using Blender's UI?
-        # TODO: how can I step execution back?
-        # TODO: how can I jump to an arbitrary point in execution?
-        
-        x.times do 
-          # NO-OP
-          Fiber.yield
-        end
-        
-        moves.each do |v|
-          # step in a direction, but subdivide into
-          # two motions for animation / tweening
-          2.times do
-            # must exit the mutate block to set the value back
-            @environment.mutate_entity_transform(74) do |mat|
-              v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
-              
-              GLM.translate(mat, v2)
-            end
-            
-            
-            Fiber.yield
-            
-            
-            x.times do 
-              # NO-OP
-              Fiber.yield
-            end
-          end
-        end
-        
-        
-        # # step in a direction, but subdivide into
-        # # two motions for animation / tweening
-        # 2.times do
-        #   # must exit the mutate block to set the value back
-        #   @environment.mutate_entity_transform(74) do |mat|
-        #     # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-        #     v = GLM::Vec3.new(0.5, 0.0, 0.0)
-            
-        #     GLM.translate(mat, v)
-        #   end
-          
-          
-        #   Fiber.yield
-          
-          
-        #   x.times do 
-        #     # NO-OP
-        #     Fiber.yield
-        #   end
-        # end
-        
-        
-        
-        
-        # 2.times do
-        #   # must exit the mutate block to set the value back
-        #   @environment.mutate_entity_transform(74) do |mat|
-        #     # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-        #     v = GLM::Vec3.new(0.5, 0.0, 0.0)
-            
-        #     GLM.translate(mat, v)
-        #   end
-          
-          
-        #   Fiber.yield
-          
-          
-        #   x.times do 
-        #     # NO-OP
-        #     Fiber.yield
-        #   end
-        # end
-        
-        
-        
-        # 2.times do
-        #   # must exit the mutate block to set the value back
-        #   @environment.mutate_entity_transform(74) do |mat|
-        #     # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-        #     v = GLM::Vec3.new(0.0, 0.5, 0.0)
-            
-        #     GLM.translate(mat, v)
-        #   end
-          
-          
-        #   Fiber.yield
-          
-          
-        #   x.times do 
-        #     # NO-OP
-        #     Fiber.yield
-        #   end
-        # end
-        
-        
+        on_update()
       end
       
       @f1 = Fiber.new do
@@ -784,82 +643,76 @@ class Core
     
   end
   
+  
+  
+  
   # methods #update and #draw are called by the C++ render loop
   # Their only job now at the Ruby level is to set up Fibers
   # which call the true render logic. This structure is necessary
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def on_update(scheduler)
-    if @first_update
-      # load_world_state
-      
-      @first_update = false
-      
-      
-      # # 
-      # # jpg test
-      # # 
-      
-      # @pixels = RubyOF::Pixels.new
-      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
-      
-      # @texture_out = RubyOF::Texture.new
-      
-      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
-      #                      :horizontal => :clamp_to_edge)
-      
-      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      # @texture_out.load_data(@pixels)
-      
-      
-      # 
-      # OpenEXR animation texture test
-      # 
-      @environment = VertexAnimationBatch.new(
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
-      )
+  def on_update
+    # step every x frames
+    
+    x = 8
+    
+    
+    moves = [
+      GLM::Vec3.new(1, 0, 0),
+      GLM::Vec3.new(1, 0, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(-1, 0, 0),
+      GLM::Vec3.new(-1, 0, 0),
+      GLM::Vec3.new(0, 1, 0),
+    ]
+    
+    
+    # TODO: wrap GLM::Vec3 multiply by a scalar
+    # TODO: how can I step this execution forward frame-by-frame using Blender's UI?
+    # TODO: how can I step execution back?
+    # TODO: how can I jump to an arbitrary point in execution?
+    
+    x.times do 
+      frame do
+        # NO-OP
+      end
     end
     
-    scheduler.section name: "sync ", budget: msec(5.0)
-      @sync.update
-    
-    
-    scheduler.section name: "main", budget: msec(10.0)
-      
-      # 500.times do 
-        @environment.mutate_entity_transform(74) do |mat|
-          # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-          v = GLM::Vec3.new(0.1, 0.0, 0.0)
-          
-          GLM.translate(mat, v)
+    moves.each do |v|
+      # step in a direction, but subdivide into
+      # two motions for animation / tweening
+      2.times do
+        # must exit the mutate block to set the value back
+        
+        
+        frame do
+          @environment.mutate_entity_transform(74) do |mat|
+            v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
+            
+            GLM.translate(mat, v2)
+          end
         end
-      # end
-      
-      
-      
-    scheduler.section name: "end", budget: msec(0.1)
-    # ^ this section does literally nothing,
-    #   but if I set the budget to 1000 us, it can take as much as 925 us
-    #   with budget at 100 us, it seems to cap at 162 um
-    #   thus, it appears that the max time used depends on the budget given
-    #   why is that?
-    #   what about the scheduling algorithm produces this behavior?
-    # 
-    # nope, just saw a max of 826 us with a budget of 0.1 us
-    # (not sure when I saved - have to try this again...)
-    # 
-    # currently seeing max of 697 us with a budget of 100 us
-    # I think that the time consumed can go over budget, even when total budget < 16.6 ms - which is what I expected the code to do
+        
+        
+        
+        x.times do 
+          frame do
+            # NO-OP
+          end
+        end
+      end
+    end
+        
+  end
+  
+  def frame # &block
+    yield
     
-    # puts "end"
-    
-    
-
-    
+    Fiber.yield
   end
   
   
