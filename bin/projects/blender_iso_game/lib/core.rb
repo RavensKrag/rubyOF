@@ -310,6 +310,14 @@ class VertexAnimationBatch
     
     return self
   end
+  
+  def mutate_entity_transform(i) # &block
+    transform = self.get_entity_transform(i)
+    
+      transform = yield transform
+    
+    self.set_entity_transform(i, transform)
+  end
 end
 
 
@@ -621,15 +629,12 @@ class Core
     scheduler.section name: "main", budget: msec(10.0)
       
       # 500.times do 
-        i = 74
-        transform = @environment.get_entity_transform(i)
-        
-        # v = GLM::Vec3.new(0.0, 0.0, 0.0)
-        v = GLM::Vec3.new(0.01, 0.0, 0.0)
-        
-          transform = GLM.translate(transform, v)
-        
-        @environment.set_entity_transform(i, transform)
+        @environment.mutate_entity_transform(74) do |mat|
+          # v = GLM::Vec3.new(0.0, 0.0, 0.0)
+          v = GLM::Vec3.new(0.1, 0.0, 0.0)
+          
+          GLM.translate(mat, v)
+        end
       # end
       
           
