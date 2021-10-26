@@ -1331,7 +1331,7 @@ def unregister():
         if 'RUBYOF' in panel.COMPAT_ENGINES:
             panel.COMPAT_ENGINES.remove('RUBYOF')
     
-    for c in classes:
+    for c in reversed(classes):
         bpy.utils.unregister_class(c)
 
 
