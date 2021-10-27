@@ -14,7 +14,7 @@ class FrameHistory
     
     @paused = true
     @take_one_step = false
-    @direction = :forward
+    @state = :forward
   end
   
   def update
@@ -32,43 +32,53 @@ class FrameHistory
     
     # Below is some prototype logic to get the ball rolling
     
-    
-    while @paused do
+    if @state != :reverse_cycle
+      while @paused do
+        Fiber.yield
+        
+        
+        if @take_one_step
+          @take_one_step = false
+          break
+        end
+      end
+      
+      
+      
+      p [@executing_frame, @state_history.length]
+      
+      if @state == :forward
+        iterate_forward(block)
+      elsif @state == :reverse
+        iterate_back()
+      end
+      
+      
       Fiber.yield
       
       
-      if @take_one_step
-        @take_one_step = false
-        break
-      end
+    elsif @state == :reverse_cycle
+      # NO-OP
+      # (just trying to get back to the right place in the code)
+      # (don't actually execute anything)
+      
+    else
+      raise "frame history encountered unexpected state: #{@state}"
     end
     
-    
-    
-    p [@executing_frame, @state_history.length]
-    
-    if @direction == :forward
-      iterate_forward(block)
-    elsif @direction == :reverse
-      iterate_back()
-    end
-    
-    
-    
-    Fiber.yield
   end
   
   def step_forward
     if @paused
       @take_one_step = true
-      @direction = :forward
+      @state = :forward
     end
   end
   
   def step_back
     if @paused
       @take_one_step = true
-      @direction = :reverse
+      @state = :reverse
     end
   end
   
@@ -78,12 +88,12 @@ class FrameHistory
   
   def play
     @paused = false
-    @direction = :forward
+    @state = :forward
   end
   
   def reverse
     @paused = false
-    @direction = :reverse
+    @state = :reverse
   end
   
   
@@ -104,22 +114,25 @@ class FrameHistory
         
         # hit the end of execution
         @paused = true
-        @direction = :neutral
+        @state = :neutral
         
+        puts "start second loop"
         # reverse cycle
         loop do
           # potential to just iterate backwards
-          puts "second loop"
-          if @direction == :reverse
+          if @state == :reverse
             p [@executing_frame, @state_history.length]
             iterate_back()
-          elsif @direction == :forward
+          elsif @state == :forward
             resume_forward()
             break # end the reverse cycle
           else # :neutral
             Fiber.yield
           end
         end
+        
+        puts "start new cycle"
+        @state = :forward
         
         # pause before start of the next cycle
         Fiber.yield
@@ -149,7 +162,7 @@ class FrameHistory
         
       Fiber.yield
     elsif @executing_frame == 0
-      @direction = :neutral
+      @state = :neutral
     end
   end
   
@@ -158,6 +171,20 @@ class FrameHistory
   def resume_forward
     @f2 = Fiber.new do
       @context.on_update(self)
+    end
+    
+    @target_frame = @executing_frame
+    @executing_frame = 0
+    @state = :reverse_cycle
+    
+    puts "executing frame: #{@executing_frame}"
+    puts "target_frame: #{@target_frame}"
+    puts "#{@executing_frame} < #{@target_frame}"
+    
+    while @executing_frame < @target_frame
+      @f2.resume(self)
+      
+      Fiber.yield
     end
   end
   
