@@ -3,34 +3,8 @@ class FrameHistory
     @context = context
     
     # TODO: how do I write code that looks sorta like this, but also allows going back? I'm willing to mark the end of a frame, but not give each frame an explict "number", at least not in the block defined here.
-    @f2 = Fiber.new do
-      @context.on_update(self)
-    end
     
-    @f1 = Fiber.new do
-      while @f2.alive?
-        @f2.resume(self)
-        Fiber.yield
-      end
-      
-      @paused = true
-      loop do
-        if @direction == :reverse
-          puts "iterate back"
-          
-          if @executing_frame > 0
-            @executing_frame -= 1
-            
-            state = @state_history[@executing_frame]
-            @context.load_state(state)
-              
-            Fiber.yield
-          end
-        end
-        
-        Fiber.yield
-      end
-    end
+    generate_fibers()
     
     
     @executing_frame = 0
@@ -74,68 +48,14 @@ class FrameHistory
     p [@executing_frame, @target_frame]
     
     if @direction == :forward
-      state = @context.snapshot_gamestate
-      @state_history[@executing_frame] = state
-      
-      puts "history length: #{@state_history.length}"
-      
-      @executing_frame += 1
-      
-      block.call
+      iterate_forward(block)
     elsif @direction == :reverse
-      puts "iterate back"
-      
-      if @executing_frame > 0
-        @executing_frame -= 1
-        
-        state = @state_history[@executing_frame]
-        @context.load_state(state)
-          
-        Fiber.yield
-      end
+      iterate_back()
     end
-    
-    
-    # if (50..100).include? @executing_frame
-    #   # either execute code to generate the frame
-    # else
-    #   # or load the data from history
-    # end
     
     
     
     Fiber.yield
-    
-    
-    # NOTE: can't reverse after hitting the end of the main block, because then the inner fiber is dead
-    
-    
-    
-    
-    
-    # # first frame that the on_update gets called is frame 1
-    # # frame 0 is just the initial state
-    
-    # # should always snapshot BEFORE the block call happens
-    
-    # @executing_frame = 0
-    
-    # state = @context.snapshot_gamestate
-    # @state_history[@executing_frame] = state # frame 0
-    
-    # @executing_frame += 1
-    
-    # block.call                # frame 1
-    
-    # state = @context.snapshot_gamestate
-    # @state_history[1] = state # frame 1
-    
-    # @executing_frame += 1
-    
-    # block.call                # frame 2
-    
-    # state = @context.snapshot_gamestate
-    # @state_history[2] = state # frame 2
   end
   
   def step_forward
@@ -153,12 +73,10 @@ class FrameHistory
   end
   
   def pause
-    puts "pause from frame history"
     @paused = true
   end
   
   def play
-    puts "play from frame history"
     @paused = false
     @direction = :forward
   end
@@ -166,6 +84,80 @@ class FrameHistory
   def reverse
     @paused = false
     @direction = :reverse
+  end
+  
+  
+  private
+  
+  def generate_fibers()
+    @f2 = Fiber.new do
+      @context.on_update(self)
+    end
+    
+    @f1 = Fiber.new do
+      loop do
+        # forward cycle
+        while @f2.alive?
+          @f2.resume(self)
+          Fiber.yield
+        end
+        
+        # hit the end of execution
+        @paused = true
+        @direction = :neutral
+        
+        # reverse cycle
+        loop do
+          # potential to just iterate backwards
+          puts "second loop"
+          if @direction == :reverse
+            iterate_back()
+          elsif @direction == :forward
+            resume_forward()
+            break # end the reverse cycle
+          else # :neutral
+            Fiber.yield
+          end
+        end
+        
+        # pause before start of the next cycle
+        Fiber.yield
+      end
+    end
+  end
+  
+  def iterate_forward(block)
+    state = @context.snapshot_gamestate
+    @state_history[@executing_frame] = state
+    
+    puts "history length: #{@state_history.length}"
+    
+    @executing_frame += 1
+    
+    block.call
+  end
+  
+  def iterate_back
+    puts "iterate back"
+    
+    if @executing_frame > 0
+      @executing_frame -= 1
+      
+      state = @state_history[@executing_frame]
+      @context.load_state(state)
+        
+      Fiber.yield
+    elsif @executing_frame == 0
+      @direction = :neutral
+    end
+  end
+  
+  # you have advanced through some (or perhaps all) code blocks
+  # you now need to resume from some known frame
+  def resume_forward
+    @f2 = Fiber.new do
+      @context.on_update(self)
+    end
   end
   
   
