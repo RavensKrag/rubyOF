@@ -56,8 +56,6 @@ class FrameHistory
       end
       
       def play
-        new_state = nil
-        
         @outer.instance_eval do
           
           if @executing_frame < @history.length-1
@@ -68,9 +66,8 @@ class FrameHistory
             new_state = :generating_new
           end
           
+          self.state = new_state
         end
-        
-        @outer.state = new_state
       end
       
       def pause
@@ -114,19 +111,14 @@ class FrameHistory
     # (forward via code execution)
     class Generating_New < State
       def update
-        fiber_dead = false
         @outer.instance_eval do
           
           if @f1.alive?
             @f1.resume()
           else
-            fiber_dead = true
+            self.state = :finished
           end
           
-        end
-        
-        if fiber_dead
-          @outer.state = :finished
         end
       end
       
