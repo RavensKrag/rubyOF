@@ -198,7 +198,7 @@ class Core
     
     @history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @history)
+    @sync = BlenderSync.new(@w, @depsgraph, @history, self)
     
     
     
@@ -268,7 +268,7 @@ class Core
       @history.on_reload
       
       puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @history)
+      @sync = BlenderSync.new(@w, @depsgraph, @history, self)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
       @first_update = true
@@ -488,6 +488,15 @@ class Core
   def snapshot_gamestate
     # for now, just save the state of the one entity that's moving
     return @environment.get_entity_transform(74)
+  end
+  
+  def pause
+    puts "pause from core"
+    @frame_history.pause
+  end
+  
+  def play
+    @frame_history.play
   end
   
   

@@ -19,6 +19,8 @@ class FrameHistory
     @target_frame = 20
     
     @state_history = Array.new
+    
+    @paused = false
   end
   
   def update
@@ -38,6 +40,10 @@ class FrameHistory
     
     p [@executing_frame, @target_frame]
     
+    while @paused do
+      Fiber.yield
+    end
+    
     state = @context.snapshot_gamestate
     @state_history[@executing_frame] = state
     
@@ -50,6 +56,7 @@ class FrameHistory
     # else
     #   # or load the data from history
     # end
+    
     
     
     Fiber.yield
@@ -81,6 +88,24 @@ class FrameHistory
     
     # state = @context.snapshot_gamestate
     # @state_history[2] = state # frame 2
+  end
+  
+  def step_forward
+    
+  end
+  
+  def step_back
+    
+  end
+  
+  def pause
+    puts "pause from frame history"
+    @paused = true
+  end
+  
+  def play
+    puts "play from frame history"
+    @paused = false
   end
   
   

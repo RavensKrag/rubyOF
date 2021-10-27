@@ -2,10 +2,12 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history)
+  def initialize(window, depsgraph, history, context)
     @window = window
     @depsgraph = depsgraph
     @history = history
+    
+    @context = context
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -406,8 +408,10 @@ class BlenderSync
         puts 'back'
       when 'pause'
         puts 'pause'
+        @context.pause
       when 'play'
         puts 'play'
+        @context.play
       end
     
     
