@@ -158,11 +158,15 @@ class FrameHistory
       end
       
       def step_forward
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def step_back
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def reverse
@@ -203,11 +207,15 @@ class FrameHistory
       end
       
       def step_forward
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def step_back
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def reverse
@@ -298,53 +306,66 @@ class FrameHistory
       end
       
       def step_forward
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def step_back
-        
+        # NO-OP
+        # (actively running, can't manually step)
+        # (if you want to manually step, should first pause)
       end
       
       def reverse
-        @outer.instance_eval do
-          
-          
-          
-          
-        end
+        
       end
     end
     
   end
   
-  
-  
-  
-  
-  def state=(new_state_name)
-    current_state_name = 
-      if @state.nil?
-        "<null>"
-      else
-        @state.name
-      end
+  def setup_states()
+    self.state = :initial
     
-    @state = nil # <-- blank this out so you get an error if you try to access the "current" state during a transition
     
-    # implement triggers on certain edges
-    @edge_callbacks.each do |state1, state2, callback|
-      if state1 == current_state_name && state2 == new_state_name
-        puts ">> edge callback: #{state1} -> #{state2}"
-        callback.call()
+    after_transition :initial, :generating_new do
+      @f2 = Fiber.new do
+        @context.on_update(self)
       end
+      
+      @f1 = Fiber.new do
+        # forward cycle
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+      
+      
+      # p @f1
+      @executing_frame = 0
     end
     
-    raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" unless @all_states.keys.include? new_state_name
     
-    # trigger state change
-    @state = @all_states[new_state_name]
+    after_transition :replaying_old, :generating_new do
+      # need to regenerate, but also need to get back to the same place
+      
+      @f2 = Fiber.new do
+        @context.on_update(self)
+      end
+      
+      @f1 = Fiber.new do
+        # forward cycle
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+      
+      @executing_frame = 0
+    end
     
-    puts "state = #{new_state_name}"
+    
   end
   
   
@@ -395,54 +416,43 @@ class FrameHistory
     #   end
     # end
     
-    
-    
-    self.state = :initial
-    
-    
-    after_transition :initial, :generating_new do
-      @f2 = Fiber.new do
-        @context.on_update(self)
-      end
-      
-      @f1 = Fiber.new do
-        # forward cycle
-        while @f2.alive?
-          @f2.resume()
-          Fiber.yield
-        end
-      end
-      
-      
-      # p @f1
-      @executing_frame = 0
-    end
-    
-    
-    after_transition :replaying_old, :generating_new do
-      # need to regenerate, but also need to get back to the same place
-      
-      @f2 = Fiber.new do
-        @context.on_update(self)
-      end
-      
-      @f1 = Fiber.new do
-        # forward cycle
-        while @f2.alive?
-          @f2.resume()
-          Fiber.yield
-        end
-      end
-      
-      @executing_frame = 0
-    end
-    
-    
-    
+    setup_states()
   end
   
+  
+  
+  
+  
+  def state=(new_state_name)
+    current_state_name = 
+      if @state.nil?
+        "<null>"
+      else
+        @state.name
+      end
+    
+    @state = nil # <-- blank this out so you get an error if you try to access the "current" state during a transition
+    
+    # implement triggers on certain edges
+    @edge_callbacks.each do |state1, state2, callback|
+      if state1 == current_state_name && state2 == new_state_name
+        puts ">> edge callback: #{state1} -> #{state2}"
+        callback.call()
+      end
+    end
+    
+    raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" unless @all_states.keys.include? new_state_name
+    
+    # trigger state change
+    @state = @all_states[new_state_name]
+    
+    puts "state = #{new_state_name}"
+  end
+  
+  
   extend Forwardable
-  def_delegators :@state, :frame, :play, :pause, :reverse
+  def_delegators :@state, 
+    :frame, :play, :pause, :reverse, :step_back, :step_forward
   
   def update
     @state.update
@@ -452,148 +462,7 @@ class FrameHistory
     @edge_callbacks << [state1, state2, block]
   end
   
-  
-  # def frame(&block)
-  #   # TODO: rather than executing this frame immediately, assign the passed block some frame number, and compare that number to the desired frame of execution. then, the desired frame number can be manually scrubbed back-and-forth in order to control the point of execution
-  #     # this needs to be paired with a sytem that has memory of previous states. when old frames are not actively executed, their state should be pulled from this memory. that frame delta can be used to advance the state instead of computing fresh data.
-    
-  #   # Below is some prototype logic to get the ball rolling
-    
-  #   if @state != :reverse_cycle
-  #     while @paused do
-  #       Fiber.yield
-        
-        
-  #       if @take_one_step
-  #         @take_one_step = false
-  #         break
-  #       end
-  #     end
-      
-      
-      
-  #     p [@executing_frame, @state_history.length]
-      
-  #     if @state == :forward
-  #       iterate_forward(block)
-  #     elsif @state == :reverse
-  #       iterate_back()
-  #     end
-      
-      
-  #     Fiber.yield
-      
-      
-  #   elsif @state == :reverse_cycle
-  #     # NO-OP
-  #     # (just trying to get back to the right place in the code)
-  #     # (don't actually execute anything)
-      
-  #   else
-  #     raise "frame history encountered unexpected state: #{@state}"
-  #   end
-    
-  # end
-  
-  
-  
-  # private
-  
-  # def generate_fibers()
-  #   @f2 = Fiber.new do
-  #     @context.on_update(self)
-  #   end
-    
-  #   @f1 = Fiber.new do
-  #     loop do
-  #       # forward cycle
-  #       while @f2.alive?
-  #         @f2.resume(self)
-  #         Fiber.yield
-  #       end
-        
-  #       # hit the end of execution
-  #       @paused = true
-  #       @state = :neutral
-        
-  #       puts "start second loop"
-  #       # reverse cycle
-  #       loop do
-  #         # potential to just iterate backwards
-  #         if @state == :reverse
-  #           p [@executing_frame, @state_history.length]
-  #           iterate_back()
-            
-  #         elsif @state == :forward
-  #           resume_forward()
-  #           @state = :forward
-  #           break # end the reverse cycle
-            
-  #         elsif @state == :neutral # :neutral
-  #           Fiber.yield
-            
-  #         else
-  #           raise "unknown state detected"
-            
-  #         end
-  #       end
-        
-  #       puts "start new cycle"
-        
-        
-  #       # pause before start of the next cycle
-  #       Fiber.yield
-  #     end
-  #   end
-  # end
-  
-  # def iterate_forward(block)
-  #   state = @context.snapshot_gamestate
-  #   @state_history[@executing_frame] = state
-    
-  #   puts "history length: #{@state_history.length}"
-    
-  #   @executing_frame += 1
-    
-  #   block.call
-  # end
-  
-  # def iterate_back
-  #   puts "iterate back"
-    
-  #   if @executing_frame > 0
-  #     @executing_frame -= 1
-      
-  #     state = @state_history[@executing_frame]
-  #     @context.load_state(state)
-        
-  #     Fiber.yield
-  #   elsif @executing_frame == 0
-  #     @state = :neutral
-  #   end
-  # end
-  
-  # # you have advanced through some (or perhaps all) code blocks
-  # # you now need to resume from some known frame
-  # def resume_forward
-  #   @f2 = Fiber.new do
-  #     @context.on_update(self)
-  #   end
-    
-  #   @target_frame = @executing_frame
-  #   @executing_frame = 0
-  #   @state = :reverse_cycle
-    
-  #   puts "executing frame: #{@executing_frame}"
-  #   puts "target_frame: #{@target_frame}"
-  #   puts "#{@executing_frame} < #{@target_frame}"
-    
-  #   while @executing_frame < @target_frame
-  #     @f2.resume(self)
-      
-  #     Fiber.yield
-  #   end
-  # end
-  
+  # TODO: rather than executing this frame immediately, assign the passed block some frame number, and compare that number to the desired frame of execution. then, the desired frame number can be manually scrubbed back-and-forth in order to control the point of execution
+    # this needs to be paired with a sytem that has memory of previous states. when old frames are not actively executed, their state should be pulled from this memory. that frame delta can be used to advance the state instead of computing fresh data.
   
 end
