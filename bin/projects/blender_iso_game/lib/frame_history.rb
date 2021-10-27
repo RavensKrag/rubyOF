@@ -1,15 +1,23 @@
 class FrameHistory
-  
-  module States
-    class State
-      def initialize(context)
-        @context = context
-      end
+  class State
+    def initialize(context)
+      @outer = context
     end
     
+    def name
+      self.class.name.split("::").last.downcase.to_sym
+    end
+  end
+  
+  class AnyState
+    
+  end
+  
+  
+  module States
     class Park < State
       def update
-        puts "park"
+        
       end
       
       def frame(&block)
@@ -17,37 +25,60 @@ class FrameHistory
       end
       
       def play
-        @context.state = :drive 
+        @outer.state = :drive 
       end
       
       def pause
+        
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
         
       end
     end
     
     class Drive < State
       def update
-        puts "drive"
-        
-        @context.instance_eval do
+        fiber_dead = false
+        @outer.instance_eval do
+          
           if @f1.alive?
-            @f1.resume(self) 
+            @f1.resume() 
+          else
+            fiber_dead = true
           end
+          
+        end
+        
+        if fiber_dead
+          @outer.state = :finished
         end
       end
       
       def frame(&block)
-        @context.instance_eval do
+        @outer.instance_eval do
+          
+          
           state = @context.snapshot_gamestate
           @history[@executing_frame] = state
           
-          puts "history length: #{@history.length}"
+          p [@executing_frame, @history.length-1]
+          # puts "history length: #{@history.length}"
           
           @executing_frame += 1
           
           block.call
           
           Fiber.yield
+          
         end
       end
       
@@ -56,18 +87,178 @@ class FrameHistory
       end
       
       def pause
-        @context.state = :park
+        @outer.state = :park
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        
       end
     end
+    
+    class Finished < State
+      def update
+        
+      end
+      
+      def frame(&block)
+        
+      end
+      
+      def play
+        
+      end
+      
+      def pause
+        @outer.state = :park
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        @outer.instance_eval do
+          
+          @f1 = Fiber.new do
+            while @executing_frame > 0 do
+              @executing_frame -= 1
+              
+              p [@executing_frame, @history.length-1]
+              
+              state = @history[@executing_frame]
+              @context.load_state state
+              
+              Fiber.yield
+            end
+            
+          end
+          
+          
+          self.state = :reverse
+        end
+      end
+    end
+    
+    
+    class Reverse < State
+      def update
+        fiber_dead = false
+        @outer.instance_eval do
+          
+          if @f1.alive?
+            @f1.resume() 
+          else
+            fiber_dead = true
+          end
+          
+        end
+        
+        if fiber_dead
+          @outer.state = :park
+        end
+        
+      end
+      
+      def frame(&block)
+        
+      end
+      
+      def play
+        
+      end
+      
+      def pause
+        @outer.state = :park
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        @outer.instance_eval do
+          
+          
+          
+          
+        end
+      end
+    end
+    
   end
   
-  def state=(state_name)
-    @state = @all_states[state_name]
+  
+  
+  
+  
+  def state=(new_state_name)
+    current_state_name = 
+      if @state.nil?
+        "<null>"
+      else
+        @state.name
+      end
+    
+    @state = nil # <-- blank this out so you get an error if you try to access the "current" state during a transition
+    
+    # implement triggers on certain edges
+    @edge_callbacks.each do |state1, state2, callback|
+      if state1 == current_state_name && state2 == new_state_name
+        puts ">> edge callback: #{state1} -> #{state2}"
+        callback.call()
+      end
+    end
+    
+    # trigger state change
+    @state = @all_states[new_state_name]
+    
+    puts "state = #{new_state_name}"
   end
   
   
   def initialize(context)
     @context = context
+    
+    
+    @edge_callbacks = Array.new
+    
+    
+    # 
+    # Populate a hash called @all_states
+    # with one instance of each class in the States module.
+    # The expected format is similar to this:
+    # 
+    # { :park => States::Park.new(self) }
+    # 
+    p self.class::States.constants
+    
+    @all_states = Hash.new
+    
+    states_module = self.class::States
+    states_module.constants.each do |const_sym|
+      klass = states_module.const_get const_sym
+      @all_states[const_sym.to_s.downcase.to_sym] = klass.new(self)
+    end
+    
+    
+    
+    
     
     
     
@@ -76,28 +267,54 @@ class FrameHistory
     
     @history = Array.new
     
-    @f2 = Fiber.new do
-      @context.on_update(self)
-    end
+    # @f2 = Fiber.new do
+    #   @context.on_update(self)
+    # end
     
-    @f1 = Fiber.new do
-      # forward cycle
-      while @f2.alive?
-        @f2.resume()
-        Fiber.yield
-      end
-    end
+    # @f1 = Fiber.new do
+    #   # forward cycle
+    #   while @f2.alive?
+    #     @f2.resume()
+    #     Fiber.yield
+    #   end
+    # end
     
     
-    @all_states = {
-      :park => States::Park.new(self),
-      :drive => States::Drive.new(self)
-    }
+    
     self.state = :park
+    
+    
+    after_transition :park, :drive do
+      @f2 = Fiber.new do
+        @context.on_update(self)
+      end
+      
+      @f1 = Fiber.new do
+        # forward cycle
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+      
+      
+      # p @f1
+      @executing_frame = 0
+    end
+    
+    
   end
   
   extend Forwardable
-  def_delegators :@state, :update, :frame, :play, :pause
+  def_delegators :@state, :frame, :play, :pause, :reverse
+  
+  def update
+    @state.update
+  end
+  
+  def after_transition(state1, state2, &block)
+    @edge_callbacks << [state1, state2, block]
+  end
   
   
   # def frame(&block)
