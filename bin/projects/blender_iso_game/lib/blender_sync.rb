@@ -395,6 +395,22 @@ class BlenderSync
         
       end
       
+    
+    
+    when 'timeline_command'
+      p message
+      case message['value']
+      when 'step forward'
+        puts "forward"
+      when 'step back'
+        puts 'back'
+      when 'pause'
+        puts 'pause'
+      when 'play'
+        puts 'play'
+      end
+    
+    
     else
       
     end
