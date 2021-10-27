@@ -26,6 +26,37 @@ class FrameHistory
   end
   
   
+  def step_forward
+    if @paused
+      @take_one_step = true
+      @state = :forward
+    end
+  end
+  
+  def step_back
+    if @paused
+      @take_one_step = true
+      @state = :reverse
+    end
+  end
+  
+  def pause
+    @paused = true
+    
+    p self
+  end
+  
+  def play
+    @paused = false
+    @state = :forward
+  end
+  
+  def reverse
+    @paused = false
+    @state = :reverse
+  end
+  
+  
   def frame(&block)
     # TODO: rather than executing this frame immediately, assign the passed block some frame number, and compare that number to the desired frame of execution. then, the desired frame number can be manually scrubbed back-and-forth in order to control the point of execution
       # this needs to be paired with a sytem that has memory of previous states. when old frames are not actively executed, their state should be pulled from this memory. that frame delta can be used to advance the state instead of computing fresh data.
@@ -68,33 +99,6 @@ class FrameHistory
     
   end
   
-  def step_forward
-    if @paused
-      @take_one_step = true
-      @state = :forward
-    end
-  end
-  
-  def step_back
-    if @paused
-      @take_one_step = true
-      @state = :reverse
-    end
-  end
-  
-  def pause
-    @paused = true
-  end
-  
-  def play
-    @paused = false
-    @state = :forward
-  end
-  
-  def reverse
-    @paused = false
-    @state = :reverse
-  end
   
   
   private
@@ -123,16 +127,23 @@ class FrameHistory
           if @state == :reverse
             p [@executing_frame, @state_history.length]
             iterate_back()
+            
           elsif @state == :forward
             resume_forward()
+            @state = :forward
             break # end the reverse cycle
-          else # :neutral
+            
+          elsif @state == :neutral # :neutral
             Fiber.yield
+            
+          else
+            raise "unknown state detected"
+            
           end
         end
         
         puts "start new cycle"
-        @state = :forward
+        
         
         # pause before start of the next cycle
         Fiber.yield
