@@ -498,6 +498,7 @@ class IPC_Helper():
         # self.fifo.close()
         # print("FIFO closed")
     
+to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -513,14 +514,12 @@ class RubyOF(bpy.types.RenderEngine):
     def __init__(self):
         self.first_time = True
         
-        self.to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
-        
         
         # data = {
         #     'type':"interrupt"
         #     'value': "RESET"
         # }
-        # self.to_ruby.write(json.dumps(data))
+        # to_ruby.write(json.dumps(data))
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
@@ -653,7 +652,7 @@ class RubyOF(bpy.types.RenderEngine):
             view_perspective = rv3d.view_perspective
         )
         
-        self.to_ruby.write(json.dumps(data))
+        to_ruby.write(json.dumps(data))
         
         
         
@@ -665,7 +664,7 @@ class RubyOF(bpy.types.RenderEngine):
                 'pid': os.getpid()
             }
             
-            self.to_ruby.write(json.dumps(data))
+            to_ruby.write(json.dumps(data))
         
         
     
@@ -683,7 +682,7 @@ class RubyOF(bpy.types.RenderEngine):
             'memo': 'start',
         }
         
-        self.to_ruby.write(json.dumps(data))
+        to_ruby.write(json.dumps(data))
         
         # collect up two different categories of messages
         # the datablock messages must be sent before entity messages
@@ -788,12 +787,12 @@ class RubyOF(bpy.types.RenderEngine):
         unique_datablocks = list(set(mesh_datablocks))
         for datablock in unique_datablocks:
             msg = pack_mesh_data(datablock, self.shm_dir)
-            self.to_ruby.write(json.dumps(msg))
+            to_ruby.write(json.dumps(msg))
         
         # send out all the regular messages after the datablocks
         # to prevent dependency issues
         for msg in message_queue:
-            self.to_ruby.write(json.dumps(msg))
+            to_ruby.write(json.dumps(msg))
         
         # full list of all objects, by name (helps Ruby delete old objects)
         data = {
@@ -802,7 +801,7 @@ class RubyOF(bpy.types.RenderEngine):
                         in depsgraph.object_instances ]
         }
         
-        self.to_ruby.write(json.dumps(data))
+        to_ruby.write(json.dumps(data))
         
         
         # information about material linkages
@@ -827,7 +826,7 @@ class RubyOF(bpy.types.RenderEngine):
                     'material_name': material_name
                 }
                 
-                self.to_ruby.write(json.dumps(data))
+                to_ruby.write(json.dumps(data))
         
         data = {
             'type': 'timestamp',
@@ -835,7 +834,7 @@ class RubyOF(bpy.types.RenderEngine):
             'memo': 'end',
         }
         
-        self.to_ruby.write(json.dumps(data))
+        to_ruby.write(json.dumps(data))
         
         
         # TODO: serialize and send materials that have changed
@@ -843,6 +842,27 @@ class RubyOF(bpy.types.RenderEngine):
         # note: in blender, one object can have many material slots
     
     # --------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #
@@ -1006,20 +1026,151 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         return (context.engine in cls.COMPAT_ENGINES)
     
     def draw(self, context):
-        # self.layout.label(text="Hello World")
+        layout = self.layout
         
-        # self.layout.prop(context.scene.my_custom_props, "my_bool")
-        # self.layout.prop(context.scene.my_custom_props, "my_float")
-        # self.layout.prop(context.scene.my_custom_props, "my_pointer")
+        # layout.label(text="Hello World")
         
-        # self.layout.label(text="Real Data Below")
-        self.layout.prop(context.scene.my_custom_props, "alpha")
-        self.layout.prop(context.scene.my_custom_props, "b_windowLink")
-        self.layout.prop(context.scene.my_custom_props, "camera")
-        # self.layout.prop(context.scene.my_custom_props, "aspect_ratio")
-        self.layout.prop(context.scene.my_custom_props, "ortho_scale")
+        # layout.prop(context.scene.my_custom_props, "my_bool")
+        # layout.prop(context.scene.my_custom_props, "my_float")
+        # layout.prop(context.scene.my_custom_props, "my_pointer")
         
+        # layout.label(text="Real Data Below")
+        layout.prop(context.scene.my_custom_props, "alpha")
+        layout.prop(context.scene.my_custom_props, "b_windowLink")
+        layout.prop(context.scene.my_custom_props, "camera")
+        # layout.prop(context.scene.my_custom_props, "aspect_ratio")
+        layout.prop(context.scene.my_custom_props, "ortho_scale")
+        
+        layout.row().separator()
+        
+        row = layout.row()
+        row.operator("render.rubyof_reverse", text="<--")
+        row.operator("render.rubyof_pause", text=" || ")
+        row.operator("render.rubyof_play", text="-->")
+        
+        row = layout.row()
+        row.operator("render.rubyof_step_back", text="back")
+        row.operator("render.rubyof_step_forward", text="forward")
+
+
+class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "render.rubyof_step_back"
+    bl_label = "Step Back"
     
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'step back',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        return {'FINISHED'}
+
+class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "render.rubyof_step_forward"
+    bl_label = "Step Forward"
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'step forward',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        return {'FINISHED'}
+
+class RENDER_OT_RubyOF_MessagePause (bpy.types.Operator):
+    """pause execution"""
+    bl_idname = "render.rubyof_pause"
+    bl_label = "||"
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'pause',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        return {'FINISHED'}
+
+class RENDER_OT_RubyOF_MessagePlay (bpy.types.Operator):
+    """let execution play forwards, generating new history"""
+    bl_idname = "render.rubyof_play"
+    bl_label = "-->"
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'play',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        return {'FINISHED'}
+
+class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
+    """let execution play backwards, using saved history"""
+    bl_idname = "render.rubyof_reverse"
+    bl_label = "<--"
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'reverse',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        return {'FINISHED'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
 # Panel for light (under "object data" tab for a light object)
 # (based on blender source code:
@@ -1236,7 +1387,6 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
 
 
 
-
 # RenderEngines also need to tell UI Panels that they are compatible with.
 # We recommend to enable all panels marked as BLENDER_RENDER, and then
 # exclude any panels that are replaced by custom panels registered by the
@@ -1293,6 +1443,11 @@ def get_panels():
     return panels
 
 classes = (
+    RENDER_OT_RubyOF_StepBack,
+    RENDER_OT_RubyOF_MessageStepForward,
+    RENDER_OT_RubyOF_MessagePause,
+    RENDER_OT_RubyOF_MessagePlay,
+    RENDER_OT_RubyOF_MessageReverse,
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
