@@ -25,7 +25,7 @@ class FrameHistory
       end
       
       def play
-        @outer.state = :drive 
+        @outer.state = :generating_new 
       end
       
       def pause
@@ -56,7 +56,21 @@ class FrameHistory
       end
       
       def play
-        @outer.state = :drive 
+        new_state = nil
+        
+        @outer.instance_eval do
+          
+          if @executing_frame < @history.length-1
+            # currently exploring the past
+            new_state = :replaying_old
+          else
+            # currently ready to generate new future data
+            new_state = :generating_new
+          end
+          
+        end
+        
+        @outer.state = new_state
       end
       
       def pause
@@ -78,7 +92,7 @@ class FrameHistory
             while @executing_frame > 0 do
               @executing_frame -= 1
               
-              p [@executing_frame, @history.length-1]
+              # p [@executing_frame, @history.length-1]
               
               state = @history[@executing_frame]
               @context.load_state state
@@ -94,9 +108,11 @@ class FrameHistory
       end
     end
     
+    # BUG: go forward, then pause, then go backwards, pause, then forward again
+    # Improperly advances through history using code execution right away, instead of replaying some forward state in history and then advancing with code later
     
-    
-    class Drive < State
+    # (forward via code execution)
+    class Generating_New < State
       def update
         fiber_dead = false
         @outer.instance_eval do
@@ -117,20 +133,73 @@ class FrameHistory
       def frame(&block)
         @outer.instance_eval do
           
-          
-          state = @context.snapshot_gamestate
-          @history[@executing_frame] = state
-          
-          p [@executing_frame, @history.length-1]
-          # puts "history length: #{@history.length}"
-          
-          @executing_frame += 1
-          
-          block.call
-          
-          Fiber.yield
+          if @executing_frame < @history.length-1
+            # resuming
+            
+            # (skip this frame)
+            @executing_frame += 1
+            
+          else
+            # actually generating new state
+            state = @context.snapshot_gamestate
+            @history[@executing_frame] = state
+            
+            # p [@executing_frame, @history.length-1]
+            # puts "history length: #{@history.length}"
+            
+            @executing_frame += 1
+            
+            block.call
+            
+            Fiber.yield
+          end
           
         end
+      end
+      
+      def play
+        
+      end
+      
+      def pause
+        @outer.state = :paused
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        
+      end
+    end
+    
+    # (forward via stored history)
+    class Replaying_Old < State
+      def update
+        @outer.instance_eval do
+          
+          # NOTE: not in a Fiber
+          if @executing_frame < @history.length-1
+            @executing_frame += 1
+            
+            # p [@executing_frame, @history.length-1]
+            
+            state = @history[@executing_frame]
+            @context.load_state state
+          else
+            self.state = :generating_new
+          end
+          
+        end
+      end
+      
+      def frame(&block)
+        
       end
       
       def play
@@ -187,7 +256,7 @@ class FrameHistory
             while @executing_frame > 0 do
               @executing_frame -= 1
               
-              p [@executing_frame, @history.length-1]
+              # p [@executing_frame, @history.length-1]
               
               state = @history[@executing_frame]
               @context.load_state state
@@ -218,7 +287,7 @@ class FrameHistory
         end
         
         if fiber_dead
-          @outer.state = :park
+          @outer.state = :initial
         end
         
       end
@@ -232,7 +301,8 @@ class FrameHistory
       end
       
       def pause
-        @outer.state = :park
+        # must have paused somewhere in the middle. if we hit the beginning of history, then the state would have been set to :initial in #update
+        @outer.state = :paused
       end
       
       def step_forward
@@ -277,6 +347,8 @@ class FrameHistory
       end
     end
     
+    raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" unless @all_states.keys.include? new_state_name
+    
     # trigger state change
     @state = @all_states[new_state_name]
     
@@ -296,7 +368,7 @@ class FrameHistory
     # with one instance of each class in the States module.
     # The expected format is similar to this:
     # 
-    # { :park => States::Park.new(self) }
+    # { :initial => States::initial.new(self) }
     # 
     p self.class::States.constants
     
@@ -333,10 +405,10 @@ class FrameHistory
     
     
     
-    self.state = :park
+    self.state = :initial
     
     
-    after_transition :park, :drive do
+    after_transition :initial, :generating_new do
       @f2 = Fiber.new do
         @context.on_update(self)
       end
@@ -353,6 +425,26 @@ class FrameHistory
       # p @f1
       @executing_frame = 0
     end
+    
+    
+    after_transition :replaying_old, :generating_new do
+      # need to regenerate, but also need to get back to the same place
+      
+      @f2 = Fiber.new do
+        @context.on_update(self)
+      end
+      
+      @f1 = Fiber.new do
+        # forward cycle
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+      
+      @executing_frame = 0
+    end
+    
     
     
   end
