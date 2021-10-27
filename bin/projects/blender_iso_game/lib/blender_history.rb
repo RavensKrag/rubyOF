@@ -24,6 +24,7 @@ class BlenderHistory
     end
     
     @state = compress_history(@state)
+    @state.reject!{|msg| msg['type'] == 'timeline_command' }
     
     @buffer.clear
     
