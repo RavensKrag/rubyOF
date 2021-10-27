@@ -46,6 +46,7 @@ class FrameHistory
       end
     end
     
+    
     class Paused < State
       def update
         # NO-OP
@@ -77,7 +78,7 @@ class FrameHistory
       def step_forward
         @outer.instance_eval do
           
-          puts "step forward #{@executing_frame} -> #{@executing_frame+1} (#{@history.length-1})"
+          puts "try step forward #{@executing_frame} -> #{@executing_frame+1} (#{@history.length-1})"
           
           @queued_state = :paused
           if @executing_frame < @history.length-1
@@ -94,7 +95,7 @@ class FrameHistory
       def step_back
         @outer.instance_eval do
           
-          puts "step back #{@executing_frame} -> #{@executing_frame-1} (#{@history.length-1})"
+          puts "try step back #{@executing_frame} -> #{@executing_frame-1} (#{@history.length-1})"
           @queued_state = :paused
           self.state = :reverse
           
@@ -137,14 +138,19 @@ class FrameHistory
       def frame(&block)
         @outer.instance_eval do
           
-          if @executing_frame < @history.length
+          if @executing_frame < @history.length-1
             # resuming
             
-            # puts "resuming"
-            # (skip this frame)
-            @executing_frame += 1
+            # if manually stepping forward, we'll be able to see the transition
+            # but otherwise, this transition will be silent
+            # (keeps logs clean unless you really need the info)
+            if @queued_state
+              puts "resuming"
+            end
             
-          elsif @executing_frame > @history.length
+            # (skip this frame)
+            
+            @executing_frame += 1
             
           else # @executing_frame > @history.length-1
             # actually generating new state
@@ -245,41 +251,6 @@ class FrameHistory
       end
     end
     
-    class Finished < State
-      def update
-        
-      end
-      
-      def frame(&block)
-        
-      end
-      
-      def play
-        
-      end
-      
-      def pause
-        # NO-OP
-        # (already not advancing state)
-      end
-      
-      def step_forward
-        
-      end
-      
-      def step_back
-        
-      end
-      
-      def reverse
-        @outer.instance_eval do
-          
-          self.state = :reverse
-          
-        end
-      end
-    end
-    
     
     class Reverse < State
       def update
@@ -330,52 +301,110 @@ class FrameHistory
       end
     end
     
+    
+    class Finished < State
+      def update
+        
+      end
+      
+      def frame(&block)
+        
+      end
+      
+      def play
+        
+      end
+      
+      def pause
+        # NO-OP
+        # (already not advancing state)
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        @outer.instance_eval do
+          
+          self.state = :reverse
+          
+        end
+      end
+    end
+    
+    
   end
   
   def setup_states()
     @executing_frame = 0
     @target_frame = 20
-    
+    @fiber_mode = nil
     
     self.state = :initial
     
     
     after_transition :ANY, :generating_new do
-      @f2 = Fiber.new do
-        @context.on_update(self)
-      end
-      
-      @f1 = Fiber.new do
-        # forward cycle
-        while @f2.alive?
-          @f2.resume()
-          Fiber.yield
+      if @fiber_mode != :forward
+        @f2 = Fiber.new do
+          @context.on_update(self)
         end
+        
+        @f1 = Fiber.new do
+          # forward cycle
+          while @f2.alive?
+            @f2.resume()
+            Fiber.yield
+          end
+        end
+        
+        @fiber_mode = :forward
+        # p @f1
+        @executing_frame = 0
       end
-      
-      
-      # p @f1
-      @executing_frame = 0
     end
     
     after_transition :ANY, :reverse do
-      @f1 = Fiber.new do
-        while @executing_frame > 0 do
-          @executing_frame -= 1
-          
-          # p [@executing_frame, @history.length-1]
-          
-          state = @history[@executing_frame]
-          @context.load_state state
-          
-          Fiber.yield
+      if @fiber_mode != :reverse
+        @f1 = Fiber.new do
+          while @executing_frame > 0 do
+            @executing_frame -= 1
+            
+            # p [@executing_frame, @history.length-1]
+            
+            state = @history[@executing_frame]
+            @context.load_state state
+            
+            Fiber.yield
+          end
         end
+        
+        @fiber_mode = :reverse
       end
+    end
+    
+    after_transition :ANY, :paused do
+      puts "frame: #{@executing_frame} (#{@history.length-1})"
     end
     
     
     
   end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
