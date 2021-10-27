@@ -20,8 +20,9 @@ class FrameHistory
     
     @state_history = Array.new
     
-    @paused = false
+    @paused = true
     @take_one_step = false
+    @direction = :forward
   end
   
   def update
@@ -39,7 +40,6 @@ class FrameHistory
     
     # Below is some prototype logic to get the ball rolling
     
-    p [@executing_frame, @target_frame]
     
     while @paused do
       Fiber.yield
@@ -51,12 +51,32 @@ class FrameHistory
       end
     end
     
-    state = @context.snapshot_gamestate
-    @state_history[@executing_frame] = state
     
-    @executing_frame += 1
     
-    block.call
+    p [@executing_frame, @target_frame]
+    
+    if @direction == :forward
+      state = @context.snapshot_gamestate
+      @state_history[@executing_frame] = state
+      
+      puts "history length: #{@state_history.length}"
+      
+      @executing_frame += 1
+      
+      block.call
+    elsif @direction == :backwards
+      puts "iterate back"
+      
+      if @executing_frame > 0
+        @executing_frame -= 1
+        
+        state = @state_history[@executing_frame]
+        @context.load_state(state)
+          
+        Fiber.yield
+      end
+    end
+    
     
     # if (50..100).include? @executing_frame
     #   # either execute code to generate the frame
@@ -98,11 +118,17 @@ class FrameHistory
   end
   
   def step_forward
-    @take_one_step = true
+    if @paused
+      @take_one_step = true
+      @direction = :forward
+    end
   end
   
   def step_back
-    
+    if @paused
+      @take_one_step = true
+      @direction = :backwards
+    end
   end
   
   def pause
@@ -113,6 +139,7 @@ class FrameHistory
   def play
     puts "play from frame history"
     @paused = false
+    @direction = :forward
   end
   
   

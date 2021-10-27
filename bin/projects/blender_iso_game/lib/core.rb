@@ -490,6 +490,10 @@ class Core
     return @environment.get_entity_transform(74)
   end
   
+  def load_state(state)
+    @environment.set_entity_transform(74, state)
+  end
+  
   def pause
     @frame_history.pause
   end
