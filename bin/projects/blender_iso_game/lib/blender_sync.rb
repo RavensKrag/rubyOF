@@ -404,14 +404,20 @@ class BlenderSync
       case message['value']
       when 'step forward'
         puts "forward"
+        @context.step_forward
+        
       when 'step back'
-        puts 'back'
+        # puts 'back'
+        @context.step_back
+        
       when 'pause'
-        puts 'pause'
+        # puts 'pause'
         @context.pause
+        
       when 'play'
-        puts 'play'
+        # puts 'play'
         @context.play
+        
       end
     
     

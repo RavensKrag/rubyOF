@@ -21,6 +21,7 @@ class FrameHistory
     @state_history = Array.new
     
     @paused = false
+    @take_one_step = false
   end
   
   def update
@@ -42,6 +43,12 @@ class FrameHistory
     
     while @paused do
       Fiber.yield
+      
+      
+      if @take_one_step
+        @take_one_step = false
+        break
+      end
     end
     
     state = @context.snapshot_gamestate
@@ -91,7 +98,7 @@ class FrameHistory
   end
   
   def step_forward
-    
+    @take_one_step = true
   end
   
   def step_back

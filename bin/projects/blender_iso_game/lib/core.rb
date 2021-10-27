@@ -491,7 +491,6 @@ class Core
   end
   
   def pause
-    puts "pause from core"
     @frame_history.pause
   end
   
@@ -499,6 +498,13 @@ class Core
     @frame_history.play
   end
   
+  def step_forward
+    @frame_history.step_forward
+  end
+  
+  def step_back
+    @frame_history.step_back
+  end
   
   
   
