@@ -275,21 +275,15 @@ class FrameHistory
     
     class Reverse < State
       def update
-        fiber_dead = false
         @outer.instance_eval do
           
           if @f1.alive?
             @f1.resume() 
           else
-            fiber_dead = true
+            self.state = :initial
           end
           
         end
-        
-        if fiber_dead
-          @outer.state = :initial
-        end
-        
       end
       
       def frame(&block)
@@ -367,6 +361,11 @@ class FrameHistory
     
     
   end
+  
+  
+  
+  
+  
   
   
   def initialize(context)
