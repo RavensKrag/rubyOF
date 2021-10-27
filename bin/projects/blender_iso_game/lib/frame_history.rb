@@ -48,7 +48,7 @@ class FrameHistory
     
     class Paused < State
       def update
-        
+        # NO-OP
       end
       
       def frame(&block)
@@ -60,47 +60,53 @@ class FrameHistory
           
           if @executing_frame < @history.length-1
             # currently exploring the past
-            new_state = :replaying_old
+            self.state = :replaying_old
           else
             # currently ready to generate new future data
-            new_state = :generating_new
+            self.state = :generating_new
           end
           
-          self.state = new_state
         end
       end
       
       def pause
-        
+        # NO-OP
+        # (already paused - self loop)
       end
       
       def step_forward
-        
+        @outer.instance_eval do
+          
+          puts "step forward #{@executing_frame} -> #{@executing_frame+1} (#{@history.length-1})"
+          
+          @queued_state = :paused
+          if @executing_frame < @history.length-1
+            # currently exploring the past
+            self.state = :replaying_old
+          else
+            # currently ready to generate new future data
+            self.state = :generating_new
+          end
+          
+        end
       end
       
       def step_back
-        
+        @outer.instance_eval do
+          
+          puts "step back #{@executing_frame} -> #{@executing_frame-1} (#{@history.length-1})"
+          @queued_state = :paused
+          self.state = :reverse
+          
+          
+        end
       end
       
       def reverse
         @outer.instance_eval do
           
-          @f1 = Fiber.new do
-            while @executing_frame > 0 do
-              @executing_frame -= 1
-              
-              # p [@executing_frame, @history.length-1]
-              
-              state = @history[@executing_frame]
-              @context.load_state state
-              
-              Fiber.yield
-            end
-            
-          end
-          
-          
           self.state = :reverse
+          
         end
       end
     end
@@ -119,20 +125,30 @@ class FrameHistory
             self.state = :finished
           end
           
+          # after one iteration via this method, transition to the queued state
+          if @queued_state
+            self.state = @queued_state
+            @queued_state = nil
+          end
+          
         end
       end
       
       def frame(&block)
         @outer.instance_eval do
           
-          if @executing_frame < @history.length-1
+          if @executing_frame < @history.length
             # resuming
             
+            # puts "resuming"
             # (skip this frame)
             @executing_frame += 1
             
-          else
+          elsif @executing_frame > @history.length
+            
+          else # @executing_frame > @history.length-1
             # actually generating new state
+            
             state = @context.snapshot_gamestate
             @history[@executing_frame] = state
             
@@ -189,6 +205,12 @@ class FrameHistory
             @context.load_state state
           else
             self.state = :generating_new
+          end
+          
+          # after one iteration via this method, transition to the queued state
+          if @queued_state
+            self.state = @queued_state
+            @queued_state = nil
           end
           
         end
@@ -252,22 +274,8 @@ class FrameHistory
       def reverse
         @outer.instance_eval do
           
-          @f1 = Fiber.new do
-            while @executing_frame > 0 do
-              @executing_frame -= 1
-              
-              # p [@executing_frame, @history.length-1]
-              
-              state = @history[@executing_frame]
-              @context.load_state state
-              
-              Fiber.yield
-            end
-            
-          end
-          
-          
           self.state = :reverse
+          
         end
       end
     end
@@ -280,7 +288,13 @@ class FrameHistory
           if @f1.alive?
             @f1.resume() 
           else
-            self.state = :initial
+            self.state = :paused
+          end
+          
+          # after one iteration via this method, transition to the queued state
+          if @queued_state
+            self.state = @queued_state
+            @queued_state = nil
           end
           
         end
@@ -319,10 +333,14 @@ class FrameHistory
   end
   
   def setup_states()
+    @executing_frame = 0
+    @target_frame = 20
+    
+    
     self.state = :initial
     
     
-    after_transition :initial, :generating_new do
+    after_transition :ANY, :generating_new do
       @f2 = Fiber.new do
         @context.on_update(self)
       end
@@ -340,24 +358,21 @@ class FrameHistory
       @executing_frame = 0
     end
     
-    
-    after_transition :replaying_old, :generating_new do
-      # need to regenerate, but also need to get back to the same place
-      
-      @f2 = Fiber.new do
-        @context.on_update(self)
-      end
-      
+    after_transition :ANY, :reverse do
       @f1 = Fiber.new do
-        # forward cycle
-        while @f2.alive?
-          @f2.resume()
+        while @executing_frame > 0 do
+          @executing_frame -= 1
+          
+          # p [@executing_frame, @history.length-1]
+          
+          state = @history[@executing_frame]
+          @context.load_state state
+          
           Fiber.yield
         end
       end
-      
-      @executing_frame = 0
     end
+    
     
     
   end
@@ -397,10 +412,6 @@ class FrameHistory
     
     
     
-    
-    @executing_frame = 0
-    @target_frame = 20
-    
     @history = Array.new
     
     # @f2 = Fiber.new do
@@ -434,13 +445,16 @@ class FrameHistory
     
     # implement triggers on certain edges
     @edge_callbacks.each do |state1, state2, callback|
-      if state1 == current_state_name && state2 == new_state_name
+      if( (state1 == current_state_name || state1 == :ANY) &&
+          (state2 == new_state_name     || state2 == :ANY) )
         puts ">> edge callback: #{state1} -> #{state2}"
         callback.call()
       end
     end
     
-    raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" unless @all_states.keys.include? new_state_name
+    unless @all_states.keys.include? new_state_name
+      raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" 
+    end
     
     # trigger state change
     @state = @all_states[new_state_name]
