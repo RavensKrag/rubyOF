@@ -45,7 +45,7 @@ class FrameHistory
     
     
     
-    p [@executing_frame, @target_frame]
+    p [@executing_frame, @state_history.length]
     
     if @direction == :forward
       iterate_forward(block)
@@ -111,6 +111,7 @@ class FrameHistory
           # potential to just iterate backwards
           puts "second loop"
           if @direction == :reverse
+            p [@executing_frame, @state_history.length]
             iterate_back()
           elsif @direction == :forward
             resume_forward()
