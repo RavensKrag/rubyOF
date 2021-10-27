@@ -116,6 +116,8 @@ load LIB_DIR/'frame_history.rb'
 class Core
   include HelperFunctions
   
+  attr_accessor :frame_history
+  
   def initialize(window)
     @w = window
   end
@@ -492,22 +494,6 @@ class Core
   
   def load_state(state)
     @environment.set_entity_transform(74, state)
-  end
-  
-  def pause
-    @frame_history.pause
-  end
-  
-  def play
-    @frame_history.play
-  end
-  
-  def step_forward
-    @frame_history.step_forward
-  end
-  
-  def step_back
-    @frame_history.step_back
   end
   
   

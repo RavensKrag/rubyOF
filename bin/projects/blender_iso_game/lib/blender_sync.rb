@@ -2,12 +2,12 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history, context)
+  def initialize(window, depsgraph, history, core)
     @window = window
     @depsgraph = depsgraph
     @history = history
     
-    @context = context
+    @core = core
     
     # 
     # Open FIFO in main thread then pass to Thread using function closure.
@@ -404,20 +404,22 @@ class BlenderSync
       case message['value']
       when 'step forward'
         puts "forward"
-        @context.step_forward
+        @core.frame_history.step_forward
         
       when 'step back'
         # puts 'back'
-        @context.step_back
+        @core.frame_history.step_back
         
       when 'pause'
         # puts 'pause'
-        @context.pause
+        @core.frame_history.pause
         
       when 'play'
         # puts 'play'
-        @context.play
-        
+        @core.frame_history.play
+      
+      when 'reverse'
+        @core.frame_history.reverse
       end
     
     
