@@ -400,26 +400,24 @@ class BlenderSync
     
     
     when 'timeline_command'
-      p message
+      # p message
+      
       case message['value']
       when 'step forward'
-        puts "forward"
         @core.frame_history.step_forward
         
       when 'step back'
-        # puts 'back'
         @core.frame_history.step_back
         
       when 'pause'
-        # puts 'pause'
         @core.frame_history.pause
         
       when 'play'
-        # puts 'play'
         @core.frame_history.play
       
       when 'reverse'
         @core.frame_history.reverse
+        
       end
     
     
