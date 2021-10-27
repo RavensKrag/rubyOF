@@ -1044,8 +1044,9 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         layout.row().separator()
         
         row = layout.row()
-        row.operator("render.rubyof_pause", text="Pause")
-        row.operator("render.rubyof_play", text="Play")
+        row.operator("render.rubyof_reverse", text="<--")
+        row.operator("render.rubyof_pause", text=" || ")
+        row.operator("render.rubyof_play", text="-->")
         
         row = layout.row()
         row.operator("render.rubyof_step_back", text="back")
@@ -1072,8 +1073,6 @@ class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
         
         return {'FINISHED'}
 
-
-
 class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
     """Clear both animation textures"""
     bl_idname = "render.rubyof_step_forward"
@@ -1095,9 +1094,9 @@ class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
         return {'FINISHED'}
 
 class RENDER_OT_RubyOF_MessagePause (bpy.types.Operator):
-    """Clear both animation textures"""
+    """pause execution"""
     bl_idname = "render.rubyof_pause"
-    bl_label = "Pause"
+    bl_label = "||"
     
     @classmethod
     def poll(cls, context):
@@ -1114,9 +1113,9 @@ class RENDER_OT_RubyOF_MessagePause (bpy.types.Operator):
         return {'FINISHED'}
 
 class RENDER_OT_RubyOF_MessagePlay (bpy.types.Operator):
-    """Clear both animation textures"""
+    """let execution play forwards, generating new history"""
     bl_idname = "render.rubyof_play"
-    bl_label = "Play"
+    bl_label = "-->"
     
     @classmethod
     def poll(cls, context):
@@ -1133,6 +1132,25 @@ class RENDER_OT_RubyOF_MessagePlay (bpy.types.Operator):
         
         return {'FINISHED'}
 
+class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
+    """let execution play backwards, using saved history"""
+    bl_idname = "render.rubyof_reverse"
+    bl_label = "<--"
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        data = {
+            'type': 'timeline_command',
+            'value': 'reverse',
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        return {'FINISHED'}
 
 
 
@@ -1429,6 +1447,7 @@ classes = (
     RENDER_OT_RubyOF_MessageStepForward,
     RENDER_OT_RubyOF_MessagePause,
     RENDER_OT_RubyOF_MessagePlay,
+    RENDER_OT_RubyOF_MessageReverse,
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,

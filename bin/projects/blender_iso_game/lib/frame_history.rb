@@ -64,7 +64,7 @@ class FrameHistory
       @executing_frame += 1
       
       block.call
-    elsif @direction == :backwards
+    elsif @direction == :reverse
       puts "iterate back"
       
       if @executing_frame > 0
@@ -87,6 +87,9 @@ class FrameHistory
     
     
     Fiber.yield
+    
+    
+    # NOTE: can't reverse after hitting the end of the main block, because then the inner fiber is dead
     
     
     
@@ -127,7 +130,7 @@ class FrameHistory
   def step_back
     if @paused
       @take_one_step = true
-      @direction = :backwards
+      @direction = :reverse
     end
   end
   
@@ -140,6 +143,11 @@ class FrameHistory
     puts "play from frame history"
     @paused = false
     @direction = :forward
+  end
+  
+  def reverse
+    @paused = false
+    @direction = :reverse
   end
   
   
