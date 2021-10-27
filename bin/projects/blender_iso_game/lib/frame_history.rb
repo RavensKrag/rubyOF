@@ -15,7 +15,38 @@ class FrameHistory
   
   
   module States
-    class Park < State
+    class Initial < State
+      def update
+        
+      end
+      
+      def frame(&block)
+        
+      end
+      
+      def play
+        @outer.state = :drive 
+      end
+      
+      def pause
+        # NO-OP
+        # (already not going anywhere)
+      end
+      
+      def step_forward
+        
+      end
+      
+      def step_back
+        
+      end
+      
+      def reverse
+        
+      end
+    end
+    
+    class Paused < State
       def update
         
       end
@@ -41,9 +72,29 @@ class FrameHistory
       end
       
       def reverse
-        
+        @outer.instance_eval do
+          
+          @f1 = Fiber.new do
+            while @executing_frame > 0 do
+              @executing_frame -= 1
+              
+              p [@executing_frame, @history.length-1]
+              
+              state = @history[@executing_frame]
+              @context.load_state state
+              
+              Fiber.yield
+            end
+            
+          end
+          
+          
+          self.state = :reverse
+        end
       end
     end
+    
+    
     
     class Drive < State
       def update
@@ -51,7 +102,7 @@ class FrameHistory
         @outer.instance_eval do
           
           if @f1.alive?
-            @f1.resume() 
+            @f1.resume()
           else
             fiber_dead = true
           end
@@ -87,7 +138,7 @@ class FrameHistory
       end
       
       def pause
-        @outer.state = :park
+        @outer.state = :paused
       end
       
       def step_forward
@@ -117,7 +168,8 @@ class FrameHistory
       end
       
       def pause
-        @outer.state = :park
+        # NO-OP
+        # (already not advancing state)
       end
       
       def step_forward
