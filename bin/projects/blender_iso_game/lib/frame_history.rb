@@ -12,6 +12,24 @@ class FrameHistory
         @f2.resume(self)
         Fiber.yield
       end
+      
+      @paused = true
+      loop do
+        if @direction == :reverse
+          puts "iterate back"
+          
+          if @executing_frame > 0
+            @executing_frame -= 1
+            
+            state = @state_history[@executing_frame]
+            @context.load_state(state)
+              
+            Fiber.yield
+          end
+        end
+        
+        Fiber.yield
+      end
     end
     
     
