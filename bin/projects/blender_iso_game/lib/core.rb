@@ -501,9 +501,9 @@ class Core
           end
         end
         
-        if v.x == -1
-          raise "error test"
-        end
+        # if v.x == -1
+        #   raise "error test"
+        # end
       end
     end
     
@@ -516,7 +516,6 @@ class Core
   end
   
   def load_state(state)
-    puts "loading"
     @environment.set_entity_transform(74, state)
   end
   
@@ -664,6 +663,16 @@ class Core
       # + frag shader (just load the default one)
     
     # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+    
+    @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+    if @crash_detected
+      
+      ofPushStyle()
+        ofEnableAlphaBlending()
+        ofSetColor(@crash_color)
+        ofDrawRectangle(0,0,0, @w.width, @w.height)
+      ofPopStyle()
+    end
     
   end
   

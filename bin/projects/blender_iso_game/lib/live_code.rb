@@ -85,7 +85,7 @@ class LiveCode
       
       def method_missing(method, *args)
         # suspend delegation in order to suppress additional errors
-        puts "livecode - supressing: #{method}"
+        # puts "livecode - supressing: #{method}"
         
         if method == :draw
           @inner.draw
