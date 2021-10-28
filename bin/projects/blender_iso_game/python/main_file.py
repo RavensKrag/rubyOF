@@ -1054,7 +1054,7 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
 
 
 class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
-    """Clear both animation textures"""
+    """move execution one frame backwards"""
     bl_idname = "render.rubyof_step_back"
     bl_label = "Step Back"
     
@@ -1074,7 +1074,7 @@ class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
         return {'FINISHED'}
 
 class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
-    """Clear both animation textures"""
+    """move execution one frame forwards"""
     bl_idname = "render.rubyof_step_forward"
     bl_label = "Step Forward"
     
