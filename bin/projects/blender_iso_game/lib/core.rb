@@ -198,9 +198,9 @@ class Core
     
     
     
-    @history = BlenderHistory.new
+    @message_history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @history, self)
+    @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
     
     
     
@@ -283,28 +283,39 @@ class Core
     @update_scheduler = nil
     
     # setup()
-      # @history = History.new
+      # @message_history = History.new
       # @depsgraph = DependencyGraph.new
       
       # puts "clearing"
       # @depsgraph.clear
       
       # puts "reloading history"
-      # @history.on_reload
+      # @message_history.on_reload
       
       puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @history, self)
+      @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
-      @first_update = true
       
-      
-      # was paused when the crash happened,
-      # so should be able to 'play' and resume execution
-      @frame_history.play
-      puts "frame: #{@frame_history.executing_frame}"
-      
-      puts "reload complete"
+      if @frame_history.time_traveling?
+        @frame_history = @frame_history.branch_history
+        
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+      else
+        # was paused when the crash happened,
+        # so should be able to 'play' and resume execution
+        @frame_history.play
+        puts "frame: #{@frame_history.frame_index}"
+      end
+    
+    
+    
+    
+    @first_update = true
+    puts "reload complete"
     
     
     # load_world_state()
@@ -501,9 +512,9 @@ class Core
           end
         end
         
-        # if v.x == -1
-        #   raise "error test"
-        # end
+        if v.x == -1
+          raise "error test"
+        end
       end
     end
     
