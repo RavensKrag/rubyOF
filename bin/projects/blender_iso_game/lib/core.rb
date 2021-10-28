@@ -207,12 +207,35 @@ class Core
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
     
+    
+    
+    
+    # want these created once, and not reloaded when code is reloaded.
+    # @environment is reloaded with reloading of new code,
+    # then it can clobber the positions loaded by @frame_history
+    # (or maybe we can reload @environment in on_reload, BEFORE @frame_history)
+    
+    # 
+    # OpenEXR animation texture test
+    # 
+    @environment = VertexAnimationBatch.new(
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
+    )
+    
+    @frame_history = FrameHistory.new(self)
   end
   
   # run when exception is detected
   def on_crash
     puts "core: on_crash"
     @crash_detected = true
+    
+    @frame_history.pause
+    @frame_history.update
+    @frame_history.step_back
+    @frame_history.update
     
     
     self.ensure()
@@ -263,11 +286,11 @@ class Core
       # @history = History.new
       # @depsgraph = DependencyGraph.new
       
-      puts "clearing"
-      @depsgraph.clear
+      # puts "clearing"
+      # @depsgraph.clear
       
-      puts "reloading history"
-      @history.on_reload
+      # puts "reloading history"
+      # @history.on_reload
       
       puts "start up sync"
       @sync = BlenderSync.new(@w, @depsgraph, @history, self)
@@ -275,8 +298,13 @@ class Core
       
       @first_update = true
       
+      
+      # was paused when the crash happened,
+      # so should be able to 'play' and resume execution
+      @frame_history.play
+      puts "frame: #{@frame_history.executing_frame}"
+      
       puts "reload complete"
-    
     
     
     # load_world_state()
@@ -397,18 +425,9 @@ class Core
       # @texture_out.load_data(@pixels)
       
       
-      # 
-      # OpenEXR animation texture test
-      # 
-      @environment = VertexAnimationBatch.new(
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
-      )
       
       
       
-      @frame_history = FrameHistory.new(self)
     end
     
     
@@ -472,14 +491,18 @@ class Core
             
             GLM.translate(mat, v2)
           end
+          
+          
         end
-        
-        
         
         x.times do 
           snapshot.frame do
             # NO-OP
           end
+        end
+        
+        if v.x == -1
+          raise "error test"
         end
       end
     end
@@ -493,6 +516,7 @@ class Core
   end
   
   def load_state(state)
+    puts "loading"
     @environment.set_entity_transform(74, state)
   end
   

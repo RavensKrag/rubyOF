@@ -340,6 +340,9 @@ class FrameHistory
     
   end
   
+  
+  attr_reader :executing_frame
+  
   def setup_states()
     @executing_frame = 0
     @target_frame = 20
@@ -503,6 +506,7 @@ class FrameHistory
   def after_transition(state1, state2, &block)
     @edge_callbacks << [state1, state2, block]
   end
+  
   
   # TODO: rather than executing this frame immediately, assign the passed block some frame number, and compare that number to the desired frame of execution. then, the desired frame number can be manually scrubbed back-and-forth in order to control the point of execution
     # this needs to be paired with a sytem that has memory of previous states. when old frames are not actively executed, their state should be pulled from this memory. that frame delta can be used to advance the state instead of computing fresh data.
