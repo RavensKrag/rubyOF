@@ -117,6 +117,7 @@ class Core
   include HelperFunctions
   
   attr_accessor :frame_history
+  attr_accessor :sync
   
   def initialize(window)
     @w = window
@@ -238,7 +239,7 @@ class Core
     @frame_history.update
     
     
-    self.ensure()
+    # self.ensure()
   end
   
   # run on normal exit, before exiting program
@@ -265,7 +266,7 @@ class Core
   def on_reload
     puts "core: on reload"
     
-    unless @crash_detected
+    # if !@crash_detected
       # on a successful reload after a normal run with no errors,
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
@@ -276,7 +277,7 @@ class Core
       # need to manually refresh the Blender viewport
       # just to see the same state that you had before reload.
       # save_world_state()
-    end
+    # end
     
     @crash_detected = false
     
@@ -298,11 +299,15 @@ class Core
       
       
       if @frame_history.time_traveling?
-        @frame_history = @frame_history.branch_history
+        # @frame_history = @frame_history.branch_history
         
         # For now, just replace the curret timeline with the alt one.
         # In future commits, we can refine this system to use multiple
         # timelines, with UI to compress timelines or switch between them.
+        
+        
+        
+        @frame_history.branch_history
         
       else
         # was paused when the crash happened,
@@ -390,6 +395,8 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    @crash_detected = false # reset when normal updates are called again
+    
     # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
     
     # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
@@ -512,9 +519,9 @@ class Core
           end
         end
         
-        if v.x == -1
-          raise "error test"
-        end
+        # if v.x == -1
+        #   raise "error test"
+        # end
       end
     end
     
@@ -528,6 +535,42 @@ class Core
   
   def load_state(state)
     @environment.set_entity_transform(74, state)
+  end
+  
+  
+  def update_while_crashed
+    @crash_detected = true # set in Core#on_crash
+    
+    puts "=== update while crashed ==="
+    
+    # pass @crash_detected flag to FrameHistory
+    @frame_history.crash_detected
+    
+    # update messages and history as necessary to try dealing with crash
+    @sync.update
+    @frame_history.update
+      # FrameHistory will clear the @crash_detected state
+      # if you start to go back in time after a crash.
+      
+      
+      # oh wait,
+      # but need take one step back when crash is detected
+    
+    # If FrameHistory was able to use time travel to resolve the crash
+    # then clear the flag
+    if !@frame_history.crash_detected?
+      @crash_detected = false
+    end
+    
+    puts "=== update while crashed END"
+  end
+  
+  
+  # Propagates signal from FrameHistory back up to LiveCode
+  # that the problem which caused the crash has been managed,
+  # even without loading new code.
+  def in_error_state?
+    @crash_detected
   end
   
   

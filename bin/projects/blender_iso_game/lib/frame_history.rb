@@ -378,6 +378,9 @@ class FrameHistory
     end
     
     after_transition :ANY, :reverse do
+      puts "reset crash flag"
+      @crash_detected = false
+      
       if @fiber_mode != :reverse
         @f1 = Fiber.new do
           while @executing_frame > 0 do
@@ -404,6 +407,17 @@ class FrameHistory
     
   end
   
+  # recieved a message from Core that a crash was detected this frame
+  # (called every frame while Core is in the crashed state)
+  def crash_detected
+    puts "set crash flag"
+    @crash_detected = true
+  end
+  
+  # let Core know if the crash could be resolved via time travel
+  def crash_detected?
+    return @crash_detected
+  end
   
   
   
@@ -522,25 +536,33 @@ class FrameHistory
     # or immutable (symbols). Each snapshot saved to @history can 
     # also be viewed as immutable, but the entire Array is mutable.
     
-    raise "Execution must be paused before creating a new timeline using #branch_history" unless @state == :paused
+    # raise "Execution must be paused before creating a new timeline using #branch_history" unless @state.name == :paused
     
-    new_timeline = self.dup # shallow copy
-    # https://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods
+    # new_timeline = self.dup # shallow copy
+    # # https://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods
     
-    # change @history variable
-    new_timeline.instance_eval do
-      # shallow copy, as elements are considered immutable
-      new_history = @history.dup
+    # # change @history variable
+    # new_timeline.instance_eval do
+    #   # shallow copy, as elements are considered immutable
+    #   new_history = @history.dup
       
-      # snip off part of the history
-      new_history = new_history[0..@executing_frame]
+    #   # snip off part of the history
+    #   new_history = new_history[0..@executing_frame]
       
-      # set history
-      @history = new_history
-    end
+    #   # set history
+    #   @history = new_history
+    # end
     
     
-    return new_timeline
+    # return new_timeline
+    
+    
+    new_history = @history[0..@executing_frame]
+      
+    # set history
+    @history = new_history
+    
+    return self
   end
   
   

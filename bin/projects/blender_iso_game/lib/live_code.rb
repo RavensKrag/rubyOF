@@ -103,13 +103,16 @@ class LiveCode
         #   return nil
         # end
       end
-            
+      
       def update(*args)
+        @inner.update_while_crashed
+        
+        
         # :reload_successful
         # :file_unchanged
         # :reload_failed
         signal = attempt_reload(first_time: @last_time.nil?)
-        if signal == :reload_successful
+        if signal == :reload_successful || !@inner.in_error_state?
           self.error_patched
           
           begin
