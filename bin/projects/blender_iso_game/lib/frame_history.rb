@@ -152,7 +152,7 @@ class FrameHistory
             
             @executing_frame += 1
             
-          else # @executing_frame > @history.length-1
+          else
             # actually generating new state
             
             state = @context.snapshot_gamestate
@@ -340,6 +340,15 @@ class FrameHistory
     
   end
   
+  
+  def frame_index
+    return @executing_frame
+  end
+  
+  def time_traveling?
+    return @executing_frame < @history.length-1
+  end
+  
   def setup_states()
     @executing_frame = 0
     @target_frame = 20
@@ -369,6 +378,9 @@ class FrameHistory
     end
     
     after_transition :ANY, :reverse do
+      puts "reset crash flag"
+      @crash_detected = false
+      
       if @fiber_mode != :reverse
         @f1 = Fiber.new do
           while @executing_frame > 0 do
@@ -395,6 +407,17 @@ class FrameHistory
     
   end
   
+  # recieved a message from Core that a crash was detected this frame
+  # (called every frame while Core is in the crashed state)
+  def crash_detected
+    puts "set crash flag"
+    @crash_detected = true
+  end
+  
+  # let Core know if the crash could be resolved via time travel
+  def crash_detected?
+    return @crash_detected
+  end
   
   
   
@@ -411,16 +434,26 @@ class FrameHistory
   
   
   
-  
+  # --- WARNING ---
+  # This particular way of using class variables
+  # makes it difficult to dynamically reload 
+  # this class properly. What happens to this class
+  # after dynamic reload (with respect to defining
+  # new states) is undefined.
+  # 
+  # If you need to redefine the state machine,
+  # you will need to restart the entire application.
+  # 
+  # (could fix this by defining some #on_reload callback)
   def initialize(context)
     @context = context
     
     
-    @edge_callbacks = Array.new
+    @@edge_callbacks ||= Array.new
     
     
     # 
-    # Populate a hash called @all_states
+    # Populate a hash called @@all_states
     # with one instance of each class in the States module.
     # The expected format is similar to this:
     # 
@@ -428,32 +461,16 @@ class FrameHistory
     # 
     p self.class::States.constants
     
-    @all_states = Hash.new
+    @@all_states ||= Hash.new
     
     states_module = self.class::States
     states_module.constants.each do |const_sym|
       klass = states_module.const_get const_sym
-      @all_states[const_sym.to_s.downcase.to_sym] = klass.new(self)
+      @@all_states[const_sym.to_s.downcase.to_sym] = klass.new(self)
     end
     
     
-    
-    
-    
-    
     @history = Array.new
-    
-    # @f2 = Fiber.new do
-    #   @context.on_update(self)
-    # end
-    
-    # @f1 = Fiber.new do
-    #   # forward cycle
-    #   while @f2.alive?
-    #     @f2.resume()
-    #     Fiber.yield
-    #   end
-    # end
     
     setup_states()
   end
@@ -473,7 +490,7 @@ class FrameHistory
     @state = nil # <-- blank this out so you get an error if you try to access the "current" state during a transition
     
     # implement triggers on certain edges
-    @edge_callbacks.each do |state1, state2, callback|
+    @@edge_callbacks.each do |state1, state2, callback|
       if( (state1 == current_state_name || state1 == :ANY) &&
           (state2 == new_state_name     || state2 == :ANY) )
         puts ">> edge callback: #{state1} -> #{state2}"
@@ -481,12 +498,12 @@ class FrameHistory
       end
     end
     
-    unless @all_states.keys.include? new_state_name
-      raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@all_states.keys}" 
+    unless @@all_states.keys.include? new_state_name
+      raise "Invalid state name '#{new_state_name}' for state machine in #{self.class}. Expected one of the following: #{@@all_states.keys}" 
     end
     
     # trigger state change
-    @state = @all_states[new_state_name]
+    @state = @@all_states[new_state_name]
     
     puts "state = #{new_state_name}"
   end
@@ -501,8 +518,53 @@ class FrameHistory
   end
   
   def after_transition(state1, state2, &block)
-    @edge_callbacks << [state1, state2, block]
+    @@edge_callbacks << [state1, state2, block]
   end
+  
+  
+  # If FrameHistory contains states through time,
+  # and replaying those states is "time traveling",
+  # then this method creates a new parallel timeline.
+  # 
+  # Create a copy of the current timeline,
+  # but reset part of the state, such that
+  # all state from this point forward is invalidated.
+  # Thus, that part of the state will be generated anew.
+  # (Useful for loading new code)
+  def branch_history
+    # most state in FrameHistory is either shared (class variables)
+    # or immutable (symbols). Each snapshot saved to @history can 
+    # also be viewed as immutable, but the entire Array is mutable.
+    
+    # raise "Execution must be paused before creating a new timeline using #branch_history" unless @state.name == :paused
+    
+    # new_timeline = self.dup # shallow copy
+    # # https://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods
+    
+    # # change @history variable
+    # new_timeline.instance_eval do
+    #   # shallow copy, as elements are considered immutable
+    #   new_history = @history.dup
+      
+    #   # snip off part of the history
+    #   new_history = new_history[0..@executing_frame]
+      
+    #   # set history
+    #   @history = new_history
+    # end
+    
+    
+    # return new_timeline
+    
+    
+    new_history = @history[0..@executing_frame]
+      
+    # set history
+    @history = new_history
+    
+    return self
+  end
+  
   
   # TODO: rather than executing this frame immediately, assign the passed block some frame number, and compare that number to the desired frame of execution. then, the desired frame number can be manually scrubbed back-and-forth in order to control the point of execution
     # this needs to be paired with a sytem that has memory of previous states. when old frames are not actively executed, their state should be pulled from this memory. that frame delta can be used to advance the state instead of computing fresh data.

@@ -86,14 +86,33 @@ class LiveCode
       def method_missing(method, *args)
         # suspend delegation in order to suppress additional errors
         # puts "livecode - supressing: #{method}"
+        
+        if method == :draw
+          @inner.draw
+        end
+        
+        # begin
+        #   # puts "livecode - delegate: #{method}"
+        #   return args.empty? ? @inner.send(method) : @inner.send(method, *args)
+        # rescue StandardError => e
+        #   # puts "method missing error handler in LiveCode"
+        #   puts "Error handler in LiveCode:"
+        #   puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
+          
+        #   self.runtime_error_detected
+        #   return nil
+        # end
       end
-            
+      
       def update(*args)
+        @inner.update_while_crashed
+        
+        
         # :reload_successful
         # :file_unchanged
         # :reload_failed
         signal = attempt_reload(first_time: @last_time.nil?)
-        if signal == :reload_successful
+        if signal == :reload_successful || !@inner.in_error_state?
           self.error_patched
           
           begin

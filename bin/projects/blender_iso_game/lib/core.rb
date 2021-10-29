@@ -117,6 +117,7 @@ class Core
   include HelperFunctions
   
   attr_accessor :frame_history
+  attr_accessor :sync
   
   def initialize(window)
     @w = window
@@ -198,15 +199,33 @@ class Core
     
     
     
-    @history = BlenderHistory.new
+    @message_history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @history, self)
+    @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
     
     
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
     
+    
+    
+    
+    # want these created once, and not reloaded when code is reloaded.
+    # @environment is reloaded with reloading of new code,
+    # then it can clobber the positions loaded by @frame_history
+    # (or maybe we can reload @environment in on_reload, BEFORE @frame_history)
+    
+    # 
+    # OpenEXR animation texture test
+    # 
+    @environment = VertexAnimationBatch.new(
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
+      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
+    )
+    
+    @frame_history = FrameHistory.new(self)
   end
   
   # run when exception is detected
@@ -214,8 +233,13 @@ class Core
     puts "core: on_crash"
     @crash_detected = true
     
+    @frame_history.pause
+    @frame_history.update
+    @frame_history.step_back
+    @frame_history.update
     
-    self.ensure()
+    
+    # self.ensure()
   end
   
   # run on normal exit, before exiting program
@@ -242,7 +266,7 @@ class Core
   def on_reload
     puts "core: on reload"
     
-    unless @crash_detected
+    # if !@crash_detected
       # on a successful reload after a normal run with no errors,
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
@@ -253,30 +277,50 @@ class Core
       # need to manually refresh the Blender viewport
       # just to see the same state that you had before reload.
       # save_world_state()
-    end
+    # end
     
     @crash_detected = false
     
     @update_scheduler = nil
     
     # setup()
-      # @history = History.new
+      # @message_history = History.new
       # @depsgraph = DependencyGraph.new
       
-      puts "clearing"
-      @depsgraph.clear
+      # puts "clearing"
+      # @depsgraph.clear
       
-      puts "reloading history"
-      @history.on_reload
+      # puts "reloading history"
+      # @message_history.on_reload
       
       puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @history, self)
+      @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
-      @first_update = true
       
-      puts "reload complete"
+      if @frame_history.time_traveling?
+        # @frame_history = @frame_history.branch_history
+        
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        
+        @frame_history.branch_history
+        
+      else
+        # was paused when the crash happened,
+        # so should be able to 'play' and resume execution
+        @frame_history.play
+        puts "frame: #{@frame_history.frame_index}"
+      end
     
+    
+    
+    
+    @first_update = true
+    puts "reload complete"
     
     
     # load_world_state()
@@ -351,6 +395,8 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
+    @crash_detected = false # reset when normal updates are called again
+    
     # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
     
     # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
@@ -397,18 +443,9 @@ class Core
       # @texture_out.load_data(@pixels)
       
       
-      # 
-      # OpenEXR animation texture test
-      # 
-      @environment = VertexAnimationBatch.new(
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
-        "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
-      )
       
       
       
-      @frame_history = FrameHistory.new(self)
     end
     
     
@@ -472,15 +509,19 @@ class Core
             
             GLM.translate(mat, v2)
           end
+          
+          
         end
-        
-        
         
         x.times do 
           snapshot.frame do
             # NO-OP
           end
         end
+        
+        # if v.x == -1
+        #   raise "error test"
+        # end
       end
     end
     
@@ -494,6 +535,42 @@ class Core
   
   def load_state(state)
     @environment.set_entity_transform(74, state)
+  end
+  
+  
+  def update_while_crashed
+    @crash_detected = true # set in Core#on_crash
+    
+    puts "=== update while crashed ==="
+    
+    # pass @crash_detected flag to FrameHistory
+    @frame_history.crash_detected
+    
+    # update messages and history as necessary to try dealing with crash
+    @sync.update
+    @frame_history.update
+      # FrameHistory will clear the @crash_detected state
+      # if you start to go back in time after a crash.
+      
+      
+      # oh wait,
+      # but need take one step back when crash is detected
+    
+    # If FrameHistory was able to use time travel to resolve the crash
+    # then clear the flag
+    if !@frame_history.crash_detected?
+      @crash_detected = false
+    end
+    
+    puts "=== update while crashed END"
+  end
+  
+  
+  # Propagates signal from FrameHistory back up to LiveCode
+  # that the problem which caused the crash has been managed,
+  # even without loading new code.
+  def in_error_state?
+    @crash_detected
   end
   
   
@@ -640,6 +717,16 @@ class Core
       # + frag shader (just load the default one)
     
     # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+    
+    @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+    if @crash_detected
+      
+      ofPushStyle()
+        ofEnableAlphaBlending()
+        ofSetColor(@crash_color)
+        ofDrawRectangle(0,0,0, @w.width, @w.height)
+      ofPopStyle()
+    end
     
   end
   
