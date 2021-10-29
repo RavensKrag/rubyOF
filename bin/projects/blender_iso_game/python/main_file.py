@@ -33,12 +33,6 @@ from bpy.props import (StringProperty,
 
 import time
 
-
-
-
-
-
-
 import queue
 import threading
 
@@ -46,6 +40,10 @@ import threading
 import hashlib
 
 import math
+
+
+
+import anim_tex_exporter
 
 
 def typestring(obj):
