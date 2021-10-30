@@ -818,7 +818,7 @@ def pack_mesh(obj):
         'type': typestring(obj), # 'bpy.types.Object'
         'name': obj.name_full,
         '.type' : obj.type, # 'MESH'
-        'transform': pack_transform(obj),
+        'transform': pack_transform_mat4(obj),
         '.data.name': obj.data.name
     }
     
@@ -1033,6 +1033,19 @@ def pack_transform(obj):
     }
     
     return transform
+
+def pack_transform_mat4(obj):
+    nested_array = [None, None, None, None]
+    
+    mat = obj.matrix_world
+    
+    nested_array[0] = vec4_to_rgba(mat[0])
+    nested_array[1] = vec4_to_rgba(mat[1])
+    nested_array[2] = vec4_to_rgba(mat[2])
+    nested_array[3] = vec4_to_rgba(mat[3])
+    
+    
+    return nested_array
     
 
     
@@ -1432,8 +1445,11 @@ class RubyOF(bpy.types.RenderEngine):
                     message_queue.append(pack_light(obj))
                     
                 elif obj.type == 'MESH':
-                    mesh_datablocks.append(obj.data)
-                    message_queue.append(pack_mesh(obj))
+                    pass
+                    # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+                    
+                    # mesh_datablocks.append(obj.data)
+                    # message_queue.append(pack_mesh(obj))
             
             # loop over all materials
             for mat in bpy.data.materials:
@@ -1455,9 +1471,12 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            mesh_datablocks.append(active_object.data)
-            message_queue.append(pack_mesh(active_object))
-            # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
+            # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+            
+            # mesh_datablocks.append(active_object.data)
+            # message_queue.append(pack_mesh(active_object))
+            
+            # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
             
             
             # send material data if any material was changed
@@ -1488,8 +1507,10 @@ class RubyOF(bpy.types.RenderEngine):
                         message_queue.append(pack_light(obj))
                         
                     elif obj.type == 'MESH':
-                        if update.is_updated_geometry:
-                            mesh_datablocks.append(obj.data)
+                        # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+                        
+                        # if update.is_updated_geometry:
+                        #     mesh_datablocks.append(obj.data)
                         message_queue.append(pack_mesh(obj))
                     
                     # if update.is_updated_transform:
@@ -1553,7 +1574,9 @@ class RubyOF(bpy.types.RenderEngine):
                     'material_name': material_name
                 }
                 
-                to_ruby.write(json.dumps(data))
+                # TODO: silence material linkage for now, but need to re-instate an equivalent way to send this data later. Have to turn it off for now because I'm deliberately not sending some mesh datablocks to RubyOF. If the meshes don't exist over there, then trying to set the linkage will cause a crash.
+                
+                # to_ruby.write(json.dumps(data))
         
         data = {
             'type': 'timestamp',

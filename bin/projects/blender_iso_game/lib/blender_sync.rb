@@ -336,41 +336,25 @@ class BlenderSync
     when 'bpy_types.Object'
       case message['.type']
       when 'MESH'
-        puts "create mesh entity"
-        # associate mesh object (transform) with underlying mesh data (verts)
-        
-        # TODO: how do you handle an existing object being linked to a different mesh?
-        
-        # if 'data' field is set, assume that linkage must be updated
-        
-        mesh_entity =
-          @depsgraph.fetch_mesh_object(message['name']) do |name|
-            
-            mesh_datablock = 
-              message['.data.name'].yield_self do |datablock_name|
-                
-                @depsgraph.fetch_mesh_datablock(datablock_name) do
-                  datablock = @new_datablocks.delete(datablock_name)
-                    # ^ retrieve and delete in one line
-                  if datablock.nil?
-                    raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
-                  else
-                    datablock # pseudoreturn for #fetch block
-                  end
-                end
-                
-              end
-            
-            material = @default_material
-            
-            BlenderMesh.new(name, mesh_datablock, material).tap do |entity|
-              @depsgraph.add entity
-            end
-          end
-        
-        message['transform']&.tap do |transform_data|
-          mesh_entity.load_transform(transform_data)
+        @core.instance_eval do
+          name = message['name']
+          id = @entity_name_to_id[name]
+          
+          
+          mat = message['transform']
+          # ^ array of arrays
+          
+          # swizzle the components, like when reading from image
+          glm_mat = GLM::Mat4.new(
+            GLM::Vec4.new(mat[0][0], mat[1][0], mat[2][0], mat[3][0]),
+            GLM::Vec4.new(mat[0][1], mat[1][1], mat[2][1], mat[3][1]),
+            GLM::Vec4.new(mat[0][2], mat[1][2], mat[2][2], mat[3][2]),
+            GLM::Vec4.new(mat[0][3], mat[1][3], mat[2][3], mat[3][3])
+          )
+          
+          @environment.set_entity_transform id, glm_mat
         end
+        
         
       when 'LIGHT'
         # load transform AND data for lights here as necessary
