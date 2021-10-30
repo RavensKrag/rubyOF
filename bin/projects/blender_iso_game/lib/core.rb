@@ -325,6 +325,7 @@ class Core
         @frame_history.play
         puts "frame: #{@frame_history.frame_index}"
       end
+      
     
     
     
@@ -335,6 +336,7 @@ class Core
     
     # load_world_state()
   end
+  
   
   # always run on exit, with or without exception
   # and also trigger when code is reloaded
@@ -401,6 +403,120 @@ class Core
       # end
     end
   end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # 
+  # handle update messages from BlenderSync
+  # 
+  
+  def update_entity_mapping(message)
+    # p message['value']
+    @entity_name_to_id = message['value']
+    
+    dump_yaml @entity_name_to_id => @entity_map_file
+    
+  end
+  
+  
+  def update_anim_textures(message)
+    # p message
+    @environment = VertexAnimationBatch.new(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path'],
+    )
+    
+    # reload history
+    # (code adapted from Core#on_reload)
+    if @frame_history.time_traveling?
+      # @frame_history = @frame_history.branch_history
+      
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
+      
+      
+      
+      @frame_history.branch_history
+      
+    else
+      # was paused when the crash happened,
+      # so should be able to 'play' and resume execution
+      @frame_history.play
+      puts "frame: #{@frame_history.frame_index}"
+    end
+  end
+  
+  def update_entity(message)
+    case message['.type']
+    when 'MESH'
+      name = message['name']
+      id = @entity_name_to_id[name]
+      
+      
+      nested_array = message['transform']
+      # ^ array of arrays
+      
+      # p nested_array
+      
+      @environment.set_entity_transform_array id, nested_array
+      # ^ thin wrapper on C++ callback
+      
+      
+      
+      # reload history
+      # (code adapted from Core#on_reload)
+      if @frame_history.time_traveling?
+        # @frame_history = @frame_history.branch_history
+        
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        
+        @frame_history.branch_history
+        
+      else
+        # Do NOT trigger play on reload after direct manipulation.
+        # Need the user to press "play" manually to signal
+        # they are done with direct manipulation. Otherwise,
+        # inputs from direct manipulation are comingled with
+        # inputs from ruby code execution.
+        
+        
+        # # was paused when the crash happened,
+        # # so should be able to 'play' and resume execution
+        # @frame_history.play
+        # puts "frame: #{@frame_history.frame_index}"
+      end
+    else
+      
+      
+    end
+  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   # use a structure where Fiber does not need to be regenerated on reload
@@ -624,44 +740,6 @@ class Core
     end
   end
   
-  
-  def load_anim_textures(message)
-    # load data
-    p message
-    @environment = VertexAnimationBatch.new(
-      message['position_tex_path'],
-      message['normal_tex_path'],
-      message['transform_tex_path'],
-    )
-    
-    # reload history
-    # (code copied from Core#on_reload)
-    if @frame_history.time_traveling?
-      # @frame_history = @frame_history.branch_history
-      
-      # For now, just replace the curret timeline with the alt one.
-      # In future commits, we can refine this system to use multiple
-      # timelines, with UI to compress timelines or switch between them.
-      
-      
-      
-      @frame_history.branch_history
-      
-    else
-      # was paused when the crash happened,
-      # so should be able to 'play' and resume execution
-      @frame_history.play
-      puts "frame: #{@frame_history.frame_index}"
-    end
-  end
-  
-  def update_entity_mapping(message)
-    # p message['value']
-    @entity_name_to_id = message['value']
-    
-    dump_yaml @entity_name_to_id => @entity_map_file
-    
-  end
   
   
   include RubyOF::Graphics

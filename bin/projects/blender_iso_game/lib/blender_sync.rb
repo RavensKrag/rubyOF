@@ -336,20 +336,7 @@ class BlenderSync
     when 'bpy_types.Object'
       case message['.type']
       when 'MESH'
-        @core.instance_eval do
-          name = message['name']
-          id = @entity_name_to_id[name]
-          
-          
-          nested_array = message['transform']
-          # ^ array of arrays
-          
-          # p nested_array
-          
-          @environment.set_entity_transform_array id, nested_array
-          # ^ thin wrapper on C++ callback
-        end
-        
+        @core.update_entity(message)
         
       when 'LIGHT'
         # load transform AND data for lights here as necessary
@@ -404,7 +391,7 @@ class BlenderSync
     
     
     when 'anim_texture_update'
-      @core.load_anim_textures(message)
+      @core.update_anim_textures(message)
     
     else
       
