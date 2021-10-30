@@ -611,7 +611,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
 
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
-    COMPAT_ENGINES= {"BLENDER_EEVEE"}
+    COMPAT_ENGINES= {"RUBYOF"}
     
     bl_idname = "DATA_PT_texanim_panel3"
     bl_label = "AnimTex - all in collection"
@@ -626,8 +626,9 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
 #       bl_category = bpy.context.preferences.addons[__name__].preferences.category 
 
     @classmethod
-    def poll(self,context):
-        return True
+    def poll(cls, context):
+        print(context.engine)
+        return (context.engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout
