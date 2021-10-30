@@ -687,28 +687,6 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def typestring(obj):
     klass = type(obj)
     return f'{klass.__module__}.{klass.__qualname__}'
@@ -1114,6 +1092,30 @@ def calc_viewport_fov(rv3d):
     
     return fov
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1583,90 +1585,6 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         )
 
 
-# def update_rgb_nodes(self, context):
-#     pass
-    # mat = self.id_data
-    # nodes = [n for n in mat.node_tree.nodes
-    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
-
-    # for n in nodes:
-    #     n.outputs[0].default_value = self.rgb_controller
-
-class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
-    # diffuse color
-    # alpha
-    # shininess
-    
-    color: FloatVectorProperty(
-        name = "Color",
-        description = "Diffuse color",
-        subtype = 'COLOR',
-        default = (1.0, 1.0, 1.0), # white is default
-        size = 3,
-        # min = 0.0,
-        # max = 1.0
-        )
-    
-    
-    specular: FloatVectorProperty(
-        name = "specular color",
-        description = "the color of highlights on a material",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    diffuse: FloatVectorProperty(
-        name = "diffuse color",
-        description = "the color of the material when it is illuminated",
-        subtype = 'COLOR',
-        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    ambient: FloatVectorProperty(
-        name = "ambient color",
-        description = "the color of the material when it is not illuminated",
-        subtype = 'COLOR',
-        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    emissive: FloatVectorProperty(
-        name = "emissive color",
-        description = "the color the material illuminated from within",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    alpha: FloatProperty(
-        name = "alpha",
-        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
-        default = 1,
-        min = 0,
-        max = 1,
-        precision = 2,
-        step = 0.01
-        )
-    
-    shininess: FloatProperty(
-        name = "shininess",
-        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
-        default = 0.2,
-        min = 0,
-        max = 128
-        )
-
-
 #
 # Panel for general renderer properties (under Render Properties tab)
 #
@@ -1829,6 +1747,93 @@ class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
 
 
 
+
+
+
+
+
+# def update_rgb_nodes(self, context):
+#     pass
+    # mat = self.id_data
+    # nodes = [n for n in mat.node_tree.nodes
+    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
+
+    # for n in nodes:
+    #     n.outputs[0].default_value = self.rgb_controller
+
+class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
+    # diffuse color
+    # alpha
+    # shininess
+    
+    color: FloatVectorProperty(
+        name = "Color",
+        description = "Diffuse color",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0), # white is default
+        size = 3,
+        # min = 0.0,
+        # max = 1.0
+        )
+    
+    
+    specular: FloatVectorProperty(
+        name = "specular color",
+        description = "the color of highlights on a material",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    diffuse: FloatVectorProperty(
+        name = "diffuse color",
+        description = "the color of the material when it is illuminated",
+        subtype = 'COLOR',
+        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    ambient: FloatVectorProperty(
+        name = "ambient color",
+        description = "the color of the material when it is not illuminated",
+        subtype = 'COLOR',
+        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    emissive: FloatVectorProperty(
+        name = "emissive color",
+        description = "the color the material illuminated from within",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    alpha: FloatProperty(
+        name = "alpha",
+        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
+        default = 1,
+        min = 0,
+        max = 1,
+        precision = 2,
+        step = 0.01
+        )
+    
+    shininess: FloatProperty(
+        name = "shininess",
+        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
+        default = 0.2,
+        min = 0,
+        max = 128
+        )
 
 
 
@@ -2042,6 +2047,27 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
             col = layout.column()
             col.prop(mat.rb_mat, "alpha")
             col.prop(mat.rb_mat, "shininess")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
