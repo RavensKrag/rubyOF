@@ -1486,7 +1486,8 @@ class RubyOF(bpy.types.RenderEngine):
             
             # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
             data = {
-                'type': 'anim_texture_update',
+                'type': 'geometry_update',
+                'scanline': meshDatablock_to_meshID[mesh],
                 'normal_tex_path'  : os.path.join(
                                         bpy.path.abspath(mytool.output_dir),
                                         mytool.name+".normal"+'.exr'),
@@ -1496,6 +1497,7 @@ class RubyOF(bpy.types.RenderEngine):
                 'transform_tex_path': os.path.join(
                                         bpy.path.abspath(mytool.output_dir),
                                         mytool.name+".transform"+'.exr'),
+
             }
             
             to_ruby.write(json.dumps(data))

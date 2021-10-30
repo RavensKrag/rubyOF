@@ -391,9 +391,15 @@ class BlenderSync
     
     
     when 'anim_texture_update'
+      # update all 3 textures
       @core.update_anim_textures(message)
     
+    when 'geometry_update'
+      # position and normal data for one mesh has been updated
+      @core.update_geometry(message)
+    
     else
+      
       
     end
     

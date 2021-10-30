@@ -428,7 +428,7 @@ class Core
   
   def update_anim_textures(message)
     # p message
-    @environment = VertexAnimationBatch.new(
+    @environment.load_textures(
       message['position_tex_path'],
       message['normal_tex_path'],
       message['transform_tex_path'],
@@ -455,6 +455,17 @@ class Core
       # @frame_history.play
       # puts "frame: #{@frame_history.frame_index}"
     end
+  end
+  
+  # position and normal data for one mesh has been updated
+  def update_geometry(message)
+    p message
+    @environment.load_textures(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path']
+    )
+    
   end
   
   def update_entity(message)
