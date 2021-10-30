@@ -610,8 +610,8 @@ class Core
     
     @frame_history = FrameHistory.new(self)
     
-    @entity_name_to_id = Hash.new
-    @entity_name_to_id['CharacterTest'] = 74
+    @entity_map_file = data_dir/'entity_map.yaml'
+    @entity_name_to_id = YAML.load_file @entity_map_file
   end
   
   # run when exception is detected
@@ -891,7 +891,6 @@ class Core
         
         snapshot.frame do
           i = @entity_name_to_id['CharacterTest']
-          i = 74
           @environment.mutate_entity_transform(i) do |mat|
             v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
             
@@ -1012,8 +1011,11 @@ class Core
   end
   
   def update_entity_mapping(message)
-    p message['value']
+    # p message['value']
     @entity_name_to_id = message['value']
+    
+    dump_yaml @entity_name_to_id => @entity_map_file
+    
   end
   
   
