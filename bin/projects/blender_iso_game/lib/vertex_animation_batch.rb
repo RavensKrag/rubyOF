@@ -211,4 +211,31 @@ class VertexAnimationBatch
     
     self.set_entity_transform(i, transform)
   end
+  
+  def set_entity_transform_array(i, nested_array)
+    # name = message['name']
+    # id = @entity_name_to_id[name]
+    
+    
+    # mat = message['transform']
+    # # ^ array of arrays
+    
+    # # swizzle the components, like when reading from image
+    # glm_mat = GLM::Mat4.new(
+    #   GLM::Vec4.new(mat[0][0], mat[1][0], mat[2][0], mat[3][0]),
+    #   GLM::Vec4.new(mat[0][1], mat[1][1], mat[2][1], mat[3][1]),
+    #   GLM::Vec4.new(mat[0][2], mat[1][2], mat[2][2], mat[3][2]),
+    #   GLM::Vec4.new(mat[0][3], mat[1][3], mat[2][3], mat[3][3])
+    # )
+    
+    # @environment.set_entity_transform id, glm_mat
+    
+    
+    
+    RubyOF::CPP_Callbacks.set_entity_transform_array(
+      @pixels[:transforms], i, nested_array.flatten, @textures[:transforms]
+    )
+    
+    return self
+  end
 end
