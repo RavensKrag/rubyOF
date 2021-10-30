@@ -573,11 +573,12 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         mytool.status_message = "export object transforms"
         for i, obj in enumerate(all_objects):
+            # use mapping: obj -> mesh datablock -> mesh ID
             export_object_transforms(mytool, obj,
                                      scanline=i+1,
                                      mesh_id=meshDatablock_to_meshID[obj.data])
-            # map obj -> mesh ID
             
+            # create map: obj name -> transform ID
             object_map[obj.name] = i+1
             
             task_count += 1
@@ -595,10 +596,24 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         #         scene=bpy.context.scene
         #     )
         
+        
+        # 
+        # get name of object -> mesh id mapping
+        # 
+        
         mytool.status_message = "show object map"
         
         print(object_map)
         # ^ TODO: when integrated with main Blender -> RubyOF tools, need to dynamically send this mapping to RubyOF
+        
+        
+        data = {
+            'type': 'object_to_id_map',
+            'value': object_map,
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
         
         context = yield(task_count / total_tasks)
         

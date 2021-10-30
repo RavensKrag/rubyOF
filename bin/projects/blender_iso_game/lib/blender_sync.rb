@@ -420,6 +420,9 @@ class BlenderSync
         
       end
     
+    when 'object_to_id_map'
+      p message
+    
     
     else
       
