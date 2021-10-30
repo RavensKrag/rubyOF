@@ -598,10 +598,14 @@ class Core
     # 
     # OpenEXR animation texture test
     # 
+    
+    data_dir = (PROJECT_DIR/'bin'/'data')
+    geometry_texture_dir = data_dir/'geom_textures'
+    
     @environment = VertexAnimationBatch.new(
-      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.position.exr",
-      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.normal.exr",
-      "/home/ravenskrag/Desktop/blender animation export/my_git_repo/animation.transform.exr"
+      geometry_texture_dir/"animation.position.exr",
+      geometry_texture_dir/"animation.normal.exr",
+      geometry_texture_dir/"animation.transform.exr"
     )
     
     @frame_history = FrameHistory.new(self)

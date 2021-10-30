@@ -15,9 +15,9 @@ class VertexAnimationBatch
       :transforms => RubyOF::Texture.new
     }
     
-    ofLoadImage(@pixels[:positions],  position_tex_path)
-    ofLoadImage(@pixels[:normals],    normal_tex_path)
-    ofLoadImage(@pixels[:transforms], transform_tex_path)
+    ofLoadImage(@pixels[:positions],  position_tex_path.to_s)
+    ofLoadImage(@pixels[:normals],    normal_tex_path.to_s)
+    ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
     
     # 
     # configure all sets of pixels (CPU data) and textures (GPU data)
