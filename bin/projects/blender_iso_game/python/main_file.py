@@ -647,6 +647,26 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
 
 
 
+class OT_TexAnimClearAllTextures (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "wm.texanim_clear_all_textures"
+    bl_label = "Clear All 3 Textures"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        # clear_textures(context.scene.my_tool)
+        
+        mytool = context.scene.my_tool
+        
+        mytool.position_tex  = None
+        mytool.normal_tex    = None
+        mytool.transform_tex = None
+        
+        
+        return {'FINISHED'}
 
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
@@ -689,6 +709,11 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
             layout.label(text=mytool.status_message)
         else:
             layout.operator("wm.texanim_export_collection")
+        
+        layout.row().separator()
+        
+        layout.operator("wm.texanim_clear_all_textures")
+
 
 
 
@@ -2186,6 +2211,7 @@ classes = (
     PG_MyProperties,
     OT_ProgressBarOperator,
     OT_TexAnimExportCollection,
+    OT_TexAnimClearAllTextures,
     DATA_PT_texanim_panel3
 )
 
