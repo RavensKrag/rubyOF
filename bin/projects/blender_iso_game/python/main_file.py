@@ -354,6 +354,7 @@ def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
     # output_path = bpy.path.abspath("//")
     
     
+    
     transform_tex = ImageWrapper(
         get_cached_image(mytool, "transform_tex",
                          mytool.name+".transform",
@@ -501,6 +502,10 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         all_objects = mytool.collection_ptr.all_objects
         
         
+        num_objects = len(all_objects)
+        if num_objects > mytool.max_num_objects:
+            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
+        
         
         # 
         # create a list of unique evaluated meshes
@@ -603,13 +608,32 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         mytool.status_message = "show object map"
         
-        print(object_map)
-        # ^ TODO: when integrated with main Blender -> RubyOF tools, need to dynamically send this mapping to RubyOF
-        
-        
+        # send mapping to RubyOF
         data = {
             'type': 'object_to_id_map',
             'value': object_map,
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+        
+        
+        
+        # 
+        # let RubyOF know that new animation textures have been exported
+        # 
+        
+        data = {
+            'type': 'anim_texture_update',
+            'normal_tex_path'  : os.path.join(
+                                    bpy.path.abspath(mytool.output_dir),
+                                    mytool.name+".normal"+'.exr'),
+            'position_tex_path': os.path.join(
+                                    bpy.path.abspath(mytool.output_dir),
+                                    mytool.name+".position"+'.exr'),
+            'transform_tex_path': os.path.join(
+                                    bpy.path.abspath(mytool.output_dir),
+                                    mytool.name+".transform"+'.exr'),
         }
         
         to_ruby.write(json.dumps(data))

@@ -424,6 +424,9 @@ class BlenderSync
       p message
     
     
+    when 'anim_texture_update'
+      @core.load_anim_textures(message)
+    
     else
       
     end

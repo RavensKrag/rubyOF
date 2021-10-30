@@ -991,6 +991,15 @@ class Core
   end
   
   
+  def load_anim_textures(message)
+    p message
+    @environment = VertexAnimationBatch.new(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path'],
+    )
+  end
+  
   
   include RubyOF::Graphics
   def on_draw
