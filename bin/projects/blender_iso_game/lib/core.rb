@@ -116,12 +116,6 @@ load LIB_DIR/'frame_history.rb'
 class OIT_RenderPipeline
   
   def initialize
-    @opaque_pass = nil
-    @transparent_pass = nil
-    @ui_pass = nil
-    
-    
-    
     @light_material = RubyOF::Material.new
     # ^ material used to visualize lights a small spheres in space.
     # color of this material may change for every light
@@ -136,19 +130,33 @@ class OIT_RenderPipeline
     # (very important for debugging synchronization between RubyOF and blender)
   end
   
-  
-  
-  def opaque_pass(&block)
-    @opaque_pass = block
+  class Helper
+    EMPTY_BLOCK = Proc.new{  }
+    
+    def initialize
+      @opaque_pass      = EMPTY_BLOCK
+      @transparent_pass = EMPTY_BLOCK
+      @ui_pass          = EMPTY_BLOCK
+    end
+    
+    def opaque_pass(&block)
+      @opaque_pass = block
+    end
+    
+    def transparent_pass(&block)
+      @transparent_pass = block
+    end
+    
+    def ui_pass(&block)
+      @ui_pass = block
+    end
+    
+    def get_render_passes
+      return @opaque_pass, @transparent_pass, @ui_pass
+    end
+    
   end
   
-  def transparent_pass(&block)
-    @transparent_pass = block
-  end
-  
-  def ui_pass(&block)
-    @ui_pass = block
-  end
   
   
   COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
@@ -156,7 +164,13 @@ class OIT_RenderPipeline
   
   include RubyOF::Graphics
   include Gl
-  def draw(window, camera:nil, lights:nil)
+  def draw(window, camera:nil, lights:nil, &block)
+    helper = Helper.new
+    block.call(helper)
+    
+    @opaque_pass,@transparent_pass,@ui_pass = helper.get_render_passes
+    
+    
     
     # ofEnableAlphaBlending()
     # # ^ doesn't seem to do anything, at least not right now
@@ -997,115 +1011,109 @@ class Core
     # set up phases of drawing
     # 
     
-    @render_pipeline.opaque_pass do
-      @environment.draw_scene
-      
-      
-      # glCullFace(GL_BACK)
-      # glDisable(GL_CULL_FACE)
-    end
-    
-    @render_pipeline.transparent_pass do
-      
-    end
-    
-    @render_pipeline.ui_pass do
-      # t0 = RubyOF::TimeCounter.now
-      
-      
-      p1 = CP::Vec2.new(500,500)
-      @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
-      
-      
-      
-      p2 = CP::Vec2.new(500,600)
-      if @mouse_pos
+    @render_pipeline.draw(@w, lights:@depsgraph.lights,
+                              camera:@depsgraph.viewport_camera) do |pipeline|
+      pipeline.opaque_pass do
+        @environment.draw_scene
         
-        @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
+        
+        # glCullFace(GL_BACK)
+        # glDisable(GL_CULL_FACE)
       end
       
-      
-      # line_height = 35
-      # p3 = CP::Vec2.new(500,650)
-      # str_out = []
-      
-      # batches = @depsgraph.batches
-      # header = [
-      #   "i".rjust(3),
-      #   "mesh".ljust(10), # BlenderMeshData
+      pipeline.transparent_pass do
         
-      #   "mat".ljust(15), # BlenderMaterial
-      #   # ^ use #inspect to visualize empty string
-        
-      #   "batch size" # RenderBatch
-        
-      # ].join('| ')
-      
-      # str_out = 
-      #   batches.each_with_index.collect do |batch_line, i|
-      #     a,b,c = batch_line
-      #     # data = [
-      #     #   a.class.to_s.each_char.first(20).join(''),
-      #     #   b.class.to_s.each_char.first(20).join(''),
-      #     #   c.class.to_s.each_char.first(20).join('')
-      #     # ].join(', ')
-          
-          
-      #     data = [
-      #       "#{i}".rjust(3),
-      #       a.name.ljust(10), # BlenderMeshData
-            
-      #       b.name.inspect.ljust(15), # BlenderMaterial
-      #       # ^ use #inspect to visualize empty string
-            
-      #       c.size.to_s # RenderBatch
-            
-      #     ].join('| ')
-      #   end
-      
-      # ([header] + str_out).each_with_index do |line, i|
-      #   @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
-      # end
-      
-      
-      
-      # t1 = RubyOF::TimeCounter.now
-      # puts "=> UI    : #{(t1 - t0).to_ms} ms"
-      
-      
-      # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-      @environment.draw_ui
-      
-      # stuff we need to render with this
-        # + a programatically created mesh with triangles to mutate
-        # + a material to hold the vertex and fragment shaders
-        # + vertex shader <---  this is what does the heavy lifting
-        # + frag shader (just load the default one)
-      
-      # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
-      
-      @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
-      if @crash_detected
-        
-        ofPushStyle()
-          ofEnableAlphaBlending()
-          ofSetColor(@crash_color)
-          ofDrawRectangle(0,0,0, @w.width, @w.height)
-        ofPopStyle()
       end
       
-      
-      
+      pipeline.ui_pass do
+        # t0 = RubyOF::TimeCounter.now
+        
+        
+        p1 = CP::Vec2.new(500,500)
+        @fonts[:monospace].draw_string("hello world!",
+                                       p1.x, p1.y)
+        
+        
+        
+        p2 = CP::Vec2.new(500,600)
+        if @mouse_pos
+          
+          @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}",
+                                         p2.x, p2.y)
+        end
+        
+        
+        # line_height = 35
+        # p3 = CP::Vec2.new(500,650)
+        # str_out = []
+        
+        # batches = @depsgraph.batches
+        # header = [
+        #   "i".rjust(3),
+        #   "mesh".ljust(10), # BlenderMeshData
+          
+        #   "mat".ljust(15), # BlenderMaterial
+        #   # ^ use #inspect to visualize empty string
+          
+        #   "batch size" # RenderBatch
+          
+        # ].join('| ')
+        
+        # str_out = 
+        #   batches.each_with_index.collect do |batch_line, i|
+        #     a,b,c = batch_line
+        #     # data = [
+        #     #   a.class.to_s.each_char.first(20).join(''),
+        #     #   b.class.to_s.each_char.first(20).join(''),
+        #     #   c.class.to_s.each_char.first(20).join('')
+        #     # ].join(', ')
+            
+            
+        #     data = [
+        #       "#{i}".rjust(3),
+        #       a.name.ljust(10), # BlenderMeshData
+              
+        #       b.name.inspect.ljust(15), # BlenderMaterial
+        #       # ^ use #inspect to visualize empty string
+              
+        #       c.size.to_s # RenderBatch
+              
+        #     ].join('| ')
+        #   end
+        
+        # ([header] + str_out).each_with_index do |line, i|
+        #   @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
+        # end
+        
+        
+        
+        # t1 = RubyOF::TimeCounter.now
+        # puts "=> UI    : #{(t1 - t0).to_ms} ms"
+        
+        
+        # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+        @environment.draw_ui
+        
+        # stuff we need to render with this
+          # + a programatically created mesh with triangles to mutate
+          # + a material to hold the vertex and fragment shaders
+          # + vertex shader <---  this is what does the heavy lifting
+          # + frag shader (just load the default one)
+        
+        # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+        
+        @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+        if @crash_detected
+          
+          ofPushStyle()
+            ofEnableAlphaBlending()
+            ofSetColor(@crash_color)
+            ofDrawRectangle(0,0,0, @w.width, @w.height)
+          ofPopStyle()
+        end
+      end
     end
     
-    
-    # 
-    # actually draw the stuff
-    # 
-    @render_pipeline.draw(@w,
-      lights:@depsgraph.lights,
-      camera:@depsgraph.viewport_camera
-    )
     
     # @depsgraph.draw(@w) do
     
