@@ -29,7 +29,8 @@ from bpy.props import (StringProperty,
                        IntProperty,
                        FloatProperty,
                        EnumProperty,
-                       FloatVectorProperty)
+                       FloatVectorProperty,
+                       PointerProperty)
 
 import time
 
@@ -43,7 +44,226 @@ import math
 
 
 
-import anim_tex_exporter
+# import anim_tex_exporter
+
+
+
+# need extra help to reload classes:
+# https://developer.blender.org/T66924
+# by gecko man (geckoman), Jul 22 2019, 9:02 PM
+
+import importlib, sys
+# reloads class' parent module and returns updated class
+def reload_class(c):
+    mod = sys.modules.get(c.__module__)
+    importlib.reload(mod)
+    return mod.__dict__[c.__name__]
+
+
+import os
+from image_wrapper import ( ImageWrapper, get_cached_image )
+
+ImageWrapper = reload_class(ImageWrapper)
+
+
+import time
+from progress_bar import ( OT_ProgressBarOperator, coroutine )
+OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
+
+
+
+
+
+
+class PG_MyProperties (bpy.types.PropertyGroup):
+    
+    def limit_output_frame(self, context):
+        # print(self)
+        mytool = context.scene.my_tool
+        
+        max_frame_index = mytool.max_frames-1
+        
+        if mytool.output_frame > max_frame_index:
+            mytool.output_frame = max_frame_index
+        
+        return None
+    
+    def limit_num_objects(self, context):
+        # print(self)
+        mytool = context.scene.my_tool
+        
+        max_index = mytool.max_num_objects-1
+        
+        if mytool.transform_scanline > max_index:
+            mytool.transform_scanline = max_index
+        
+        return None
+    
+    output_dir : StringProperty(
+        name="Output directory",
+        description="Directory where all animation textures will be written (vertex animation data)",
+        default="//",
+        subtype='DIR_PATH'
+    )
+    
+    name : StringProperty(
+        name="Name",
+        description="base name for all texture files",
+        default="animation",
+    )
+    
+    target_object : PointerProperty(
+        name="Target object",
+        description="object to be exported",
+        type=bpy.types.Object
+    )
+    
+    collection_ptr : PointerProperty(
+        name="Collection",
+        description="will export all geometry and transforms for all objects in this collection",
+        type=bpy.types.Collection
+    )
+    
+    max_tris : IntProperty(
+        name = "Max tris",
+        description="Total number of tris per frame",
+        default = 100,
+        min = 1,
+        max = 1000000
+    )
+    
+    max_frames : IntProperty(
+        name = "Max frames",
+        description="frame number where output vertex data should be stored",
+        default = 20,
+        min = 1,
+        max = 1000000
+    )
+    
+    output_frame : IntProperty(
+        name = "Output frame",
+        description="frame number where output vertex data should be stored",
+        default = 3,
+        min = 1,
+        max = 1000000,
+        update=limit_output_frame
+    )
+        
+    
+    position_tex : PointerProperty(
+        name="Position texture",
+        description="texture encoding position information",
+        type=bpy.types.Image
+    )
+    
+    normal_tex : PointerProperty(
+        name="Normal texture",
+        description="texture encoding normal vector data",
+        type=bpy.types.Image
+    )
+    
+    transform_tex : PointerProperty(
+        name="Transform mat4 texture",
+        description="texture encoding object mat4 transformse",
+        type=bpy.types.Image
+    )
+    
+    
+    max_num_objects : IntProperty(
+        name = "Max number of objects",
+        description="maximum number of objects whose transforms can be saved",
+        default = 20,
+        min = 1,
+        max = 1000000
+    )
+    
+    transform_scanline : IntProperty(
+        name = "Transform scanline",
+        description="Scanline in texture where object transform will be stored",
+        default = 3,
+        min = 1,
+        max = 1000000,
+        update=limit_num_objects
+    )
+    
+    transform_id : IntProperty(
+        name = "Transform ID",
+        description="ID value to be written to the next transform scanline",
+        default = 3,
+        min = 0,
+        max = 65504
+    )
+    
+    progress : FloatProperty(
+        name="Progress",
+        subtype="PERCENTAGE",
+        soft_min=0, 
+        soft_max=100, 
+        precision=0,
+    )
+    
+    running : BoolProperty(
+        name="Running",
+        default=False
+    )
+    
+    status_message : StringProperty(
+        name="Status message",
+        default="exporting..."
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def typestring(obj):
@@ -882,7 +1102,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         max = 30.0
         )
         
-    my_pointer: bpy.props.PointerProperty(type=bpy.types.Object)
+    my_pointer: PointerProperty(type=bpy.types.Object)
     
     alpha: FloatProperty(
         name = "Alpha",
@@ -898,7 +1118,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default = False
         )
     
-    camera: bpy.props.PointerProperty(
+    camera: PointerProperty(
         type=bpy.types.Camera,
         name="camera",
         description="Camera to be used by the RubyOF game engine")
@@ -1451,7 +1671,12 @@ classes = (
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
     DATA_PT_spot,
-    RUBYOF_MATERIAL_PT_context_material
+    RUBYOF_MATERIAL_PT_context_material,
+    #
+    #
+    #
+    PG_MyProperties,
+    OT_ProgressBarOperator
 )
 
 def register():
@@ -1467,13 +1692,15 @@ def register():
         bpy.utils.register_class(c)
     
     # Bind variable for properties
-    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(
+    bpy.types.Scene.my_custom_props = PointerProperty(
             type=RubyOF_Properties
         )
     
-    bpy.types.Material.rb_mat = bpy.props.PointerProperty(
+    bpy.types.Material.rb_mat = PointerProperty(
             type=RubyOF_MATERIAL_Properties
         )
+    
+    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
 
 
@@ -1486,6 +1713,9 @@ def unregister():
     
     for c in reversed(classes):
         bpy.utils.unregister_class(c)
+        
+    
+    del bpy.types.Scene.my_tool
 
 
 
