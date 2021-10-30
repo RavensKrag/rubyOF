@@ -1098,15 +1098,6 @@ void set_entity_transform(ofFloatPixels &pixels, const int i, const glm::mat4 ma
 
 
 void set_entity_transform_array(ofFloatPixels &pixels, const int i, Rice::Array ary, ofTexture &tex){
-	// # swizzle the components, like when reading from image
-	// glm::mat4x4 mat(
-	// 	mat[0][0], mat[1][0], mat[2][0], mat[3][0],
-	// 	mat[0][1], mat[1][1], mat[2][1], mat[3][1],
-	// 	mat[0][2], mat[1][2], mat[2][2], mat[3][2],
-	// 	mat[0][3], mat[1][3], mat[2][3], mat[3][3]
-	// );
-	
-	
 	// TODO: optimize - always allocate 16 floats (dynamic allocation can be slow)
 	
 	// copy ruby data over to C++ memory
@@ -1116,14 +1107,6 @@ void set_entity_transform_array(ofFloatPixels &pixels, const int i, Rice::Array 
 		tmp_array[idx] = from_ruby<float>(*aI);
 		idx++;
 	}
-	
-	// glm::mat4x4 mat(
-	// 	tmp_array[ 0], tmp_array[ 1], tmp_array[ 2], tmp_array[ 3],
-	// 	tmp_array[ 4], tmp_array[ 5], tmp_array[ 6], tmp_array[ 7],
-	// 	tmp_array[ 8], tmp_array[ 9], tmp_array[10], tmp_array[11],
-	// 	tmp_array[12], tmp_array[13], tmp_array[14], tmp_array[15]
-	// );
-	
 	
 	// don't need to swizzle on write,
 	// this is just like exporting from python

@@ -344,7 +344,7 @@ class BlenderSync
           nested_array = message['transform']
           # ^ array of arrays
           
-          p nested_array
+          # p nested_array
           
           @environment.set_entity_transform_array id, nested_array
           # ^ thin wrapper on C++ callback
