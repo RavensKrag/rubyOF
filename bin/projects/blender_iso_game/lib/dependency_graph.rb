@@ -3,6 +3,8 @@ class DependencyGraph
   COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
   COLOR_ONE  = RubyOF::FloatColor.rgba([1,1,1,1])
   
+  attr_reader :lights, :viewport_camera
+  
   def initialize()
     
     @viewport_camera = ViewportCamera.new
