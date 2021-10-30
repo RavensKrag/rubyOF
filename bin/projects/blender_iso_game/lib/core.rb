@@ -115,18 +115,12 @@ load LIB_DIR/'frame_history.rb'
 # order independent transparency render pipeline
 class OIT_RenderPipeline
   
-  attr_accessor :lights, :camera
-  
   def initialize
-    @camera = nil
-    
     @opaque_pass = nil
     @transparent_pass = nil
     @ui_pass = nil
     
     
-    
-    @lights = Array.new
     
     @light_material = RubyOF::Material.new
     # ^ material used to visualize lights a small spheres in space.
@@ -162,7 +156,7 @@ class OIT_RenderPipeline
   
   include RubyOF::Graphics
   include Gl
-  def draw(window)
+  def draw(window, camera:nil, lights:nil)
     
     # ofEnableAlphaBlending()
     # # ^ doesn't seem to do anything, at least not right now
@@ -268,7 +262,7 @@ class OIT_RenderPipeline
     ofEnableLighting() # // enable lighting //
     ofEnableDepthTest()
     
-    @lights.each{ |light|  light.enable() }
+    lights.each{ |light|  light.enable() }
     
     
     
@@ -277,12 +271,30 @@ class OIT_RenderPipeline
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      using_camera @camera do
+      using_camera camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
         
         @opaque_pass.call()
         
-        visualize_lights()
+        
+        # visualize lights
+        # render colored spheres to represent lights
+        lights.each do |light|
+          light_pos   = light.position
+          light_color = light.diffuse_color
+          
+          @light_material.tap do |mat|
+            mat.emissive_color = light_color
+            
+            
+            # light.draw
+            mat.begin()
+            ofPushMatrix()
+              ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+            ofPopMatrix()
+            mat.end()
+          end
+        end
       end
     end
     
@@ -298,7 +310,7 @@ class OIT_RenderPipeline
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
-      using_camera @camera do
+      using_camera camera do
         @transparent_pass.call()
       end
       
@@ -307,7 +319,7 @@ class OIT_RenderPipeline
     end
     
     
-    @lights.each{ |light|  light.disable() }
+    lights.each{ |light|  light.disable() }
     
     # teardown GL state
     ofDisableDepthTest()
@@ -400,25 +412,6 @@ class OIT_RenderPipeline
     end
   end
   
-  # render colored spheres to represent lights
-  def visualize_lights
-    @lights.each do |light|
-      light_pos   = light.position
-      light_color = light.diffuse_color
-      
-      @light_material.tap do |mat|
-        mat.emissive_color = light_color
-        
-        
-        # light.draw
-        mat.begin()
-        ofPushMatrix()
-          ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-        ofPopMatrix()
-        mat.end()
-      end
-    end
-  end
   
   # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
   def using_framebuffer fbo # &block
@@ -998,11 +991,6 @@ class Core
     # end
     
     
-    # steal lights and camera from the depsgraph for now
-    @render_pipeline.lights = @depsgraph.lights
-    @render_pipeline.camera = @depsgraph.viewport_camera
-    
-    
     
     
     # 
@@ -1114,7 +1102,10 @@ class Core
     # 
     # actually draw the stuff
     # 
-    @render_pipeline.draw(@w)
+    @render_pipeline.draw(@w,
+      lights:@depsgraph.lights,
+      camera:@depsgraph.viewport_camera
+    )
     
     # @depsgraph.draw(@w) do
     
