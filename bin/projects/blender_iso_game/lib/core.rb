@@ -448,10 +448,12 @@ class Core
       @frame_history.branch_history
       
     else
-      # was paused when the crash happened,
-      # so should be able to 'play' and resume execution
-      @frame_history.play
-      puts "frame: #{@frame_history.frame_index}"
+      # Do NOT trigger play on reload after direct manipulation.
+      
+      # # was paused when the crash happened,
+      # # so should be able to 'play' and resume execution
+      # @frame_history.play
+      # puts "frame: #{@frame_history.frame_index}"
     end
   end
   

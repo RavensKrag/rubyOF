@@ -418,6 +418,8 @@ def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
 #   operators
 # ------------------------------------------------------------------------
 
+meshDatablock_to_meshID = {}
+# ^ TODO: think about a better way to grant access to this key variable
 
 def calc_geometry_tex_size(mytool):
     width_px  = mytool.max_tris*3 # 3 verts per triangle
@@ -522,6 +524,8 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         unique_evaluated_meshes = []
         
         unique_mesh_datablocks = set()
+        
+        global meshDatablock_to_meshID
         meshDatablock_to_meshID = {}
         
         for obj in all_objects:
@@ -566,6 +570,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         mytool.status_message = "export unique meshes"
         for i, mesh in enumerate(unique_evaluated_meshes):
             export_vertex_data(mytool, mesh, i+1) # handles triangulation
+                # NOTE: This index 'i' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -1450,6 +1455,8 @@ class RubyOF(bpy.types.RenderEngine):
                     
                     # mesh_datablocks.append(obj.data)
                     # message_queue.append(pack_mesh(obj))
+                    
+                    # ^ Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
             
             # loop over all materials
             for mat in bpy.data.materials:
@@ -1471,10 +1478,28 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+            # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+            mytool = context.scene.my_tool
             
-            # mesh_datablocks.append(active_object.data)
-            # message_queue.append(pack_mesh(active_object))
+            mesh = active_object.data
+            export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
+            
+            # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+            data = {
+                'type': 'anim_texture_update',
+                'normal_tex_path'  : os.path.join(
+                                        bpy.path.abspath(mytool.output_dir),
+                                        mytool.name+".normal"+'.exr'),
+                'position_tex_path': os.path.join(
+                                        bpy.path.abspath(mytool.output_dir),
+                                        mytool.name+".position"+'.exr'),
+                'transform_tex_path': os.path.join(
+                                        bpy.path.abspath(mytool.output_dir),
+                                        mytool.name+".transform"+'.exr'),
+            }
+            
+            to_ruby.write(json.dumps(data))
+            
             
             # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
             
