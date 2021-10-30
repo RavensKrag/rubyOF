@@ -69,19 +69,19 @@ def get_cached_image(cache, property, texture_name, size=[1,1], channels_per_pix
     width  = size[0]
     height = size[1]
     
-    if not is_valid_anim_tex(cache[property], width, height):
+    if not is_valid_anim_tex(getattr(cache, property), width, height):
         print("new texture for:", property)
         
-        cache[property] = allocate_texture(
+        setattr(cache, property, allocate_texture(
             texture_name,
             width=width, height=height,
             alpha=True, float_buffer=True,
             channels_per_pixel=channels_per_pixel
-        )
+        ))
         
-        cache[property].reload()
+        getattr(cache, property).reload()
     
-    return cache[property]
+    return getattr(cache, property)
 
 
 class ImageWrapper():
