@@ -418,7 +418,7 @@ def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
 #   operators
 # ------------------------------------------------------------------------
 
-meshDatablock_to_meshID = {}
+meshDatablock_to_meshID = None
 # ^ TODO: think about a better way to grant access to this key variable
 
 def calc_geometry_tex_size(mytool):
@@ -1478,29 +1478,32 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-            mytool = context.scene.my_tool
-            
-            mesh = active_object.data
-            export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
-            
-            # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-            data = {
-                'type': 'geometry_update',
-                'scanline': meshDatablock_to_meshID[mesh],
-                'normal_tex_path'  : os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".normal"+'.exr'),
-                'position_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".position"+'.exr'),
-                'transform_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".transform"+'.exr'),
+            if meshDatablock_to_meshID is None:
+                print(f'ERROR: Mesh datablock -> mesh ID mapping must be created before meshes can be edited. Please export the entire texture before editing meshes.') 
+            else:
+                # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+                mytool = context.scene.my_tool
+                
+                mesh = active_object.data
+                export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
+                
+                # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+                data = {
+                    'type': 'geometry_update',
+                    'scanline': meshDatablock_to_meshID[mesh],
+                    'normal_tex_path'  : os.path.join(
+                                            bpy.path.abspath(mytool.output_dir),
+                                            mytool.name+".normal"+'.exr'),
+                    'position_tex_path': os.path.join(
+                                            bpy.path.abspath(mytool.output_dir),
+                                            mytool.name+".position"+'.exr'),
+                    'transform_tex_path': os.path.join(
+                                            bpy.path.abspath(mytool.output_dir),
+                                            mytool.name+".transform"+'.exr'),
 
-            }
-            
-            to_ruby.write(json.dumps(data))
+                }
+                
+                to_ruby.write(json.dumps(data))
             
             
             # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
@@ -1584,7 +1587,7 @@ class RubyOF(bpy.types.RenderEngine):
         # (RubyOF will figure out whether to rebind or not)
         for obj in bpy.data.objects:
             if isinstance(obj.data, bpy.types.Mesh):
-                print("found object with mesh")
+                # print("found object with mesh")
                 
                 material_name = ''
                 # ^ default material name
