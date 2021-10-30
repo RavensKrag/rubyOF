@@ -421,7 +421,7 @@ class BlenderSync
       end
     
     when 'object_to_id_map'
-      p message
+      @core.update_entity_mapping(message)
     
     
     when 'anim_texture_update'

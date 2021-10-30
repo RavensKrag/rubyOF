@@ -378,7 +378,7 @@ class FrameHistory
     end
     
     after_transition :ANY, :reverse do
-      puts "reset crash flag"
+      # puts "reset crash flag"
       @crash_detected = false
       
       if @fiber_mode != :reverse
@@ -410,7 +410,7 @@ class FrameHistory
   # recieved a message from Core that a crash was detected this frame
   # (called every frame while Core is in the crashed state)
   def crash_detected
-    puts "set crash flag"
+    # puts "set crash flag"
     @crash_detected = true
   end
   

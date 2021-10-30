@@ -605,6 +605,9 @@ class Core
     )
     
     @frame_history = FrameHistory.new(self)
+    
+    @entity_name_to_id = Hash.new
+    @entity_name_to_id['CharacterTest'] = 74
   end
   
   # run when exception is detected
@@ -883,7 +886,9 @@ class Core
         
         
         snapshot.frame do
-          @environment.mutate_entity_transform(74) do |mat|
+          i = @entity_name_to_id['CharacterTest']
+          i = 74
+          @environment.mutate_entity_transform(i) do |mat|
             v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
             
             GLM.translate(mat, v2)
@@ -909,18 +914,20 @@ class Core
   
   def snapshot_gamestate
     # for now, just save the state of the one entity that's moving
-    return @environment.get_entity_transform(74)
+    i = @entity_name_to_id['CharacterTest']
+    return @environment.get_entity_transform(i)
   end
   
   def load_state(state)
-    @environment.set_entity_transform(74, state)
+    i = @entity_name_to_id['CharacterTest']
+    @environment.set_entity_transform(i, state)
   end
   
   
   def update_while_crashed
     @crash_detected = true # set in Core#on_crash
     
-    puts "=== update while crashed ==="
+    # puts "=== update while crashed ==="
     
     # pass @crash_detected flag to FrameHistory
     @frame_history.crash_detected
@@ -941,7 +948,7 @@ class Core
       @crash_detected = false
     end
     
-    puts "=== update while crashed END"
+    # puts "=== update while crashed END"
   end
   
   
@@ -998,6 +1005,11 @@ class Core
       message['normal_tex_path'],
       message['transform_tex_path'],
     )
+  end
+  
+  def update_entity_mapping(message)
+    p message['value']
+    @entity_name_to_id = message['value']
   end
   
   
