@@ -44,9 +44,6 @@ import math
 
 
 
-# import anim_tex_exporter
-
-
 
 # need extra help to reload classes:
 # https://developer.blender.org/T66924
