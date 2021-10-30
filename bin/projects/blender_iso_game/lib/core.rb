@@ -626,12 +626,33 @@ class Core
   
   
   def load_anim_textures(message)
+    # load data
     p message
     @environment = VertexAnimationBatch.new(
       message['position_tex_path'],
       message['normal_tex_path'],
       message['transform_tex_path'],
     )
+    
+    # reload history
+    # (code copied from Core#on_reload)
+    if @frame_history.time_traveling?
+      # @frame_history = @frame_history.branch_history
+      
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
+      
+      
+      
+      @frame_history.branch_history
+      
+    else
+      # was paused when the crash happened,
+      # so should be able to 'play' and resume execution
+      @frame_history.play
+      puts "frame: #{@frame_history.frame_index}"
+    end
   end
   
   def update_entity_mapping(message)
