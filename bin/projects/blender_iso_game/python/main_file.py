@@ -29,15 +29,10 @@ from bpy.props import (StringProperty,
                        IntProperty,
                        FloatProperty,
                        EnumProperty,
-                       FloatVectorProperty)
+                       FloatVectorProperty,
+                       PointerProperty)
 
 import time
-
-
-
-
-
-
 
 import queue
 import threading
@@ -46,6 +41,650 @@ import threading
 import hashlib
 
 import math
+
+
+
+
+# need extra help to reload classes:
+# https://developer.blender.org/T66924
+# by gecko man (geckoman), Jul 22 2019, 9:02 PM
+
+import importlib, sys
+# reloads class' parent module and returns updated class
+def reload_class(c):
+    mod = sys.modules.get(c.__module__)
+    importlib.reload(mod)
+    return mod.__dict__[c.__name__]
+
+
+import os
+from image_wrapper import ( ImageWrapper, get_cached_image )
+
+ImageWrapper = reload_class(ImageWrapper)
+
+
+import time
+from progress_bar import ( OT_ProgressBarOperator, coroutine )
+OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
+
+
+
+
+
+
+class PG_MyProperties (bpy.types.PropertyGroup):
+    
+    def limit_output_frame(self, context):
+        # print(self)
+        mytool = context.scene.my_tool
+        
+        max_frame_index = mytool.max_frames-1
+        
+        if mytool.output_frame > max_frame_index:
+            mytool.output_frame = max_frame_index
+        
+        return None
+    
+    def limit_num_objects(self, context):
+        # print(self)
+        mytool = context.scene.my_tool
+        
+        max_index = mytool.max_num_objects-1
+        
+        if mytool.transform_scanline > max_index:
+            mytool.transform_scanline = max_index
+        
+        return None
+    
+    output_dir : StringProperty(
+        name="Output directory",
+        description="Directory where all animation textures will be written (vertex animation data)",
+        default="//",
+        subtype='DIR_PATH'
+    )
+    
+    name : StringProperty(
+        name="Name",
+        description="base name for all texture files",
+        default="animation",
+    )
+    
+    target_object : PointerProperty(
+        name="Target object",
+        description="object to be exported",
+        type=bpy.types.Object
+    )
+    
+    collection_ptr : PointerProperty(
+        name="Collection",
+        description="will export all geometry and transforms for all objects in this collection",
+        type=bpy.types.Collection
+    )
+    
+    max_tris : IntProperty(
+        name = "Max tris",
+        description="Total number of tris per frame",
+        default = 100,
+        min = 1,
+        max = 1000000
+    )
+    
+    max_frames : IntProperty(
+        name = "Max frames",
+        description="frame number where output vertex data should be stored",
+        default = 20,
+        min = 1,
+        max = 1000000
+    )
+    
+    output_frame : IntProperty(
+        name = "Output frame",
+        description="frame number where output vertex data should be stored",
+        default = 3,
+        min = 1,
+        max = 1000000,
+        update=limit_output_frame
+    )
+        
+    
+    position_tex : PointerProperty(
+        name="Position texture",
+        description="texture encoding position information",
+        type=bpy.types.Image
+    )
+    
+    normal_tex : PointerProperty(
+        name="Normal texture",
+        description="texture encoding normal vector data",
+        type=bpy.types.Image
+    )
+    
+    transform_tex : PointerProperty(
+        name="Transform mat4 texture",
+        description="texture encoding object mat4 transformse",
+        type=bpy.types.Image
+    )
+    
+    
+    max_num_objects : IntProperty(
+        name = "Max number of objects",
+        description="maximum number of objects whose transforms can be saved",
+        default = 20,
+        min = 1,
+        max = 1000000
+    )
+    
+    transform_scanline : IntProperty(
+        name = "Transform scanline",
+        description="Scanline in texture where object transform will be stored",
+        default = 3,
+        min = 1,
+        max = 1000000,
+        update=limit_num_objects
+    )
+    
+    transform_id : IntProperty(
+        name = "Transform ID",
+        description="ID value to be written to the next transform scanline",
+        default = 3,
+        min = 0,
+        max = 65504
+    )
+    
+    progress : FloatProperty(
+        name="Progress",
+        subtype="PERCENTAGE",
+        soft_min=0, 
+        soft_max=100, 
+        precision=0,
+    )
+    
+    running : BoolProperty(
+        name="Running",
+        default=False
+    )
+    
+    status_message : StringProperty(
+        name="Status message",
+        default="exporting..."
+    )
+
+
+
+
+
+# ------------------------------------------------------------------------
+#   utility functions
+# ------------------------------------------------------------------------
+
+def vec3_to_rgba(vec):
+    # allocate data for one pixel (RGBA)
+    px = [0.0, 0.0, 0.0, 1.0]
+    
+    px[0] = vec[0]
+    px[1] = vec[1]
+    px[2] = vec[2]
+    # no data to put in alpha channel
+    
+    return px
+
+def vec4_to_rgba(vec):
+    # allocate data for one pixel (RGBA)
+    px = [0.0, 0.0, 0.0, 1.0]
+    
+    px[0] = vec[0]
+    px[1] = vec[1]
+    px[2] = vec[2]
+    px[3] = vec[3]
+    
+    return px
+
+# scanline : array of pixel data (not nested array, just a flat array)
+# Set the data for one pixel within an array representing a whole scanline
+def scanline_set_px(scanline, px_i, px_data, channels=4):
+    for i in range(channels):
+        scanline[px_i*channels+i] = px_data[i]
+
+
+
+
+
+def export_vertex_data(mytool, mesh, output_frame):
+    mesh.calc_loop_triangles()
+    # ^ need to call this to populate the mesh.loop_triangles() cache
+    
+    mesh.calc_normals_split()
+    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+    # ^ normals stored on the tri / face
+    
+    
+    # TODO: update all code to use RGB (no alpha) to save some memory
+    # TODO: use half instead of float to save memory
+    
+    
+    # NOTE: all textures in the same animation set have the same dimensions
+    
+    # output_path = bpy.path.abspath("//")
+    
+    
+    pos_texture = ImageWrapper(
+        get_cached_image(mytool, "position_tex",
+                         mytool.name+".position",
+                         size=calc_geometry_tex_size(mytool),
+                         channels_per_pixel=4),
+        mytool.output_dir
+    )
+    
+    norm_texture = ImageWrapper(
+        get_cached_image(mytool, "normal_tex",
+                         mytool.name+".normal",
+                         size=calc_geometry_tex_size(mytool),
+                         channels_per_pixel=4),
+        mytool.output_dir
+    )
+    
+    # (bottom row of pixels will always be full red)
+    # This allows for the easy identification of one edge,
+    # like a "this side up" sign, but it also allows for
+    # the user to create frames completely free of any
+    # visible geometry. (useful with GPU instancing)
+    
+    # data for just this object
+    pixel_data = [1.0, 0.0, 0.0, 1.0] * pos_texture.width
+    
+    pos_texture.write_scanline(pixel_data, 0)
+    
+    
+    
+    # 
+    # allocate pixel data buffers for mesh
+    # 
+    
+    scanline_position = [0.2, 0.2, 0.2, 1.0] * pos_texture.width
+    scanline_normals  = [0.0, 0.0, 0.0, 1.0] * norm_texture.width
+    # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
+    
+    
+    # 
+    # pack each and every triangle
+    # 
+    
+    # number of actual verts likely to be less than maximum
+    # so just measure the list
+    num_tris  = len(mesh.loop_triangles)
+    num_verts = len(mesh.loop_triangles)*3
+    print("num tris:", num_tris)
+    print("num verts:", num_verts)
+
+    if num_tris > mytool.max_tris:
+        raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {mytool.max_tris} tris. Please increase the size of the animation texture.')
+    
+    
+    verts = mesh.vertices
+    for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+        normals = tri.split_normals
+        for j in range(3): # verts per triangle
+            vert_index = tri.vertices[j]
+            vert = verts[vert_index]
+            
+            scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
+                            channels=pos_texture.channels_per_pixel)
+            
+            
+            normal = normals[j]
+            
+            scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
+                            channels=norm_texture.channels_per_pixel)
+    
+    pos_texture.write_scanline(scanline_position, output_frame)
+    norm_texture.write_scanline(scanline_normals, output_frame)
+    
+    
+    pos_texture.save()
+    norm_texture.save()
+
+
+def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
+    # TODO: update all code to use RGB (no alpha) to save some memory
+    # TODO: use half instead of float to save memory
+    
+    
+    # TODO: consider using black and white for these textures, if that saves on pixels / somehow makes calculation easier (need to consider entire pipeline, so this must be delayed for a while)
+    
+    # output_path = bpy.path.abspath("//")
+    
+    
+    transform_tex = ImageWrapper(
+        get_cached_image(mytool, "transform_tex",
+                         mytool.name+".transform",
+                         size=calc_transform_tex_size(mytool),
+                         channels_per_pixel=4),
+        mytool.output_dir
+    )
+    
+    # (bottom row of pixels will always be full red)
+    # This allows for the easy identification of one edge,
+    # like a "this side up" sign, but it also allows for
+    # the user to create frames completely free of any
+    # visible geometry. (useful with GPU instancing)
+    
+    # data for just this object
+    pixel_data = [1.0, 0.0, 1.0, 1.0] * transform_tex.width
+    
+    transform_tex.write_scanline(pixel_data, 0)
+    
+    
+    # 
+    # extract transforms from object
+    # 
+    
+    # this_mat = target_object.matrix_local
+    this_mat = target_object.matrix_world
+    # print(this_mat)
+    # print(type(this_mat))
+    
+    identity_matrix = this_mat.Identity(4)
+    
+    # out_mat = identity_matrix
+    out_mat = this_mat
+    
+    
+    # 
+    # write transforms to image
+    # 
+    
+    scanline_transform = [0.0, 0.0, 0.0, 0.0] * transform_tex.width
+    
+    
+    id = mesh_id # TODO: update this to match mesh index
+    
+    scanline_set_px(scanline_transform, 0, [id, id, id, 1.0],
+                    channels=transform_tex.channels_per_pixel)
+    
+    for i in range(1, 5): # range is exclusive of high end: [a, b)
+        scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
+                        channels=transform_tex.channels_per_pixel)
+    
+    
+    transform_tex.write_scanline(scanline_transform, scanline)
+    
+    
+    transform_tex.save()
+
+
+
+# ------------------------------------------------------------------------
+#   operators
+# ------------------------------------------------------------------------
+
+
+def calc_geometry_tex_size(mytool):
+    width_px  = mytool.max_tris*3 # 3 verts per triangle
+    height_px = mytool.max_frames
+    
+    return [width_px, height_px]
+
+
+# 
+# This transform matrix data used by the GPU in the context of GPU instancing
+# to draw various geometries that have been encoded onto textures.
+# 
+# This is not intended as an interchange format between Blender and RubyOF
+# (it may be better to send individual position / rotation / scale instead)
+# (so that way the individual components of the transform can be edited)
+# 
+
+def calc_transform_tex_size(mytool):
+    # the transform texture must encode 2 things:
+    
+    # 1) a mat4 for the object's transform
+    channels_per_pixel = 4
+    mat4_size = 4*4;
+    pixels_per_transform = mat4_size // channels_per_pixel;
+    
+    # 2) what mesh to use when rendering this object
+    pixels_per_id_block = 1
+    
+    width_px  = pixels_per_id_block + pixels_per_transform
+    height_px = mytool.max_num_objects
+    
+    return [width_px, height_px]
+
+class OT_TexAnimExportCollection (OT_ProgressBarOperator):
+    """Export all objects in target collection"""
+    bl_idname = "wm.texanim_export_collection"
+    bl_label = "Export ENTIRE Collection"
+    
+    def setup(self, context):
+        self.setup_properties(property_group=context.scene.my_tool,
+                              percent_field='progress',
+                              bool_field='running')
+        
+        self.delay_interval = 2
+        self.timer_dt = 1/60
+    
+    def update_label(self):
+        global Operations
+        # context.object.progress_label = list(Operations.keys())[self.step]
+    
+    # called every tick
+    @coroutine
+    def run(self):
+        t0 = time.time()
+        
+        context = yield(0)
+        
+        mytool = context.scene.my_tool
+        
+        mytool.status_message = "eval dependencies"
+        depsgraph = context.evaluated_depsgraph_get()
+        context = yield(0.0)
+        
+        
+        # collect up all the objects to export
+        
+        # for each object find the associated mesh datablock
+        # reduce to the objects with unique mesh datablocks
+        # generate evaluated meshes for those objects
+        # create mapping of obj -> evaulated mesh
+        
+        # create mapping of evaluated mesh -> scanline index
+        # export evaluated meshes to file
+        
+        # for each object
+            # map object -> mesh -> mesh scanline index
+            # export object transform with mesh_id= mesh scanline index
+        
+        
+        
+        
+        all_objects = mytool.collection_ptr.all_objects
+        
+        
+        
+        # 
+        # create a list of unique evaluated meshes
+        # AND
+        # map mesh datablock -> mesh id
+        # so object transfoms and mesh ID can be paired up in transform export
+        mytool.status_message = "collect mesh data"
+        
+        # don't need (obj -> mesh datablock) mapping
+        # as each object already knows its mesh datablock
+        
+        meshID = 1
+        
+        unique_evaluated_meshes = []
+        
+        unique_mesh_datablocks = set()
+        meshDatablock_to_meshID = {}
+        
+        for obj in all_objects:
+            if obj.type == 'MESH':
+                if obj.data in unique_mesh_datablocks:
+                    pass
+                    # if this datablock has already been seen,
+                    # then the mapping to meshID is already set up
+                else:
+                    # never seen this datablock before
+                    
+                    # ASSUME: need the object to get the evaluated mesh
+                    # (^ this assumption should be challenged)
+                    
+                    unique_mesh_datablocks.add(obj.data)
+                    
+                    
+                    # evaluate meshes
+                    object_eval = obj.evaluated_get(depsgraph)
+                    mesh = object_eval.data
+                    
+                    # map datablock -> mesh id
+                    meshDatablock_to_meshID[obj.data] = meshID
+                    meshID += 1
+                    
+                    unique_evaluated_meshes.append(mesh)
+        
+        context = yield( 0.0 )
+        
+        # 
+        # calculate how many tasks there are
+        # 
+        
+        total_tasks = len(unique_evaluated_meshes) + len(all_objects)
+        task_count = 0
+        
+        
+        # 
+        # export all unique meshes
+        # 
+        
+        mytool.status_message = "export unique meshes"
+        for i, mesh in enumerate(unique_evaluated_meshes):
+            export_vertex_data(mytool, mesh, i+1) # handles triangulation
+            
+            task_count += 1
+            context = yield(task_count / total_tasks)
+        
+        # 
+        # export all objects
+        # (transforms and associated mesh IDs)
+        # 
+        object_map = {}
+        
+        mytool.status_message = "export object transforms"
+        for i, obj in enumerate(all_objects):
+            export_object_transforms(mytool, obj,
+                                     scanline=i+1,
+                                     mesh_id=meshDatablock_to_meshID[obj.data])
+            # map obj -> mesh ID
+            
+            object_map[obj.name] = i+1
+            
+            task_count += 1
+            context = yield(task_count / total_tasks)
+        
+        # images = [
+        #     mytool.position_tex,
+        #     mytool.normal_tex,
+        #     mytool.transform_tex
+        # ]
+        
+        # for image in images:
+        #     image.save_render(
+        #         image.filepath_raw,
+        #         scene=bpy.context.scene
+        #     )
+        
+        mytool.status_message = "show object map"
+        
+        print(object_map)
+        # ^ TODO: when integrated with main Blender -> RubyOF tools, need to dynamically send this mapping to RubyOF
+        
+        context = yield(task_count / total_tasks)
+        
+        t1 = time.time()
+        
+        print("time elapsed:", t1-t0, "sec")
+
+
+
+
+
+class DATA_PT_texanim_panel3 (bpy.types.Panel):
+    COMPAT_ENGINES= {"RUBYOF"}
+    
+    bl_idname = "DATA_PT_texanim_panel3"
+    bl_label = "AnimTex - all in collection"
+    # bl_category = "Tool"  # note: replaced by preferences-setting in register function 
+    bl_region_type = "WINDOW"
+    bl_context = "output"   
+    bl_space_type = "PROPERTIES"
+
+
+#   def __init(self):
+#       super( self, Panel ).__init__()
+#       bl_category = bpy.context.preferences.addons[__name__].preferences.category 
+
+    @classmethod
+    def poll(cls, context):
+        print(context.engine)
+        return (context.engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        mytool = scene.my_tool
+        
+        layout.prop( mytool, "collection_ptr")
+        layout.prop( mytool, "output_dir")
+        layout.prop( mytool, "name")
+        
+        layout.prop( mytool, "max_tris")
+        layout.prop( mytool, "max_frames")
+        layout.prop( mytool, "max_num_objects")
+        
+        layout.row().separator()
+        
+        if mytool.running: 
+            layout.prop( mytool, "progress")
+            layout.label(text=mytool.status_message)
+        else:
+            layout.operator("wm.texanim_export_collection")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def typestring(obj):
@@ -453,6 +1092,30 @@ def calc_viewport_fov(rv3d):
     
     return fov
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -884,7 +1547,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         max = 30.0
         )
         
-    my_pointer: bpy.props.PointerProperty(type=bpy.types.Object)
+    my_pointer: PointerProperty(type=bpy.types.Object)
     
     alpha: FloatProperty(
         name = "Alpha",
@@ -900,7 +1563,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default = False
         )
     
-    camera: bpy.props.PointerProperty(
+    camera: PointerProperty(
         type=bpy.types.Camera,
         name="camera",
         description="Camera to be used by the RubyOF game engine")
@@ -919,90 +1582,6 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default = 1,
         min = 0,
         max = 100000
-        )
-
-
-# def update_rgb_nodes(self, context):
-#     pass
-    # mat = self.id_data
-    # nodes = [n for n in mat.node_tree.nodes
-    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
-
-    # for n in nodes:
-    #     n.outputs[0].default_value = self.rgb_controller
-
-class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
-    # diffuse color
-    # alpha
-    # shininess
-    
-    color: FloatVectorProperty(
-        name = "Color",
-        description = "Diffuse color",
-        subtype = 'COLOR',
-        default = (1.0, 1.0, 1.0), # white is default
-        size = 3,
-        # min = 0.0,
-        # max = 1.0
-        )
-    
-    
-    specular: FloatVectorProperty(
-        name = "specular color",
-        description = "the color of highlights on a material",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    diffuse: FloatVectorProperty(
-        name = "diffuse color",
-        description = "the color of the material when it is illuminated",
-        subtype = 'COLOR',
-        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    ambient: FloatVectorProperty(
-        name = "ambient color",
-        description = "the color of the material when it is not illuminated",
-        subtype = 'COLOR',
-        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    emissive: FloatVectorProperty(
-        name = "emissive color",
-        description = "the color the material illuminated from within",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    alpha: FloatProperty(
-        name = "alpha",
-        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
-        default = 1,
-        min = 0,
-        max = 1,
-        precision = 2,
-        step = 0.01
-        )
-    
-    shininess: FloatProperty(
-        name = "shininess",
-        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
-        default = 0.2,
-        min = 0,
-        max = 128
         )
 
 
@@ -1168,6 +1747,93 @@ class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
 
 
 
+
+
+
+
+
+# def update_rgb_nodes(self, context):
+#     pass
+    # mat = self.id_data
+    # nodes = [n for n in mat.node_tree.nodes
+    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
+
+    # for n in nodes:
+    #     n.outputs[0].default_value = self.rgb_controller
+
+class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
+    # diffuse color
+    # alpha
+    # shininess
+    
+    color: FloatVectorProperty(
+        name = "Color",
+        description = "Diffuse color",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0), # white is default
+        size = 3,
+        # min = 0.0,
+        # max = 1.0
+        )
+    
+    
+    specular: FloatVectorProperty(
+        name = "specular color",
+        description = "the color of highlights on a material",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    diffuse: FloatVectorProperty(
+        name = "diffuse color",
+        description = "the color of the material when it is illuminated",
+        subtype = 'COLOR',
+        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    ambient: FloatVectorProperty(
+        name = "ambient color",
+        description = "the color of the material when it is not illuminated",
+        subtype = 'COLOR',
+        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    emissive: FloatVectorProperty(
+        name = "emissive color",
+        description = "the color the material illuminated from within",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    alpha: FloatProperty(
+        name = "alpha",
+        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
+        default = 1,
+        min = 0,
+        max = 1,
+        precision = 2,
+        step = 0.01
+        )
+    
+    shininess: FloatProperty(
+        name = "shininess",
+        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
+        default = 0.2,
+        min = 0,
+        max = 128
+        )
 
 
 
@@ -1387,6 +2053,27 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # RenderEngines also need to tell UI Panels that they are compatible with.
 # We recommend to enable all panels marked as BLENDER_RENDER, and then
 # exclude any panels that are replaced by custom panels registered by the
@@ -1453,7 +2140,14 @@ classes = (
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
     DATA_PT_spot,
-    RUBYOF_MATERIAL_PT_context_material
+    RUBYOF_MATERIAL_PT_context_material,
+    #
+    #
+    #
+    PG_MyProperties,
+    OT_ProgressBarOperator,
+    OT_TexAnimExportCollection,
+    DATA_PT_texanim_panel3
 )
 
 def register():
@@ -1469,13 +2163,15 @@ def register():
         bpy.utils.register_class(c)
     
     # Bind variable for properties
-    bpy.types.Scene.my_custom_props = bpy.props.PointerProperty(
+    bpy.types.Scene.my_custom_props = PointerProperty(
             type=RubyOF_Properties
         )
     
-    bpy.types.Material.rb_mat = bpy.props.PointerProperty(
+    bpy.types.Material.rb_mat = PointerProperty(
             type=RubyOF_MATERIAL_Properties
         )
+    
+    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
 
 
@@ -1488,6 +2184,9 @@ def unregister():
     
     for c in reversed(classes):
         bpy.utils.unregister_class(c)
+        
+    
+    del bpy.types.Scene.my_tool
 
 
 
