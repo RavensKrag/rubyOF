@@ -274,10 +274,10 @@
         //                              vec4(0,0,0,1);
         
         vec4 localColor = 
-                vec4(ambient, 1.0) * mat_ambient  + 
+                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
                 vec4(diffuse, 1.0) * v_diffuse  + 
-                vec4(specular,1.0) * mat_specular + 
-                                     mat_emissive;
+                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+                                     vec4(v_emissive.rgb, 0);
         
         
         
