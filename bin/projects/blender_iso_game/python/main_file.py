@@ -519,39 +519,200 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         # don't need (obj -> mesh datablock) mapping
         # as each object already knows its mesh datablock
         
-        meshID = 1
         
-        unique_evaluated_meshes = []
-        
-        unique_mesh_datablocks = set()
+        def find_unique_meshes(obj_list):
+            meshID = 1
+            
+            unique_evaluated_meshes = []
+            
+            unique_mesh_datablocks = set()
+            
+            meshDatablock_to_meshID = {}
+            
+            for obj in obj_list:
+                if obj.type == 'MESH':
+                    if obj.data in unique_mesh_datablocks:
+                        pass
+                        # if this datablock has already been seen,
+                        # then the mapping to meshID is already set up
+                    else:
+                        # never seen this datablock before
+                        
+                        # ASSUME: need the object to get the evaluated mesh
+                        # (^ this assumption should be challenged)
+                        
+                        unique_mesh_datablocks.add(obj.data)
+                        
+                        
+                        # evaluate meshes
+                        object_eval = obj.evaluated_get(depsgraph)
+                        mesh = object_eval.data
+                        
+                        # map datablock -> mesh id
+                        meshDatablock_to_meshID[obj.data] = meshID
+                        meshID += 1
+                        
+                        unique_evaluated_meshes.append(mesh)
+            
+            return (unique_evaluated_meshes, meshDatablock_to_meshID)
         
         global meshDatablock_to_meshID
-        meshDatablock_to_meshID = {}
+        unqiue_meshes,meshDatablock_to_meshID = find_unique_meshes(depsgraph, all_objects)
         
-        for obj in all_objects:
-            if obj.type == 'MESH':
-                if obj.data in unique_mesh_datablocks:
-                    pass
-                    # if this datablock has already been seen,
-                    # then the mapping to meshID is already set up
-                else:
-                    # never seen this datablock before
-                    
-                    # ASSUME: need the object to get the evaluated mesh
-                    # (^ this assumption should be challenged)
-                    
-                    unique_mesh_datablocks.add(obj.data)
-                    
-                    
-                    # evaluate meshes
-                    object_eval = obj.evaluated_get(depsgraph)
-                    mesh = object_eval.data
-                    
-                    # map datablock -> mesh id
-                    meshDatablock_to_meshID[obj.data] = meshID
-                    meshID += 1
-                    
-                    unique_evaluated_meshes.append(mesh)
+        
+        # get unique mesh datablocks, assigning each one a unique number
+        # get some objects attached to those 
+        
+        
+        # problem: if two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh.
+            # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
+        
+        
+        def foo():
+            pass
+            
+        
+        def bar():
+            pass
+        
+        
+        pairs = foo(all_objects)
+        
+        meshID = 1
+        meshDatablock_to_meshID = {}
+        for mesh_obj, mesh_datablock in pairs:
+            meshDatablock_to_meshID[mesh_datablock] = meshID
+            meshID += 1
+        
+        unique_evaluated_meshes = []
+        for mesh_obj, mesh_datablock in pairs:
+            object_eval = mesh_obj.evaluated_get(depsgraph)
+            mesh = object_eval.data
+            unique_evaluated_meshes.append(mesh)
+        
+        # O(n) + O(2m)
+        
+        
+        
+        
+        
+        all_mesh_objects = [ obj
+                             for obj in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        unique_pairs = foo(all_mesh_objects)
+        mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
+        mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
+        
+        meshDatablock_to_meshID = { mesh : i+1
+                                    for i, mesh in enumerate(mesh_datablocks) }
+        
+        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+                          for obj in mesh_objects ]
+        
+        
+        
+        
+        all_mesh_objects = [ obj
+                             for obj in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        baz = foo(all_mesh_objects)
+        
+        meshDatablock_to_meshID = { mesh : i+1
+                                    for i, mesh in enumerate(baz.keys()) }
+        
+        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+                          for obj in baz.values() ]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        all_mesh_objects = [ obj
+                             for obj in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        datablock_to_obj = { obj.data : obj
+                             for obj in all_mesh_objects }
+        
+        unique_datablocks = list(set( [ x.data for x in all_mesh_objects ] )) 
+        # ^ will change the order of the data, which is bad
+        
+        baz = { datablock_to_obj[datablock] : datablock
+                for datablock in unique_datablocks }
+        
+        meshDatablock_to_meshID = { mesh : i+1
+                                    for i, mesh in enumerate(baz.keys()) }
+        
+        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+                          for obj in baz.values() ]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        def bar(all_mesh_objects):
+            datablock_to_obj = { obj.data : obj
+                                 for obj in all_mesh_objects }
+            
+            datablocks = [ x.data for x in all_mesh_objects ]
+            unique_datablocks = set(datablocks)
+            datablock_list = [ x
+                               if  ]
+            # ^ will change the order of the data, which is bad
+            
+            baz = { datablock_to_obj[datablock] : datablock
+                    for datablock in datablock_list }
+            
+            return baz
+        
+        
+        
+        
+        all_mesh_objects = [ obj
+                             for obj in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        uniq_map = bar(all_mesh_objects)
+        
+        meshDatablock_to_meshID = { mesh : i+1
+                                    for i, mesh in enumerate(uniq_map.keys()) }
+        
+        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+                          for obj in uniq_map.values() ]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         context = yield( 0.0 )
         
@@ -559,7 +720,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         # calculate how many tasks there are
         # 
         
-        total_tasks = len(unique_evaluated_meshes) + len(all_objects)
+        total_tasks = len(unqiue_meshes) + len(all_objects)
         task_count = 0
         
         
@@ -568,9 +729,9 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         # 
         
         mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unique_evaluated_meshes):
+        for i, mesh in enumerate(unqiue_meshes):
             export_vertex_data(mytool, mesh, i+1) # handles triangulation
-                # NOTE: This index 'i' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
+                # NOTE: This index 'i+1' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
             
             task_count += 1
             context = yield(task_count / total_tasks)
