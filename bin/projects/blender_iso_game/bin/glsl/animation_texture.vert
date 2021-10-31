@@ -84,6 +84,7 @@ void main (void){
     vec2 texCoord2 = vec2(2, gl_InstanceID+1) + offset;
     vec2 texCoord3 = vec2(3, gl_InstanceID+1) + offset;
     vec2 texCoord4 = vec2(4, gl_InstanceID+1) + offset;
+    vec2 texCoord5 = vec2(5, gl_InstanceID+1) + offset;
     
     
     // 
@@ -159,14 +160,11 @@ void main (void){
     // 
     
     // v_color = vec4(pos_data.rgb, 1.0);
-    v_color = vec4(finalNormal.rgb, 1.0);
-    
-    // float x = object_data.r/3;
-    // v_color = vec4(x,x,x, 1.0);
-    
-    // v_color = vec4(1,1,1,1);
+    // v_color = vec4(finalNormal.rgb, 1.0);
     
     // NOTE: may have to transform normals because of rotation? unclear
+    
+    v_color = TEXTURE(object_transform_tex, texCoord5);
     
     
     

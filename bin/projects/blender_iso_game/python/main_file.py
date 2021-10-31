@@ -32,6 +32,8 @@ from bpy.props import (StringProperty,
                        FloatVectorProperty,
                        PointerProperty)
 
+from mathutils import Color
+
 import time
 
 import queue
@@ -344,7 +346,7 @@ def export_vertex_data(mytool, mesh, output_frame):
     norm_texture.save()
 
 
-def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
+def export_object_data(mytool, target_object, scanline=1, mesh_id=1):
     # TODO: update all code to use RGB (no alpha) to save some memory
     # TODO: use half instead of float to save memory
     
@@ -407,6 +409,28 @@ def export_object_transforms(mytool, target_object, scanline=1, mesh_id=1):
                         channels=transform_tex.channels_per_pixel)
     
     
+    
+    # 
+    # set color (if no material set, default to white)
+    # 
+    
+    
+    mat_slots = target_object.material_slots
+    
+    color = None
+    
+    if len(mat_slots) > 0:
+        mat = mat_slots[0].material.rb_mat
+        color = mat.color
+    else:
+        color = Color((1.0, 1.0, 1.0)) # (0,0,0)
+        # default white for unspecified color
+        # (ideally would copy this from the default in materials)
+    
+    scanline_set_px(scanline_transform, 5, vec3_to_rgba(color),
+                    channels=transform_tex.channels_per_pixel)
+    
+    
     transform_tex.write_scanline(scanline_transform, scanline)
     
     
@@ -438,7 +462,7 @@ def calc_geometry_tex_size(mytool):
 # 
 
 def calc_transform_tex_size(mytool):
-    # the transform texture must encode 2 things:
+    # the transform texture must encode 3 things:
     
     # 1) a mat4 for the object's transform
     channels_per_pixel = 4
@@ -448,7 +472,10 @@ def calc_transform_tex_size(mytool):
     # 2) what mesh to use when rendering this object
     pixels_per_id_block = 1
     
-    width_px  = pixels_per_id_block + pixels_per_transform
+    # 3) values needed by the material (like Unity's material property block)
+    pixels_for_material = 1 
+    
+    width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
     height_px = mytool.max_num_objects
     
     return [width_px, height_px]
@@ -592,9 +619,9 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         mytool.status_message = "export object transforms"
         for i, obj in enumerate(all_objects):
             # use mapping: obj -> mesh datablock -> mesh ID
-            export_object_transforms(mytool, obj,
-                                     scanline=i+1,
-                                     mesh_id=meshDatablock_to_meshID[obj.data])
+            export_object_data(mytool, obj,
+                               scanline=i+1,
+                               mesh_id=meshDatablock_to_meshID[obj.data])
             
             # create map: obj name -> transform ID
             object_map[obj.name] = i+1

@@ -63,7 +63,7 @@ class VertexAnimationBatch
     shader_src_dir = PROJECT_DIR/"bin/glsl"
     @vert_shader_path = shader_src_dir/"animation_texture.vert"
     # @frag_shader_path = shader_src_dir/"phong_test.frag"
-    @frag_shader_path = shader_src_dir/"phong.frag"
+    @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
     
     
     # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
