@@ -421,7 +421,7 @@ def export_object_data(mytool, target_object, scanline=1, mesh_id=1):
     
     if len(mat_slots) > 0:
         mat = mat_slots[0].material.rb_mat
-        color = mat.color
+        color = mat.diffuse
     else:
         color = Color((1.0, 1.0, 1.0)) # (0,0,0)
         # default white for unspecified color
@@ -1024,9 +1024,9 @@ def pack_material(mat):
         'name': mat.name,
         'color': [
             'FloatColor_rgb',
-            mat.rb_mat.color[0],
-            mat.rb_mat.color[1],
-            mat.rb_mat.color[2],
+            mat.rb_mat.diffuse[0],
+            mat.rb_mat.diffuse[1],
+            mat.rb_mat.diffuse[2]
         ],
         'alpha': [
             'float',
@@ -1911,97 +1911,6 @@ class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
 
 
 
-
-
-
-
-
-
-# def update_rgb_nodes(self, context):
-#     pass
-    # mat = self.id_data
-    # nodes = [n for n in mat.node_tree.nodes
-    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
-
-    # for n in nodes:
-    #     n.outputs[0].default_value = self.rgb_controller
-
-class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
-    # diffuse color
-    # alpha
-    # shininess
-    
-    color: FloatVectorProperty(
-        name = "Color",
-        description = "Diffuse color",
-        subtype = 'COLOR',
-        default = (1.0, 1.0, 1.0), # white is default
-        size = 3,
-        # min = 0.0,
-        # max = 1.0
-        )
-    
-    
-    specular: FloatVectorProperty(
-        name = "specular color",
-        description = "the color of highlights on a material",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    diffuse: FloatVectorProperty(
-        name = "diffuse color",
-        description = "the color of the material when it is illuminated",
-        subtype = 'COLOR',
-        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    ambient: FloatVectorProperty(
-        name = "ambient color",
-        description = "the color of the material when it is not illuminated",
-        subtype = 'COLOR',
-        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    emissive: FloatVectorProperty(
-        name = "emissive color",
-        description = "the color the material illuminated from within",
-        subtype = 'COLOR',
-        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
-        size = 3,
-        min = 0.0,
-        max = 1.0
-        )
-    
-    alpha: FloatProperty(
-        name = "alpha",
-        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
-        default = 1,
-        min = 0,
-        max = 1,
-        precision = 2,
-        step = 0.01
-        )
-    
-    shininess: FloatProperty(
-        name = "shininess",
-        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
-        default = 0.2,
-        min = 0,
-        max = 128
-        )
-
-
-
 #
 # Panel for light (under "object data" tab for a light object)
 # (based on blender source code:
@@ -2080,6 +1989,101 @@ class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
 
         col.prop(light, "show_cone")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def update_rgb_nodes(self, context):
+#     pass
+    # mat = self.id_data
+    # nodes = [n for n in mat.node_tree.nodes
+    #         if isinstance(n, bpy.types.ShaderNodeRGB)]
+
+    # for n in nodes:
+    #     n.outputs[0].default_value = self.rgb_controller
+
+class RubyOF_MATERIAL_Properties(bpy.types.PropertyGroup):
+    # diffuse color
+    # alpha
+    # shininess
+    
+    ambient: FloatVectorProperty(
+        name = "Ambient Color",
+        description = "the color of the material when it is not illuminated",
+        subtype = 'COLOR',
+        default = (0.2, 0.2, 0.2), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    diffuse: FloatVectorProperty(
+        name = "Diffuse Color",
+        description = "the color of the material when it is illuminated",
+        subtype = 'COLOR',
+        default = (0.8, 0.8, 0.8), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    specular: FloatVectorProperty(
+        name = "Specular Color",
+        description = "the color of highlights on a material",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    emissive: FloatVectorProperty(
+        name = "Emissive Color",
+        description = "the color the material illuminated from within",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0), # default from OpenFrameworks
+        size = 3,
+        min = 0.0,
+        max = 1.0
+        )
+    
+    alpha: FloatProperty(
+        name = "alpha",
+        description = "Alpha transparency. Varies 0-1, where 0 is fully transparent",
+        default = 1,
+        min = 0,
+        max = 1,
+        precision = 2,
+        step = 0.01
+        )
+    
+    shininess: FloatProperty(
+        name = "shininess",
+        description = "Specular exponent; Varies 0-128, where 128 is the most shiny",
+        default = 0.2,
+        min = 0,
+        max = 128
+        )
 
 
 
@@ -2202,11 +2206,11 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
         # or you get a Python error.
         # (Blender won't crash, but this is still not good behavior.)
         if mat:
-            layout.prop(mat.rb_mat, "color")
+            # layout.prop(mat.rb_mat, "color")
             
-            layout.prop(mat.rb_mat, "specular")
-            layout.prop(mat.rb_mat, "diffuse")
             layout.prop(mat.rb_mat, "ambient")
+            layout.prop(mat.rb_mat, "diffuse")
+            layout.prop(mat.rb_mat, "specular")
             layout.prop(mat.rb_mat, "emissive")
             
             col = layout.column()
