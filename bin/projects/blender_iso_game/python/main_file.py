@@ -466,7 +466,7 @@ def find_unique_mesh_pairs(all_mesh_objects):
             pass
         else:
             unique_mesh_datablocks.add(obj.data)
-            unique_pairs.apppend( (obj, obj.data) )
+            unique_pairs.append( (obj, obj.data) )
     
     return unique_pairs
 
