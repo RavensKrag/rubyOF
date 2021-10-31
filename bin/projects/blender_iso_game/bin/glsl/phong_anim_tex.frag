@@ -5,7 +5,11 @@
     IN vec3 v_eyePosition;
     IN vec3 v_worldPosition;
 // #if HAS_COLOR
-    IN vec4 v_color;
+    IN vec4 v_ambient;
+    IN vec4 v_diffuse;
+    IN vec4 v_specular;
+    IN vec4 v_emissive;
+    
 // #endif
 
 #define TRANSPARENT_PASS 1
@@ -261,11 +265,25 @@
         
         // ASSUME: material properties are specified by transform texture
         // and passed through the vertex shader, 'animation_texture.vert'
+        
+        
+        // vec4 localColor = 
+        //         vec4(ambient, 1.0) * vec4(1,1,1,1)  + 
+        //         vec4(diffuse, 1.0) * vec4(v_diffuse.rgb, 1)  + 
+        //         vec4(specular,1.0) * vec4(1,1,1,1) + 
+        //                              vec4(0,0,0,1);
+        
         vec4 localColor = 
                 vec4(ambient, 1.0) * mat_ambient  + 
-                vec4(diffuse, 1.0) * v_color  + 
+                vec4(diffuse, 1.0) * v_diffuse  + 
                 vec4(specular,1.0) * mat_specular + 
                                      mat_emissive;
+        
+        
+        
+        
+        
+        
         
         
         // #else
@@ -296,10 +314,10 @@
         // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
         
         // #if TRANSPARENT_PASS
-        if(mat_diffuse.a != 1){
+        if(v_diffuse.a != 1){
             // ---transparent pass---
             
-            float ai = mat_diffuse.a; // no alpha map, so all fragments have same alpha
+            float ai = v_diffuse.a; // no alpha map, so all fragments have same alpha
             float zi = v_eyePosition.z; // relative to the camera
             
             

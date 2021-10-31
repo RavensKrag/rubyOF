@@ -468,6 +468,18 @@ class Core
     
   end
   
+  # position data in transform texture has been updated
+  # may effect one object, or many
+  def update_material(message)
+    p message
+    @environment.load_textures(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path']
+    )
+  end
+  
+  
   def update_entity(message)
     case message['.type']
     when 'MESH'

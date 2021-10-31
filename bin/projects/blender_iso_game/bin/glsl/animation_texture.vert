@@ -4,7 +4,11 @@ OUT vec3 v_normal;
 OUT vec3 v_eyePosition;
 OUT vec3 v_worldPosition;
 // #if HAS_COLOR
-OUT vec4 v_color;
+// OUT vec4 v_color;
+OUT vec4 v_ambient;
+OUT vec4 v_diffuse;
+OUT vec4 v_specular;
+OUT vec4 v_emissive;
 // #endif
 
 IN vec4 position;
@@ -79,12 +83,20 @@ void main (void){
     // it is not intended to be read as data.
     // Thus, the shader must +1 to the index.
     
+    // id block - what mesh should we draw?
     vec2 texCoord0 = vec2(0, gl_InstanceID+1) + offset;
+    
+    // transform block - mat4x4 for transform
     vec2 texCoord1 = vec2(1, gl_InstanceID+1) + offset;
     vec2 texCoord2 = vec2(2, gl_InstanceID+1) + offset;
     vec2 texCoord3 = vec2(3, gl_InstanceID+1) + offset;
     vec2 texCoord4 = vec2(4, gl_InstanceID+1) + offset;
+    
+    // material property block (ambient, diffuse, specular, emmisive)
     vec2 texCoord5 = vec2(5, gl_InstanceID+1) + offset;
+    vec2 texCoord6 = vec2(6, gl_InstanceID+1) + offset;
+    vec2 texCoord7 = vec2(7, gl_InstanceID+1) + offset;
+    vec2 texCoord8 = vec2(8, gl_InstanceID+1) + offset;
     
     
     // 
@@ -164,7 +176,10 @@ void main (void){
     
     // NOTE: may have to transform normals because of rotation? unclear
     
-    v_color = TEXTURE(object_transform_tex, texCoord5);
+    v_ambient  = TEXTURE(object_transform_tex, texCoord5);
+    v_diffuse  = TEXTURE(object_transform_tex, texCoord6);
+    v_specular = TEXTURE(object_transform_tex, texCoord7);
+    v_emissive = TEXTURE(object_transform_tex, texCoord8);
     
     
     
