@@ -146,6 +146,15 @@ class ImageWrapper():
             self.image.pixels[offset+i] = pixel_data[i]
             
         # print([px for px in self.image.pixels])
+    
+    def write_pixel(self, row,col, pixel_data):
+        px_per_scanline = self.width*self.channels_per_pixel
+        
+        offset = (row*px_per_scanline +
+                  col*self.channels_per_pixel)
+        
+        for i in range(self.channels_per_pixel):
+            self.image.pixels[offset+i] = pixel_data[i]
         
     # def __del__(self):
         # bpy.data.images.remove(img)

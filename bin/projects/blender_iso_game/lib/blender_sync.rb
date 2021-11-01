@@ -398,6 +398,12 @@ class BlenderSync
       # position and normal data for one mesh has been updated
       @core.update_geometry(message)
     
+    when 'material_update'
+      # position data in transform texture has been updated
+      # may effect one object, or many
+      @core.update_material(message)
+    
+    
     else
       
       
