@@ -614,6 +614,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
         task_count = 0
         
+        context = yield( 0.0 )
         
         # 
         # export all unique meshes
@@ -631,17 +632,11 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         # export all objects
         # (transforms and associated mesh IDs)
         # 
-        object_map = {}
-        
-        mytool.status_message = "export object transforms"
         for i, obj in enumerate(all_mesh_objects):
             # use mapping: obj -> mesh datablock -> mesh ID
             export_transform_data(mytool, obj,
                                   scanline=i+1,
                                   mesh_id=meshDatablock_to_meshID[obj.data])
-            
-            # create map: obj name -> transform ID
-            object_map[obj.name] = i+1
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -665,6 +660,10 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         mytool.status_message = "show object map"
         
+        # create map: obj name -> transform ID
+        object_map = { obj.name : i+1
+                       for i, obj in enumerate(all_mesh_objects) }
+        
         # send mapping to RubyOF
         data = {
             'type': 'object_to_id_map',
@@ -673,7 +672,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         to_ruby.write(json.dumps(data))
         
-        
+        context = yield( task_count / total_tasks )
         
         
         # 
@@ -1558,6 +1557,29 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
+        # # 
+        # # update entity mappings
+        # # 
+        
+        # mytool = context.scene.my_tool
+        
+        # all_mesh_objects = [ obj
+        #                      for obj in mytool.collection_ptr.all_objects
+        #                      if obj.type == 'MESH' ]
+        
+        # # create map: obj name -> transform ID
+        # object_map = { obj.name : i+1
+        #                for i, obj in enumerate(all_mesh_objects) }
+        
+        # # send mapping to RubyOF
+        # data = {
+        #     'type': 'object_to_id_map',
+        #     'value': object_map,
+        # }
+        
+        # to_ruby.write(json.dumps(data))
+        
+        
         # 
         # create meshDatablock_to_meshID mapping if it does not already exist
         # 
@@ -1779,10 +1801,47 @@ class RubyOF(bpy.types.RenderEngine):
     # --------------------------------
 
 
+def register_depgraph_handlers():
+    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+    if not on_depsgraph_update in depsgraph_events:
+        depsgraph_events.append(on_depsgraph_update)
+
+def unregister_depgraph_handlers():
+    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+    if on_depsgraph_update in depsgraph_events:
+        depsgraph_events.remove(on_depsgraph_update)
 
 
 
-
+def on_depsgraph_update(scene, depsgraph):
+    # print(args)
+    
+    # 
+    # update entity mappings
+    # 
+    
+    mytool = scene.my_tool
+    
+    all_mesh_objects = [ obj
+                         for obj in mytool.collection_ptr.all_objects
+                         if obj.type == 'MESH' ]
+    
+    # create map: obj name -> transform ID
+    object_map = { obj.name : i+1
+                   for i, obj in enumerate(all_mesh_objects) }
+    
+    # send mapping to RubyOF
+    data = {
+        'type': 'object_to_id_map',
+        'value': object_map,
+    }
+    
+    to_ruby.write(json.dumps(data))
+    
+    
+    
 
 
 
@@ -2450,9 +2509,12 @@ def register():
     
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
+    register_depgraph_handlers()
 
 
 def unregister():
+    unregister_depgraph_handlers()
+    
     bpy.utils.unregister_class(RubyOF)
     
     for panel in get_panels():
@@ -2464,8 +2526,8 @@ def unregister():
         
     
     del bpy.types.Scene.my_tool
-
-
+    
+    
 
 def main():
     print("hello world")
