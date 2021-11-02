@@ -760,6 +760,26 @@ class AnimTexManager ():
         t1 = time.time()
         
         print("time elapsed:", t1-t0, "sec")
+    
+    
+    # run this while mesh is being edited
+    def update_mesh_datablock(self, active_object):
+        # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+        
+        mesh = active_object.data
+        self.export_vertex_data(mesh, meshDatablock_to_meshID[mesh])
+        
+        # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+        data = {
+            'type': 'geometry_update',
+            'scanline': meshDatablock_to_meshID[mesh],
+            'position_tex_path' : self.position_tex.filepath,
+            'normal_tex_path'   : self.normal_tex.filepath,
+            'transform_tex_path': self.transform_tex.filepath,
+        }
+        
+        to_ruby.write(json.dumps(data))
+
 
 
 
@@ -934,29 +954,6 @@ def update_mesh_object(context, mesh_obj):
     #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
 
 
-
-
-
-# run this while mesh is being edited
-def update_mesh_datablock(context, active_object):
-    mytool = context.scene.my_tool
-    tex_manager = anim_texture_manager_singleton(context)
-    
-    # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-    
-    mesh = active_object.data
-    tex_manager.export_vertex_data(mesh, meshDatablock_to_meshID[mesh])
-    
-    # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-    data = {
-        'type': 'geometry_update',
-        'scanline': meshDatablock_to_meshID[mesh],
-        'position_tex_path' : tex_manager.position_tex.filepath,
-        'normal_tex_path'   : tex_manager.normal_tex.filepath,
-        'transform_tex_path': tex_manager.transform_tex.filepath,
-    }
-    
-    to_ruby.write(json.dumps(data))
 
 
 
@@ -1782,7 +1779,8 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            update_mesh_datablock(context, active_object)
+            tex_manager = anim_texture_manager_singleton(context)
+            tex_manager.update_mesh_datablock(active_object)
             
             
             # send material data if any material was changed
