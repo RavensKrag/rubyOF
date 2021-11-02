@@ -779,6 +779,81 @@ class AnimTexManager ():
         }
         
         to_ruby.write(json.dumps(data))
+    
+    
+    
+    
+    # TODO: consider removing 'context' from this function, somehow
+    
+    # repack for all entities that use this material
+    # (like denormalising two database tables)
+    # transform with color info          material color info
+    def update_material(self, context, updated_material):
+        print("updating material...")
+        
+        mytool = context.scene.my_tool
+        
+        # don't need this (not writing to the variable)
+        # but it helps to remember the scope of globals
+        global meshDatablock_to_meshID
+        
+        
+        all_mesh_objects = [ obj
+                             for obj in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        
+        tuples = [ (obj, obj.material_slots[0].material, i)
+                   for i, obj in enumerate(all_mesh_objects)
+                   if len(obj.material_slots) > 0 ]
+        
+        
+        # need to update the pixels in the transform texture
+        # that encode the color, but want to keep the other pixels the same
+        
+        # really need to update the API to remove the "scanline" notion before I can implement this correctly.
+        
+        # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
+        
+        texture = self.transform_tex
+        
+        i = 0
+        for obj, bound_material, i in tuples:
+            # print(bound_material, updated_material)
+            # print(bound_material.name, updated_material.name)
+            if bound_material.name == updated_material.name:
+                print("mesh index:",i)
+                row = i+1
+                # i = meshDatablock_to_meshID[obj.data]
+                # ^ oops
+                # this is an index in the position / normal textures. I need a position in the transform texture
+                col = 5
+                
+                mat = updated_material.rb_mat
+                
+                texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
+                
+                diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
+                texture.write_pixel(row,col+1, diffuse_with_alpha)
+                
+                texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
+                texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
+        
+        texture.save()
+        
+        data = {
+            'type': 'material_update',
+            'position_tex_path' : self.position_tex.filepath,
+            'normal_tex_path'   : self.normal_tex.filepath,
+            'transform_tex_path': self.transform_tex.filepath,
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+
+
+
+
 
 
 
@@ -952,79 +1027,6 @@ def update_mesh_object(context, mesh_obj):
     #     export_transform_data(mytool, mesh_obj,
     #                           scanline=i+1,
     #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
-
-
-
-
-
-# repack for all entities that use this material
-# (like denormalising two database tables)
-# transform with color info          material color info
-def update_material(context, updated_material):
-    print("updating material...")
-    
-    mytool = context.scene.my_tool
-    tex_manager = anim_texture_manager_singleton(context)
-    
-    # don't need this (not writing to the variable)
-    # but it helps to remember the scope of globals
-    global meshDatablock_to_meshID
-    
-    
-    all_mesh_objects = [ obj
-                         for obj in mytool.collection_ptr.all_objects
-                         if obj.type == 'MESH' ]
-    
-    
-    tuples = [ (obj, obj.material_slots[0].material, i)
-               for i, obj in enumerate(all_mesh_objects)
-               if len(obj.material_slots) > 0 ]
-    
-    
-    # need to update the pixels in the transform texture
-    # that encode the color, but want to keep the other pixels the same
-    
-    # really need to update the API to remove the "scanline" notion before I can implement this correctly.
-    
-    # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
-    
-    texture = tex_manager.transform_tex
-    
-    i = 0
-    for obj, bound_material, i in tuples:
-        # print(bound_material, updated_material)
-        # print(bound_material.name, updated_material.name)
-        if bound_material.name == updated_material.name:
-            print("mesh index:",i)
-            row = i+1
-            # i = meshDatablock_to_meshID[obj.data]
-            # ^ oops
-            # this is an index in the position / normal textures. I need a position in the transform texture
-            col = 5
-            
-            mat = updated_material.rb_mat
-            
-            texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-            
-            diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-            texture.write_pixel(row,col+1, diffuse_with_alpha)
-            
-            texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-            texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
-    
-    texture.save()
-    
-    data = {
-        'type': 'material_update',
-        'position_tex_path' : tex_manager.position_tex.filepath,
-        'normal_tex_path'   : tex_manager.normal_tex.filepath,
-        'transform_tex_path': tex_manager.transform_tex.filepath,
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
-
-
 
 
 
@@ -1686,6 +1688,8 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
+        tex_manager = anim_texture_manager_singleton(context)
+        
         # # 
         # # update entity mappings
         # # 
@@ -1779,7 +1783,6 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            tex_manager = anim_texture_manager_singleton(context)
             tex_manager.update_mesh_datablock(active_object)
             
             
@@ -1838,7 +1841,7 @@ class RubyOF(bpy.types.RenderEngine):
                     # transform with color info          material color info
                     
                     mat = obj
-                    update_material(context, mat)
+                    tex_manager.update_material(context, mat)
                     
                     message_queue.append(pack_material(mat))
             
