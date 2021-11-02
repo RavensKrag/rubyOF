@@ -614,8 +614,6 @@ class AnimTexManager ():
         t0 = time.time()
         
         
-        tex_manager = anim_texture_manager_singleton(context)
-        
         mytool = context.scene.my_tool
         
         
@@ -700,7 +698,7 @@ class AnimTexManager ():
         
         mytool.status_message = "export unique meshes"
         for i, mesh in enumerate(unqiue_meshes):
-            tex_manager.export_vertex_data(mesh, i+1)
+            self.export_vertex_data(mesh, i+1)
                 # NOTE: This index 'i+1' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
             
             task_count += 1
@@ -712,7 +710,7 @@ class AnimTexManager ():
         # 
         for i, obj in enumerate(all_mesh_objects):
             # use mapping: obj -> mesh datablock -> mesh ID
-            tex_manager.export_transform_data(
+            self.export_transform_data(
                 obj,
                 scanline=i+1,
                 mesh_id=meshDatablock_to_meshID[obj.data]
@@ -749,9 +747,9 @@ class AnimTexManager ():
         
         data = {
             'type': 'anim_texture_update',
-            'position_tex_path' : tex_manager.position_tex.filepath,
-            'normal_tex_path'   : tex_manager.normal_tex.filepath,
-            'transform_tex_path': tex_manager.transform_tex.filepath,
+            'position_tex_path' : self.position_tex.filepath,
+            'normal_tex_path'   : self.normal_tex.filepath,
+            'transform_tex_path': self.transform_tex.filepath,
         }
         
         to_ruby.write(json.dumps(data))
