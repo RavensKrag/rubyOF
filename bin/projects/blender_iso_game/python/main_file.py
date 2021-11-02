@@ -47,6 +47,22 @@ import math
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # need extra help to reload classes:
 # https://developer.blender.org/T66924
 # by gecko man (geckoman), Jul 22 2019, 9:02 PM
@@ -68,7 +84,6 @@ ImageWrapper = reload_class(ImageWrapper)
 import time
 from progress_bar import ( OT_ProgressBarOperator, coroutine )
 OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
-
 
 
 
@@ -797,16 +812,6 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
 
 
 
-
-
-
-
-
-
-
-
-
-
 def typestring(obj):
     klass = type(obj)
     return f'{klass.__module__}.{klass.__qualname__}'
@@ -820,15 +825,6 @@ def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
         return sensor_y;
     
     return sensor_x;
-
-
-
-
-
-
-
-    
-    
     
 def pack_light(obj):
     data = {
@@ -879,160 +875,6 @@ def pack_mesh(obj):
     }
     
     return obj_data
-
-def pack_mesh_data(mesh, shm_dir):
-    mesh.calc_loop_triangles()
-    # ^ need to call this to populate the mesh.loop_triangles() cache
-    
-    mesh.calc_normals_split()
-    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-    # ^ normals stored on the tri / face
-    
-    
-    # 
-    # vert positions
-    # 
-    
-    start_time = time.time()
-    
-    # number of actual verts likely to be less than maximum
-    # so just measure the list
-    num_verts = len(mesh.vertices)*3 # TODO: rename this variable
-    vert_data = [None] * num_verts
-    
-    
-    for i in range(len(mesh.vertices)):
-        vert = mesh.vertices[i]
-        
-        vert_data[i*3+0] = vert.co[0]
-        vert_data[i*3+1] = vert.co[1]
-        vert_data[i*3+2] = vert.co[2]
-    
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("vertex export: ", dt, " msec" )
-    
-    
-    # 
-    # index buffer
-    # 
-    
-    start_time = time.time()
-    
-    
-    index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("index export: ", dt, " msec" )
-    
-    
-    # 
-    # normal vectors
-    # 
-    
-    start_time = time.time()
-    
-    num_tris = len(mesh.loop_triangles)
-    
-    num_normals = (num_tris * 3 * 3)
-    normal_data = [None] * num_normals
-    
-    # iter3 = range(3)
-    
-    for i in range(num_tris):
-        tri = mesh.loop_triangles[i]
-        for j in range(3):
-            normal = tri.split_normals[j]
-            for k in range(3):
-                idx = 9*i+3*j+k
-                # print(idx)
-                # print(i, ' ', j, ' ', k)
-                normal_data[idx] = normal[k]
-    
-    
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("normal export: ", dt, " msec" )
-    
-    
-    # 
-    # pack Base64 normal vector data
-    # 
-    
-    start_time = time.time()
-    
-    # array -> binary blob
-    binary_data = struct.pack('%df' % num_normals, *normal_data)
-    
-    # normal binary -> base 64 encoded binary -> ascii
-    binary_string = base64.b64encode(binary_data).decode('ascii')
-    
-    
-    sha = hashlib.sha1(binary_data).hexdigest()
-    tmp_normal_file_path = os.path.join(shm_dir, "%s.txt" % sha)
-    
-    
-    # tmp_normal_file_path = os.path.join(shm_dir, "normals.txt")
-    
-    if not os.path.exists(tmp_normal_file_path):
-        with open(tmp_normal_file_path, 'w') as f:
-            f.write(binary_string)
-        
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("shm file io (normals): ", dt, " msec" )
-    
-    
-    # 
-    # pack Base64 vertex data
-    # 
-    
-    start_time = time.time()
-    
-    # array -> binary blob
-    binary_data = struct.pack('%df' % num_verts, *vert_data)
-    
-    # normal binary -> base 64 encoded binary -> ascii
-    binary_string = base64.b64encode(binary_data).decode('ascii')
-    
-    
-    sha = hashlib.sha1(binary_data).hexdigest()
-    tmp_vert_file_path = os.path.join(shm_dir, "%s.txt" % sha)
-    
-    
-    # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
-    
-    if not os.path.exists(tmp_vert_file_path):
-        with open(tmp_vert_file_path, 'w') as f:
-            f.write(binary_string)
-        
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("shm file io (verts): ", dt, " msec" )
-    
-    
-    # 
-    # Pack final mesh datablock data for FIFO transmission
-    # 
-    
-    data = {
-        'type': typestring(mesh),
-        'name': mesh.name, # name of the data, not the object
-        'verts': [
-            'float', num_verts, tmp_vert_file_path
-        ],
-        'normals': [
-            'float', num_normals, tmp_normal_file_path
-        ],
-        'tris' : index_buffer
-    }
-    
-    return data
-
-
 
 def pack_material(mat):
     data = {
@@ -1245,6 +1087,114 @@ def calc_viewport_fov(rv3d):
 
 
 
+
+
+
+
+
+
+
+
+
+def register_depgraph_handlers():
+    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+    if not on_depsgraph_update in depsgraph_events:
+        depsgraph_events.append(on_depsgraph_update)
+
+def unregister_depgraph_handlers():
+    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+    if on_depsgraph_update in depsgraph_events:
+        depsgraph_events.remove(on_depsgraph_update)
+
+
+
+def on_depsgraph_update(scene, depsgraph):
+    # print(args)
+    
+    # 
+    # update entity mappings
+    # 
+    
+    mytool = scene.my_tool
+    
+    all_mesh_objects = [ obj
+                         for obj in mytool.collection_ptr.all_objects
+                         if obj.type == 'MESH' ]
+    
+    # create map: obj name -> transform ID
+    object_map = { obj.name : i+1
+                   for i, obj in enumerate(all_mesh_objects) }
+    
+    # send mapping to RubyOF
+    data = {
+        'type': 'object_to_id_map',
+        'value': object_map,
+    }
+    
+    to_ruby.write(json.dumps(data))
+    
+    
+    # # Loop over all object instances in the scene.
+    # for update in depsgraph.updates:
+    #     obj = update.id
+        
+    #     if isinstance(obj, bpy.types.Object):
+    #         if obj.type == 'LIGHT':
+    #             message_queue.append(pack_light(obj))
+                
+    #         elif obj.type == 'MESH':
+
+
+
+# bring in some code from mesh edit to update meshes
+# maybe?
+# but also need to detect:
+    # new mesh object created
+    # new mesh datablock created
+def update_mesh_object(context, mesh_obj):
+    pass
+    
+    # mytool = context.scene.my_tool
+    # if "new object created":
+    #     # add a new row to the 
+        
+    #     export_transform_data(mytool, mesh_obj,
+    #                           scanline=i+1,
+    #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
+    
+
+
+
+# run this while mesh is being updated
+def update_mesh_datablock(context, active_object):
+    mytool = context.scene.my_tool
+    
+    # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+    
+    mesh = active_object.data
+    export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
+    
+    # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+    data = {
+        'type': 'geometry_update',
+        'scanline': meshDatablock_to_meshID[mesh],
+        'normal_tex_path'  : os.path.join(
+                                bpy.path.abspath(mytool.output_dir),
+                                mytool.name+".normal"+'.exr'),
+        'position_tex_path': os.path.join(
+                                bpy.path.abspath(mytool.output_dir),
+                                mytool.name+".position"+'.exr'),
+        'transform_tex_path': os.path.join(
+                                bpy.path.abspath(mytool.output_dir),
+                                mytool.name+".transform"+'.exr')
+    }
+    
+    to_ruby.write(json.dumps(data))
+    
+    
+    # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
 
 
 
@@ -1607,7 +1557,6 @@ class RubyOF(bpy.types.RenderEngine):
         # the datablock messages must be sent before entity messages
         # otherwise there will be issues with dependencies
         message_queue   = [] # list of dict
-        mesh_datablocks = [] # list of datablock objects (various types)
         
         active_object = context.active_object
         
@@ -1627,7 +1576,6 @@ class RubyOF(bpy.types.RenderEngine):
                     pass
                     # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
                     
-                    # mesh_datablocks.append(obj.data)
                     # message_queue.append(pack_mesh(obj))
                     
                     # ^ Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
@@ -1652,32 +1600,7 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            mytool = context.scene.my_tool
-            
-            # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-            
-            mesh = active_object.data
-            export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
-            
-            # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-            data = {
-                'type': 'geometry_update',
-                'scanline': meshDatablock_to_meshID[mesh],
-                'normal_tex_path'  : os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".normal"+'.exr'),
-                'position_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".position"+'.exr'),
-                'transform_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".transform"+'.exr')
-            }
-            
-            to_ruby.write(json.dumps(data))
-            
-            
-            # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
+            update_mesh_datablock(context, active_object)
             
             
             # send material data if any material was changed
@@ -1712,7 +1635,15 @@ class RubyOF(bpy.types.RenderEngine):
                         
                         # if update.is_updated_geometry:
                         #     mesh_datablocks.append(obj.data)
+                        
+                        # send message to update mesh object transform, etc
                         message_queue.append(pack_mesh(obj))
+                        
+                        # update mesh datablock
+                        update_mesh_object(context, obj)
+                        
+                        
+                        
                     
                     # if update.is_updated_transform:
                     #     obj_data['transform'] = pack_transform(obj)
@@ -1739,10 +1670,8 @@ class RubyOF(bpy.types.RenderEngine):
         # If many objects use one mesh datablock, 
         # should only send that datablock once.
         # That is why we need to group them all up before sending
-        unique_datablocks = list(set(mesh_datablocks))
-        for datablock in unique_datablocks:
-            msg = pack_mesh_data(datablock, self.shm_dir)
-            to_ruby.write(json.dumps(msg))
+        
+        # (DELETED OLD CODE FOR MESH EXPORT)
         
         # send out all the regular messages after the datablocks
         # to prevent dependency issues
@@ -1799,51 +1728,6 @@ class RubyOF(bpy.types.RenderEngine):
         # note: in blender, one object can have many material slots
     
     # --------------------------------
-
-
-def register_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
-    
-    if not on_depsgraph_update in depsgraph_events:
-        depsgraph_events.append(on_depsgraph_update)
-
-def unregister_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
-    
-    if on_depsgraph_update in depsgraph_events:
-        depsgraph_events.remove(on_depsgraph_update)
-
-
-
-def on_depsgraph_update(scene, depsgraph):
-    # print(args)
-    
-    # 
-    # update entity mappings
-    # 
-    
-    mytool = scene.my_tool
-    
-    all_mesh_objects = [ obj
-                         for obj in mytool.collection_ptr.all_objects
-                         if obj.type == 'MESH' ]
-    
-    # create map: obj name -> transform ID
-    object_map = { obj.name : i+1
-                   for i, obj in enumerate(all_mesh_objects) }
-    
-    # send mapping to RubyOF
-    data = {
-        'type': 'object_to_id_map',
-        'value': object_map,
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
-    
-    
-
-
 
 
 
@@ -2265,43 +2149,6 @@ class MaterialButtonsPanel:
         return mat and (context.engine in cls.COMPAT_ENGINES) and not mat.grease_pencil
 
 
-# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
-#     bl_label = "Preview"
-#     bl_options = {'DEFAULT_CLOSED'}
-#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
-
-#     def draw(self, context):
-#         self.layout.template_preview(context.material)
-
-
-# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
-#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
-#     _context_path = "material"
-#     _property_type = bpy.types.Material
-
-# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
-#     bl_label = "Viewport Display"
-#     bl_context = "material"
-#     bl_options = {'DEFAULT_CLOSED'}
-#     bl_order = 10
-
-#     @classmethod
-#     def poll(cls, context):
-#         mat = context.material
-#         return mat and not mat.grease_pencil
-
-#     def draw(self, context):
-#         layout = self.layout
-#         layout.use_property_split = True
-
-#         mat = context.material
-
-#         col = layout.column()
-#         col.prop(mat, "diffuse_color", text="Color")
-#         col.prop(mat, "metallic")
-#         col.prop(mat, "roughness")
-
-
 class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel):
     bl_label = ""
     bl_context = "material"
@@ -2383,6 +2230,43 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
             col.prop(mat.rb_mat, "alpha")
             col.prop(mat.rb_mat, "shininess")
 
+
+
+# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+#     bl_label = "Preview"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+#     def draw(self, context):
+#         self.layout.template_preview(context.material)
+
+
+# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
+#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
+#     _context_path = "material"
+#     _property_type = bpy.types.Material
+
+# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
+#     bl_label = "Viewport Display"
+#     bl_context = "material"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     bl_order = 10
+
+#     @classmethod
+#     def poll(cls, context):
+#         mat = context.material
+#         return mat and not mat.grease_pencil
+
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.use_property_split = True
+
+#         mat = context.material
+
+#         col = layout.column()
+#         col.prop(mat, "diffuse_color", text="Color")
+#         col.prop(mat, "metallic")
+#         col.prop(mat, "roughness")
 
 
 
