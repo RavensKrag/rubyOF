@@ -155,6 +155,10 @@ class ImageWrapper():
         
         for i in range(self.channels_per_pixel):
             self.image.pixels[offset+i] = pixel_data[i]
+    
+    @property
+    def filepath(self):
+        return self.image.filepath_raw
         
     # def __del__(self):
         # bpy.data.images.remove(img)

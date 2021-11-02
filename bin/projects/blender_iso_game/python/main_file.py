@@ -325,11 +325,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
 
 
 
-# global anim_tex_manager
-#         if anim_tex_manager == None:
-#             anim_tex_manager = Foo()
-        
-
 
 # ------------------------------------------------------------------------
 #   Helpers needed to manipulate OpenEXR data
@@ -343,21 +338,228 @@ ImageWrapper = reload_class(ImageWrapper)
 
 from coroutine_decorator import *
 
-class Foo ():
-    def __init__(self):
-        pass
+class AnimTexManager ():
+    def __init__(self, context):
+        self.mytool = context.scene.my_tool
+        
+        
+        self.position_tex = ImageWrapper(
+            get_cached_image(self.mytool, "position_tex",
+                             self.mytool.name+".position",
+                             size=calc_geometry_tex_size(self.mytool),
+                             channels_per_pixel=4),
+            self.mytool.output_dir
+        )
+        
+        self.normal_tex = ImageWrapper(
+            get_cached_image(self.mytool, "normal_tex",
+                             self.mytool.name+".normal",
+                             size=calc_geometry_tex_size(self.mytool),
+                             channels_per_pixel=4),
+            self.mytool.output_dir
+        )
+        
+        self.transform_tex = ImageWrapper(
+            get_cached_image(self.mytool, "transform_tex",
+                             self.mytool.name+".transform",
+                             size=calc_transform_tex_size(self.mytool),
+                             channels_per_pixel=4),
+            self.mytool.output_dir
+        )
+        
+        self.max_tris = self.mytool.max_tris
+        
+        
     
-    def __del__(self):
-        pass
+    # def __del__(self):
+    #     pass
     
     
-    
-    # TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
-    
-    
-    def update_textures(self):
-        pass
+    # handles triangulation
+    def export_vertex_data(self, mesh, output_frame):
+        mesh.calc_loop_triangles()
+        # ^ need to call this to populate the mesh.loop_triangles() cache
+        
+        mesh.calc_normals_split()
+        # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+        # ^ normals stored on the tri / face
+        
+        
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        
+        # NOTE: all textures in the same animation set have the same dimensions
+        
+        # output_path = bpy.path.abspath("//")
+        
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)
+        
+        # data for just this object
+        pixel_data = [1.0, 0.0, 0.0, 1.0] * self.position_tex.width
+        
+        self.position_tex.write_scanline(pixel_data, 0)
+        
+        
+        
+        # 
+        # allocate pixel data buffers for mesh
+        # 
+        
+        scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
+        scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+        # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
+        
+        
+        # 
+        # pack each and every triangle
+        # 
+        
+        # number of actual verts likely to be less than maximum
+        # so just measure the list
+        num_tris  = len(mesh.loop_triangles)
+        num_verts = len(mesh.loop_triangles)*3
+        print("num tris:", num_tris)
+        print("num verts:", num_verts)
 
+        if num_tris > self.max_tris:
+            raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
+        
+        
+        verts = mesh.vertices
+        for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+            normals = tri.split_normals
+            for j in range(3): # verts per triangle
+                vert_index = tri.vertices[j]
+                vert = verts[vert_index]
+                
+                scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
+                                channels=self.position_tex.channels_per_pixel)
+                
+                
+                normal = normals[j]
+                
+                scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
+                                channels=self.normal_tex.channels_per_pixel)
+        
+        self.position_tex.write_scanline(scanline_position, output_frame)
+        self.normal_tex.write_scanline(scanline_normals, output_frame)
+        
+        
+        self.position_tex.save()
+        self.normal_tex.save()
+    
+    
+    def export_transform_data(self, target_object, scanline=1, mesh_id=1):
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        
+        # TODO: consider using black and white for these textures, if that saves on pixels / somehow makes calculation easier (need to consider entire pipeline, so this must be delayed for a while)
+        
+        # output_path = bpy.path.abspath("//")
+        
+        
+        
+        
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)
+        
+        # data for just this object
+        pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
+        
+        self.transform_tex.write_scanline(pixel_data, 0)
+        
+        
+        # 
+        # extract transforms from object
+        # 
+        
+        # this_mat = target_object.matrix_local
+        this_mat = target_object.matrix_world
+        # print(this_mat)
+        # print(type(this_mat))
+        
+        identity_matrix = this_mat.Identity(4)
+        
+        # out_mat = identity_matrix
+        out_mat = this_mat
+        
+        
+        # 
+        # write transforms to image
+        # 
+        
+        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        
+        
+        id = mesh_id # TODO: update this to match mesh index
+        
+        scanline_set_px(scanline_transform, 0, [id, id, id, 1.0],
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        for i in range(1, 5): # range is exclusive of high end: [a, b)
+            scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
+                            channels=self.transform_tex.channels_per_pixel)
+        
+        
+        
+        # 
+        # set color (if no material set, default to white)
+        # 
+        
+        
+        mat_slots = target_object.material_slots
+        
+        # color = c1 = c2 = c3 = c4 = alpha = None
+        
+        if len(mat_slots) > 0:
+            mat = mat_slots[0].material.rb_mat
+            c1 = mat.ambient
+            c2 = mat.diffuse
+            c3 = mat.specular
+            c4 = mat.emissive
+            alpha = mat.alpha
+        else:
+            color = Color((1.0, 1.0, 1.0)) # (0,0,0)
+            c1 = color
+            c2 = color
+            c3 = color
+            c4 = color
+            alpha = 1
+            # default white for unspecified color
+            # (ideally would copy this from the default in materials)
+        
+        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1) + [alpha],
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        self.transform_tex.write_scanline(scanline_transform, scanline)
+        
+        
+        self.transform_tex.save()
+    
+    
+    
 
 
 # scanline : array of pixel data (not nested array, just a flat array)
@@ -368,209 +570,6 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
 
 
 
-
-
-def export_vertex_data(mytool, mesh, output_frame):
-    mesh.calc_loop_triangles()
-    # ^ need to call this to populate the mesh.loop_triangles() cache
-    
-    mesh.calc_normals_split()
-    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-    # ^ normals stored on the tri / face
-    
-    
-    # TODO: update all code to use RGB (no alpha) to save some memory
-    # TODO: use half instead of float to save memory
-    
-    
-    # NOTE: all textures in the same animation set have the same dimensions
-    
-    # output_path = bpy.path.abspath("//")
-    
-    
-    pos_texture = ImageWrapper(
-        get_cached_image(mytool, "position_tex",
-                         mytool.name+".position",
-                         size=calc_geometry_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    norm_texture = ImageWrapper(
-        get_cached_image(mytool, "normal_tex",
-                         mytool.name+".normal",
-                         size=calc_geometry_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    # (bottom row of pixels will always be full red)
-    # This allows for the easy identification of one edge,
-    # like a "this side up" sign, but it also allows for
-    # the user to create frames completely free of any
-    # visible geometry. (useful with GPU instancing)
-    
-    # data for just this object
-    pixel_data = [1.0, 0.0, 0.0, 1.0] * pos_texture.width
-    
-    pos_texture.write_scanline(pixel_data, 0)
-    
-    
-    
-    # 
-    # allocate pixel data buffers for mesh
-    # 
-    
-    scanline_position = [0.2, 0.2, 0.2, 1.0] * pos_texture.width
-    scanline_normals  = [0.0, 0.0, 0.0, 1.0] * norm_texture.width
-    # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
-    
-    
-    # 
-    # pack each and every triangle
-    # 
-    
-    # number of actual verts likely to be less than maximum
-    # so just measure the list
-    num_tris  = len(mesh.loop_triangles)
-    num_verts = len(mesh.loop_triangles)*3
-    print("num tris:", num_tris)
-    print("num verts:", num_verts)
-
-    if num_tris > mytool.max_tris:
-        raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {mytool.max_tris} tris. Please increase the size of the animation texture.')
-    
-    
-    verts = mesh.vertices
-    for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
-        normals = tri.split_normals
-        for j in range(3): # verts per triangle
-            vert_index = tri.vertices[j]
-            vert = verts[vert_index]
-            
-            scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
-                            channels=pos_texture.channels_per_pixel)
-            
-            
-            normal = normals[j]
-            
-            scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
-                            channels=norm_texture.channels_per_pixel)
-    
-    pos_texture.write_scanline(scanline_position, output_frame)
-    norm_texture.write_scanline(scanline_normals, output_frame)
-    
-    
-    pos_texture.save()
-    norm_texture.save()
-
-
-def export_transform_data(mytool, target_object, scanline=1, mesh_id=1):
-    # TODO: update all code to use RGB (no alpha) to save some memory
-    # TODO: use half instead of float to save memory
-    
-    
-    # TODO: consider using black and white for these textures, if that saves on pixels / somehow makes calculation easier (need to consider entire pipeline, so this must be delayed for a while)
-    
-    # output_path = bpy.path.abspath("//")
-    
-    
-    
-    transform_tex = ImageWrapper(
-        get_cached_image(mytool, "transform_tex",
-                         mytool.name+".transform",
-                         size=calc_transform_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    # (bottom row of pixels will always be full red)
-    # This allows for the easy identification of one edge,
-    # like a "this side up" sign, but it also allows for
-    # the user to create frames completely free of any
-    # visible geometry. (useful with GPU instancing)
-    
-    # data for just this object
-    pixel_data = [1.0, 0.0, 1.0, 1.0] * transform_tex.width
-    
-    transform_tex.write_scanline(pixel_data, 0)
-    
-    
-    # 
-    # extract transforms from object
-    # 
-    
-    # this_mat = target_object.matrix_local
-    this_mat = target_object.matrix_world
-    # print(this_mat)
-    # print(type(this_mat))
-    
-    identity_matrix = this_mat.Identity(4)
-    
-    # out_mat = identity_matrix
-    out_mat = this_mat
-    
-    
-    # 
-    # write transforms to image
-    # 
-    
-    scanline_transform = [0.0, 0.0, 0.0, 0.0] * transform_tex.width
-    
-    
-    id = mesh_id # TODO: update this to match mesh index
-    
-    scanline_set_px(scanline_transform, 0, [id, id, id, 1.0],
-                    channels=transform_tex.channels_per_pixel)
-    
-    for i in range(1, 5): # range is exclusive of high end: [a, b)
-        scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
-                        channels=transform_tex.channels_per_pixel)
-    
-    
-    
-    # 
-    # set color (if no material set, default to white)
-    # 
-    
-    
-    mat_slots = target_object.material_slots
-    
-    # color = c1 = c2 = c3 = c4 = alpha = None
-    
-    if len(mat_slots) > 0:
-        mat = mat_slots[0].material.rb_mat
-        c1 = mat.ambient
-        c2 = mat.diffuse
-        c3 = mat.specular
-        c4 = mat.emissive
-        alpha = mat.alpha
-    else:
-        color = Color((1.0, 1.0, 1.0)) # (0,0,0)
-        c1 = color
-        c2 = color
-        c3 = color
-        c4 = color
-        alpha = 1
-        # default white for unspecified color
-        # (ideally would copy this from the default in materials)
-    
-    scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1) + [alpha],
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2),
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
-                    channels=transform_tex.channels_per_pixel)
-    
-    transform_tex.write_scanline(scanline_transform, scanline)
-    
-    
-    transform_tex.save()
 
 
 def calc_geometry_tex_size(mytool):
@@ -607,139 +606,6 @@ def calc_transform_tex_size(mytool):
     height_px = mytool.max_num_objects
     
     return [width_px, height_px]
-
-
-
-
-
-# bring in some code from mesh edit to update meshes
-# maybe?
-# but also need to detect:
-    # new mesh object created
-    # new mesh datablock created
-def update_mesh_object(context, mesh_obj):
-    pass
-    
-    # mytool = context.scene.my_tool
-    # if "new object created":
-    #     # add a new row to the 
-        
-    #     export_transform_data(mytool, mesh_obj,
-    #                           scanline=i+1,
-    #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
-
-
-
-# run this while mesh is being updated
-def update_mesh_datablock(context, active_object):
-    mytool = context.scene.my_tool
-    
-    # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-    
-    mesh = active_object.data
-    export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
-    
-    # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-    data = {
-        'type': 'geometry_update',
-        'scanline': meshDatablock_to_meshID[mesh],
-        'normal_tex_path'  : os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".normal"+'.exr'),
-        'position_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".position"+'.exr'),
-        'transform_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".transform"+'.exr')
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
-    
-    # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
-
-
-
-# repack for all entities that use this material
-# (like denormalising two database tables)
-# transform with color info          material color info
-def update_material(context, updated_material):
-    print("updating material...")
-    
-    mytool = context.scene.my_tool
-    
-    
-    # don't need this (not writing to the variable)
-    # but it helps to remember the scope of globals
-    global meshDatablock_to_meshID
-    
-    
-    all_mesh_objects = [ obj
-                         for obj in mytool.collection_ptr.all_objects
-                         if obj.type == 'MESH' ]
-    
-    
-    tuples = [ (obj, obj.material_slots[0].material, i)
-               for i, obj in enumerate(all_mesh_objects)
-               if len(obj.material_slots) > 0 ]
-    
-    
-    # need to update the pixels in the transform texture
-    # that encode the color, but want to keep the other pixels the same
-    
-    # really need to update the API to remove the "scanline" notion before I can implement this correctly.
-    
-    # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
-    
-    transform_tex = ImageWrapper(
-        get_cached_image(mytool, "transform_tex",
-                         mytool.name+".transform",
-                         size=calc_transform_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    
-    i = 0
-    for obj, bound_material, i in tuples:
-        # print(bound_material, updated_material)
-        # print(bound_material.name, updated_material.name)
-        if bound_material.name == updated_material.name:
-            print("mesh index:",i)
-            row = i+1
-            # i = meshDatablock_to_meshID[obj.data]
-            # ^ oops
-            # this is an index in the position / normal textures. I need a position in the transform texture
-            col = 5
-            
-            mat = updated_material.rb_mat
-            
-            transform_tex.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-            
-            diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-            transform_tex.write_pixel(row,col+1, diffuse_with_alpha)
-            
-            transform_tex.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-            transform_tex.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
-            
-    transform_tex.save()
-    
-    data = {
-        'type': 'material_update',
-        'normal_tex_path'  : os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".normal"+'.exr'),
-        'position_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".position"+'.exr'),
-        'transform_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".transform"+'.exr')
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
 
 
 
@@ -795,11 +661,22 @@ def on_depsgraph_update(scene, depsgraph):
     #         elif obj.type == 'MESH':
 
 
+
+# TODO: reset this "singleton" if the dimensions of the animation texture have changed
 anim_tex_manager = None
 
+def anim_texture_manager_singleton(context):
+    global anim_tex_manager
+    if anim_tex_manager == None:
+        anim_tex_manager = AnimTexManager(context)
+    
+    return anim_tex_manager
 
 
 
+
+
+# TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
 
 @coroutine
 def export_all_textures():
@@ -813,6 +690,8 @@ def export_all_textures():
     
     t0 = time.time()
     
+    
+    tex_manager = anim_texture_manager_singleton(context)
     
     mytool = context.scene.my_tool
     
@@ -898,7 +777,7 @@ def export_all_textures():
     
     mytool.status_message = "export unique meshes"
     for i, mesh in enumerate(unqiue_meshes):
-        export_vertex_data(mytool, mesh, i+1) # handles triangulation
+        tex_manager.export_vertex_data(mesh, i+1)
             # NOTE: This index 'i+1' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
         
         task_count += 1
@@ -910,9 +789,11 @@ def export_all_textures():
     # 
     for i, obj in enumerate(all_mesh_objects):
         # use mapping: obj -> mesh datablock -> mesh ID
-        export_transform_data(mytool, obj,
-                              scanline=i+1,
-                              mesh_id=meshDatablock_to_meshID[obj.data])
+        tex_manager.export_transform_data(
+            obj,
+            scanline=i+1,
+            mesh_id=meshDatablock_to_meshID[obj.data]
+        )
         
         task_count += 1
         context = yield(task_count / total_tasks)
@@ -945,15 +826,9 @@ def export_all_textures():
     
     data = {
         'type': 'anim_texture_update',
-        'normal_tex_path'  : os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".normal"+'.exr'),
-        'position_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".position"+'.exr'),
-        'transform_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".transform"+'.exr'),
+        'position_tex_path' : tex_manager.position_tex.filepath,
+        'normal_tex_path'   : tex_manager.normal_tex.filepath,
+        'transform_tex_path': tex_manager.transform_tex.filepath,
     }
     
     to_ruby.write(json.dumps(data))
@@ -965,6 +840,118 @@ def export_all_textures():
     
     print("time elapsed:", t1-t0, "sec")
 
+
+
+# bring in some code from mesh edit to update meshes
+# maybe?
+# but also need to detect:
+    # new mesh object created
+    # new mesh datablock created
+def update_mesh_object(context, mesh_obj):
+    pass
+    
+    # mytool = context.scene.my_tool
+    # if "new object created":
+    #     # add a new row to the 
+        
+    #     export_transform_data(mytool, mesh_obj,
+    #                           scanline=i+1,
+    #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
+
+
+
+# run this while mesh is being updated
+def update_mesh_datablock(context, active_object):
+    mytool = context.scene.my_tool
+    tex_manager = anim_texture_manager_singleton(context)
+    
+    # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
+    
+    mesh = active_object.data
+    tex_manager.export_vertex_data(mesh, meshDatablock_to_meshID[mesh])
+    
+    # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+    data = {
+        'type': 'geometry_update',
+        'scanline': meshDatablock_to_meshID[mesh],
+        'position_tex_path' : tex_manager.position_tex.filepath,
+        'normal_tex_path'   : tex_manager.normal_tex.filepath,
+        'transform_tex_path': tex_manager.transform_tex.filepath,
+    }
+    
+    to_ruby.write(json.dumps(data))
+    
+    
+    # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
+
+
+
+# repack for all entities that use this material
+# (like denormalising two database tables)
+# transform with color info          material color info
+def update_material(context, updated_material):
+    print("updating material...")
+    
+    mytool = context.scene.my_tool
+    tex_manager = anim_texture_manager_singleton(context)
+    
+    # don't need this (not writing to the variable)
+    # but it helps to remember the scope of globals
+    global meshDatablock_to_meshID
+    
+    
+    all_mesh_objects = [ obj
+                         for obj in mytool.collection_ptr.all_objects
+                         if obj.type == 'MESH' ]
+    
+    
+    tuples = [ (obj, obj.material_slots[0].material, i)
+               for i, obj in enumerate(all_mesh_objects)
+               if len(obj.material_slots) > 0 ]
+    
+    
+    # need to update the pixels in the transform texture
+    # that encode the color, but want to keep the other pixels the same
+    
+    # really need to update the API to remove the "scanline" notion before I can implement this correctly.
+    
+    # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
+    
+    texture = tex_manager.transform_tex
+    
+    i = 0
+    for obj, bound_material, i in tuples:
+        # print(bound_material, updated_material)
+        # print(bound_material.name, updated_material.name)
+        if bound_material.name == updated_material.name:
+            print("mesh index:",i)
+            row = i+1
+            # i = meshDatablock_to_meshID[obj.data]
+            # ^ oops
+            # this is an index in the position / normal textures. I need a position in the transform texture
+            col = 5
+            
+            mat = updated_material.rb_mat
+            
+            texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
+            
+            diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
+            texture.write_pixel(row,col+1, diffuse_with_alpha)
+            
+            texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
+            texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
+    
+    texture.save()
+    
+    data = {
+        'type': 'material_update',
+        'position_tex_path' : tex_manager.position_tex.filepath,
+        'normal_tex_path'   : tex_manager.normal_tex.filepath,
+        'transform_tex_path': tex_manager.transform_tex.filepath,
+    }
+    
+    to_ruby.write(json.dumps(data))
+    
 
 
 
