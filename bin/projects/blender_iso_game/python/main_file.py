@@ -340,37 +340,36 @@ from coroutine_decorator import *
 
 class AnimTexManager ():
     def __init__(self, context):
-        self.mytool = context.scene.my_tool
+        mytool = context.scene.my_tool
         
         
         self.position_tex = ImageWrapper(
-            get_cached_image(self.mytool, "position_tex",
-                             self.mytool.name+".position",
-                             size=calc_geometry_tex_size(self.mytool),
+            get_cached_image(mytool, "position_tex",
+                             mytool.name+".position",
+                             size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            self.mytool.output_dir
+            mytool.output_dir
         )
         
         self.normal_tex = ImageWrapper(
-            get_cached_image(self.mytool, "normal_tex",
-                             self.mytool.name+".normal",
-                             size=calc_geometry_tex_size(self.mytool),
+            get_cached_image(mytool, "normal_tex",
+                             mytool.name+".normal",
+                             size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            self.mytool.output_dir
+            mytool.output_dir
         )
         
         self.transform_tex = ImageWrapper(
-            get_cached_image(self.mytool, "transform_tex",
-                             self.mytool.name+".transform",
-                             size=calc_transform_tex_size(self.mytool),
+            get_cached_image(mytool, "transform_tex",
+                             mytool.name+".transform",
+                             size=self.__calc_transform_tex_size(mytool),
                              channels_per_pixel=4),
-            self.mytool.output_dir
+            mytool.output_dir
         )
         
-        self.max_tris = self.mytool.max_tris
+        self.max_tris = mytool.max_tris
         
         
-    
     # def __del__(self):
     #     pass
     
@@ -560,6 +559,42 @@ class AnimTexManager ():
     
     
     
+    
+    def __calc_geometry_tex_size(mytool):
+        width_px  = mytool.max_tris*3 # 3 verts per triangle
+        height_px = mytool.max_frames
+        
+        return [width_px, height_px]
+
+
+    # 
+    # This transform matrix data used by the GPU in the context of GPU instancing
+    # to draw various geometries that have been encoded onto textures.
+    # 
+    # This is not intended as an interchange format between Blender and RubyOF
+    # (it may be better to send individual position / rotation / scale instead)
+    # (so that way the individual components of the transform can be edited)
+    # 
+
+    def __calc_transform_tex_size(mytool):
+        # the transform texture must encode 3 things:
+        
+        # 1) a mat4 for the object's transform
+        channels_per_pixel = 4
+        mat4_size = 4*4;
+        pixels_per_transform = mat4_size // channels_per_pixel;
+        
+        # 2) what mesh to use when rendering this object
+        pixels_per_id_block = 1
+        
+        # 3) values needed by the material (like Unity's material property block)
+        pixels_for_material = 4
+        
+        width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
+        height_px = mytool.max_num_objects
+        
+        return [width_px, height_px]
+
 
 
 # scanline : array of pixel data (not nested array, just a flat array)
@@ -571,41 +606,6 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
 
 
 
-
-def calc_geometry_tex_size(mytool):
-    width_px  = mytool.max_tris*3 # 3 verts per triangle
-    height_px = mytool.max_frames
-    
-    return [width_px, height_px]
-
-
-# 
-# This transform matrix data used by the GPU in the context of GPU instancing
-# to draw various geometries that have been encoded onto textures.
-# 
-# This is not intended as an interchange format between Blender and RubyOF
-# (it may be better to send individual position / rotation / scale instead)
-# (so that way the individual components of the transform can be edited)
-# 
-
-def calc_transform_tex_size(mytool):
-    # the transform texture must encode 3 things:
-    
-    # 1) a mat4 for the object's transform
-    channels_per_pixel = 4
-    mat4_size = 4*4;
-    pixels_per_transform = mat4_size // channels_per_pixel;
-    
-    # 2) what mesh to use when rendering this object
-    pixels_per_id_block = 1
-    
-    # 3) values needed by the material (like Unity's material property block)
-    pixels_for_material = 4
-    
-    width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
-    height_px = mytool.max_num_objects
-    
-    return [width_px, height_px]
 
 
 
