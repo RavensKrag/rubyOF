@@ -568,14 +568,16 @@ class AnimTexManager ():
 
 
     # 
-    # This transform matrix data used by the GPU in the context of GPU instancing
-    # to draw various geometries that have been encoded onto textures.
+    # The transform texture mainly encodes transform matrix data
+    # on a per-entity basis, which is used by the GPU
+    # in the context of GPU instancing to draw various geometries
+    # that have been encoded onto textures.
     # 
-    # This is not intended as an interchange format between Blender and RubyOF
-    # (it may be better to send individual position / rotation / scale instead)
-    # (so that way the individual components of the transform can be edited)
+    # Useful as an interchange format between Blender and RubyOF.
+    # If you need the separate components of position / rotation / scale,
+    # consider using glm matrix decompose, or similar.
     # 
-
+    
     def __calc_transform_tex_size(mytool):
         # the transform texture must encode 3 things:
         
