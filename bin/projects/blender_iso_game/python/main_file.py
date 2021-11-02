@@ -560,7 +560,7 @@ class AnimTexManager ():
     
     
     
-    def __calc_geometry_tex_size(mytool):
+    def __calc_geometry_tex_size(self, mytool):
         width_px  = mytool.max_tris*3 # 3 verts per triangle
         height_px = mytool.max_frames
         
@@ -578,7 +578,7 @@ class AnimTexManager ():
     # consider using glm matrix decompose, or similar.
     # 
     
-    def __calc_transform_tex_size(mytool):
+    def __calc_transform_tex_size(self, mytool):
         # the transform texture must encode 3 things:
         
         # 1) a mat4 for the object's transform
@@ -664,15 +664,6 @@ def on_depsgraph_update(scene, depsgraph):
 
 
 
-# TODO: reset this "singleton" if the dimensions of the animation texture have changed
-anim_tex_manager = None
-
-def anim_texture_manager_singleton(context):
-    global anim_tex_manager
-    if anim_tex_manager == None:
-        anim_tex_manager = AnimTexManager(context)
-    
-    return anim_tex_manager
 
 
 
@@ -962,6 +953,15 @@ def update_material(context, updated_material):
 
 
 
+# TODO: reset this "singleton" if the dimensions of the animation texture have changed
+anim_tex_manager = None
+
+def anim_texture_manager_singleton(context):
+    global anim_tex_manager
+    if anim_tex_manager == None:
+        anim_tex_manager = AnimTexManager(context)
+    
+    return anim_tex_manager
 
 
 
