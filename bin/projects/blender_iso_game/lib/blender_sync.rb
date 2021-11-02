@@ -157,19 +157,6 @@ class BlenderSync
     # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
     
     
-    if @default_material.nil?
-      @default_material = BlenderMaterial.new('')
-      # ^ use default material settings
-      
-      # default material name needs to be '' (empty string)
-      # because that's the string that the Blender Python script
-      # sends when no material is bound.
-      # (I could change it something else, but this seems ok for now)
-      # 
-      # If the strings do not match, the default material gets rebound
-      # every frame, which can be very expensive / wasteful.
-      
-    end
     
     # p @depsgraph.instance_variable_get("@mesh_objects")
     # p @new_datablocks
@@ -228,75 +215,21 @@ class BlenderSync
       
     when 'material_mapping'
       
-      # Rebind materials for existing objects
-      # 
-      # All meshes are assigned the default material on init
-      # and then they are rebound here when the material mapping is recieved.
-      # Mappings should be sent every update for every mesh obj.
-      
-      # get object
-      obj_name = message['object_name']
-      obj = 
-        @depsgraph.fetch_mesh_object(obj_name) do
-          raise "Mesh entity '#{obj_name}' not found."
-        end
-      
-      # get material
-      mat_name = message['material_name']
-      
-      
-      # debug print
-      puts ">> entity name: #{obj.name}"
-      puts ">> current mat name: #{obj.material.name}"
-      puts ">> material name: #{mat_name.inspect}"
-      
-      # perform mapping
-      if mat_name != obj.material.name
-        material = find_material(mat_name)
-        # ^ get material first just in case there is an error
-        #   Thus, if the material does not exist
-        #   then the exception hits here and the depsgraph is preserved.
-        
-        # remove from existing batch
-        @depsgraph.delete obj.name, 'MESH'
-        
-        # bind new material
-        obj.material = material
-        
-        # assign to new batch
-        @depsgraph.add obj
-        
-      end
+      # NO LONGER NECESSARY
+      # materials are exported to OpenEXR transform texture in python
+      # the RubyOF renderer just needs to render the data provided.
       
     when 'bpy.types.Material'
       # (same pattern as mesh datablock manipulation)
       # retrieve existing material and edit its properties
       
-      puts "create material: #{message['name']}"
-      
-      mat =
-        @depsgraph.fetch_material_datablock(message['name']) do
-          BlenderMaterial.new(message['name'])
-        end
-      
-      # p message['color'][1..3] # => data is already an array of floats
-      # convert to premultiplied alpha format
-      alpha = message['alpha'][1]
-      color = RubyOF::FloatColor.rgb(message['color'][1..3].map{|i| i * alpha})
-      color.a = alpha
+      # NO LONGER NECESSARY
+      # python code now exports this data in a denormalized way,
+      # encoding it on the transform texture
       
       
-      puts color
       
-      
-      mat.diffuse_color  = color
-      
-      mat.ambient_color  = @default_material.ambient_color
-      mat.specular_color = @default_material.specular_color
-      mat.emissive_color = @default_material.emissive_color
-      
-      
-      @new_materials[message['name']] = mat
+      # TODO: create Ruby API to edit material settings of object in transform texture, so that code can dynamically edit these properties in game
       
     when 'bpy.types.Light'
       # # I don't want to have linked lights in RubyOF.
@@ -320,22 +253,14 @@ class BlenderSync
       # to later associate with mesh objects (transform)
       # which sets the foundation for instanced geometry
       
-      puts 'new mesh datablock'
       
-      
-      mesh_datablock =
-        @depsgraph.fetch_mesh_datablock(message['name']) do |name|
-          BlenderMeshData.new(name).tap do |mesh_datablock|
-            @new_datablocks[name] = mesh_datablock
-          end
-        end
-      
-      puts "load: #{message.inspect}"
-      mesh_datablock.load_data(message)
+      # NO LONGER NECESSARY
+      # replaced by the OpenEXR export
       
     when 'bpy_types.Object'
       case message['.type']
       when 'MESH'
+        # update object transform based on direct manipulation in blender
         @core.update_entity(message)
         
       when 'LIGHT'
@@ -410,28 +335,7 @@ class BlenderSync
     end
     
     
-    
-    
-    
-    # # process timestamps twice:
-    # # + calculate transmission time at the start of this function
-    # # + calculate roundtrip time at the end of this function
-    # timestamps = blender_data['timestamps']
-    # unless timestamps.nil?
-    #   time = timestamps['end_time']
-    #   dt = Time.now.strftime('%s.%N').to_f - time
-    #   puts "transmision time: #{dt*1000} ms"
-    # end
-    
-    
-    
-    
-    
-    
     # # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
-    
-    
-    
     
     
     # # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
@@ -439,47 +343,10 @@ class BlenderSync
     # # dt = t1-t0;
     # # puts "time - parse data: #{dt} us"
     
-    
-    # # process this last for proper timing
-    # unless timestamps.nil?
-    #   # t0 = data['time']
-    #   # t1 = Time.now.strftime('%s.%N').to_f
-    #   dt = Time.now.strftime('%s.%N').to_f - timestamps['start_time']
-    #   puts "roundtrip time: #{dt*1000} ms"
-    # end
-    
-    
-    
-    
-    
-    
-    
   end
   
   
   private
-  
-  def find_material(material_name)
-    puts "material name: #{material_name.inspect}"
-    
-    # p @depsgraph
-    # p @new_materials
-    
-    if material_name == ''
-      # (can't use nil, b/c nil means this field was not set)
-      @default_material
-    else
-      @depsgraph.fetch_material_datablock(material_name) do
-        mat = @new_materials.delete(material_name)
-          # ^ retrieve and delete in one line
-        if mat.nil?
-          raise "Could not find material '#{material_name}'"
-        else
-          mat # pseudoreturn for #fetch block
-        end
-      end
-    end
-  end
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
