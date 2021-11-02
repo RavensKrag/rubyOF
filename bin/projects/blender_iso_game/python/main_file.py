@@ -160,13 +160,6 @@ class IPC_Helper():
 to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
 
-meshDatablock_to_meshID = None
-# ^ TODO: think about a better way to grant access to this key variable
-
-
-
-
-
 
 
 
@@ -368,6 +361,26 @@ class AnimTexManager ():
         )
         
         self.max_tris = mytool.max_tris
+        
+        
+        
+        # 
+        # create self.meshDatablock_to_meshID mapping if it does not already exist
+        # 
+        
+        all_mesh_objects = [ obj
+                             for obj
+                             in mytool.collection_ptr.all_objects
+                             if obj.type == 'MESH' ]
+        
+        unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
+        mesh_datablocks = [ datablock
+                            for obj, datablock in unique_pairs ]
+        
+        self.meshDatablock_to_meshID = { mesh : i+1
+                                    for i, mesh
+                                    in enumerate(mesh_datablocks) }
+        
         
         
     # def __del__(self):
@@ -661,13 +674,12 @@ class AnimTexManager ():
         # don't need (obj -> mesh datablock) mapping
         # as each object already knows its mesh datablock
         
-        global meshDatablock_to_meshID
         
         unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
         mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
         mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
         
-        meshDatablock_to_meshID = { mesh : i+1
+        self.meshDatablock_to_meshID = { mesh : i+1
                                     for i, mesh in enumerate(mesh_datablocks) }
         
         unqiue_meshes = [ obj.evaluated_get(depsgraph).data
@@ -699,7 +711,7 @@ class AnimTexManager ():
         mytool.status_message = "export unique meshes"
         for i, mesh in enumerate(unqiue_meshes):
             self.export_vertex_data(mesh, i+1)
-                # NOTE: This index 'i+1' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
+                # NOTE: This index 'i+1' ends up always being the same as the indicies in self.meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -713,7 +725,7 @@ class AnimTexManager ():
             self.export_transform_data(
                 obj,
                 scanline=i+1,
-                mesh_id=meshDatablock_to_meshID[obj.data]
+                mesh_id=self.meshDatablock_to_meshID[obj.data]
             )
             
             task_count += 1
@@ -767,12 +779,12 @@ class AnimTexManager ():
         # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
         
         mesh = active_object.data
-        self.export_vertex_data(mesh, meshDatablock_to_meshID[mesh])
+        self.export_vertex_data(mesh, self.meshDatablock_to_meshID[mesh])
         
         # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
         data = {
             'type': 'geometry_update',
-            'scanline': meshDatablock_to_meshID[mesh],
+            'scanline': self.meshDatablock_to_meshID[mesh],
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
             'transform_tex_path': self.transform_tex.filepath,
@@ -795,7 +807,6 @@ class AnimTexManager ():
         
         # don't need this (not writing to the variable)
         # but it helps to remember the scope of globals
-        global meshDatablock_to_meshID
         
         
         all_mesh_objects = [ obj
@@ -824,7 +835,7 @@ class AnimTexManager ():
             if bound_material.name == updated_material.name:
                 print("mesh index:",i)
                 row = i+1
-                # i = meshDatablock_to_meshID[obj.data]
+                # i = self.meshDatablock_to_meshID[obj.data]
                 # ^ oops
                 # this is an index in the position / normal textures. I need a position in the transform texture
                 col = 5
@@ -992,7 +1003,7 @@ def update_mesh_object(context, mesh_obj):
     # (reverse index used by Ruby game code to select objects by name)
     
     
-    meshDatablock_to_meshID = {
+    self.meshDatablock_to_meshID = {
         'name: .data.name' : meshID
     }
     # meshID == index of corresponding data in vert_data
@@ -1012,7 +1023,7 @@ def update_mesh_object(context, mesh_obj):
     
     # + can the edited texture be identical to one from a complete export, or will we need a "defrag"-like operation every once in a while?
     
-    # + what is going on with meshDatablock_to_meshID and other such mappings?
+    # + what is going on with self.meshDatablock_to_meshID and other such mappings?
     
     
     
@@ -1026,7 +1037,7 @@ def update_mesh_object(context, mesh_obj):
         
     #     export_transform_data(mytool, mesh_obj,
     #                           scanline=i+1,
-    #                           mesh_id=meshDatablock_to_meshID[mesh_obj.data])
+    #                           mesh_id=self.meshDatablock_to_meshID[mesh_obj.data])
 
 
 
@@ -1712,27 +1723,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         # to_ruby.write(json.dumps(data))
         
-        
-        # 
-        # create meshDatablock_to_meshID mapping if it does not already exist
-        # 
-        
-        global meshDatablock_to_meshID
-        if meshDatablock_to_meshID is None:
-            mytool = context.scene.my_tool
-            
-            all_mesh_objects = [ obj
-                                 for obj
-                                 in mytool.collection_ptr.all_objects
-                                 if obj.type == 'MESH' ]
-            
-            unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-            mesh_datablocks = [ datablock
-                                for obj, datablock in unique_pairs ]
-            
-            meshDatablock_to_meshID = { mesh : i+1
-                                        for i, mesh
-                                        in enumerate(mesh_datablocks) }
         
         
         
