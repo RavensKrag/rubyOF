@@ -1250,7 +1250,19 @@ def anim_texture_manager_singleton(context):
     
     return anim_tex_manager
 
-
+def reset_anim_tex_manager(context):
+    global anim_tex_manager
+    mytool = context.scene.my_tool
+    
+    mytool.position_tex  = None
+    mytool.normal_tex    = None
+    mytool.transform_tex = None
+    
+    anim_tex_manager = None
+    
+    
+        
+        
 
 
 
@@ -1344,11 +1356,7 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
     def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
-        mytool = context.scene.my_tool
-        
-        mytool.position_tex  = None
-        mytool.normal_tex    = None
-        mytool.transform_tex = None
+        reset_anim_tex_manager(context)
         
         
         return {'FINISHED'}
