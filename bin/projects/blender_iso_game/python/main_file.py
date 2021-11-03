@@ -905,15 +905,14 @@ class AnimTexManager ():
         
         
         
-        # 
-        # update transform
-        # 
+        # Regaurdless of the signalling from update,
+        # this block can only update existing transform data.
+        # If it can't find a match, it makes no changes to the texture.
         
+        # To add a new object, you would need something different
         if update.is_updated_transform:
             if hasattr(self, 'transform_data'):
-                
-                # update already existing object to have a new transform
-                
+                # find existing position in transform texture (if any)
                 target_index = None
                 for i, data in enumerate(self.transform_data):
                     obj, material = data
@@ -934,16 +933,35 @@ class AnimTexManager ():
                         print(mesh_obj)
                         print("edit transform line:", i)
                 
+                
                 if target_index is not None:
+                    # 
+                    # update already existing object to have a new transform
+                    # 
                     self.export_transform_data(
                         mesh_obj,
                         scanline=target_index,
                         mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
                     )
+                    # ^ will update transform, associated mesh, and material data
+                    # need to at least split out material data into a separate method
+                    
                     
                     print("moved object")
                 else:
+                    # 
+                    # No object has existed in texture before
+                    # but there was an update to the transform?
+                    # must be a new object!
+                    # 
                     print("NO OBJECT FOUND")
+                    
+                    self.export_transform_data(
+                        mesh_obj,
+                        scanline=len(self.transform_data),
+                        mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
+                    )
+                    
                 
                 # print(self.transform_data)
                 
@@ -970,7 +988,35 @@ class AnimTexManager ():
             else:
                 print("no transform")
         
-        
+        # if update.is_updated_geometry:
+            # may just have changed mapping, or may need to export geometry too
+            # first let's assuming mapping has changed
+            # (this may also catch object dups?)
+            
+            
+            
+            # for i, data in enumerate(self.transform_data):
+            #     obj, material = data
+            #     if obj is None:
+            #         continue
+                    
+                # if obj.name == mesh_obj.name:
+                    # if you find the index of the target object
+                    
+            
+            
+            
+            # # then re-export meshes (likely this would be new mesh data)
+            # for i, data in enumerate(self.vert_data):
+            #     datablock = data
+            #     if obj is None:
+            #         continue
+                
+            #     # search for datablock that matches target
+            #     if datablock.name == mesh_obj.data.name:
+            #         pass
+            #         # 
+                
         
         
         
