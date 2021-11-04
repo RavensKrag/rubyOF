@@ -376,22 +376,10 @@ class AnimTexManager ():
         
         
         
-        # 
-        # create meshDatablock_to_meshID mapping if it does not already exist
-        # 
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-        mesh_datablocks = [ datablock
-                            for obj, datablock in unique_pairs ]
-        
-        self.meshDatablock_to_meshID = { mesh : i+1
-                                         for i, mesh
-                                         in enumerate(mesh_datablocks) }
-        
+        # (maybe want to generate index / reverse index on init? not sure how yet.)
+        # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
+        self.vertex_data    = []
+        self.transform_data = []
         
         
     # def __del__(self):
@@ -622,6 +610,63 @@ class AnimTexManager ():
         return [width_px, height_px]
     
     
+    
+    
+    
+    
+    
+    
+    
+    # 
+    # schema for cache data
+    # 
+    
+    # This method should never actually be called.
+    # I just want a space to sketch out the schema
+    # of the cache and get syntax highlighting.
+    def __cache_schema(self):
+        # Don't store names in the lists - if you need to hang on to an object in Python, use a pointer to the object instead. Only need to pass names to Ruby so that the game can acquire the pointers in the first place. This aquisition phase is like how the user can pick an item by name from Blender's outliner.
+        
+        self.vertex_data = [
+            None,
+            datablock_ptr # => 'datablock_name: .data.name'
+        ]
+        # need a pointer to the original object, so we can still ID the thing even if the name has been changed
+        
+        
+        
+        transform_data = [
+            [None, None, None],
+            [mesh_obj, first_material]
+                # => 'name: .name'
+        ]
+        # need a pointer to the original object, so we can still ID the thing even if the name has been changed
+        
+        # ^ depsgraph can tell you if the transform has changed, so you don't necessarily need to store a copy of the mat4 here
+        
+        # ^ need a pointer to the mat, s.t. when the material is changed, it can identify the rows of the texture that need updating
+        
+        
+        
+        objName_to_transformID = {
+            'name: .name' : transformID
+        }
+        # transformID == index of corresponding data in transform_data
+        # (reverse index used by Ruby game code to select objects by name)
+        
+        
+        self.meshDatablock_to_meshID = {
+            'name: .data.name' : meshID
+        }
+        # meshID == index of corresponding data in self.vertex_data
+        # (reverse index used by Python exporter code to only export unique meshes)
+        # ^ this is the reverse index of self.vertex_data
+        #   you can generate it by walking self.vertex_data
+    
+    
+    
+    
+    
     # TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
     
     # yields percentage of task completion, for use with a progress bar
@@ -640,7 +685,7 @@ class AnimTexManager ():
         
         
         
-        self.vert_data      = []
+        self.vertex_data    = []
         self.transform_data = []
         
         
@@ -726,10 +771,14 @@ class AnimTexManager ():
         # export all unique meshes
         # 
         
+        self.vertex_data = [ None ]
+        
         mytool.status_message = "export unique meshes"
         for i, mesh in enumerate(unqiue_meshes):
             self.export_vertex_data(mesh, i+1)
                 # NOTE: This index 'i+1' ends up always being the same as the indicies in self.meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
+            
+            self.vertex_data.append( mesh.name )
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -751,7 +800,7 @@ class AnimTexManager ():
             
             task_count += 1
             
-            self.transform_data.append( [obj, first_material(obj)] )
+            self.transform_data.append( [obj.name, first_material(obj)] )
             
             context = yield(task_count / total_tasks)
         
@@ -796,32 +845,8 @@ class AnimTexManager ():
         t1 = time.time()
         
         print("time elapsed:", t1-t0, "sec")
-    
-    
-    
-    
-    # run this while mesh is being edited
-    # (precondition: datablock already exists)
-    def update_mesh_datablock(self, active_object):
-        # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
         
-        mesh = active_object.data
-        self.export_vertex_data(mesh, self.meshDatablock_to_meshID[mesh.name])
-        
-        # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-        data = {
-            'type': 'geometry_update',
-            'scanline': self.meshDatablock_to_meshID[mesh.name],
-            'position_tex_path' : self.position_tex.filepath,
-            'normal_tex_path'   : self.normal_tex.filepath,
-            'transform_tex_path': self.transform_tex.filepath,
-        }
-        
-        to_ruby.write(json.dumps(data))
     
-    
-    # bring in some code from mesh edit to update meshes
-    # maybe?
     
     
     # update data that would have been sent in pack_mesh():
@@ -839,122 +864,54 @@ class AnimTexManager ():
         # new mesh datablock created
     
     # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
-    
     def update_mesh_object(self, update, mesh_obj):
-        # pass
-        
-        
-        
-        # if completely new object created (add primitive / duplicate)
-            # in position_tex and normal_tex add:
-                # new vertex data
-            # in transform_tex add:
-                # mesh mapping
-                # transform
-                # material data
-        # if linked copy of an existing object (new object, preexisting datablock)
-            # in transform_tex add:
-                # mesh mapping
-                # transform
-                # material data
-        
-        
-        
-        # # Don't store names in the lists - if you need to hang on to an object in Python, use a pointer to the object instead. Only need to pass names to Ruby so that the game can acquire the pointers in the first place. This aquisition phase is like how the user can pick an item by name from Blender's outliner.
-        
-        # vert_data = [
-        #     None,
-        #     datablock_ptr # => 'datablock_name: .data.name'
-        # ]
-        
-        # # need a pointer to the original object, so we can still ID the thing even if the name has been changed
-        
-        
-        
-        # transform_data = [
-        #     [None, None, None],
-        #     [obj, transform_4, mat]
-        #         # => 'name: .name'
-        # ]
-        
-        # # need a pointer to the original object, so we can still ID the thing even if the name has been changed
-        
-        # # ^ depsgraph can tell you if the transform has changed, so you don't necessarily need to store a copy of the mat4 here
-        
-        # # ^ need a pointer to the mat, s.t. when the material is changed, it can identify the rows of the texture that need updating
-        
-        
-        
-        # objName_to_transformID = {
-        #     'name: .name' : transformID
-        # }
-        
-        # # transformID == index of corresponding data in transform_data
-        # # (reverse index used by Ruby game code to select objects by name)
-        
-        
-        # self.meshDatablock_to_meshID = {
-        #     'name: .data.name' : meshID
-        # }
-        
-        # # meshID == index of corresponding data in vert_data
-        # # (reverse index used by Python exporter code to only export unique meshes)
-        # # ^ this is the reverse index of vert_data
-        # #   you can generate it by walking vert_data
-        
-        
-        
-        
-        # Regaurdless of the signalling from update,
-        # this block can only update existing transform data.
-        # If it can't find a match, it makes no changes to the texture.
-        
-        # To add a new object, you would need something different
         if update.is_updated_transform:
             if hasattr(self, 'transform_data'):
                 # find existing position in transform texture (if any)
-                target_index = None
-                for i, data in enumerate(self.transform_data):
-                    obj, material = data
-                    if obj is None:
-                        continue
-                    
-                    
-                    # need to match by name - likely objects don't match exactly because of some depsgraph state or something
-                    # 
-                    # but the pointer points to the correct thing,
-                    # because if the name is changed in the outliner
-                    # I can still find the correct object.
-                    
-                    if obj.name == mesh_obj.name:
-                        target_index = i
-                        print("object found by name")
-                        print(obj)
-                        print(mesh_obj)
-                        print("edit transform line:", i)
+                target_obj_index = self.transform_data_index(mesh_obj)
                 
-                
-                if target_index is not None:
+                if target_obj_index is not None:
                     # 
                     # update already existing object to have a new transform
                     # 
                     self.export_transform_data(
                         mesh_obj,
-                        scanline=target_index,
+                        scanline=target_obj_index,
                         mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
                     )
                     # ^ will update transform, associated mesh, and material data
-                    # need to at least split out material data into a separate method
+                    # TODO: split out material data into a separate method
                     
+                    
+                    # Don't need to update the cache.
+                    # This object already exists in the cache, so it's fine.
+                    self.cache_transform_data(mesh_obj)
                     
                     print("moved object")
                 else:
                     # 
                     # No object has existed in texture before
                     # but there was an update to the transform?
+                    # 
                     # must be a new object!
                     # 
                     print("NO OBJECT FOUND")
+                    
+                    # 
+                    # create new mesh datablock if necessary
+                    # 
+                    datablock_index = self.vertex_data_index(mesh_obj.data)
+                    if datablock_index is None:
+                        # write to texture
+                        i = len(self.vertex_data)
+                        self.export_vertex_data(mesh_obj.data, i)
+                        
+                        # update cache
+                        self.cache_vertex_data( mesh_obj.data )
+                    
+                    # 
+                    # link the new mesh object to the correct datablock
+                    # 
                     
                     self.export_transform_data(
                         mesh_obj,
@@ -962,12 +919,10 @@ class AnimTexManager ():
                         mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
                     )
                     
-                
-                # print(self.transform_data)
-                
+                    self.cache_transform_data(mesh_obj)
                 
                 
-                # TODO: get a separate update type for when transforms update
+                # TODO: create a separate update message type for when transforms update
                 # TODO: only send update message once per frame, not every frame
                     # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
                 
@@ -983,71 +938,26 @@ class AnimTexManager ():
                 to_ruby.write(json.dumps(data))
                 
                 
-                
-                
             else:
                 print("no transform")
         
-        # if update.is_updated_geometry:
-            # may just have changed mapping, or may need to export geometry too
-            # first let's assuming mapping has changed
-            # (this may also catch object dups?)
-            
-            
-            
-            # for i, data in enumerate(self.transform_data):
-            #     obj, material = data
-            #     if obj is None:
-            #         continue
-                    
-                # if obj.name == mesh_obj.name:
-                    # if you find the index of the target object
-                    
-            
-            
-            
-            # # then re-export meshes (likely this would be new mesh data)
-            # for i, data in enumerate(self.vert_data):
-            #     datablock = data
-            #     if obj is None:
-            #         continue
-                
-            #     # search for datablock that matches target
-            #     if datablock.name == mesh_obj.data.name:
-            #         pass
-            #         # 
-                
         
         
+        if not (mesh_obj.name in bpy.data.objects):
+            # object has been deleted
+            print("object", mesh_obj.name, "was deleted")
         
-        # # 
-        # # update transform
-        # # 
+        # ^ this doesn't work. depsgraph doesn't seem to send updates for deleted objects
         
-        # target_index = None
-        # for i, data in enumerate(transform_data):
-        #     obj, name, transform, material = data
-        #     if obj == mesh_obj:
-        #         target_index = i
-        #         break
+        # need to see if there is a way to get this info from depsgraph
         
-        # if target_index:
-        #     # set data
-        #     data = [obj, 'name: .name', transform, material]
-            
-            
-        #     # write to texture
-            
-            
-        #     # save to cache
-        #     transform_data[target_index] = data
+        # if not, I can have some update function here
+        # which is called every frame / every update,
+        # and which compares the current list of objects to the previous list.
+        # The difference set between these two
+        # would tell you what objects were deleted.
         
-        
-        # # 
-        # # update name
-        # # 
-        
-        
+        # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
         
         
         
@@ -1075,16 +985,30 @@ class AnimTexManager ():
         
         
         # TODO: need to clean up other operators that use the animation texture data, such as OT_TexAnimClearAllTextures
+            # ^ this particular one works now, but should check for others
         
+    
+    
+    # run this while mesh is being edited
+    # (precondition: datablock already exists)
+    def update_mesh_datablock(self, active_object):
+        print("transform data:", self.transform_data)
+        # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
         
+        mesh = active_object.data
+        self.export_vertex_data(mesh, self.meshDatablock_to_meshID[mesh.name])
         
-        # mytool = context.scene.my_tool
-        # if "new object created":
-        #     # add a new row to the 
-            
-        #     export_transform_data(mytool, mesh_obj,
-        #                           scanline=i+1,
-        #                           mesh_id=self.meshDatablock_to_meshID[mesh_obj.data])
+        # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+        data = {
+            'type': 'geometry_update',
+            'scanline': self.meshDatablock_to_meshID[mesh.name],
+            'position_tex_path' : self.position_tex.filepath,
+            'normal_tex_path'   : self.normal_tex.filepath,
+            'transform_tex_path': self.transform_tex.filepath,
+        }
+        
+        to_ruby.write(json.dumps(data))
+    
     
     
     
@@ -1153,6 +1077,98 @@ class AnimTexManager ():
         }
         
         to_ruby.write(json.dumps(data))
+    
+    
+    
+    
+    def vertex_data_index(self, meshObj_data):
+        target_datablock_index = None
+        
+        for i, data in enumerate(self.vertex_data):
+            datablock_name = data
+            if datablock_name is None:
+                continue
+            
+            if datablock_name == meshObj_data.name:
+                target_datablock_index = i
+        
+        return target_datablock_index
+    
+    def cache_vertex_data(self, meshObj_data):
+        data = meshObj_data.name
+        
+        
+        # if a corresponding object already exists in the cache,
+        # update the cache
+        target_obj_index = self.vertex_data_index(meshObj_data)
+        if target_obj_index is not None:
+            self.vertex_data[target_obj_index] = data
+        # else, add new data to the cache
+        else:
+            self.vertex_data.append( data )
+        
+        
+        # update reverse index
+        self.meshDatablock_to_meshID = {}
+        
+        for i, data in enumerate(self.vertex_data):
+            datablock_name = data
+            
+            self.meshDatablock_to_meshID[datablock_name] = i
+        
+    
+    # Find target mesh object and retrieve it's index.
+    # 
+    # Need to match by name - likely objects don't
+    # match exactly because of some depsgraph state or something
+    # 
+    # but the pointer points to the correct thing,
+    # because if the name is changed in the outliner
+    # I can still find the correct object.
+    def transform_data_index(self, mesh_obj):
+        target_obj_index = None
+        
+        # print(self.transform_data)
+        for i, data in enumerate(self.transform_data):
+            obj_name, material = data
+            if obj_name is None:
+                continue
+            
+            if obj_name == mesh_obj.name:
+                target_obj_index = i
+        
+        return target_obj_index
+    
+    
+    # PROBLEM: when exporting the entire texture, self.transform_data is populated using the normal mesh objects. but when updating the cache, we're looking at / comparing with objects from the depsgraph. I think the depsgraph objects are not as permanent, which is causing errors when I try to access RNA data that has been invalidated.
+        # or maybe GC is just being weird to me? not sure, needs more testing
+    def cache_transform_data(self, mesh_obj):
+        # print("new data:", [mesh_obj, first_material(mesh_obj)] )
+        
+        data = [mesh_obj.name, first_material(mesh_obj)] 
+        
+        # if a corresponding object already exists in the cache,
+        # update the cache
+        target_obj_index = self.transform_data_index(mesh_obj)
+        if target_obj_index is not None:
+            self.transform_data[target_obj_index] = data
+        # else, add new data to the cache
+        else:
+            self.transform_data.append( data )
+        
+        
+        # update the reverse index
+        self.objName_to_transformID = {}
+        
+        for i, data in enumerate(self.transform_data):
+            obj_name, material = data
+            if obj_name is None:
+                continue
+            
+            self.objName_to_transformID[obj_name] = i
+            
+            
+        # TODO: When should this data be set to Ruby land? Is this a good time / place to do that?
         
 
 
