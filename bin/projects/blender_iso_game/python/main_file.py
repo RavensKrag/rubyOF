@@ -343,6 +343,25 @@ ImageWrapper = reload_class(ImageWrapper)
 
 from coroutine_decorator import *
 
+
+
+def find_unique_mesh_pairs(all_mesh_objects):
+    """Given a list of mesh objects, return
+       all pairs (mesh_object, mesh_datablock)
+       such that each mesh_datablock is unique"""
+    
+    unique_mesh_datablocks = set()
+    unique_pairs = []
+    
+    for obj in all_mesh_objects:
+        if obj.data in unique_mesh_datablocks:
+            pass
+        else:
+            unique_mesh_datablocks.add(obj.data)
+            unique_pairs.append( (obj, obj.data) )
+    
+    return unique_pairs
+
 class AnimTexManager ():
     def __init__(self, context):
         mytool = context.scene.my_tool
@@ -969,21 +988,6 @@ class AnimTexManager ():
         
         
         
-        
-        # questions:
-        
-        # + how do we detect if something is "new" or not?
-        
-        # + how do we know if the data is already in the texture or not? names are not saved in the texture
-        
-        # + how do we know where to insert the new data?
-        
-        # + can the edited texture be identical to one from a complete export, or will we need a "defrag"-like operation every once in a while?
-        
-        # + what is going on with self.meshDatablock_to_meshID and other such mappings?
-        
-        
-        
         # TODO: need to clean up other operators that use the animation texture data, such as OT_TexAnimClearAllTextures
             # ^ this particular one works now, but should check for others
         
@@ -1174,15 +1178,6 @@ class AnimTexManager ():
 
 
 
-
-
-
-
-
-
-
-
-
 # scanline : array of pixel data (not nested array, just a flat array)
 # Set the data for one pixel within an array representing a whole scanline
 def scanline_set_px(scanline, px_i, px_data, channels=4):
@@ -1309,24 +1304,6 @@ import time
 from progress_bar import ( OT_ProgressBarOperator )
 OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
 
-
-
-def find_unique_mesh_pairs(all_mesh_objects):
-    """Given a list of mesh objects, return
-       all pairs (mesh_object, mesh_datablock)
-       such that each mesh_datablock is unique"""
-    
-    unique_mesh_datablocks = set()
-    unique_pairs = []
-    
-    for obj in all_mesh_objects:
-        if obj.data in unique_mesh_datablocks:
-            pass
-        else:
-            unique_mesh_datablocks.add(obj.data)
-            unique_pairs.append( (obj, obj.data) )
-    
-    return unique_pairs
 
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
