@@ -327,6 +327,22 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
+    
+    
+    
+    def update_function(self, context):
+        if self.sync_deletions:
+            bpy.ops.wm.sync_deletions('INVOKE_DEFAULT')
+        
+        return None
+    
+    sync_deletions : BoolProperty(
+        name="Sync Deletions",
+        default=False,
+        update=update_function
+    )
+    
+
 
 
 
@@ -342,6 +358,9 @@ from image_wrapper import ( ImageWrapper, get_cached_image )
 ImageWrapper = reload_class(ImageWrapper)
 
 from coroutine_decorator import *
+
+import queue
+import functools
 
 
 
@@ -401,8 +420,71 @@ class AnimTexManager ():
         self.transform_data = []
         
         
+        # # Use timer APT to detect deletions in a separate thread.
+        # # Then, we can react to the deletions in the main thread.
+        # self.timer_dt = 1/60
+        # self.delete_queue = queue.Queue();
+        # self.timer = functools.partial(self.detect_deletions, mytool)
+        
+        # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+        
+        
     # def __del__(self):
-    #     pass
+    #     if bpy.app.timers.is_registered(self.timer):
+    #         bpy.app.timers.unregister(self.timer)
+    
+    
+    # def detect_deletions(self, mytool):
+    #     # 
+    #     # update entity mappings
+    #     # 
+        
+    #     all_mesh_objects = [ obj
+    #                          for obj in mytool.collection_ptr.all_objects
+    #                          if obj.type == 'MESH' ]
+        
+        
+    #     # create map: obj name -> transform ID
+    #     object_map = { obj.name : i+1
+    #                    for i, obj in enumerate(all_mesh_objects) }
+        
+    #     # print(self.transform_data)
+        
+    #     old = [ mesh_name 
+    #                              for mesh_name, material
+    #                              in self.transform_data
+    #                              if mesh_name is not None ]
+    #     # print(old)
+    #     old_entity_names = set(old)
+        
+    #     new_entity_names = set(object_map.keys())
+        
+    #     delta_set = old_entity_names - new_entity_names
+        
+    #     if len(delta_set) > 0:
+    #         # print(">>old:", len(old_entity_names), old_entity_names)
+    #         # print(">>new:", len(new_entity_names), new_entity_names)
+    #         print("delta set:", delta_set)
+    #         print("set size:", len(delta_set))
+            
+    #         for obj_name in list(delta_set):
+    #             # these things have been deleted - process them
+    #             self.delete_queue.put(obj_name)
+        
+    #     return self.timer_dt
+    
+    # respond to messages from detect_deletions()
+    def delete_mesh_objects(self, obj_name):
+        print("object", obj_name, "was deleted")
+        
+        i = self.transform_data_index(obj_name)
+        
+        print(i)
+        
+        if i is not None:
+            pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+            self.transform_tex.write_scanline(pixel_data, i)
+            self.transform_tex.save()
     
     
     # handles triangulation
@@ -418,11 +500,7 @@ class AnimTexManager ():
         # TODO: update all code to use RGB (no alpha) to save some memory
         # TODO: use half instead of float to save memory
         
-        
         # NOTE: all textures in the same animation set have the same dimensions
-        
-        # output_path = bpy.path.abspath("//")
-        
         
         
         # (bottom row of pixels will always be full red)
@@ -491,24 +569,12 @@ class AnimTexManager ():
         # TODO: use half instead of float to save memory
         
         
-        # TODO: consider using black and white for these textures, if that saves on pixels / somehow makes calculation easier (need to consider entire pipeline, so this must be delayed for a while)
-        
-        # output_path = bpy.path.abspath("//")
-        
-        
-        
-        
-        
-        
         # (bottom row of pixels will always be full red)
         # This allows for the easy identification of one edge,
         # like a "this side up" sign, but it also allows for
         # the user to create frames completely free of any
-        # visible geometry. (useful with GPU instancing)
-        
-        # data for just this object
+        # visible geometry. (useful with GPU instancing)        
         pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
-        
         self.transform_tex.write_scanline(pixel_data, 0)
         
         
@@ -542,7 +608,6 @@ class AnimTexManager ():
         for i in range(1, 5): # range is exclusive of high end: [a, b)
             scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
                             channels=self.transform_tex.channels_per_pixel)
-        
         
         
         # 
@@ -634,6 +699,11 @@ class AnimTexManager ():
     
     
     
+    
+    def update(self, scene):
+        print(time.time())
+        print("update from AnimTexManager")
+        print("objects:", "(",len(scene.objects),")",  )
     
     
     # 
@@ -832,12 +902,15 @@ class AnimTexManager ():
         
         # create map: obj name -> transform ID
         object_map = { obj.name : i+1
-                       for i, obj in enumerate(all_mesh_objects) }
+                       for i, obj in enumerate(all_mesh_objects)
+                       if obj.type == 'MESH' }
+        
+        self.objName_to_transformID = object_map
         
         # send mapping to RubyOF
         data = {
             'type': 'object_to_id_map',
-            'value': object_map,
+            'value': self.objName_to_transformID,
         }
         
         to_ruby.write(json.dumps(data))
@@ -869,25 +942,14 @@ class AnimTexManager ():
     
     
     # update data that would have been sent in pack_mesh():
-        # obj_data = {
-        #     'type': typestring(obj), # 'bpy.types.Object'
-        #     'name': obj.name_full,
-        #     '.type' : obj.type, # 'MESH'
-        #     'transform': pack_transform_mat4(obj),
-        #     '.data.name': obj.data.name
-        # }
     # so, the transform and what datablock the object is linked to
-    
-    # AND also need to detect:
-        # new mesh object created
-        # new mesh datablock created
     
     # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
     def update_mesh_object(self, update, mesh_obj):
         if update.is_updated_transform:
             if hasattr(self, 'transform_data'):
                 # find existing position in transform texture (if any)
-                target_obj_index = self.transform_data_index(mesh_obj)
+                target_obj_index = self.transform_data_index(mesh_obj.name)
                 
                 if target_obj_index is not None:
                     # 
@@ -919,7 +981,7 @@ class AnimTexManager ():
                     # 
                     # create new mesh datablock if necessary
                     # 
-                    datablock_index = self.vertex_data_index(mesh_obj.data)
+                    datablock_index = self.vertex_data_index(mesh_obj.data.name)
                     if datablock_index is None:
                         # write to texture
                         i = len(self.vertex_data)
@@ -961,15 +1023,15 @@ class AnimTexManager ():
                 print("no transform")
         
         
+        # You won't get a message from depsgraph about a material being changed
+        # until the object you're inspecting is the material.
+        # Thus, you need to deal with the denormalization / update
+        # of the material, in the material, and not here in the mesh.
         
-        if not (mesh_obj.name in bpy.data.objects):
-            # object has been deleted
-            print("object", mesh_obj.name, "was deleted")
         
-        # ^ this doesn't work. depsgraph doesn't seem to send updates for deleted objects
-        
-        # need to see if there is a way to get this info from depsgraph
-        
+    
+    # NOTE: No good way right now to "garbage collect" unused mesh datablocks that continue to be in the animation texture. Maybe we can store resource counts in the first pixel?? But for right now, doing a clean build is the only way to clear out some old data.
+    
         # if not, I can have some update function here
         # which is called every frame / every update,
         # and which compares the current list of objects to the previous list.
@@ -978,18 +1040,21 @@ class AnimTexManager ():
         
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
         
+    
+    # callback for right before deletion 
+    def post_mesh_object_deletion(self, obj_name): 
+        print("object", obj_name, "was deleted")
         
         
-        # You won't get a message from depsgraph about a material being changed
-        # until the object you're inspecting is the material.
-        # Thus, you need to deal with the denormalization / update
-        # of the material, in the material, and not here in the mesh.
+        i = self.transform_data_index(obj_name)
         
+        print(i)
         
+        if i is not None:
+            pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+            self.transform_tex.write_scanline(pixel_data, i)
+            self.transform_tex.save()
         
-        
-        # TODO: need to clean up other operators that use the animation texture data, such as OT_TexAnimClearAllTextures
-            # ^ this particular one works now, but should check for others
         
     
     
@@ -1084,8 +1149,8 @@ class AnimTexManager ():
     
     
     
-    
-    def vertex_data_index(self, meshObj_data):
+    # find via name
+    def vertex_data_index(self, meshObj_data_name):
         target_datablock_index = None
         
         for i, data in enumerate(self.vertex_data):
@@ -1093,18 +1158,19 @@ class AnimTexManager ():
             if datablock_name is None:
                 continue
             
-            if datablock_name == meshObj_data.name:
+            if datablock_name == meshObj_data_name:
                 target_datablock_index = i
         
         return target_datablock_index
     
+    # store via datablock object
     def cache_vertex_data(self, meshObj_data):
         data = meshObj_data.name
         
         
         # if a corresponding object already exists in the cache,
         # update the cache
-        target_obj_index = self.vertex_data_index(meshObj_data)
+        target_obj_index = self.vertex_data_index(meshObj_data.name)
         if target_obj_index is not None:
             self.vertex_data[target_obj_index] = data
         # else, add new data to the cache
@@ -1121,15 +1187,9 @@ class AnimTexManager ():
             self.meshDatablock_to_meshID[datablock_name] = i
         
     
+    # find via name
     # Find target mesh object and retrieve it's index.
-    # 
-    # Need to match by name - likely objects don't
-    # match exactly because of some depsgraph state or something
-    # 
-    # but the pointer points to the correct thing,
-    # because if the name is changed in the outliner
-    # I can still find the correct object.
-    def transform_data_index(self, mesh_obj):
+    def transform_data_index(self, mesh_obj_name):
         target_obj_index = None
         
         # print(self.transform_data)
@@ -1138,12 +1198,13 @@ class AnimTexManager ():
             if obj_name is None:
                 continue
             
-            if obj_name == mesh_obj.name:
+            if obj_name == mesh_obj_name:
                 target_obj_index = i
         
         return target_obj_index
     
     
+    # store via mesh object
     # PROBLEM: when exporting the entire texture, self.transform_data is populated using the normal mesh objects. but when updating the cache, we're looking at / comparing with objects from the depsgraph. I think the depsgraph objects are not as permanent, which is causing errors when I try to access RNA data that has been invalidated.
         # or maybe GC is just being weird to me? not sure, needs more testing
     def cache_transform_data(self, mesh_obj):
@@ -1153,7 +1214,7 @@ class AnimTexManager ():
         
         # if a corresponding object already exists in the cache,
         # update the cache
-        target_obj_index = self.transform_data_index(mesh_obj)
+        target_obj_index = self.transform_data_index(mesh_obj.name)
         if target_obj_index is not None:
             self.transform_data[target_obj_index] = data
         # else, add new data to the cache
@@ -1173,6 +1234,14 @@ class AnimTexManager ():
             
             
         # TODO: When should this data be set to Ruby land? Is this a good time / place to do that?
+        
+        # send mapping to RubyOF
+        data = {
+            'type': 'object_to_id_map',
+            'value': self.objName_to_transformID,
+        }
+        
+        to_ruby.write(json.dumps(data))
         
 
 
@@ -1206,43 +1275,61 @@ def unregister_depgraph_handlers():
 
 
 def on_depsgraph_update(scene, depsgraph):
-    # print(args)
-    
-    # 
-    # update entity mappings
-    # 
-    
-    mytool = scene.my_tool
-    
-    all_mesh_objects = [ obj
-                         for obj in mytool.collection_ptr.all_objects
-                         if obj.type == 'MESH' ]
-    
-    # create map: obj name -> transform ID
-    object_map = { obj.name : i+1
-                   for i, obj in enumerate(all_mesh_objects) }
-    
-    # send mapping to RubyOF
-    data = {
-        'type': 'object_to_id_map',
-        'value': object_map,
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
-    
-    # # Loop over all object instances in the scene.
-    # for update in depsgraph.updates:
-    #     obj = update.id
+    global anim_tex_manager
+    if anim_tex_manager is not None:
+        anim_tex_manager.update(scene)
+
+def pre_delete_callback(context, obj):
+    # if isinstance(obj, bpy.types.Object):
+    #     tex_manager = anim_texture_manager_singleton(context)
         
-    #     if isinstance(obj, bpy.types.Object):
-    #         if obj.type == 'LIGHT':
-    #             message_queue.append(pack_light(obj))
-                
-    #         elif obj.type == 'MESH':
+    #     tex_manager.pre_mesh_object_deletion(obj.name)
+    
+    pass
+
+
+# bpy.app.handlers.undo_post
+# ^ use this handler to revert object state after undo
+ 
+# NOTE: may need to re-accuire image handles on undo / redo
+
+
+# can use the Timer API to get a regular tick
+# can update based on deletion using that tick, if necessary
 
 
 
+
+ 
+# override delete s.t. we can establish a delete hook:
+# https://blender.stackexchange.com/questions/66065/object-delete-handler
+# https://blender.stackexchange.com/questions/28932/prevent-accidental-deletion-of-object/28933#28933
+
+
+# class OT_DeleteOverride(bpy.types.Operator):
+#     """delete operator with a callback"""
+#     bl_idname = "object.delete"
+#     bl_label = "Object Delete Operator"
+    
+#     @classmethod
+#     def poll(cls, context):
+#         return False
+    
+#     # def invoke(self, context, event):
+#     #     return context.window_manager.invoke_confirm(self, event)
+    
+#     def execute(self, context):
+#         # for obj in context.selected_objects:
+#         #     # pre_delete_callback(context, obj)
+            
+#         bpy.data.objects.remove(obj)
+#         print("delete")
+        
+#         return {'FINISHED'}
+ 
+ 
+ 
+ # (still not quite sure how to process object deletion though...)
 
 
 
@@ -1355,6 +1442,67 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         return {'FINISHED'}
 
 
+
+
+class OT_TexAnimSyncDeletions (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "wm.sync_deletions"
+    bl_label = "Sync Deletions"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def __init__(self):
+        
+        self._timer = None
+        self.timer_dt = 1/60
+        self.done = False
+        
+        self.timer_count = 0 #timer count, need to let a little bit of space between updates otherwise gui will not have time to update
+        
+        self.coroutine = None
+        
+        self.value = 0
+        self.delay_interval = 30
+    
+    def modal(self, context, event):
+        mytool = context.scene.my_tool
+        
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not mytool.sync_deletions:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
+            
+    def invoke(self, context, event):
+        wm = context.window_manager
+        
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+    
+    
+    def run(self, context):
+        print("running", time.time())
+        print("objects: ", len(context.scene.objects))
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
     COMPAT_ENGINES= {"RUBYOF"}
     
@@ -1399,6 +1547,14 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         layout.row().separator()
         
         layout.operator("wm.texanim_clear_all_textures")
+        
+        layout.row().separator()
+        
+        
+        label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
+        layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
+        # ^ updated by OT_TexAnimSyncDeletions
+        
 
 
 
@@ -1813,6 +1969,10 @@ class RubyOF(bpy.types.RenderEngine):
         
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
+        
+        print(time.time())
+        print("from draw")
+        print("objects:", "(",len(scene.objects),")",  )
     
     
     # For viewport renders, this method gets called once at the start and
@@ -1826,6 +1986,12 @@ class RubyOF(bpy.types.RenderEngine):
         
         # send info to RubyOF about the data in the scene
         self.__update_scene(context, depsgraph)
+        
+        print(time.time())
+        print("from update")
+        print("objects:", "(",len(scene.objects),")",  )
+        
+        
     
         
     # ---- private helper methods ----
@@ -1896,28 +2062,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         tex_manager = anim_texture_manager_singleton(context)
         
-        # # 
-        # # update entity mappings
-        # # 
         
-        # mytool = context.scene.my_tool
-        
-        # all_mesh_objects = [ obj
-        #                      for obj in mytool.collection_ptr.all_objects
-        #                      if obj.type == 'MESH' ]
-        
-        # # create map: obj name -> transform ID
-        # object_map = { obj.name : i+1
-        #                for i, obj in enumerate(all_mesh_objects) }
-        
-        # # send mapping to RubyOF
-        # data = {
-        #     'type': 'object_to_id_map',
-        #     'value': object_map,
-        # }
-        
-        # to_ruby.write(json.dumps(data))
-        
+        # tex_manager.update(context)
         
         
         
@@ -2215,6 +2361,7 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         row = layout.row()
         row.operator("render.rubyof_step_back", text="back")
         row.operator("render.rubyof_step_forward", text="forward")
+        
 
 
 class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
@@ -2724,6 +2871,9 @@ def get_panels():
     return panels
 
 classes = (
+    # OT_DeleteOverride,
+    #
+    #
     RENDER_OT_RubyOF_StepBack,
     RENDER_OT_RubyOF_MessageStepForward,
     RENDER_OT_RubyOF_MessagePause,
@@ -2735,6 +2885,8 @@ classes = (
     DATA_PT_RubyOF_light,
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
+    # 
+    OT_TexAnimSyncDeletions,
     #
     #
     #
