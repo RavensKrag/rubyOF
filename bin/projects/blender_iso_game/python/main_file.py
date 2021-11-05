@@ -424,20 +424,6 @@ class AnimTexManager ():
     #     pass
     
     
-    # respond to messages from detect_deletions()
-    def delete_mesh_objects(self, obj_name):
-        print("object", obj_name, "was deleted")
-        
-        i = self.transform_data_index(obj_name)
-        
-        print(i)
-        
-        if i is not None:
-            pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
-            self.transform_tex.write_scanline(pixel_data, i)
-            self.transform_tex.save()
-    
-    
     # handles triangulation
     def export_vertex_data(self, mesh, output_frame):
         mesh.calc_loop_triangles()
@@ -983,7 +969,7 @@ class AnimTexManager ():
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
         
     
-    # callback for right before deletion 
+    # callback for right after deletion 
     def post_mesh_object_deletion(self, obj_name): 
         print("object", obj_name, "was deleted")
         
@@ -993,9 +979,23 @@ class AnimTexManager ():
         print(i)
         
         if i is not None:
+            print("deleting...")
+            # delete the data
             pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
             self.transform_tex.write_scanline(pixel_data, i)
             self.transform_tex.save()
+            
+            # tell Ruby to update
+            data = {
+                'type': 'anim_texture_update',
+                'position_tex_path' : self.position_tex.filepath,
+                'normal_tex_path'   : self.normal_tex.filepath,
+                'transform_tex_path': self.transform_tex.filepath,
+            }
+            
+            to_ruby.write(json.dumps(data))
+            
+            print("delete complete")
         
         
     
@@ -1339,6 +1339,9 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
 # which then requires that you make your operation thread safe.
 # That's all a huge pain just to get concurrency, 
 # so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
 class OT_TexAnimSyncDeletions (bpy.types.Operator):
     """Watch for object deletions and sync them to the anim texture"""
     bl_idname = "wm.sync_deletions"
@@ -1352,14 +1355,10 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         
         self._timer = None
         self.timer_dt = 1/60
-        self.done = False
         
-        self.timer_count = 0 #timer count, need to let a little bit of space between updates otherwise gui will not have time to update
+        self.old_names = None
+        self.new_names = None
         
-        self.coroutine = None
-        
-        self.value = 0
-        self.delay_interval = 30
     
     def modal(self, context, event):
         mytool = context.scene.my_tool
@@ -1378,12 +1377,44 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
         wm.modal_handler_add(self)
+        
+        self.old_names = [ obj.name for obj in context.scene.objects ]
+        
         return {'RUNNING_MODAL'}
     
     
     def run(self, context):
         print("running", time.time())
         print("objects: ", len(context.scene.objects))
+        
+        
+        self.new_names = [ obj.name for obj in context.scene.objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        print("delta:", delta)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
+                
+            
+        
+        
+        
+        
+        
+        
+        # mesh_obj_name = 
         
         
 
@@ -1865,9 +1896,6 @@ class RubyOF(bpy.types.RenderEngine):
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
         
-        print(time.time())
-        print("from draw")
-        print("objects:", "(",len(scene.objects),")",  )
     
     
     # For viewport renders, this method gets called once at the start and
@@ -1882,9 +1910,6 @@ class RubyOF(bpy.types.RenderEngine):
         # send info to RubyOF about the data in the scene
         self.__update_scene(context, depsgraph)
         
-        print(time.time())
-        print("from update")
-        print("objects:", "(",len(scene.objects),")",  )
         
         
     
@@ -2815,11 +2840,11 @@ def register():
     
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
-    register_depgraph_handlers()
+    # register_depgraph_handlers()
 
 
 def unregister():
-    unregister_depgraph_handlers()
+    # unregister_depgraph_handlers()
     
     bpy.utils.unregister_class(RubyOF)
     
