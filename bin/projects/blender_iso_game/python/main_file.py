@@ -418,60 +418,11 @@ class AnimTexManager ():
         # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
         self.vertex_data    = []
         self.transform_data = []
-        
-        
-        # # Use timer APT to detect deletions in a separate thread.
-        # # Then, we can react to the deletions in the main thread.
-        # self.timer_dt = 1/60
-        # self.delete_queue = queue.Queue();
-        # self.timer = functools.partial(self.detect_deletions, mytool)
-        
-        # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-        
+    
         
     # def __del__(self):
-    #     if bpy.app.timers.is_registered(self.timer):
-    #         bpy.app.timers.unregister(self.timer)
+    #     pass
     
-    
-    # def detect_deletions(self, mytool):
-    #     # 
-    #     # update entity mappings
-    #     # 
-        
-    #     all_mesh_objects = [ obj
-    #                          for obj in mytool.collection_ptr.all_objects
-    #                          if obj.type == 'MESH' ]
-        
-        
-    #     # create map: obj name -> transform ID
-    #     object_map = { obj.name : i+1
-    #                    for i, obj in enumerate(all_mesh_objects) }
-        
-    #     # print(self.transform_data)
-        
-    #     old = [ mesh_name 
-    #                              for mesh_name, material
-    #                              in self.transform_data
-    #                              if mesh_name is not None ]
-    #     # print(old)
-    #     old_entity_names = set(old)
-        
-    #     new_entity_names = set(object_map.keys())
-        
-    #     delta_set = old_entity_names - new_entity_names
-        
-    #     if len(delta_set) > 0:
-    #         # print(">>old:", len(old_entity_names), old_entity_names)
-    #         # print(">>new:", len(new_entity_names), new_entity_names)
-    #         print("delta set:", delta_set)
-    #         print("set size:", len(delta_set))
-            
-    #         for obj_name in list(delta_set):
-    #             # these things have been deleted - process them
-    #             self.delete_queue.put(obj_name)
-        
-    #     return self.timer_dt
     
     # respond to messages from detect_deletions()
     def delete_mesh_objects(self, obj_name):
@@ -695,15 +646,6 @@ class AnimTexManager ():
     
     
     
-    
-    
-    
-    
-    
-    def update(self, scene):
-        print(time.time())
-        print("update from AnimTexManager")
-        print("objects:", "(",len(scene.objects),")",  )
     
     
     # 
@@ -1256,36 +1198,24 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
 
 
 
-
-
-
-
-def register_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+# def register_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
     
-    if not on_depsgraph_update in depsgraph_events:
-        depsgraph_events.append(on_depsgraph_update)
+#     if not on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.append(on_depsgraph_update)
 
-def unregister_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+# def unregister_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
     
-    if on_depsgraph_update in depsgraph_events:
-        depsgraph_events.remove(on_depsgraph_update)
+#     if on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.remove(on_depsgraph_update)
 
 
 
-def on_depsgraph_update(scene, depsgraph):
-    global anim_tex_manager
-    if anim_tex_manager is not None:
-        anim_tex_manager.update(scene)
-
-def pre_delete_callback(context, obj):
-    # if isinstance(obj, bpy.types.Object):
-    #     tex_manager = anim_texture_manager_singleton(context)
-        
-    #     tex_manager.pre_mesh_object_deletion(obj.name)
-    
-    pass
+# def on_depsgraph_update(scene, depsgraph):
+#     global anim_tex_manager
+#     if anim_tex_manager is not None:
+#         anim_tex_manager.update(scene)
 
 
 # bpy.app.handlers.undo_post
@@ -1293,45 +1223,7 @@ def pre_delete_callback(context, obj):
  
 # NOTE: may need to re-accuire image handles on undo / redo
 
-
-# can use the Timer API to get a regular tick
-# can update based on deletion using that tick, if necessary
-
-
-
-
- 
-# override delete s.t. we can establish a delete hook:
-# https://blender.stackexchange.com/questions/66065/object-delete-handler
-# https://blender.stackexchange.com/questions/28932/prevent-accidental-deletion-of-object/28933#28933
-
-
-# class OT_DeleteOverride(bpy.types.Operator):
-#     """delete operator with a callback"""
-#     bl_idname = "object.delete"
-#     bl_label = "Object Delete Operator"
-    
-#     @classmethod
-#     def poll(cls, context):
-#         return False
-    
-#     # def invoke(self, context, event):
-#     #     return context.window_manager.invoke_confirm(self, event)
-    
-#     def execute(self, context):
-#         # for obj in context.selected_objects:
-#         #     # pre_delete_callback(context, obj)
-            
-#         bpy.data.objects.remove(obj)
-#         print("delete")
-        
-#         return {'FINISHED'}
- 
- 
- 
- # (still not quite sure how to process object deletion though...)
-
-
+# NOTE: depsgraph is not updated when objecs are deleted
 
 
 
@@ -1443,7 +1335,10 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
 
 
 
-
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
 class OT_TexAnimSyncDeletions (bpy.types.Operator):
     """Watch for object deletions and sync them to the anim texture"""
     bl_idname = "wm.sync_deletions"
