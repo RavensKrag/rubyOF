@@ -780,6 +780,9 @@ class AnimTexManager ():
         self.to_ruby.write(json.dumps(data))
     
     
+    # note: in blender, one object can have many material slots, but this exporter only considers the first material slot, at least for now
+    
+    
     
     
     # TODO: consider removing 'context' from this function, somehow
@@ -801,41 +804,37 @@ class AnimTexManager ():
                              if obj.type == 'MESH' ]
         
         
-        tuples = [ (obj, obj.material_slots[0].material, i)
-                   for i, obj in enumerate(all_mesh_objects)
-                   if len(obj.material_slots) > 0 ]
+        obj_and_material_pairs = [ (obj, obj.material_slots[0].material)
+                                   for obj in all_mesh_objects
+                                   if len(obj.material_slots) > 0 ]
         
         
         # need to update the pixels in the transform texture
-        # that encode the color, but want to keep the other pixels the same
-        
-        # really need to update the API to remove the "scanline" notion before I can implement this correctly.
-        
-        # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
+        # that encode the color, but want to keep the other pixels the same.
+        # Thus, set individual pixels, rather than the entire scanline.
         
         texture = self.transform_tex
         
-        i = 0
-        for obj, bound_material, i in tuples:
+        for obj, bound_material in obj_and_material_pairs:
             # print(bound_material, updated_material)
             # print(bound_material.name, updated_material.name)
             if bound_material.name == updated_material.name:
+                i = self.transform_data_index(obj.name)
                 print("mesh index:",i)
-                row = i+1
-                # i = self.meshDatablock_to_meshID[obj.data]
-                # ^ oops
-                # this is an index in the position / normal textures. I need a position in the transform texture
-                col = 5
                 
-                mat = updated_material.rb_mat
-                
-                texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-                
-                diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-                texture.write_pixel(row,col+1, diffuse_with_alpha)
-                
-                texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-                texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
+                if i is not None:
+                    row = i
+                    col = 5
+                    
+                    mat = updated_material.rb_mat
+                    
+                    texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
+                    
+                    diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
+                    texture.write_pixel(row,col+1, diffuse_with_alpha)
+                    
+                    texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
+                    texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
         
         texture.save()
         
