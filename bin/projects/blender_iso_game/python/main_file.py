@@ -418,73 +418,10 @@ class AnimTexManager ():
         # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
         self.vertex_data    = []
         self.transform_data = []
-        
-        
-        # # Use timer APT to detect deletions in a separate thread.
-        # # Then, we can react to the deletions in the main thread.
-        # self.timer_dt = 1/60
-        # self.delete_queue = queue.Queue();
-        # self.timer = functools.partial(self.detect_deletions, mytool)
-        
-        # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-        
+    
         
     # def __del__(self):
-    #     if bpy.app.timers.is_registered(self.timer):
-    #         bpy.app.timers.unregister(self.timer)
-    
-    
-    # def detect_deletions(self, mytool):
-    #     # 
-    #     # update entity mappings
-    #     # 
-        
-    #     all_mesh_objects = [ obj
-    #                          for obj in mytool.collection_ptr.all_objects
-    #                          if obj.type == 'MESH' ]
-        
-        
-    #     # create map: obj name -> transform ID
-    #     object_map = { obj.name : i+1
-    #                    for i, obj in enumerate(all_mesh_objects) }
-        
-    #     # print(self.transform_data)
-        
-    #     old = [ mesh_name 
-    #                              for mesh_name, material
-    #                              in self.transform_data
-    #                              if mesh_name is not None ]
-    #     # print(old)
-    #     old_entity_names = set(old)
-        
-    #     new_entity_names = set(object_map.keys())
-        
-    #     delta_set = old_entity_names - new_entity_names
-        
-    #     if len(delta_set) > 0:
-    #         # print(">>old:", len(old_entity_names), old_entity_names)
-    #         # print(">>new:", len(new_entity_names), new_entity_names)
-    #         print("delta set:", delta_set)
-    #         print("set size:", len(delta_set))
-            
-    #         for obj_name in list(delta_set):
-    #             # these things have been deleted - process them
-    #             self.delete_queue.put(obj_name)
-        
-    #     return self.timer_dt
-    
-    # respond to messages from detect_deletions()
-    def delete_mesh_objects(self, obj_name):
-        print("object", obj_name, "was deleted")
-        
-        i = self.transform_data_index(obj_name)
-        
-        print(i)
-        
-        if i is not None:
-            pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
-            self.transform_tex.write_scanline(pixel_data, i)
-            self.transform_tex.save()
+    #     pass
     
     
     # handles triangulation
@@ -695,15 +632,6 @@ class AnimTexManager ():
     
     
     
-    
-    
-    
-    
-    
-    def update(self, scene):
-        print(time.time())
-        print("update from AnimTexManager")
-        print("objects:", "(",len(scene.objects),")",  )
     
     
     # 
@@ -1041,7 +969,7 @@ class AnimTexManager ():
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
         
     
-    # callback for right before deletion 
+    # callback for right after deletion 
     def post_mesh_object_deletion(self, obj_name): 
         print("object", obj_name, "was deleted")
         
@@ -1051,9 +979,23 @@ class AnimTexManager ():
         print(i)
         
         if i is not None:
+            print("deleting...")
+            # delete the data
             pixel_data = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
             self.transform_tex.write_scanline(pixel_data, i)
             self.transform_tex.save()
+            
+            # tell Ruby to update
+            data = {
+                'type': 'anim_texture_update',
+                'position_tex_path' : self.position_tex.filepath,
+                'normal_tex_path'   : self.normal_tex.filepath,
+                'transform_tex_path': self.transform_tex.filepath,
+            }
+            
+            to_ruby.write(json.dumps(data))
+            
+            print("delete complete")
         
         
     
@@ -1256,36 +1198,24 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
 
 
 
-
-
-
-
-def register_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+# def register_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
     
-    if not on_depsgraph_update in depsgraph_events:
-        depsgraph_events.append(on_depsgraph_update)
+#     if not on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.append(on_depsgraph_update)
 
-def unregister_depgraph_handlers():
-    depsgraph_events = bpy.app.handlers.depsgraph_update_post
+# def unregister_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
     
-    if on_depsgraph_update in depsgraph_events:
-        depsgraph_events.remove(on_depsgraph_update)
+#     if on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.remove(on_depsgraph_update)
 
 
 
-def on_depsgraph_update(scene, depsgraph):
-    global anim_tex_manager
-    if anim_tex_manager is not None:
-        anim_tex_manager.update(scene)
-
-def pre_delete_callback(context, obj):
-    # if isinstance(obj, bpy.types.Object):
-    #     tex_manager = anim_texture_manager_singleton(context)
-        
-    #     tex_manager.pre_mesh_object_deletion(obj.name)
-    
-    pass
+# def on_depsgraph_update(scene, depsgraph):
+#     global anim_tex_manager
+#     if anim_tex_manager is not None:
+#         anim_tex_manager.update(scene)
 
 
 # bpy.app.handlers.undo_post
@@ -1293,45 +1223,7 @@ def pre_delete_callback(context, obj):
  
 # NOTE: may need to re-accuire image handles on undo / redo
 
-
-# can use the Timer API to get a regular tick
-# can update based on deletion using that tick, if necessary
-
-
-
-
- 
-# override delete s.t. we can establish a delete hook:
-# https://blender.stackexchange.com/questions/66065/object-delete-handler
-# https://blender.stackexchange.com/questions/28932/prevent-accidental-deletion-of-object/28933#28933
-
-
-# class OT_DeleteOverride(bpy.types.Operator):
-#     """delete operator with a callback"""
-#     bl_idname = "object.delete"
-#     bl_label = "Object Delete Operator"
-    
-#     @classmethod
-#     def poll(cls, context):
-#         return False
-    
-#     # def invoke(self, context, event):
-#     #     return context.window_manager.invoke_confirm(self, event)
-    
-#     def execute(self, context):
-#         # for obj in context.selected_objects:
-#         #     # pre_delete_callback(context, obj)
-            
-#         bpy.data.objects.remove(obj)
-#         print("delete")
-        
-#         return {'FINISHED'}
- 
- 
- 
- # (still not quite sure how to process object deletion though...)
-
-
+# NOTE: depsgraph is not updated when objecs are deleted
 
 
 
@@ -1443,7 +1335,13 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
 
 
 
-
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
 class OT_TexAnimSyncDeletions (bpy.types.Operator):
     """Watch for object deletions and sync them to the anim texture"""
     bl_idname = "wm.sync_deletions"
@@ -1457,14 +1355,10 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         
         self._timer = None
         self.timer_dt = 1/60
-        self.done = False
         
-        self.timer_count = 0 #timer count, need to let a little bit of space between updates otherwise gui will not have time to update
+        self.old_names = None
+        self.new_names = None
         
-        self.coroutine = None
-        
-        self.value = 0
-        self.delay_interval = 30
     
     def modal(self, context, event):
         mytool = context.scene.my_tool
@@ -1483,12 +1377,44 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
         wm.modal_handler_add(self)
+        
+        self.old_names = [ obj.name for obj in context.scene.objects ]
+        
         return {'RUNNING_MODAL'}
     
     
     def run(self, context):
         print("running", time.time())
         print("objects: ", len(context.scene.objects))
+        
+        
+        self.new_names = [ obj.name for obj in context.scene.objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        print("delta:", delta)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
+                
+            
+        
+        
+        
+        
+        
+        
+        # mesh_obj_name = 
         
         
 
@@ -1970,9 +1896,6 @@ class RubyOF(bpy.types.RenderEngine):
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
         
-        print(time.time())
-        print("from draw")
-        print("objects:", "(",len(scene.objects),")",  )
     
     
     # For viewport renders, this method gets called once at the start and
@@ -1987,9 +1910,6 @@ class RubyOF(bpy.types.RenderEngine):
         # send info to RubyOF about the data in the scene
         self.__update_scene(context, depsgraph)
         
-        print(time.time())
-        print("from update")
-        print("objects:", "(",len(scene.objects),")",  )
         
         
     
@@ -2920,11 +2840,11 @@ def register():
     
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
-    register_depgraph_handlers()
+    # register_depgraph_handlers()
 
 
 def unregister():
-    unregister_depgraph_handlers()
+    # unregister_depgraph_handlers()
     
     bpy.utils.unregister_class(RubyOF)
     
