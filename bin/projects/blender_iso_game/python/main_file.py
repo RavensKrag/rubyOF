@@ -334,15 +334,15 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
     
     
     def run(self, context):
-        print("running", time.time())
-        print("objects: ", len(context.scene.objects))
+        # print("running", time.time())
+        # print("objects: ", len(context.scene.objects))
         
         
         self.new_names = [ obj.name for obj in context.scene.objects ]
         
         delta = list(set(self.old_names) - set(self.new_names))
         
-        print("delta:", delta)
+        # print("delta:", delta)
         
         if len(delta) > 0:
             self.old_names = self.new_names
