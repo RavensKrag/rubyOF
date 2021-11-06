@@ -1091,16 +1091,15 @@ class RubyOF(bpy.types.RenderEngine):
                     
                 elif obj.type == 'MESH':
                     pass
-                    # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-                    
-                    # message_queue.append(pack_mesh(obj))
-                    
-                    # ^ Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
+                    # Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
             
             # loop over all materials
             for mat in bpy.data.materials:
                 if mat.users > 0:
-                    message_queue.append(pack_material(mat))
+                    tex_manager.update_material(context, mat)
+            
+            # ^ will be hard to test this until I adopt a structure that makes the initial big export unnecessary
+            
             
             # TODO: want to separate out lights from meshes (objects)
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
@@ -1149,23 +1148,10 @@ class RubyOF(bpy.types.RenderEngine):
                         message_queue.append(pack_light(obj))
                         
                     elif obj.type == 'MESH':
-                        
-                        # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-                        
-                        # if update.is_updated_geometry:
-                        #     mesh_datablocks.append(obj.data)
-                        
-                        # send message to update mesh object transform, etc
-                        # message_queue.append(pack_mesh(obj))
-                        
-                        # update mesh datablock
+                        # update mesh object (transform)
+                        # sending updates to mesh datablocks if necessary
                         tex_manager.update_mesh_object(update, obj)
-                        
-                        
-                        
                     
-                    # if update.is_updated_transform:
-                    #     obj_data['transform'] = pack_transform(obj)
                     
                     # if isinstance(obj.data, bpy.types.Light):
                     #     obj_data['data'] = self.__pack_light(obj.data)
@@ -1179,18 +1165,10 @@ class RubyOF(bpy.types.RenderEngine):
                     mat = obj
                     tex_manager.update_material(context, mat)
                     
-                    message_queue.append(pack_material(mat))
             
-            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
-            
+            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material.
+        
         # ----------
-        # TODO: if many objects use one mesh datablock, should only need to send that datablock once. old style did this, but the new style does not.
-        
-        # If many objects use one mesh datablock, 
-        # should only send that datablock once.
-        # That is why we need to group them all up before sending
-        
-        # (DELETED OLD CODE FOR MESH EXPORT)
         
         # send out all the regular messages after the datablocks
         # to prevent dependency issues
@@ -1207,31 +1185,6 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
-        # information about material linkages
-        # (send all info every frame)
-        # (RubyOF will figure out whether to rebind or not)
-        for obj in bpy.data.objects:
-            if isinstance(obj.data, bpy.types.Mesh):
-                # print("found object with mesh")
-                
-                material_name = ''
-                # ^ default material name
-                #   tells RubyOF to bind default material
-                
-                # if there is a material bound, use that instead of the default
-                if(len(obj.material_slots) > 0):
-                    mat = obj.material_slots[0].material
-                    material_name = mat.name
-                
-                data = {
-                    'type': 'material_mapping',
-                    'object_name': obj.name_full,
-                    'material_name': material_name
-                }
-                
-                # TODO: silence material linkage for now, but need to re-instate an equivalent way to send this data later. Have to turn it off for now because I'm deliberately not sending some mesh datablocks to RubyOF. If the meshes don't exist over there, then trying to set the linkage will cause a crash.
-                
-                # to_ruby.write(json.dumps(data))
         
         data = {
             'type': 'timestamp',
@@ -1242,10 +1195,6 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
-        # TODO: serialize and send materials that have changed
-        
-        # note: in blender, one object can have many material slots
-    
     # --------------------------------
 
 
