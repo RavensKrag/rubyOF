@@ -1151,10 +1151,6 @@ class RubyOF(bpy.types.RenderEngine):
                         # update mesh object (transform)
                         # sending updates to mesh datablocks if necessary
                         tex_manager.update_mesh_object(update, obj)
-                    
-                    
-                    # if isinstance(obj.data, bpy.types.Light):
-                    #     obj_data['data'] = self.__pack_light(obj.data)
                 
                 # only send data for updated materials
                 if isinstance(obj, bpy.types.Material):
