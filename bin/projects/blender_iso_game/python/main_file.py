@@ -511,6 +511,8 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         
         reset_anim_tex_manager(context)
         
+        mytool = context.scene.my_tool
+        mytool.sync_deletions = False
         
         return {'FINISHED'}
 
@@ -564,6 +566,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         layout.row().separator()
         
         
+        layout.label(text="check for deletions?")
         label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
         layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
         # ^ updated by OT_TexAnimSyncDeletions
