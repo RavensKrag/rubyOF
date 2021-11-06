@@ -1,7 +1,7 @@
 bl_info = {
     "name": "RubyOF renderer engine",
     "author": "Jason Ko",
-    "version": (0, 0, 2),
+    "version": (0, 0, 3),
     "blender": (2, 90, 1),
     "location": "Render",
     "description": "Integration with external real-time RubyOF renderer for games, etc",
@@ -45,33 +45,92 @@ import hashlib
 import math
 
 
-
-
-# need extra help to reload classes:
-# https://developer.blender.org/T66924
-# by gecko man (geckoman), Jul 22 2019, 9:02 PM
-
-import importlib, sys
-# reloads class' parent module and returns updated class
-def reload_class(c):
-    mod = sys.modules.get(c.__module__)
-    importlib.reload(mod)
-    return mod.__dict__[c.__name__]
-
-
-import os
-from image_wrapper import ( ImageWrapper, get_cached_image )
-
-ImageWrapper = reload_class(ImageWrapper)
-
-
-import time
-from progress_bar import ( OT_ProgressBarOperator, coroutine )
-OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
+from class_reloader import reload_class
+from utilities import *
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------
+#   Live communication between Blender (python) and RubyOF (Ruby)
+#   (uses FIFO to send JSON messages)
+# ------------------------------------------------------------------------
+
+
+class IPC_Helper():
+    def __init__(self, fifo_path):
+        self.fifo_path = fifo_path
+    
+    def write(self, message):
+        if not os.path.exists(self.fifo_path):
+            return
+        
+        # print("-----")
+        # print("=> FIFO open")
+        pipe = open(self.fifo_path, 'w')
+        
+        
+        start_time = time.time()
+        try:
+            # text = text.encode('utf-8') # <-- not needed
+            
+            pipe.write(message + "\n")
+            
+            # print(message)
+            # print("=> msg len:", len(message))
+        except IOError as e:
+            pass
+            # print("broken pipe error (suppressed exception)")
+        
+        stop_time = time.time()
+        dt = (stop_time - start_time) * 1000
+        # print("=> fifo data transfer: ", dt, " msec" )
+        
+        pipe.close()
+        # print("=> FIFO closed")
+        # print("-----")
+    
+    
+    # def __del__(self):
+    #     pass
+        
+        # self.fifo.close()
+        # print("FIFO closed")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------
+#   properties needed for mesh export to OpenEXR
+#   (serialized data)
+# ------------------------------------------------------------------------
 
 
 class PG_MyProperties (bpy.types.PropertyGroup):
@@ -210,309 +269,198 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
-
-
-
-
-
-# ------------------------------------------------------------------------
-#   utility functions
-# ------------------------------------------------------------------------
-
-def vec3_to_rgba(vec):
-    # allocate data for one pixel (RGBA)
-    px = [0.0, 0.0, 0.0, 1.0]
-    
-    px[0] = vec[0]
-    px[1] = vec[1]
-    px[2] = vec[2]
-    # no data to put in alpha channel
-    
-    return px
-
-def vec4_to_rgba(vec):
-    # allocate data for one pixel (RGBA)
-    px = [0.0, 0.0, 0.0, 1.0]
-    
-    px[0] = vec[0]
-    px[1] = vec[1]
-    px[2] = vec[2]
-    px[3] = vec[3]
-    
-    return px
-
-# scanline : array of pixel data (not nested array, just a flat array)
-# Set the data for one pixel within an array representing a whole scanline
-def scanline_set_px(scanline, px_i, px_data, channels=4):
-    for i in range(channels):
-        scanline[px_i*channels+i] = px_data[i]
-
-
-
-
-
-def export_vertex_data(mytool, mesh, output_frame):
-    mesh.calc_loop_triangles()
-    # ^ need to call this to populate the mesh.loop_triangles() cache
-    
-    mesh.calc_normals_split()
-    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-    # ^ normals stored on the tri / face
     
     
-    # TODO: update all code to use RGB (no alpha) to save some memory
-    # TODO: use half instead of float to save memory
     
+    def update_function(self, context):
+        if self.sync_deletions:
+            bpy.ops.wm.sync_deletions('INVOKE_DEFAULT')
+        
+        return None
     
-    # NOTE: all textures in the same animation set have the same dimensions
-    
-    # output_path = bpy.path.abspath("//")
-    
-    
-    pos_texture = ImageWrapper(
-        get_cached_image(mytool, "position_tex",
-                         mytool.name+".position",
-                         size=calc_geometry_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
+    sync_deletions : BoolProperty(
+        name="Sync Deletions",
+        default=False,
+        update=update_function
     )
     
-    norm_texture = ImageWrapper(
-        get_cached_image(mytool, "normal_tex",
-                         mytool.name+".normal",
-                         size=calc_geometry_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    # (bottom row of pixels will always be full red)
-    # This allows for the easy identification of one edge,
-    # like a "this side up" sign, but it also allows for
-    # the user to create frames completely free of any
-    # visible geometry. (useful with GPU instancing)
-    
-    # data for just this object
-    pixel_data = [1.0, 0.0, 0.0, 1.0] * pos_texture.width
-    
-    pos_texture.write_scanline(pixel_data, 0)
-    
-    
-    
-    # 
-    # allocate pixel data buffers for mesh
-    # 
-    
-    scanline_position = [0.2, 0.2, 0.2, 1.0] * pos_texture.width
-    scanline_normals  = [0.0, 0.0, 0.0, 1.0] * norm_texture.width
-    # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
-    
-    
-    # 
-    # pack each and every triangle
-    # 
-    
-    # number of actual verts likely to be less than maximum
-    # so just measure the list
-    num_tris  = len(mesh.loop_triangles)
-    num_verts = len(mesh.loop_triangles)*3
-    print("num tris:", num_tris)
-    print("num verts:", num_verts)
 
-    if num_tris > mytool.max_tris:
-        raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {mytool.max_tris} tris. Please increase the size of the animation texture.')
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+class OT_TexAnimSyncDeletions (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "wm.sync_deletions"
+    bl_label = "Sync Deletions"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def __init__(self):
+        
+        self._timer = None
+        self.timer_dt = 1/60
+        
+        self.old_names = None
+        self.new_names = None
+        
+    
+    def modal(self, context, event):
+        mytool = context.scene.my_tool
+        
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not mytool.sync_deletions:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
+    
+    def invoke(self, context, event):
+        wm = context.window_manager
+        
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
+        
+        self.old_names = [ obj.name for obj in context.scene.objects ]
+        
+        return {'RUNNING_MODAL'}
     
     
-    verts = mesh.vertices
-    for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
-        normals = tri.split_normals
-        for j in range(3): # verts per triangle
-            vert_index = tri.vertices[j]
-            vert = verts[vert_index]
+    def run(self, context):
+        print("running", time.time())
+        print("objects: ", len(context.scene.objects))
+        
+        
+        self.new_names = [ obj.name for obj in context.scene.objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        print("delta:", delta)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
             
-            scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
-                            channels=pos_texture.channels_per_pixel)
+            tex_manager = anim_texture_manager_singleton(context)
             
-            
-            normal = normals[j]
-            
-            scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
-                            channels=norm_texture.channels_per_pixel)
-    
-    pos_texture.write_scanline(scanline_position, output_frame)
-    norm_texture.write_scanline(scanline_normals, output_frame)
-    
-    
-    pos_texture.save()
-    norm_texture.save()
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
 
 
-def export_transform_data(mytool, target_object, scanline=1, mesh_id=1):
-    # TODO: update all code to use RGB (no alpha) to save some memory
-    # TODO: use half instead of float to save memory
-    
-    
-    # TODO: consider using black and white for these textures, if that saves on pixels / somehow makes calculation easier (need to consider entire pipeline, so this must be delayed for a while)
-    
-    # output_path = bpy.path.abspath("//")
-    
-    
-    
-    transform_tex = ImageWrapper(
-        get_cached_image(mytool, "transform_tex",
-                         mytool.name+".transform",
-                         size=calc_transform_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    # (bottom row of pixels will always be full red)
-    # This allows for the easy identification of one edge,
-    # like a "this side up" sign, but it also allows for
-    # the user to create frames completely free of any
-    # visible geometry. (useful with GPU instancing)
-    
-    # data for just this object
-    pixel_data = [1.0, 0.0, 1.0, 1.0] * transform_tex.width
-    
-    transform_tex.write_scanline(pixel_data, 0)
-    
-    
-    # 
-    # extract transforms from object
-    # 
-    
-    # this_mat = target_object.matrix_local
-    this_mat = target_object.matrix_world
-    # print(this_mat)
-    # print(type(this_mat))
-    
-    identity_matrix = this_mat.Identity(4)
-    
-    # out_mat = identity_matrix
-    out_mat = this_mat
-    
-    
-    # 
-    # write transforms to image
-    # 
-    
-    scanline_transform = [0.0, 0.0, 0.0, 0.0] * transform_tex.width
-    
-    
-    id = mesh_id # TODO: update this to match mesh index
-    
-    scanline_set_px(scanline_transform, 0, [id, id, id, 1.0],
-                    channels=transform_tex.channels_per_pixel)
-    
-    for i in range(1, 5): # range is exclusive of high end: [a, b)
-        scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
-                        channels=transform_tex.channels_per_pixel)
-    
-    
-    
-    # 
-    # set color (if no material set, default to white)
-    # 
-    
-    
-    mat_slots = target_object.material_slots
-    
-    # color = c1 = c2 = c3 = c4 = alpha = None
-    
-    if len(mat_slots) > 0:
-        mat = mat_slots[0].material.rb_mat
-        c1 = mat.ambient
-        c2 = mat.diffuse
-        c3 = mat.specular
-        c4 = mat.emissive
-        alpha = mat.alpha
-    else:
-        color = Color((1.0, 1.0, 1.0)) # (0,0,0)
-        c1 = color
-        c2 = color
-        c3 = color
-        c4 = color
-        alpha = 1
-        # default white for unspecified color
-        # (ideally would copy this from the default in materials)
-    
-    scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1) + [alpha],
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2),
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
-                    channels=transform_tex.channels_per_pixel)
-    
-    scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
-                    channels=transform_tex.channels_per_pixel)
-    
-    transform_tex.write_scanline(scanline_transform, scanline)
-    
-    
-    transform_tex.save()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 # ------------------------------------------------------------------------
-#   operators
+#   Helpers needed to manipulate OpenEXR data
+#   (live in-memory data)
 # ------------------------------------------------------------------------
 
-meshDatablock_to_meshID = None
-# ^ TODO: think about a better way to grant access to this key variable
-
-def calc_geometry_tex_size(mytool):
-    width_px  = mytool.max_tris*3 # 3 verts per triangle
-    height_px = mytool.max_frames
-    
-    return [width_px, height_px]
+import os
 
 
-# 
-# This transform matrix data used by the GPU in the context of GPU instancing
-# to draw various geometries that have been encoded onto textures.
-# 
-# This is not intended as an interchange format between Blender and RubyOF
-# (it may be better to send individual position / rotation / scale instead)
-# (so that way the individual components of the transform can be edited)
-# 
+from anim_tex_manager import ( AnimTexManager )
+AnimTexManager = reload_class(AnimTexManager)
 
-def calc_transform_tex_size(mytool):
-    # the transform texture must encode 3 things:
-    
-    # 1) a mat4 for the object's transform
-    channels_per_pixel = 4
-    mat4_size = 4*4;
-    pixels_per_transform = mat4_size // channels_per_pixel;
-    
-    # 2) what mesh to use when rendering this object
-    pixels_per_id_block = 1
-    
-    # 3) values needed by the material (like Unity's material property block)
-    pixels_for_material = 4
-    
-    width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
-    height_px = mytool.max_num_objects
-    
-    return [width_px, height_px]
 
-def find_unique_mesh_pairs(all_mesh_objects):
-    """Given a list of mesh objects, return
-       all pairs (mesh_object, mesh_datablock)
-       such that each mesh_datablock is unique"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------
+#   Things that need to be accessed in mulitple places,
+#   so I declared them global for now
+# ------------------------------------------------------------------------
+
+
+# initialize in global scope - doesn't open FIFO until IPC_Helper.write()
+to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
+
+
+
+
+
+# TODO: reset this "singleton" if the dimensions of the animation texture have changed
+anim_tex_manager = None
+
+def anim_texture_manager_singleton(context):
+    global anim_tex_manager
+    if anim_tex_manager == None:
+        anim_tex_manager = AnimTexManager(context, to_ruby)
     
-    unique_mesh_datablocks = set()
-    unique_pairs = []
+    return anim_tex_manager
+
+def reset_anim_tex_manager(context):
+    global anim_tex_manager
+    mytool = context.scene.my_tool
     
-    for obj in all_mesh_objects:
-        if obj.data in unique_mesh_datablocks:
-            pass
-        else:
-            unique_mesh_datablocks.add(obj.data)
-            unique_pairs.append( (obj, obj.data) )
+    mytool.position_tex  = None
+    mytool.normal_tex    = None
+    mytool.transform_tex = None
     
-    return unique_pairs
+    anim_tex_manager = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------
+#   User interface for animation texture export
+#   (front end to OpenEXR export)
+# ------------------------------------------------------------------------
+
+
+import time
+from progress_bar import ( OT_ProgressBarOperator )
+OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
+
 
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
@@ -535,172 +483,14 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
     # called every tick
     @coroutine
     def run(self):
-        t0 = time.time()
-        
-        context = yield(0)
-        
-        mytool = context.scene.my_tool
-        
-        mytool.status_message = "eval dependencies"
-        depsgraph = context.evaluated_depsgraph_get()
         context = yield(0.0)
         
+        tex_manager = anim_texture_manager_singleton(context)
         
-        # collect up all the objects to export
-        
-        # for each object find the associated mesh datablock
-        # reduce to the objects with unique mesh datablocks
-        # generate evaluated meshes for those objects
-        # create mapping of obj -> evaulated mesh
-        
-        # create mapping of evaluated mesh -> scanline index
-        # export evaluated meshes to file
-        
-        # for each object
-            # map object -> mesh -> mesh scanline index
-            # export object transform with mesh_id= mesh scanline index
-        
-        
-        
-        
-        all_objects = mytool.collection_ptr.all_objects
-        
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        num_objects = len(all_mesh_objects)
-        if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
-        
-        
-        # 
-        # create a list of unique evaluated meshes
-        # AND
-        # map mesh datablock -> mesh id
-        # so object transfoms and mesh ID can be paired up in transform export
-        mytool.status_message = "collect mesh data"
-        
-        # don't need (obj -> mesh datablock) mapping
-        # as each object already knows its mesh datablock
-        
-        global meshDatablock_to_meshID
-        
-        unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-        mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
-        mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
-        
-        meshDatablock_to_meshID = { mesh : i+1
-                                    for i, mesh in enumerate(mesh_datablocks) }
-        
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
-                          for obj in mesh_objects ]
-        
-        # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
-            # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
-        
-        # unique_datablocks = list(set( [ x.data for x in all_mesh_objects ] )) 
-        # # ^ will change the order of the data, which is bad
-        
-        context = yield( 0.0 )
-        
-        
-        
-        # 
-        # calculate how many tasks there are
-        # 
-        
-        total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
-        task_count = 0
-        
-        
-        # 
-        # export all unique meshes
-        # 
-        
-        mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unqiue_meshes):
-            export_vertex_data(mytool, mesh, i+1) # handles triangulation
-                # NOTE: This index 'i+1' ends up always being the same as the indicies in meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
-            
-            task_count += 1
-            context = yield(task_count / total_tasks)
-        
-        # 
-        # export all objects
-        # (transforms and associated mesh IDs)
-        # 
-        object_map = {}
-        
-        mytool.status_message = "export object transforms"
-        for i, obj in enumerate(all_mesh_objects):
-            # use mapping: obj -> mesh datablock -> mesh ID
-            export_transform_data(mytool, obj,
-                                  scanline=i+1,
-                                  mesh_id=meshDatablock_to_meshID[obj.data])
-            
-            # create map: obj name -> transform ID
-            object_map[obj.name] = i+1
-            
-            task_count += 1
-            context = yield(task_count / total_tasks)
-        
-        # images = [
-        #     mytool.position_tex,
-        #     mytool.normal_tex,
-        #     mytool.transform_tex
-        # ]
-        
-        # for image in images:
-        #     image.save_render(
-        #         image.filepath_raw,
-        #         scene=bpy.context.scene
-        #     )
-        
-        
-        # 
-        # get name of object -> mesh id mapping
-        # 
-        
-        mytool.status_message = "show object map"
-        
-        # send mapping to RubyOF
-        data = {
-            'type': 'object_to_id_map',
-            'value': object_map,
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        
-        
-        
-        # 
-        # let RubyOF know that new animation textures have been exported
-        # 
-        
-        data = {
-            'type': 'anim_texture_update',
-            'normal_tex_path'  : os.path.join(
-                                    bpy.path.abspath(mytool.output_dir),
-                                    mytool.name+".normal"+'.exr'),
-            'position_tex_path': os.path.join(
-                                    bpy.path.abspath(mytool.output_dir),
-                                    mytool.name+".position"+'.exr'),
-            'transform_tex_path': os.path.join(
-                                    bpy.path.abspath(mytool.output_dir),
-                                    mytool.name+".transform"+'.exr'),
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        
-        context = yield(task_count / total_tasks)
-        
-        t1 = time.time()
-        
-        print("time elapsed:", t1-t0, "sec")
+        # Delegating to a subgenerator
+        # https://www.python.org/dev/peps/pep-0380/
+        # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
+        yield from tex_manager.export_all_textures()
 
 
 
@@ -716,14 +506,11 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
     def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
-        mytool = context.scene.my_tool
-        
-        mytool.position_tex  = None
-        mytool.normal_tex    = None
-        mytool.transform_tex = None
+        reset_anim_tex_manager(context)
         
         
         return {'FINISHED'}
+
 
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
@@ -737,9 +524,9 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
     bl_space_type = "PROPERTIES"
 
 
-#   def __init(self):
-#       super( self, Panel ).__init__()
-#       bl_category = bpy.context.preferences.addons[__name__].preferences.category 
+  # def __init(self):
+  #     super( self, Panel ).__init__()
+  #     bl_category = bpy.context.preferences.addons[__name__].preferences.category 
 
     @classmethod
     def poll(cls, context):
@@ -770,16 +557,14 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         layout.row().separator()
         
         layout.operator("wm.texanim_clear_all_textures")
-
-
-
-
-
-
-
-
-
-
+        
+        layout.row().separator()
+        
+        
+        label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
+        layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
+        # ^ updated by OT_TexAnimSyncDeletions
+        
 
 
 
@@ -821,15 +606,6 @@ def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
         return sensor_y;
     
     return sensor_x;
-
-
-
-
-
-
-
-    
-    
     
 def pack_light(obj):
     data = {
@@ -880,160 +656,6 @@ def pack_mesh(obj):
     }
     
     return obj_data
-
-def pack_mesh_data(mesh, shm_dir):
-    mesh.calc_loop_triangles()
-    # ^ need to call this to populate the mesh.loop_triangles() cache
-    
-    mesh.calc_normals_split()
-    # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
-    # ^ normals stored on the tri / face
-    
-    
-    # 
-    # vert positions
-    # 
-    
-    start_time = time.time()
-    
-    # number of actual verts likely to be less than maximum
-    # so just measure the list
-    num_verts = len(mesh.vertices)*3 # TODO: rename this variable
-    vert_data = [None] * num_verts
-    
-    
-    for i in range(len(mesh.vertices)):
-        vert = mesh.vertices[i]
-        
-        vert_data[i*3+0] = vert.co[0]
-        vert_data[i*3+1] = vert.co[1]
-        vert_data[i*3+2] = vert.co[2]
-    
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("vertex export: ", dt, " msec" )
-    
-    
-    # 
-    # index buffer
-    # 
-    
-    start_time = time.time()
-    
-    
-    index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("index export: ", dt, " msec" )
-    
-    
-    # 
-    # normal vectors
-    # 
-    
-    start_time = time.time()
-    
-    num_tris = len(mesh.loop_triangles)
-    
-    num_normals = (num_tris * 3 * 3)
-    normal_data = [None] * num_normals
-    
-    # iter3 = range(3)
-    
-    for i in range(num_tris):
-        tri = mesh.loop_triangles[i]
-        for j in range(3):
-            normal = tri.split_normals[j]
-            for k in range(3):
-                idx = 9*i+3*j+k
-                # print(idx)
-                # print(i, ' ', j, ' ', k)
-                normal_data[idx] = normal[k]
-    
-    
-    
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("normal export: ", dt, " msec" )
-    
-    
-    # 
-    # pack Base64 normal vector data
-    # 
-    
-    start_time = time.time()
-    
-    # array -> binary blob
-    binary_data = struct.pack('%df' % num_normals, *normal_data)
-    
-    # normal binary -> base 64 encoded binary -> ascii
-    binary_string = base64.b64encode(binary_data).decode('ascii')
-    
-    
-    sha = hashlib.sha1(binary_data).hexdigest()
-    tmp_normal_file_path = os.path.join(shm_dir, "%s.txt" % sha)
-    
-    
-    # tmp_normal_file_path = os.path.join(shm_dir, "normals.txt")
-    
-    if not os.path.exists(tmp_normal_file_path):
-        with open(tmp_normal_file_path, 'w') as f:
-            f.write(binary_string)
-        
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("shm file io (normals): ", dt, " msec" )
-    
-    
-    # 
-    # pack Base64 vertex data
-    # 
-    
-    start_time = time.time()
-    
-    # array -> binary blob
-    binary_data = struct.pack('%df' % num_verts, *vert_data)
-    
-    # normal binary -> base 64 encoded binary -> ascii
-    binary_string = base64.b64encode(binary_data).decode('ascii')
-    
-    
-    sha = hashlib.sha1(binary_data).hexdigest()
-    tmp_vert_file_path = os.path.join(shm_dir, "%s.txt" % sha)
-    
-    
-    # tmp_vert_file_path = os.path.join(self.shm_dir, "verts.txt")
-    
-    if not os.path.exists(tmp_vert_file_path):
-        with open(tmp_vert_file_path, 'w') as f:
-            f.write(binary_string)
-        
-    stop_time = time.time()
-    dt = (stop_time - start_time) * 1000
-    print("shm file io (verts): ", dt, " msec" )
-    
-    
-    # 
-    # Pack final mesh datablock data for FIFO transmission
-    # 
-    
-    data = {
-        'type': typestring(mesh),
-        'name': mesh.name, # name of the data, not the object
-        'verts': [
-            'float', num_verts, tmp_vert_file_path
-        ],
-        'normals': [
-            'float', num_normals, tmp_normal_file_path
-        ],
-        'tris' : index_buffer
-    }
-    
-    return data
-
-
 
 def pack_material(mat):
     data = {
@@ -1199,15 +821,15 @@ def calc_ortho_scale(scene, space, rv3d):
     
     # with estimated ortho scale, compute sensor size
     ortho_scale = scene.my_custom_props.ortho_scale
-    print('ortho scale -> sensor size')
+    # print('ortho scale -> sensor size')
     sensor_size = ortho_scale * space.lens / rv3d.view_distance
-    print(sensor_size)
+    # print(sensor_size)
     
     # then, with that constant sensor size, compute the dynamic ortho scale
-    print('that sensor size -> ortho scale')
+    # print('that sensor size -> ortho scale')
     sensor_size = 71.98320027323571
     ortho_scale = rv3d.view_distance * sensor_size / space.lens
-    print(ortho_scale)
+    # print(ortho_scale)
     
     # ^ this works now!
     #   but now I need to be able to automatically compute the sensor size...
@@ -1221,8 +843,8 @@ def calc_viewport_fov(rv3d):
     vmat_inv = rv3d.view_matrix.inverted()
     pmat = rv3d.perspective_matrix @ vmat_inv # @ is matrix multiplication
     fov = 2.0*math.atan(1.0/pmat[1][1])*180.0/math.pi;
-    print('rv3d fov:')
-    print(fov)
+    # print('rv3d fov:')
+    # print(fov)
     
     return fov
     
@@ -1249,129 +871,9 @@ def calc_viewport_fov(rv3d):
 
 
 
-# repack for all entities that use this material
-# (like denormalising two database tables)
-# transform with color info          material color info
-def update_material(context, updated_material):
-    print("updating material...")
-    
-    mytool = context.scene.my_tool
-    
-    
-    # don't need this (not writing to the variable)
-    # but it helps to remember the scope of globals
-    global meshDatablock_to_meshID
-    
-    
-    all_mesh_objects = [ obj
-                         for obj in mytool.collection_ptr.all_objects
-                         if obj.type == 'MESH' ]
-    
-    
-    tuples = [ (obj, obj.material_slots[0].material, i)
-               for i, obj in enumerate(all_mesh_objects)
-               if len(obj.material_slots) > 0 ]
-    
-    
-    # need to update the pixels in the transform texture
-    # that encode the color, but want to keep the other pixels the same
-    
-    # really need to update the API to remove the "scanline" notion before I can implement this correctly.
-    
-    # If the API allows for setting a pixel at a time, instead of setting a whole scanline all at once, then this can become much easier.
-    
-    transform_tex = ImageWrapper(
-        get_cached_image(mytool, "transform_tex",
-                         mytool.name+".transform",
-                         size=calc_transform_tex_size(mytool),
-                         channels_per_pixel=4),
-        mytool.output_dir
-    )
-    
-    
-    i = 0
-    for obj, bound_material, i in tuples:
-        # print(bound_material, updated_material)
-        # print(bound_material.name, updated_material.name)
-        if bound_material.name == updated_material.name:
-            print("mesh index:",i)
-            row = i+1
-            # i = meshDatablock_to_meshID[obj.data]
-            # ^ oops
-            # this is an index in the position / normal textures. I need a position in the transform texture
-            col = 5
-            
-            mat = updated_material.rb_mat
-            
-            transform_tex.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-            
-            diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-            transform_tex.write_pixel(row,col+1, diffuse_with_alpha)
-            
-            transform_tex.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-            transform_tex.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
-            
-    transform_tex.save()
-    
-    data = {
-        'type': 'material_update',
-        'normal_tex_path'  : os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".normal"+'.exr'),
-        'position_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".position"+'.exr'),
-        'transform_tex_path': os.path.join(
-                                bpy.path.abspath(mytool.output_dir),
-                                mytool.name+".transform"+'.exr')
-    }
-    
-    to_ruby.write(json.dumps(data))
-    
 
 
 
-
-class IPC_Helper():
-    def __init__(self, fifo_path):
-        self.fifo_path = fifo_path
-    
-    def write(self, message):
-        if not os.path.exists(self.fifo_path):
-            return
-        
-        print("-----")
-        print("=> FIFO open")
-        pipe = open(self.fifo_path, 'w')
-        
-        
-        start_time = time.time()
-        try:
-            # text = text.encode('utf-8')
-            
-            pipe.write(message + "\n")
-            
-            print(message)
-            print("=> msg len:", len(message))
-        except IOError as e:
-            print("broken pipe error (suppressed exception)")
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        print("=> fifo data transfer: ", dt, " msec" )
-        
-        pipe.close()
-        print("=> FIFO closed")
-        print("-----")
-    
-    
-    # def __del__(self):
-    #     pass
-        
-        # self.fifo.close()
-        # print("FIFO closed")
-    
-to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
 
 class RubyOF(bpy.types.RenderEngine):
@@ -1454,10 +956,29 @@ class RubyOF(bpy.types.RenderEngine):
     def view_draw(self, context, depsgraph):
         # send data to RubyOF about the viewport / camera
         self.__update_viewport(context, depsgraph)
+        self.__render_viewport(context, depsgraph)
         
-        #
-        # Render the viewport
-        #
+    
+    
+    # For viewport renders, this method gets called once at the start and
+    # whenever the scene or 3D viewport changes. This method is where data
+    # should be read from Blender in the same thread. Typically a render
+    # thread will be started to do the work while keeping Blender responsive.
+    def view_update(self, context, depsgraph):
+        region = context.region
+        view3d = context.space_data
+        scene = depsgraph.scene
+        
+        # send info to RubyOF about the data in the scene
+        self.__update_scene(context, depsgraph)
+        
+        
+        
+    
+        
+    # ---- private helper methods ----
+    
+    def __render_viewport(self, context, depsgraph):
         region = context.region
         scene = depsgraph.scene
         
@@ -1477,22 +998,6 @@ class RubyOF(bpy.types.RenderEngine):
         
         self.unbind_display_space_shader()
         bgl.glDisable(bgl.GL_BLEND)
-    
-    
-    # For viewport renders, this method gets called once at the start and
-    # whenever the scene or 3D viewport changes. This method is where data
-    # should be read from Blender in the same thread. Typically a render
-    # thread will be started to do the work while keeping Blender responsive.
-    def view_update(self, context, depsgraph):
-        region = context.region
-        view3d = context.space_data
-        scene = depsgraph.scene
-        
-        # send info to RubyOF about the data in the scene
-        self.__update_scene(context, depsgraph)
-    
-        
-    # ---- private helper methods ----
     
     def __update_viewport(self, context, depsgraph):
         #
@@ -1558,26 +1063,10 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
-        # 
-        # create meshDatablock_to_meshID mapping if it does not already exist
-        # 
+        tex_manager = anim_texture_manager_singleton(context)
         
-        global meshDatablock_to_meshID
-        if meshDatablock_to_meshID is None:
-            mytool = context.scene.my_tool
-            
-            all_mesh_objects = [ obj
-                                 for obj
-                                 in mytool.collection_ptr.all_objects
-                                 if obj.type == 'MESH' ]
-            
-            unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-            mesh_datablocks = [ datablock
-                                for obj, datablock in unique_pairs ]
-            
-            meshDatablock_to_meshID = { mesh : i+1
-                                        for i, mesh
-                                        in enumerate(mesh_datablocks) }
+        
+        # tex_manager.update(context)
         
         
         
@@ -1585,7 +1074,6 @@ class RubyOF(bpy.types.RenderEngine):
         # the datablock messages must be sent before entity messages
         # otherwise there will be issues with dependencies
         message_queue   = [] # list of dict
-        mesh_datablocks = [] # list of datablock objects (various types)
         
         active_object = context.active_object
         
@@ -1603,17 +1091,15 @@ class RubyOF(bpy.types.RenderEngine):
                     
                 elif obj.type == 'MESH':
                     pass
-                    # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-                    
-                    # mesh_datablocks.append(obj.data)
-                    # message_queue.append(pack_mesh(obj))
-                    
-                    # ^ Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
+                    # Don't really need to send this data on startup. the assumption should be that the texture holds most of the transform / vertex data in between sessions of RubyOF.
             
             # loop over all materials
             for mat in bpy.data.materials:
                 if mat.users > 0:
-                    message_queue.append(pack_material(mat))
+                    tex_manager.update_material(context, mat)
+            
+            # ^ will be hard to test this until I adopt a structure that makes the initial big export unnecessary
+            
             
             # TODO: want to separate out lights from meshes (objects)
             # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
@@ -1630,32 +1116,7 @@ class RubyOF(bpy.types.RenderEngine):
             print(active_object)
             
             
-            mytool = context.scene.my_tool
-            
-            # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-            
-            mesh = active_object.data
-            export_vertex_data(mytool, mesh, meshDatablock_to_meshID[mesh])
-            
-            # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
-            data = {
-                'type': 'geometry_update',
-                'scanline': meshDatablock_to_meshID[mesh],
-                'normal_tex_path'  : os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".normal"+'.exr'),
-                'position_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".position"+'.exr'),
-                'transform_tex_path': os.path.join(
-                                        bpy.path.abspath(mytool.output_dir),
-                                        mytool.name+".transform"+'.exr')
-            }
-            
-            to_ruby.write(json.dumps(data))
-            
-            
-            # # TODO: try removing the object message and only sending the mesh data message. this may be sufficient, as the name linking the two should stay the same, and I don't think the object properties are changing.
+            tex_manager.update_mesh_datablock(active_object)
             
             
             # send material data if any material was changed
@@ -1680,23 +1141,16 @@ class RubyOF(bpy.types.RenderEngine):
             # Loop over all object instances in the scene.
             for update in depsgraph.updates:
                 obj = update.id
+                print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
                 
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':
                         message_queue.append(pack_light(obj))
                         
                     elif obj.type == 'MESH':
-                        # TODO: re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
-                        
-                        # if update.is_updated_geometry:
-                        #     mesh_datablocks.append(obj.data)
-                        message_queue.append(pack_mesh(obj))
-                    
-                    # if update.is_updated_transform:
-                    #     obj_data['transform'] = pack_transform(obj)
-                    
-                    # if isinstance(obj.data, bpy.types.Light):
-                    #     obj_data['data'] = self.__pack_light(obj.data)
+                        # update mesh object (transform)
+                        # sending updates to mesh datablocks if necessary
+                        tex_manager.update_mesh_object(update, obj)
                 
                 # only send data for updated materials
                 if isinstance(obj, bpy.types.Material):
@@ -1705,22 +1159,12 @@ class RubyOF(bpy.types.RenderEngine):
                     # transform with color info          material color info
                     
                     mat = obj
-                    update_material(context, mat)
+                    tex_manager.update_material(context, mat)
                     
-                    message_queue.append(pack_material(mat))
             
-            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material. Thus, we send a mapping of {mesh object name => material name} for all meshes, every frame. RubyOF will figure out when to actually rebind the materials.
-            
-        # ----------
-        # TODO: if many objects use one mesh datablock, should only need to send that datablock once. old style did this, but the new style does not.
+            # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material.
         
-        # If many objects use one mesh datablock, 
-        # should only send that datablock once.
-        # That is why we need to group them all up before sending
-        unique_datablocks = list(set(mesh_datablocks))
-        for datablock in unique_datablocks:
-            msg = pack_mesh_data(datablock, self.shm_dir)
-            to_ruby.write(json.dumps(msg))
+        # ----------
         
         # send out all the regular messages after the datablocks
         # to prevent dependency issues
@@ -1737,31 +1181,6 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
-        # information about material linkages
-        # (send all info every frame)
-        # (RubyOF will figure out whether to rebind or not)
-        for obj in bpy.data.objects:
-            if isinstance(obj.data, bpy.types.Mesh):
-                # print("found object with mesh")
-                
-                material_name = ''
-                # ^ default material name
-                #   tells RubyOF to bind default material
-                
-                # if there is a material bound, use that instead of the default
-                if(len(obj.material_slots) > 0):
-                    mat = obj.material_slots[0].material
-                    material_name = mat.name
-                
-                data = {
-                    'type': 'material_mapping',
-                    'object_name': obj.name_full,
-                    'material_name': material_name
-                }
-                
-                # TODO: silence material linkage for now, but need to re-instate an equivalent way to send this data later. Have to turn it off for now because I'm deliberately not sending some mesh datablocks to RubyOF. If the meshes don't exist over there, then trying to set the linkage will cause a crash.
-                
-                # to_ruby.write(json.dumps(data))
         
         data = {
             'type': 'timestamp',
@@ -1772,19 +1191,7 @@ class RubyOF(bpy.types.RenderEngine):
         to_ruby.write(json.dumps(data))
         
         
-        # TODO: serialize and send materials that have changed
-        
-        # note: in blender, one object can have many material slots
-    
     # --------------------------------
-
-
-
-
-
-
-
-
 
 
 
@@ -1902,6 +1309,7 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         row = layout.row()
         row.operator("render.rubyof_step_back", text="back")
         row.operator("render.rubyof_step_forward", text="forward")
+        
 
 
 class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
@@ -2002,6 +1410,11 @@ class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
         
         
         return {'FINISHED'}
+
+
+
+
+
 
 
 
@@ -2206,43 +1619,6 @@ class MaterialButtonsPanel:
         return mat and (context.engine in cls.COMPAT_ENGINES) and not mat.grease_pencil
 
 
-# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
-#     bl_label = "Preview"
-#     bl_options = {'DEFAULT_CLOSED'}
-#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
-
-#     def draw(self, context):
-#         self.layout.template_preview(context.material)
-
-
-# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
-#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
-#     _context_path = "material"
-#     _property_type = bpy.types.Material
-
-# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
-#     bl_label = "Viewport Display"
-#     bl_context = "material"
-#     bl_options = {'DEFAULT_CLOSED'}
-#     bl_order = 10
-
-#     @classmethod
-#     def poll(cls, context):
-#         mat = context.material
-#         return mat and not mat.grease_pencil
-
-#     def draw(self, context):
-#         layout = self.layout
-#         layout.use_property_split = True
-
-#         mat = context.material
-
-#         col = layout.column()
-#         col.prop(mat, "diffuse_color", text="Color")
-#         col.prop(mat, "metallic")
-#         col.prop(mat, "roughness")
-
-
 class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel):
     bl_label = ""
     bl_context = "material"
@@ -2326,6 +1702,43 @@ class RUBYOF_MATERIAL_PT_context_material(MaterialButtonsPanel, bpy.types.Panel)
 
 
 
+# class MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+#     bl_label = "Preview"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+#     def draw(self, context):
+#         self.layout.template_preview(context.material)
+
+
+# class MATERIAL_PT_custom_props(MaterialButtonsPanel, PropertyPanel, Panel):
+#     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
+#     _context_path = "material"
+#     _property_type = bpy.types.Material
+
+# class MATERIAL_PT_viewport(MaterialButtonsPanel, Panel):
+#     bl_label = "Viewport Display"
+#     bl_context = "material"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     bl_order = 10
+
+#     @classmethod
+#     def poll(cls, context):
+#         mat = context.material
+#         return mat and not mat.grease_pencil
+
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.use_property_split = True
+
+#         mat = context.material
+
+#         col = layout.column()
+#         col.prop(mat, "diffuse_color", text="Color")
+#         col.prop(mat, "metallic")
+#         col.prop(mat, "roughness")
+
+
 
 
 
@@ -2406,6 +1819,9 @@ def get_panels():
     return panels
 
 classes = (
+    # OT_DeleteOverride,
+    #
+    #
     RENDER_OT_RubyOF_StepBack,
     RENDER_OT_RubyOF_MessageStepForward,
     RENDER_OT_RubyOF_MessagePause,
@@ -2417,6 +1833,8 @@ classes = (
     DATA_PT_RubyOF_light,
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
+    # 
+    OT_TexAnimSyncDeletions,
     #
     #
     #
@@ -2450,9 +1868,12 @@ def register():
     
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
+    # register_depgraph_handlers()
 
 
 def unregister():
+    # unregister_depgraph_handlers()
+    
     bpy.utils.unregister_class(RubyOF)
     
     for panel in get_panels():
@@ -2464,8 +1885,8 @@ def unregister():
         
     
     del bpy.types.Scene.my_tool
-
-
+    
+    
 
 def main():
     print("hello world")
