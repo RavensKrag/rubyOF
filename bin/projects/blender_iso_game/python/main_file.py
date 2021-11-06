@@ -956,29 +956,7 @@ class RubyOF(bpy.types.RenderEngine):
     def view_draw(self, context, depsgraph):
         # send data to RubyOF about the viewport / camera
         self.__update_viewport(context, depsgraph)
-        
-        #
-        # Render the viewport
-        #
-        region = context.region
-        scene = depsgraph.scene
-        
-        # Get viewport dimensions
-        dimensions = region.width, region.height
-        
-        # Bind shader that converts from scene linear to display space,
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
-        self.bind_display_space_shader(scene)
-        
-        
-        a = context.scene.my_custom_props.alpha
-        bgl.glClearColor(0*a,0*a,0*a,a)
-        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
-        
-        
-        self.unbind_display_space_shader()
-        bgl.glDisable(bgl.GL_BLEND)
+        self.__render_viewport(context, depsgraph)
         
     
     
@@ -999,6 +977,27 @@ class RubyOF(bpy.types.RenderEngine):
     
         
     # ---- private helper methods ----
+    
+    def __render_viewport(self, context, depsgraph):
+        region = context.region
+        scene = depsgraph.scene
+        
+        # Get viewport dimensions
+        dimensions = region.width, region.height
+        
+        # Bind shader that converts from scene linear to display space,
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glBlendFunc(bgl.GL_ONE, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        self.bind_display_space_shader(scene)
+        
+        
+        a = context.scene.my_custom_props.alpha
+        bgl.glClearColor(0*a,0*a,0*a,a)
+        bgl.glClear(bgl.GL_COLOR_BUFFER_BIT|bgl.GL_DEPTH_BUFFER_BIT)
+        
+        
+        self.unbind_display_space_shader()
+        bgl.glDisable(bgl.GL_BLEND)
     
     def __update_viewport(self, context, depsgraph):
         #
