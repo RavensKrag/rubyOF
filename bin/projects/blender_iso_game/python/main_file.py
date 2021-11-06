@@ -328,7 +328,9 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
         wm.modal_handler_add(self)
         
-        self.old_names = [ obj.name for obj in context.scene.objects ]
+        mytool = context.scene.my_tool
+        
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
         return {'RUNNING_MODAL'}
     
@@ -337,8 +339,9 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
         # print("running", time.time())
         # print("objects: ", len(context.scene.objects))
         
+        mytool = context.scene.my_tool
         
-        self.new_names = [ obj.name for obj in context.scene.objects ]
+        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
         delta = list(set(self.old_names) - set(self.new_names))
         
