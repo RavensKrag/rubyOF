@@ -304,15 +304,15 @@ class AnimTexManager ():
         
         self.vertex_data = [
             None,
-            datablock_ptr # => 'datablock_name: .data.name'
+            datablock_name # => 'datablock_name: .data.name'
         ]
         # need a pointer to the original object, so we can still ID the thing even if the name has been changed
         
         
         
         transform_data = [
-            [None, None, None],
-            [mesh_obj, first_material]
+            [None, None],
+            [mesh_obj_name, first_material]
                 # => 'name: .name'
         ]
         # need a pointer to the original object, so we can still ID the thing even if the name has been changed
