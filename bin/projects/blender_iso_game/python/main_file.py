@@ -343,7 +343,77 @@ class PG_MyProperties (bpy.types.PropertyGroup):
     )
     
 
-
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+class OT_TexAnimSyncDeletions (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "wm.sync_deletions"
+    bl_label = "Sync Deletions"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def __init__(self):
+        
+        self._timer = None
+        self.timer_dt = 1/60
+        
+        self.old_names = None
+        self.new_names = None
+        
+    
+    def modal(self, context, event):
+        mytool = context.scene.my_tool
+        
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not mytool.sync_deletions:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
+    
+    def invoke(self, context, event):
+        wm = context.window_manager
+        
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
+        
+        self.old_names = [ obj.name for obj in context.scene.objects ]
+        
+        return {'RUNNING_MODAL'}
+    
+    
+    def run(self, context):
+        print("running", time.time())
+        print("objects: ", len(context.scene.objects))
+        
+        
+        self.new_names = [ obj.name for obj in context.scene.objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        print("delta:", delta)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
 
 
 
@@ -381,7 +451,18 @@ def find_unique_mesh_pairs(all_mesh_objects):
     
     return unique_pairs
 
+
+# scanline : array of pixel data (not nested array, just a flat array)
+# Set the data for one pixel within an array representing a whole scanline
+def scanline_set_px(scanline, px_i, px_data, channels=4):
+    for i in range(channels):
+        scanline[px_i*channels+i] = px_data[i]
+
+
 class AnimTexManager ():
+    # 
+    # setup data
+    # 
     def __init__(self, context):
         mytool = context.scene.my_tool
         
@@ -419,10 +500,43 @@ class AnimTexManager ():
         self.vertex_data    = []
         self.transform_data = []
     
+    def __calc_geometry_tex_size(self, mytool):
+        width_px  = mytool.max_tris*3 # 3 verts per triangle
+        height_px = mytool.max_frames
         
+        return [width_px, height_px]
+    
+    def __calc_transform_tex_size(self, mytool):
+        # the transform texture must encode 3 things:
+        
+        # 1) a mat4 for the object's transform
+        channels_per_pixel = 4
+        mat4_size = 4*4;
+        pixels_per_transform = mat4_size // channels_per_pixel;
+        
+        # 2) what mesh to use when rendering this object
+        pixels_per_id_block = 1
+        
+        # 3) values needed by the material (like Unity's material property block)
+        pixels_for_material = 4
+        
+        width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
+        height_px = mytool.max_num_objects
+        
+        return [width_px, height_px]
+    
+    
     # def __del__(self):
     #     pass
     
+    
+    
+    
+    
+    
+    # 
+    # write a single row of the texture
+    # 
     
     # handles triangulation
     def export_vertex_data(self, mesh, output_frame):
@@ -593,49 +707,9 @@ class AnimTexManager ():
     
     
     
-    def __calc_geometry_tex_size(self, mytool):
-        width_px  = mytool.max_tris*3 # 3 verts per triangle
-        height_px = mytool.max_frames
-        
-        return [width_px, height_px]
-
-
-    # 
-    # The transform texture mainly encodes transform matrix data
-    # on a per-entity basis, which is used by the GPU
-    # in the context of GPU instancing to draw various geometries
-    # that have been encoded onto textures.
-    # 
-    # Useful as an interchange format between Blender and RubyOF.
-    # If you need the separate components of position / rotation / scale,
-    # consider using glm matrix decompose, or similar.
-    # 
-    
-    def __calc_transform_tex_size(self, mytool):
-        # the transform texture must encode 3 things:
-        
-        # 1) a mat4 for the object's transform
-        channels_per_pixel = 4
-        mat4_size = 4*4;
-        pixels_per_transform = mat4_size // channels_per_pixel;
-        
-        # 2) what mesh to use when rendering this object
-        pixels_per_id_block = 1
-        
-        # 3) values needed by the material (like Unity's material property block)
-        pixels_for_material = 4
-        
-        width_px  = pixels_per_id_block + pixels_per_transform + pixels_for_material
-        height_px = mytool.max_num_objects
-        
-        return [width_px, height_px]
-    
-    
-    
-    
     
     # 
-    # schema for cache data
+    # manipulate cache for data in the textures
     # 
     
     # This method should never actually be called.
@@ -681,7 +755,108 @@ class AnimTexManager ():
         #   you can generate it by walking self.vertex_data
     
     
+    # find via name
+    def vertex_data_index(self, meshObj_data_name):
+        target_datablock_index = None
+        
+        for i, data in enumerate(self.vertex_data):
+            datablock_name = data
+            if datablock_name is None:
+                continue
+            
+            if datablock_name == meshObj_data_name:
+                target_datablock_index = i
+        
+        return target_datablock_index
     
+    # store via datablock object
+    def cache_vertex_data(self, meshObj_data):
+        data = meshObj_data.name
+        
+        
+        # if a corresponding object already exists in the cache,
+        # update the cache
+        target_obj_index = self.vertex_data_index(meshObj_data.name)
+        if target_obj_index is not None:
+            self.vertex_data[target_obj_index] = data
+        # else, add new data to the cache
+        else:
+            self.vertex_data.append( data )
+        
+        
+        # update reverse index
+        self.meshDatablock_to_meshID = {}
+        
+        for i, data in enumerate(self.vertex_data):
+            datablock_name = data
+            
+            self.meshDatablock_to_meshID[datablock_name] = i
+        
+    
+    # find via name
+    # Find target mesh object and retrieve it's index.
+    def transform_data_index(self, mesh_obj_name):
+        target_obj_index = None
+        
+        # print(self.transform_data)
+        for i, data in enumerate(self.transform_data):
+            obj_name, material = data
+            if obj_name is None:
+                continue
+            
+            if obj_name == mesh_obj_name:
+                target_obj_index = i
+        
+        return target_obj_index
+    
+    
+    # store via mesh object
+    # PROBLEM: when exporting the entire texture, self.transform_data is populated using the normal mesh objects. but when updating the cache, we're looking at / comparing with objects from the depsgraph. I think the depsgraph objects are not as permanent, which is causing errors when I try to access RNA data that has been invalidated.
+        # or maybe GC is just being weird to me? not sure, needs more testing
+    def cache_transform_data(self, mesh_obj):
+        # print("new data:", [mesh_obj, first_material(mesh_obj)] )
+        
+        data = [mesh_obj.name, first_material(mesh_obj)] 
+        
+        # if a corresponding object already exists in the cache,
+        # update the cache
+        target_obj_index = self.transform_data_index(mesh_obj.name)
+        if target_obj_index is not None:
+            self.transform_data[target_obj_index] = data
+        # else, add new data to the cache
+        else:
+            self.transform_data.append( data )
+        
+        
+        # update the reverse index
+        self.objName_to_transformID = {}
+        
+        for i, data in enumerate(self.transform_data):
+            obj_name, material = data
+            if obj_name is None:
+                continue
+            
+            self.objName_to_transformID[obj_name] = i
+            
+            
+        # TODO: When should this data be set to Ruby land? Is this a good time / place to do that?
+        
+        # send mapping to RubyOF
+        data = {
+            'type': 'object_to_id_map',
+            'value': self.objName_to_transformID,
+        }
+        
+        to_ruby.write(json.dumps(data))
+        
+
+    
+    
+    
+    # 
+    # main public interface
+    # (mostly callbacks that get run by key operators)
+    # 
     
     
     # TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
@@ -1088,115 +1263,8 @@ class AnimTexManager ():
         }
         
         to_ruby.write(json.dumps(data))
-    
-    
-    
-    # find via name
-    def vertex_data_index(self, meshObj_data_name):
-        target_datablock_index = None
-        
-        for i, data in enumerate(self.vertex_data):
-            datablock_name = data
-            if datablock_name is None:
-                continue
-            
-            if datablock_name == meshObj_data_name:
-                target_datablock_index = i
-        
-        return target_datablock_index
-    
-    # store via datablock object
-    def cache_vertex_data(self, meshObj_data):
-        data = meshObj_data.name
-        
-        
-        # if a corresponding object already exists in the cache,
-        # update the cache
-        target_obj_index = self.vertex_data_index(meshObj_data.name)
-        if target_obj_index is not None:
-            self.vertex_data[target_obj_index] = data
-        # else, add new data to the cache
-        else:
-            self.vertex_data.append( data )
-        
-        
-        # update reverse index
-        self.meshDatablock_to_meshID = {}
-        
-        for i, data in enumerate(self.vertex_data):
-            datablock_name = data
-            
-            self.meshDatablock_to_meshID[datablock_name] = i
-        
-    
-    # find via name
-    # Find target mesh object and retrieve it's index.
-    def transform_data_index(self, mesh_obj_name):
-        target_obj_index = None
-        
-        # print(self.transform_data)
-        for i, data in enumerate(self.transform_data):
-            obj_name, material = data
-            if obj_name is None:
-                continue
-            
-            if obj_name == mesh_obj_name:
-                target_obj_index = i
-        
-        return target_obj_index
-    
-    
-    # store via mesh object
-    # PROBLEM: when exporting the entire texture, self.transform_data is populated using the normal mesh objects. but when updating the cache, we're looking at / comparing with objects from the depsgraph. I think the depsgraph objects are not as permanent, which is causing errors when I try to access RNA data that has been invalidated.
-        # or maybe GC is just being weird to me? not sure, needs more testing
-    def cache_transform_data(self, mesh_obj):
-        # print("new data:", [mesh_obj, first_material(mesh_obj)] )
-        
-        data = [mesh_obj.name, first_material(mesh_obj)] 
-        
-        # if a corresponding object already exists in the cache,
-        # update the cache
-        target_obj_index = self.transform_data_index(mesh_obj.name)
-        if target_obj_index is not None:
-            self.transform_data[target_obj_index] = data
-        # else, add new data to the cache
-        else:
-            self.transform_data.append( data )
-        
-        
-        # update the reverse index
-        self.objName_to_transformID = {}
-        
-        for i, data in enumerate(self.transform_data):
-            obj_name, material = data
-            if obj_name is None:
-                continue
-            
-            self.objName_to_transformID[obj_name] = i
-            
-            
-        # TODO: When should this data be set to Ruby land? Is this a good time / place to do that?
-        
-        # send mapping to RubyOF
-        data = {
-            'type': 'object_to_id_map',
-            'value': self.objName_to_transformID,
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-
-
-
-
-# scanline : array of pixel data (not nested array, just a flat array)
-# Set the data for one pixel within an array representing a whole scanline
-def scanline_set_px(scanline, px_i, px_data, channels=4):
-    for i in range(channels):
-        scanline[px_i*channels+i] = px_data[i]
-
-
-
+ 
+ 
 
 # def register_depgraph_handlers():
 #     depsgraph_events = bpy.app.handlers.depsgraph_update_post
@@ -1253,6 +1321,29 @@ def reset_anim_tex_manager(context):
     
         
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1332,97 +1423,6 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         
         
         return {'FINISHED'}
-
-
-
-# Use modal over the timer api, because the timer api involves threading,
-# which then requires that you make your operation thread safe.
-# That's all a huge pain just to get concurrency, 
-# so for our use case, the modal operator is much better.
-    # timer api:
-    # self.timer = functools.partial(self.detect_deletions, mytool)
-    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-class OT_TexAnimSyncDeletions (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "wm.sync_deletions"
-    bl_label = "Sync Deletions"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def __init__(self):
-        
-        self._timer = None
-        self.timer_dt = 1/60
-        
-        self.old_names = None
-        self.new_names = None
-        
-    
-    def modal(self, context, event):
-        mytool = context.scene.my_tool
-        
-        if event.type == 'TIMER':
-            self.run(context)
-        
-        if not mytool.sync_deletions:
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
-        
-        return {'PASS_THROUGH'}
-            
-    def invoke(self, context, event):
-        wm = context.window_manager
-        
-        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
-        self.old_names = [ obj.name for obj in context.scene.objects ]
-        
-        return {'RUNNING_MODAL'}
-    
-    
-    def run(self, context):
-        print("running", time.time())
-        print("objects: ", len(context.scene.objects))
-        
-        
-        self.new_names = [ obj.name for obj in context.scene.objects ]
-        
-        delta = list(set(self.old_names) - set(self.new_names))
-        
-        print("delta:", delta)
-        
-        if len(delta) > 0:
-            self.old_names = self.new_names
-            
-            tex_manager = anim_texture_manager_singleton(context)
-            
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                tex_manager.post_mesh_object_deletion(name)
-                
-                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
-                
-            
-        
-        
-        
-        
-        
-        
-        # mesh_obj_name = 
-        
-        
-
-
-
-
-
-
 
 
 
