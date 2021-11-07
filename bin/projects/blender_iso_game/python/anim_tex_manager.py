@@ -13,6 +13,8 @@ import time
 import queue
 import functools
 import json
+import sys
+import os
 
 
 
@@ -34,11 +36,30 @@ def find_unique_mesh_pairs(all_mesh_objects):
     return unique_pairs
 
 
+
 # scanline : array of pixel data (not nested array, just a flat array)
 # Set the data for one pixel within an array representing a whole scanline
 def scanline_set_px(scanline, px_i, px_data, channels=4):
     for i in range(channels):
         scanline[px_i*channels+i] = px_data[i]
+
+
+
+def first_material(mesh_object):
+    mat_slots = mesh_object.material_slots
+    
+    # color = c1 = c2 = c3 = c4 = alpha = None
+    
+    if len(mat_slots) > 0:
+        mat = mat_slots[0].material
+        
+    else:
+        mat = bpy.data.materials['Material']
+    
+    return mat
+    
+
+
 
 
 class AnimTexManager ():
@@ -271,10 +292,10 @@ class AnimTexManager ():
             # default white for unspecified color
             # (ideally would copy this from the default in materials)
         
-        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1) + [alpha],
+        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.transform_tex.channels_per_pixel)
         
-        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2),
+        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
                         channels=self.transform_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
@@ -310,9 +331,9 @@ class AnimTexManager ():
         
         
         
-        transform_data = [
+        self.transform_data = [
             [None, None],
-            [mesh_obj_name, first_material]
+            [mesh_obj_name, first_material.name]
                 # => 'name: .name'
         ]
         # need a pointer to the original object, so we can still ID the thing even if the name has been changed
@@ -323,7 +344,7 @@ class AnimTexManager ():
         
         
         
-        objName_to_transformID = {
+        self.objName_to_transformID = {
             'name: .name' : transformID
         }
         # transformID == index of corresponding data in transform_data
@@ -384,7 +405,7 @@ class AnimTexManager ():
         
         # print(self.transform_data)
         for i, data in enumerate(self.transform_data):
-            obj_name, material = data
+            obj_name, material_name = data
             if obj_name is None:
                 continue
             
@@ -400,7 +421,7 @@ class AnimTexManager ():
     def cache_transform_data(self, mesh_obj):
         # print("new data:", [mesh_obj, first_material(mesh_obj)] )
         
-        data = [mesh_obj.name, first_material(mesh_obj)] 
+        data = [ mesh_obj.name, first_material(mesh_obj).name ] 
         
         # if a corresponding object already exists in the cache,
         # update the cache
@@ -416,7 +437,7 @@ class AnimTexManager ():
         self.objName_to_transformID = {}
         
         for i, data in enumerate(self.transform_data):
-            obj_name, material = data
+            obj_name, material_name = data
             if obj_name is None:
                 continue
             
@@ -576,7 +597,7 @@ class AnimTexManager ():
             
             task_count += 1
             
-            self.transform_data.append( [obj.name, first_material(obj)] )
+            self.transform_data.append( [obj.name, first_material(obj).name] )
             
             context = yield(task_count / total_tasks)
         
@@ -726,7 +747,9 @@ class AnimTexManager ():
         # would tell you what objects were deleted.
         
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
-        
+    
+    
+    # PRECONDITION: assumes that self.transform_data cache is populated
     
     # callback for right after deletion 
     def post_mesh_object_deletion(self, obj_name): 
@@ -785,6 +808,8 @@ class AnimTexManager ():
     
     
     
+    # PRECONDITION: assumes that self.transform_data cache is populated
+    
     # TODO: consider removing 'context' from this function, somehow
     
     # repack for all entities that use this material
@@ -795,19 +820,6 @@ class AnimTexManager ():
         
         mytool = context.scene.my_tool
         
-        # don't need this (not writing to the variable)
-        # but it helps to remember the scope of globals
-        
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        
-        obj_and_material_pairs = [ (obj, obj.material_slots[0].material)
-                                   for obj in all_mesh_objects
-                                   if len(obj.material_slots) > 0 ]
-        
         
         # need to update the pixels in the transform texture
         # that encode the color, but want to keep the other pixels the same.
@@ -815,26 +827,24 @@ class AnimTexManager ():
         
         texture = self.transform_tex
         
-        for obj, bound_material in obj_and_material_pairs:
-            # print(bound_material, updated_material)
-            # print(bound_material.name, updated_material.name)
-            if bound_material.name == updated_material.name:
-                i = self.transform_data_index(obj.name)
-                print("mesh index:",i)
+        for i, data in enumerate(self.transform_data):
+            obj_name, material_name = data
+            
+            if material_name == updated_material.name:
+                print("transform index:",i)
+                row = i
+                col = 5
                 
-                if i is not None:
-                    row = i
-                    col = 5
-                    
-                    mat = updated_material.rb_mat
-                    
-                    texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-                    
-                    diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-                    texture.write_pixel(row,col+1, diffuse_with_alpha)
-                    
-                    texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-                    texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
+                mat = updated_material.rb_mat
+                
+                texture.write_pixel(row, col+0,
+                                    vec3_to_rgba(mat.ambient))
+                texture.write_pixel(row, col+1, 
+                                    vec3_to_rgba(mat.diffuse) + [mat.alpha])
+                texture.write_pixel(row, col+2,
+                                    vec3_to_rgba(mat.specular))
+                texture.write_pixel(row, col+3,
+                                    vec3_to_rgba(mat.emissive))
         
         texture.save()
         
@@ -846,7 +856,81 @@ class AnimTexManager ():
         }
         
         self.to_ruby.write(json.dumps(data))
- 
+    
+    
+    
+    # 
+    # serialization
+    # 
+    
+    def on_save(self):
+        data = {
+            'vertex_data': self.vertex_data,
+            'transform_data': self.transform_data,
+            'objName_to_transformID' : self.objName_to_transformID,
+            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
+        }
+        
+        # print(json.dumps(data))
+        
+        # sys.stdout.flush()
+        # ^ if you don't flush, python may buffer stdout
+        #   This is a feature of python in general, not just Blender
+        # Can also use the flush= named parameter on print()
+        # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
+        
+        # print()
+        
+        filepath = bpy.path.abspath("//anim_tex_cache.json")
+        with open(filepath, 'w') as f:
+            f.write(json.dumps(data, indent=2))
+        
+    def on_load(self):
+        filepath = bpy.path.abspath("//anim_tex_cache.json")
+        if os.path.isfile(filepath):
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+                
+                print(data)
+                sys.stdout.flush()
+                
+                self.vertex_data    = data['vertex_data']
+                self.transform_data = data['transform_data']
+                self.objName_to_transformID = data['objName_to_transformID']
+                self.meshDatablock_to_meshID = data['meshDatablock_to_meshID']
+                
+            
+     
+        
+        
+    
+    # 
+    # serialization helper
+    # 
+    
+    def dump_cache(self):
+        data = {
+            'vertex_data': self.vertex_data,
+            'transform_data': self.transform_data,
+            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
+            'objName_to_transformID' : self.objName_to_transformID,
+            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
+        }
+        
+        return json.dumps(data)
+    
+    
+    # 
+    # undo / redo callbacks
+    # 
+    
+    
+    def on_undo(self):
+        pass
+    
+    def on_redo(self):
+        pass
+    
  
 
 # def register_depgraph_handlers():

@@ -12,6 +12,7 @@ import json
 import base64
 import struct
 
+import sys
 import os
 import fcntl
 import posix
@@ -53,6 +54,91 @@ from utilities import *
 
 
 
+handler_types = {
+    'on_save' : bpy.app.handlers.save_post,
+    'on_load' : bpy.app.handlers.load_post,
+    'on_undo' : bpy.app.handlers.undo_post,
+    'on_redo' : bpy.app.handlers.redo_post
+}
+
+def register_callback(handler_type, function):
+    # unregister_callbacks()
+    
+    depsgraph_events = handler_types[handler_type]
+    
+    if not function in depsgraph_events:
+        depsgraph_events.append(function)
+        # callbacks[handler_type].append(function)
+    
+    print(depsgraph_events)
+    sys.stdout.flush()
+
+def unregister_callbacks():
+    for depsgraph_events in handler_types.values():
+        for handler in depsgraph_events:
+            if "rubyof__" in handler.__name__:
+                depsgraph_events.remove(handler)
+        
+        print("events:", depsgraph_events)
+        sys.stdout.flush()
+
+
+from bpy.app.handlers import persistent
+
+@persistent
+def rubyof__on_load(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_load()
+
+
+@persistent
+def rubyof__on_save(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_save()
+
+
+def rubyof__on_undo(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_undo()
+
+def rubyof__on_redo(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_redo()
+    
+
+def register_event_handlers():
+    register_callback('on_save', rubyof__on_save)
+    register_callback('on_load', rubyof__on_load)
+    register_callback('on_redo', rubyof__on_redo)
+    register_callback('on_undo', rubyof__on_undo)
+    
+    
+def unregister_event_handlers():
+    unregister_callbacks()
+
+
+# def register_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+#     if not on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.append(on_depsgraph_update)
+
+# def unregister_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+#     if on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.remove(on_depsgraph_update)
+
+
+
+# def on_depsgraph_update(scene, depsgraph):
+#     global anim_tex_manager
+#     if anim_tex_manager is not None:
+#         anim_tex_manager.update(scene)
 
 
 
@@ -464,7 +550,7 @@ import time
 from progress_bar import ( OT_ProgressBarOperator )
 OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
 
-
+from coroutine_decorator import *
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
     """Export all objects in target collection"""
@@ -560,8 +646,10 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
             layout.operator("wm.texanim_export_collection")
         
         layout.row().separator()
-        
         layout.operator("wm.texanim_clear_all_textures")
+        
+        
+        
         
         layout.row().separator()
         
@@ -570,8 +658,6 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
         layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
         # ^ updated by OT_TexAnimSyncDeletions
-        
-
 
 
 
@@ -1083,6 +1169,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         active_object = context.active_object
         
+        print(time.time())
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
@@ -1286,7 +1374,7 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
     # Here, we check to make sure that the active render engine is in the list of compatible engines.
     @classmethod
     def poll(cls, context):
-        print(context.engine)
+        # print(context.engine)
         return (context.engine in cls.COMPAT_ENGINES)
     
     def draw(self, context):
@@ -1852,6 +1940,8 @@ classes = (
 )
 
 def register():
+    print("register")
+    sys.stdout.flush()
     # Register the RenderEngine
     bpy.utils.register_class(RubyOF)
     
@@ -1875,10 +1965,16 @@ def register():
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
     # register_depgraph_handlers()
+    register_event_handlers()
+
 
 
 def unregister():
+    print("unregister")
+    sys.stdout.flush()
+    
     # unregister_depgraph_handlers()
+    unregister_event_handlers()
     
     bpy.utils.unregister_class(RubyOF)
     
