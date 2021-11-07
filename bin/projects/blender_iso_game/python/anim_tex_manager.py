@@ -104,6 +104,8 @@ class AnimTexManager ():
         # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
         self.vertex_data    = []
         self.transform_data = []
+        
+        self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
     
     def __calc_geometry_tex_size(self, mytool):
         width_px  = mytool.max_tris*3 # 3 verts per triangle
@@ -881,13 +883,12 @@ class AnimTexManager ():
         
         # print()
         
-        filepath = bpy.path.abspath("//anim_tex_cache.json")
-        with open(filepath, 'w') as f:
+        
+        with open(self.json_filepath, 'w') as f:
             f.write(json.dumps(data, indent=2))
         
     def on_load(self):
-        filepath = bpy.path.abspath("//anim_tex_cache.json")
-        if os.path.isfile(filepath):
+        if os.path.isfile(self.json_filepath):
             with open(filepath, 'r') as f:
                 data = json.load(f)
                 
