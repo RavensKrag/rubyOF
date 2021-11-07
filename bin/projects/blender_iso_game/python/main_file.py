@@ -54,68 +54,17 @@ from utilities import *
 
 
 
-from bpy.app.handlers import persistent
-
-@persistent
-def rubyof__on_load(*args):
-    # print("on load callback")
-    # print(args)
-    # sys.stdout.flush()
-    
-    context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
-    tex_manager.on_load()
-
-@persistent
-def rubyof__on_save(*args):
-    # print("on save callback")
-    # print(args)
-    # sys.stdout.flush()
-    
-    context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
-    tex_manager.on_save()
-    
-    
-    # context = bpy.context
-    # tex_manager = anim_texture_manager_singleton(context)
-    
-    # data = tex_manager.dump_cache()
-    
-    # print(data)
-    # sys.stdout.flush()
-    
-
-def rubyof__on_undo(*args):
-    print("on undo callback")
-    print(args)
-    sys.stdout.flush()
-
-def rubyof__on_redo(*args):
-    print("on redo callback")
-    print(args)
-    sys.stdout.flush()
-
-handler_types = [
-    'on_save',
-    'on_load',
-    'on_undo',
-    'on_redo'
-]
+handler_types = {
+    'on_save' : bpy.app.handlers.save_post,
+    'on_load' : bpy.app.handlers.load_post,
+    'on_undo' : bpy.app.handlers.undo_post,
+    'on_redo' : bpy.app.handlers.redo_post
+}
 
 def register_callback(handler_type, function):
     # unregister_callbacks()
     
-    if handler_type == 'on_save':
-        depsgraph_events = bpy.app.handlers.save_post
-    elif handler_type == 'on_load':
-        depsgraph_events = bpy.app.handlers.load_post
-    elif handler_type == 'on_undo':
-        depsgraph_events = bpy.app.handlers.undo_post
-    elif handler_type == 'on_redo':
-        depsgraph_events = bpy.app.handlers.redo_post
-    else:
-        raise RuntimeError(f"Callback type '{handler_type}' not among recognized types")
+    depsgraph_events = handler_types[handler_type]
     
     if not function in depsgraph_events:
         depsgraph_events.append(function)
@@ -125,21 +74,7 @@ def register_callback(handler_type, function):
     sys.stdout.flush()
 
 def unregister_callbacks():
-    
-    for handler_type in handler_types:
-        print(handler_type)
-        
-        if handler_type == 'on_save':
-            depsgraph_events = bpy.app.handlers.save_post
-        elif handler_type == 'on_load':
-            depsgraph_events = bpy.app.handlers.load_post
-        elif handler_type == 'on_undo':
-            depsgraph_events = bpy.app.handlers.undo_post
-        elif handler_type == 'on_redo':
-            depsgraph_events = bpy.app.handlers.redo_post
-        else:
-            raise RuntimeError(f"Callback type '{handler_type}' not among recognized types")
-        
+    for depsgraph_events in handler_types.values():
         for handler in depsgraph_events:
             if "rubyof__" in handler.__name__:
                 depsgraph_events.remove(handler)
@@ -148,14 +83,41 @@ def unregister_callbacks():
         sys.stdout.flush()
 
 
-def register_save_handlers():
+from bpy.app.handlers import persistent
+
+@persistent
+def rubyof__on_load(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_load()
+
+
+@persistent
+def rubyof__on_save(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_save()
+
+
+def rubyof__on_undo(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_undo()
+
+def rubyof__on_redo(*args):
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_redo()
+    
+
+def register_event_handlers():
     register_callback('on_save', rubyof__on_save)
     register_callback('on_load', rubyof__on_load)
     register_callback('on_redo', rubyof__on_redo)
     register_callback('on_undo', rubyof__on_undo)
     
     
-def unregister_save_handlers():
+def unregister_event_handlers():
     unregister_callbacks()
 
 
@@ -2050,7 +2012,7 @@ def register():
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
     # register_depgraph_handlers()
-    register_save_handlers()
+    register_event_handlers()
 
 
 
@@ -2059,7 +2021,7 @@ def unregister():
     sys.stdout.flush()
     
     # unregister_depgraph_handlers()
-    unregister_save_handlers()
+    unregister_event_handlers()
     
     bpy.utils.unregister_class(RubyOF)
     

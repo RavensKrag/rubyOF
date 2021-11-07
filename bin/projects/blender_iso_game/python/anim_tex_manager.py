@@ -865,6 +865,28 @@ class AnimTexManager ():
         pass
     
     def on_save(self):
+        data = {
+            'vertex_data': self.vertex_data,
+            'transform_data': self.transform_data,
+            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
+            'objName_to_transformID' : self.objName_to_transformID,
+            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
+        }
+        
+        print(json.dumps(data))
+        
+        sys.stdout.flush()
+        # ^ if you don't flush, python may buffer stdout
+        #   This is a feature of python in general, not just Blender
+        # Can also use the flush= named parameter on print()
+        # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
+        
+        # print()
+    
+    def on_undo(self):
+        pass
+    
+    def on_redo(self):
         pass
     
     def dump_cache(self):
