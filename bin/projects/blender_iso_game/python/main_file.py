@@ -12,6 +12,7 @@ import json
 import base64
 import struct
 
+import sys
 import os
 import fcntl
 import posix
@@ -53,6 +54,151 @@ from utilities import *
 
 
 
+from bpy.app.handlers import persistent
+
+@persistent
+def on_load(*args):
+    # print("on load callback")
+    # print(args)
+    # sys.stdout.flush()
+    
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_load()
+
+@persistent
+def on_save(*args):
+    # print("on save callback")
+    # print(args)
+    # sys.stdout.flush()
+    
+    context = bpy.context
+    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager.on_save()
+    
+    
+    # context = bpy.context
+    # tex_manager = anim_texture_manager_singleton(context)
+    
+    # data = tex_manager.dump_cache()
+    
+    # print(data)
+    # sys.stdout.flush()
+    
+
+def on_undo(*args):
+    print("on undo callback")
+    print(args)
+    sys.stdout.flush()
+
+def on_redo(*args):
+    print("on redo callback")
+    print(args)
+    sys.stdout.flush()
+
+
+
+callbacks = {
+    'on_save' : None,
+    'on_load' : None,
+    'on_undo' : None,
+    'on_redo' : None
+}
+
+def register_callback(handler_type, function):
+    global callbacks
+    
+    if handler_type == 'on_save':
+        depsgraph_events = bpy.app.handlers.save_post
+    elif handler_type == 'on_load':
+        depsgraph_events = bpy.app.handlers.load_post
+    elif handler_type == 'on_undo':
+        depsgraph_events = bpy.app.handlers.undo_post
+    elif handler_type == 'on_redo':
+        depsgraph_events = bpy.app.handlers.redo_post
+    else:
+        raise RuntimeError(f"Callback type '{handler_type}' not among recognized types")
+    
+    if not function in depsgraph_events:
+        depsgraph_events.append(function)
+        callbacks[handler_type] = function
+    
+    print(depsgraph_events)
+    sys.stdout.flush()
+
+def unregister_callbacks():
+    global callbacks
+    
+    for handler_type, func in callbacks.items():
+    
+        if handler_type == 'on_save':
+            depsgraph_events = bpy.app.handlers.save_post
+        elif handler_type == 'on_load':
+            depsgraph_events = bpy.app.handlers.load_post
+        elif handler_type == 'on_undo':
+            depsgraph_events = bpy.app.handlers.undo_post
+        elif handler_type == 'on_redo':
+            depsgraph_events = bpy.app.handlers.redo_post
+        else:
+            raise RuntimeError(f"Callback type '{handler_type}' not among recognized types")
+        
+        if func is not None:
+            if func in depsgraph_events:
+                depsgraph_events.remove(func)
+    
+    print(depsgraph_events)
+    sys.stdout.flush()
+
+
+def register_save_handlers():
+    register_callback('on_load', on_load)
+    
+    # depsgraph_events = bpy.app.handlers.save_post
+    # if not on_save in depsgraph_events:
+    #     depsgraph_events.append(on_save)
+    
+    # depsgraph_events = bpy.app.handlers.undo_post
+    # if not on_undo in depsgraph_events:
+    #     depsgraph_events.append(on_undo)
+    
+    # depsgraph_events = bpy.app.handlers.redo_post
+    # if not on_redo in depsgraph_events:
+    #     depsgraph_events.append(on_redo)
+    
+def unregister_save_handlers():
+    unregister_callbacks()
+    
+    # depsgraph_events = bpy.app.handlers.save_post
+    # if on_save in depsgraph_events:
+    #     depsgraph_events.remove(on_save)
+    
+    # depsgraph_events = bpy.app.handlers.undo_post
+    # if on_undo in depsgraph_events:
+    #     depsgraph_events.append(on_undo)
+    
+    # depsgraph_events = bpy.app.handlers.redo_post
+    # if on_redo in depsgraph_events:
+    #     depsgraph_events.append(on_redo)
+
+
+# def register_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+#     if not on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.append(on_depsgraph_update)
+
+# def unregister_depgraph_handlers():
+#     depsgraph_events = bpy.app.handlers.depsgraph_update_post
+    
+#     if on_depsgraph_update in depsgraph_events:
+#         depsgraph_events.remove(on_depsgraph_update)
+
+
+
+# def on_depsgraph_update(scene, depsgraph):
+#     global anim_tex_manager
+#     if anim_tex_manager is not None:
+#         anim_tex_manager.update(scene)
 
 
 
@@ -464,7 +610,7 @@ import time
 from progress_bar import ( OT_ProgressBarOperator )
 OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
 
-
+from coroutine_decorator import *
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
     """Export all objects in target collection"""
@@ -517,6 +663,48 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         return {'FINISHED'}
 
 
+class OT_TexAnimExportCache (bpy.types.Operator):
+    """Export cached values"""
+    bl_idname = "wm.texanim_export_cache"
+    bl_label = "Export cache data to JSON files"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        # clear_textures(context.scene.my_tool)
+        
+        # reset_anim_tex_manager(context)
+        
+        # mytool = context.scene.my_tool
+        # mytool.sync_deletions = False
+        
+        tex_manager = anim_texture_manager_singleton(context)
+        
+        data = tex_manager.dump_cache()
+        
+        # time.sleep(3)
+        
+        # for i in range(1000):
+        print()
+        print()
+        print()
+        print("exporting to JSON")
+        print(data)
+        sys.stdout.flush()
+        # ^ if you don't flush, python may buffer stdout
+        #   This is a feature of python in general, not just Blender
+        # Can also use the flush= named parameter on print()
+        # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
+        
+        
+        # print(data)
+        # time.sleep(3)
+        
+        
+        return {'FINISHED'}
+
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
     COMPAT_ENGINES= {"RUBYOF"}
@@ -560,8 +748,10 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
             layout.operator("wm.texanim_export_collection")
         
         layout.row().separator()
-        
         layout.operator("wm.texanim_clear_all_textures")
+        
+        
+        
         
         layout.row().separator()
         
@@ -571,7 +761,9 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
         # ^ updated by OT_TexAnimSyncDeletions
         
-
+        
+        layout.row().separator()
+        layout.operator("wm.texanim_export_cache")
 
 
 
@@ -1083,6 +1275,8 @@ class RubyOF(bpy.types.RenderEngine):
         
         active_object = context.active_object
         
+        print(time.time())
+        
         if self.first_time:
             # First time initialization
             self.first_time = False
@@ -1286,7 +1480,7 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
     # Here, we check to make sure that the active render engine is in the list of compatible engines.
     @classmethod
     def poll(cls, context):
-        print(context.engine)
+        # print(context.engine)
         return (context.engine in cls.COMPAT_ENGINES)
     
     def draw(self, context):
@@ -1848,10 +2042,13 @@ classes = (
     OT_ProgressBarOperator,
     OT_TexAnimExportCollection,
     OT_TexAnimClearAllTextures,
+    OT_TexAnimExportCache,
     DATA_PT_texanim_panel3
 )
 
 def register():
+    print("register")
+    sys.stdout.flush()
     # Register the RenderEngine
     bpy.utils.register_class(RubyOF)
     
@@ -1875,10 +2072,16 @@ def register():
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
     
     # register_depgraph_handlers()
+    register_save_handlers()
+
 
 
 def unregister():
+    print("unregister")
+    sys.stdout.flush()
+    
     # unregister_depgraph_handlers()
+    unregister_save_handlers()
     
     bpy.utils.unregister_class(RubyOF)
     
