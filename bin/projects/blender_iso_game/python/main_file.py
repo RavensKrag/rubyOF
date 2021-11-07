@@ -603,48 +603,6 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         return {'FINISHED'}
 
 
-class OT_TexAnimExportCache (bpy.types.Operator):
-    """Export cached values"""
-    bl_idname = "wm.texanim_export_cache"
-    bl_label = "Export cache data to JSON files"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def execute(self, context):
-        # clear_textures(context.scene.my_tool)
-        
-        # reset_anim_tex_manager(context)
-        
-        # mytool = context.scene.my_tool
-        # mytool.sync_deletions = False
-        
-        tex_manager = anim_texture_manager_singleton(context)
-        
-        data = tex_manager.dump_cache()
-        
-        # time.sleep(3)
-        
-        # for i in range(1000):
-        print()
-        print()
-        print()
-        print("exporting to JSON")
-        print(data)
-        sys.stdout.flush()
-        # ^ if you don't flush, python may buffer stdout
-        #   This is a feature of python in general, not just Blender
-        # Can also use the flush= named parameter on print()
-        # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
-        
-        
-        # print(data)
-        # time.sleep(3)
-        
-        
-        return {'FINISHED'}
-
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
     COMPAT_ENGINES= {"RUBYOF"}
@@ -700,10 +658,6 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
         layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
         # ^ updated by OT_TexAnimSyncDeletions
-        
-        
-        layout.row().separator()
-        layout.operator("wm.texanim_export_cache")
 
 
 
@@ -1982,7 +1936,6 @@ classes = (
     OT_ProgressBarOperator,
     OT_TexAnimExportCollection,
     OT_TexAnimClearAllTextures,
-    OT_TexAnimExportCache,
     DATA_PT_texanim_panel3
 )
 
