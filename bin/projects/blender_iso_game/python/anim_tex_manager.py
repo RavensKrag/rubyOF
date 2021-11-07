@@ -290,10 +290,10 @@ class AnimTexManager ():
             # default white for unspecified color
             # (ideally would copy this from the default in materials)
         
-        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1) + [alpha],
+        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.transform_tex.channels_per_pixel)
         
-        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2),
+        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
                         channels=self.transform_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
@@ -329,9 +329,9 @@ class AnimTexManager ():
         
         
         
-        transform_data = [
+        self.transform_data = [
             [None, None],
-            [mesh_obj_name, first_material]
+            [mesh_obj_name, first_material.name]
                 # => 'name: .name'
         ]
         # need a pointer to the original object, so we can still ID the thing even if the name has been changed
@@ -342,7 +342,7 @@ class AnimTexManager ():
         
         
         
-        objName_to_transformID = {
+        self.objName_to_transformID = {
             'name: .name' : transformID
         }
         # transformID == index of corresponding data in transform_data
@@ -403,7 +403,7 @@ class AnimTexManager ():
         
         # print(self.transform_data)
         for i, data in enumerate(self.transform_data):
-            obj_name, material = data
+            obj_name, material_name = data
             if obj_name is None:
                 continue
             
@@ -419,7 +419,7 @@ class AnimTexManager ():
     def cache_transform_data(self, mesh_obj):
         # print("new data:", [mesh_obj, first_material(mesh_obj)] )
         
-        data = [mesh_obj.name, first_material(mesh_obj)] 
+        data = [ mesh_obj.name, first_material(mesh_obj).name ] 
         
         # if a corresponding object already exists in the cache,
         # update the cache
@@ -435,7 +435,7 @@ class AnimTexManager ():
         self.objName_to_transformID = {}
         
         for i, data in enumerate(self.transform_data):
-            obj_name, material = data
+            obj_name, material_name = data
             if obj_name is None:
                 continue
             
@@ -595,7 +595,7 @@ class AnimTexManager ():
             
             task_count += 1
             
-            self.transform_data.append( [obj.name, first_material(obj)] )
+            self.transform_data.append( [obj.name, first_material(obj).name] )
             
             context = yield(task_count / total_tasks)
         
@@ -745,7 +745,9 @@ class AnimTexManager ():
         # would tell you what objects were deleted.
         
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
-        
+    
+    
+    # PRECONDITION: assumes that self.transform_data cache is populated
     
     # callback for right after deletion 
     def post_mesh_object_deletion(self, obj_name): 
@@ -804,6 +806,8 @@ class AnimTexManager ():
     
     
     
+    # PRECONDITION: assumes that self.transform_data cache is populated
+    
     # TODO: consider removing 'context' from this function, somehow
     
     # repack for all entities that use this material
@@ -814,19 +818,6 @@ class AnimTexManager ():
         
         mytool = context.scene.my_tool
         
-        # don't need this (not writing to the variable)
-        # but it helps to remember the scope of globals
-        
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        
-        obj_and_material_pairs = [ (obj, obj.material_slots[0].material)
-                                   for obj in all_mesh_objects
-                                   if len(obj.material_slots) > 0 ]
-        
         
         # need to update the pixels in the transform texture
         # that encode the color, but want to keep the other pixels the same.
@@ -834,26 +825,24 @@ class AnimTexManager ():
         
         texture = self.transform_tex
         
-        for obj, bound_material in obj_and_material_pairs:
-            # print(bound_material, updated_material)
-            # print(bound_material.name, updated_material.name)
-            if bound_material.name == updated_material.name:
-                i = self.transform_data_index(obj.name)
-                print("mesh index:",i)
+        for i, data in enumerate(self.transform_data):
+            obj_name, material_name = data
+            
+            if material_name == updated_material.name:
+                print("transform index:",i)
+                row = i
+                col = 5
                 
-                if i is not None:
-                    row = i
-                    col = 5
-                    
-                    mat = updated_material.rb_mat
-                    
-                    texture.write_pixel(row,col+0, vec3_to_rgba(mat.ambient))
-                    
-                    diffuse_with_alpha = vec3_to_rgba(mat.diffuse) + [mat.alpha]
-                    texture.write_pixel(row,col+1, diffuse_with_alpha)
-                    
-                    texture.write_pixel(row,col+2, vec3_to_rgba(mat.specular))
-                    texture.write_pixel(row,col+3, vec3_to_rgba(mat.emissive))
+                mat = updated_material.rb_mat
+                
+                texture.write_pixel(row, col+0,
+                                    vec3_to_rgba(mat.ambient))
+                texture.write_pixel(row, col+1, 
+                                    vec3_to_rgba(mat.diffuse) + [mat.alpha])
+                texture.write_pixel(row, col+2,
+                                    vec3_to_rgba(mat.specular))
+                texture.write_pixel(row, col+3,
+                                    vec3_to_rgba(mat.emissive))
         
         texture.save()
         
@@ -865,6 +854,29 @@ class AnimTexManager ():
         }
         
         self.to_ruby.write(json.dumps(data))
+    
+    
+    
+    # 
+    # serialization
+    # 
+    
+    def on_load(self):
+        pass
+    
+    def on_save(self):
+        pass
+    
+    def dump_cache(self):
+        data = {
+            'vertex_data': self.vertex_data,
+            'transform_data': self.transform_data,
+            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
+            'objName_to_transformID' : self.objName_to_transformID,
+            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
+        }
+        
+        return json.dumps(data)
  
  
 
