@@ -99,15 +99,23 @@ def rubyof__on_save(*args):
     tex_manager.on_save()
 
 
-def rubyof__on_undo(*args):
+def rubyof__on_undo(scene):
+    # print("on undo")
+    # print(args)
+    # sys.stdout.flush()
+    
     context = bpy.context
     tex_manager = anim_texture_manager_singleton(context)
-    tex_manager.on_undo()
+    tex_manager.on_undo(scene)
 
-def rubyof__on_redo(*args):
+def rubyof__on_redo(scene):
+    # print("on undo")
+    # print(args)
+    # sys.stdout.flush()
+    
     context = bpy.context
     tex_manager = anim_texture_manager_singleton(context)
-    tex_manager.on_redo()
+    tex_manager.on_redo(scene)
     
 
 def register_event_handlers():
