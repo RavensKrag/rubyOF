@@ -1,3 +1,4 @@
+import bpy
 
 # ------------------------------------------------------------------------
 #   utility functions
@@ -24,18 +25,3 @@ def vec4_to_rgba(vec):
     px[3] = vec[3]
     
     return px
-
-
-def first_material(mesh_object):
-    mat_slots = mesh_object.material_slots
-    
-    # color = c1 = c2 = c3 = c4 = alpha = None
-    
-    if len(mat_slots) > 0:
-        mat = mat_slots[0].material.rb_mat
-        
-    else:
-        mat = None
-    
-    return mat
-

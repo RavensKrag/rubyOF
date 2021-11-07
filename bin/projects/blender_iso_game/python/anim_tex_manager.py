@@ -34,11 +34,30 @@ def find_unique_mesh_pairs(all_mesh_objects):
     return unique_pairs
 
 
+
 # scanline : array of pixel data (not nested array, just a flat array)
 # Set the data for one pixel within an array representing a whole scanline
 def scanline_set_px(scanline, px_i, px_data, channels=4):
     for i in range(channels):
         scanline[px_i*channels+i] = px_data[i]
+
+
+
+def first_material(mesh_object):
+    mat_slots = mesh_object.material_slots
+    
+    # color = c1 = c2 = c3 = c4 = alpha = None
+    
+    if len(mat_slots) > 0:
+        mat = mat_slots[0].material
+        
+    else:
+        mat = bpy.data.materials['Material']
+    
+    return mat
+    
+
+
 
 
 class AnimTexManager ():
