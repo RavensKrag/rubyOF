@@ -57,7 +57,7 @@ from utilities import *
 from bpy.app.handlers import persistent
 
 @persistent
-def on_load(*args):
+def rubyof__on_load(*args):
     # print("on load callback")
     # print(args)
     # sys.stdout.flush()
@@ -67,7 +67,7 @@ def on_load(*args):
     tex_manager.on_load()
 
 @persistent
-def on_save(*args):
+def rubyof__on_save(*args):
     # print("on save callback")
     # print(args)
     # sys.stdout.flush()
@@ -86,27 +86,25 @@ def on_save(*args):
     # sys.stdout.flush()
     
 
-def on_undo(*args):
+def rubyof__on_undo(*args):
     print("on undo callback")
     print(args)
     sys.stdout.flush()
 
-def on_redo(*args):
+def rubyof__on_redo(*args):
     print("on redo callback")
     print(args)
     sys.stdout.flush()
 
-
-
-callbacks = {
-    'on_save' : None,
-    'on_load' : None,
-    'on_undo' : None,
-    'on_redo' : None
-}
+handler_types = [
+    'on_save',
+    'on_load',
+    'on_undo',
+    'on_redo'
+]
 
 def register_callback(handler_type, function):
-    global callbacks
+    # unregister_callbacks()
     
     if handler_type == 'on_save':
         depsgraph_events = bpy.app.handlers.save_post
@@ -121,16 +119,16 @@ def register_callback(handler_type, function):
     
     if not function in depsgraph_events:
         depsgraph_events.append(function)
-        callbacks[handler_type] = function
+        # callbacks[handler_type].append(function)
     
     print(depsgraph_events)
     sys.stdout.flush()
 
 def unregister_callbacks():
-    global callbacks
     
-    for handler_type, func in callbacks.items():
-    
+    for handler_type in handler_types:
+        print(handler_type)
+        
         if handler_type == 'on_save':
             depsgraph_events = bpy.app.handlers.save_post
         elif handler_type == 'on_load':
@@ -142,43 +140,23 @@ def unregister_callbacks():
         else:
             raise RuntimeError(f"Callback type '{handler_type}' not among recognized types")
         
-        if func is not None:
-            if func in depsgraph_events:
-                depsgraph_events.remove(func)
-    
-    print(depsgraph_events)
-    sys.stdout.flush()
+        for handler in depsgraph_events:
+            if "rubyof__" in handler.__name__:
+                depsgraph_events.remove(handler)
+        
+        print("events:", depsgraph_events)
+        sys.stdout.flush()
 
 
 def register_save_handlers():
-    register_callback('on_load', on_load)
+    register_callback('on_save', rubyof__on_save)
+    register_callback('on_load', rubyof__on_load)
+    register_callback('on_redo', rubyof__on_redo)
+    register_callback('on_undo', rubyof__on_undo)
     
-    # depsgraph_events = bpy.app.handlers.save_post
-    # if not on_save in depsgraph_events:
-    #     depsgraph_events.append(on_save)
-    
-    # depsgraph_events = bpy.app.handlers.undo_post
-    # if not on_undo in depsgraph_events:
-    #     depsgraph_events.append(on_undo)
-    
-    # depsgraph_events = bpy.app.handlers.redo_post
-    # if not on_redo in depsgraph_events:
-    #     depsgraph_events.append(on_redo)
     
 def unregister_save_handlers():
     unregister_callbacks()
-    
-    # depsgraph_events = bpy.app.handlers.save_post
-    # if on_save in depsgraph_events:
-    #     depsgraph_events.remove(on_save)
-    
-    # depsgraph_events = bpy.app.handlers.undo_post
-    # if on_undo in depsgraph_events:
-    #     depsgraph_events.append(on_undo)
-    
-    # depsgraph_events = bpy.app.handlers.redo_post
-    # if on_redo in depsgraph_events:
-    #     depsgraph_events.append(on_redo)
 
 
 # def register_depgraph_handlers():
