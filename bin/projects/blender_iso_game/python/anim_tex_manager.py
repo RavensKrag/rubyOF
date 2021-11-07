@@ -106,6 +106,8 @@ class AnimTexManager ():
         self.transform_data = []
         
         self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
+        
+        self.on_load()
     
     def __calc_geometry_tex_size(self, mytool):
         width_px  = mytool.max_tris*3 # 3 verts per triangle
@@ -889,7 +891,7 @@ class AnimTexManager ():
         
     def on_load(self):
         if os.path.isfile(self.json_filepath):
-            with open(filepath, 'r') as f:
+            with open(self.json_filepath, 'r') as f:
                 data = json.load(f)
                 
                 print(data)
