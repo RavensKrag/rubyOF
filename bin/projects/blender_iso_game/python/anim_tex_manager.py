@@ -13,6 +13,7 @@ import time
 import queue
 import functools
 import json
+import sys
 
 
 
@@ -868,7 +869,6 @@ class AnimTexManager ():
         data = {
             'vertex_data': self.vertex_data,
             'transform_data': self.transform_data,
-            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
             'objName_to_transformID' : self.objName_to_transformID,
             'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
         }
@@ -882,12 +882,17 @@ class AnimTexManager ():
         # https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function
         
         # print()
+        
+        filepath = bpy.path.abspath("//anim_tex_cache.json")
+        with open(filepath, 'w') as f:
+            f.write(json.dumps(data, indent=2))
+        
+        
+        
     
-    def on_undo(self):
-        pass
-    
-    def on_redo(self):
-        pass
+    # 
+    # serialization helper
+    # 
     
     def dump_cache(self):
         data = {
@@ -899,7 +904,19 @@ class AnimTexManager ():
         }
         
         return json.dumps(data)
- 
+    
+    
+    # 
+    # undo / redo callbacks
+    # 
+    
+    
+    def on_undo(self):
+        pass
+    
+    def on_redo(self):
+        pass
+    
  
 
 # def register_depgraph_handlers():
