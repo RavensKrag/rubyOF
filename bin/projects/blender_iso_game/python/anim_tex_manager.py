@@ -14,6 +14,7 @@ import queue
 import functools
 import json
 import sys
+import os
 
 
 
@@ -862,9 +863,6 @@ class AnimTexManager ():
     # serialization
     # 
     
-    def on_load(self):
-        pass
-    
     def on_save(self):
         data = {
             'vertex_data': self.vertex_data,
@@ -873,9 +871,9 @@ class AnimTexManager ():
             'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
         }
         
-        print(json.dumps(data))
+        # print(json.dumps(data))
         
-        sys.stdout.flush()
+        # sys.stdout.flush()
         # ^ if you don't flush, python may buffer stdout
         #   This is a feature of python in general, not just Blender
         # Can also use the flush= named parameter on print()
@@ -887,6 +885,22 @@ class AnimTexManager ():
         with open(filepath, 'w') as f:
             f.write(json.dumps(data, indent=2))
         
+    def on_load(self):
+        filepath = bpy.path.abspath("//anim_tex_cache.json")
+        if os.path.isfile(filepath):
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+                
+                print(data)
+                sys.stdout.flush()
+                
+                self.vertex_data    = data['vertex_data']
+                self.transform_data = data['transform_data']
+                self.objName_to_transformID = data['objName_to_transformID']
+                self.meshDatablock_to_meshID = data['meshDatablock_to_meshID']
+                
+            
+     
         
         
     
