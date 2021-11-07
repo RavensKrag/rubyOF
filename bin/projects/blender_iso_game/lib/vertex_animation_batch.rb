@@ -109,8 +109,8 @@ class VertexAnimationBatch
     
     @textures[:transforms].tap do |texture| 
       @node ||= RubyOF::Node.new
-      @node.scale    = GLM::Vec3.new(10, 10, 1)
-      @node.position = GLM::Vec3.new(12, 320, 1)
+      @node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
+      @node.position = GLM::Vec3.new(108, 320, 1)
       
       @node.transformGL
       

@@ -72,6 +72,23 @@ class AnimTexManager ():
         mytool = context.scene.my_tool
         
         
+        self.__wrap_textures(mytool)
+        
+        
+        self.max_tris = mytool.max_tris
+        
+        
+        
+        # (maybe want to generate index / reverse index on init? not sure how yet.)
+        # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
+        self.vertex_data    = []
+        self.transform_data = []
+        
+        self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
+        
+        self.on_load()
+    
+    def __wrap_textures(self, mytool):
         self.position_tex = ImageWrapper(
             get_cached_image(mytool, "position_tex",
                              mytool.name+".position",
@@ -95,15 +112,6 @@ class AnimTexManager ():
                              channels_per_pixel=4),
             mytool.output_dir
         )
-        
-        self.max_tris = mytool.max_tris
-        
-        
-        
-        # (maybe want to generate index / reverse index on init? not sure how yet.)
-        # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
-        self.vertex_data    = []
-        self.transform_data = []
     
     def __calc_geometry_tex_size(self, mytool):
         width_px  = mytool.max_tris*3 # 3 verts per triangle
@@ -881,14 +889,13 @@ class AnimTexManager ():
         
         # print()
         
-        filepath = bpy.path.abspath("//anim_tex_cache.json")
-        with open(filepath, 'w') as f:
+        
+        with open(self.json_filepath, 'w') as f:
             f.write(json.dumps(data, indent=2))
         
     def on_load(self):
-        filepath = bpy.path.abspath("//anim_tex_cache.json")
-        if os.path.isfile(filepath):
-            with open(filepath, 'r') as f:
+        if os.path.isfile(self.json_filepath):
+            with open(self.json_filepath, 'r') as f:
                 data = json.load(f)
                 
                 print(data)
@@ -925,11 +932,23 @@ class AnimTexManager ():
     # 
     
     
-    def on_undo(self):
-        pass
+    def on_undo(self, scene):
+        mytool = scene.my_tool
+        
+        # mytool.position_tex  = None
+        # mytool.normal_tex    = None
+        # mytool.transform_tex = None
+        
+        self.__wrap_textures(mytool)
     
-    def on_redo(self):
-        pass
+    def on_redo(self, scene):
+        mytool = scene.my_tool
+        
+        # mytool.position_tex  = None
+        # mytool.normal_tex    = None
+        # mytool.transform_tex = None
+        
+        self.__wrap_textures(mytool)
     
  
 
