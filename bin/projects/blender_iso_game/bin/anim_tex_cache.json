@@ -443,6 +443,22 @@
     [
       "Cube.105",
       "Material"
+    ],
+    [
+      "Cube.106",
+      "Material"
+    ],
+    [
+      "Cube.107",
+      "Material"
+    ],
+    [
+      "Cube.109",
+      "Material"
+    ],
+    [
+      "Cube.110",
+      "Material"
     ]
   ],
   "objName_to_transformID": {
@@ -553,7 +569,11 @@
     "Cube.102": 105,
     "Cube.103": 106,
     "Cube.104": 107,
-    "Cube.105": 108
+    "Cube.105": 108,
+    "Cube.106": 109,
+    "Cube.107": 110,
+    "Cube.109": 111,
+    "Cube.110": 112
   },
   "meshDatablock_to_meshID": {
     "Cube.002": 1,
