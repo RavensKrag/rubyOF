@@ -489,52 +489,52 @@ class Core
   
   
   def update_entity(message)
-    case message['.type']
-    when 'MESH'
-      name = message['name']
-      id = @entity_name_to_id[name]
+    # case message['.type']
+    # when 'MESH'
+    #   name = message['name']
+    #   id = @entity_name_to_id[name]
       
       
-      nested_array = message['transform']
-      # ^ array of arrays
+    #   nested_array = message['transform']
+    #   # ^ array of arrays
       
-      # p nested_array
+    #   # p nested_array
       
-      @environment.set_entity_transform_array id, nested_array
-      # ^ thin wrapper on C++ callback
+    #   @environment.set_entity_transform_array id, nested_array
+    #   # ^ thin wrapper on C++ callback
       
       
       
-      # reload history
-      # (code adapted from Core#on_reload)
-      if @frame_history.time_traveling?
-        # @frame_history = @frame_history.branch_history
+    #   # reload history
+    #   # (code adapted from Core#on_reload)
+    #   if @frame_history.time_traveling?
+    #     # @frame_history = @frame_history.branch_history
         
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-        @frame_history.branch_history
-        
-      else
-        # Do NOT trigger play on reload after direct manipulation.
-        # Need the user to press "play" manually to signal
-        # they are done with direct manipulation. Otherwise,
-        # inputs from direct manipulation are comingled with
-        # inputs from ruby code execution.
+    #     # For now, just replace the curret timeline with the alt one.
+    #     # In future commits, we can refine this system to use multiple
+    #     # timelines, with UI to compress timelines or switch between them.
         
         
-        # # was paused when the crash happened,
-        # # so should be able to 'play' and resume execution
-        # @frame_history.play
-        # puts "frame: #{@frame_history.frame_index}"
-      end
-    else
+        
+    #     @frame_history.branch_history
+        
+    #   else
+    #     # Do NOT trigger play on reload after direct manipulation.
+    #     # Need the user to press "play" manually to signal
+    #     # they are done with direct manipulation. Otherwise,
+    #     # inputs from direct manipulation are comingled with
+    #     # inputs from ruby code execution.
+        
+        
+    #     # # was paused when the crash happened,
+    #     # # so should be able to 'play' and resume execution
+    #     # @frame_history.play
+    #     # puts "frame: #{@frame_history.frame_index}"
+    #   end
+    # else
       
       
-    end
+    # end
   end
   
   
