@@ -119,35 +119,35 @@ class Space
     @hash = Hash.new
     
     
-    entity_list = Array.new
+    
+    # isolate the part that uses the pixel data
+    # and then port that to C++ for speed
+    data_list = nil
       # used decompose_matrix (allocate once, reuse many times) 
       # (only works because I don't need rotation or scale for this)
       rot  = GLM::Quat.new(1,0,0,0)
       scale = GLM::Vec3.new(0,0,0)
-    
     @env.instance_eval do
-      @pixels[:transforms].height.times do |y|
-        c1 = @pixels[:transforms].color_at(0, y)
-        # puts c1
-        
-        mat = self.get_entity_transform(y)
-        # puts mat
-        
-        
-        pos  = GLM::Vec3.new(0,0,0)
-        RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-        
-        i = c1.r.to_i
-        unless i == 0
-          # puts "tile, pos: #{tile_id_to_name[i]}, #{pos}"
-          entity_list << [tile_id_to_name[i], pos]
+      data_list = 
+        @pixels[:transforms].height.times.collect do |y|
+          c1 = @pixels[:transforms].color_at(0, y)
+          # puts c1
+          
+          mat = self.get_entity_transform(y)
+          # puts mat
+          
+          
+          pos  = GLM::Vec3.new(0,0,0)
+          RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+          
+          # pseudo-return for block
+          [c1.r.to_i, pos]
         end
-        
-      end
     end
     
-    
-    @entity_list = entity_list
+    # now this part is pure ruby, in clean functional style
+    @entity_list = data_list.reject{   |i, pos|   i == 0  }
+                            .collect{  |i, pos|   [tile_id_to_name[i], pos] }
     
     @entity_list.each do |name, pos|
       puts "#{name}, #{pos}"
