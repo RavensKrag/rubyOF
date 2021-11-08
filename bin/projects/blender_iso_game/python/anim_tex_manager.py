@@ -633,7 +633,7 @@ class AnimTexManager ():
         
         
         # 
-        # get name of object -> mesh id mapping
+        # get name of object -> transform id mapping
         # 
         
         mytool.status_message = "show object map"
@@ -654,6 +654,21 @@ class AnimTexManager ():
         self.to_ruby.write(json.dumps(data))
         
         context = yield( task_count / total_tasks )
+        
+        
+        # 
+        # get mesh id -> mesh name mapping
+        # 
+        
+        data = {
+            'type': 'meshID_to_meshName',
+            'value': self.vertex_data,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
+        context = yield( task_count / total_tasks )
+        
         
         
         # 

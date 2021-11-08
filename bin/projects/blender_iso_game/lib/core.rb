@@ -236,6 +236,10 @@ class Core
     
     @entity_map_file = data_dir/'entity_map.yaml'
     @entity_name_to_id = YAML.load_file @entity_map_file
+    
+    
+    @mesh_id_map_file = data_dir/'mesh_map.yaml'
+    @mesh_id_to_name = YAML.load_file @mesh_id_map_file
   end
   
   # run when exception is detected
@@ -429,6 +433,8 @@ class Core
     mapping = message['value']
     
     @mesh_id_to_name = mapping
+    
+    dump_yaml @mesh_id_to_name => @mesh_id_map_file
   end
   
   
