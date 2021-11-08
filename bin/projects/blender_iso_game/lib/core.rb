@@ -425,6 +425,14 @@ class Core
     
   end
   
+  def update_mesh_mapping(message)
+    mapping = message['value']
+    
+    @mesh_id_to_name = mapping
+  end
+  
+  
+  
   
   def update_anim_textures(message)
     # p message

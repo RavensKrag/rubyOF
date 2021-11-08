@@ -314,6 +314,8 @@ class BlenderSync
     when 'object_to_id_map'
       @core.update_entity_mapping(message)
     
+    when 'meshID_to_meshName'
+      @core.update_mesh_mapping(message)
     
     when 'anim_texture_update'
       # update all 3 textures
