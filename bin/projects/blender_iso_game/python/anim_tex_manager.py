@@ -462,6 +462,28 @@ class AnimTexManager ():
         
         self.to_ruby.write(json.dumps(data))
         
+        
+        # need mesh datablock -> meshID to update the vertex data,
+        # but for spatial queries in Ruby you need
+        # to map point in space -> mesh name
+        
+        # point in space -> transformID
+        # transformID -> meshID
+        # meshID -> mesh name
+        
+        # so you need a meshID_to_meshDatablock mapping
+        # which is the reverse of what we currently have.
+        
+        # But meshID_to_meshDatablock is already the reverse index of self.vertex_data, so just send that instead
+        
+        data = {
+            'type': 'meshID_to_meshName',
+            'value': self.vertex_data,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
+        
 
     
     
@@ -611,7 +633,7 @@ class AnimTexManager ():
         
         
         # 
-        # get name of object -> mesh id mapping
+        # get name of object -> transform id mapping
         # 
         
         mytool.status_message = "show object map"
@@ -632,6 +654,21 @@ class AnimTexManager ():
         self.to_ruby.write(json.dumps(data))
         
         context = yield( task_count / total_tasks )
+        
+        
+        # 
+        # get mesh id -> mesh name mapping
+        # 
+        
+        data = {
+            'type': 'meshID_to_meshName',
+            'value': self.vertex_data,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
+        context = yield( task_count / total_tasks )
+        
         
         
         # 

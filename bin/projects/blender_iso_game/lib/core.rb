@@ -112,6 +112,72 @@ load LIB_DIR/'vertex_animation_batch.rb'
 load LIB_DIR/'frame_history.rb'
 
 
+class Space
+  def initialize(environment, tile_id_to_name)
+    @env = environment
+    
+    @hash = Hash.new
+    
+    
+    entity_list = Array.new
+      # used decompose_matrix (allocate once, reuse many times) 
+      # (only works because I don't need rotation or scale for this)
+      rot  = GLM::Quat.new(1,0,0,0)
+      scale = GLM::Vec3.new(0,0,0)
+    
+    @env.instance_eval do
+      @pixels[:transforms].height.times do |y|
+        c1 = @pixels[:transforms].color_at(0, y)
+        # puts c1
+        
+        mat = self.get_entity_transform(y)
+        # puts mat
+        
+        
+        pos  = GLM::Vec3.new(0,0,0)
+        RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+        
+        i = c1.r.to_i
+        unless i == 0
+          # puts "tile, pos: #{tile_id_to_name[i]}, #{pos}"
+          entity_list << [tile_id_to_name[i], pos]
+        end
+        
+      end
+    end
+    
+    
+    @entity_list = entity_list
+    
+    @entity_list.each do |name, pos|
+      puts "#{name}, #{pos}"
+    end
+    
+  end
+  
+  # what type of tile is located at the point 'pt'?
+  def point_query(pt)
+    puts pt
+    
+    # unless @first
+    #   require 'irb'
+    #   binding.irb
+    # end
+    
+    # @first ||= true
+    
+    
+    name, pos = @entity_list.find{|name, pos| pos == pt }
+    puts "name: #{name}"
+    
+    return name
+    # @entity_list.each do |name, pos|
+    #   # puts "#{name}, #{pos}"
+    #   if 
+    # end
+  end
+end
+
 
 
 class Core
@@ -236,6 +302,10 @@ class Core
     
     @entity_map_file = data_dir/'entity_map.yaml'
     @entity_name_to_id = YAML.load_file @entity_map_file
+    
+    
+    @mesh_id_map_file = data_dir/'mesh_map.yaml'
+    @mesh_id_to_name = YAML.load_file @mesh_id_map_file
   end
   
   # run when exception is detected
@@ -425,6 +495,16 @@ class Core
     
   end
   
+  def update_mesh_mapping(message)
+    mapping = message['value']
+    
+    @mesh_id_to_name = mapping
+    
+    dump_yaml @mesh_id_to_name => @mesh_id_map_file
+  end
+  
+  
+  
   
   def update_anim_textures(message)
     # p message
@@ -481,52 +561,52 @@ class Core
   
   
   def update_entity(message)
-    case message['.type']
-    when 'MESH'
-      name = message['name']
-      id = @entity_name_to_id[name]
+    # case message['.type']
+    # when 'MESH'
+    #   name = message['name']
+    #   id = @entity_name_to_id[name]
       
       
-      nested_array = message['transform']
-      # ^ array of arrays
+    #   nested_array = message['transform']
+    #   # ^ array of arrays
       
-      # p nested_array
+    #   # p nested_array
       
-      @environment.set_entity_transform_array id, nested_array
-      # ^ thin wrapper on C++ callback
+    #   @environment.set_entity_transform_array id, nested_array
+    #   # ^ thin wrapper on C++ callback
       
       
       
-      # reload history
-      # (code adapted from Core#on_reload)
-      if @frame_history.time_traveling?
-        # @frame_history = @frame_history.branch_history
+    #   # reload history
+    #   # (code adapted from Core#on_reload)
+    #   if @frame_history.time_traveling?
+    #     # @frame_history = @frame_history.branch_history
         
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-        @frame_history.branch_history
-        
-      else
-        # Do NOT trigger play on reload after direct manipulation.
-        # Need the user to press "play" manually to signal
-        # they are done with direct manipulation. Otherwise,
-        # inputs from direct manipulation are comingled with
-        # inputs from ruby code execution.
+    #     # For now, just replace the curret timeline with the alt one.
+    #     # In future commits, we can refine this system to use multiple
+    #     # timelines, with UI to compress timelines or switch between them.
         
         
-        # # was paused when the crash happened,
-        # # so should be able to 'play' and resume execution
-        # @frame_history.play
-        # puts "frame: #{@frame_history.frame_index}"
-      end
-    else
+        
+    #     @frame_history.branch_history
+        
+    #   else
+    #     # Do NOT trigger play on reload after direct manipulation.
+    #     # Need the user to press "play" manually to signal
+    #     # they are done with direct manipulation. Otherwise,
+    #     # inputs from direct manipulation are comingled with
+    #     # inputs from ruby code execution.
+        
+        
+    #     # # was paused when the crash happened,
+    #     # # so should be able to 'play' and resume execution
+    #     # @frame_history.play
+    #     # puts "frame: #{@frame_history.frame_index}"
+    #   end
+    # else
       
       
-    end
+    # end
   end
   
   
@@ -622,10 +702,15 @@ class Core
     
     x = 8
     
+    @space = Space.new(@environment, @mesh_id_to_name)
     
     moves = [
       GLM::Vec3.new(1, 0, 0),
       GLM::Vec3.new(1, 0, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
       GLM::Vec3.new(0, 1, 0),
       GLM::Vec3.new(0, 1, 0),
       GLM::Vec3.new(0, 1, 0),
@@ -650,6 +735,52 @@ class Core
     moves.each do |v|
       # step in a direction, but subdivide into
       # two motions for animation / tweening
+      
+      # 
+      # step up the step, if it's there
+      # 
+      i = @entity_name_to_id['CharacterTest']
+      mat = @environment.get_entity_transform(i)
+      
+      pos  = GLM::Vec3.new(0,0,0)
+      rot  = GLM::Quat.new(1,0,0,0)
+      scale = GLM::Vec3.new(0,0,0)
+      RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+      # TODO: ^ this should be extracted from the transform matrix
+      # puts pos
+      
+      # TODO: implement vector addition
+        # (in glm, the operators like + are still implemented as infix)
+      
+      # if the space you're trying to move into is blocked
+      # then assume it's a step, and try to step up
+      if @space.point_query(pos + v) != nil
+        # step upwards
+        2.times do
+          snapshot.frame do
+            mat1 = @environment.get_entity_transform(i)
+            v2 = GLM::Vec3.new(0.0, 0.0, 0.5)
+            
+            mat2 = GLM.translate(mat1, v2)
+            
+            @environment.set_entity_transform(i, mat2)
+          end
+          
+          
+          # wait some frames
+          x.times do 
+            snapshot.frame do
+              # NO-OP
+            end
+          end
+        end
+      end
+      
+      
+      
+      # 
+      # move along the ground
+      # 
       2.times do
         # must exit the mutate block to set the value back
         

@@ -283,6 +283,166 @@
     [
       "Cube.024",
       "Material"
+    ],
+    [
+      "Cube.066",
+      "Material"
+    ],
+    [
+      "Cube.067",
+      "Material"
+    ],
+    [
+      "Cube.068",
+      "Material"
+    ],
+    [
+      "Cube.069",
+      "Material"
+    ],
+    [
+      "Cube.070",
+      "Material"
+    ],
+    [
+      "Cube.071",
+      "Material"
+    ],
+    [
+      "Cube.072",
+      "Material"
+    ],
+    [
+      "Cube.073",
+      "Material"
+    ],
+    [
+      "Cube.074",
+      "Material"
+    ],
+    [
+      "Cube.075",
+      "Material"
+    ],
+    [
+      "Cube.076",
+      "Material"
+    ],
+    [
+      "Cube.077",
+      "Material"
+    ],
+    [
+      "Cube.078",
+      "Material"
+    ],
+    [
+      "Cube.079",
+      "Material"
+    ],
+    [
+      "Cube.080",
+      "Material"
+    ],
+    [
+      "Cube.081",
+      "Material"
+    ],
+    [
+      "Cube.082",
+      "Material"
+    ],
+    [
+      "Cube.083",
+      "Material"
+    ],
+    [
+      "Cube.084",
+      "Material"
+    ],
+    [
+      "Cube.085",
+      "Material"
+    ],
+    [
+      "Cube.086",
+      "Material"
+    ],
+    [
+      "Cube.087",
+      "Material"
+    ],
+    [
+      "Cube.088",
+      "Material"
+    ],
+    [
+      "Cube.089",
+      "Material"
+    ],
+    [
+      "Cube.090",
+      "Material"
+    ],
+    [
+      "Cube.091",
+      "Material"
+    ],
+    [
+      "Cube.092",
+      "Material"
+    ],
+    [
+      "Cube.093",
+      "Material"
+    ],
+    [
+      "Cube.094",
+      "Material"
+    ],
+    [
+      "Cube.095",
+      "Material"
+    ],
+    [
+      "Cube.096",
+      "Material"
+    ],
+    [
+      "Cube.097",
+      "Material"
+    ],
+    [
+      "Cube.098",
+      "Material"
+    ],
+    [
+      "Cube.099",
+      "Material"
+    ],
+    [
+      "Cube.100",
+      "Material"
+    ],
+    [
+      "Cube.101",
+      "Material"
+    ],
+    [
+      "Cube.102",
+      "Material"
+    ],
+    [
+      "Cube.103",
+      "Material"
+    ],
+    [
+      "Cube.104",
+      "Material"
+    ],
+    [
+      "Cube.105",
+      "Material"
     ]
   ],
   "objName_to_transformID": {
@@ -353,7 +513,47 @@
     "Cube.019": 65,
     "Cube.023": 66,
     "Cube.020": 67,
-    "Cube.024": 68
+    "Cube.024": 68,
+    "Cube.066": 69,
+    "Cube.067": 70,
+    "Cube.068": 71,
+    "Cube.069": 72,
+    "Cube.070": 73,
+    "Cube.071": 74,
+    "Cube.072": 75,
+    "Cube.073": 76,
+    "Cube.074": 77,
+    "Cube.075": 78,
+    "Cube.076": 79,
+    "Cube.077": 80,
+    "Cube.078": 81,
+    "Cube.079": 82,
+    "Cube.080": 83,
+    "Cube.081": 84,
+    "Cube.082": 85,
+    "Cube.083": 86,
+    "Cube.084": 87,
+    "Cube.085": 88,
+    "Cube.086": 89,
+    "Cube.087": 90,
+    "Cube.088": 91,
+    "Cube.089": 92,
+    "Cube.090": 93,
+    "Cube.091": 94,
+    "Cube.092": 95,
+    "Cube.093": 96,
+    "Cube.094": 97,
+    "Cube.095": 98,
+    "Cube.096": 99,
+    "Cube.097": 100,
+    "Cube.098": 101,
+    "Cube.099": 102,
+    "Cube.100": 103,
+    "Cube.101": 104,
+    "Cube.102": 105,
+    "Cube.103": 106,
+    "Cube.104": 107,
+    "Cube.105": 108
   },
   "meshDatablock_to_meshID": {
     "Cube.002": 1,

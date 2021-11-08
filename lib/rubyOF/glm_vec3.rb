@@ -20,6 +20,18 @@ class Vec3
     super()
   end
   
+  def ==(other)
+    if other.class == self.class
+      flag = (self.x == other.x && 
+              self.y == other.y && 
+              self.z == other.z )
+      
+      return flag
+    else
+      return false
+    end
+  end
+  
   
   
   # hide C++ level helper methods
