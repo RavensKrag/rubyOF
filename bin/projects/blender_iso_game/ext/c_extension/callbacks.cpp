@@ -1192,42 +1192,48 @@ void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::v
 // list of fields copied from Ruby code, 2021.11.08
 // FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
 // pull all fields (specifying which ones too pull is too complicated)
-Rice::Array query_transform_pixels(const ofFloatPixels &pixels, int i)
+Rice::Array query_transform_pixels(const ofFloatPixels &pixels)
 {
-	Rice::Array out_array;
+	Rice::Array table;
 	
-	ofFloatColor color;
+	for(int i=0; i<pixels.getHeight(); i++){
+		Rice::Array row;
+		
+		ofFloatColor color;
+		
+		// mesh id
+		color = pixels.getColor(0, i);
+		row.push(to_ruby(color.r));
+		
+		// transform data
+		glm::mat4 mat = get_entity_transform(pixels, i);
+		glm::vec3 pos;
+		glm::quat rot;
+		glm::vec3 scale;
+		decompose_matrix(mat, pos, rot, scale);
+		
+		row.push(to_ruby(pos));
+		row.push(to_ruby(rot));
+		row.push(to_ruby(scale));
+		
+		// material data
+		color = pixels.getColor(5, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(6, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(7, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(8, i);
+		row.push(to_ruby(color));
+		
+		table.push(row);
+	}
 	
-	// mesh id
-	color = pixels.getColor(0, i);
-	out_array.push(to_ruby(color.r));
 	
-	// transform data
-	glm::mat4 mat = get_entity_transform(pixels, i);
-	glm::vec3 pos;
-	glm::quat rot;
-	glm::vec3 scale;
-	decompose_matrix(mat, pos, rot, scale);
-	
-	out_array.push(to_ruby(pos));
-	out_array.push(to_ruby(rot));
-	out_array.push(to_ruby(scale));
-	
-	// material data
-	color = pixels.getColor(5, i);
-	out_array.push(to_ruby(color));
-	
-	color = pixels.getColor(6, i);
-	out_array.push(to_ruby(color));
-	
-	color = pixels.getColor(7, i);
-	out_array.push(to_ruby(color));
-	
-	color = pixels.getColor(8, i);
-	out_array.push(to_ruby(color));
-	
-	
-	return out_array;
+	return table;
 }
 
 

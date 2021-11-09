@@ -239,12 +239,7 @@ class VertexAnimationBatch
   
   
   class TransformData
-    FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
-        
-    FIELD_TO_INDEX = 
-      FIELDS.each_with_index
-              .collect{ |field, i|  [field, i] }
-              .to_h
+    FIELDS = [:mesh_id, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive]
     
     def initialize(pixels)
       @pixels = pixels
@@ -270,89 +265,16 @@ class VertexAnimationBatch
       # end
       
       
-      
       # p query_fields
       
       # run actual query at C++ level
-      out = 
-        @pixels.height.times.collect do |y|
-          RubyOF::CPP_Callbacks.query_transform_pixels(
-            @pixels, y
-          )
-        end
+      table = RubyOF::CPP_Callbacks.query_transform_pixels(@pixels)
       
-      properties = [:mesh_id, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive]
-      out.collect do |data|
-        map = properties.zip(data).to_h
+      table.collect do |data|
+        map = FIELDS.zip(data).to_h
         
         query_fields.collect{ |field|  map[field] }
       end
-      
-      # p out
-      
-      # return out
-      
-      # @pixels.height.times.collect do |y|
-      #   bExtractMat = false
-      #   bDecomposeMat = false
-        
-      #   query_fields.each do |field|
-      #     if field == :transform
-      #       bExtractMat = true
-      #     elsif field == :position || field == :rotation || field == :scale
-      #       bExtractMat = true
-      #       bDecomposeMat = true
-      #     end
-      #   end
-        
-      #   if bExtractMat
-      #     mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels, y)
-          
-      #     if bDecomposeMat
-            
-      #       pos   = GLM::Vec3.new(0,0,0)
-      #       rot   = GLM::Quat.new(1,0,0,0)
-      #       scale = GLM::Vec3.new(0,0,0)
-      #       RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-            
-      #     end
-      #   end
-        
-      #   query_fields.collect do |field|
-      #     case field
-      #     when :mesh_id
-      #       @pixels.color_at(0,y).r.to_i
-      #       # 1
-      #     when :transform
-      #       mat
-      #       # GLM::Vec3.new(0,0,0)
-      #     when :position
-      #       pos
-      #       # GLM::Vec3.new(0,0,0)
-      #     when :rotation
-      #       rotation
-      #       # GLM::Quat.new(1,0,0,0)
-      #     when :scale
-      #       scale
-      #       # GLM::Vec3.new(0,0,0)
-      #     when :ambient
-      #       @pixels.color_at(5,y)
-      #       # RubyOF::FloatColor.rgba(0,0,0,0)
-      #     when :diffuse
-      #       @pixels.color_at(6,y)
-      #       # RubyOF::FloatColor.rgba(0,0,0,0)
-      #     when :specular
-      #       @pixels.color_at(7,y)
-      #       # RubyOF::FloatColor.rgba(0,0,0,0)
-      #     when :emmissive
-      #       @pixels.color_at(8,y)
-      #       # RubyOF::FloatColor.rgba(0,0,0,0)
-      #     when :alpha
-      #       @pixels.color_at(6,y).a
-      #       # RubyOF::FloatColor.rgba(0,0,0,0)
-      #     end
-      #   end
-      # end
       
     end
     
