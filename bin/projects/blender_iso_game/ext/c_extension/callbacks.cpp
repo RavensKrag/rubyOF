@@ -1066,7 +1066,7 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
-glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
+inline glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
 	// glm::mat4 mat(1);
 	
 	// pull colors out of image on CPU side
@@ -1196,20 +1196,20 @@ Rice::Array query_transform_pixels(const ofFloatPixels &pixels)
 {
 	Rice::Array table;
 	
+	ofFloatColor color;
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::vec3 scale;
 	for(int i=0; i<pixels.getHeight(); i++){
 		Rice::Array row;
 		
-		ofFloatColor color;
 		
 		// mesh id
 		color = pixels.getColor(0, i);
-		row.push(to_ruby(color.r));
+		row.push(to_ruby(static_cast<int>(color.r)));
 		
 		// transform data
 		glm::mat4 mat = get_entity_transform(pixels, i);
-		glm::vec3 pos;
-		glm::quat rot;
-		glm::vec3 scale;
 		decompose_matrix(mat, pos, rot, scale);
 		
 		row.push(to_ruby(pos));
