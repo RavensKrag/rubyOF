@@ -145,6 +145,29 @@ class Space
         end
     end
     
+    
+    data_list = @env.transform_data.query(:mesh_id, :position)
+    
+    # what fields can you ask for?
+    @env.transform_data.fields
+    # => [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
+    
+    # run a query (like a database) and pull out the desired fields.
+    # returns an Array, where each entry has the values of the desired fields.
+    # ex) [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
+    data_list = @env.transform_data.query(:mesh_id, :position)
+    
+    
+    
+    @entity_list =
+      @env.transform_data.query(:mesh_id, :position)
+                         .reject{   |i, pos|   i == 0  }
+                         .collect{  |i, pos|   [tile_id_to_name[i], pos] }
+    
+    
+    
+    
+    
     # now this part is pure ruby, in clean functional style
     @entity_list = data_list.reject{   |i, pos|   i == 0  }
                             .collect{  |i, pos|   [tile_id_to_name[i], pos] }
