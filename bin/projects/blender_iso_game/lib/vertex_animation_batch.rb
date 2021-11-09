@@ -271,7 +271,7 @@ class VertexAnimationBatch
       
       
       
-      p query_fields
+      # p query_fields
       
       # run actual query at C++ level
       out = 
@@ -281,9 +281,16 @@ class VertexAnimationBatch
           )
         end
       
-      p out
+      properties = [:mesh_id, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive]
+      out.collect do |data|
+        map = properties.zip(data).to_h
+        
+        query_fields.collect{ |field|  map[field] }
+      end
       
-      return out
+      # p out
+      
+      # return out
       
       # @pixels.height.times.collect do |y|
       #   bExtractMat = false

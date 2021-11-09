@@ -137,11 +137,11 @@ class Space
                          .reject{   |i, pos|   i == 0  }
                          .collect{  |i, pos|   [tile_id_to_name[i], pos] }
     
-    p @entity_list
+    # p @entity_list
     
-    @entity_list.each do |name, pos|
-      puts "#{name}, #{pos}"
-    end
+    # @entity_list.each do |name, pos|
+    #   puts "#{name}, #{pos}"
+    # end
     
   end
   
