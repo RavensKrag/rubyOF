@@ -1122,7 +1122,7 @@ void set_entity_transform(ofFloatPixels &pixels, const int i, const glm::mat4 ma
 }
 
 
-void set_entity_transform_array(ofFloatPixels &pixels, const int i, Rice::Array ary, ofTexture &tex){
+void set_entity_transform_array(ofFloatPixels &pixels, int i, Rice::Array ary, ofTexture &tex){
 	// TODO: optimize - always allocate 16 floats (dynamic allocation can be slow)
 	
 	// copy ruby data over to C++ memory
@@ -1190,51 +1190,41 @@ void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::v
 
 
 // list of fields copied from Ruby code, 2021.11.08
-// [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
-Rice::Array query_transform_pixels(const ofFloatPixels &pixels, Rice::Array query)
+// FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
+// pull all fields (specifying which ones too pull is too complicated)
+Rice::Array query_transform_pixels(const ofFloatPixels &pixels, int i)
 {
-	// convert ruby array to C array
-	int* query_ptr = new int[query.size()];
-	
-	int idx=0;
-	for(auto aI = query.begin(); aI != query.end(); ++aI){
-		query_ptr[idx] = from_ruby<int>(*aI);
-		idx++;
-	}
-	
-	
-	// set flags
-	bool bDecomposeMat = false;
-	bool bExtractAlpha = false;
-	
-	for(int i=0; i<query.size(); i++){
-		if(query_ptr[i] == 2 || query_ptr[i] == 4 query_ptr[i] == 4){
-			// :position, :rotation, :scale
-			bDecomposeMat = true;
-		}
-		if(query_ptr[i] == 9){
-			// :alpha
-			bExtractAlpha = true
-		}
-	}
-	
-	
-	
 	Rice::Array out_array;
 	
-	ofFloatColor c;
-	int height = pixels.getHeight();
-	for(int y=0; y<height; y++){
-		
-		
-		c = pixels.getColor(0,y);
-		
-		
-	}
+	ofFloatColor color;
 	
+	// mesh id
+	color = pixels.getColor(0, i);
+	out_array.push(to_ruby(color.r));
 	
-	// free memory
-	delete query_ptr;
+	// transform data
+	glm::mat4 mat = get_entity_transform(pixels, i);
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::vec3 scale;
+	decompose_matrix(mat, pos, rot, scale);
+	
+	out_array.push(to_ruby(pos));
+	out_array.push(to_ruby(rot));
+	out_array.push(to_ruby(scale));
+	
+	// material data
+	color = pixels.getColor(5, i);
+	out_array.push(to_ruby(color));
+	
+	color = pixels.getColor(6, i);
+	out_array.push(to_ruby(color));
+	
+	color = pixels.getColor(7, i);
+	out_array.push(to_ruby(color));
+	
+	color = pixels.getColor(8, i);
+	out_array.push(to_ruby(color));
 	
 	
 	return out_array;

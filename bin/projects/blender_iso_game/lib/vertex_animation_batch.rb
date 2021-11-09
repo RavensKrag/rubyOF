@@ -261,74 +261,91 @@ class VertexAnimationBatch
     # ex) self.transform_data.query(:mesh_id, :position)
     #     => [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
     def query(*query_fields)
-      # convert symbols to integers
-      query_i = query_fields.collect{|field|  FIELD_TO_INDEX[field] }
+      # # convert symbols to integers
+      # query_i = query_fields.collect{|field|  FIELD_TO_INDEX[field] }
       
-      # error checking
-      if query_i.any?{|x| x.nil? }
-        raise "Unknown field specified in query."
-      end
+      # # error checking
+      # if query_i.any?{|x| x.nil? }
+      #   raise "Unknown field specified in query."
+      # end
       
       
       
       p query_fields
       
-      # # run actual query at C++ level
-      # return RubyOF::CPP_Callbacks.query_transform_pixels(
-      #   @pixels, query_i
-      # )
+      # run actual query at C++ level
+      out = 
+        @pixels.height.times.collect do |y|
+          RubyOF::CPP_Callbacks.query_transform_pixels(
+            @pixels, y
+          )
+        end
       
-      @pixels.height.times.collect do |y|
-        bExtractMat = false
-        bDecomposeMat = false
+      p out
+      
+      return out
+      
+      # @pixels.height.times.collect do |y|
+      #   bExtractMat = false
+      #   bDecomposeMat = false
         
-        query_fields.each do |field|
-          if field == :transform
-            bExtractMat = true
-          elsif field == :position || field == :rotation || field == :scale
-            bExtractMat = true
-            bDecomposeMat = true
-          end
-        end
+      #   query_fields.each do |field|
+      #     if field == :transform
+      #       bExtractMat = true
+      #     elsif field == :position || field == :rotation || field == :scale
+      #       bExtractMat = true
+      #       bDecomposeMat = true
+      #     end
+      #   end
         
-        if bExtractMat
-          mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels, y)
+      #   if bExtractMat
+      #     mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels, y)
           
-          if bDecomposeMat
+      #     if bDecomposeMat
             
-            pos   = GLM::Vec3.new(0,0,0)
-            rot   = GLM::Quat.new(1,0,0,0)
-            scale = GLM::Vec3.new(0,0,0)
-            RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+      #       pos   = GLM::Vec3.new(0,0,0)
+      #       rot   = GLM::Quat.new(1,0,0,0)
+      #       scale = GLM::Vec3.new(0,0,0)
+      #       RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
             
-          end
-        end
+      #     end
+      #   end
         
-        query_fields.collect do |field|
-          case field
-          when :mesh_id
-            @pixels.color_at(0,y).r.to_i
-          when :transform
-            mat
-          when :position
-            pos
-          when :rotation
-            rotation
-          when :scale
-            scale
-          when :ambient
-            @pixels.color_at(5,y)
-          when :diffuse
-            @pixels.color_at(6,y)
-          when :specular
-            @pixels.color_at(7,y)
-          when :emmissive
-            @pixels.color_at(8,y)
-          when :alpha
-            @pixels.color_at(6,y).a
-          end
-        end
-      end
+      #   query_fields.collect do |field|
+      #     case field
+      #     when :mesh_id
+      #       @pixels.color_at(0,y).r.to_i
+      #       # 1
+      #     when :transform
+      #       mat
+      #       # GLM::Vec3.new(0,0,0)
+      #     when :position
+      #       pos
+      #       # GLM::Vec3.new(0,0,0)
+      #     when :rotation
+      #       rotation
+      #       # GLM::Quat.new(1,0,0,0)
+      #     when :scale
+      #       scale
+      #       # GLM::Vec3.new(0,0,0)
+      #     when :ambient
+      #       @pixels.color_at(5,y)
+      #       # RubyOF::FloatColor.rgba(0,0,0,0)
+      #     when :diffuse
+      #       @pixels.color_at(6,y)
+      #       # RubyOF::FloatColor.rgba(0,0,0,0)
+      #     when :specular
+      #       @pixels.color_at(7,y)
+      #       # RubyOF::FloatColor.rgba(0,0,0,0)
+      #     when :emmissive
+      #       @pixels.color_at(8,y)
+      #       # RubyOF::FloatColor.rgba(0,0,0,0)
+      #     when :alpha
+      #       @pixels.color_at(6,y).a
+      #       # RubyOF::FloatColor.rgba(0,0,0,0)
+      #     end
+      #   end
+      # end
       
     end
     
