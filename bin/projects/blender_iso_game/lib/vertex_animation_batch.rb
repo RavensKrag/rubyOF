@@ -2,6 +2,8 @@
 class VertexAnimationBatch
   include RubyOF::Graphics
   
+  attr_reader :transform_data
+  
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
       :positions  => RubyOF::FloatPixels.new,
@@ -70,6 +72,13 @@ class VertexAnimationBatch
     # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
     # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
     # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+    
+    
+    # 
+    # query interface
+    # 
+    
+    @transform_data = TransformData.new(@pixels[:transforms])
   end
   
   def draw_scene
@@ -225,4 +234,51 @@ class VertexAnimationBatch
       texture.load_data(pixels)
     end
   end
+  
+  
+  
+  
+  class TransformData
+    FIELDS = [:mesh_id, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive]
+    
+    def initialize(pixels)
+      @pixels = pixels
+    end
+    
+    # what fields can you ask for in #query?
+    def fields
+      return FIELDS
+    end
+    
+    # run a query (like a database) and pull out the desired fields.
+    # returns an Array, where each entry has the values of the desired fields.
+    # 
+    # ex) self.transform_data.query(:mesh_id, :position)
+    #     => [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
+    def query(*query_fields)
+      # # convert symbols to integers
+      # query_i = query_fields.collect{|field|  FIELD_TO_INDEX[field] }
+      
+      # # error checking
+      # if query_i.any?{|x| x.nil? }
+      #   raise "Unknown field specified in query."
+      # end
+      
+      
+      # p query_fields
+      
+      # run actual query at C++ level
+      table = RubyOF::CPP_Callbacks.query_transform_pixels(@pixels)
+      
+      table.collect do |data|
+        map = FIELDS.zip(data).to_h
+        
+        query_fields.collect{ |field|  map[field] }
+      end
+      
+    end
+    
+    
+  end
+  
 end

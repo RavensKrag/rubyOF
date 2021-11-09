@@ -119,39 +119,29 @@ class Space
     @hash = Hash.new
     
     
-    entity_list = Array.new
-      # used decompose_matrix (allocate once, reuse many times) 
-      # (only works because I don't need rotation or scale for this)
-      rot  = GLM::Quat.new(1,0,0,0)
-      scale = GLM::Vec3.new(0,0,0)
     
-    @env.instance_eval do
-      @pixels[:transforms].height.times do |y|
-        c1 = @pixels[:transforms].color_at(0, y)
-        # puts c1
-        
-        mat = self.get_entity_transform(y)
-        # puts mat
-        
-        
-        pos  = GLM::Vec3.new(0,0,0)
-        RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-        
-        i = c1.r.to_i
-        unless i == 0
-          # puts "tile, pos: #{tile_id_to_name[i]}, #{pos}"
-          entity_list << [tile_id_to_name[i], pos]
-        end
-        
-      end
-    end
+    # # what fields can you ask for?
+    # @env.transform_data.fields
+    # # => [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
     
     
-    @entity_list = entity_list
+    # # run a query (like a database) and pull out the desired fields.
+    # # returns an Array, where each entry has the values of the desired fields.
+    # # ex) [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
+    # data_list = @env.transform_data.query(:mesh_id, :position)
     
-    @entity_list.each do |name, pos|
-      puts "#{name}, #{pos}"
-    end
+    # p @env.transform_data.query(:mesh_id, :position)
+    
+    @entity_list =
+      @env.transform_data.query(:mesh_id, :position)
+                         .reject{   |i, pos|   i == 0  }
+                         .collect{  |i, pos|   [tile_id_to_name[i], pos] }
+    
+    # p @entity_list
+    
+    # @entity_list.each do |name, pos|
+    #   puts "#{name}, #{pos}"
+    # end
     
   end
   
