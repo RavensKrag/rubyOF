@@ -937,6 +937,31 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
 	
 	// 
@@ -1162,6 +1187,76 @@ void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::v
         glm::vec3(m[2]) / scale[2]);
     rot = glm::quat_cast(rotMtx);
 }
+
+
+// list of fields copied from Ruby code, 2021.11.08
+// [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
+Rice::Array query_transform_pixels(const ofFloatPixels &pixels, Rice::Array query)
+{
+	// convert ruby array to C array
+	int* query_ptr = new int[query.size()];
+	
+	int idx=0;
+	for(auto aI = query.begin(); aI != query.end(); ++aI){
+		query_ptr[idx] = from_ruby<int>(*aI);
+		idx++;
+	}
+	
+	
+	// set flags
+	bool bDecomposeMat = false;
+	bool bExtractAlpha = false;
+	
+	for(int i=0; i<query.size(); i++){
+		if(query_ptr[i] == 2 || query_ptr[i] == 4 query_ptr[i] == 4){
+			// :position, :rotation, :scale
+			bDecomposeMat = true;
+		}
+		if(query_ptr[i] == 9){
+			// :alpha
+			bExtractAlpha = true
+		}
+	}
+	
+	
+	
+	Rice::Array out_array;
+	
+	ofFloatColor c;
+	int height = pixels.getHeight();
+	for(int y=0; y<height; y++){
+		
+		
+		c = pixels.getColor(0,y);
+		
+		
+	}
+	
+	
+	// free memory
+	delete query_ptr;
+	
+	
+	return out_array;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1734,6 +1829,8 @@ void Init_rubyOF_project()
 			                     &set_entity_transform_array)
 		
 		
+		.define_module_function("query_transform_pixels",
+			                     &query_transform_pixels)
 		
 		
 		.define_module_function("decompose_matrix",
