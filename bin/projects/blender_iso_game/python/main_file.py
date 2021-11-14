@@ -366,7 +366,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
     
     
     
-    def update_function(self, context):
+    def update_sync_deletions(self, context):
         if self.sync_deletions:
             bpy.ops.wm.sync_deletions('INVOKE_DEFAULT')
         
@@ -375,8 +375,11 @@ class PG_MyProperties (bpy.types.PropertyGroup):
     sync_deletions : BoolProperty(
         name="Sync Deletions",
         default=False,
-        update=update_function
+        update=update_sync_deletions
     )
+    
+    
+    
     
 
 # Use modal over the timer api, because the timer api involves threading,
@@ -453,8 +456,6 @@ class OT_TexAnimSyncDeletions (bpy.types.Operator):
                 tex_manager.post_mesh_object_deletion(name)
                 
                 # tex_manager.post_mesh_object_deletion(mesh_obj_name)
-
-
 
 
 
@@ -1364,54 +1365,81 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         min = 0,
         max = 100000
         )
+    
+    
+    def update_detect_playback(self, context):
+        if self.detect_playback:
+            bpy.ops.render.rubyof_detect_playback('INVOKE_DEFAULT')
+        
+        return None
+    
+    detect_playback : BoolProperty(
+        name="Detect Playback",
+        default=False,
+        update=update_detect_playback
+    )
 
 
-#
-# Panel for general renderer properties (under Render Properties tab)
-#
-class DATA_PT_RubyOF_Properties(bpy.types.Panel):
-    COMPAT_ENGINES= {"RUBYOF"}
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "render.rubyof_detect_playback"
+    bl_label = "Detect Playback"
     
-    bl_idname = "RUBYOF_PT_HELLOWORLD"
-    bl_label = "Properties (custom renderer)"
-    bl_region_type = 'WINDOW'
-    bl_context = "render"
-    bl_space_type = 'PROPERTIES'
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
     
-    # poll allows panel to only be shown in certain contexts (ie, when the function returns true)
-    # Here, we check to make sure that the active render engine is in the list of compatible engines.
-    @classmethod
-    def poll(cls, context):
-        # print(context.engine)
-        return (context.engine in cls.COMPAT_ENGINES)
+    def __init__(self):
+        self._timer = None
+        self.timer_dt = 1/60
     
-    def draw(self, context):
-        layout = self.layout
+    def invoke(self, context, event):
+        wm = context.window_manager
         
-        # layout.label(text="Hello World")
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
         
-        # layout.prop(context.scene.my_custom_props, "my_bool")
-        # layout.prop(context.scene.my_custom_props, "my_float")
-        # layout.prop(context.scene.my_custom_props, "my_pointer")
+        self.setup(context)
+        return {'RUNNING_MODAL'}
+    
+    def modal(self, context, event):
+        # mytool = context.scene.my_tool
         
-        # layout.label(text="Real Data Below")
-        layout.prop(context.scene.my_custom_props, "alpha")
-        layout.prop(context.scene.my_custom_props, "b_windowLink")
-        layout.prop(context.scene.my_custom_props, "camera")
-        # layout.prop(context.scene.my_custom_props, "aspect_ratio")
-        layout.prop(context.scene.my_custom_props, "ortho_scale")
+        if event.type == 'TIMER':
+            self.run(context)
         
-        layout.row().separator()
+        if not context.scene.my_custom_props.detect_playback:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
         
-        row = layout.row()
-        row.operator("render.rubyof_reverse", text="<--")
-        row.operator("render.rubyof_pause", text=" || ")
-        row.operator("render.rubyof_play", text="-->")
+        return {'PASS_THROUGH'}
+    
+    def setup(self, context):
+        self.old_names = None
+        self.new_names = None
         
-        row = layout.row()
-        row.operator("render.rubyof_step_back", text="back")
-        row.operator("render.rubyof_step_forward", text="forward")
+        # mytool = context.scene.my_tool
         
+        # self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+    
+    def run(self, context):
+        # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
+        # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        
+        # this is a bool, not a function
+        if context.screen.is_animation_playing:
+            print("playing")
+            sys.stdout.flush();
+
+
+
 
 
 class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
@@ -1516,6 +1544,58 @@ class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
 
 
 
+
+
+#
+# Panel for general renderer properties (under Render Properties tab)
+#
+class DATA_PT_RubyOF_Properties(bpy.types.Panel):
+    COMPAT_ENGINES= {"RUBYOF"}
+    
+    bl_idname = "RUBYOF_PT_HELLOWORLD"
+    bl_label = "Properties (custom renderer)"
+    bl_region_type = 'WINDOW'
+    bl_context = "render"
+    bl_space_type = 'PROPERTIES'
+    
+    # poll allows panel to only be shown in certain contexts (ie, when the function returns true)
+    # Here, we check to make sure that the active render engine is in the list of compatible engines.
+    @classmethod
+    def poll(cls, context):
+        # print(context.engine)
+        return (context.engine in cls.COMPAT_ENGINES)
+    
+    def draw(self, context):
+        layout = self.layout
+        
+        # layout.label(text="Hello World")
+        
+        # layout.prop(context.scene.my_custom_props, "my_bool")
+        # layout.prop(context.scene.my_custom_props, "my_float")
+        # layout.prop(context.scene.my_custom_props, "my_pointer")
+        
+        # layout.label(text="Real Data Below")
+        layout.prop(context.scene.my_custom_props, "alpha")
+        layout.prop(context.scene.my_custom_props, "b_windowLink")
+        layout.prop(context.scene.my_custom_props, "camera")
+        # layout.prop(context.scene.my_custom_props, "aspect_ratio")
+        layout.prop(context.scene.my_custom_props, "ortho_scale")
+        
+        layout.row().separator()
+        
+        row = layout.row()
+        row.operator("render.rubyof_reverse", text="<--")
+        row.operator("render.rubyof_pause", text=" || ")
+        row.operator("render.rubyof_play", text="-->")
+        
+        row = layout.row()
+        row.operator("render.rubyof_step_back", text="back")
+        row.operator("render.rubyof_step_forward", text="forward")
+        
+        
+        props = context.scene.my_custom_props
+        label = "Operator ON" if props.detect_playback else "Operator OFF"
+        layout.prop(props, "detect_playback", text=label, toggle=True)
 
 
 
@@ -1929,6 +2009,7 @@ classes = (
     RENDER_OT_RubyOF_MessagePause,
     RENDER_OT_RubyOF_MessagePlay,
     RENDER_OT_RubyOF_MessageReverse,
+    RENDER_OT_RubyOF_DetectPlayback,
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
