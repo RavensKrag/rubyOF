@@ -1425,19 +1425,56 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         self.old_names = None
         self.new_names = None
         
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
         # mytool = context.scene.my_tool
         
         # self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
     
     def run(self, context):
-        # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
-        # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        # test if animation is playing:
+            # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
+            # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        # find the current frame:
+            # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
         
-        # this is a bool, not a function
-        if context.screen.is_animation_playing:
-            print("playing")
-            sys.stdout.flush();
-
+        
+        
+        # screen = context.screen
+        # print(screen.is_animation_playing, screen.is_scrubbing)
+        
+        # is_scrubbing
+        
+        if context.screen.is_scrubbing:
+            # if scrubbing, we are also playing,
+            # so need to check for scrubbing first
+            print("scrubbing", context.scene.frame_current)
+        else:
+            # this is a bool, not a function
+            if context.screen.is_animation_playing:
+                if not self.bPlaying:
+                    # transition from paused to playing
+                    print("starting animation")
+                    
+                    # print("current:",context.scene.frame_current)
+                    # print("prev:", self.frame)
+                    # if context.scene.frame_current > self.frame:
+                    #     print("forward")
+                    # else:
+                    #     print("reverse")
+                    
+                    # ^ this cant not detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
+                    
+                    
+            else:
+                if self.bPlaying:
+                    # transition from playing to paused
+                    print("stopping animation")
+            
+        sys.stdout.flush();
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
 
 
 
@@ -1594,7 +1631,12 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         
         
         props = context.scene.my_custom_props
-        label = "Operator ON" if props.detect_playback else "Operator OFF"
+        
+        
+        if props.detect_playback:
+            label = "Syncing Timeline" 
+        else:
+            label = "No Timeline Sync"
         layout.prop(props, "detect_playback", text=label, toggle=True)
 
 
