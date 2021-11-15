@@ -1449,6 +1449,9 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             # if scrubbing, we are also playing,
             # so need to check for scrubbing first
             print("scrubbing", context.scene.frame_current)
+            # (does not trigger when stepping with arrow keys)
+            
+            # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
         else:
             # this is a bool, not a function
             if context.screen.is_animation_playing:
@@ -1456,20 +1459,24 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                     # transition from paused to playing
                     print("starting animation")
                     
-                    # print("current:",context.scene.frame_current)
-                    # print("prev:", self.frame)
-                    # if context.scene.frame_current > self.frame:
-                    #     print("forward")
-                    # else:
-                    #     print("reverse")
-                    
-                    # ^ this cant not detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
-                    
                     
             else:
                 if self.bPlaying:
                     # transition from playing to paused
                     print("stopping animation")
+        
+        # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
+        
+        delta = abs(self.frame - context.scene.frame_current)
+        if delta == 1:
+            # triggers when stepping with arrow keys,
+            # and also on normal playback.
+            # Triggers once per frame while scrubbing.
+            print("step - frame", context.scene.frame_current)
+        elif delta > 1:
+            # triggers when using shift+right or shift+left to jump to end/beginning of timeline
+            print("jump - frame", context.scene.frame_current)
+                
             
         sys.stdout.flush();
         
