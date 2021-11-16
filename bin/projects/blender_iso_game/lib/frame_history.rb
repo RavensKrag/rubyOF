@@ -41,6 +41,11 @@ class FrameHistory
           
         end
       end
+      
+      # needed for crash recovery
+      def step_back
+        self.seek(@outer.frame_index - 1)
+      end
     end
     
     # BUG: go forward, then pause, then go backwards, pause, then forward again
@@ -135,6 +140,11 @@ class FrameHistory
           
         end
       end
+      
+      # needed for crash recovery
+      def step_back
+        self.seek(@outer.frame_index - 1)
+      end
     end
     
     # (forward via stored history)
@@ -197,6 +207,11 @@ class FrameHistory
           # TODO: Blender frames can be negative. should handle that case too.
           
         end
+      end
+      
+      # needed for crash recovery
+      def step_back
+        self.seek(@outer.frame_index - 1)
       end
     end
     
@@ -398,14 +413,14 @@ class FrameHistory
   # However, if state transition happens while calling,
   # change state immediately and re-call the method
   # in the new state.
-  [:update, :frame, :play, :pause, :seek].each do |sym|
-    define_method(sym) do |*args, **kwargs|
+  [:update, :frame, :play, :pause, :seek, :step_back].each do |sym|
+    define_method(sym) do |*args, **kwargs, &block|
       old_state_name = @state.name
       
-      @state.send(sym, *args, **kwargs)
+      @state.send(sym, *args, **kwargs, &block)
       
       if old_state_name != @state.name
-        @state.send(sym, *args, **kwargs)
+        @state.send(sym, *args, **kwargs, &block)
       end
       # TODO: maybe this should loop?
       

@@ -1459,11 +1459,25 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                     # transition from paused to playing
                     print("starting animation")
                     
+                    data = {
+                        'type': 'timeline_command',
+                        'value': 'play',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+                    
                     
             else:
                 if self.bPlaying:
                     # transition from playing to paused
                     print("stopping animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'value': 'pause',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
         
         # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
         

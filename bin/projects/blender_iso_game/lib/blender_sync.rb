@@ -295,10 +295,10 @@ class BlenderSync
       
       case message['value']
       when 'step forward'
-        @core.frame_history.step_forward
+        # @core.frame_history.step_forward
         
       when 'step back'
-        @core.frame_history.step_back
+        # @core.frame_history.step_back
         
       when 'pause'
         @core.frame_history.pause
@@ -307,7 +307,7 @@ class BlenderSync
         @core.frame_history.play
       
       when 'reverse'
-        @core.frame_history.reverse
+        # @core.frame_history.reverse
         
       end
     
