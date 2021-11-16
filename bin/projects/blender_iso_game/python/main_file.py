@@ -1451,6 +1451,14 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             print("scrubbing", context.scene.frame_current)
             # (does not trigger when stepping with arrow keys)
             
+            data = {
+                'type': 'timeline_command',
+                'name': 'seek',
+                'time': context.scene.frame_current
+            }
+            
+            to_ruby.write(json.dumps(data))
+            
             # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
         else:
             # this is a bool, not a function
@@ -1461,7 +1469,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                     
                     data = {
                         'type': 'timeline_command',
-                        'value': 'play',
+                        'name': 'play',
                     }
                     
                     to_ruby.write(json.dumps(data))
@@ -1474,7 +1482,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                     
                     data = {
                         'type': 'timeline_command',
-                        'value': 'pause',
+                        'name': 'pause',
                     }
                     
                     to_ruby.write(json.dumps(data))
@@ -1486,7 +1494,11 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             # triggers when stepping with arrow keys,
             # and also on normal playback.
             # Triggers once per frame while scrubbing.
+            
+            # (is_scrubbing == false while stepping)
+            
             print("step - frame", context.scene.frame_current)
+            
         elif delta > 1:
             # triggers when using shift+right or shift+left to jump to end/beginning of timeline
             print("jump - frame", context.scene.frame_current)

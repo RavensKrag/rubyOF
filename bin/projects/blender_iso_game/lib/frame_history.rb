@@ -225,29 +225,29 @@ class FrameHistory
         
       end
       
+      # enable forward playback.
       def play
-        
+        # @outer.paused = false
       end
       
       def pause
-        # NO-OP
-        # (already not advancing state)
+        # @outer.paused = true
       end
       
-      def step_forward
-        
-      end
-      
-      def step_back
-        
-      end
-      
-      def reverse
+      # jump to specified frame number
+      # (used for time traveling - stepping and playing)
+      def seek(frame_number)
+        # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
         @outer.instance_eval do
           
-          self.state = :reverse
+          self.state = :replaying_old
           
         end
+      end
+      
+      # needed for crash recovery
+      def step_back
+        self.seek(@outer.frame_index - 1)
       end
     end
     
