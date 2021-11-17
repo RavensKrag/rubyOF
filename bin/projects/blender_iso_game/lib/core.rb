@@ -939,6 +939,16 @@ class Core
         end
         
         
+        
+        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length}",
+                                         400, 80)
+        
+        @fonts[:monospace].draw_string("state #{@frame_history.state}",
+                                         400, 120)
+        
+        # @fonts[:monospace].draw_string("history size: #{}",
+                                         # 400, 160)
+        
         # line_height = 35
         # p3 = CP::Vec2.new(500,650)
         # str_out = []

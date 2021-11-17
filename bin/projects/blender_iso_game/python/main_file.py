@@ -1465,6 +1465,15 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             if context.screen.is_animation_playing:
                 if not self.bPlaying:
                     # transition from paused to playing
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'seek',
+                        'time': context.scene.frame_current
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+                    
                     print("starting animation")
                     
                     data = {
