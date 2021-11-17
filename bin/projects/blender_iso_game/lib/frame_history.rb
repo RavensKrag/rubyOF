@@ -85,7 +85,7 @@ class FrameHistory
             
             @executing_frame += 1
             
-          elsif @executing_frame == @history.length
+          else # [@history.length-1, inf]
             # actually generating new state
             
             state = @context.snapshot_gamestate
@@ -99,13 +99,13 @@ class FrameHistory
             block.call
             
             Fiber.yield
-          elsif @executing_frame > @history.length
-            # scrubbing in future space
-            # NO-OP
-            # (pretty sure I need both this logic and the logic in Finished)
-          else
-            # initial state??
-            # not sure what's left
+          # elsif @executing_frame > @history.length
+          #   # scrubbing in future space
+          #   # NO-OP
+          #   # (pretty sure I need both this logic and the logic in Finished)
+          # else
+          #   # initial state??
+          #   # not sure what's left
           end
           
         end
