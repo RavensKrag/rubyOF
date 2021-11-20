@@ -1488,13 +1488,13 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                 if self.bPlaying:
                     # transition from playing to paused
                     
-                    data = {
-                        'type': 'timeline_command',
-                        'name': 'seek',
-                        'time': context.scene.frame_current
-                    }
+                    # data = {
+                    #     'type': 'timeline_command',
+                    #     'name': 'seek',
+                    #     'time': context.scene.frame_current
+                    # }
                     
-                    to_ruby.write(json.dumps(data))
+                    # to_ruby.write(json.dumps(data))
                     
                     print("stopping animation")
                     
@@ -1507,20 +1507,38 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
         
-        delta = abs(self.frame - context.scene.frame_current)
-        if delta == 1:
-            # triggers when stepping with arrow keys,
-            # and also on normal playback.
-            # Triggers once per frame while scrubbing.
-            
-            # (is_scrubbing == false while stepping)
-            
-            print("step - frame", context.scene.frame_current)
-            
-        elif delta > 1:
-            # triggers when using shift+right or shift+left to jump to end/beginning of timeline
-            print("jump - frame", context.scene.frame_current)
+        if not context.screen.is_animation_playing:
+            delta = abs(self.frame - context.scene.frame_current)
+            if delta == 1:
+                # triggers when stepping with arrow keys,
+                # and also on normal playback.
+                # Triggers once per frame while scrubbing.
                 
+                # (is_scrubbing == false while stepping)
+                
+                print("step - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+                
+                
+            elif delta > 1:
+                # triggers when using shift+right or shift+left to jump to end/beginning of timeline
+                print("jump - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+        
             
         sys.stdout.flush();
         
