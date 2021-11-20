@@ -173,33 +173,33 @@ class IPC_Helper():
         self.fifo_path = fifo_path
     
     def write(self, message):
-        if not os.path.exists(self.fifo_path):
-            return
-        
-        # print("-----")
-        # print("=> FIFO open")
-        pipe = open(self.fifo_path, 'w')
-        
-        
-        start_time = time.time()
         try:
+            # print("-----")
+            # print("=> FIFO open")
+            pipe = os.open(self.fifo_path, os.O_RDONLY | os.O_NONBLOCK)
+            # ^ will throw exception if the file does not already exist
+            
+            start_time = time.time()
             # text = text.encode('utf-8') # <-- not needed
             
             pipe.write(message + "\n")
             
             # print(message)
             # print("=> msg len:", len(message))
+            stop_time = time.time()
+            dt = (stop_time - start_time) * 1000
+            
+            # print("=> fifo data transfer: ", dt, " msec" )
+            
+            pipe.close()
+            # print("=> FIFO closed")
+            # print("-----")
+        except FileNotFoundError as e:
+            print("FIFO file not found")
         except IOError as e:
             pass
             # print("broken pipe error (suppressed exception)")
         
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        # print("=> fifo data transfer: ", dt, " msec" )
-        
-        pipe.close()
-        # print("=> FIFO closed")
-        # print("-----")
     
     
     # def __del__(self):
