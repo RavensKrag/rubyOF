@@ -309,6 +309,11 @@ class Core
     @frame_history.update
     
     
+    
+    # Don't stop sync thread on crash.
+    # Need to be able to communicate with Blender
+    # in order to control time travel
+    
     # self.ensure()
   end
   
@@ -316,9 +321,9 @@ class Core
   def on_exit
     puts "core: on exit"
     
-    unless @crash_detected
+    # if @crash_detected
       self.ensure()
-    end
+    # end
     
     
     # puts @draw_durations.join("\t")
@@ -410,6 +415,9 @@ class Core
     # In that case, you can get a double-crash if you try to run
     # BlenderSync#stop.
     @sync.stop unless @sync.nil?
+    
+    # TODO: make sure BlenderSync#stop is called on crash. seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
+      # If the named pipe is closed, subsequent writes should recieve the SIGPIPE signal (broken pipe) which should allow me to deal with hanging stuff from Blender
   end
   
   

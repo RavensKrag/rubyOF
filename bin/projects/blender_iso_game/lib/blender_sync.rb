@@ -72,7 +72,7 @@ class BlenderSync
     p fifo_path
     
     @f_r.close
-    FileUtils.rm(fifo_path)
+    # FileUtils.rm(fifo_path)
     puts "fifo closed"
   end
   

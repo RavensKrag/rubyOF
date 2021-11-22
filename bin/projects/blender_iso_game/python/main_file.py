@@ -166,47 +166,86 @@ def unregister_event_handlers():
 #   Live communication between Blender (python) and RubyOF (Ruby)
 #   (uses FIFO to send JSON messages)
 # ------------------------------------------------------------------------
-
+import fcntl
 
 class IPC_Helper():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
+        self.pipe = None
     
     def write(self, message):
         try:
             # print("-----")
             # print("=> FIFO open")
-            pipe = os.open(self.fifo_path, os.O_RDONLY | os.O_NONBLOCK)
-            # ^ will throw exception if the file does not already exist
+            
+            
+            # if the pipe exists,
+            # open it for writing
+            
+            if self.pipe is None:
+                # opening file will throw exception if the file does not exist
+                print("FIFO: open", flush=True)
+                self.pipe = open(self.fifo_path, "w")
+                
+                # NOTE: open() and os.open() are different functions
+                # https://stackoverflow.com/questions/30172428/python-non-block-read-file
+                
+                # set NONBLOCK status flag
+                fd = self.pipe.fileno()
+                flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+                fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
+            
+            
+            # once you have the pipe open, try to write messages into the pipe
+                # when do we close it?
+                # maybe we just go until the pipe is broken?
+            
             
             start_time = time.time()
             # text = text.encode('utf-8') # <-- not needed
             
-            pipe.write(message + "\n")
+            self.pipe.write(message + "\n")
+            self.pipe.flush()
             
             # print(message)
             # print("=> msg len:", len(message))
             stop_time = time.time()
             dt = (stop_time - start_time) * 1000
             
-            # print("=> fifo data transfer: ", dt, " msec" )
+            print("=> fifo data transfer: ", dt, " msec", flush=True)
             
-            pipe.close()
+            # print("FIFO: close", flush=True)
+            # self.pipe.close()
+            
+            # NOTE: might not be able to fix the problem this way. may need to get the reader (ruby) to clear the fifo's queue and then delete the FIFO file before going down.
+            
+            
             # print("=> FIFO closed")
             # print("-----")
         except FileNotFoundError as e:
             print("FIFO file not found")
-        except IOError as e:
-            pass
-            # print("broken pipe error (suppressed exception)")
+        # except IOError as e:
+        except BrokenPipeError as e:
+            # when all readers close, the writer should get a broken pipe signal
+            # at this point, you can close the FIFO and delete the file
+            print("broken pipe error (suppressed exception)")
+            
+            # self.pipe.close()
+            # print("=> FIFO closed", flush=True)
+            # ^ can't close the pipe at this point
+            #   => ValueError: I/O operation on closed file.
+            # (should be fine to just leave it be, I think???)
+            
+            # os.remove(self.fifo_path)
+            # print("=> FIFO deleted", flush=True)
+            # ^ can't do this either...? not sure why not
+            
         
     
     
-    # def __del__(self):
-    #     pass
-        
-        # self.fifo.close()
-        # print("FIFO closed")
+    def __del__(self):
+        self.pipe.close()
+        print("FIFO closed", flush=True)
 
 
 
@@ -1407,6 +1446,8 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         wm.modal_handler_add(self)
         
         self.setup(context)
+        
+        print("render.rubyof_detect_playback -- RUNNING_MODAL", flush=True)
         return {'RUNNING_MODAL'}
     
     def modal(self, context, event):
@@ -1417,8 +1458,12 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         if not context.scene.my_custom_props.detect_playback:
             context.window_manager.event_timer_remove(self._timer)
+            
+            print("render.rubyof_detect_playback -- FINISHED", flush=True)
+            
             return {'FINISHED'}
         
+        print("render.rubyof_detect_playback -- PASS_THROUGH", flush=True)
         return {'PASS_THROUGH'}
     
     def setup(self, context):
@@ -1458,7 +1503,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             }
             
             to_ruby.write(json.dumps(data))
-            
+                        
             # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
         else:
             # this is a bool, not a function
@@ -1539,7 +1584,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                 
                 to_ruby.write(json.dumps(data))
         
-            
+        print("render.rubyof_detect_playback -- end of run")
         sys.stdout.flush();
         
         self.bPlaying = context.screen.is_animation_playing

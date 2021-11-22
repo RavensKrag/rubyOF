@@ -30,7 +30,7 @@ class LiveCode
       
       def method_missing(method, *args)
         begin
-          # puts "livecode - delegate: #{method}"
+          puts "livecode - delegate: #{method}"
           return args.empty? ? @inner.send(method) : @inner.send(method, *args)
         rescue StandardError => e
           # puts "method missing error handler in LiveCode"
@@ -84,11 +84,21 @@ class LiveCode
     state :error do
       
       def method_missing(method, *args)
-        # suspend delegation in order to suppress additional errors
-        # puts "livecode - supressing: #{method}"
+        # suspend delegation in order to suppress additional errors,
+        # with the exception of certain key methods.
         
-        if method == :draw
-          @inner.draw
+        allowed_methods = [
+          :draw,    # time travel means a valid frame to draw is always loaded
+                    # ^ maybe this isn't true? what about bugs in draw?
+          :on_exit  # need to be able to shut down properly
+        ]
+        
+        if allowed_methods.include? method
+          puts "livecode - delegate: #{method}"
+          return args.empty? ? @inner.send(method) : @inner.send(method, *args)
+        else
+          
+          puts "livecode - supressing: #{method}"
         end
         
         # begin
@@ -120,6 +130,7 @@ class LiveCode
             return update_signal
           rescue StandardError => e
             puts "Error handler in LiveCode:"
+            # puts "(error message supressed until later)"
             puts e.full_message
             
             self.runtime_error_detected

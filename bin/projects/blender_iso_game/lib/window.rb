@@ -116,6 +116,7 @@ class Window < RubyOF::Window
   def on_exit
     super()
     
+    puts "project window: on_exit"
     @live_code.on_exit
     
     # --- Save data
