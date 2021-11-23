@@ -182,7 +182,7 @@ class IPC_Helper():
             # if the pipe exists,
             # open it for writing
             
-            if self.pipe is None:
+            if os.path.exists(self.fifo_path) and self.pipe is None:
                 # opening file will throw exception if the file does not exist
                 print("FIFO: open", flush=True)
                 self.pipe = open(self.fifo_path, "w")
@@ -190,62 +190,69 @@ class IPC_Helper():
                 # NOTE: open() and os.open() are different functions
                 # https://stackoverflow.com/questions/30172428/python-non-block-read-file
                 
-                # set NONBLOCK status flag
-                fd = self.pipe.fileno()
-                flag = fcntl.fcntl(fd, fcntl.F_GETFL)
-                fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
+                # # set NONBLOCK status flag
+                # fd = self.pipe.fileno()
+                # flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+                # fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
             
             
             # once you have the pipe open, try to write messages into the pipe
                 # when do we close it?
                 # maybe we just go until the pipe is broken?
+            if self.pipe is not None:
+                start_time = time.time()
+                # text = text.encode('utf-8') # <-- not needed
+                
+                self.pipe.write(message + "\n")
+                self.pipe.flush()
+                
+                # print(message)
+                # print("=> msg len:", len(message))
+                stop_time = time.time()
+                dt = (stop_time - start_time) * 1000
+                
+                print("=> fifo data transfer: ", dt, " msec", flush=True)
+                
+                # print("FIFO: close", flush=True)
+                # self.pipe.close()
+                
+                # NOTE: might not be able to fix the problem this way. may need to get the reader (ruby) to clear the fifo's queue and then delete the FIFO file before going down.
+                
+                
+                # print("=> FIFO closed")
+                # print("-----")
+            else:
+                print("(no FIFO available; supressing mesage)", flush=True)
             
-            
-            start_time = time.time()
-            # text = text.encode('utf-8') # <-- not needed
-            
-            self.pipe.write(message + "\n")
-            self.pipe.flush()
-            
-            # print(message)
-            # print("=> msg len:", len(message))
-            stop_time = time.time()
-            dt = (stop_time - start_time) * 1000
-            
-            print("=> fifo data transfer: ", dt, " msec", flush=True)
-            
-            # print("FIFO: close", flush=True)
-            # self.pipe.close()
-            
-            # NOTE: might not be able to fix the problem this way. may need to get the reader (ruby) to clear the fifo's queue and then delete the FIFO file before going down.
-            
-            
-            # print("=> FIFO closed")
-            # print("-----")
         except FileNotFoundError as e:
-            print("FIFO file not found")
+            print("FIFO file not found", flush=True)
         # except IOError as e:
         except BrokenPipeError as e:
             # when all readers close, the writer should get a broken pipe signal
             # at this point, you can close the FIFO and delete the file
-            print("broken pipe error (suppressed exception)")
+            print("FIFO: broken pipe error", flush=True)
             
             # self.pipe.close()
             # print("=> FIFO closed", flush=True)
             # ^ can't close the pipe at this point
             #   => ValueError: I/O operation on closed file.
             # (should be fine to just leave it be, I think???)
+            self.pipe = None
             
-            # os.remove(self.fifo_path)
-            # print("=> FIFO deleted", flush=True)
+            
+            os.remove(self.fifo_path)
+            print("FIFO: deleted", flush=True)
             # ^ can't do this either...? not sure why not
+            # TODO: figure this part out
+            
             
         
     
     
     def __del__(self):
-        self.pipe.close()
-        print("FIFO closed", flush=True)
+        if self.pipe is not None:
+            self.pipe.close()
+            print("FIFO closed", flush=True)
 
 
 
