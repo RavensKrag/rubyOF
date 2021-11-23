@@ -416,7 +416,7 @@ class Core
     # BlenderSync#stop.
     @sync.stop unless @sync.nil?
     
-    # TODO: make sure BlenderSync#stop is called on crash. seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
+    # TODO: seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
       # If the named pipe is closed, subsequent writes should recieve the SIGPIPE signal (broken pipe) which should allow me to deal with hanging stuff from Blender
   end
   
