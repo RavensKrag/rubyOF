@@ -175,7 +175,7 @@ class IPC_Helper():
     
     def write(self, message):
         try:
-            # if the pipe exists,
+            # If the pipe exists,
             # open it for writing
             if os.path.exists(self.fifo_path) and self.pipe is None:
                 # opening file will throw exception if the file does not exist
@@ -191,9 +191,9 @@ class IPC_Helper():
                 # fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
             
             
-            # once you have the pipe open, try to write messages into the pipe
-                # when do we close it?
-                # maybe we just go until the pipe is broken?
+            # Once you have the pipe open, try to write messages into the pipe.
+            # Subsequent calls to write() will write to the same pipe
+            # until the pipe is broken. (no need to ever call close)
             if self.pipe is not None:
                 start_time = time.time()
                 # text = text.encode('utf-8') # <-- not needed
