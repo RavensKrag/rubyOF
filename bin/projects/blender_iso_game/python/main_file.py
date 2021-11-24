@@ -166,47 +166,87 @@ def unregister_event_handlers():
 #   Live communication between Blender (python) and RubyOF (Ruby)
 #   (uses FIFO to send JSON messages)
 # ------------------------------------------------------------------------
-
+import fcntl
 
 class IPC_Helper():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
+        self.pipe = None
     
     def write(self, message):
-        if not os.path.exists(self.fifo_path):
-            return
-        
-        # print("-----")
-        # print("=> FIFO open")
-        pipe = open(self.fifo_path, 'w')
-        
-        
-        start_time = time.time()
         try:
-            # text = text.encode('utf-8') # <-- not needed
+            # If the pipe exists,
+            # open it for writing
+            if os.path.exists(self.fifo_path) and self.pipe is None:
+                # opening file will throw exception if the file does not exist
+                print("FIFO: open", flush=True)
+                self.pipe = open(self.fifo_path, "w")
+                
+                # NOTE: open() and os.open() are different functions
+                # https://stackoverflow.com/questions/30172428/python-non-block-read-file
+                
+                # # set NONBLOCK status flag
+                # fd = self.pipe.fileno()
+                # flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+                # fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
             
-            pipe.write(message + "\n")
             
-            # print(message)
-            # print("=> msg len:", len(message))
-        except IOError as e:
-            pass
-            # print("broken pipe error (suppressed exception)")
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        # print("=> fifo data transfer: ", dt, " msec" )
-        
-        pipe.close()
-        # print("=> FIFO closed")
-        # print("-----")
+            # Once you have the pipe open, try to write messages into the pipe.
+            # Subsequent calls to write() will write to the same pipe
+            # until the pipe is broken. (no need to ever call close)
+            if self.pipe is not None:
+                start_time = time.time()
+                # text = text.encode('utf-8') # <-- not needed
+                
+                self.pipe.write(message + "\n")
+                self.pipe.flush()
+                
+                # print(message)
+                # print("=> msg len:", len(message))
+                stop_time = time.time()
+                dt = (stop_time - start_time) * 1000
+                
+                print("=> fifo data transfer: ", dt, " msec", flush=True)
+                
+            else:
+                print("(no FIFO available; supressing mesage)", flush=True)
+            
+        except FileNotFoundError as e:
+            print("FIFO file not found", flush=True)
+        # except IOError as e:
+        except BrokenPipeError as e:
+            # When all readers close, the writer will get a broken pipe signal.
+            # At this point, the FIFO is invalid. (no need to call close)
+            # 
+            # You will get this signal even if the FIFO is removed
+            # from the filesystem, as the file is not truely deleted
+            # until the last file handle closes
+                # https://stackoverflow.com/questions/2028874/what-happens-to-an-open-file-handle-on-linux-if-the-pointed-file-gets-moved-or-d
+            # Additionally, the operating system will close all
+            # open file handles when the application exits.
+            # Thus, if Blender maintains a handle to the FIFO
+            # after RubyOF terminates, it will be closed
+            # when Python tries to write to the FIFO, or Blender exits,
+            # whichever comes first.
+                # https://stackoverflow.com/questions/45762323/what-happens-to-open-files-which-are-not-properly-closed?noredirect=1&lq=1
+            
+            print("FIFO: broken pipe error", flush=True)
+            
+            # self.pipe.close()
+            # print("=> FIFO closed", flush=True)
+            # ^ can't close the pipe at this point
+            #   => ValueError: I/O operation on closed file.
+            # Just need to set to None so future calls to write()
+            # don't try to put more data into this invalid pipe.
+            self.pipe = None
+            
+            # NOTE: deletion of the FIFO from the filesystem happens in Ruby code, blender_sync.rb
     
     
     # def __del__(self):
-    #     pass
-        
-        # self.fifo.close()
-        # print("FIFO closed")
+    #     if self.pipe is not None:
+    #         self.pipe.close()
+    #         print("FIFO closed", flush=True)
 
 
 
@@ -1407,6 +1447,8 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         wm.modal_handler_add(self)
         
         self.setup(context)
+        
+        # print("render.rubyof_detect_playback -- RUNNING_MODAL", flush=True)
         return {'RUNNING_MODAL'}
     
     def modal(self, context, event):
@@ -1417,8 +1459,12 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         if not context.scene.my_custom_props.detect_playback:
             context.window_manager.event_timer_remove(self._timer)
+            
+            # print("render.rubyof_detect_playback -- FINISHED", flush=True)
+            
             return {'FINISHED'}
         
+        # print("render.rubyof_detect_playback -- PASS_THROUGH", flush=True)
         return {'PASS_THROUGH'}
     
     def setup(self, context):
@@ -1458,7 +1504,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             }
             
             to_ruby.write(json.dumps(data))
-            
+                        
             # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
         else:
             # this is a bool, not a function
@@ -1539,8 +1585,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                 
                 to_ruby.write(json.dumps(data))
         
-            
-        sys.stdout.flush();
+        # print("render.rubyof_detect_playback -- end of run", flush=True)
         
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
