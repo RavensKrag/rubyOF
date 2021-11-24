@@ -1448,7 +1448,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         self.setup(context)
         
-        print("render.rubyof_detect_playback -- RUNNING_MODAL", flush=True)
+        # print("render.rubyof_detect_playback -- RUNNING_MODAL", flush=True)
         return {'RUNNING_MODAL'}
     
     def modal(self, context, event):
@@ -1460,11 +1460,11 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         if not context.scene.my_custom_props.detect_playback:
             context.window_manager.event_timer_remove(self._timer)
             
-            print("render.rubyof_detect_playback -- FINISHED", flush=True)
+            # print("render.rubyof_detect_playback -- FINISHED", flush=True)
             
             return {'FINISHED'}
         
-        print("render.rubyof_detect_playback -- PASS_THROUGH", flush=True)
+        # print("render.rubyof_detect_playback -- PASS_THROUGH", flush=True)
         return {'PASS_THROUGH'}
     
     def setup(self, context):
@@ -1585,8 +1585,7 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                 
                 to_ruby.write(json.dumps(data))
         
-        print("render.rubyof_detect_playback -- end of run")
-        sys.stdout.flush();
+        # print("render.rubyof_detect_playback -- end of run", flush=True)
         
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
