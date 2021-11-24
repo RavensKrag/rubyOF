@@ -403,103 +403,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
-    
-    
-    
-    def update_sync_deletions(self, context):
-        if self.sync_deletions:
-            bpy.ops.wm.sync_deletions('INVOKE_DEFAULT')
-        
-        return None
-    
-    sync_deletions : BoolProperty(
-        name="Sync Deletions",
-        default=False,
-        update=update_sync_deletions
-    )
-    
-    
-    
-    
-
-# Use modal over the timer api, because the timer api involves threading,
-# which then requires that you make your operation thread safe.
-# That's all a huge pain just to get concurrency, 
-# so for our use case, the modal operator is much better.
-    # timer api:
-    # self.timer = functools.partial(self.detect_deletions, mytool)
-    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-class OT_TexAnimSyncDeletions (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "wm.sync_deletions"
-    bl_label = "Sync Deletions"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def __init__(self):
-        
-        self._timer = None
-        self.timer_dt = 1/60
-        
-        self.old_names = None
-        self.new_names = None
-        
-    
-    def modal(self, context, event):
-        mytool = context.scene.my_tool
-        
-        if event.type == 'TIMER':
-            self.run(context)
-        
-        if not mytool.sync_deletions:
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
-        
-        return {'PASS_THROUGH'}
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
-        
-        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
-        mytool = context.scene.my_tool
-        
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        return {'RUNNING_MODAL'}
-    
-    
-    def run(self, context):
-        # print("running", time.time())
-        # print("objects: ", len(context.scene.objects))
-        
-        mytool = context.scene.my_tool
-        
-        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        delta = list(set(self.old_names) - set(self.new_names))
-        
-        # print("delta:", delta)
-        
-        if len(delta) > 0:
-            self.old_names = self.new_names
-            
-            tex_manager = anim_texture_manager_singleton(context)
-            
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                tex_manager.post_mesh_object_deletion(name)
-                
-                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
-
-
-
-
 
 
 
@@ -699,14 +602,9 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         
         
         
+        # layout.row().separator()
         
-        layout.row().separator()
         
-        
-        layout.label(text="check for deletions?")
-        label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
-        layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
-        # ^ updated by OT_TexAnimSyncDeletions
 
 
 
@@ -1418,6 +1316,21 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default=False,
         update=update_detect_playback
     )
+    
+    
+    
+    def update_sync_deletions(self, context):
+        if self.sync_deletions:
+            bpy.ops.render.rubyof_sync_deletions('INVOKE_DEFAULT')
+        
+        return None
+    
+    sync_deletions : BoolProperty(
+        name="Sync Deletions",
+        default=False,
+        update=update_sync_deletions
+    )
+    
 
 
 # Use modal over the timer api, because the timer api involves threading,
@@ -1592,106 +1505,78 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
 
 
 
-
-class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
-    """move execution one frame backwards"""
-    bl_idname = "render.rubyof_step_back"
-    bl_label = "Step Back"
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+class RENDER_OT_RubyOF_TexAnimSyncDeletions (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "render.rubyof_sync_deletions"
+    bl_label = "Sync Deletions"
     
-    @classmethod
-    def poll(cls, context):
-        return True
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
     
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'step back',
-        }
+    def __init__(self):
         
-        to_ruby.write(json.dumps(data))
+        self._timer = None
+        self.timer_dt = 1/60
         
+        self.old_names = None
+        self.new_names = None
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
-    """move execution one frame forwards"""
-    bl_idname = "render.rubyof_step_forward"
-    bl_label = "Step Forward"
     
-    @classmethod
-    def poll(cls, context):
-        return True
+    def modal(self, context, event):
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not context.scene.my_custom_props.sync_deletions:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
     
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'step forward',
-        }
+    def invoke(self, context, event):
+        wm = context.window_manager
         
-        to_ruby.write(json.dumps(data))
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
         
+        mytool = context.scene.my_tool
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessagePause (bpy.types.Operator):
-    """pause execution"""
-    bl_idname = "render.rubyof_pause"
-    bl_label = "||"
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        return {'RUNNING_MODAL'}
     
-    @classmethod
-    def poll(cls, context):
-        return True
     
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'pause',
-        }
+    def run(self, context):
+        # print("running", time.time())
+        # print("objects: ", len(context.scene.objects))
         
-        to_ruby.write(json.dumps(data))
+        mytool = context.scene.my_tool
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessagePlay (bpy.types.Operator):
-    """let execution play forwards, generating new history"""
-    bl_idname = "render.rubyof_play"
-    bl_label = "-->"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'play',
-        }
+        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
-        to_ruby.write(json.dumps(data))
+        delta = list(set(self.old_names) - set(self.new_names))
         
+        # print("delta:", delta)
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
-    """let execution play backwards, using saved history"""
-    bl_idname = "render.rubyof_reverse"
-    bl_label = "<--"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'reverse',
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        
-        return {'FINISHED'}
-
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
 
 
 
@@ -1734,14 +1619,6 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         
         layout.row().separator()
         
-        row = layout.row()
-        row.operator("render.rubyof_reverse", text="<--")
-        row.operator("render.rubyof_pause", text=" || ")
-        row.operator("render.rubyof_play", text="-->")
-        
-        row = layout.row()
-        row.operator("render.rubyof_step_back", text="back")
-        row.operator("render.rubyof_step_forward", text="forward")
         
         
         props = context.scene.my_custom_props
@@ -1752,6 +1629,14 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         else:
             label = "No Timeline Sync"
         layout.prop(props, "detect_playback", text=label, toggle=True)
+        
+        
+        if props.sync_deletions:
+            label = "Syncing object deletions"
+        else:
+            label = "No object delete sync" 
+        layout.prop(props, 'sync_deletions', text=label, toggle=True)
+        # ^ updated by RENDER_OT_RubyOF_TexAnimSyncDeletions
 
 
 
@@ -2160,12 +2045,8 @@ classes = (
     # OT_DeleteOverride,
     #
     #
-    RENDER_OT_RubyOF_StepBack,
-    RENDER_OT_RubyOF_MessageStepForward,
-    RENDER_OT_RubyOF_MessagePause,
-    RENDER_OT_RubyOF_MessagePlay,
-    RENDER_OT_RubyOF_MessageReverse,
     RENDER_OT_RubyOF_DetectPlayback,
+    RENDER_OT_RubyOF_TexAnimSyncDeletions,
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
@@ -2173,7 +2054,6 @@ classes = (
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
     # 
-    OT_TexAnimSyncDeletions,
     #
     #
     #
