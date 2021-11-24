@@ -301,7 +301,7 @@ class BlenderSync
         @core.frame_history.play
       
       when 'seek'
-        @core.frame_history.seekoeu(message['time'])
+        @core.frame_history.seek(message['time'])
         
       end
     
