@@ -175,13 +175,8 @@ class IPC_Helper():
     
     def write(self, message):
         try:
-            # print("-----")
-            # print("=> FIFO open")
-            
-            
             # if the pipe exists,
             # open it for writing
-            
             if os.path.exists(self.fifo_path) and self.pipe is None:
                 # opening file will throw exception if the file does not exist
                 print("FIFO: open", flush=True)
@@ -213,14 +208,6 @@ class IPC_Helper():
                 
                 print("=> fifo data transfer: ", dt, " msec", flush=True)
                 
-                # print("FIFO: close", flush=True)
-                # self.pipe.close()
-                
-                # NOTE: might not be able to fix the problem this way. may need to get the reader (ruby) to clear the fifo's queue and then delete the FIFO file before going down.
-                
-                
-                # print("=> FIFO closed")
-                # print("-----")
             else:
                 print("(no FIFO available; supressing mesage)", flush=True)
             
@@ -228,31 +215,38 @@ class IPC_Helper():
             print("FIFO file not found", flush=True)
         # except IOError as e:
         except BrokenPipeError as e:
-            # when all readers close, the writer should get a broken pipe signal
-            # at this point, you can close the FIFO and delete the file
+            # When all readers close, the writer will get a broken pipe signal.
+            # At this point, the FIFO is invalid. (no need to call close)
+            # 
+            # You will get this signal even if the FIFO is removed
+            # from the filesystem, as the file is not truely deleted
+            # until the last file handle closes
+                # https://stackoverflow.com/questions/2028874/what-happens-to-an-open-file-handle-on-linux-if-the-pointed-file-gets-moved-or-d
+            # Additionally, the operating system will close all
+            # open file handles when the application exits.
+            # Thus, if Blender maintains a handle to the FIFO
+            # after RubyOF terminates, it will be closed
+            # when Python tries to write to the FIFO, or Blender exits,
+            # whichever comes first.
+                # https://stackoverflow.com/questions/45762323/what-happens-to-open-files-which-are-not-properly-closed?noredirect=1&lq=1
+            
             print("FIFO: broken pipe error", flush=True)
             
             # self.pipe.close()
             # print("=> FIFO closed", flush=True)
             # ^ can't close the pipe at this point
             #   => ValueError: I/O operation on closed file.
-            # (should be fine to just leave it be, I think???)
+            # Just need to set to None so future calls to write()
+            # don't try to put more data into this invalid pipe.
             self.pipe = None
             
-            
-            os.remove(self.fifo_path)
-            print("FIFO: deleted", flush=True)
-            # ^ can't do this either...? not sure why not
-            # TODO: figure this part out
-            
-            
-        
+            # NOTE: deletion of the FIFO from the filesystem happens in Ruby code, blender_sync.rb
     
     
-    def __del__(self):
-        if self.pipe is not None:
-            self.pipe.close()
-            print("FIFO closed", flush=True)
+    # def __del__(self):
+    #     if self.pipe is not None:
+    #         self.pipe.close()
+    #         print("FIFO closed", flush=True)
 
 
 
