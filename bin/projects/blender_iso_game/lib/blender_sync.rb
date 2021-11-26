@@ -9,87 +9,34 @@ class BlenderSync
     
     @core = core
     
-    # 
-    # Open FIFO in main thread then pass to Thread using function closure.
-    # This prevents weird race conditions.
-    # 
-    # Consider this timing diagram:
-    #   main thread         @msg_thread
-    #   -----------         -----------
-    #   setup               
-    #                       File.mkfifo(fifo_path)
-    #                       
-    #   update (ERROR)
-    #                       f_r = File.open(fifo_path, "r+")
-    #                       
-    #                       ensure: f_r#close
-    #                       ensure: FileUtils.rm(fifo_path)
-    # 
-    # ^ When the error happens in update
-    #   f_r has not yet been initialized (f_r == nil)
-    #   but the ensure block of @msg_thread will try close f_r.
-    #   This results in an exception, 
-    #   which prevents the FIFO from being properly deleted.
-    #   This will then cause an error when the program is restarted / reloaded
-    #   as a FIFO can not be created where one already exists.
+    # two-way communication between RubyOF (ruby) and Blender (python)
+    # implemented using two named pipes
+    @blender_link = ActorChannel.new
     
-    @fifo_dir = PROJECT_DIR/'bin'/'run'
-    @fifo_name = 'blender_comm'
-    
-      fifo_path = @fifo_dir/@fifo_name
-      
-      if fifo_path.exist?
-        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
-      else
-        File.mkfifo(fifo_path)
-      end
-      
-      puts "fifo created @ #{fifo_path}"
-      
-      @f_r = File.open(fifo_path, "r+")
-    
-    @msg_queue = Queue.new
-    @msg_thread = Thread.new do
-      begin
-        puts "fifo message thread start"
-        loop do
-          data = @f_r.gets # blocking IO
-          @msg_queue << data
-        end
-      ensure
-        puts "fifo message thread stopped"
-      end
-    end
   end
   
   def stop
-    @msg_thread.kill.join
-    
-    # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
-    fifo_path = @fifo_dir/@fifo_name
-    
-    p @f_r
-    p fifo_path
-    
-    @f_r.close
-    FileUtils.rm(fifo_path)
-    puts "fifo closed"
+    @blender_link.stop
   end
   
   def update
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    puts "queue length: #{@msg_queue.length}" if @msg_queue.length != 0
-    @msg_queue.length.times do
-      data_string = @msg_queue.pop
-      
-      
+    
+    # @blender_link.send
+    # message = @blender_link.take
+    
+    
+    # 
+    # read messages from Blender (python)
+    # 
+    
+    while message = @blender_link.take
       # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      blender_message = JSON.parse(data_string)
       
       # # --- This write is only needed for debugging
       # File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
-      #   f.puts JSON.pretty_generate blender_message
+      #   f.puts JSON.pretty_generate message
       # end
       # # ---
       
@@ -101,7 +48,7 @@ class BlenderSync
       
       
       # send all of this data to history
-      @history.write blender_message
+      @history.write message
       
     end
     
@@ -126,7 +73,21 @@ class BlenderSync
     # dt = update_t1 - update_t0
     # puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
+    
+    # 
+    # send messages to Blender (python)
+    # 
+    message = {
+      'type' => 'final_frame',
+      'value' => @core.frame_history.frame_index
+    }
+    
+    @blender_link.send message
+    
+    
   end
+  
+  private
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
@@ -342,7 +303,6 @@ class BlenderSync
   end
   
   
-  private
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
@@ -440,6 +400,113 @@ class BlenderSync
     return CP::Vec2.new(hit_px, hit_py)
   end
   
+  
+  # Implement an interface similar to ruby's Ractor,
+  # which is based on the actor pattern
+  class ActorChannel
+    def initialize
+      # 
+      # Open FIFO in main thread then pass to Thread using function closure.
+      # This prevents weird race conditions.
+      # 
+      # Consider this timing diagram:
+      #   main thread         @incoming_thread
+      #   -----------         -----------
+      #   setup               
+      #                       File.mkfifo(fifo_path)
+      #                       
+      #   update (ERROR)
+      #                       f_r = File.open(fifo_path, "r+")
+      #                       
+      #                       ensure: f_r#close
+      #                       ensure: FileUtils.rm(fifo_path)
+      # 
+      # ^ When the error happens in update
+      #   f_r has not yet been initialized (f_r == nil)
+      #   but the ensure block of @incoming_thread will try close f_r.
+      #   This results in an exception, 
+      #   which prevents the FIFO from being properly deleted.
+      #   This will then cause an error when the program is restarted / reloaded
+      #   as a FIFO can not be created where one already exists.
+      
+      @fifo_dir = PROJECT_DIR/'bin'/'run'
+      @fifo_name = 'blender_comm'
+      
+      @f_r = open_fifo(@fifo_dir/@fifo_name, "r+")
+      
+      @incoming_port = Queue.new
+      
+      @incoming_thread = Thread.new do
+        begin
+          puts "fifo message thread start"
+          loop do
+            data = @f_r.gets # blocking IO
+            @incoming_port << data
+          end
+        ensure
+          puts "fifo message thread stopped"
+        end
+      end
+      
+      @outgoing_port = Queue.new
+    end
+    
+    
+    # 
+    # close communication channels
+    # 
+    
+    def stop
+      @incoming_thread.kill.join
+      
+      # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
+      
+      p @f_r
+      p @f_r.path
+      
+      @f_r.close
+      FileUtils.rm(@f_r.path)
+      puts "fifo closed"
+    end
+    
+    
+    # 
+    # communicate via json messages
+    # 
+    
+    def send(message)
+      @outgoing_port.push message.to_json
+    end
+    
+    def take
+      if @incoming_port.empty?
+        return nil
+      else
+        # Queue#pop blocks the current thread while empty
+        message_string = @incoming_port.pop
+        message = JSON.parse message_string
+        return message
+      end
+    end
+    
+    
+    
+    private
+    
+    
+    def open_fifo(fifo_path, mode)
+      if fifo_path.exist?
+        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
+      else
+        File.mkfifo(fifo_path)
+      end
+      
+      puts "fifo created @ #{fifo_path}"
+      
+      return File.open(fifo_path, mode)
+    end
+    
+  end
+  
 end
-
 
