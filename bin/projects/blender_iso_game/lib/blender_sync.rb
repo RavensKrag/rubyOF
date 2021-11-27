@@ -460,14 +460,17 @@ class BlenderSync
       @outgoing_thread = Thread.new do
         puts "#{self.class}: outgoing thread start"
         
-        fifo_dir = make_fifo(@fifo_dir/'blender_comm_reverse')
+        @outgoing_fifo_path = make_fifo(@fifo_dir/'blender_comm_reverse')
         
         loop do
           begin
-            if !@outgoing_open or @f_w.nil?
-              puts "#{self.class}: opening outgoing pipe" 
-              @f_w = File.open(fifo_dir, "w")
+            if @f_w.nil? || !@outgoing_open
+              puts "#{self.class}: opening outgoing pipe"
+              
+              @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
               @outgoing_open = true
+              
+              puts "pipe opened"
             end
             
             message = @outgoing_port.pop # will block thread when Queue empty
@@ -518,11 +521,14 @@ class BlenderSync
       
       if @outgoing_open
         p @f_w
-        p @f_w.path
+        p @outgoing_fifo_path
         
         @f_w.close
       end
-      FileUtils.rm(@f_w.path)
+      FileUtils.rm(@outgoing_fifo_path)
+        # can't use @f_w.path, because if no readers ever connect,
+        # then the FIFO never opens,
+        # and then @f_w == nil
       puts "outgoing fifo closed"
     end
     
