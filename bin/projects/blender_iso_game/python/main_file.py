@@ -279,6 +279,10 @@ class IPC_Reader():
                 # text = text.encode('utf-8') # <-- not needed
                 
                 message_string = self.pipe.readline()
+                # https://docs.python.org/3/library/io.html#io.StringIO
+                # read() goes until EOF
+                # readlines() goes until newline or EOF
+                    # will return the empty string, "", when at EOF
                 
                 if message_string is not "":
                     # print(message_string)
@@ -1667,7 +1671,8 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
     
     def run(self, context):
         message = from_ruby.read()
-        print("from ruby:", message, flush=True)
+        if message is not None:
+            print("from ruby:", message, flush=True)
 
 
 
