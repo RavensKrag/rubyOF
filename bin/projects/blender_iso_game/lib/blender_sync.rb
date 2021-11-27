@@ -16,6 +16,16 @@ class BlenderSync
   end
   
   def stop
+    puts "stopping sync"
+    
+    
+    message = {
+      'type' => 'sync_status',
+      'value' => 'stopping',
+      'final_buffer_size' => @core.frame_history.length
+    }
+    @blender_link.send message
+    
     @blender_link.stop
   end
   
@@ -80,7 +90,7 @@ class BlenderSync
     
     if @core.frame_history.state == 'finished'
       message = {
-        'type' => 'history.length',
+        'type' => 'history.final_frame',
         'value' => @core.frame_history.length
       }
       
@@ -88,7 +98,7 @@ class BlenderSync
       
     else
       message = {
-        'type' => 'history.final_frame',
+        'type' => 'history.length',
         'value' => @core.frame_history.length
       }
       
@@ -133,7 +143,7 @@ class BlenderSync
     
     # p @depsgraph.instance_variable_get("@mesh_objects")
     # p @new_datablocks
-    puts "--- #{message['type']} ---"
+    # puts "--- #{message['type']} ---"
     # puts message['type'] === 'bpy.types.Mesh'
     
     
@@ -243,7 +253,7 @@ class BlenderSync
         # load transform AND data for lights here as necessary
         # ('data' field has already been linked to necessary data)
         
-        puts "loading light: #{message['name']}"
+        # puts "loading light: #{message['name']}"
         
         light =
           @depsgraph.fetch_light(message['name']) do |name|

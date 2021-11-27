@@ -119,20 +119,21 @@ def rubyof__on_redo(scene):
     tex_manager.on_redo(scene)
 
 def rubyof__before_frame_change(scene):
+    # pass 
     # print(args, flush=True)
     props = scene.my_custom_props
     
     # props.ruby_buffer_size = 10
-    print("buffer size:", props.ruby_buffer_size, flush=True)
-    print("current frame:", scene.frame_current, flush=True)
+    # print("buffer size:", props.ruby_buffer_size, flush=True)
+    # print("current frame:", scene.frame_current, flush=True)
     
-    scene.frame_end = props.ruby_buffer_size
+    # scene.frame_end = props.ruby_buffer_size
     
     
     if scene.frame_current == props.ruby_buffer_size:
         bpy.ops.screen.animation_cancel(restore_frame=False)
-    elif scene.frame_current > props.ruby_buffer_size:
-        scene.frame_current = props.ruby_buffer_size
+    # elif scene.frame_current > props.ruby_buffer_size:
+    #     scene.frame_current = props.ruby_buffer_size
     
 
 def register_event_handlers():
@@ -225,7 +226,7 @@ class IPC_Writer():
                 stop_time = time.time()
                 dt = (stop_time - start_time) * 1000
                 
-                print("=> fifo data transfer: ", dt, " msec", flush=True)
+                # print("=> fifo data transfer: ", dt, " msec", flush=True)
                 
             else:
                 print("(no FIFO available; suppressing message)", flush=True)
@@ -1368,44 +1369,6 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         )
     
     
-    def update_detect_playback(self, context):
-        if self.detect_playback:
-            bpy.ops.render.rubyof_detect_playback('INVOKE_DEFAULT')
-        
-        return None
-    
-    detect_playback : BoolProperty(
-        name="Detect Playback",
-        default=False,
-        update=update_detect_playback
-    )
-    
-    
-    
-    def update_sync_deletions(self, context):
-        if self.sync_deletions:
-            bpy.ops.render.rubyof_sync_deletions('INVOKE_DEFAULT')
-        
-        return None
-    
-    sync_deletions : BoolProperty(
-        name="Sync Deletions",
-        default=False,
-        update=update_sync_deletions
-    )
-    
-    def update_read_from_ruby(self, context):
-        if self.read_from_ruby:
-            bpy.ops.render.rubyof_read_from_ruby('INVOKE_DEFAULT')
-        
-        return None
-    
-    read_from_ruby : BoolProperty(
-        name="Read from Ruby",
-        default=False,
-        update=update_read_from_ruby
-    )
-    
     
     ruby_buffer_size: IntProperty(
         name = "Ruby buffer size",
@@ -1413,7 +1376,20 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         default = 0,
         )
     
-
+    
+    
+    def update_modal_loop(self, context):
+        if self.b_modalUpdateActive:
+            bpy.ops.render.rubyof_modal_update('INVOKE_DEFAULT')
+        
+        return None
+    
+    b_modalUpdateActive : BoolProperty(
+        name="Modal update active",
+        default=False,
+        update=update_modal_loop
+    )
+    
 
 # Use modal over the timer api, because the timer api involves threading,
 # which then requires that you make your operation thread safe.
@@ -1422,18 +1398,34 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
     # timer api:
     # self.timer = functools.partial(self.detect_deletions, mytool)
     # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "render.rubyof_detect_playback"
-    bl_label = "Detect Playback"
+class ModalLoop (bpy.types.Operator):
+    # bl_idname = "render.rubyof_modal_update"
+    # bl_label = "modal operator update loop"
     
     # @classmethod
     # def poll(cls, context):
     #     # return True
     
     def __init__(self):
+        
         self._timer = None
         self.timer_dt = 1/60
+        
+        self.old_names = None
+        self.new_names = None
+        
+    
+    def modal(self, context, event):
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
+            self.on_exit()
+            
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
     
     def invoke(self, context, event):
         wm = context.window_manager
@@ -1443,34 +1435,52 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         self.setup(context)
         
-        # print("render.rubyof_detect_playback -- RUNNING_MODAL", flush=True)
         return {'RUNNING_MODAL'}
     
-    def modal(self, context, event):
-        # mytool = context.scene.my_tool
-        
-        if event.type == 'TIMER':
-            self.run(context)
-        
-        if not context.scene.my_custom_props.detect_playback:
-            context.window_manager.event_timer_remove(self._timer)
-            
-            # print("render.rubyof_detect_playback -- FINISHED", flush=True)
-            
-            return {'FINISHED'}
-        
-        # print("render.rubyof_detect_playback -- PASS_THROUGH", flush=True)
-        return {'PASS_THROUGH'}
     
     def setup(self, context):
-        self.old_names = None
+        self.rubyof_PropContext = context.scene.my_custom_props
+        self.rubyof_BoolPropName = "read_from_ruby"
+    
+    def run(self, context):
+        pass
+    
+    def on_exit(self):
+        pass
+
+
+class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
+    """Use timer API and modal operator to generate periodic update tick"""
+    bl_idname = "render.rubyof_modal_update"
+    bl_label = "modal operator update loop"
+    
+    def setup(self, context):
+        # these two variables must always be set,
+        # otherwise the modal loop can not function
+        self.rubyof_PropContext = context.scene.my_custom_props
+        self.rubyof_BoolPropName = "b_modalUpdateActive"
+        
+        
+        # other stuff can be set after that
+        
+        data = {
+            'type':"interrupt",
+            'value': "RESET"
+        }
+        to_ruby.write(json.dumps(data))
+        
+        
+        mytool = context.scene.my_tool
+        
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        
         self.new_names = None
         
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
         # mytool = context.scene.my_tool
         
-        # self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
     
     def run(self, context):
         # test if animation is playing:
@@ -1478,7 +1488,6 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
             # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
         # find the current frame:
             # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
-        
         
         
         # screen = context.screen
@@ -1523,6 +1532,8 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
                     }
                     
                     to_ruby.write(json.dumps(data))
+                    
+                    # context.scene.my_custom_props.read_from_ruby = True
                     
                     
             else:
@@ -1582,60 +1593,16 @@ class RENDER_OT_RubyOF_DetectPlayback (bpy.types.Operator):
         
         # print("render.rubyof_detect_playback -- end of run", flush=True)
         
+        sys.stdout.flush()
+        
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
-
-
-
-# Use modal over the timer api, because the timer api involves threading,
-# which then requires that you make your operation thread safe.
-# That's all a huge pain just to get concurrency, 
-# so for our use case, the modal operator is much better.
-    # timer api:
-    # self.timer = functools.partial(self.detect_deletions, mytool)
-    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-class RENDER_OT_RubyOF_TexAnimSyncDeletions (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "render.rubyof_sync_deletions"
-    bl_label = "Sync Deletions"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def __init__(self):
         
-        self._timer = None
-        self.timer_dt = 1/60
         
-        self.old_names = None
-        self.new_names = None
         
-    
-    def modal(self, context, event):
-        if event.type == 'TIMER':
-            self.run(context)
         
-        if not context.scene.my_custom_props.sync_deletions:
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
         
-        return {'PASS_THROUGH'}
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
         
-        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
-        mytool = context.scene.my_tool
-        
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        return {'RUNNING_MODAL'}
-    
-    
-    def run(self, context):
         # print("running", time.time())
         # print("objects: ", len(context.scene.objects))
         
@@ -1659,71 +1626,40 @@ class RENDER_OT_RubyOF_TexAnimSyncDeletions (bpy.types.Operator):
                 tex_manager.post_mesh_object_deletion(name)
                 
                 # tex_manager.post_mesh_object_deletion(mesh_obj_name)
-
-
-class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "render.rubyof_read_from_ruby"
-    bl_label = "Read from Ruby"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def __init__(self):
         
-        self._timer = None
-        self.timer_dt = 1/60
         
-        self.old_names = None
-        self.new_names = None
         
-    
-    def modal(self, context, event):
-        if event.type == 'TIMER':
-            self.run(context)
         
-        if not context.scene.my_custom_props.read_from_ruby:
-            self.on_exit()
-            
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
         
-        return {'PASS_THROUGH'}
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
         
-        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
-        self.setup(context)
-        
-        return {'RUNNING_MODAL'}
-    
-    
-    def setup(self, context):
-        data = {
-            'type':"interrupt",
-            'value': "RESET"
-        }
-        to_ruby.write(json.dumps(data))
-    
-    def run(self, context):
         message = from_ruby.read()
         if message is not None:
             print("from ruby:", message, flush=True)
-            
+            scene = context.scene
             
             props = context.scene.my_custom_props
             
             if message['type'] == 'history.length':
                 # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
                 props.ruby_buffer_size = message['value']+10
+                scene.frame_end = props.ruby_buffer_size
                 
             elif message['type'] == 'history.final_frame':
                 # once all frames are generated, lock in the exact frame count
                 props.ruby_buffer_size = message['value']
+                scene.frame_end = props.ruby_buffer_size
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+                context.scene.frame_current = props.ruby_buffer_size
+                
+            elif message['type'] == 'sync_status':
+                if message['value'] == 'stopping':
+                    # scene.my_custom_props.read_from_ruby = False
+                    
+                    props.ruby_buffer_size = message['final_buffer_size']
+                    scene.frame_end = props.ruby_buffer_size
+                else:
+                    pass
             
     
     def on_exit(self):
@@ -1774,27 +1710,11 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         props = context.scene.my_custom_props
         
         
-        if props.detect_playback:
-            label = "Syncing Timeline" 
+        if props.b_modalUpdateActive:
+            label = "enabled" 
         else:
-            label = "No Timeline Sync"
-        layout.prop(props, "detect_playback", text=label, toggle=True)
-        
-        
-        if props.sync_deletions:
-            label = "Syncing object deletions"
-        else:
-            label = "No object delete sync" 
-        layout.prop(props, 'sync_deletions', text=label, toggle=True)
-        # ^ updated by RENDER_OT_RubyOF_TexAnimSyncDeletions
-        
-        
-        if props.read_from_ruby:
-            label = "Reading messages from RubyOF"
-        else:
-            label = "Not accepting messages from RubyOF"
-        layout.prop(props, 'read_from_ruby', text=label, toggle=True)
-
+            label = "disabled"
+        layout.prop(props, "b_modalUpdateActive", text=label, toggle=True)
 
 
 
@@ -2202,9 +2122,7 @@ classes = (
     # OT_DeleteOverride,
     #
     #
-    RENDER_OT_RubyOF_DetectPlayback,
-    RENDER_OT_RubyOF_TexAnimSyncDeletions,
-    RENDER_OT_RubyOF_ReadFromRuby,
+    RENDER_OT_RubyOF_ModalUpdate,
     # 
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
