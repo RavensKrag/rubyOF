@@ -1369,7 +1369,7 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
     )
     
     def update_read_from_ruby(self, context):
-        if self.sync_deletions:
+        if self.read_from_ruby:
             bpy.ops.render.rubyof_read_from_ruby('INVOKE_DEFAULT')
         
         return None
@@ -1650,7 +1650,7 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
         if event.type == 'TIMER':
             self.run(context)
         
-        if not context.scene.my_custom_props.sync_deletions:
+        if not context.scene.my_custom_props.read_from_ruby:
             context.window_manager.event_timer_remove(self._timer)
             return {'FINISHED'}
         
@@ -1662,9 +1662,9 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
         wm.modal_handler_add(self)
         
-        mytool = context.scene.my_tool
+        # mytool = context.scene.my_tool
         
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        # self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
         return {'RUNNING_MODAL'}
     
