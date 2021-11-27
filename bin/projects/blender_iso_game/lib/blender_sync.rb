@@ -458,20 +458,15 @@ class BlenderSync
       @outgoing_port = Queue.new
       
       @outgoing_thread = Thread.new do
-        begin
-          puts "#{self.class}: outgoing thread start"
-          
-          fifo_dir = make_fifo(@fifo_dir/'blender_comm_reverse')
-          
-          loop do
-            if !@outgoing_open
-              # if @f_w.nil? || @f_w.closed?
-              if @f_w.nil?
-                @f_w = File.open(fifo_dir, "w")
-              end
-              # end
-              
-              
+        puts "#{self.class}: outgoing thread start"
+        
+        fifo_dir = make_fifo(@fifo_dir/'blender_comm_reverse')
+        
+        loop do
+          begin
+            if !@outgoing_open or @f_w.nil?
+              puts "#{self.class}: opening outgoing pipe" 
+              @f_w = File.open(fifo_dir, "w")
               @outgoing_open = true
             end
             
@@ -481,24 +476,23 @@ class BlenderSync
             
             
             sleep(0.1)
+          rescue Errno::EPIPE => e
+            puts "#{self.class}: outgoing pipe broken" 
+            @outgoing_open = false # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
+            
+            @outgoing_port.clear # clear all existing messages from the buffer
+            
+            
+            # p @f_w.closed?
+            # => false
+            
+            # can't close the file here - will get an execption
+            # but must open the FIFO again before writing
           end
-          
-          # NOTE: can use unix `cat` to monitor the output of this named pipe
-          
-        rescue Errno::EPIPE => e
-          puts "#{self.class}: outgoing pipe broken. stopping" 
-          @outgoing_open = false # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
-          
-          
-          # can't close the file here - will get an execption
-          
-          
-          # must open the FIFO again before writing
-          
-          
-        ensure
-          puts "#{self.class}: outgoing thread stopped"
         end
+        
+        # NOTE: can use unix `cat` to monitor the output of this named pipe
+          
       end
     end
     
