@@ -168,7 +168,7 @@ def unregister_event_handlers():
 # ------------------------------------------------------------------------
 import fcntl
 
-class IPC_Helper():
+class IPC_Writer():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
         self.pipe = None
@@ -209,7 +209,7 @@ class IPC_Helper():
                 print("=> fifo data transfer: ", dt, " msec", flush=True)
                 
             else:
-                print("(no FIFO available; supressing mesage)", flush=True)
+                print("(no FIFO available; suppressing message)", flush=True)
             
         except FileNotFoundError as e:
             print("FIFO file not found", flush=True)
@@ -246,9 +246,63 @@ class IPC_Helper():
     # def __del__(self):
     #     if self.pipe is not None:
     #         self.pipe.close()
-    #         print("FIFO closed", flush=True)
+    #         print("outgoing FIFO closed", flush=True)
 
 
+class IPC_Reader():
+    def __init__(self, fifo_path):
+        self.fifo_path = fifo_path
+        self.pipe = None
+    
+    def read(self):
+        # If the pipe exists,
+        # open it for writing
+        if os.path.exists(self.fifo_path) and self.pipe is None:
+            # opening file will throw exception if the file does not exist
+            print("FIFO: open", flush=True)
+            self.pipe = open(self.fifo_path, "r")
+            
+            # NOTE: open() and os.open() are different functions
+            # https://stackoverflow.com/questions/30172428/python-non-block-read-file
+            
+            # set NONBLOCK status flag
+            fd = self.pipe.fileno()
+            flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
+        
+        
+        # Once you have the pipe open, try to write messages into the pipe.
+        # Subsequent calls to write() will write to the same pipe
+        # until the pipe is broken. (no need to ever call close)
+        if self.pipe is not None:
+            try:
+                # text = text.encode('utf-8') # <-- not needed
+                
+                message_string = self.pipe.readline()
+                # https://docs.python.org/3/library/io.html#io.StringIO
+                # read() goes until EOF
+                # readlines() goes until newline or EOF
+                    # will return the empty string, "", when at EOF
+                
+                if message_string is not "":
+                    # print(message_string)
+                    message = json.loads(message_string)
+                    
+                    return message
+                else:
+                    return None
+                
+            except FileNotFoundError as e:
+                print("FIFO file not found", flush=True)
+            
+        else:
+            return None
+            
+    
+    def __del__(self):
+        if self.pipe is not None:
+            self.pipe.close()
+            print("incoming FIFO closed", flush=True)
 
 
 
@@ -427,33 +481,16 @@ AnimTexManager = reload_class(AnimTexManager)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ------------------------------------------------------------------------
 #   Things that need to be accessed in mulitple places,
 #   so I declared them global for now
 # ------------------------------------------------------------------------
 
 
-# initialize in global scope - doesn't open FIFO until IPC_Helper.write()
-to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
+# initialize in global scope - doesn't open FIFO until IPC_Writer.write()
+to_ruby = IPC_Writer("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
-
+from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse")
 
 
 
@@ -1331,6 +1368,18 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         update=update_sync_deletions
     )
     
+    def update_read_from_ruby(self, context):
+        if self.sync_deletions:
+            bpy.ops.render.rubyof_read_from_ruby('INVOKE_DEFAULT')
+        
+        return None
+    
+    read_from_ruby : BoolProperty(
+        name="Read from Ruby",
+        default=False,
+        update=update_read_from_ruby
+    )
+    
 
 
 # Use modal over the timer api, because the timer api involves threading,
@@ -1579,6 +1628,52 @@ class RENDER_OT_RubyOF_TexAnimSyncDeletions (bpy.types.Operator):
                 # tex_manager.post_mesh_object_deletion(mesh_obj_name)
 
 
+class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
+    """Watch for object deletions and sync them to the anim texture"""
+    bl_idname = "render.rubyof_read_from_ruby"
+    bl_label = "Read from Ruby"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def __init__(self):
+        
+        self._timer = None
+        self.timer_dt = 1/60
+        
+        self.old_names = None
+        self.new_names = None
+        
+    
+    def modal(self, context, event):
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not context.scene.my_custom_props.sync_deletions:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
+    
+    def invoke(self, context, event):
+        wm = context.window_manager
+        
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
+        
+        mytool = context.scene.my_tool
+        
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        return {'RUNNING_MODAL'}
+    
+    
+    def run(self, context):
+        message = from_ruby.read()
+        if message is not None:
+            print("from ruby:", message, flush=True)
+
 
 
 
@@ -1637,6 +1732,13 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
             label = "No object delete sync" 
         layout.prop(props, 'sync_deletions', text=label, toggle=True)
         # ^ updated by RENDER_OT_RubyOF_TexAnimSyncDeletions
+        
+        
+        if props.read_from_ruby:
+            label = "Reading messages from RubyOF"
+        else:
+            label = "Not accepting messages from RubyOF"
+        layout.prop(props, 'read_from_ruby', text=label, toggle=True)
 
 
 
@@ -2047,6 +2149,8 @@ classes = (
     #
     RENDER_OT_RubyOF_DetectPlayback,
     RENDER_OT_RubyOF_TexAnimSyncDeletions,
+    RENDER_OT_RubyOF_ReadFromRuby,
+    # 
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
