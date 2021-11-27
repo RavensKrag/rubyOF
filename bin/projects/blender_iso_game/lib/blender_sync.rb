@@ -78,9 +78,10 @@ class BlenderSync
     # send messages to Blender (python)
     # 
     message = {
-      'type' => 'final_frame',
-      'value' => @core.frame_history.frame_index
+      'type' => 'history.length',
+      'value' => @core.frame_history.length
     }
+    
     
     @blender_link.send message
     
@@ -128,8 +129,11 @@ class BlenderSync
     case message['type']
     when 'interrupt'
       if message['value'] == 'RESET'
-        # blender has reset, so reset all RubyOF data
-        @depsgraph.clear
+        # # blender has reset, so reset all RubyOF data
+        # @depsgraph.clear
+        
+        @blender_link.reset
+        
       end
       
     when 'all_entity_names'
@@ -453,7 +457,7 @@ class BlenderSync
       
       
       
-      @outgoing_open = false
+      @outgoing_status = :idle
       
       @outgoing_port = Queue.new
       
@@ -464,26 +468,30 @@ class BlenderSync
         
         loop do
           begin
-            if @f_w.nil? || !@outgoing_open
+            if @f_w.nil? || @outgoing_status == :closed
               puts "#{self.class}: opening outgoing pipe"
               
               @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
-              @outgoing_open = true
-              
               puts "pipe opened"
+              
+              @outgoing_status = :open
+              
+              # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+              
             end
             
             message = @outgoing_port.pop # will block thread when Queue empty
             @f_w.puts message
             @f_w.flush
             
-            
-            sleep(0.1)
+            # puts "queue size: #{@outgoing_port.size}"
           rescue Errno::EPIPE => e
             puts "#{self.class}: outgoing pipe broken" 
-            @outgoing_open = false # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
             
             @outgoing_port.clear # clear all existing messages from the buffer
+            
+            
+            @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
             
             
             # p @f_w.closed?
@@ -495,9 +503,20 @@ class BlenderSync
         end
         
         # NOTE: can use unix `cat` to monitor the output of this named pipe
-          
+        
       end
     end
+    
+    
+    # blender has connected
+    # resume sending data via the output port
+    def reset
+      @outgoing_port.clear
+      @outgoing_status == :open
+      p "status: #{@outgoing_status}"
+    end
+    
+    
     
     
     # 
@@ -519,7 +538,7 @@ class BlenderSync
       
       
       
-      if @outgoing_open
+      if @outgoing_status == :open
         p @f_w
         p @outgoing_fifo_path
         
@@ -540,11 +559,20 @@ class BlenderSync
     # Send a message from ruby to python
     # (supress message if port is closed)
     def send(message)
-      if @outgoing_open
+      # if the port is open, queue the message (should go out soon)
+      # if the port is closed, supress the message (don't even queue it up)
+      
+      
+      case @outgoing_status
+      when :open
+        # p message
         @outgoing_port.push message.to_json
-      else
+      when :closed
+        # NO-OP
+      when :resetting
         # NO-OP
       end
+      
     end
     
     # Take the latest message from python to ruby out of the queue

@@ -299,6 +299,13 @@ class IPC_Reader():
             return None
             
     
+    def close(self):
+        if self.pipe is not None:
+            self.pipe.close()
+            print("incoming FIFO closed", flush=True)
+            
+            self.pipe = None
+    
     def __del__(self):
         if self.pipe is not None:
             self.pipe.close()
@@ -966,11 +973,11 @@ class RubyOF(bpy.types.RenderEngine):
         self.first_time = True
         
         
-        # data = {
-        #     'type':"interrupt"
-        #     'value': "RESET"
-        # }
-        # to_ruby.write(json.dumps(data))
+        data = {
+            'type':"interrupt",
+            'value': "RESET"
+        }
+        to_ruby.write(json.dumps(data))
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
@@ -1651,6 +1658,8 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
             self.run(context)
         
         if not context.scene.my_custom_props.read_from_ruby:
+            self.on_exit()
+            
             context.window_manager.event_timer_remove(self._timer)
             return {'FINISHED'}
         
@@ -1662,17 +1671,25 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
         wm.modal_handler_add(self)
         
-        # mytool = context.scene.my_tool
-        
-        # self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        self.setup(context)
         
         return {'RUNNING_MODAL'}
     
+    
+    def setup(self, context):
+        data = {
+            'type':"interrupt",
+            'value': "RESET"
+        }
+        to_ruby.write(json.dumps(data))
     
     def run(self, context):
         message = from_ruby.read()
         if message is not None:
             print("from ruby:", message, flush=True)
+    
+    def on_exit(self):
+        from_ruby.close()
 
 
 
