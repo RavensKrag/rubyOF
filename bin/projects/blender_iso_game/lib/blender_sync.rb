@@ -430,25 +430,76 @@ class BlenderSync
       #   as a FIFO can not be created where one already exists.
       
       @fifo_dir = PROJECT_DIR/'bin'/'run'
-      @fifo_name = 'blender_comm'
       
-      @f_r = open_fifo(@fifo_dir/@fifo_name, "r+")
+      @f_r = File.open(make_fifo(@fifo_dir/'blender_comm'), "r+")
+      
+      # NOTE: @incoming_port and @outgoing_port always hold JSON-encoded strings, not other types of ruby objects.
+      # (see #send and #take for details)
       
       @incoming_port = Queue.new
       
       @incoming_thread = Thread.new do
         begin
-          puts "fifo message thread start"
+          puts "#{self.class}: incoming thread start"
           loop do
             data = @f_r.gets # blocking IO
             @incoming_port << data
           end
         ensure
-          puts "fifo message thread stopped"
+          puts "#{self.class}: incoming thread stopped"
         end
       end
       
+      
+      
+      
+      @outgoing_open = false
+      
       @outgoing_port = Queue.new
+      
+      @outgoing_thread = Thread.new do
+        begin
+          puts "#{self.class}: outgoing thread start"
+          
+          fifo_dir = make_fifo(@fifo_dir/'blender_comm_reverse')
+          
+          loop do
+            if !@outgoing_open
+              # if @f_w.nil? || @f_w.closed?
+              if @f_w.nil?
+                @f_w = File.open(fifo_dir, "w")
+              end
+              # end
+              
+              
+              @outgoing_open = true
+            end
+            
+            message = @outgoing_port.pop # will block thread when Queue empty
+            @f_w.puts message
+            @f_w.flush
+            
+            
+            sleep(0.1)
+          end
+          
+          # NOTE: can use unix `cat` to monitor the output of this named pipe
+          
+        rescue Errno::EPIPE => e
+          puts "#{self.class}: outgoing pipe broken. stopping" 
+          @outgoing_open = false # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
+          
+          
+          # can't close the file here - will get an execption
+          
+          
+          # must open the FIFO again before writing
+          
+          
+        ensure
+          puts "#{self.class}: outgoing thread stopped"
+        end
+      end
     end
     
     
@@ -458,15 +509,27 @@ class BlenderSync
     
     def stop
       @incoming_thread.kill.join
+      @outgoing_thread.kill.join
       
-      # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
+      # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up.
       
       p @f_r
       p @f_r.path
       
       @f_r.close
       FileUtils.rm(@f_r.path)
-      puts "fifo closed"
+      puts "incoming fifo closed"
+      
+      
+      
+      if @outgoing_open
+        p @f_w
+        p @f_w.path
+        
+        @f_w.close
+      end
+      FileUtils.rm(@f_w.path)
+      puts "outgoing fifo closed"
     end
     
     
@@ -474,10 +537,18 @@ class BlenderSync
     # communicate via json messages
     # 
     
+    # Send a message from ruby to python
+    # (supress message if port is closed)
     def send(message)
-      @outgoing_port.push message.to_json
+      if @outgoing_open
+        @outgoing_port.push message.to_json
+      else
+        # NO-OP
+      end
     end
     
+    # Take the latest message from python to ruby out of the queue
+    # (return nil if there are no messages in the queue)
     def take
       if @incoming_port.empty?
         return nil
@@ -494,16 +565,15 @@ class BlenderSync
     private
     
     
-    def open_fifo(fifo_path, mode)
+    def make_fifo(fifo_path)
       if fifo_path.exist?
         raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
       else
         File.mkfifo(fifo_path)
       end
-      
       puts "fifo created @ #{fifo_path}"
       
-      return File.open(fifo_path, mode)
+      return fifo_path
     end
     
   end
