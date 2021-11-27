@@ -132,8 +132,8 @@ def rubyof__before_frame_change(scene):
     
     if scene.frame_current == props.ruby_buffer_size:
         bpy.ops.screen.animation_cancel(restore_frame=False)
-    # elif scene.frame_current > props.ruby_buffer_size:
-    #     scene.frame_current = props.ruby_buffer_size
+    elif scene.frame_current > props.ruby_buffer_size:
+        scene.frame_current = props.ruby_buffer_size
     
 
 def register_event_handlers():
