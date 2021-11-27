@@ -58,7 +58,8 @@ handler_types = {
     'on_save' : bpy.app.handlers.save_post,
     'on_load' : bpy.app.handlers.load_post,
     'on_undo' : bpy.app.handlers.undo_post,
-    'on_redo' : bpy.app.handlers.redo_post
+    'on_redo' : bpy.app.handlers.redo_post,
+    'before_frame_change' : bpy.app.handlers.frame_change_pre,
 }
 
 def register_callback(handler_type, function):
@@ -116,6 +117,22 @@ def rubyof__on_redo(scene):
     context = bpy.context
     tex_manager = anim_texture_manager_singleton(context)
     tex_manager.on_redo(scene)
+
+def rubyof__before_frame_change(scene):
+    # print(args, flush=True)
+    props = scene.my_custom_props
+    
+    # props.ruby_buffer_size = 10
+    print("buffer size:", props.ruby_buffer_size, flush=True)
+    print("current frame:", scene.frame_current, flush=True)
+    
+    scene.frame_end = props.ruby_buffer_size
+    
+    
+    if scene.frame_current == props.ruby_buffer_size:
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+    elif scene.frame_current > props.ruby_buffer_size:
+        scene.frame_current = props.ruby_buffer_size
     
 
 def register_event_handlers():
@@ -123,6 +140,8 @@ def register_event_handlers():
     register_callback('on_load', rubyof__on_load)
     register_callback('on_redo', rubyof__on_redo)
     register_callback('on_undo', rubyof__on_undo)
+    
+    register_callback('before_frame_change', rubyof__before_frame_change)
     
     
 def unregister_event_handlers():
@@ -1387,6 +1406,13 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         update=update_read_from_ruby
     )
     
+    
+    ruby_buffer_size: IntProperty(
+        name = "Ruby buffer size",
+        description = "number of frames known to RubyOF history",
+        default = 0,
+        )
+    
 
 
 # Use modal over the timer api, because the timer api involves threading,
@@ -1687,6 +1713,18 @@ class RENDER_OT_RubyOF_ReadFromRuby (bpy.types.Operator):
         message = from_ruby.read()
         if message is not None:
             print("from ruby:", message, flush=True)
+            
+            
+            props = context.scene.my_custom_props
+            
+            if message['type'] == 'history.length':
+                # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
+                props.ruby_buffer_size = message['value']+10
+                
+            elif message['type'] == 'history.final_frame':
+                # once all frames are generated, lock in the exact frame count
+                props.ruby_buffer_size = message['value']
+            
     
     def on_exit(self):
         from_ruby.close()

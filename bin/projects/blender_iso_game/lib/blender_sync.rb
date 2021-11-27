@@ -77,13 +77,24 @@ class BlenderSync
     # 
     # send messages to Blender (python)
     # 
-    message = {
-      'type' => 'history.length',
-      'value' => @core.frame_history.length
-    }
     
-    
-    @blender_link.send message
+    if @core.frame_history.state == 'finished'
+      message = {
+        'type' => 'history.length',
+        'value' => @core.frame_history.length
+      }
+      
+      @blender_link.send message
+      
+    else
+      message = {
+        'type' => 'history.final_frame',
+        'value' => @core.frame_history.length
+      }
+      
+      @blender_link.send message
+      
+    end
     
     
   end
