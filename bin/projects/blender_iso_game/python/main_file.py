@@ -209,7 +209,7 @@ class IPC_Writer():
                 print("=> fifo data transfer: ", dt, " msec", flush=True)
                 
             else:
-                print("(no FIFO available; supressing message)", flush=True)
+                print("(no FIFO available; suppressing message)", flush=True)
             
         except FileNotFoundError as e:
             print("FIFO file not found", flush=True)
