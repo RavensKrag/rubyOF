@@ -1621,7 +1621,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         message = from_ruby.read()
         if message is not None:
-            print("from ruby:", message, flush=True)
+            # print("from ruby:", message, flush=True)
             scene = context.scene
             
             props = context.scene.my_custom_props
