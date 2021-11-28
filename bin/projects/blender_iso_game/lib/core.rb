@@ -741,7 +741,7 @@ class Core
         GLM::Vec3.new(0,0,1).tap do |v|
           #  1 - animate
           snapshot.frame do
-            p pos
+            puts pos
           end
           #  2 - animate
           snapshot.frame do
@@ -927,6 +927,10 @@ class Core
   end
   
   
+  
+  # 
+  # methods used by FrameHistory to save world state
+  # 
   def snapshot_gamestate
     # for now, just save the state of the one entity that's moving
     i = @entity_name_to_id['CharacterTest']
@@ -937,6 +941,9 @@ class Core
     i = @entity_name_to_id['CharacterTest']
     @environment.set_entity_transform(i, state)
   end
+  
+  
+  
   
   
   def update_while_crashed
