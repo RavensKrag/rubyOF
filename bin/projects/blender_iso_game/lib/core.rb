@@ -677,19 +677,35 @@ class Core
     # TODO: how can I step execution back?
     # TODO: how can I jump to an arbitrary point in execution?
     
-    x.times do 
-      snapshot.frame do
-        # NO-OP
-      end
-    end
-    
-    moves.each do |v|
+    moves.each_with_index do |v, move_idx|
       # step in a direction, but subdivide into
       # two motions for animation / tweening
       
-      # 
-      # step up the step, if it's there
-      # 
+      puts "move idx: #{move_idx} of #{moves.length-1}"
+      
+      
+      
+      # distribute the moves over a series of turns.
+      # each turn, take one movement action.
+      # + move in the specified way
+      # + play an animation to interpolate the frames
+      
+      dt = 0.5
+      
+      
+      
+      #  0 - log root position
+      snapshot.frame do
+        
+      end
+      
+      
+      # transform could be set on frame 0 (e.g. the very first frame)
+      # so want to load the transform data after that
+      
+      # all code inside snapshot blocks will be skipped on resume
+      # so in order to make sure this executes every time,
+      # need to put it outside of the snapshot
       i = @entity_name_to_id['CharacterTest']
       mat = @environment.get_entity_transform(i)
       
@@ -703,60 +719,209 @@ class Core
       # TODO: implement vector addition
         # (in glm, the operators like + are still implemented as infix)
       
-      # if the space you're trying to move into is blocked
-      # then assume it's a step, and try to step up
+      puts "grid position: #{pos}"
+      
+        # ^ pos will not update on resume, because all the snapshot
+        #   blocks are being skipped, which skips the transforms.
+      
+      
+      
+        # FIXME: on reload, pos == nil
+        # I expect that if I roll back, then hit play
+        # again, at some point in the past,
+        # then a new fiber should be created
+        # and all the steps up to the desired point
+        # should be played again.
+        # thus, all variables that need to be set
+        # should be set.
+        # but that doesn't seem to be the case here.
+      
+      # step up if there's an obstruction
       if @space.point_query(pos + v) != nil
-        # step upwards
-        2.times do
+        GLM::Vec3.new(0,0,1).tap do |v|
+          #  1 - animate
           snapshot.frame do
-            mat1 = @environment.get_entity_transform(i)
-            v2 = GLM::Vec3.new(0.0, 0.0, 0.5)
-            
-            mat2 = GLM.translate(mat1, v2)
-            
-            @environment.set_entity_transform(i, mat2)
+            p pos
           end
-          
-          
-          # wait some frames
-          x.times do 
-            snapshot.frame do
-              # NO-OP
+          #  2 - animate
+          snapshot.frame do
+            
+          end
+          #  3 - animate
+          snapshot.frame do
+            
+          end
+          #  4 - animate
+          snapshot.frame do
+            
+          end
+          #  5 - animate
+          snapshot.frame do
+            
+          end
+          #  6 - animate
+          snapshot.frame do
+            
+          end
+          #  7 - animate
+          snapshot.frame do
+            
+          end
+          #  8 - animate (halfway)
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
             end
           end
-        end
-      end
-      
-      
-      
-      # 
-      # move along the ground
-      # 
-      2.times do
-        # must exit the mutate block to set the value back
-        
-        
-        snapshot.frame do
-          i = @entity_name_to_id['CharacterTest']
-          @environment.mutate_entity_transform(i) do |mat|
-            v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
-            
-            GLM.translate(mat, v2)
-          end
-          
-          
-        end
-        
-        x.times do 
+          #  9 - animate
           snapshot.frame do
-            # NO-OP
+            
+          end
+          # 10 - animate
+          snapshot.frame do
+            
+          end
+          # 11 - animate
+          snapshot.frame do
+            
+          end
+          # 12 - animate
+          snapshot.frame do
+            
+          end
+          # 13 - animate
+          snapshot.frame do
+            
+          end
+          # 14 - animate
+          snapshot.frame do
+            
+          end
+          # 15 - animate
+          snapshot.frame do
+            
+          end
+          # 16 - animate
+          snapshot.frame do
+            
+          end
+          # 17 - animate
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
+            end
+          end
+          
+          #  0 - new root position
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            mat = @environment.get_entity_transform(i)
+            
+            pos  = GLM::Vec3.new(0,0,0)
+            rot  = GLM::Quat.new(1,0,0,0)
+            scale = GLM::Vec3.new(0,0,0)
+            RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+            # TODO: ^ this should be extracted from the transform matrix
+            # puts pos
+            
+            # TODO: implement vector addition
+              # (in glm, the operators like + are still implemented as infix)
+            
           end
         end
         
-        # if v.x == -1
-        #   raise "error test"
-        # end
       end
+      
+      
+      #  1 - animate
+      snapshot.frame do
+        p pos
+      end
+      #  2 - animate
+      snapshot.frame do
+        
+      end
+      #  3 - animate
+      snapshot.frame do
+        
+      end
+      #  4 - animate
+      snapshot.frame do
+        
+      end
+      #  5 - animate
+      snapshot.frame do
+        
+      end
+      #  6 - animate
+      snapshot.frame do
+        
+      end
+      #  7 - animate
+      snapshot.frame do
+        
+      end
+      #  8 - animate (halfway)
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      #  9 - animate
+      snapshot.frame do
+        
+      end
+      # 10 - animate
+      snapshot.frame do
+        
+      end
+      # 11 - animate
+      snapshot.frame do
+        
+      end
+      # 12 - animate
+      snapshot.frame do
+        
+      end
+      # 13 - animate
+      snapshot.frame do
+        
+      end
+      # 14 - animate
+      snapshot.frame do
+        
+      end
+      # 15 - animate
+      snapshot.frame do
+        
+      end
+      # 16 - animate
+      snapshot.frame do
+        
+      end
+      # 17 - animate
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      # # 18 - new root position
+      # snapshot.frame do
+        
+      # end
+      
     end
     
   end

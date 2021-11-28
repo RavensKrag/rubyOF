@@ -77,11 +77,18 @@ class FrameHistory
             # if manually stepping forward, we'll be able to see the transition
             # but otherwise, this transition will be silent
             # (keeps logs clean unless you really need the info)
-            if @queued_state
+            # if @queued_state
               puts "resuming"
-            end
+            # end
             
             # (skip this frame)
+            # don't run the code for this frame,
+            # so instead update the transforms
+            # based on the history buffer
+            
+            state = @history[@executing_frame]
+            @context.load_state state
+            
             
             @executing_frame += 1
             
@@ -228,6 +235,7 @@ class FrameHistory
       def update
         puts "Finished update"
         @final_frame = @outer.length-1
+        @outer.paused = true
         p @final_frame
       end
       
