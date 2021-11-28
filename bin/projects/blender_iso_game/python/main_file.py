@@ -289,7 +289,7 @@ class IPC_Reader():
                 # readlines() goes until newline or EOF
                     # will return the empty string, "", when at EOF
                 
-                if message_string is not "":
+                if message_string != "":
                     # print(message_string)
                     message = json.loads(message_string)
                     
@@ -1450,6 +1450,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         # other stuff can be set after that
         
+        self.counter = 0
+        
         data = {
             'type':"interrupt",
             'value': "RESET"
@@ -1470,125 +1472,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
     
     def run(self, context):
-        # test if animation is playing:
-            # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
-            # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
-        # find the current frame:
-            # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
-        
-        
-        # screen = context.screen
-        # print(screen.is_animation_playing, screen.is_scrubbing)
-        
-        # is_scrubbing
-        
-        if context.screen.is_scrubbing:
-            # if scrubbing, we are also playing,
-            # so need to check for scrubbing first
-            print("scrubbing", context.scene.frame_current)
-            # (does not trigger when stepping with arrow keys)
-            
-            data = {
-                'type': 'timeline_command',
-                'name': 'seek',
-                'time': context.scene.frame_current
-            }
-            
-            to_ruby.write(json.dumps(data))
-                        
-            # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
-        else:
-            # this is a bool, not a function
-            if context.screen.is_animation_playing:
-                if not self.bPlaying:
-                    # transition from paused to playing
-                    
-                    # data = {
-                    #     'type': 'timeline_command',
-                    #     'name': 'seek',
-                    #     'time': context.scene.frame_current
-                    # }
-                    
-                    # to_ruby.write(json.dumps(data))
-                    
-                    print("starting animation")
-                    
-                    data = {
-                        'type': 'timeline_command',
-                        'name': 'play',
-                    }
-                    
-                    to_ruby.write(json.dumps(data))
-                    
-                    # context.scene.my_custom_props.read_from_ruby = True
-                    
-                    
-            else:
-                if self.bPlaying:
-                    # transition from playing to paused
-                    
-                    # data = {
-                    #     'type': 'timeline_command',
-                    #     'name': 'seek',
-                    #     'time': context.scene.frame_current
-                    # }
-                    
-                    # to_ruby.write(json.dumps(data))
-                    
-                    print("stopping animation")
-                    
-                    data = {
-                        'type': 'timeline_command',
-                        'name': 'pause',
-                    }
-                    
-                    to_ruby.write(json.dumps(data))
-        
-        # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
-        
-        if not context.screen.is_animation_playing:
-            delta = abs(self.frame - context.scene.frame_current)
-            if delta == 1:
-                # triggers when stepping with arrow keys,
-                # and also on normal playback.
-                # Triggers once per frame while scrubbing.
-                
-                # (is_scrubbing == false while stepping)
-                
-                print("step - frame", context.scene.frame_current)
-                
-                data = {
-                    'type': 'timeline_command',
-                    'name': 'seek',
-                    'time': context.scene.frame_current
-                }
-                
-                to_ruby.write(json.dumps(data))
-                
-                
-            elif delta > 1:
-                # triggers when using shift+right or shift+left to jump to end/beginning of timeline
-                print("jump - frame", context.scene.frame_current)
-                
-                data = {
-                    'type': 'timeline_command',
-                    'name': 'seek',
-                    'time': context.scene.frame_current
-                }
-                
-                to_ruby.write(json.dumps(data))
-        
-        # print("render.rubyof_detect_playback -- end of run", flush=True)
-        
-        sys.stdout.flush()
-        
-        self.bPlaying = context.screen.is_animation_playing
-        self.frame = context.scene.frame_current
-        
-        
-        
-        
-        
+        # 
+        # sync object deletions
+        # 
         
         # print("running", time.time())
         # print("objects: ", len(context.scene.objects))
@@ -1615,6 +1501,119 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # tex_manager.post_mesh_object_deletion(mesh_obj_name)
         
         
+        # 
+        # sync timeline
+        # 
+        
+        self.counter = (self.counter + 1) % 10000
+        
+        scene = context.scene
+        props = context.scene.my_custom_props
+        
+        # print("---", flush=True)
+        
+        # test if animation is playing:
+            # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
+            # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        # find the current frame:
+            # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
+        
+        
+        # screen = context.screen
+        # print(screen.is_animation_playing, screen.is_scrubbing)
+        
+        # is_scrubbing
+        
+        if context.screen.is_scrubbing:
+            # if scrubbing, we are also playing,
+            # so need to check for scrubbing first
+            self.print("scrubbing", context.scene.frame_current)
+            # (does not trigger when stepping with arrow keys)
+            
+            data = {
+                'type': 'timeline_command',
+                'name': 'seek',
+                'time': context.scene.frame_current
+            }
+            
+            to_ruby.write(json.dumps(data))
+                        
+            # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
+        else:
+            # this is a bool, not a function
+            if context.screen.is_animation_playing:
+                if not self.bPlaying:
+                    # transition from paused to playing
+                    
+                    self.print("starting animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'play',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+                    
+                    
+                    
+                    props.ruby_buffer_size = 1000
+                    scene.frame_end = props.ruby_buffer_size
+                    
+                    
+                    # context.scene.my_custom_props.read_from_ruby = True
+                    
+                    
+            else:
+                if self.bPlaying:
+                    # transition from playing to paused
+                    
+                    self.print("stopping animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'pause',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+        
+        # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
+        
+        if not context.screen.is_animation_playing:
+            delta = abs(self.frame - context.scene.frame_current)
+            if delta == 1:
+                # triggers when stepping with arrow keys,
+                # and also on normal playback.
+                # Triggers once per frame while scrubbing.
+                
+                # (is_scrubbing == false while stepping)
+                
+                self.print("step - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+                
+                
+            elif delta > 1:
+                # triggers when using shift+right or shift+left to jump to end/beginning of timeline
+                self.print("jump - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+        
+        # print("render.rubyof_detect_playback -- end of run", flush=True)
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
         
         
         
@@ -1622,35 +1621,56 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         message = from_ruby.read()
         if message is not None:
             # print("from ruby:", message, flush=True)
-            scene = context.scene
             
-            props = context.scene.my_custom_props
+            if message['type'] == 'loopback_stopped':
+                self.print("loopback - stopped")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']
+                scene.frame_end = props.ruby_buffer_size
             
-            if message['type'] == 'history.length':
-                # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
-                props.ruby_buffer_size = message['value']+10
-                scene.frame_end = props.ruby_buffer_size
+            # if message['type'] == 'loopback_started':
+                # self.print("loopback - started generate new frames")
                 
-            elif message['type'] == 'history.final_frame':
-                # once all frames are generated, lock in the exact frame count
-                props.ruby_buffer_size = message['value']
-                scene.frame_end = props.ruby_buffer_size
                 
-                bpy.ops.screen.animation_cancel(restore_frame=False)
-                context.scene.frame_current = props.ruby_buffer_size
+                # props.ruby_buffer_size = 1000
+                # scene.frame_end = props.ruby_buffer_size
+            
+            
+            # if message['type'] == 'history.length':
+            #     # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
+            #     props.ruby_buffer_size = message['value']+10
+            #     scene.frame_end = props.ruby_buffer_size
                 
-            elif message['type'] == 'sync_status':
-                if message['value'] == 'stopping':
-                    # scene.my_custom_props.read_from_ruby = False
+            # elif message['type'] == 'history.final_frame':
+            #     # once all frames are generated, lock in the exact frame count
+            #     props.ruby_buffer_size = message['value']
+            #     scene.frame_end = props.ruby_buffer_size
+                
+            #     bpy.ops.screen.animation_cancel(restore_frame=False)
+            #     context.scene.frame_current = props.ruby_buffer_size
+                
+            # elif message['type'] == 'sync_status':
+            #     if message['value'] == 'stopping':
+            #         # scene.my_custom_props.read_from_ruby = False
                     
-                    props.ruby_buffer_size = message['final_buffer_size']
-                    scene.frame_end = props.ruby_buffer_size
-                else:
-                    pass
-            
+            #         props.ruby_buffer_size = message['final_buffer_size']
+            #         scene.frame_end = props.ruby_buffer_size
+            #     else:
+            #         pass
+        
+        
+        
     
     def on_exit(self):
         from_ruby.close()
+    
+    # print with a 4-digit timestamp (wrapping counter of frames)
+    # so its clear how much time elapsed between different
+    # sections of the code.
+    def print(self, *args):
+        print(f'{self.counter:04}', *args, flush=True)
 
 def rubyof__before_frame_change(scene):
     # pass 

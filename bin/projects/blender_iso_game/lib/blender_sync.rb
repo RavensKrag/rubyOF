@@ -111,6 +111,82 @@ class BlenderSync
   
   private
   
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'pause'
+      puts "== pause"
+      p @core.frame_history.state
+      
+      if @core.frame_history.state == :generating_new
+        @core.frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_stopped',
+          'history.length' => @core.frame_history.length
+        }
+        
+        @blender_link.send message
+        
+      else
+        @core.frame_history.pause
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @core.frame_history.state
+      
+      if @core.frame_history.state != :generating_new
+        @core.frame_history.play
+        # ^ this will not immediately advance
+        #   to the new state. It's more like shifting
+        #   from Park to Drive.
+        #   Transition to next state will not happen until
+        #   FrameHistory#update -> State#update
+        # 
+        # note: even responding to pause
+        # takes at least 1 frame. need a better way
+        # of dealing with this.
+        # 
+        # For now, I will expand the play range when python
+        # detects playback has started, without waiting
+        # for a round-trip response from ruby.
+        # (using aribtrary large number, 1000 frames)
+        # 
+        # TODO: use the "preview range" feature to set
+        #       two time ranges for the timeline
+        #       1) the maximum number of frames that can 
+        #          be stored
+        #       2) the current number of frames in history
+        
+        if @core.frame_history.play == :generating_new
+          message = {
+            'type' => 'loopback_started',
+            'history.length' => @core.frame_history.length
+          }
+          
+          @blender_link.send message
+        end
+        
+        
+      else
+        @core.frame_history.play
+        
+      end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @core.frame_history.seek(message['time'])
+      
+    end
+  end
+  
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
   def parse_blender_data(message)
@@ -278,18 +354,7 @@ class BlenderSync
     
     when 'timeline_command'
       # p message
-      
-      case message['name']
-      when 'pause'
-        @core.frame_history.pause
-        
-      when 'play'
-        @core.frame_history.play
-      
-      when 'seek'
-        @core.frame_history.seek(message['time'])
-        
-      end
+      parse_timeline_commands(message)
     
     when 'object_to_id_map'
       @core.update_entity_mapping(message)
