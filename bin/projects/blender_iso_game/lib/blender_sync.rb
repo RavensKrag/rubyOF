@@ -2,10 +2,11 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history, core)
+  def initialize(window, depsgraph, message_history, history, core)
     @window = window
     @depsgraph = depsgraph
-    @history = history
+    @message_history = message_history
+    @frame_history = history
     
     @core = core
     
@@ -22,7 +23,7 @@ class BlenderSync
     message = {
       'type' => 'sync_status',
       'value' => 'stopping',
-      'final_buffer_size' => @core.frame_history.length
+      'final_buffer_size' => @frame_history.length
     }
     @blender_link.send message
     
@@ -58,7 +59,7 @@ class BlenderSync
       
       
       # send all of this data to history
-      @history.write message
+      @message_history.write message
       
     end
     
@@ -70,7 +71,7 @@ class BlenderSync
     # TODO: why can't the viewport be made about 1/4 of my screen size? why does it have to be large to sync with the RubyOF window?
     
     
-    @history.read do |message|
+    @message_history.read do |message|
       parse_blender_data message
     end
     # ^ this method of merging history can't prevent spikes due to
@@ -88,11 +89,11 @@ class BlenderSync
     # send messages to Blender (python)
     # 
     
-    if @core.frame_history.state == :finished
+    if @frame_history.state == :finished
       puts "finished"
       message = {
         'type' => 'loopback_finished',
-        'history.length' => @core.frame_history.length
+        'history.length' => @frame_history.length
       }
       
       @blender_link.send message
@@ -100,7 +101,7 @@ class BlenderSync
     else
       # message = {
       #   'type' => 'history.length',
-      #   'value' => @core.frame_history.length
+      #   'value' => @frame_history.length
       # }
       
       # @blender_link.send message
@@ -122,19 +123,19 @@ class BlenderSync
       
       @blender_link.reset
       
-      if @core.frame_history.time_traveling?
+      if @frame_history.time_traveling?
         # For now, just replace the curret timeline with the alt one.
         # In future commits, we can refine this system to use multiple
         # timelines, with UI to compress timelines or switch between them.
         
         
-        @core.frame_history.branch_history
+        @frame_history.branch_history
         
         
         message = {
           'type' => 'loopback_reset',
-          'history.length'      => @core.frame_history.length,
-          'history.frame_index' => @core.frame_history.frame_index
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
         }
         
         @blender_link.send message
@@ -147,22 +148,22 @@ class BlenderSync
       
     when 'pause'
       puts "== pause"
-      p @core.frame_history.state
+      p @frame_history.state
       
-      if @core.frame_history.state == :generating_new
-        @core.frame_history.pause
+      if @frame_history.state == :generating_new
+        @frame_history.pause
         
         
         message = {
           'type' => 'loopback_paused',
-          'history.length'      => @core.frame_history.length,
-          'history.frame_index' => @core.frame_history.frame_index
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
         }
         
         @blender_link.send message
         
       else
-        @core.frame_history.pause
+        @frame_history.pause
         
       end
       
@@ -171,10 +172,10 @@ class BlenderSync
       
     when 'play'
       puts "== play"
-      p @core.frame_history.state
+      p @frame_history.state
       
-      if @core.frame_history.state != :generating_new
-        @core.frame_history.play
+      if @frame_history.state != :generating_new
+        @frame_history.play
         # ^ this will not immediately advance
         #   to the new state. It's more like shifting
         #   from Park to Drive.
@@ -196,10 +197,10 @@ class BlenderSync
         #          be stored
         #       2) the current number of frames in history
         
-        if @core.frame_history.play == :generating_new
+        if @frame_history.play == :generating_new
           message = {
             'type' => 'loopback_started',
-            'history.length' => @core.frame_history.length
+            'history.length' => @frame_history.length
           }
           
           @blender_link.send message
@@ -207,7 +208,7 @@ class BlenderSync
         
         
       else
-        @core.frame_history.play
+        @frame_history.play
         
       end
       
@@ -215,7 +216,7 @@ class BlenderSync
       
     
     when 'seek'
-      @core.frame_history.seek(message['time'])
+      @frame_history.seek(message['time'])
       
     end
   end

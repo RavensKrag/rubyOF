@@ -173,7 +173,6 @@ end
 class Core
   include HelperFunctions
   
-  attr_accessor :frame_history
   attr_accessor :sync
   
   def initialize(window)
@@ -256,10 +255,6 @@ class Core
     
     
     
-    @message_history = BlenderHistory.new
-    @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
-    
     
     
     
@@ -296,6 +291,19 @@ class Core
     
     @mesh_id_map_file = data_dir/'mesh_map.yaml'
     @mesh_id_to_name = YAML.load_file @mesh_id_map_file
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    @message_history = BlenderHistory.new
+    @depsgraph = DependencyGraph.new
+    @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
+    
   end
   
   # run when exception is detected
@@ -369,7 +377,7 @@ class Core
       # @message_history.on_reload
       
       puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
+      @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
       
@@ -419,61 +427,6 @@ class Core
     # TODO: seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
       # If the named pipe is closed, subsequent writes should recieve the SIGPIPE signal (broken pipe) which should allow me to deal with hanging stuff from Blender
   end
-  
-  
-  def save_world_state
-    # 
-    # save 3D graphics data to file
-    # 
-    
-    # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-    # ('CAMERA' not yet supported)
-    # ('ORTHO' support currently rather poor)
-    
-    # RubyProf.start
-    
-    dump_yaml @depsgraph => @world_save_file
-    puts "world saved!"
-  end
-  
-  def load_world_state
-    if @world_save_file.exist?
-      puts "loading 3D graphics data..."
-      
-      # 
-      # loading the file takes 17 - 35 ms.
-      # the entire loading update takes ~1800 ms
-      # so the file IO is negligible
-      # 
-      
-      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # File.readlines(@world_save_file)
-      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # dt = t1-t0
-      # puts "file load time: #{dt / 1000} ms"
-      
-      @sync.stop
-      
-      @depsgraph = YAML.load_file @world_save_file
-      
-      @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
-      puts "load complete!"
-      
-      # result = RubyProf.stop
-      
-      # printer = RubyProf::FlatPrinter.new(result)
-      # printer.print(STDOUT)
-      
-      # printer = RubyProf::CallStackPrinter.new(result)
-      
-      # File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
-      #   printer.print(f)
-      # end
-    end
-  end
-  
-  
-  
   
   
   
@@ -650,7 +603,7 @@ class Core
     
     if @first_update
       puts "first update"
-      # load_world_state
+      # load_world_state()
       
       @first_update = false
       
