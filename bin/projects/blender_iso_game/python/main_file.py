@@ -1140,7 +1140,7 @@ class RubyOF(bpy.types.RenderEngine):
         scene = depsgraph.scene
         
         
-        print("view update ---")
+        # print("view update ---")
         
         data = {
             'type': 'timestamp',
