@@ -88,21 +88,22 @@ class BlenderSync
     # send messages to Blender (python)
     # 
     
-    if @core.frame_history.state == 'finished'
+    if @core.frame_history.state == :finished
+      puts "finished"
       message = {
-        'type' => 'history.final_frame',
-        'value' => @core.frame_history.length
+        'type' => 'loopback_finished',
+        'history.length' => @core.frame_history.length
       }
       
       @blender_link.send message
       
     else
-      message = {
-        'type' => 'history.length',
-        'value' => @core.frame_history.length
-      }
+      # message = {
+      #   'type' => 'history.length',
+      #   'value' => @core.frame_history.length
+      # }
       
-      @blender_link.send message
+      # @blender_link.send message
       
     end
     
@@ -113,6 +114,37 @@ class BlenderSync
   
   def parse_timeline_commands(message)
     case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      # @depsgraph.clear
+      
+      puts "== reset"
+      
+      @blender_link.reset
+      
+      if @core.frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        @core.frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @core.frame_history.length,
+          'history.frame_index' => @core.frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        
+      end
+      
+      puts "====="
+      
     when 'pause'
       puts "== pause"
       p @core.frame_history.state
@@ -122,8 +154,9 @@ class BlenderSync
         
         
         message = {
-          'type' => 'loopback_stopped',
-          'history.length' => @core.frame_history.length
+          'type' => 'loopback_paused',
+          'history.length'      => @core.frame_history.length,
+          'history.frame_index' => @core.frame_history.frame_index
         }
         
         @blender_link.send message
@@ -224,15 +257,6 @@ class BlenderSync
     
     
     case message['type']
-    when 'interrupt'
-      if message['value'] == 'RESET'
-        # # blender has reset, so reset all RubyOF data
-        # @depsgraph.clear
-        
-        @blender_link.reset
-        
-      end
-      
     when 'all_entity_names'
       # The viewport camera is an object in RubyOF, but not in Blender
       # Need to remove it from the entity list or the camera

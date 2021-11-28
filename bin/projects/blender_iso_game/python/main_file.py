@@ -1453,8 +1453,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         self.counter = 0
         
         data = {
-            'type':"interrupt",
-            'value': "RESET"
+            'type':"timeline_command",
+            'name': "reset"
         }
         to_ruby.write(json.dumps(data))
         
@@ -1622,13 +1622,15 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         if message is not None:
             # print("from ruby:", message, flush=True)
             
-            if message['type'] == 'loopback_stopped':
-                self.print("loopback - stopped")
+            if message['type'] == 'loopback_paused':
+                self.print("loopback - paused")
                 
                 self.print("history.length: ", message['history.length'])
                 
-                props.ruby_buffer_size = message['history.length']
+                props.ruby_buffer_size = message['history.length']-1
                 scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
             
             # if message['type'] == 'loopback_started':
                 # self.print("loopback - started generate new frames")
@@ -1636,6 +1638,22 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # props.ruby_buffer_size = 1000
                 # scene.frame_end = props.ruby_buffer_size
+            
+            if message['type'] == 'loopback_finished':
+                self.print("loopback - finished")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+            
+            if message['type'] == 'loopback_reset':
+                self.print("loopback - reset")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
             
             
             # if message['type'] == 'history.length':
