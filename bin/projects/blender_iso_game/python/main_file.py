@@ -118,25 +118,7 @@ def rubyof__on_redo(scene):
     tex_manager = anim_texture_manager_singleton(context)
     tex_manager.on_redo(scene)
 
-def rubyof__before_frame_change(scene):
-    # pass 
-    # print(args, flush=True)
-    props = scene.my_custom_props
-    
-    # props.ruby_buffer_size = 10
-    # print("buffer size:", props.ruby_buffer_size, flush=True)
-    # print("current frame:", scene.frame_current, flush=True)
-    
-    # scene.frame_end = props.ruby_buffer_size
-    
-    
-    if scene.frame_current == props.ruby_buffer_size:
-        # stop and the end - otherwise blender will loop by jumping back to frame=0, which is not currently supported by the RubyOF connection
-        bpy.ops.screen.animation_cancel(restore_frame=False)
-    elif scene.frame_current > props.ruby_buffer_size:
-        # prevent seeking past the end
-        scene.frame_current = props.ruby_buffer_size
-    
+
     
 
 def register_event_handlers():
@@ -1452,6 +1434,8 @@ class ModalLoop (bpy.types.Operator):
         pass
 
 
+
+
 class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
     """Use timer API and modal operator to generate periodic update tick"""
     bl_idname = "render.rubyof_modal_update"
@@ -1667,6 +1651,39 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
     
     def on_exit(self):
         from_ruby.close()
+
+def rubyof__before_frame_change(scene):
+    # pass 
+    # print(args, flush=True)
+    props = scene.my_custom_props
+    
+    # props.ruby_buffer_size = 10
+    # print("buffer size:", props.ruby_buffer_size, flush=True)
+    # print("current frame:", scene.frame_current, flush=True)
+    
+    # scene.frame_end = props.ruby_buffer_size
+    
+    
+    if scene.frame_current == props.ruby_buffer_size:
+        # stop and the end - otherwise blender will loop by jumping back to frame=0, which is not currently supported by the RubyOF connection
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+    elif scene.frame_current > props.ruby_buffer_size:
+        # prevent seeking past the end
+        scene.frame_current = props.ruby_buffer_size
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
