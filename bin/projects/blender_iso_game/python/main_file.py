@@ -1165,7 +1165,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         active_object = context.active_object
         
-        print(time.time())
+        # print(time.time())
         
         if self.first_time:
             # First time initialization
@@ -1226,12 +1226,12 @@ class RubyOF(bpy.types.RenderEngine):
             # Could be a mixture of objects and/or materials.
             # Only send the data that has changed.
             
-            print("there are", len(depsgraph.updates), "updates to process")
+            # print("there are", len(depsgraph.updates), "updates to process")
             
             # Loop over all object instances in the scene.
             for update in depsgraph.updates:
                 obj = update.id
-                print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
+                # print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
                 
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':
