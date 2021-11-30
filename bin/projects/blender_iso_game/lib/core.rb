@@ -146,6 +146,7 @@ class Space
   end
   
   # what type of tile is located at the point 'pt'?
+  # Returns a list of title types (mesh datablock names)
   def point_query(pt)
     puts puts "point query @ #{pt}"
     
@@ -156,15 +157,8 @@ class Space
     
     # @first ||= true
     
-    
-    name, pos = @entity_list.find{|name, pos| pos == pt }
-    puts "name: #{name}"
-    
-    return name
-    # @entity_list.each do |name, pos|
-    #   # puts "#{name}, #{pos}"
-    #   if 
-    # end
+    @entity_list.select{   |name, pos|   pos == pt  }
+                .collect{  |name, pos|   name  }
   end
 end
 
@@ -704,9 +698,9 @@ class Core
       # so want to load the transform data after that
       
       # all code inside snapshot blocks will be skipped on resume
-      # so in order to make sure this executes every time,
-      # need to put it outside of the snapshot
-      i = @entity_name_to_id['CharacterTest']
+      # so any code related to a branch condition
+      # needs to be outside of the snapshot blocks.
+      i = @entity_name_to_id['CharacterTest'] # object name
       mat = @environment.get_entity_transform(i)
       
       pos  = GLM::Vec3.new(0,0,0)
@@ -721,23 +715,9 @@ class Core
       
       puts "grid position: #{pos}"
       
-        # ^ pos will not update on resume, because all the snapshot
-        #   blocks are being skipped, which skips the transforms.
-      
-      
-      
-        # FIXME: on reload, pos == nil
-        # I expect that if I roll back, then hit play
-        # again, at some point in the past,
-        # then a new fiber should be created
-        # and all the steps up to the desired point
-        # should be played again.
-        # thus, all variables that need to be set
-        # should be set.
-        # but that doesn't seem to be the case here.
       
       # step up if there's an obstruction
-      if @space.point_query(pos + v) == 'Cube.002'
+      if @space.point_query(pos + v).include? 'Cube.002' # datablock name
         GLM::Vec3.new(0,0,1).tap do |v|
           #  1 - animate
           snapshot.frame do
@@ -818,22 +798,28 @@ class Core
             end
           end
           
+          
           #  0 - new root position
           snapshot.frame do
-            i = @entity_name_to_id['CharacterTest']
-            mat = @environment.get_entity_transform(i)
-            
-            pos  = GLM::Vec3.new(0,0,0)
-            rot  = GLM::Quat.new(1,0,0,0)
-            scale = GLM::Vec3.new(0,0,0)
-            RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-            # TODO: ^ this should be extracted from the transform matrix
-            # puts pos
-            
-            # TODO: implement vector addition
-              # (in glm, the operators like + are still implemented as infix)
             
           end
+          
+          # 
+          # update pos = new root position
+          # 
+          i = @entity_name_to_id['CharacterTest']
+          mat = @environment.get_entity_transform(i)
+          
+          pos  = GLM::Vec3.new(0,0,0)
+          rot  = GLM::Quat.new(1,0,0,0)
+          scale = GLM::Vec3.new(0,0,0)
+          RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+          # TODO: ^ this should be extracted from the transform matrix
+          # puts pos
+          
+          # TODO: implement vector addition
+            # (in glm, the operators like + are still implemented as infix)
+          
         end
         
       end
