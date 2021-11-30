@@ -78,7 +78,7 @@ class FrameHistory
             # but otherwise, this transition will be silent
             # (keeps logs clean unless you really need the info)
             # if @queued_state
-              puts "resuming"
+              puts "#{@executing_frame.to_s.rjust(4, '0')} resuming"
             # end
             
             # (skip this frame)
@@ -86,14 +86,18 @@ class FrameHistory
             # so instead update the transforms
             # based on the history buffer
             
+            @executing_frame += 1
+            
+            
             state = @history[@executing_frame]
             @context.load_state state
             
             
-            @executing_frame += 1
             
           else # [@history.length-1, inf]
             # actually generating new state
+            
+            puts "#{@executing_frame.to_s.rjust(4, '0')} new state"
             
             state = @context.snapshot_gamestate
             @history[@executing_frame] = state

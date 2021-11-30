@@ -147,7 +147,7 @@ class Space
   
   # what type of tile is located at the point 'pt'?
   def point_query(pt)
-    puts pt
+    puts puts "point query @ #{pt}"
     
     # unless @first
     #   require 'irb'
@@ -737,7 +737,7 @@ class Core
         # but that doesn't seem to be the case here.
       
       # step up if there's an obstruction
-      if @space.point_query(pos + v) != nil
+      if @space.point_query(pos + v) == 'Cube.002'
         GLM::Vec3.new(0,0,1).tap do |v|
           #  1 - animate
           snapshot.frame do
