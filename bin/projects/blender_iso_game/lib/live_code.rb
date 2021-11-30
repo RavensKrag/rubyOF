@@ -30,7 +30,7 @@ class LiveCode
       
       def method_missing(method, *args)
         begin
-          puts "livecode - delegate: #{method}"
+          # puts "livecode - delegate: #{method}"
           return args.empty? ? @inner.send(method) : @inner.send(method, *args)
         rescue StandardError => e
           # puts "method missing error handler in LiveCode"
@@ -94,11 +94,11 @@ class LiveCode
         ]
         
         if allowed_methods.include? method
-          puts "livecode - delegate: #{method}"
+          # puts "livecode - delegate: #{method}"
           return args.empty? ? @inner.send(method) : @inner.send(method, *args)
         else
           
-          puts "livecode - supressing: #{method}"
+          # puts "livecode - supressing: #{method}"
         end
         
         # begin
