@@ -148,7 +148,7 @@ class Space
   # what type of tile is located at the point 'pt'?
   # Returns a list of title types (mesh datablock names)
   def point_query(pt)
-    puts puts "point query @ #{pt}"
+    puts "point query @ #{pt}"
     
     # unless @first
     #   require 'irb'
@@ -157,8 +157,12 @@ class Space
     
     # @first ||= true
     
-    @entity_list.select{   |name, pos|   pos == pt  }
-                .collect{  |name, pos|   name  }
+    out = @entity_list.select{   |name, pos|   pos == pt  }
+                      .collect{  |name, pos|   name  }
+    
+    puts "=> #{out.inspect}"
+    
+    return out
   end
 end
 
@@ -667,9 +671,6 @@ class Core
     
     
     # TODO: wrap GLM::Vec3 multiply by a scalar
-    # TODO: how can I step this execution forward frame-by-frame using Blender's UI?
-    # TODO: how can I step execution back?
-    # TODO: how can I jump to an arbitrary point in execution?
     
     moves.each_with_index do |v, move_idx|
       # step in a direction, but subdivide into
