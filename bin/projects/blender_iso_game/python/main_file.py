@@ -1769,9 +1769,9 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         
         
         if props.b_modalUpdateActive:
-            label = "enabled" 
+            label = "update loop enabled" 
         else:
-            label = "disabled"
+            label = "update loop disabled"
         layout.prop(props, "b_modalUpdateActive", text=label, toggle=True)
 
 
