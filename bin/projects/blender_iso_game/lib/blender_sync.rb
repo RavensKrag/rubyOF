@@ -2,20 +2,31 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history, core)
+  def initialize(window, depsgraph, message_history, history, core)
     @window = window
     @depsgraph = depsgraph
-    @history = history
+    @message_history = message_history
+    @frame_history = history
     
     @core = core
     
     # two-way communication between RubyOF (ruby) and Blender (python)
     # implemented using two named pipes
     @blender_link = ActorChannel.new
-    
+    @finished = false
   end
   
   def stop
+    puts "stopping sync"
+    
+    
+    message = {
+      'type' => 'sync_status',
+      'value' => 'stopping',
+      'final_buffer_size' => @frame_history.length
+    }
+    @blender_link.send message
+    
     @blender_link.stop
   end
   
@@ -48,7 +59,7 @@ class BlenderSync
       
       
       # send all of this data to history
-      @history.write message
+      @message_history.write message
       
     end
     
@@ -60,7 +71,7 @@ class BlenderSync
     # TODO: why can't the viewport be made about 1/4 of my screen size? why does it have to be large to sync with the RubyOF window?
     
     
-    @history.read do |message|
+    @message_history.read do |message|
       parse_blender_data message
     end
     # ^ this method of merging history can't prevent spikes due to
@@ -77,17 +88,144 @@ class BlenderSync
     # 
     # send messages to Blender (python)
     # 
-    message = {
-      'type' => 'final_frame',
-      'value' => @core.frame_history.frame_index
-    }
     
-    @blender_link.send message
+    if @frame_history.state == :finished
+      # needs to be a separate if block,
+      # so outer else only triggers when we detect some other state
+      if !@finished
+        puts "finished --> (send message to blender)"
+        message = {
+          'type' => 'loopback_finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @blender_link.send message
+        
+        @finished = true
+      end
+    else
+      @finished = false
+      # message = {
+      #   'type' => 'history.length',
+      #   'value' => @frame_history.length
+      # }
+      
+      # @blender_link.send message
+      
+    end
     
     
   end
   
   private
+  
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      # @depsgraph.clear
+      
+      puts "== reset"
+      
+      @blender_link.reset
+      
+      if @frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        @frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        
+      end
+      
+      puts "====="
+      
+    when 'pause'
+      puts "== pause"
+      p @frame_history.state
+      
+      if @frame_history.state == :generating_new
+        @frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_paused',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        @frame_history.pause
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @frame_history.state
+      
+      if @frame_history.state != :generating_new
+        @frame_history.play
+        # ^ this will not immediately advance
+        #   to the new state. It's more like shifting
+        #   from Park to Drive.
+        #   Transition to next state will not happen until
+        #   FrameHistory#update -> State#update
+        # 
+        # note: even responding to pause
+        # takes at least 1 frame. need a better way
+        # of dealing with this.
+        # 
+        # For now, I will expand the play range when python
+        # detects playback has started, without waiting
+        # for a round-trip response from ruby.
+        # (using aribtrary large number, 1000 frames)
+        # 
+        # TODO: use the "preview range" feature to set
+        #       two time ranges for the timeline
+        #       1) the maximum number of frames that can 
+        #          be stored
+        #       2) the current number of frames in history
+        
+        if @frame_history.play == :generating_new
+          message = {
+            'type' => 'loopback_started',
+            'history.length' => @frame_history.length
+          }
+          
+          @blender_link.send message
+        end
+        
+        
+      else
+        @frame_history.play
+        
+      end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @frame_history.seek(message['time'])
+      
+    end
+  end
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
@@ -121,17 +259,11 @@ class BlenderSync
     
     # p @depsgraph.instance_variable_get("@mesh_objects")
     # p @new_datablocks
-    puts "--- #{message['type']} ---"
+    # puts "--- #{message['type']} ---"
     # puts message['type'] === 'bpy.types.Mesh'
     
     
     case message['type']
-    when 'interrupt'
-      if message['value'] == 'RESET'
-        # blender has reset, so reset all RubyOF data
-        @depsgraph.clear
-      end
-      
     when 'all_entity_names'
       # The viewport camera is an object in RubyOF, but not in Blender
       # Need to remove it from the entity list or the camera
@@ -228,7 +360,7 @@ class BlenderSync
         # load transform AND data for lights here as necessary
         # ('data' field has already been linked to necessary data)
         
-        puts "loading light: #{message['name']}"
+        # puts "loading light: #{message['name']}"
         
         light =
           @depsgraph.fetch_light(message['name']) do |name|
@@ -253,18 +385,7 @@ class BlenderSync
     
     when 'timeline_command'
       # p message
-      
-      case message['name']
-      when 'pause'
-        @core.frame_history.pause
-        
-      when 'play'
-        @core.frame_history.play
-      
-      when 'seek'
-        @core.frame_history.seek(message['time'])
-        
-      end
+      parse_timeline_commands(message)
     
     when 'object_to_id_map'
       @core.update_entity_mapping(message)
@@ -453,7 +574,7 @@ class BlenderSync
       
       
       
-      @outgoing_open = false
+      @outgoing_status = :idle
       
       @outgoing_port = Queue.new
       
@@ -464,26 +585,30 @@ class BlenderSync
         
         loop do
           begin
-            if @f_w.nil? || !@outgoing_open
+            if @f_w.nil? || @outgoing_status == :closed
               puts "#{self.class}: opening outgoing pipe"
               
               @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
-              @outgoing_open = true
-              
               puts "pipe opened"
+              
+              @outgoing_status = :open
+              
+              # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+              
             end
             
             message = @outgoing_port.pop # will block thread when Queue empty
             @f_w.puts message
             @f_w.flush
             
-            
-            sleep(0.1)
+            # puts "queue size: #{@outgoing_port.size}"
           rescue Errno::EPIPE => e
             puts "#{self.class}: outgoing pipe broken" 
-            @outgoing_open = false # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
             
             @outgoing_port.clear # clear all existing messages from the buffer
+            
+            
+            @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
             
             
             # p @f_w.closed?
@@ -495,9 +620,20 @@ class BlenderSync
         end
         
         # NOTE: can use unix `cat` to monitor the output of this named pipe
-          
+        
       end
     end
+    
+    
+    # blender has connected
+    # resume sending data via the output port
+    def reset
+      @outgoing_port.clear
+      @outgoing_status == :open
+      p "status: #{@outgoing_status}"
+    end
+    
+    
     
     
     # 
@@ -519,7 +655,7 @@ class BlenderSync
       
       
       
-      if @outgoing_open
+      if @outgoing_status == :open
         p @f_w
         p @outgoing_fifo_path
         
@@ -540,11 +676,20 @@ class BlenderSync
     # Send a message from ruby to python
     # (supress message if port is closed)
     def send(message)
-      if @outgoing_open
+      # if the port is open, queue the message (should go out soon)
+      # if the port is closed, supress the message (don't even queue it up)
+      
+      
+      case @outgoing_status
+      when :open
+        # p message
         @outgoing_port.push message.to_json
-      else
+      when :closed
+        # NO-OP
+      when :resetting
         # NO-OP
       end
+      
     end
     
     # Take the latest message from python to ruby out of the queue

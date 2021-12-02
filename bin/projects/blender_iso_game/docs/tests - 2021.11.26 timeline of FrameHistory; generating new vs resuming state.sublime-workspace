@@ -1,0 +1,2910 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"b_up",
+				"b_modalUpdateActive"
+			],
+			[
+				"my",
+				"my_custom_props"
+			],
+			[
+				"mess",
+				"message"
+			],
+			[
+				"fro",
+				"from_ruby"
+			],
+			[
+				"outg",
+				"outgoing_port"
+			],
+			[
+				"out",
+				"outgoing_open"
+			],
+			[
+				"fina",
+				"final_frame"
+			],
+			[
+				"fin",
+				"final_frame"
+			],
+			[
+				"attr",
+				"attr_accessor"
+			],
+			[
+				"attr_",
+				"attr_accessor"
+			],
+			[
+				"def",
+				"define_method"
+			],
+			[
+				"rep",
+				"replaying_old"
+			],
+			[
+				"fram",
+				"frame_number"
+			],
+			[
+				"el",
+				"elsif"
+			],
+			[
+				"trans",
+				"transform"
+			],
+			[
+				"bExtr",
+				"bExtractAlpha"
+			],
+			[
+				"que",
+				"query_ptr"
+			],
+			[
+				"mesh_id",
+				"mesh_id_to_name"
+			],
+			[
+				"ent",
+				"entity_list"
+			],
+			[
+				"my_",
+				"my_tool"
+			],
+			[
+				"load",
+				"load_handler"
+			],
+			[
+				"transform",
+				"transform_data"
+			],
+			[
+				"pre_",
+				"pre_mesh_object_deletion"
+			],
+			[
+				"cache",
+				"cache_vertex_data"
+			],
+			[
+				"tran",
+				"transform_data"
+			],
+			[
+				"datab",
+				"datablock"
+			],
+			[
+				"targ",
+				"target_obj_index"
+			],
+			[
+				"trnasdaa",
+				"transform_data_index"
+			],
+			[
+				"animt",
+				"anim_tex_manager"
+			],
+			[
+				"animma",
+				"anim_texture_manager_singleton"
+			],
+			[
+				"mesho",
+				"mesh_obj"
+			],
+			[
+				"isupdat",
+				"is_updated_geometry"
+			],
+			[
+				"transf",
+				"transform_data"
+			],
+			[
+				"tard",
+				"target_index"
+			],
+			[
+				"normtx",
+				"normal_tex"
+			],
+			[
+				"expor",
+				"export_all_textures"
+			],
+			[
+				"material",
+				"material_slots"
+			],
+			[
+				"mesh",
+				"mesh_datablock"
+			],
+			[
+				"meshda",
+				"mesh_datablock"
+			],
+			[
+				"uqe",
+				"unique_evaluated_meshes"
+			],
+			[
+				"tra",
+				"transform_tex_path"
+			],
+			[
+				"tr",
+				"transform_tex_path"
+			],
+			[
+				"att",
+				"attr_accessor"
+			],
+			[
+				"instance_variable",
+				"instance_variable_set"
+			],
+			[
+				"step_",
+				"step_forward"
+			],
+			[
+				"ste",
+				"step_back"
+			],
+			[
+				"hi",
+				"frame_history"
+			],
+			[
+				"state",
+				"state2"
+			],
+			[
+				"repla",
+				"Replaying_Old"
+			],
+			[
+				"all",
+				"all_states"
+			],
+			[
+				"stat",
+				"state_name"
+			],
+			[
+				"const",
+				"const_get"
+			],
+			[
+				"reve",
+				"reverse_each"
+			],
+			[
+				"fr",
+				"frame_history"
+			],
+			[
+				"upda",
+				"update_fiber"
+			],
+			[
+				"mcol",
+				"m_col3"
+			],
+			[
+				"V",
+				"Vec3"
+			],
+			[
+				"norm",
+				"normal"
+			],
+			[
+				"texc",
+				"texcoord"
+			],
+			[
+				"materia",
+				"material_mapping"
+			],
+			[
+				"mate",
+				"material_name"
+			],
+			[
+				"matr",
+				"material_name"
+			],
+			[
+				"isntan",
+				"instance_variables"
+			],
+			[
+				"whe",
+				"when"
+			],
+			[
+				"cas",
+				"case"
+			],
+			[
+				"pacme",
+				"pack_mesh_data"
+			],
+			[
+				"databl",
+				"datablock_export"
+			],
+			[
+				"__updat",
+				"__update_scene"
+			],
+			[
+				"mater",
+				"materials"
+			],
+			[
+				"exist",
+				"existing_data"
+			],
+			[
+				"exi",
+				"existing_data"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"men",
+				"mesh_entity"
+			],
+			[
+				"defm",
+				"default_material"
+			],
+			[
+				"active",
+				"active_object"
+			],
+			[
+				"pack",
+				"update_packed_entity_positions"
+			],
+			[
+				"sini",
+				"shininess"
+			],
+			[
+				"Blender",
+				"BlenderLight"
+			],
+			[
+				"batch",
+				"batch"
+			],
+			[
+				"meshob",
+				"mesh_objects"
+			],
+			[
+				"nodes",
+				"nodes"
+			],
+			[
+				"rot",
+				"rotate_vector"
+			],
+			[
+				"Blendhr",
+				"BlenderLight"
+			],
+			[
+				"deps",
+				"depsgraph"
+			],
+			[
+				"entit",
+				"entity_list"
+			],
+			[
+				"encode",
+				"encode_transform"
+			],
+			[
+				"generate",
+				"generate_mesh"
+			],
+			[
+				"enti",
+				"entity_list"
+			],
+			[
+				"Mesh",
+				"BlenderMesh"
+			],
+			[
+				"viewpo",
+				"viewport_camera"
+			],
+			[
+				"dep",
+				"depsgraph"
+			],
+			[
+				"relo",
+				"reload_instancing_shaders"
+			],
+			[
+				"FLAT",
+				"FLOAT_MAX"
+			],
+			[
+				"magni",
+				"magnitude"
+			],
+			[
+				"magnitude",
+				"magnitude_normalized"
+			],
+			[
+				"tras",
+				"transforms"
+			],
+			[
+				"fs",
+				"frag_shader_path"
+			],
+			[
+				"main",
+				"max_instances"
+			],
+			[
+				"view",
+				"viewport_camera"
+			],
+			[
+				"tims",
+				"timestamps"
+			],
+			[
+				"shm",
+				"shm_dir"
+			],
+			[
+				"fifo",
+				"fifo_path"
+			],
+			[
+				"queue",
+				"outbound_queue"
+			],
+			[
+				"index",
+				"index_buffer"
+			],
+			[
+				"specul",
+				"specular_color"
+			],
+			[
+				"setpo",
+				"set_point_light"
+			],
+			[
+				"or",
+				"orientation"
+			],
+			[
+				"diffuse",
+				"diffuse_color"
+			],
+			[
+				"point",
+				"pointLight"
+			],
+			[
+				"mat",
+				"material2"
+			],
+			[
+				"first",
+				"first_update"
+			],
+			[
+				"ofcam",
+				"of_cam"
+			],
+			[
+				"hit",
+				"hit_wm_id"
+			],
+			[
+				"parse",
+				"parse_blender_data"
+			],
+			[
+				"camera",
+				"camera_settings_file"
+			],
+			[
+				"jso",
+				"json_obj"
+			],
+			[
+				"Wait",
+				"WaitReadable"
+			],
+			[
+				"midi",
+				"midi_history"
+			],
+			[
+				"noteo",
+				"note_on"
+			],
+			[
+				"delat",
+				"deltatime"
+			],
+			[
+				"setColor",
+				"setColorPickerColor"
+			],
+			[
+				"mfrac",
+				"mFrameCounter_draw"
+			],
+			[
+				"mplott",
+				"mPloter_draw_time"
+			],
+			[
+				"widt",
+				"whole_iter_dt"
+			],
+			[
+				"charm",
+				"char_mapped_display"
+			],
+			[
+				"CP",
+				"CPP_Callbacks"
+			],
+			[
+				"grid",
+				"setGridCodepoint"
+			],
+			[
+				"_grid",
+				"_textGrid"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "[when generating new state]\n\n000        initialize (generate frame 000)\n000        puts frame => \"000\"\n\n000        save (save frame 000 -- initial state)\n000 -> 001 increment\n001        puts frame => \"001\"\n001        update (generate frame 001 - using first snapshot block)\n001        draw\n\n001        save\n001 -> 002 increment\n002        puts frame => \"002\"\n002        update\n002        draw\n\n\n\n[when resuming state]\n\n\n\n000        initialize (generate frame 000)\n\n000        seek t = 116 (load frame 116) -- state == :replaying_old\n116        update                        -- state == :replaying_old\n116        draw                          -- state == :replaying_old\n\n--- play\n\n116        update: state transition      -- state == :replaying_old\n116        update: new state             -- state == :generating_new\n116 -> 117 increment                     -- state == :generating_new\n117        puts frame => \"117\"\n117        load (load frame 117)         -- state == :generating_new\n117        draw\n\n117 -> 118 increment                     -- state == :generating_new\n118        puts frame => \"118\"\n118        load (load frame 118)         -- state == :generating_new\n118        draw\n",
+			"settings":
+			{
+				"buffer_size": 1188,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAApAQAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"insert",
+					{
+						"characters": "--"
+					},
+					"AgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					2,
+					1,
+					"insert",
+					{
+						"characters": "-"
+					},
+					"AQAAAAIAAAAAAAAAAwAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "r core...\nc++: set up module: GLM\nc++: set up module: RubyOF\nLoading c-extension for project...\nloading Ruby dependencies using Bundler...\n---- inside gemfile\nGEM_ROOT = /home/ravenskrag/Desktop/gem_structure\n--- gems for RubyOF core BEGIN\n--- gems for RubyOF core END\n--------------------\nLoad Ruby code that defines RubyOF...\nRubyOF: loading ruby code\nLoad up the project-specific Ruby code for the window...\nc++: constructor - launcher\n-- creating GLFW window\n-- configuring GLFW window\n-- creating openFrameworks app...\nc++: rbApp constructor\n-- app created!\nruby: Window#initialize\nc++: Launcher::show()\nc++: rbApp::setup\n[notice ] ofxMidiIn: 2 ports available\n[notice ] ofxMidiIn: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiIn: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiIn: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\n[notice ] ofxMidiOut: 2 ports available\n[notice ] ofxMidiOut: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiOut: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiOut: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\nruby: Window#setup (RubyOF default)\nruby: Window#setup (project)\ncore: setup\nloading font\nloading font\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n[:Replaying_Old, :Initial, :Finished, :Generating_New]\nstate = initial\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\nfirst update\n[\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.vert\", \"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.frag\"]\nalpha compositing shaders reloaded\nBlenderSync::ActorChannel: outgoing thread start\nBlenderSync::ActorChannel: incoming thread start\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse\nBlenderSync::ActorChannel: opening outgoing pipe\n\n\n-------------\nreloading vertex and frag shaders for OpenEXR vertex animation mat\n[:mouse_in, 0, 0]\n[notice ] 16\n[notice ] 3686\n[:mouse_out, 1252, 264]\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n== reset\n\"status: idle\"\n=====\npipe opened\n== play\n:initial\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0000 new state\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0001 new state\n#<GLM::Vec3:0x000055f087c5cf88>\n0002 new state\n0003 new state\n0004 new state\n0005 new state\n0006 new state\n0007 new state\n0008 new state\n0009 new state\n0010 new state\n0011 new state\n0012 new state\n0013 new state\n0014 new state\n0015 new state\n0016 new state\n0017 new state\nmove idx: 1 of 12\n0018 new state\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0019 new state\n#<GLM::Vec3:0x000055f089a593b0>\n0020 new state\n0021 new state\n0022 new state\n0023 new state\n0024 new state\n0025 new state\n0026 new state\n0027 new state\n0028 new state\n0029 new state\n0030 new state\n0031 new state\n0032 new state\n0033 new state\n0034 new state\n0035 new state\nmove idx: 2 of 12\n0036 new state\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0037 new state\n#<GLM::Vec3:0x000055f0889ef0b0>\n0038 new state\n0039 new state\n0040 new state\n0041 new state\n0042 new state\n0043 new state\n0044 new state\n0045 new state\n0046 new state\n0047 new state\n0048 new state\n0049 new state\n0050 new state\n0051 new state\n0052 new state\n0053 new state\nmove idx: 3 of 12\n0054 new state\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0055 new state\n#<GLM::Vec3:0x000055f0887af278>\n0056 new state\n0057 new state\n0058 new state\n0059 new state\n0060 new state\n0061 new state\n0062 new state\n0063 new state\n0064 new state\n0065 new state\n0066 new state\n0067 new state\n0068 new state\n0069 new state\n0070 new state\n0071 new state\nmove idx: 4 of 12\n0072 new state\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0073 new state\n#<GLM::Vec3:0x000055f089abd298>\n0074 new state\n0075 new state\n0076 new state\n0077 new state\n0078 new state\n0079 new state\n0080 new state\n0081 new state\n0082 new state\n0083 new state\n0084 new state\n0085 new state\n0086 new state\n0087 new state\n0088 new state\n0089 new state\nmove idx: 5 of 12\n0090 new state\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> []\n0091 new state\n#<GLM::Vec3:0x000055f089a1d478>\n0092 new state\n0093 new state\n0094 new state\n0095 new state\n0096 new state\n0097 new state\n0098 new state\n0099 new state\n0100 new state\n0101 new state\n0102 new state\n0103 new state\n0104 new state\n0105 new state\n0106 new state\n0107 new state\nmove idx: 6 of 12\n0108 new state\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0109 new state\n#<GLM::Vec3:0x000055f0888e26b8>\n0110 new state\n0111 new state\n0112 new state\n0113 new state\n0114 new state\n0115 new state\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x000055f087ee8bf8>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x000055f0898a4b28>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x000055f08885b8c0>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x000055f087cae810>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x000055f089a50210>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x000055f0889c75b0>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nFinished seek\nframe_number 249\n@final_frame 251\n>> edge callback: ANY -> replaying_old\nstate = replaying_old\n== pause\n:replaying_old\n=====\n== reset\n\"status: open\"\n=====\nBlenderSync::ActorChannel: outgoing pipe broken\nBlenderSync::ActorChannel: opening outgoing pipe\npipe opened\n== play\n:replaying_old\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0000 resuming\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0001 resuming\n0002 resuming\n0003 resuming\n0004 resuming\n0005 resuming\n0006 resuming\n0007 resuming\n0008 resuming\n0009 resuming\n0010 resuming\n0011 resuming\n0012 resuming\n0013 resuming\n0014 resuming\n0015 resuming\n0016 resuming\n0017 resuming\nmove idx: 1 of 12\n0018 resuming\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0019 resuming\n0020 resuming\n0021 resuming\n0022 resuming\n0023 resuming\n0024 resuming\n0025 resuming\n0026 resuming\n0027 resuming\n0028 resuming\n0029 resuming\n0030 resuming\n0031 resuming\n0032 resuming\n0033 resuming\n0034 resuming\n0035 resuming\nmove idx: 2 of 12\n0036 resuming\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0037 resuming\n0038 resuming\n0039 resuming\n0040 resuming\n0041 resuming\n0042 resuming\n0043 resuming\n0044 resuming\n0045 resuming\n0046 resuming\n0047 resuming\n0048 resuming\n0049 resuming\n0050 resuming\n0051 resuming\n0052 resuming\n0053 resuming\nmove idx: 3 of 12\n0054 resuming\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0055 resuming\n0056 resuming\n0057 resuming\n0058 resuming\n0059 resuming\n0060 resuming\n0061 resuming\n0062 resuming\n0063 resuming\n0064 resuming\n0065 resuming\n0066 resuming\n0067 resuming\n0068 resuming\n0069 resuming\n0070 resuming\n0071 resuming\nmove idx: 4 of 12\n0072 resuming\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0073 resuming\n0074 resuming\n0075 resuming\n0076 resuming\n0077 resuming\n0078 resuming\n0079 resuming\n0080 resuming\n0081 resuming\n0082 resuming\n0083 resuming\n0084 resuming\n0085 resuming\n0086 resuming\n0087 resuming\n0088 resuming\n0089 resuming\nmove idx: 5 of 12\n0090 resuming\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> [\"Cube.001\"]\n0091 resuming\n0092 resuming\n0093 resuming\n0094 resuming\n0095 resuming\n0096 resuming\n0097 resuming\n0098 resuming\n0099 resuming\n0100 resuming\n0101 resuming\n0102 resuming\n0103 resuming\n0104 resuming\n0105 resuming\n0106 resuming\n0107 resuming\nmove idx: 6 of 12\n0108 resuming\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0109 resuming\n0110 resuming\n0111 resuming\n0112 resuming\n0113 resuming\n0114 resuming\n0115 resuming\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x000055f089a7e958>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x000055f08882d268>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x000055f089ac7518>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x000055f089a26a28>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x000055f0888f4ae8>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x000055f087f1a888>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_in, 1252, 264]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_out, 812, 1080]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[notice ] 27\nc++: exit\nruby: exiting application... (RubyOF default)\nproject window: on_exit\ncore: on exit\ncore: ensure\nstopping sync\nBlenderSync::ActorChannel: incoming thread stopped\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm>\n\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\"\nincoming fifo closed\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\n#<Pathname:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\noutgoing fifo closed\nFINISHED!\nravenskrag@ravensnest:~/Desktop/gem_structure/bin/projects/blender_iso_game(limit-timeline)$ rake run\n(in /home/ravenskrag/Desktop/gem_structure)\ncurrent: /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game\nruby level execution\nproject_root = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game\nGEM_ROOT = /home/ravenskrag/Desktop/gem_structure\nLoading c-extension for core...\nc++: set up module: GLM\nc++: set up module: RubyOF\nLoading c-extension for project...\nloading Ruby dependencies using Bundler...\n---- inside gemfile\nGEM_ROOT = /home/ravenskrag/Desktop/gem_structure\n--- gems for RubyOF core BEGIN\n--- gems for RubyOF core END\n--------------------\nLoad Ruby code that defines RubyOF...\nRubyOF: loading ruby code\nLoad up the project-specific Ruby code for the window...\nc++: constructor - launcher\n-- creating GLFW window\n-- configuring GLFW window\n-- creating openFrameworks app...\nc++: rbApp constructor\n-- app created!\nruby: Window#initialize\nc++: Launcher::show()\nc++: rbApp::setup\n[notice ] ofxMidiIn: 2 ports available\n[notice ] ofxMidiIn: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiIn: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiIn: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\n[notice ] ofxMidiOut: 2 ports available\n[notice ] ofxMidiOut: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiOut: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiOut: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\nruby: Window#setup (RubyOF default)\nruby: Window#setup (project)\ncore: setup\nloading font\nloading font\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n[:Replaying_Old, :Initial, :Finished, :Generating_New]\nstate = initial\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\nfirst update\n[\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.vert\", \"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.frag\"]\nBlenderSync::ActorChannel: incoming thread start\nalpha compositing shaders reloaded\nBlenderSync::ActorChannel: outgoing thread start\n\n\n-------------\nreloading vertex and frag shaders for OpenEXR vertex animation mat\n[:mouse_in, 0, 0]\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse\nBlenderSync::ActorChannel: opening outgoing pipe\n[notice ] 16\n[notice ] 3686\n[:mouse_out, 1082, 20]\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n== pause\n:initial\n=====\n== reset\n\"status: idle\"\n=====\npipe opened\n== play\n:initial\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0000 new state\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0001 new state\n#<GLM::Vec3:0x00005594817c8d08>\n0002 new state\n0003 new state\n0004 new state\n0005 new state\n0006 new state\n0007 new state\n0008 new state\n0009 new state\n0010 new state\n0011 new state\n0012 new state\n0013 new state\n0014 new state\n0015 new state\n0016 new state\n0017 new state\nmove idx: 1 of 12\n0018 new state\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0019 new state\n#<GLM::Vec3:0x0000559483c47080>\n0020 new state\n0021 new state\n0022 new state\n0023 new state\n0024 new state\n0025 new state\n0026 new state\n0027 new state\n0028 new state\n0029 new state\n0030 new state\n0031 new state\n0032 new state\n0033 new state\n0034 new state\n0035 new state\nmove idx: 2 of 12\n0036 new state\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0037 new state\n#<GLM::Vec3:0x0000559482b94ff8>\n0038 new state\n0039 new state\n0040 new state\n0041 new state\n0042 new state\n0043 new state\n0044 new state\n0045 new state\n0046 new state\n0047 new state\n0048 new state\n0049 new state\n0050 new state\n0051 new state\n0052 new state\n0053 new state\nmove idx: 3 of 12\n0054 new state\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0055 new state\n#<GLM::Vec3:0x00005594822691e0>\n0056 new state\n0057 new state\n0058 new state\n0059 new state\n0060 new state\n0061 new state\n0062 new state\n0063 new state\n0064 new state\n0065 new state\n0066 new state\n0067 new state\n0068 new state\n0069 new state\n0070 new state\n0071 new state\nmove idx: 4 of 12\n0072 new state\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0073 new state\n#<GLM::Vec3:0x0000559483caaf68>\n0074 new state\n0075 new state\n0076 new state\n0077 new state\n0078 new state\n0079 new state\n0080 new state\n0081 new state\n0082 new state\n0083 new state\n0084 new state\n0085 new state\n0086 new state\n0087 new state\n0088 new state\n0089 new state\nmove idx: 5 of 12\n0090 new state\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> []\n0091 new state\n#<GLM::Vec3:0x0000559483c103a0>\n0092 new state\n0093 new state\n0094 new state\n0095 new state\n0096 new state\n0097 new state\n0098 new state\n0099 new state\n0100 new state\n0101 new state\n0102 new state\n0103 new state\n0104 new state\n0105 new state\n0106 new state\n0107 new state\nmove idx: 6 of 12\n0108 new state\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0109 new state\n#<GLM::Vec3:0x0000559482acfbb8>\n0110 new state\n0111 new state\n0112 new state\n0113 new state\n0114 new state\n0115 new state\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x0000559481fdd5c0>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x0000559482c59a38>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x0000559482a0be48>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x00005594818a7850>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x0000559483c434a8>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x0000559482b79ff0>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nFinished seek\nframe_number 250\n@final_frame 251\n>> edge callback: ANY -> replaying_old\nstate = replaying_old\n== pause\n:replaying_old\n=====\n== reset\n\"status: open\"\n=====\nBlenderSync::ActorChannel: outgoing pipe broken\nBlenderSync::ActorChannel: opening outgoing pipe\npipe opened\n== play\n:replaying_old\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 resuming\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 resuming\n0003 resuming\n0004 resuming\n0005 resuming\n0006 resuming\n0007 resuming\n0008 resuming\n0009 resuming\n0010 resuming\n0011 resuming\n0012 resuming\n0013 resuming\n0014 resuming\n0015 resuming\n0016 resuming\n0017 resuming\n0018 resuming\nmove idx: 1 of 12\n0019 resuming\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 resuming\n0021 resuming\n0022 resuming\n0023 resuming\n0024 resuming\n0025 resuming\n0026 resuming\n0027 resuming\n0028 resuming\n0029 resuming\n0030 resuming\n0031 resuming\n0032 resuming\n0033 resuming\n0034 resuming\n0035 resuming\n0036 resuming\nmove idx: 2 of 12\n0037 resuming\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 resuming\n0039 resuming\n0040 resuming\n0041 resuming\n0042 resuming\n0043 resuming\n0044 resuming\n0045 resuming\n0046 resuming\n0047 resuming\n0048 resuming\n0049 resuming\n0050 resuming\n0051 resuming\n0052 resuming\n0053 resuming\n0054 resuming\nmove idx: 3 of 12\n0055 resuming\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 resuming\n0057 resuming\n0058 resuming\n0059 resuming\n0060 resuming\n0061 resuming\n0062 resuming\n0063 resuming\n0064 resuming\n0065 resuming\n0066 resuming\n0067 resuming\n0068 resuming\n0069 resuming\n0070 resuming\n0071 resuming\n0072 resuming\nmove idx: 4 of 12\n0073 resuming\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 resuming\n0075 resuming\n0076 resuming\n0077 resuming\n0078 resuming\n0079 resuming\n0080 resuming\n0081 resuming\n0082 resuming\n0083 resuming\n0084 resuming\n0085 resuming\n0086 resuming\n0087 resuming\n0088 resuming\n0089 resuming\n0090 resuming\nmove idx: 5 of 12\n0091 resuming\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> [\"Cube.001\"]\n0092 resuming\n0093 resuming\n0094 resuming\n0095 resuming\n0096 resuming\n0097 resuming\n0098 resuming\n0099 resuming\n0100 resuming\n0101 resuming\n0102 resuming\n0103 resuming\n0104 resuming\n0105 resuming\n0106 resuming\n0107 resuming\n0108 resuming\nmove idx: 6 of 12\n0109 resuming\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 resuming\n0111 resuming\n0112 resuming\n0113 resuming\n0114 resuming\n0115 resuming\n0116 resuming\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x0000559482be66c8>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x0000559483cb62a0>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x0000559483bff758>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x0000559482aa38b0>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x0000559481f06b88>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x0000559483c5a310>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_in, 1082, 20]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_out, 815, 1081]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[notice ] 27\nc++: exit\nruby: exiting application... (RubyOF default)\nproject window: on_exit\ncore: on exit\ncore: ensure\nstopping sync\nBlenderSync::ActorChannel: incoming thread stopped\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm>\n\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\"\nincoming fifo closed\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\n#<Pathname:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\noutgoing fifo closed\n",
+			"settings":
+			{
+				"buffer_size": 39810,
+				"line_ending": "Unix",
+				"name": "r core..."
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAgpsAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": ">> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0000 new state\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0001 new state\n#<GLM::Vec3:0x00005594817c8d08>\n0002 new state\n0003 new state\n0004 new state\n0005 new state\n0006 new state\n0007 new state\n0008 new state\n0009 new state\n0010 new state\n0011 new state\n0012 new state\n0013 new state\n0014 new state\n0015 new state\n0016 new state\n0017 new state\nmove idx: 1 of 12\n0018 new state\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0019 new state\n#<GLM::Vec3:0x0000559483c47080>\n0020 new state\n0021 new state\n0022 new state\n0023 new state\n0024 new state\n0025 new state\n0026 new state\n0027 new state\n0028 new state\n0029 new state\n0030 new state\n0031 new state\n0032 new state\n0033 new state\n0034 new state\n0035 new state\nmove idx: 2 of 12\n0036 new state\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0037 new state\n#<GLM::Vec3:0x0000559482b94ff8>\n0038 new state\n0039 new state\n0040 new state\n0041 new state\n0042 new state\n0043 new state\n0044 new state\n0045 new state\n0046 new state\n0047 new state\n0048 new state\n0049 new state\n0050 new state\n0051 new state\n0052 new state\n0053 new state\nmove idx: 3 of 12\n0054 new state\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0055 new state\n#<GLM::Vec3:0x00005594822691e0>\n0056 new state\n0057 new state\n0058 new state\n0059 new state\n0060 new state\n0061 new state\n0062 new state\n0063 new state\n0064 new state\n0065 new state\n0066 new state\n0067 new state\n0068 new state\n0069 new state\n0070 new state\n0071 new state\nmove idx: 4 of 12\n0072 new state\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0073 new state\n#<GLM::Vec3:0x0000559483caaf68>\n0074 new state\n0075 new state\n0076 new state\n0077 new state\n0078 new state\n0079 new state\n0080 new state\n0081 new state\n0082 new state\n0083 new state\n0084 new state\n0085 new state\n0086 new state\n0087 new state\n0088 new state\n0089 new state\nmove idx: 5 of 12\n0090 new state\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> []\n0091 new state\n#<GLM::Vec3:0x0000559483c103a0>\n0092 new state\n0093 new state\n0094 new state\n0095 new state\n0096 new state\n0097 new state\n0098 new state\n0099 new state\n0100 new state\n0101 new state\n0102 new state\n0103 new state\n0104 new state\n0105 new state\n0106 new state\n0107 new state\nmove idx: 6 of 12\n0108 new state\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0109 new state\n#<GLM::Vec3:0x0000559482acfbb8>\n0110 new state\n0111 new state\n0112 new state\n0113 new state\n0114 new state\n0115 new state\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x0000559481fdd5c0>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x0000559482c59a38>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x0000559482a0be48>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x00005594818a7850>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x0000559483c434a8>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x0000559482b79ff0>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished",
+			"settings":
+			{
+				"buffer_size": 5874,
+				"line_ending": "Unix",
+				"name": ">> edge callback: ANY -> generating_new"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAVRsAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					12,
+					2,
+					"right_delete",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAAJBAAAamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi5wb3NpdGlvbi5leHIiLCAibm9ybWFsX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLm5vcm1hbC5leHIiLCAidHJhbnNmb3JtX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLnRyYW5zZm9ybS5leHIifQo8RmxvYXRDb2xvciAocmdiYSk6IC0xLjAsIC0xLjAsIDAuMCwgMS4wPgo8RmxvYXRDb2xvciAocmdiYSk6IDAuMCwgMC4wLCAxLjAsIDEuMD4KPEZsb2F0Q29sb3IgKHJnYmEpOiAyLjAsIDIuMCwgMi4wLCAxLjA+CnsidHlwZSI9PiJtYXRlcmlhbF91cGRhdGUiLCAicG9zaXRpb25fdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24ucG9zaXRpb24uZXhyIiwgIm5vcm1hbF90ZXhfcGF0aCI9PiIvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi5ub3JtYWwuZXhyIiwgInRyYW5zZm9ybV90ZXhfcGF0aCI9PiIvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi50cmFuc2Zvcm0uZXhyIn0KPEZsb2F0Q29sb3IgKHJnYmEpOiAtMS4wLCAtMS4wLCAwLjAsIDEuMD4KPEZsb2F0Q29sb3IgKHJnYmEpOiAwLjAsIDAuMCwgMS4wLCAxLjA+CjxGbG9hdENvbG9yIChyZ2JhKTogMi4wLCAyLjAsIDIuMCwgMS4wPgAAAAAAAAAAAAAAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAJBAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					21,
+					2,
+					"right_delete",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAABYAAAAPT0gcGF1c2UKOmluaXRpYWwKPT09PT0KPT0gcmVzZXQKInN0YXR1czogaWRsZSIKPT09PT0KcGlwZSBvcGVuZWQKPT0gcGxheQo6aW5pdGlhbAo9PT09PQAAAAAAAAAAAAAAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABYAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": ">> edge callback: ANY -> replaying_old\nstate = replaying_old\n== pause\n:replaying_old\n=====\n== reset\n\"status: open\"\n=====\nBlenderSync::ActorChannel: outgoing pipe broken\nBlenderSync::ActorChannel: opening outgoing pipe\npipe opened\n== play\n:replaying_old\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 resuming\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 resuming\n0003 resuming\n0004 resuming\n0005 resuming\n0006 resuming\n0007 resuming\n0008 resuming\n0009 resuming\n0010 resuming\n0011 resuming\n0012 resuming\n0013 resuming\n0014 resuming\n0015 resuming\n0016 resuming\n0017 resuming\n0018 resuming\nmove idx: 1 of 12\n0019 resuming\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 resuming\n0021 resuming\n0022 resuming\n0023 resuming\n0024 resuming\n0025 resuming\n0026 resuming\n0027 resuming\n0028 resuming\n0029 resuming\n0030 resuming\n0031 resuming\n0032 resuming\n0033 resuming\n0034 resuming\n0035 resuming\n0036 resuming\nmove idx: 2 of 12\n0037 resuming\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 resuming\n0039 resuming\n0040 resuming\n0041 resuming\n0042 resuming\n0043 resuming\n0044 resuming\n0045 resuming\n0046 resuming\n0047 resuming\n0048 resuming\n0049 resuming\n0050 resuming\n0051 resuming\n0052 resuming\n0053 resuming\n0054 resuming\nmove idx: 3 of 12\n0055 resuming\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 resuming\n0057 resuming\n0058 resuming\n0059 resuming\n0060 resuming\n0061 resuming\n0062 resuming\n0063 resuming\n0064 resuming\n0065 resuming\n0066 resuming\n0067 resuming\n0068 resuming\n0069 resuming\n0070 resuming\n0071 resuming\n0072 resuming\nmove idx: 4 of 12\n0073 resuming\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 resuming\n0075 resuming\n0076 resuming\n0077 resuming\n0078 resuming\n0079 resuming\n0080 resuming\n0081 resuming\n0082 resuming\n0083 resuming\n0084 resuming\n0085 resuming\n0086 resuming\n0087 resuming\n0088 resuming\n0089 resuming\n0090 resuming\nmove idx: 5 of 12\n0091 resuming\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> [\"Cube.001\"]\n0092 resuming\n0093 resuming\n0094 resuming\n0095 resuming\n0096 resuming\n0097 resuming\n0098 resuming\n0099 resuming\n0100 resuming\n0101 resuming\n0102 resuming\n0103 resuming\n0104 resuming\n0105 resuming\n0106 resuming\n0107 resuming\n0108 resuming\nmove idx: 6 of 12\n0109 resuming\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 resuming\n0111 resuming\n0112 resuming\n0113 resuming\n0114 resuming\n0115 resuming\n0116 resuming\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\nmove idx: 7 of 12\n0126 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0127 new state\n#<GLM::Vec3:0x0000559482be66c8>\n0128 new state\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\nmove idx: 8 of 12\n0144 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0145 new state\n(21.000, 6.000, 0.000)\n0146 new state\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n#<GLM::Vec3:0x0000559483cb62a0>\n0164 new state\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\nmove idx: 9 of 12\n0180 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0181 new state\n#<GLM::Vec3:0x0000559483bff758>\n0182 new state\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\nmove idx: 10 of 12\n0198 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0199 new state\n#<GLM::Vec3:0x0000559482aa38b0>\n0200 new state\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\nmove idx: 11 of 12\n0216 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0217 new state\n#<GLM::Vec3:0x0000559481f06b88>\n0218 new state\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\nmove idx: 12 of 12\n0234 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0235 new state\n#<GLM::Vec3:0x0000559483c5a310>\n0236 new state\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_in, 1082, 20]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[:mouse_out, 815, 1081]\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n[notice ] 27\nc++: exit\nruby: exiting application... (RubyOF default)\nproject window: on_exit\ncore: on exit\ncore: ensure\nstopping sync\nBlenderSync::ActorChannel: incoming thread stopped\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm>\n\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\"\nincoming fifo closed\n#<File:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\n#<Pathname:/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse>\noutgoing fifo closed\n",
+			"settings":
+			{
+				"buffer_size": 8330,
+				"line_ending": "Unix",
+				"name": ">> edge callback: ANY -> replaying_old"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAySIAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					15,
+					2,
+					"right_delete",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAA+AgAACjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpGaW5pc2hlZCBzZWVrCmZyYW1lX251bWJlciAyNTAKQGZpbmFsX2ZyYW1lIDI1MQAAAAAAAAAAAAAAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAA+AgAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "---",
+			"settings":
+			{
+				"buffer_size": 3,
+				"line_ending": "Unix",
+				"name": "---"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"insert",
+					{
+						"characters": "---"
+					},
+					"AwAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "-- app created!\nruby: Window#initialize\nc++: Launcher::show()\nc++: rbApp::setup\n[notice ] ofxMidiIn: 2 ports available\n[notice ] ofxMidiIn: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiIn: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiIn: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\n[notice ] ofxMidiOut: 2 ports available\n[notice ] ofxMidiOut: 0: Midi Through:Midi Through Port-0 14:0\n[notice ] ofxMidiOut: 1: Scarlett 2i4 USB:Scarlett 2i4 USB MIDI 1 20:0\n[ error ] ofxMidiOut: port \"Adafruit Trellis M4:Adafruit Trellis M4 MIDI 1 32:0\" is not available\nruby: Window#setup (RubyOF default)\nruby: Window#setup (project)\ncore: setup\nloading font\nloading font\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n[:Replaying_Old, :Initial, :Finished, :Generating_New]\nstate = initial\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm\nfirst update\n[\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.vert\", \"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.frag\"]\nalpha compositing shaders reloaded\nBlenderSync::ActorChannel: outgoing thread start\nBlenderSync::ActorChannel: incoming thread start\nfifo created @ /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse\nBlenderSync::ActorChannel: opening outgoing pipe\n\n\n-------------\nreloading vertex and frag shaders for OpenEXR vertex animation mat\n[:mouse_in, 0, 0]\n[notice ] 16\n[notice ] 3686\n[:mouse_out, 819, 443]\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n{\"type\"=>\"material_update\", \"position_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.position.exr\", \"normal_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.normal.exr\", \"transform_tex_path\"=>\"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/geom_textures/animation.transform.exr\"}\n<FloatColor (rgba): -1.0, -1.0, 0.0, 1.0>\n<FloatColor (rgba): 0.0, 0.0, 1.0, 1.0>\n<FloatColor (rgba): 2.0, 2.0, 2.0, 1.0>\n== pause\n:initial\n=====\n== reset\n\"status: idle\"\n=====\npipe opened\n== play\n:initial\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 new state\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 new state\n#<GLM::Vec3:0x0000562247fd3698>\n0003 new state\n0004 new state\n0005 new state\n0006 new state\n0007 new state\n0008 new state\n0009 new state\n0010 new state\n0011 new state\n0012 new state\n0013 new state\n0014 new state\n0015 new state\n0016 new state\n0017 new state\n0018 new state\nmove idx: 1 of 12\n0019 new state\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 new state\n#<GLM::Vec3:0x000056224997c068>\n0021 new state\n0022 new state\n0023 new state\n0024 new state\n0025 new state\n0026 new state\n0027 new state\n0028 new state\n0029 new state\n0030 new state\n0031 new state\n0032 new state\n0033 new state\n0034 new state\n0035 new state\n0036 new state\nmove idx: 2 of 12\n0037 new state\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 new state\n#<GLM::Vec3:0x00005622498cc028>\n0039 new state\n0040 new state\n0041 new state\n0042 new state\n0043 new state\n0044 new state\n0045 new state\n0046 new state\n0047 new state\n0048 new state\n0049 new state\n0050 new state\n0051 new state\n0052 new state\n0053 new state\n0054 new state\nmove idx: 3 of 12\n0055 new state\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 new state\n#<GLM::Vec3:0x00005622487b3d18>\n0057 new state\n0058 new state\n0059 new state\n0060 new state\n0061 new state\n0062 new state\n0063 new state\n0064 new state\n0065 new state\n0066 new state\n0067 new state\n0068 new state\n0069 new state\n0070 new state\n0071 new state\n0072 new state\nmove idx: 4 of 12\n0073 new state\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 new state\n#<GLM::Vec3:0x0000562247d1ad70>\n0075 new state\n0076 new state\n0077 new state\n0078 new state\n0079 new state\n0080 new state\n0081 new state\n0082 new state\n0083 new state\n0084 new state\n0085 new state\n0086 new state\n0087 new state\n0088 new state\n0089 new state\n0090 new state\nmove idx: 5 of 12\n0091 new state\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> []\n0092 new state\n#<GLM::Vec3:0x000056224992d828>\n0093 new state\n0094 new state\n0095 new state\n0096 new state\n0097 new state\n0098 new state\n0099 new state\n0100 new state\n0101 new state\n0102 new state\n0103 new state\n0104 new state\n0105 new state\n0106 new state\n0107 new state\n0108 new state\nmove idx: 6 of 12\n0109 new state\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 new state\n#<GLM::Vec3:0x00005622497398f0>\n0111 new state\n0112 new state\n0113 new state\n0114 new state\n0115 new state\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\n0126 new state\nmove idx: 7 of 12\n0127 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0128 new state\n#<GLM::Vec3:0x00005622486efcb0>\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\n0144 new state\nmove idx: 8 of 12\n0145 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0146 new state\n(21.000, 6.000, 0.000)\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n0164 new state\n#<GLM::Vec3:0x00005622498f8948>\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\n0180 new state\nmove idx: 9 of 12\n0181 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0182 new state\n#<GLM::Vec3:0x0000562248874b58>\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\n0198 new state\nmove idx: 10 of 12\n0199 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0200 new state\n#<GLM::Vec3:0x0000562247fb69a8>\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\n0216 new state\nmove idx: 11 of 12\n0217 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0218 new state\n#<GLM::Vec3:0x0000562249971dc0>\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\n0234 new state\nmove idx: 12 of 12\n0235 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0236 new state\n#<GLM::Vec3:0x00005622498c19e8>\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\n0252 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nFinished seek\nframe_number 250\n@final_frame 251\n>> edge callback: ANY -> replaying_old\nstate = replaying_old\n== pause\n:replaying_old\n=====\n== reset\n\"status: open\"\n=====\n== play\n:replaying_old\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 resuming\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 resuming\n0003 resuming\n0004 resuming\n0005 resuming\n0006 resuming\n0007 resuming\n0008 resuming\n0009 resuming\n0010 resuming\n0011 resuming\n0012 resuming\n0013 resuming\n0014 resuming\n0015 resuming\n0016 resuming\n0017 resuming\n0018 resuming\nmove idx: 1 of 12\n0019 resuming\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 resuming\n0021 resuming\n0022 resuming\n0023 resuming\n0024 resuming\n0025 resuming\n0026 resuming\n0027 resuming\n0028 resuming\n0029 resuming\n0030 resuming\n0031 resuming\n0032 resuming\n0033 resuming\n0034 resuming\n0035 resuming\n0036 resuming\nmove idx: 2 of 12\n0037 resuming\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 resuming\n0039 resuming\n0040 resuming\n0041 resuming\n0042 resuming\n0043 resuming\n0044 resuming\n0045 resuming\n0046 resuming\n0047 resuming\n0048 resuming\n0049 resuming\n0050 resuming\n0051 resuming\n0052 resuming\n0053 resuming\n0054 resuming\nmove idx: 3 of 12\n0055 resuming\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 resuming\n0057 resuming\n0058 resuming\n0059 resuming\n0060 resuming\n0061 resuming\n0062 resuming\n0063 resuming\n0064 resuming\n0065 resuming\n0066 resuming\n0067 resuming\n0068 resuming\n0069 resuming\n0070 resuming\n0071 resuming\n0072 resuming\nmove idx: 4 of 12\n0073 resuming\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 resuming\n0075 resuming\n0076 resuming\n0077 resuming\n0078 resuming\n0079 resuming\n0080 resuming\n0081 resuming\n0082 resuming\n0083 resuming\n0084 resuming\n0085 resuming\n0086 resuming\n0087 resuming\n0088 resuming\n0089 resuming\n0090 resuming\nmove idx: 5 of 12\n0091 resuming\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> [\"Cube.001\"]\n0092 resuming\n0093 resuming\n0094 resuming\n0095 resuming\n0096 resuming\n0097 resuming\n0098 resuming\n0099 resuming\n0100 resuming\n0101 resuming\n0102 resuming\n0103 resuming\n0104 resuming\n0105 resuming\n0106 resuming\n0107 resuming\n0108 resuming\nmove idx: 6 of 12\n0109 resuming\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 resuming\n0111 resuming\n0112 resuming\n0113 resuming\n0114 resuming\n0115 resuming\n0116 resuming\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\n0126 new state\nmove idx: 7 of 12\n0127 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0128 new state\n#<GLM::Vec3:0x0000562247e1e140>\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\n0144 new state\nmove idx: 8 of 12\n0145 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0146 new state\n(21.000, 6.000, 0.000)\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n0164 new state\n#<GLM::Vec3:0x0000562249736088>\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\n0180 new state\nmove idx: 9 of 12\n0181 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0182 new state\n#<GLM::Vec3:0x00005622486a4918>\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\n0198 new state\nmove idx: 10 of 12\n0199 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0200 new state\n#<GLM::Vec3:0x000056224708a420>\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\n0216 new state\nmove idx: 11 of 12\n0217 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0218 new state\n#<GLM::Vec3:0x00005622498d0fb0>\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\n0234 new state\nmove idx: 12 of 12\n0235 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0236 new state\n#<GLM::Vec3:0x000056224879fbb0>\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\n0252 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251",
+			"settings":
+			{
+				"buffer_size": 16823,
+				"line_ending": "Unix",
+				"name": "-- app created!"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAuEkAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"left_delete",
+					null,
+					"AQAAALdBAAAAAAAAt0EAAAAAAAABCAAACmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKWzptb3VzZV9pbiwgODE5LCA0NDNdCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKW25vdGljZSBdIDI3CmMrKzogZXhpdApydWJ5OiBleGl0aW5nIGFwcGxpY2F0aW9uLi4uIChSdWJ5T0YgZGVmYXVsdCkKcHJvamVjdCB3aW5kb3c6IG9uX2V4aXQKY29yZTogb24gZXhpdApjb3JlOiBlbnN1cmUKc3RvcHBpbmcgc3luYwpCbGVuZGVyU3luYzo6QWN0b3JDaGFubmVsOiBpbmNvbWluZyB0aHJlYWQgc3RvcHBlZAojPEZpbGU6L2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC4SQAAAAAAALdBAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "== reset\n\"status: idle\"\n=====\npipe opened\n== play\n:initial\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 new state\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 new state\n#<GLM::Vec3:0x0000558f363b79a8>\n0003 new state\n0004 new state\n0005 new state\n0006 new state\n0007 new state\n0008 new state\n0009 new state\n0010 new state\n0011 new state\n0012 new state\n0013 new state\n0014 new state\n0015 new state\n0016 new state\n0017 new state\n0018 new state\nmove idx: 1 of 12\n0019 new state\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 new state\n#<GLM::Vec3:0x0000558f362e58b8>\n0021 new state\n0022 new state\n0023 new state\n0024 new state\n0025 new state\n0026 new state\n0027 new state\n0028 new state\n0029 new state\n0030 new state\n0031 new state\n0032 new state\n0033 new state\n0034 new state\n0035 new state\n0036 new state\nmove idx: 2 of 12\n0037 new state\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 new state\n#<GLM::Vec3:0x0000558f351daed8>\n0039 new state\n0040 new state\n0041 new state\n0042 new state\n0043 new state\n0044 new state\n0045 new state\n0046 new state\n0047 new state\n0048 new state\n0049 new state\n0050 new state\n0051 new state\n0052 new state\n0053 new state\n0054 new state\nmove idx: 3 of 12\n0055 new state\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 new state\n#<GLM::Vec3:0x0000558f3479cc78>\n0057 new state\n0058 new state\n0059 new state\n0060 new state\n0061 new state\n0062 new state\n0063 new state\n0064 new state\n0065 new state\n0066 new state\n0067 new state\n0068 new state\n0069 new state\n0070 new state\n0071 new state\n0072 new state\nmove idx: 4 of 12\n0073 new state\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 new state\n#<GLM::Vec3:0x0000558f3635bec8>\n0075 new state\n0076 new state\n0077 new state\n0078 new state\n0079 new state\n0080 new state\n0081 new state\n0082 new state\n0083 new state\n0084 new state\n0085 new state\n0086 new state\n0087 new state\n0088 new state\n0089 new state\n0090 new state\nmove idx: 5 of 12\n0091 new state\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> []\n0092 new state\n#<GLM::Vec3:0x0000558f360c2388>\n0093 new state\n0094 new state\n0095 new state\n0096 new state\n0097 new state\n0098 new state\n0099 new state\n0100 new state\n0101 new state\n0102 new state\n0103 new state\n0104 new state\n0105 new state\n0106 new state\n0107 new state\n0108 new state\nmove idx: 6 of 12\n0109 new state\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 new state\n#<GLM::Vec3:0x0000558f350d14b0>\n0111 new state\n0112 new state\n0113 new state\n0114 new state\n0115 new state\n0116 new state\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\n0126 new state\nmove idx: 7 of 12\n0127 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0128 new state\n#<GLM::Vec3:0x0000558f33ad1228>\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\n0144 new state\nmove idx: 8 of 12\n0145 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0146 new state\n(21.000, 6.000, 0.000)\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n0164 new state\n#<GLM::Vec3:0x0000558f3521d288>\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\n0180 new state\nmove idx: 9 of 12\n0181 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0182 new state\n#<GLM::Vec3:0x0000558f34884960>\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\n0198 new state\nmove idx: 10 of 12\n0199 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0200 new state\n#<GLM::Vec3:0x0000558f36380228>\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\n0216 new state\nmove idx: 11 of 12\n0217 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0218 new state\n#<GLM::Vec3:0x0000558f362b7d28>\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\n0234 new state\nmove idx: 12 of 12\n0235 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0236 new state\n#<GLM::Vec3:0x0000558f3515ce98>\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\n0252 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nFinished seek\nframe_number 253\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nFinished seek\nframe_number 252\n@final_frame 251\nfinished\nFinished update\n251\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nFinished seek\nframe_number 248\n@final_frame 251\n>> edge callback: ANY -> replaying_old\nstate = replaying_old\n0248 old\n0244 old\n0240 old\n0237 old\n0233 old\n0230 old\n0227 old\n0225 old\n0224 old\n0222 old\n0221 old\n0220 old\n0218 old\n0216 old\n0213 old\n0210 old\n0208 old\n0205 old\n0203 old\n0201 old\n0199 old\n0197 old\n0196 old\n0196 old\n0194 old\n0193 old\n0191 old\n0189 old\n0187 old\n0185 old\n0183 old\n0180 old\n0177 old\n0172 old\n0168 old\n0163 old\n0158 old\n0152 old\n0148 old\n0144 old\n0141 old\n0140 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0139 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0140 old\n0139 old\n0136 old\n0135 old\n0134 old\n0133 old\n0131 old\n0130 old\n0129 old\n0127 old\n0126 old\n0125 old\n0124 old\n0122 old\n0119 old\n0118 old\n0116 old\n0113 old\n0109 old\n0106 old\n0103 old\n0101 old\n0100 old\n0100 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0102 old\n0103 old\n0104 old\n0104 old\n0104 old\n0104 old\n0104 old\n0105 old\n0105 old\n0105 old\n0106 old\n0106 old\n0106 old\n0106 old\n0106 old\n0106 old\n0106 old\n0106 old\n0106 old\n0107 old\n0107 old\n0107 old\n0107 old\n0107 old\n0107 old\n0107 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0108 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0109 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0110 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0111 old\n0112 old\n0112 old\n0112 old\n0112 old\n0112 old\n0112 old\n0112 old\n0112 old\n0112 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0113 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0114 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0115 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n0116 old\n== pause\n:replaying_old\n=====\n== reset\n\"status: open\"\n=====\nBlenderSync::ActorChannel: outgoing pipe broken\nBlenderSync::ActorChannel: opening outgoing pipe\npipe opened\n== play\n:replaying_old\n=====\n>> edge callback: ANY -> generating_new\nstate = generating_new\nmove idx: 0 of 12\n0001 resuming\ngrid position: (19.000, 0.000, 0.000)\npoint query @ (20.000, 0.000, 0.000)\n=> []\n0002 resuming\n0003 resuming\n0004 resuming\n0005 resuming\n0006 resuming\n0007 resuming\n0008 resuming\n0009 resuming\n0010 resuming\n0011 resuming\n0012 resuming\n0013 resuming\n0014 resuming\n0015 resuming\n0016 resuming\n0017 resuming\n0018 resuming\nmove idx: 1 of 12\n0019 resuming\ngrid position: (20.000, 0.000, 0.000)\npoint query @ (21.000, 0.000, 0.000)\n=> []\n0020 resuming\n0021 resuming\n0022 resuming\n0023 resuming\n0024 resuming\n0025 resuming\n0026 resuming\n0027 resuming\n0028 resuming\n0029 resuming\n0030 resuming\n0031 resuming\n0032 resuming\n0033 resuming\n0034 resuming\n0035 resuming\n0036 resuming\nmove idx: 2 of 12\n0037 resuming\ngrid position: (21.000, 0.000, 0.000)\npoint query @ (21.000, 1.000, 0.000)\n=> []\n0038 resuming\n0039 resuming\n0040 resuming\n0041 resuming\n0042 resuming\n0043 resuming\n0044 resuming\n0045 resuming\n0046 resuming\n0047 resuming\n0048 resuming\n0049 resuming\n0050 resuming\n0051 resuming\n0052 resuming\n0053 resuming\n0054 resuming\nmove idx: 3 of 12\n0055 resuming\ngrid position: (21.000, 1.000, 0.000)\npoint query @ (21.000, 2.000, 0.000)\n=> []\n0056 resuming\n0057 resuming\n0058 resuming\n0059 resuming\n0060 resuming\n0061 resuming\n0062 resuming\n0063 resuming\n0064 resuming\n0065 resuming\n0066 resuming\n0067 resuming\n0068 resuming\n0069 resuming\n0070 resuming\n0071 resuming\n0072 resuming\nmove idx: 4 of 12\n0073 resuming\ngrid position: (21.000, 2.000, 0.000)\npoint query @ (21.000, 3.000, 0.000)\n=> []\n0074 resuming\n0075 resuming\n0076 resuming\n0077 resuming\n0078 resuming\n0079 resuming\n0080 resuming\n0081 resuming\n0082 resuming\n0083 resuming\n0084 resuming\n0085 resuming\n0086 resuming\n0087 resuming\n0088 resuming\n0089 resuming\n0090 resuming\nmove idx: 5 of 12\n0091 resuming\ngrid position: (21.000, 3.000, 0.000)\npoint query @ (21.000, 4.000, 0.000)\n=> [\"Cube.001\"]\n0092 resuming\n0093 resuming\n0094 resuming\n0095 resuming\n0096 resuming\n0097 resuming\n0098 resuming\n0099 resuming\n0100 resuming\n0101 resuming\n0102 resuming\n0103 resuming\n0104 resuming\n0105 resuming\n0106 resuming\n0107 resuming\n0108 resuming\nmove idx: 6 of 12\n0109 resuming\ngrid position: (21.000, 4.000, 0.000)\npoint query @ (21.000, 5.000, 0.000)\n=> []\n0110 resuming\n0111 resuming\n0112 resuming\n0113 resuming\n0114 resuming\n0115 resuming\n0116 resuming\n0117 new state\n0118 new state\n0119 new state\n0120 new state\n0121 new state\n0122 new state\n0123 new state\n0124 new state\n0125 new state\n0126 new state\nmove idx: 7 of 12\n0127 new state\ngrid position: (21.000, 5.000, 0.000)\npoint query @ (21.000, 6.000, 0.000)\n=> []\n0128 new state\n#<GLM::Vec3:0x0000558f351dbf68>\n0129 new state\n0130 new state\n0131 new state\n0132 new state\n0133 new state\n0134 new state\n0135 new state\n0136 new state\n0137 new state\n0138 new state\n0139 new state\n0140 new state\n0141 new state\n0142 new state\n0143 new state\n0144 new state\nmove idx: 8 of 12\n0145 new state\ngrid position: (21.000, 6.000, 0.000)\npoint query @ (21.000, 7.000, 0.000)\n=> [\"Cube.002\"]\n0146 new state\n(21.000, 6.000, 0.000)\n0147 new state\n0148 new state\n0149 new state\n0150 new state\n0151 new state\n0152 new state\n0153 new state\n0154 new state\n0155 new state\n0156 new state\n0157 new state\n0158 new state\n0159 new state\n0160 new state\n0161 new state\n0162 new state\n0163 new state\n0164 new state\n#<GLM::Vec3:0x0000558f3634d9b8>\n0165 new state\n0166 new state\n0167 new state\n0168 new state\n0169 new state\n0170 new state\n0171 new state\n0172 new state\n0173 new state\n0174 new state\n0175 new state\n0176 new state\n0177 new state\n0178 new state\n0179 new state\n0180 new state\nmove idx: 9 of 12\n0181 new state\ngrid position: (21.000, 7.000, 1.000)\npoint query @ (21.000, 8.000, 1.000)\n=> []\n0182 new state\n#<GLM::Vec3:0x0000558f352b2a68>\n0183 new state\n0184 new state\n0185 new state\n0186 new state\n0187 new state\n0188 new state\n0189 new state\n0190 new state\n0191 new state\n0192 new state\n0193 new state\n0194 new state\n0195 new state\n0196 new state\n0197 new state\n0198 new state\nmove idx: 10 of 12\n0199 new state\ngrid position: (21.000, 8.000, 1.000)\npoint query @ (20.000, 8.000, 1.000)\n=> []\n0200 new state\n#<GLM::Vec3:0x0000558f34a10e78>\n0201 new state\n0202 new state\n0203 new state\n0204 new state\n0205 new state\n0206 new state\n0207 new state\n0208 new state\n0209 new state\n0210 new state\n0211 new state\n0212 new state\n0213 new state\n0214 new state\n0215 new state\n0216 new state\nmove idx: 11 of 12\n0217 new state\ngrid position: (20.000, 8.000, 1.000)\npoint query @ (19.000, 8.000, 1.000)\n=> []\n0218 new state\n#<GLM::Vec3:0x0000558f363813a8>\n0219 new state\n0220 new state\n0221 new state\n0222 new state\n0223 new state\n0224 new state\n0225 new state\n0226 new state\n0227 new state\n0228 new state\n0229 new state\n0230 new state\n0231 new state\n0232 new state\n0233 new state\n0234 new state\nmove idx: 12 of 12\n0235 new state\ngrid position: (19.000, 8.000, 1.000)\npoint query @ (19.000, 9.000, 1.000)\n=> []\n0236 new state\n#<GLM::Vec3:0x0000558f362b6568>\n0237 new state\n0238 new state\n0239 new state\n0240 new state\n0241 new state\n0242 new state\n0243 new state\n0244 new state\n0245 new state\n0246 new state\n0247 new state\n0248 new state\n0249 new state\n0250 new state\n0251 new state\n0252 new state\nstate = finished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\n== pause\n:finished\n=====\nFinished seek\nframe_number 251\n@final_frame 251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished\nFinished update\n251\nfinished",
+			"settings":
+			{
+				"buffer_size": 18339,
+				"line_ending": "Unix",
+				"name": "== reset"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAn14AAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					4,
+					1,
+					"left_delete",
+					null,
+					"AQAAAG5YAAAAAAAAblgAAAAAAAAxBgAACkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKWzptb3VzZV9pbiwgNzM2LCA5NzBdCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpmaW5pc2hlZApGaW5pc2hlZCB1cGRhdGUKMjUxCmZpbmlzaGVkCkZpbmlzaGVkIHVwZGF0ZQoyNTEKZmluaXNoZWQKRmluaXNoZWQgdXBkYXRlCjI1MQpbbm90aWNlIF0gMjcKYysrOiBleGl0CnJ1Ynk6IGV4aXRpbmcgYXBwbGljYXRpb24uLi4gKFJ1YnlPRiBkZWZhdWx0KQpwcm9qZWN0IHdpbmRvdzogb25fZXhpdApjb3JlOiBvbiBleGl0CmNvcmU6IGVuc3VyZQpzdG9wcGluZyBzeW5jCkJsZW5kZXJTeW5jOjpBY3RvckNoYW5uZWw6IGluY29taW5nIHRocmVhZCBzdA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACfXgAAAAAAAG5YAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					141,
+					2,
+					"right_delete",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAADKEAAAL2dlbV9zdHJ1Y3R1cmUKLS0tIGdlbXMgZm9yIFJ1YnlPRiBjb3JlIEJFR0lOCi0tLSBnZW1zIGZvciBSdWJ5T0YgY29yZSBFTkQKLS0tLS0tLS0tLS0tLS0tLS0tLS0KTG9hZCBSdWJ5IGNvZGUgdGhhdCBkZWZpbmVzIFJ1YnlPRi4uLgpSdWJ5T0Y6IGxvYWRpbmcgcnVieSBjb2RlCkxvYWQgdXAgdGhlIHByb2plY3Qtc3BlY2lmaWMgUnVieSBjb2RlIGZvciB0aGUgd2luZG93Li4uCmMrKzogY29uc3RydWN0b3IgLSBsYXVuY2hlcgotLSBjcmVhdGluZyBHTEZXIHdpbmRvdwotLSBjb25maWd1cmluZyBHTEZXIHdpbmRvdwotLSBjcmVhdGluZyBvcGVuRnJhbWV3b3JrcyBhcHAuLi4KYysrOiByYkFwcCBjb25zdHJ1Y3RvcgotLSBhcHAgY3JlYXRlZCEKcnVieTogV2luZG93I2luaXRpYWxpemUKYysrOiBMYXVuY2hlcjo6c2hvdygpCmMrKzogcmJBcHA6OnNldHVwCltub3RpY2UgXSBvZnhNaWRpSW46IDIgcG9ydHMgYXZhaWxhYmxlCltub3RpY2UgXSBvZnhNaWRpSW46IDA6IE1pZGkgVGhyb3VnaDpNaWRpIFRocm91Z2ggUG9ydC0wIDE0OjAKW25vdGljZSBdIG9meE1pZGlJbjogMTogU2NhcmxldHQgMmk0IFVTQjpTY2FybGV0dCAyaTQgVVNCIE1JREkgMSAyMDowClsgZXJyb3IgXSBvZnhNaWRpSW46IHBvcnQgIkFkYWZydWl0IFRyZWxsaXMgTTQ6QWRhZnJ1aXQgVHJlbGxpcyBNNCBNSURJIDEgMzI6MCIgaXMgbm90IGF2YWlsYWJsZQpbbm90aWNlIF0gb2Z4TWlkaU91dDogMiBwb3J0cyBhdmFpbGFibGUKW25vdGljZSBdIG9meE1pZGlPdXQ6IDA6IE1pZGkgVGhyb3VnaDpNaWRpIFRocm91Z2ggUG9ydC0wIDE0OjAKW25vdGljZSBdIG9meE1pZGlPdXQ6IDE6IFNjYXJsZXR0IDJpNCBVU0I6U2NhcmxldHQgMmk0IFVTQiBNSURJIDEgMjA6MApbIGVycm9yIF0gb2Z4TWlkaU91dDogcG9ydCAiQWRhZnJ1aXQgVHJlbGxpcyBNNDpBZGFmcnVpdCBUcmVsbGlzIE00IE1JREkgMSAzMjowIiBpcyBub3QgYXZhaWxhYmxlCnJ1Ynk6IFdpbmRvdyNzZXR1cCAoUnVieU9GIGRlZmF1bHQpCnJ1Ynk6IFdpbmRvdyNzZXR1cCAocHJvamVjdCkKY29yZTogc2V0dXAKbG9hZGluZyBmb250CmxvYWRpbmcgZm9udAo8RmxvYXRDb2xvciAocmdiYSk6IC0xLjAsIC0xLjAsIDAuMCwgMS4wPgo8RmxvYXRDb2xvciAocmdiYSk6IDAuMCwgMC4wLCAxLjAsIDEuMD4KPEZsb2F0Q29sb3IgKHJnYmEpOiAyLjAsIDIuMCwgMi4wLCAxLjA+Cls6UmVwbGF5aW5nX09sZCwgOkluaXRpYWwsIDpGaW5pc2hlZCwgOkdlbmVyYXRpbmdfTmV3XQpzdGF0ZSA9IGluaXRpYWwKZmlmbyBjcmVhdGVkIEAgL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL3J1bi9ibGVuZGVyX2NvbW0KZmlyc3QgdXBkYXRlClsiL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2dsc2wvYWxwaGFfY29tcG9zaXRlLnZlcnQiLCAiL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2dsc2wvYWxwaGFfY29tcG9zaXRlLmZyYWciXQphbHBoYSBjb21wb3NpdGluZyBzaGFkZXJzIHJlbG9hZGVkCkJsZW5kZXJTeW5jOjpBY3RvckNoYW5uZWw6IG91dGdvaW5nIHRocmVhZCBzdGFydApmaWZvIGNyZWF0ZWQgQCAvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vcnVuL2JsZW5kZXJfY29tbV9yZXZlcnNlCkJsZW5kZXJTeW5jOjpBY3RvckNoYW5uZWw6IG9wZW5pbmcgb3V0Z29pbmcgcGlwZQoKCi0tLS0tLS0tLS0tLS0KcmVsb2FkaW5nIHZlcnRleCBhbmQgZnJhZyBzaGFkZXJzIGZvciBPcGVuRVhSIHZlcnRleCBhbmltYXRpb24gbWF0Cls6bW91c2VfaW4sIDAsIDBdCkJsZW5kZXJTeW5jOjpBY3RvckNoYW5uZWw6IGluY29taW5nIHRocmVhZCBzdGFydApbbm90aWNlIF0gMTYKW25vdGljZSBdIDM2ODYKWzptb3VzZV9vdXQsIDczNiwgOTcwXQp7InR5cGUiPT4ibWF0ZXJpYWxfdXBkYXRlIiwgInBvc2l0aW9uX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLnBvc2l0aW9uLmV4ciIsICJub3JtYWxfdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24ubm9ybWFsLmV4ciIsICJ0cmFuc2Zvcm1fdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24udHJhbnNmb3JtLmV4ciJ9CjxGbG9hdENvbG9yIChyZ2JhKTogLTEuMCwgLTEuMCwgMC4wLCAxLjA+CjxGbG9hdENvbG9yIChyZ2JhKTogMC4wLCAwLjAsIDEuMCwgMS4wPgo8RmxvYXRDb2xvciAocmdiYSk6IDIuMCwgMi4wLCAyLjAsIDEuMD4KeyJ0eXBlIj0+Im1hdGVyaWFsX3VwZGF0ZSIsICJwb3NpdGlvbl90ZXhfcGF0aCI9PiIvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi5wb3NpdGlvbi5leHIiLCAibm9ybWFsX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLm5vcm1hbC5leHIiLCAidHJhbnNmb3JtX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLnRyYW5zZm9ybS5leHIifQo8RmxvYXRDb2xvciAocmdiYSk6IC0xLjAsIC0xLjAsIDAuMCwgMS4wPgo8RmxvYXRDb2xvciAocmdiYSk6IDAuMCwgMC4wLCAxLjAsIDEuMD4KPEZsb2F0Q29sb3IgKHJnYmEpOiAyLjAsIDIuMCwgMi4wLCAxLjA+CnsidHlwZSI9PiJtYXRlcmlhbF91cGRhdGUiLCAicG9zaXRpb25fdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24ucG9zaXRpb24uZXhyIiwgIm5vcm1hbF90ZXhfcGF0aCI9PiIvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi5ub3JtYWwuZXhyIiwgInRyYW5zZm9ybV90ZXhfcGF0aCI9PiIvaG9tZS9yYXZlbnNrcmFnL0Rlc2t0b3AvZ2VtX3N0cnVjdHVyZS9iaW4vcHJvamVjdHMvYmxlbmRlcl9pc29fZ2FtZS9iaW4vZGF0YS9nZW9tX3RleHR1cmVzL2FuaW1hdGlvbi50cmFuc2Zvcm0uZXhyIn0KPEZsb2F0Q29sb3IgKHJnYmEpOiAtMS4wLCAtMS4wLCAwLjAsIDEuMD4KPEZsb2F0Q29sb3IgKHJnYmEpOiAwLjAsIDAuMCwgMS4wLCAxLjA+CjxGbG9hdENvbG9yIChyZ2JhKTogMi4wLCAyLjAsIDIuMCwgMS4wPgp7InR5cGUiPT4ibWF0ZXJpYWxfdXBkYXRlIiwgInBvc2l0aW9uX3RleF9wYXRoIj0+Ii9ob21lL3JhdmVuc2tyYWcvRGVza3RvcC9nZW1fc3RydWN0dXJlL2Jpbi9wcm9qZWN0cy9ibGVuZGVyX2lzb19nYW1lL2Jpbi9kYXRhL2dlb21fdGV4dHVyZXMvYW5pbWF0aW9uLnBvc2l0aW9uLmV4ciIsICJub3JtYWxfdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24ubm9ybWFsLmV4ciIsICJ0cmFuc2Zvcm1fdGV4X3BhdGgiPT4iL2hvbWUvcmF2ZW5za3JhZy9EZXNrdG9wL2dlbV9zdHJ1Y3R1cmUvYmluL3Byb2plY3RzL2JsZW5kZXJfaXNvX2dhbWUvYmluL2RhdGEvZ2VvbV90ZXh0dXJlcy9hbmltYXRpb24udHJhbnNmb3JtLmV4ciJ9CjxGbG9hdENvbG9yIChyZ2JhKTogLTEuMCwgLTEuMCwgMC4wLCAxLjA+CjxGbG9hdENvbG9yIChyZ2JhKTogMC4wLCAwLjAsIDEuMCwgMS4wPgo8RmxvYXRDb2xvciAocmdiYSk6IDIuMCwgMi4wLCAyLjAsIDEuMD4AAAAAAAAAAAAAAAAAAAAAAQAAAAo",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADKEAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 750.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"lowe",
+				"Convert Case: Lower Case"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"sort",
+				"SortBy: Alphabetically"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"py",
+				"Set Syntax: Python"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"sor",
+				"SortBy: Alphabetically"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"upper",
+				"Convert Case: Upper Case"
+			],
+			[
+				"uniq",
+				"Permute Lines: Unique"
+			],
+			[
+				"jso",
+				"Set Syntax: JSON"
+			],
+			[
+				"python",
+				"Set Syntax: Python"
+			],
+			[
+				"low",
+				"Convert Case: Lower Case"
+			],
+			[
+				"upper ",
+				"Convert Case: Upper Case"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"expor",
+				"Export to HTML: Show Export Menu"
+			],
+			[
+				"enable pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"disab",
+				"Package Control: Disable Package"
+			],
+			[
+				"pagke li",
+				"Package Control: List Packages"
+			],
+			[
+				"packag list",
+				"Package Control: List Packages"
+			],
+			[
+				"package list",
+				"Package Control: List Packages"
+			],
+			[
+				"syntax glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"synt rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"auto",
+				"Toggle AutoSave: current file only"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"krake",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 1062.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/docs/tests - 2021.11.26 timeline of FrameHistory; generating new vs resuming state.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/docs/tests - notes.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/Rakefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/progress_bar.py",
+		"/home/ravenskrag/.gdbinit",
+		"/home/ravenskrag/Desktop/gem_structure/build/window_guard.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/ubuntu/install_dependencies.sh",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/apothecary/formulas/glfw.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/raw/YouTube - subscriptions.html",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/pixels.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/image.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/mesh_map.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/anim_tex_cache.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/test.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/anim_tex_manager.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/class_reloader.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/coroutine_decorator.py",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/object/object_add.c",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/BLI_ghash.c",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/anim_tex_exporter.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_object.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/test_case.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Color.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb",
+		"/home/ravenskrag/Desktop/gem_structure/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/example/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/__init__.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/char_mapped_display.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/live_code.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicLight.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/tmp_delta.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/examples/RedBook/material.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.vert",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/bindings_version.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/implementation.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/gl.rb",
+		"/home/ravenskrag/Desktop/gem_structure/.bundle/config",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/FreeImage/include/FreeImage.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/texture.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_material.py",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLUtils.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.h",
+		"/home/ravenskrag/Desktop/gem_structure/common.rb",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/space_view3d_stored_views/core.py",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/packge_version.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/shader.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/graphics.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/pry-0.13.1/lib/pry/commands/ls/formatter.rb",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/BLI_array.hh",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Fbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/fbo.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/mesh.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/resource_manager.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/blender_iso_game.sublime-project",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/graphics/blendingExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/alphaMaskingShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/graphics/graphicsExample/README.md",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/math/noise1dOctaveExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/.bundle/config",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong_instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/archipack/presets/archipack_floor/herringbone_50x10.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/properties/render_engine_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/properties/material_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/ui/RubyOF_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/blender_iso_game.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/ts/cuda_perf.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_light.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/bin/data/computeShader.glsl",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/computeShaderTextureExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofBufferObject.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/multiTextureShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.frag",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/vboMeshDrawInstancedExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_object.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVbo.h"
+	],
+	"find":
+	{
+		"height": 48.0
+	},
+	"find_in_files":
+	{
+		"height": 264.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"5 of 12",
+			"=> [\"Cube.",
+			"=> [\"Cube.001\"]",
+			"=>"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1188,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								229,
+								229
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										272,
+										273
+									]
+								},
+								"icon":
+								{
+									"1":
+									[
+										"Packages/BracketHighlighter/icons/round_bracket.png",
+										"region.yellowish"
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										224,
+										225
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/zzz A File Icon zzz/aliases/JSON (Sublime).sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 39810,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								30773,
+								23776
+							]
+						],
+						"settings":
+						{
+							"auto_name": "r core...",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 37234.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5874,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3379,
+								3381
+							]
+						],
+						"settings":
+						{
+							"auto_name": ">> edge callback: ANY -> generating_new",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 4785.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8330,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2184,
+								2186
+							]
+						],
+						"settings":
+						{
+							"auto_name": ">> edge callback: ANY -> replaying_old",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 4444.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "---",
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16823,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10918,
+								10918
+							]
+						],
+						"settings":
+						{
+							"auto_name": "-- app created!",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 15717.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18339,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								16258,
+								16258
+							]
+						],
+						"settings":
+						{
+							"auto_name": "== reset",
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 36374.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 48.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.deviot":
+	{
+		"height": 236.0
+	},
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "notes - blender iso game tests.sublime-project",
+	"replace":
+	{
+		"height": 88.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"blender histor",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"progress",
+				"gem_structure/bin/projects/blender_iso_game/python/progress_bar.py"
+			],
+			[
+				"rake",
+				"gem_structure/Rakefile"
+			],
+			[
+				"window gu",
+				"gem_structure/build/window_guard.rb"
+			],
+			[
+				"main.rb",
+				"gem_structure/bin/main.rb"
+			],
+			[
+				"windo",
+				"gem_structure/lib/rubyOF/window.rb"
+			],
+			[
+				"app.cpp",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp"
+			],
+			[
+				"live c od",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"blend sync ",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"verani ",
+				"gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_batch.rb"
+			],
+			[
+				"man .py",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"core",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"frame his",
+				"gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb"
+			],
+			[
+				"main",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"ubuntu deps lin",
+				"gem_structure/ext/openFrameworks/scripts/linux/ubuntu/install_dependencies.sh"
+			],
+			[
+				"glfw.h",
+				"gem_structure/vendor/apothecary/apothecary/formulas/glfw.sh"
+			],
+			[
+				"glfwwindow",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp"
+			],
+			[
+				"ofbaseapp",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.cpp"
+			],
+			[
+				"rice array",
+				"gem_structure/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Array.hpp"
+			],
+			[
+				"gem lock",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile.lock"
+			],
+			[
+				"gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"cal",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"image.rb",
+				"gem_structure/lib/rubyOF/image.rb"
+			],
+			[
+				"meshmap.",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/mesh_map.yaml"
+			],
+			[
+				"callback",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"matrix decompo",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtx/matrix_decompose.hpp"
+			],
+			[
+				"cache.js",
+				"gem_structure/bin/projects/blender_iso_game/bin/anim_tex_cache.json"
+			],
+			[
+				"ant mana",
+				"gem_structure/bin/projects/blender_iso_game/python/anim_tex_manager.py"
+			],
+			[
+				"blendr/blenlib/intern/bligah",
+				"blender/blenlib/intern/BLI_ghash.c"
+			],
+			[
+				"oflight",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp"
+			],
+			[
+				"depen gr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"ofcamera",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.cpp"
+			],
+			[
+				"color.rb",
+				"gem_structure/lib/rubyOF/color.rb"
+			],
+			[
+				"blendr hist",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"history",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"gem",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"framh",
+				"gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb"
+			],
+			[
+				"sche",
+				"gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb"
+			],
+			[
+				"mainfi",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"callbacks.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/callbacks.rb"
+			],
+			[
+				"charmapp",
+				"gem_structure/bin/projects/blender_iso_game/lib/char_mapped_display.rb"
+			],
+			[
+				"material.cpp",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"cor",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"call",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"graphics.rb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"graphi .rb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"materal.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_material.rb"
+			],
+			[
+				"mater.rb",
+				"gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/examples/RedBook/material.rb"
+			],
+			[
+				"gefile lock",
+				"gem_structure/Gemfile.lock"
+			],
+			[
+				"instan.vert",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert"
+			],
+			[
+				"phong",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.frag"
+			],
+			[
+				"animate vert",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/animation_texture.vert"
+			],
+			[
+				"node.rb",
+				"gem_structure/lib/rubyOF/node.rb"
+			],
+			[
+				"mesh.rb",
+				"gem_structure/lib/rubyOF/mesh.rb"
+			],
+			[
+				"vbomesh.c",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp"
+			],
+			[
+				"instanced",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert"
+			],
+			[
+				"blender mate",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_material.rb"
+			],
+			[
+				"pixels",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"pixels r",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"grconstants",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h"
+			],
+			[
+				"pixels rb",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"graphrb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"oftextu",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp"
+			],
+			[
+				"texture .rb",
+				"gem_structure/lib/rubyOF/texture.rb"
+			],
+			[
+				"image",
+				"gem_structure/lib/rubyOF/image.rb"
+			],
+			[
+				"ofpixel",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp"
+			],
+			[
+				"oftexture",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp"
+			],
+			[
+				"ofimage",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"graphicpp",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"renderbatch",
+				"gem_structure/bin/projects/blender_iso_game/lib/render_batch.rb"
+			],
+			[
+				"tmp json",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"blender histo",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"tmpjs",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"schedule",
+				"gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb"
+			],
+			[
+				"livecode",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"ofpixels",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp"
+			],
+			[
+				"rakefi",
+				"gem_structure/Rakefile"
+			],
+			[
+				"iso window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"openframeworks version",
+				"gem_structure/ext/openFrameworks/packge_version.txt"
+			],
+			[
+				"ofxlight",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicLight.cpp"
+			],
+			[
+				"ofxmater",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp"
+			],
+			[
+				"light.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb"
+			],
+			[
+				"shader",
+				"gem_structure/lib/rubyOF/shader.rb"
+			],
+			[
+				".frag",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.frag"
+			],
+			[
+				"programable g",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"graphics ad",
+				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"bli array hh",
+				"blender/blenlib/BLI_array.hh"
+			],
+			[
+				"tmpjson",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"iso game json",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"iso game/ app",
+				"gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
+			],
+			[
+				"ruby .cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"blender data ",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"live",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"iso / gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"fbo",
+				"gem_structure/ext/rubyOF/Fbo.cpp"
+			],
+			[
+				"ofnode",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp"
+			],
+			[
+				"ofxdyna",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp"
+			],
+			[
+				"ofcolor",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp"
+			],
+			[
+				"ruby.cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"graphics.cpp",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"viewport camer",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb"
+			],
+			[
+				"properties material",
+				"scripts/startup/bl_ui/properties_material.py"
+			],
+			[
+				"iso game / .yaml",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			],
+			[
+				"ofxmidiin.h",
+				"gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.h"
+			],
+			[
+				"iso game core rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"callbac cpp",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"instb b",
+				"gem_structure/bin/projects/blender_iso_game/lib/instancing_buffer.rb"
+			],
+			[
+				"dep gra",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"blendr sync",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"iso game python ini",
+				"gem_structure/bin/projects/blender_iso_game/python/__init__.py"
+			],
+			[
+				"phong frag",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong.frag"
+			],
+			[
+				"ofx insta",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp"
+			],
+			[
+				"iso game core",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"color",
+				"gem_structure/lib/rubyOF/color.rb"
+			],
+			[
+				"string cast",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl"
+			],
+			[
+				"quaternion",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtc/quaternion.hpp"
+			],
+			[
+				"quat.h",
+				"gem_structure/vendor/apothecary/glm/include/glm/detail/type_quat.hpp"
+			],
+			[
+				"quat.",
+				"gem_structure/ext/openFrameworks/libs/glm/include/glm/detail/type_quat.inl"
+			],
+			[
+				"glm bind",
+				"gem_structure/ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"rubyofcpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"glm quat",
+				"gem_structure/lib/rubyOF/glm_quat.rb"
+			],
+			[
+				"dep",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"blender data",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"blenderdata",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"depgr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"graphics.c",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"world da",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 421.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
