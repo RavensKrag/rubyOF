@@ -13,7 +13,7 @@ class BlenderSync
     # two-way communication between RubyOF (ruby) and Blender (python)
     # implemented using two named pipes
     @blender_link = ActorChannel.new
-    
+    @finished = false
   end
   
   def stop
@@ -90,15 +90,21 @@ class BlenderSync
     # 
     
     if @frame_history.state == :finished
-      puts "finished"
-      message = {
-        'type' => 'loopback_finished',
-        'history.length' => @frame_history.length
-      }
-      
-      @blender_link.send message
-      
+      # needs to be a separate if block,
+      # so outer else only triggers when we detect some other state
+      if !@finished
+        puts "finished --> (send message to blender)"
+        message = {
+          'type' => 'loopback_finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @blender_link.send message
+        
+        @finished = true
+      end
     else
+      @finished = false
       # message = {
       #   'type' => 'history.length',
       #   'value' => @frame_history.length
