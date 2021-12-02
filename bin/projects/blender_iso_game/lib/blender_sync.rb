@@ -2,94 +2,52 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history, core)
+  def initialize(window, depsgraph, message_history, history, core)
     @window = window
     @depsgraph = depsgraph
-    @history = history
+    @message_history = message_history
+    @frame_history = history
     
     @core = core
     
-    # 
-    # Open FIFO in main thread then pass to Thread using function closure.
-    # This prevents weird race conditions.
-    # 
-    # Consider this timing diagram:
-    #   main thread         @msg_thread
-    #   -----------         -----------
-    #   setup               
-    #                       File.mkfifo(fifo_path)
-    #                       
-    #   update (ERROR)
-    #                       f_r = File.open(fifo_path, "r+")
-    #                       
-    #                       ensure: f_r#close
-    #                       ensure: FileUtils.rm(fifo_path)
-    # 
-    # ^ When the error happens in update
-    #   f_r has not yet been initialized (f_r == nil)
-    #   but the ensure block of @msg_thread will try close f_r.
-    #   This results in an exception, 
-    #   which prevents the FIFO from being properly deleted.
-    #   This will then cause an error when the program is restarted / reloaded
-    #   as a FIFO can not be created where one already exists.
-    
-    @fifo_dir = PROJECT_DIR/'bin'/'run'
-    @fifo_name = 'blender_comm'
-    
-      fifo_path = @fifo_dir/@fifo_name
-      
-      if fifo_path.exist?
-        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
-      else
-        File.mkfifo(fifo_path)
-      end
-      
-      puts "fifo created @ #{fifo_path}"
-      
-      @f_r = File.open(fifo_path, "r+")
-    
-    @msg_queue = Queue.new
-    @msg_thread = Thread.new do
-      begin
-        puts "fifo message thread start"
-        loop do
-          data = @f_r.gets # blocking IO
-          @msg_queue << data
-        end
-      ensure
-        puts "fifo message thread stopped"
-      end
-    end
+    # two-way communication between RubyOF (ruby) and Blender (python)
+    # implemented using two named pipes
+    @blender_link = ActorChannel.new
+    @finished = false
   end
   
   def stop
-    @msg_thread.kill.join
+    puts "stopping sync"
     
-    # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
-    fifo_path = @fifo_dir/@fifo_name
     
-    p @f_r
-    p fifo_path
+    message = {
+      'type' => 'sync_status',
+      'value' => 'stopping',
+      'final_buffer_size' => @frame_history.length
+    }
+    @blender_link.send message
     
-    @f_r.close
-    FileUtils.rm(fifo_path)
-    puts "fifo closed"
+    @blender_link.stop
   end
   
   def update
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    puts "queue length: #{@msg_queue.length}" if @msg_queue.length != 0
-    @msg_queue.length.times do
-      data_string = @msg_queue.pop
-      
-      
+    
+    # @blender_link.send
+    # message = @blender_link.take
+    
+    
+    # 
+    # read messages from Blender (python)
+    # 
+    
+    while message = @blender_link.take
       # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      blender_message = JSON.parse(data_string)
       
       # # --- This write is only needed for debugging
       # File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
-      #   f.puts JSON.pretty_generate blender_message
+      #   f.puts JSON.pretty_generate message
       # end
       # # ---
       
@@ -101,7 +59,7 @@ class BlenderSync
       
       
       # send all of this data to history
-      @history.write blender_message
+      @message_history.write message
       
     end
     
@@ -113,7 +71,7 @@ class BlenderSync
     # TODO: why can't the viewport be made about 1/4 of my screen size? why does it have to be large to sync with the RubyOF window?
     
     
-    @history.read do |message|
+    @message_history.read do |message|
       parse_blender_data message
     end
     # ^ this method of merging history can't prevent spikes due to
@@ -126,6 +84,147 @@ class BlenderSync
     # dt = update_t1 - update_t0
     # puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
+    
+    # 
+    # send messages to Blender (python)
+    # 
+    
+    if @frame_history.state == :finished
+      # needs to be a separate if block,
+      # so outer else only triggers when we detect some other state
+      if !@finished
+        puts "finished --> (send message to blender)"
+        message = {
+          'type' => 'loopback_finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @blender_link.send message
+        
+        @finished = true
+      end
+    else
+      @finished = false
+      # message = {
+      #   'type' => 'history.length',
+      #   'value' => @frame_history.length
+      # }
+      
+      # @blender_link.send message
+      
+    end
+    
+    
+  end
+  
+  private
+  
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      # @depsgraph.clear
+      
+      puts "== reset"
+      
+      @blender_link.reset
+      
+      if @frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        @frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        
+      end
+      
+      puts "====="
+      
+    when 'pause'
+      puts "== pause"
+      p @frame_history.state
+      
+      if @frame_history.state == :generating_new
+        @frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_paused',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        @frame_history.pause
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @frame_history.state
+      
+      if @frame_history.state != :generating_new
+        @frame_history.play
+        # ^ this will not immediately advance
+        #   to the new state. It's more like shifting
+        #   from Park to Drive.
+        #   Transition to next state will not happen until
+        #   FrameHistory#update -> State#update
+        # 
+        # note: even responding to pause
+        # takes at least 1 frame. need a better way
+        # of dealing with this.
+        # 
+        # For now, I will expand the play range when python
+        # detects playback has started, without waiting
+        # for a round-trip response from ruby.
+        # (using aribtrary large number, 1000 frames)
+        # 
+        # TODO: use the "preview range" feature to set
+        #       two time ranges for the timeline
+        #       1) the maximum number of frames that can 
+        #          be stored
+        #       2) the current number of frames in history
+        
+        if @frame_history.play == :generating_new
+          message = {
+            'type' => 'loopback_started',
+            'history.length' => @frame_history.length
+          }
+          
+          @blender_link.send message
+        end
+        
+        
+      else
+        @frame_history.play
+        
+      end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @frame_history.seek(message['time'])
+      
+    end
   end
   
   
@@ -160,17 +259,11 @@ class BlenderSync
     
     # p @depsgraph.instance_variable_get("@mesh_objects")
     # p @new_datablocks
-    puts "--- #{message['type']} ---"
+    # puts "--- #{message['type']} ---"
     # puts message['type'] === 'bpy.types.Mesh'
     
     
     case message['type']
-    when 'interrupt'
-      if message['value'] == 'RESET'
-        # blender has reset, so reset all RubyOF data
-        @depsgraph.clear
-      end
-      
     when 'all_entity_names'
       # The viewport camera is an object in RubyOF, but not in Blender
       # Need to remove it from the entity list or the camera
@@ -267,7 +360,7 @@ class BlenderSync
         # load transform AND data for lights here as necessary
         # ('data' field has already been linked to necessary data)
         
-        puts "loading light: #{message['name']}"
+        # puts "loading light: #{message['name']}"
         
         light =
           @depsgraph.fetch_light(message['name']) do |name|
@@ -292,24 +385,7 @@ class BlenderSync
     
     when 'timeline_command'
       # p message
-      
-      case message['value']
-      when 'step forward'
-        @core.frame_history.step_forward
-        
-      when 'step back'
-        @core.frame_history.step_back
-        
-      when 'pause'
-        @core.frame_history.pause
-        
-      when 'play'
-        @core.frame_history.play
-      
-      when 'reverse'
-        @core.frame_history.reverse
-        
-      end
+      parse_timeline_commands(message)
     
     when 'object_to_id_map'
       @core.update_entity_mapping(message)
@@ -348,7 +424,6 @@ class BlenderSync
   end
   
   
-  private
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
@@ -446,6 +521,207 @@ class BlenderSync
     return CP::Vec2.new(hit_px, hit_py)
   end
   
+  
+  # Implement an interface similar to ruby's Ractor,
+  # which is based on the actor pattern
+  class ActorChannel
+    def initialize
+      # 
+      # Open FIFO in main thread then pass to Thread using function closure.
+      # This prevents weird race conditions.
+      # 
+      # Consider this timing diagram:
+      #   main thread         @incoming_thread
+      #   -----------         -----------
+      #   setup               
+      #                       File.mkfifo(fifo_path)
+      #                       
+      #   update (ERROR)
+      #                       f_r = File.open(fifo_path, "r+")
+      #                       
+      #                       ensure: f_r#close
+      #                       ensure: FileUtils.rm(fifo_path)
+      # 
+      # ^ When the error happens in update
+      #   f_r has not yet been initialized (f_r == nil)
+      #   but the ensure block of @incoming_thread will try close f_r.
+      #   This results in an exception, 
+      #   which prevents the FIFO from being properly deleted.
+      #   This will then cause an error when the program is restarted / reloaded
+      #   as a FIFO can not be created where one already exists.
+      
+      @fifo_dir = PROJECT_DIR/'bin'/'run'
+      
+      @f_r = File.open(make_fifo(@fifo_dir/'blender_comm'), "r+")
+      
+      # NOTE: @incoming_port and @outgoing_port always hold JSON-encoded strings, not other types of ruby objects.
+      # (see #send and #take for details)
+      
+      @incoming_port = Queue.new
+      
+      @incoming_thread = Thread.new do
+        begin
+          puts "#{self.class}: incoming thread start"
+          loop do
+            data = @f_r.gets # blocking IO
+            @incoming_port << data
+          end
+        ensure
+          puts "#{self.class}: incoming thread stopped"
+        end
+      end
+      
+      
+      
+      
+      @outgoing_status = :idle
+      
+      @outgoing_port = Queue.new
+      
+      @outgoing_thread = Thread.new do
+        puts "#{self.class}: outgoing thread start"
+        
+        @outgoing_fifo_path = make_fifo(@fifo_dir/'blender_comm_reverse')
+        
+        loop do
+          begin
+            if @f_w.nil? || @outgoing_status == :closed
+              puts "#{self.class}: opening outgoing pipe"
+              
+              @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
+              puts "pipe opened"
+              
+              @outgoing_status = :open
+              
+              # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+              
+            end
+            
+            message = @outgoing_port.pop # will block thread when Queue empty
+            @f_w.puts message
+            @f_w.flush
+            
+            # puts "queue size: #{@outgoing_port.size}"
+          rescue Errno::EPIPE => e
+            puts "#{self.class}: outgoing pipe broken" 
+            
+            @outgoing_port.clear # clear all existing messages from the buffer
+            
+            
+            @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
+            
+            
+            # p @f_w.closed?
+            # => false
+            
+            # can't close the file here - will get an execption
+            # but must open the FIFO again before writing
+          end
+        end
+        
+        # NOTE: can use unix `cat` to monitor the output of this named pipe
+        
+      end
+    end
+    
+    
+    # blender has connected
+    # resume sending data via the output port
+    def reset
+      @outgoing_port.clear
+      @outgoing_status == :open
+      p "status: #{@outgoing_status}"
+    end
+    
+    
+    
+    
+    # 
+    # close communication channels
+    # 
+    
+    def stop
+      @incoming_thread.kill.join
+      @outgoing_thread.kill.join
+      
+      # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up.
+      
+      p @f_r
+      p @f_r.path
+      
+      @f_r.close
+      FileUtils.rm(@f_r.path)
+      puts "incoming fifo closed"
+      
+      
+      
+      if @outgoing_status == :open
+        p @f_w
+        p @outgoing_fifo_path
+        
+        @f_w.close
+      end
+      FileUtils.rm(@outgoing_fifo_path)
+        # can't use @f_w.path, because if no readers ever connect,
+        # then the FIFO never opens,
+        # and then @f_w == nil
+      puts "outgoing fifo closed"
+    end
+    
+    
+    # 
+    # communicate via json messages
+    # 
+    
+    # Send a message from ruby to python
+    # (supress message if port is closed)
+    def send(message)
+      # if the port is open, queue the message (should go out soon)
+      # if the port is closed, supress the message (don't even queue it up)
+      
+      
+      case @outgoing_status
+      when :open
+        # p message
+        @outgoing_port.push message.to_json
+      when :closed
+        # NO-OP
+      when :resetting
+        # NO-OP
+      end
+      
+    end
+    
+    # Take the latest message from python to ruby out of the queue
+    # (return nil if there are no messages in the queue)
+    def take
+      if @incoming_port.empty?
+        return nil
+      else
+        # Queue#pop blocks the current thread while empty
+        message_string = @incoming_port.pop
+        message = JSON.parse message_string
+        return message
+      end
+    end
+    
+    
+    
+    private
+    
+    
+    def make_fifo(fifo_path)
+      if fifo_path.exist?
+        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
+      else
+        File.mkfifo(fifo_path)
+      end
+      puts "fifo created @ #{fifo_path}"
+      
+      return fifo_path
+    end
+    
+  end
+  
 end
-
 

@@ -146,8 +146,9 @@ class Space
   end
   
   # what type of tile is located at the point 'pt'?
+  # Returns a list of title types (mesh datablock names)
   def point_query(pt)
-    puts pt
+    puts "point query @ #{pt}"
     
     # unless @first
     #   require 'irb'
@@ -156,15 +157,12 @@ class Space
     
     # @first ||= true
     
+    out = @entity_list.select{   |name, pos|   pos == pt  }
+                      .collect{  |name, pos|   name  }
     
-    name, pos = @entity_list.find{|name, pos| pos == pt }
-    puts "name: #{name}"
+    puts "=> #{out.inspect}"
     
-    return name
-    # @entity_list.each do |name, pos|
-    #   # puts "#{name}, #{pos}"
-    #   if 
-    # end
+    return out
   end
 end
 
@@ -173,7 +171,6 @@ end
 class Core
   include HelperFunctions
   
-  attr_accessor :frame_history
   attr_accessor :sync
   
   def initialize(window)
@@ -256,10 +253,6 @@ class Core
     
     
     
-    @message_history = BlenderHistory.new
-    @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
-    
     
     
     
@@ -296,6 +289,19 @@ class Core
     
     @mesh_id_map_file = data_dir/'mesh_map.yaml'
     @mesh_id_to_name = YAML.load_file @mesh_id_map_file
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    @message_history = BlenderHistory.new
+    @depsgraph = DependencyGraph.new
+    @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
+    
   end
   
   # run when exception is detected
@@ -309,6 +315,11 @@ class Core
     @frame_history.update
     
     
+    
+    # Don't stop sync thread on crash.
+    # Need to be able to communicate with Blender
+    # in order to control time travel
+    
     # self.ensure()
   end
   
@@ -316,9 +327,9 @@ class Core
   def on_exit
     puts "core: on exit"
     
-    unless @crash_detected
+    # if @crash_detected
       self.ensure()
-    end
+    # end
     
     
     # puts @draw_durations.join("\t")
@@ -364,7 +375,7 @@ class Core
       # @message_history.on_reload
       
       puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @message_history, self)
+      @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
       
@@ -410,62 +421,10 @@ class Core
     # In that case, you can get a double-crash if you try to run
     # BlenderSync#stop.
     @sync.stop unless @sync.nil?
-  end
-  
-  
-  def save_world_state
-    # 
-    # save 3D graphics data to file
-    # 
     
-    # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-    # ('CAMERA' not yet supported)
-    # ('ORTHO' support currently rather poor)
-    
-    # RubyProf.start
-    
-    dump_yaml @depsgraph => @world_save_file
-    puts "world saved!"
+    # TODO: seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
+      # If the named pipe is closed, subsequent writes should recieve the SIGPIPE signal (broken pipe) which should allow me to deal with hanging stuff from Blender
   end
-  
-  def load_world_state
-    if @world_save_file.exist?
-      puts "loading 3D graphics data..."
-      
-      # 
-      # loading the file takes 17 - 35 ms.
-      # the entire loading update takes ~1800 ms
-      # so the file IO is negligible
-      # 
-      
-      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # File.readlines(@world_save_file)
-      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # dt = t1-t0
-      # puts "file load time: #{dt / 1000} ms"
-      
-      @sync.stop
-      
-      @depsgraph = YAML.load_file @world_save_file
-      
-      @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
-      puts "load complete!"
-      
-      # result = RubyProf.stop
-      
-      # printer = RubyProf::FlatPrinter.new(result)
-      # printer.print(STDOUT)
-      
-      # printer = RubyProf::CallStackPrinter.new(result)
-      
-      # File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
-      #   printer.print(f)
-      # end
-    end
-  end
-  
-  
-  
   
   
   
@@ -642,7 +601,7 @@ class Core
     
     if @first_update
       puts "first update"
-      # load_world_state
+      # load_world_state()
       
       @first_update = false
       
@@ -712,24 +671,37 @@ class Core
     
     
     # TODO: wrap GLM::Vec3 multiply by a scalar
-    # TODO: how can I step this execution forward frame-by-frame using Blender's UI?
-    # TODO: how can I step execution back?
-    # TODO: how can I jump to an arbitrary point in execution?
     
-    x.times do 
-      snapshot.frame do
-        # NO-OP
-      end
-    end
-    
-    moves.each do |v|
+    moves.each_with_index do |v, move_idx|
       # step in a direction, but subdivide into
       # two motions for animation / tweening
       
-      # 
-      # step up the step, if it's there
-      # 
-      i = @entity_name_to_id['CharacterTest']
+      puts "move idx: #{move_idx} of #{moves.length-1}"
+      
+      
+      
+      # distribute the moves over a series of turns.
+      # each turn, take one movement action.
+      # + move in the specified way
+      # + play an animation to interpolate the frames
+      
+      dt = 0.5
+      
+      
+      
+      #  0 - log root position
+      snapshot.frame do
+        
+      end
+      
+      
+      # transform could be set on frame 0 (e.g. the very first frame)
+      # so want to load the transform data after that
+      
+      # all code inside snapshot blocks will be skipped on resume
+      # so any code related to a branch condition
+      # needs to be outside of the snapshot blocks.
+      i = @entity_name_to_id['CharacterTest'] # object name
       mat = @environment.get_entity_transform(i)
       
       pos  = GLM::Vec3.new(0,0,0)
@@ -742,65 +714,210 @@ class Core
       # TODO: implement vector addition
         # (in glm, the operators like + are still implemented as infix)
       
-      # if the space you're trying to move into is blocked
-      # then assume it's a step, and try to step up
-      if @space.point_query(pos + v) != nil
-        # step upwards
-        2.times do
+      puts "grid position: #{pos}"
+      
+      
+      # step up if there's an obstruction
+      if @space.point_query(pos + v).include? 'Cube.002' # datablock name
+        GLM::Vec3.new(0,0,1).tap do |v|
+          #  1 - animate
           snapshot.frame do
-            mat1 = @environment.get_entity_transform(i)
-            v2 = GLM::Vec3.new(0.0, 0.0, 0.5)
-            
-            mat2 = GLM.translate(mat1, v2)
-            
-            @environment.set_entity_transform(i, mat2)
+            puts pos
           end
-          
-          
-          # wait some frames
-          x.times do 
-            snapshot.frame do
-              # NO-OP
+          #  2 - animate
+          snapshot.frame do
+            
+          end
+          #  3 - animate
+          snapshot.frame do
+            
+          end
+          #  4 - animate
+          snapshot.frame do
+            
+          end
+          #  5 - animate
+          snapshot.frame do
+            
+          end
+          #  6 - animate
+          snapshot.frame do
+            
+          end
+          #  7 - animate
+          snapshot.frame do
+            
+          end
+          #  8 - animate (halfway)
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
             end
           end
-        end
-      end
-      
-      
-      
-      # 
-      # move along the ground
-      # 
-      2.times do
-        # must exit the mutate block to set the value back
-        
-        
-        snapshot.frame do
-          i = @entity_name_to_id['CharacterTest']
-          @environment.mutate_entity_transform(i) do |mat|
-            v2 = GLM::Vec3.new(v.x*0.5, v.y*0.5, v.z*0.5)
-            
-            GLM.translate(mat, v2)
-          end
-          
-          
-        end
-        
-        x.times do 
+          #  9 - animate
           snapshot.frame do
-            # NO-OP
+            
           end
+          # 10 - animate
+          snapshot.frame do
+            
+          end
+          # 11 - animate
+          snapshot.frame do
+            
+          end
+          # 12 - animate
+          snapshot.frame do
+            
+          end
+          # 13 - animate
+          snapshot.frame do
+            
+          end
+          # 14 - animate
+          snapshot.frame do
+            
+          end
+          # 15 - animate
+          snapshot.frame do
+            
+          end
+          # 16 - animate
+          snapshot.frame do
+            
+          end
+          # 17 - animate
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
+            end
+          end
+          
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          # 
+          # update pos = new root position
+          # 
+          i = @entity_name_to_id['CharacterTest']
+          mat = @environment.get_entity_transform(i)
+          
+          pos  = GLM::Vec3.new(0,0,0)
+          rot  = GLM::Quat.new(1,0,0,0)
+          scale = GLM::Vec3.new(0,0,0)
+          RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+          # TODO: ^ this should be extracted from the transform matrix
+          # puts pos
+          
+          # TODO: implement vector addition
+            # (in glm, the operators like + are still implemented as infix)
+          
         end
         
-        # if v.x == -1
-        #   raise "error test"
-        # end
       end
+      
+      
+      #  1 - animate
+      snapshot.frame do
+        p pos
+      end
+      #  2 - animate
+      snapshot.frame do
+        
+      end
+      #  3 - animate
+      snapshot.frame do
+        
+      end
+      #  4 - animate
+      snapshot.frame do
+        
+      end
+      #  5 - animate
+      snapshot.frame do
+        
+      end
+      #  6 - animate
+      snapshot.frame do
+        
+      end
+      #  7 - animate
+      snapshot.frame do
+        
+      end
+      #  8 - animate (halfway)
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      #  9 - animate
+      snapshot.frame do
+        
+      end
+      # 10 - animate
+      snapshot.frame do
+        
+      end
+      # 11 - animate
+      snapshot.frame do
+        
+      end
+      # 12 - animate
+      snapshot.frame do
+        
+      end
+      # 13 - animate
+      snapshot.frame do
+        
+      end
+      # 14 - animate
+      snapshot.frame do
+        
+      end
+      # 15 - animate
+      snapshot.frame do
+        
+      end
+      # 16 - animate
+      snapshot.frame do
+        
+      end
+      # 17 - animate
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      # # 18 - new root position
+      # snapshot.frame do
+        
+      # end
+      
     end
     
   end
   
   
+  
+  # 
+  # methods used by FrameHistory to save world state
+  # 
   def snapshot_gamestate
     # for now, just save the state of the one entity that's moving
     i = @entity_name_to_id['CharacterTest']
@@ -811,6 +928,9 @@ class Core
     i = @entity_name_to_id['CharacterTest']
     @environment.set_entity_transform(i, state)
   end
+  
+  
+  
   
   
   def update_while_crashed
@@ -938,6 +1058,16 @@ class Core
                                          p2.x, p2.y)
         end
         
+        
+        
+        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length}",
+                                         1178, 1013+40)
+        
+        @fonts[:monospace].draw_string("state #{@frame_history.state}",
+                                         1178, 1013)
+        
+        # @fonts[:monospace].draw_string("history size: #{}",
+                                         # 400, 160)
         
         # line_height = 35
         # p3 = CP::Vec2.new(500,650)

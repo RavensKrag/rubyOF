@@ -58,7 +58,8 @@ handler_types = {
     'on_save' : bpy.app.handlers.save_post,
     'on_load' : bpy.app.handlers.load_post,
     'on_undo' : bpy.app.handlers.undo_post,
-    'on_redo' : bpy.app.handlers.redo_post
+    'on_redo' : bpy.app.handlers.redo_post,
+    'before_frame_change' : bpy.app.handlers.frame_change_pre,
 }
 
 def register_callback(handler_type, function):
@@ -116,6 +117,8 @@ def rubyof__on_redo(scene):
     context = bpy.context
     tex_manager = anim_texture_manager_singleton(context)
     tex_manager.on_redo(scene)
+
+
     
 
 def register_event_handlers():
@@ -123,6 +126,8 @@ def register_event_handlers():
     register_callback('on_load', rubyof__on_load)
     register_callback('on_redo', rubyof__on_redo)
     register_callback('on_undo', rubyof__on_undo)
+    
+    register_callback('before_frame_change', rubyof__before_frame_change)
     
     
 def unregister_event_handlers():
@@ -166,49 +171,150 @@ def unregister_event_handlers():
 #   Live communication between Blender (python) and RubyOF (Ruby)
 #   (uses FIFO to send JSON messages)
 # ------------------------------------------------------------------------
+import fcntl
 
-
-class IPC_Helper():
+class IPC_Writer():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
+        self.pipe = None
     
     def write(self, message):
-        if not os.path.exists(self.fifo_path):
-            return
-        
-        # print("-----")
-        # print("=> FIFO open")
-        pipe = open(self.fifo_path, 'w')
-        
-        
-        start_time = time.time()
         try:
-            # text = text.encode('utf-8') # <-- not needed
+            # If the pipe exists,
+            # open it for writing
+            if os.path.exists(self.fifo_path) and self.pipe is None:
+                # opening file will throw exception if the file does not exist
+                print("FIFO: open", flush=True)
+                self.pipe = open(self.fifo_path, "w")
+                
+                # NOTE: open() and os.open() are different functions
+                # https://stackoverflow.com/questions/30172428/python-non-block-read-file
+                
+                # # set NONBLOCK status flag
+                # fd = self.pipe.fileno()
+                # flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+                # fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
             
-            pipe.write(message + "\n")
             
-            # print(message)
-            # print("=> msg len:", len(message))
-        except IOError as e:
-            pass
-            # print("broken pipe error (suppressed exception)")
-        
-        stop_time = time.time()
-        dt = (stop_time - start_time) * 1000
-        # print("=> fifo data transfer: ", dt, " msec" )
-        
-        pipe.close()
-        # print("=> FIFO closed")
-        # print("-----")
+            # Once you have the pipe open, try to write messages into the pipe.
+            # Subsequent calls to write() will write to the same pipe
+            # until the pipe is broken. (no need to ever call close)
+            if self.pipe is not None:
+                start_time = time.time()
+                # text = text.encode('utf-8') # <-- not needed
+                
+                self.pipe.write(message + "\n")
+                self.pipe.flush()
+                
+                # print(message)
+                # print("=> msg len:", len(message))
+                stop_time = time.time()
+                dt = (stop_time - start_time) * 1000
+                
+                # print("=> fifo data transfer: ", dt, " msec", flush=True)
+                
+            else:
+                print("(no FIFO available; suppressing message)", flush=True)
+            
+        except FileNotFoundError as e:
+            print("FIFO file not found", flush=True)
+        # except IOError as e:
+        except BrokenPipeError as e:
+            # When all readers close, the writer will get a broken pipe signal.
+            # At this point, the FIFO is invalid. (no need to call close)
+            # 
+            # You will get this signal even if the FIFO is removed
+            # from the filesystem, as the file is not truely deleted
+            # until the last file handle closes
+                # https://stackoverflow.com/questions/2028874/what-happens-to-an-open-file-handle-on-linux-if-the-pointed-file-gets-moved-or-d
+            # Additionally, the operating system will close all
+            # open file handles when the application exits.
+            # Thus, if Blender maintains a handle to the FIFO
+            # after RubyOF terminates, it will be closed
+            # when Python tries to write to the FIFO, or Blender exits,
+            # whichever comes first.
+                # https://stackoverflow.com/questions/45762323/what-happens-to-open-files-which-are-not-properly-closed?noredirect=1&lq=1
+            
+            print("FIFO: broken pipe error", flush=True)
+            
+            # self.pipe.close()
+            # print("=> FIFO closed", flush=True)
+            # ^ can't close the pipe at this point
+            #   => ValueError: I/O operation on closed file.
+            # Just need to set to None so future calls to write()
+            # don't try to put more data into this invalid pipe.
+            self.pipe = None
+            
+            # NOTE: deletion of the FIFO from the filesystem happens in Ruby code, blender_sync.rb
     
     
     # def __del__(self):
-    #     pass
+    #     if self.pipe is not None:
+    #         self.pipe.close()
+    #         print("outgoing FIFO closed", flush=True)
+
+
+class IPC_Reader():
+    def __init__(self, fifo_path):
+        self.fifo_path = fifo_path
+        self.pipe = None
+    
+    def read(self):
+        # If the pipe exists,
+        # open it for writing
+        if os.path.exists(self.fifo_path) and self.pipe is None:
+            # opening file will throw exception if the file does not exist
+            print("FIFO: open", flush=True)
+            self.pipe = open(self.fifo_path, "r")
+            
+            # NOTE: open() and os.open() are different functions
+            # https://stackoverflow.com/questions/30172428/python-non-block-read-file
+            
+            # set NONBLOCK status flag
+            fd = self.pipe.fileno()
+            flag = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, flag | os.O_NONBLOCK)
         
-        # self.fifo.close()
-        # print("FIFO closed")
-
-
+        
+        # Once you have the pipe open, try to write messages into the pipe.
+        # Subsequent calls to write() will write to the same pipe
+        # until the pipe is broken. (no need to ever call close)
+        if self.pipe is not None:
+            try:
+                # text = text.encode('utf-8') # <-- not needed
+                
+                message_string = self.pipe.readline()
+                # https://docs.python.org/3/library/io.html#io.StringIO
+                # read() goes until EOF
+                # readlines() goes until newline or EOF
+                    # will return the empty string, "", when at EOF
+                
+                if message_string != "":
+                    # print(message_string)
+                    message = json.loads(message_string)
+                    
+                    return message
+                else:
+                    return None
+                
+            except FileNotFoundError as e:
+                print("FIFO file not found", flush=True)
+            
+        else:
+            return None
+            
+    
+    def close(self):
+        if self.pipe is not None:
+            self.pipe.close()
+            print("incoming FIFO closed", flush=True)
+            
+            self.pipe = None
+    
+    def __del__(self):
+        if self.pipe is not None:
+            self.pipe.close()
+            print("incoming FIFO closed", flush=True)
 
 
 
@@ -363,102 +469,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
-    
-    
-    
-    def update_function(self, context):
-        if self.sync_deletions:
-            bpy.ops.wm.sync_deletions('INVOKE_DEFAULT')
-        
-        return None
-    
-    sync_deletions : BoolProperty(
-        name="Sync Deletions",
-        default=False,
-        update=update_function
-    )
-    
-
-# Use modal over the timer api, because the timer api involves threading,
-# which then requires that you make your operation thread safe.
-# That's all a huge pain just to get concurrency, 
-# so for our use case, the modal operator is much better.
-    # timer api:
-    # self.timer = functools.partial(self.detect_deletions, mytool)
-    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
-class OT_TexAnimSyncDeletions (bpy.types.Operator):
-    """Watch for object deletions and sync them to the anim texture"""
-    bl_idname = "wm.sync_deletions"
-    bl_label = "Sync Deletions"
-    
-    # @classmethod
-    # def poll(cls, context):
-    #     # return True
-    
-    def __init__(self):
-        
-        self._timer = None
-        self.timer_dt = 1/60
-        
-        self.old_names = None
-        self.new_names = None
-        
-    
-    def modal(self, context, event):
-        mytool = context.scene.my_tool
-        
-        if event.type == 'TIMER':
-            self.run(context)
-        
-        if not mytool.sync_deletions:
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
-        
-        return {'PASS_THROUGH'}
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
-        
-        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
-        mytool = context.scene.my_tool
-        
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        return {'RUNNING_MODAL'}
-    
-    
-    def run(self, context):
-        # print("running", time.time())
-        # print("objects: ", len(context.scene.objects))
-        
-        mytool = context.scene.my_tool
-        
-        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        delta = list(set(self.old_names) - set(self.new_names))
-        
-        # print("delta:", delta)
-        
-        if len(delta) > 0:
-            self.old_names = self.new_names
-            
-            tex_manager = anim_texture_manager_singleton(context)
-            
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                tex_manager.post_mesh_object_deletion(name)
-                
-                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
-
-
-
-
-
-
 
 
 
@@ -483,33 +493,16 @@ AnimTexManager = reload_class(AnimTexManager)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ------------------------------------------------------------------------
 #   Things that need to be accessed in mulitple places,
 #   so I declared them global for now
 # ------------------------------------------------------------------------
 
 
-# initialize in global scope - doesn't open FIFO until IPC_Helper.write()
-to_ruby = IPC_Helper("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
+# initialize in global scope - doesn't open FIFO until IPC_Writer.write()
+to_ruby = IPC_Writer("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
-
+from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse")
 
 
 
@@ -658,14 +651,9 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         
         
         
+        # layout.row().separator()
         
-        layout.row().separator()
         
-        
-        layout.label(text="check for deletions?")
-        label = "Operator ON" if mytool.sync_deletions else "Operator OFF"
-        layout.prop(mytool, 'sync_deletions', text=label, toggle=True)
-        # ^ updated by OT_TexAnimSyncDeletions
 
 
 
@@ -990,11 +978,11 @@ class RubyOF(bpy.types.RenderEngine):
         self.first_time = True
         
         
-        # data = {
-        #     'type':"interrupt"
-        #     'value': "RESET"
-        # }
-        # to_ruby.write(json.dumps(data))
+        data = {
+            'type':"interrupt",
+            'value': "RESET"
+        }
+        to_ruby.write(json.dumps(data))
         
         # # data to send to ruby, as well as None to tell the io thread to stop
         # self.outbound_queue = queue.Queue()
@@ -1152,7 +1140,7 @@ class RubyOF(bpy.types.RenderEngine):
         scene = depsgraph.scene
         
         
-        print("view update ---")
+        # print("view update ---")
         
         data = {
             'type': 'timestamp',
@@ -1177,7 +1165,7 @@ class RubyOF(bpy.types.RenderEngine):
         
         active_object = context.active_object
         
-        print(time.time())
+        # print(time.time())
         
         if self.first_time:
             # First time initialization
@@ -1238,12 +1226,12 @@ class RubyOF(bpy.types.RenderEngine):
             # Could be a mixture of objects and/or materials.
             # Only send the data that has changed.
             
-            print("there are", len(depsgraph.updates), "updates to process")
+            # print("there are", len(depsgraph.updates), "updates to process")
             
             # Loop over all object instances in the scene.
             for update in depsgraph.updates:
                 obj = update.id
-                print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
+                # print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
                 
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':
@@ -1364,6 +1352,378 @@ class RubyOF_Properties(bpy.types.PropertyGroup):
         min = 0,
         max = 100000
         )
+    
+    
+    
+    ruby_buffer_size: IntProperty(
+        name = "Ruby buffer size",
+        description = "number of frames known to RubyOF history",
+        default = 0,
+        )
+    
+    
+    
+    def update_modal_loop(self, context):
+        if self.b_modalUpdateActive:
+            bpy.ops.render.rubyof_modal_update('INVOKE_DEFAULT')
+        
+        return None
+    
+    b_modalUpdateActive : BoolProperty(
+        name="Modal update active",
+        default=False,
+        update=update_modal_loop
+    )
+    
+
+# Use modal over the timer api, because the timer api involves threading,
+# which then requires that you make your operation thread safe.
+# That's all a huge pain just to get concurrency, 
+# so for our use case, the modal operator is much better.
+    # timer api:
+    # self.timer = functools.partial(self.detect_deletions, mytool)
+    # bpy.app.timers.register(self.timer, first_interval=self.timer_dt)
+class ModalLoop (bpy.types.Operator):
+    # bl_idname = "render.rubyof_modal_update"
+    # bl_label = "modal operator update loop"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def __init__(self):
+        
+        self._timer = None
+        self.timer_dt = 1/60
+        
+        self.old_names = None
+        self.new_names = None
+        
+    
+    def modal(self, context, event):
+        if event.type == 'TIMER':
+            self.run(context)
+        
+        if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
+            self.on_exit()
+            
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        
+        return {'PASS_THROUGH'}
+    
+    def invoke(self, context, event):
+        wm = context.window_manager
+        
+        self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
+        wm.modal_handler_add(self)
+        
+        self.setup(context)
+        
+        return {'RUNNING_MODAL'}
+    
+    
+    def setup(self, context):
+        self.rubyof_PropContext = context.scene.my_custom_props
+        self.rubyof_BoolPropName = "read_from_ruby"
+    
+    def run(self, context):
+        pass
+    
+    def on_exit(self):
+        pass
+
+
+
+
+class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
+    """Use timer API and modal operator to generate periodic update tick"""
+    bl_idname = "render.rubyof_modal_update"
+    bl_label = "modal operator update loop"
+    
+    def setup(self, context):
+        # these two variables must always be set,
+        # otherwise the modal loop can not function
+        self.rubyof_PropContext = context.scene.my_custom_props
+        self.rubyof_BoolPropName = "b_modalUpdateActive"
+        
+        
+        # other stuff can be set after that
+        
+        self.counter = 0
+        
+        data = {
+            'type':"timeline_command",
+            'name': "reset"
+        }
+        to_ruby.write(json.dumps(data))
+        
+        
+        mytool = context.scene.my_tool
+        
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        
+        self.new_names = None
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
+        # mytool = context.scene.my_tool
+        
+    
+    def run(self, context):
+        # 
+        # sync object deletions
+        # 
+        
+        # print("running", time.time())
+        # print("objects: ", len(context.scene.objects))
+        
+        mytool = context.scene.my_tool
+        
+        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        # print("delta:", delta)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.post_mesh_object_deletion(name)
+                
+                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
+        
+        
+        # 
+        # sync timeline
+        # 
+        
+        self.counter = (self.counter + 1) % 10000
+        
+        scene = context.scene
+        props = context.scene.my_custom_props
+        
+        # print("---", flush=True)
+        
+        # test if animation is playing:
+            # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
+            # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        # find the current frame:
+            # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
+        
+        
+        # screen = context.screen
+        # print(screen.is_animation_playing, screen.is_scrubbing)
+        
+        # is_scrubbing
+        
+        if context.screen.is_scrubbing:
+            # if scrubbing, we are also playing,
+            # so need to check for scrubbing first
+            self.print("scrubbing", context.scene.frame_current)
+            # (does not trigger when stepping with arrow keys)
+            
+            data = {
+                'type': 'timeline_command',
+                'name': 'seek',
+                'time': context.scene.frame_current
+            }
+            
+            to_ruby.write(json.dumps(data))
+                        
+            # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
+        else:
+            # this is a bool, not a function
+            if context.screen.is_animation_playing:
+                if not self.bPlaying:
+                    # transition from paused to playing
+                    
+                    self.print("starting animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'play',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+                    
+                    
+                    
+                    props.ruby_buffer_size = 1000
+                    scene.frame_end = props.ruby_buffer_size
+                    
+                    
+                    # context.scene.my_custom_props.read_from_ruby = True
+                    
+                    
+            else:
+                if self.bPlaying:
+                    # transition from playing to paused
+                    
+                    self.print("stopping animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'pause',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+        
+        # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
+        
+        if not context.screen.is_animation_playing:
+            delta = abs(self.frame - context.scene.frame_current)
+            if delta == 1:
+                # triggers when stepping with arrow keys,
+                # and also on normal playback.
+                # Triggers once per frame while scrubbing.
+                
+                # (is_scrubbing == false while stepping)
+                
+                self.print("step - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+                
+                
+            elif delta > 1:
+                # triggers when using shift+right or shift+left to jump to end/beginning of timeline
+                self.print("jump - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+        
+        # print("render.rubyof_detect_playback -- end of run", flush=True)
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
+        
+        
+        
+        
+        message = from_ruby.read()
+        if message is not None:
+            # print("from ruby:", message, flush=True)
+            
+            if message['type'] == 'loopback_paused':
+                self.print("loopback - paused")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            # if message['type'] == 'loopback_started':
+                # self.print("loopback - started generate new frames")
+                
+                
+                # props.ruby_buffer_size = 1000
+                # scene.frame_end = props.ruby_buffer_size
+            
+            if message['type'] == 'loopback_finished':
+                self.print("loopback - finished")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+            
+            if message['type'] == 'loopback_reset':
+                self.print("loopback - reset")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            
+            # if message['type'] == 'history.length':
+            #     # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
+            #     props.ruby_buffer_size = message['value']+10
+            #     scene.frame_end = props.ruby_buffer_size
+                
+            # elif message['type'] == 'history.final_frame':
+            #     # once all frames are generated, lock in the exact frame count
+            #     props.ruby_buffer_size = message['value']
+            #     scene.frame_end = props.ruby_buffer_size
+                
+            #     bpy.ops.screen.animation_cancel(restore_frame=False)
+            #     context.scene.frame_current = props.ruby_buffer_size
+                
+            # elif message['type'] == 'sync_status':
+            #     if message['value'] == 'stopping':
+            #         # scene.my_custom_props.read_from_ruby = False
+                    
+            #         props.ruby_buffer_size = message['final_buffer_size']
+            #         scene.frame_end = props.ruby_buffer_size
+            #     else:
+            #         pass
+        
+        
+        
+    
+    def on_exit(self):
+        from_ruby.close()
+    
+    # print with a 4-digit timestamp (wrapping counter of frames)
+    # so its clear how much time elapsed between different
+    # sections of the code.
+    def print(self, *args):
+        print(f'{self.counter:04}', *args, flush=True)
+
+def rubyof__before_frame_change(scene):
+    # pass 
+    # print(args, flush=True)
+    props = scene.my_custom_props
+    
+    # props.ruby_buffer_size = 10
+    # print("buffer size:", props.ruby_buffer_size, flush=True)
+    # print("current frame:", scene.frame_current, flush=True)
+    
+    # scene.frame_end = props.ruby_buffer_size
+    
+    
+    if scene.frame_current == props.ruby_buffer_size:
+        # stop and the end - otherwise blender will loop by jumping back to frame=0, which is not currently supported by the RubyOF connection
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+    elif scene.frame_current > props.ruby_buffer_size:
+        # prevent seeking past the end
+        scene.frame_current = props.ruby_buffer_size
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #
@@ -1403,120 +1763,16 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         
         layout.row().separator()
         
-        row = layout.row()
-        row.operator("render.rubyof_reverse", text="<--")
-        row.operator("render.rubyof_pause", text=" || ")
-        row.operator("render.rubyof_play", text="-->")
-        
-        row = layout.row()
-        row.operator("render.rubyof_step_back", text="back")
-        row.operator("render.rubyof_step_forward", text="forward")
-        
-
-
-class RENDER_OT_RubyOF_StepBack (bpy.types.Operator):
-    """move execution one frame backwards"""
-    bl_idname = "render.rubyof_step_back"
-    bl_label = "Step Back"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'step back',
-        }
-        
-        to_ruby.write(json.dumps(data))
         
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessageStepForward (bpy.types.Operator):
-    """move execution one frame forwards"""
-    bl_idname = "render.rubyof_step_forward"
-    bl_label = "Step Forward"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'step forward',
-        }
-        
-        to_ruby.write(json.dumps(data))
+        props = context.scene.my_custom_props
         
         
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessagePause (bpy.types.Operator):
-    """pause execution"""
-    bl_idname = "render.rubyof_pause"
-    bl_label = "||"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'pause',
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessagePlay (bpy.types.Operator):
-    """let execution play forwards, generating new history"""
-    bl_idname = "render.rubyof_play"
-    bl_label = "-->"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'play',
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        
-        return {'FINISHED'}
-
-class RENDER_OT_RubyOF_MessageReverse (bpy.types.Operator):
-    """let execution play backwards, using saved history"""
-    bl_idname = "render.rubyof_reverse"
-    bl_label = "<--"
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        data = {
-            'type': 'timeline_command',
-            'value': 'reverse',
-        }
-        
-        to_ruby.write(json.dumps(data))
-        
-        
-        return {'FINISHED'}
-
-
-
-
-
+        if props.b_modalUpdateActive:
+            label = "enabled" 
+        else:
+            label = "disabled"
+        layout.prop(props, "b_modalUpdateActive", text=label, toggle=True)
 
 
 
@@ -1924,11 +2180,8 @@ classes = (
     # OT_DeleteOverride,
     #
     #
-    RENDER_OT_RubyOF_StepBack,
-    RENDER_OT_RubyOF_MessageStepForward,
-    RENDER_OT_RubyOF_MessagePause,
-    RENDER_OT_RubyOF_MessagePlay,
-    RENDER_OT_RubyOF_MessageReverse,
+    RENDER_OT_RubyOF_ModalUpdate,
+    # 
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
@@ -1936,7 +2189,6 @@ classes = (
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
     # 
-    OT_TexAnimSyncDeletions,
     #
     #
     #

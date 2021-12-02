@@ -1,0 +1,1954 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"b_up",
+				"b_modalUpdateActive"
+			],
+			[
+				"my",
+				"my_custom_props"
+			],
+			[
+				"mess",
+				"message"
+			],
+			[
+				"fro",
+				"from_ruby"
+			],
+			[
+				"outg",
+				"outgoing_port"
+			],
+			[
+				"out",
+				"outgoing_open"
+			],
+			[
+				"fina",
+				"final_frame"
+			],
+			[
+				"fin",
+				"final_frame"
+			],
+			[
+				"attr",
+				"attr_accessor"
+			],
+			[
+				"attr_",
+				"attr_accessor"
+			],
+			[
+				"def",
+				"define_method"
+			],
+			[
+				"rep",
+				"replaying_old"
+			],
+			[
+				"fram",
+				"frame_number"
+			],
+			[
+				"el",
+				"elsif"
+			],
+			[
+				"trans",
+				"transform"
+			],
+			[
+				"bExtr",
+				"bExtractAlpha"
+			],
+			[
+				"que",
+				"query_ptr"
+			],
+			[
+				"mesh_id",
+				"mesh_id_to_name"
+			],
+			[
+				"ent",
+				"entity_list"
+			],
+			[
+				"my_",
+				"my_tool"
+			],
+			[
+				"load",
+				"load_handler"
+			],
+			[
+				"transform",
+				"transform_data"
+			],
+			[
+				"pre_",
+				"pre_mesh_object_deletion"
+			],
+			[
+				"cache",
+				"cache_vertex_data"
+			],
+			[
+				"tran",
+				"transform_data"
+			],
+			[
+				"datab",
+				"datablock"
+			],
+			[
+				"targ",
+				"target_obj_index"
+			],
+			[
+				"trnasdaa",
+				"transform_data_index"
+			],
+			[
+				"animt",
+				"anim_tex_manager"
+			],
+			[
+				"animma",
+				"anim_texture_manager_singleton"
+			],
+			[
+				"mesho",
+				"mesh_obj"
+			],
+			[
+				"isupdat",
+				"is_updated_geometry"
+			],
+			[
+				"transf",
+				"transform_data"
+			],
+			[
+				"tard",
+				"target_index"
+			],
+			[
+				"normtx",
+				"normal_tex"
+			],
+			[
+				"expor",
+				"export_all_textures"
+			],
+			[
+				"material",
+				"material_slots"
+			],
+			[
+				"mesh",
+				"mesh_datablock"
+			],
+			[
+				"meshda",
+				"mesh_datablock"
+			],
+			[
+				"uqe",
+				"unique_evaluated_meshes"
+			],
+			[
+				"tra",
+				"transform_tex_path"
+			],
+			[
+				"tr",
+				"transform_tex_path"
+			],
+			[
+				"att",
+				"attr_accessor"
+			],
+			[
+				"instance_variable",
+				"instance_variable_set"
+			],
+			[
+				"step_",
+				"step_forward"
+			],
+			[
+				"ste",
+				"step_back"
+			],
+			[
+				"hi",
+				"frame_history"
+			],
+			[
+				"state",
+				"state2"
+			],
+			[
+				"repla",
+				"Replaying_Old"
+			],
+			[
+				"all",
+				"all_states"
+			],
+			[
+				"stat",
+				"state_name"
+			],
+			[
+				"const",
+				"const_get"
+			],
+			[
+				"reve",
+				"reverse_each"
+			],
+			[
+				"fr",
+				"frame_history"
+			],
+			[
+				"upda",
+				"update_fiber"
+			],
+			[
+				"mcol",
+				"m_col3"
+			],
+			[
+				"V",
+				"Vec3"
+			],
+			[
+				"norm",
+				"normal"
+			],
+			[
+				"texc",
+				"texcoord"
+			],
+			[
+				"materia",
+				"material_mapping"
+			],
+			[
+				"mate",
+				"material_name"
+			],
+			[
+				"matr",
+				"material_name"
+			],
+			[
+				"isntan",
+				"instance_variables"
+			],
+			[
+				"whe",
+				"when"
+			],
+			[
+				"cas",
+				"case"
+			],
+			[
+				"pacme",
+				"pack_mesh_data"
+			],
+			[
+				"databl",
+				"datablock_export"
+			],
+			[
+				"__updat",
+				"__update_scene"
+			],
+			[
+				"mater",
+				"materials"
+			],
+			[
+				"exist",
+				"existing_data"
+			],
+			[
+				"exi",
+				"existing_data"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"men",
+				"mesh_entity"
+			],
+			[
+				"defm",
+				"default_material"
+			],
+			[
+				"active",
+				"active_object"
+			],
+			[
+				"pack",
+				"update_packed_entity_positions"
+			],
+			[
+				"sini",
+				"shininess"
+			],
+			[
+				"Blender",
+				"BlenderLight"
+			],
+			[
+				"batch",
+				"batch"
+			],
+			[
+				"meshob",
+				"mesh_objects"
+			],
+			[
+				"nodes",
+				"nodes"
+			],
+			[
+				"rot",
+				"rotate_vector"
+			],
+			[
+				"Blendhr",
+				"BlenderLight"
+			],
+			[
+				"deps",
+				"depsgraph"
+			],
+			[
+				"entit",
+				"entity_list"
+			],
+			[
+				"encode",
+				"encode_transform"
+			],
+			[
+				"generate",
+				"generate_mesh"
+			],
+			[
+				"enti",
+				"entity_list"
+			],
+			[
+				"Mesh",
+				"BlenderMesh"
+			],
+			[
+				"viewpo",
+				"viewport_camera"
+			],
+			[
+				"dep",
+				"depsgraph"
+			],
+			[
+				"relo",
+				"reload_instancing_shaders"
+			],
+			[
+				"FLAT",
+				"FLOAT_MAX"
+			],
+			[
+				"magni",
+				"magnitude"
+			],
+			[
+				"magnitude",
+				"magnitude_normalized"
+			],
+			[
+				"tras",
+				"transforms"
+			],
+			[
+				"fs",
+				"frag_shader_path"
+			],
+			[
+				"main",
+				"max_instances"
+			],
+			[
+				"view",
+				"viewport_camera"
+			],
+			[
+				"tims",
+				"timestamps"
+			],
+			[
+				"shm",
+				"shm_dir"
+			],
+			[
+				"fifo",
+				"fifo_path"
+			],
+			[
+				"queue",
+				"outbound_queue"
+			],
+			[
+				"index",
+				"index_buffer"
+			],
+			[
+				"specul",
+				"specular_color"
+			],
+			[
+				"setpo",
+				"set_point_light"
+			],
+			[
+				"or",
+				"orientation"
+			],
+			[
+				"diffuse",
+				"diffuse_color"
+			],
+			[
+				"point",
+				"pointLight"
+			],
+			[
+				"mat",
+				"material2"
+			],
+			[
+				"first",
+				"first_update"
+			],
+			[
+				"ofcam",
+				"of_cam"
+			],
+			[
+				"hit",
+				"hit_wm_id"
+			],
+			[
+				"parse",
+				"parse_blender_data"
+			],
+			[
+				"camera",
+				"camera_settings_file"
+			],
+			[
+				"jso",
+				"json_obj"
+			],
+			[
+				"Wait",
+				"WaitReadable"
+			],
+			[
+				"midi",
+				"midi_history"
+			],
+			[
+				"noteo",
+				"note_on"
+			],
+			[
+				"delat",
+				"deltatime"
+			],
+			[
+				"setColor",
+				"setColorPickerColor"
+			],
+			[
+				"mfrac",
+				"mFrameCounter_draw"
+			],
+			[
+				"mplott",
+				"mPloter_draw_time"
+			],
+			[
+				"widt",
+				"whole_iter_dt"
+			],
+			[
+				"charm",
+				"char_mapped_display"
+			],
+			[
+				"CP",
+				"CPP_Callbacks"
+			],
+			[
+				"grid",
+				"setGridCodepoint"
+			],
+			[
+				"_grid",
+				"_textGrid"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 750.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"lowe",
+				"Convert Case: Lower Case"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"sort",
+				"SortBy: Alphabetically"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"py",
+				"Set Syntax: Python"
+			],
+			[
+				"pyth",
+				"Set Syntax: Python"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"sor",
+				"SortBy: Alphabetically"
+			],
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"upper",
+				"Convert Case: Upper Case"
+			],
+			[
+				"uniq",
+				"Permute Lines: Unique"
+			],
+			[
+				"jso",
+				"Set Syntax: JSON"
+			],
+			[
+				"python",
+				"Set Syntax: Python"
+			],
+			[
+				"low",
+				"Convert Case: Lower Case"
+			],
+			[
+				"upper ",
+				"Convert Case: Upper Case"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"expor",
+				"Export to HTML: Show Export Menu"
+			],
+			[
+				"enable pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"disab",
+				"Package Control: Disable Package"
+			],
+			[
+				"pagke li",
+				"Package Control: List Packages"
+			],
+			[
+				"packag list",
+				"Package Control: List Packages"
+			],
+			[
+				"package list",
+				"Package Control: List Packages"
+			],
+			[
+				"syntax glsl",
+				"Set Syntax: GLSL"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"synt rub",
+				"Set Syntax: Ruby"
+			],
+			[
+				"auto",
+				"Toggle AutoSave: current file only"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"gig",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"make",
+				"Set Syntax: Makefile"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"krake",
+				"Git GUI Clients: GitKraken"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"gitg",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"g",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"view as",
+				"SublimeHighlight: view as HTML"
+			],
+			[
+				"convert to html",
+				"SublimeHighlight: convert to HTML"
+			],
+			[
+				"convert",
+				"SublimeHighlight: convert to RTF"
+			],
+			[
+				"package insta",
+				"Package Control: Install Package"
+			],
+			[
+				"packge remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable ",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"add repo",
+				"Package Control: Add Repository"
+			],
+			[
+				"packgae",
+				"Package Control: List Packages"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"gitgui",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"makefil",
+				"Set Syntax: Makefile"
+			],
+			[
+				"ging",
+				"Git GUI Clients: Gitg"
+			],
+			[
+				"yam",
+				"Set Syntax: YAML"
+			],
+			[
+				"pacage",
+				"Package Control: Enable Package"
+			],
+			[
+				"amke",
+				"Set Syntax: Makefile"
+			],
+			[
+				"makefile",
+				"Set Syntax: Makefile"
+			],
+			[
+				"objec",
+				"Set Syntax: Objective-C"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"makef",
+				"Set Syntax: Makefile"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"irb",
+				"SublimeREPL: Ruby IRB (deprecated)"
+			],
+			[
+				"ruby ",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"r oc",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl o",
+				"SublimeREPL: Octave"
+			],
+			[
+				"octav",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl ruby",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl ru",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl rub",
+				"SublimeREPL: Ruby"
+			],
+			[
+				"repl j",
+				"SublimeREPL: Clojure"
+			],
+			[
+				"mal",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"matl",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"keyb",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"package en",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"matlab",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"repl oca",
+				"SublimeREPL: Octave"
+			],
+			[
+				"repl octa",
+				"SublimeREPL: Octave"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"pla",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"tod",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"to",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"",
+				"About"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"st",
+				"Git: Status"
+			],
+			[
+				"stat",
+				"Git: Status"
+			],
+			[
+				"pre",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pr",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"snipp",
+				"Snippet: if … end"
+			],
+			[
+				"snip",
+				"Snippet: YAML.load(file)"
+			],
+			[
+				"prefer",
+				"Preferences: Settings - User"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"vie",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"reve",
+				"File: Revert"
+			],
+			[
+				"markdown",
+				"Markdown Preview: preview in Sublime Text"
+			],
+			[
+				"view",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"smark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"fet",
+				"Git: Fetch"
+			],
+			[
+				"com",
+				"Git: Commit"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"syntax te",
+				"Set Syntax: Textile"
+			],
+			[
+				"lo",
+				"Git: Log All"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"oto",
+				"Show TODOs: Open files only"
+			],
+			[
+				"show",
+				"Show TODOs: Project and open files"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 1062.0
+	},
+	"console":
+	{
+		"height": 259.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/docs/tests - 2021.11.26 timeline of FrameHistory; generating new vs resuming state.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/docs/tests - notes.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/Rakefile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/main.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/progress_bar.py",
+		"/home/ravenskrag/.gdbinit",
+		"/home/ravenskrag/Desktop/gem_structure/build/window_guard.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/scripts/linux/ubuntu/install_dependencies.sh",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/apothecary/formulas/glfw.sh",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/bin/data/raw/YouTube - subscriptions.html",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/Gemfile.lock",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/pixels.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/image.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/mesh_map.yaml",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/anim_tex_cache.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/test.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/anim_tex_manager.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/class_reloader.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/coroutine_decorator.py",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/editors/object/object_add.c",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/intern/BLI_ghash.c",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/alpha_composite.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/anim_tex_exporter.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/entities/blender_object.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/test_case.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Color.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb",
+		"/home/ravenskrag/Desktop/gem_structure/Gemfile",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/example/lib/window.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/__init__.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/char_mapped_display.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/live_code.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicLight.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/tmp_delta.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/examples/RedBook/material.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.vert",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/bindings_version.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/opengl/implementation.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/lib/gl.rb",
+		"/home/ravenskrag/Desktop/gem_structure/.bundle/config",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/FreeImage/include/FreeImage.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/texture.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/startup/bl_ui/properties_material.py",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLUtils.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.h",
+		"/home/ravenskrag/Desktop/gem_structure/common.rb",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/space_view3d_stored_views/core.py",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/packge_version.txt",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/shader.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/graphics.rb",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/bundle/ruby/2.7.0/gems/pry-0.13.1/lib/pry/commands/ls/formatter.rb",
+		"/home/ravenskrag/Code/Source/blender-git/blender/source/blender/blenlib/BLI_array.hh",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/glm_bindings.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Graphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/GraphicsAdvanced.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/rubyOF/Fbo.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/color.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/fbo.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/mesh.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/resource_manager.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/blender_iso_game.sublime-project",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/graphics/blendingExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/alphaMaskingShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphics.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/graphics/graphicsExample/README.md",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/math/noise1dOctaveExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/.bundle/config",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.h",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong.frag",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong_instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp",
+		"/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts/addons/archipack/presets/archipack_floor/herringbone_50x10.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/properties/render_engine_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/properties/material_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/python/ui/RubyOF_properties.py",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/blender_iso_game.sublime-workspace",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/ts/cuda_perf.hpp",
+		"/home/ravenskrag/Desktop/gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF/glm_quat.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/youtube/lib/serialization/chipmunk/vec2.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/helpers.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_light.rb",
+		"/home/ravenskrag/Desktop/gem_structure/lib/rubyOF.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/bin/data/computeShader.glsl",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/computeShaderTextureExample/computeShaderTextureExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofBufferObject.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/multiTextureShaderExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.frag",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/bin/data/shaders/instanced.vert",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.cpp",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/src/ofApp.h",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/examples/gl/vboMeshDrawInstancedExample/vboMeshDrawInstancedExample.qbs",
+		"/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_object.rb",
+		"/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVbo.h"
+	],
+	"find":
+	{
+		"height": 48.0
+	},
+	"find_in_files":
+	{
+		"height": 264.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"5 of 12",
+			"=> [\"Cube.",
+			"=> [\"Cube.001\"]",
+			"=>"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"rainbowth.lispy": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 48.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.deviot":
+	{
+		"height": 236.0
+	},
+	"output.exec":
+	{
+		"height": 323.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 96.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "qbs debug",
+	"project": "notes - blender iso game tests.sublime-project",
+	"replace":
+	{
+		"height": 88.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"blender histor",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"progress",
+				"gem_structure/bin/projects/blender_iso_game/python/progress_bar.py"
+			],
+			[
+				"rake",
+				"gem_structure/Rakefile"
+			],
+			[
+				"window gu",
+				"gem_structure/build/window_guard.rb"
+			],
+			[
+				"main.rb",
+				"gem_structure/bin/main.rb"
+			],
+			[
+				"windo",
+				"gem_structure/lib/rubyOF/window.rb"
+			],
+			[
+				"app.cpp",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/app.cpp"
+			],
+			[
+				"live c od",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"blend sync ",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"verani ",
+				"gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_batch.rb"
+			],
+			[
+				"man .py",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"core",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"frame his",
+				"gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb"
+			],
+			[
+				"main",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"ubuntu deps lin",
+				"gem_structure/ext/openFrameworks/scripts/linux/ubuntu/install_dependencies.sh"
+			],
+			[
+				"glfw.h",
+				"gem_structure/vendor/apothecary/apothecary/formulas/glfw.sh"
+			],
+			[
+				"glfwwindow",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofAppGLFWWindow.cpp"
+			],
+			[
+				"ofbaseapp",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/app/ofBaseApp.cpp"
+			],
+			[
+				"rice array",
+				"gem_structure/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice/Array.hpp"
+			],
+			[
+				"gem lock",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile.lock"
+			],
+			[
+				"gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"cal",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"image.rb",
+				"gem_structure/lib/rubyOF/image.rb"
+			],
+			[
+				"meshmap.",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/mesh_map.yaml"
+			],
+			[
+				"callback",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"matrix decompo",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtx/matrix_decompose.hpp"
+			],
+			[
+				"cache.js",
+				"gem_structure/bin/projects/blender_iso_game/bin/anim_tex_cache.json"
+			],
+			[
+				"ant mana",
+				"gem_structure/bin/projects/blender_iso_game/python/anim_tex_manager.py"
+			],
+			[
+				"blendr/blenlib/intern/bligah",
+				"blender/blenlib/intern/BLI_ghash.c"
+			],
+			[
+				"oflight",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofLight.cpp"
+			],
+			[
+				"depen gr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"ofcamera",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofCamera.cpp"
+			],
+			[
+				"color.rb",
+				"gem_structure/lib/rubyOF/color.rb"
+			],
+			[
+				"blendr hist",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"history",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"gem",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"framh",
+				"gem_structure/bin/projects/blender_iso_game/lib/frame_history.rb"
+			],
+			[
+				"sche",
+				"gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb"
+			],
+			[
+				"mainfi",
+				"gem_structure/bin/projects/blender_iso_game/python/main_file.py"
+			],
+			[
+				"callbacks.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/callbacks.rb"
+			],
+			[
+				"charmapp",
+				"gem_structure/bin/projects/blender_iso_game/lib/char_mapped_display.rb"
+			],
+			[
+				"material.cpp",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.cpp"
+			],
+			[
+				"cor",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"call",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"graphics.rb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"graphi .rb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"materal.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_material.rb"
+			],
+			[
+				"mater.rb",
+				"gem_structure/vendor/bundle/ruby/2.7.0/gems/opengl-0.10.0/examples/RedBook/material.rb"
+			],
+			[
+				"gefile lock",
+				"gem_structure/Gemfile.lock"
+			],
+			[
+				"instan.vert",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert"
+			],
+			[
+				"phong",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.frag"
+			],
+			[
+				"animate vert",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/animation_texture.vert"
+			],
+			[
+				"node.rb",
+				"gem_structure/lib/rubyOF/node.rb"
+			],
+			[
+				"mesh.rb",
+				"gem_structure/lib/rubyOF/mesh.rb"
+			],
+			[
+				"vbomesh.c",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofVboMesh.cpp"
+			],
+			[
+				"instanced",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong_instanced.vert"
+			],
+			[
+				"blender mate",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_material.rb"
+			],
+			[
+				"pixels",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"pixels r",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"grconstants",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofGraphicsConstants.h"
+			],
+			[
+				"pixels rb",
+				"gem_structure/lib/rubyOF/pixels.rb"
+			],
+			[
+				"graphrb",
+				"gem_structure/lib/rubyOF/graphics.rb"
+			],
+			[
+				"oftextu",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp"
+			],
+			[
+				"texture .rb",
+				"gem_structure/lib/rubyOF/texture.rb"
+			],
+			[
+				"image",
+				"gem_structure/lib/rubyOF/image.rb"
+			],
+			[
+				"ofpixel",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp"
+			],
+			[
+				"oftexture",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofTexture.cpp"
+			],
+			[
+				"ofimage",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofImage.cpp"
+			],
+			[
+				"graphicpp",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"renderbatch",
+				"gem_structure/bin/projects/blender_iso_game/lib/render_batch.rb"
+			],
+			[
+				"tmp json",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"blender histo",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_history.rb"
+			],
+			[
+				"tmpjs",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"schedule",
+				"gem_structure/bin/projects/blender_iso_game/lib/scheduler.rb"
+			],
+			[
+				"livecode",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"ofpixels",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/graphics/ofPixels.cpp"
+			],
+			[
+				"rakefi",
+				"gem_structure/Rakefile"
+			],
+			[
+				"iso window",
+				"gem_structure/bin/projects/blender_iso_game/lib/window.rb"
+			],
+			[
+				"openframeworks version",
+				"gem_structure/ext/openFrameworks/packge_version.txt"
+			],
+			[
+				"ofxlight",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicLight.cpp"
+			],
+			[
+				"ofxmater",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp"
+			],
+			[
+				"light.rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/blender_light.rb"
+			],
+			[
+				"shader",
+				"gem_structure/lib/rubyOF/shader.rb"
+			],
+			[
+				".frag",
+				"gem_structure/bin/projects/blender_iso_game/bin/glsl/phong.frag"
+			],
+			[
+				"programable g",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/gl/ofGLProgrammableRenderer.cpp"
+			],
+			[
+				"graphics ad",
+				"gem_structure/ext/rubyOF/GraphicsAdvanced.cpp"
+			],
+			[
+				"bli array hh",
+				"blender/blenlib/BLI_array.hh"
+			],
+			[
+				"tmpjson",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/tmp.json"
+			],
+			[
+				"iso game json",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"iso game/ app",
+				"gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
+			],
+			[
+				"ruby .cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"blender data ",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"live",
+				"gem_structure/bin/projects/blender_iso_game/lib/live_code.rb"
+			],
+			[
+				"iso / gemfile",
+				"gem_structure/bin/projects/blender_iso_game/Gemfile"
+			],
+			[
+				"fbo",
+				"gem_structure/ext/rubyOF/Fbo.cpp"
+			],
+			[
+				"ofnode",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/3d/ofNode.cpp"
+			],
+			[
+				"ofxdyna",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxDynamicMaterial.cpp"
+			],
+			[
+				"ofcolor",
+				"gem_structure/ext/openFrameworks/libs/openFrameworks/types/ofColor.cpp"
+			],
+			[
+				"ruby.cpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"graphics.cpp",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"viewport camer",
+				"gem_structure/bin/projects/blender_iso_game/lib/entities/viewport_camera.rb"
+			],
+			[
+				"properties material",
+				"scripts/startup/bl_ui/properties_material.py"
+			],
+			[
+				"iso game / .yaml",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			],
+			[
+				"ofxmidiin.h",
+				"gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.h"
+			],
+			[
+				"iso game core rb",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"callbac cpp",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/callbacks.cpp"
+			],
+			[
+				"instb b",
+				"gem_structure/bin/projects/blender_iso_game/lib/instancing_buffer.rb"
+			],
+			[
+				"dep gra",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"blendr sync",
+				"gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb"
+			],
+			[
+				"iso game python ini",
+				"gem_structure/bin/projects/blender_iso_game/python/__init__.py"
+			],
+			[
+				"phong frag",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/shaders/phong.frag"
+			],
+			[
+				"ofx insta",
+				"gem_structure/bin/projects/blender_iso_game/ext/c_extension/ofxInstancingMaterial.cpp"
+			],
+			[
+				"iso game core",
+				"gem_structure/bin/projects/blender_iso_game/lib/core.rb"
+			],
+			[
+				"color",
+				"gem_structure/lib/rubyOF/color.rb"
+			],
+			[
+				"string cast",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtx/string_cast.inl"
+			],
+			[
+				"quaternion",
+				"gem_structure/vendor/apothecary/glm/include/glm/gtc/quaternion.hpp"
+			],
+			[
+				"quat.h",
+				"gem_structure/vendor/apothecary/glm/include/glm/detail/type_quat.hpp"
+			],
+			[
+				"quat.",
+				"gem_structure/ext/openFrameworks/libs/glm/include/glm/detail/type_quat.inl"
+			],
+			[
+				"glm bind",
+				"gem_structure/ext/rubyOF/glm_bindings.cpp"
+			],
+			[
+				"rubyofcpp",
+				"gem_structure/ext/rubyOF/rubyOF.cpp"
+			],
+			[
+				"glm quat",
+				"gem_structure/lib/rubyOF/glm_quat.rb"
+			],
+			[
+				"dep",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"blender data",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"blenderdata",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/blender_data.json"
+			],
+			[
+				"depgr",
+				"gem_structure/bin/projects/blender_iso_game/lib/dependency_graph.rb"
+			],
+			[
+				"graphics.c",
+				"gem_structure/ext/rubyOF/Graphics.cpp"
+			],
+			[
+				"world da",
+				"gem_structure/bin/projects/blender_iso_game/bin/data/world_data.yaml"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 1000.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Experiments/oF_Test/oF_Test.sublime-project"
+			],
+			[
+				"th",
+				"/home/ravenskrag/Documents/Sublime/ThoughtTrace.sublime-project"
+			],
+			[
+				"ete",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"e",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"et",
+				"/home/ravenskrag/Documents/Projects/Eternity.sublime-project"
+			],
+			[
+				"gamn",
+				"/home/ravenskrag/Documents/Projects/GameDesignNotes.sublime-project"
+			],
+			[
+				"oni",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"on",
+				"/home/ravenskrag/Documents/Projects/Oni.sublime-project"
+			],
+			[
+				"321",
+				"/home/ravenskrag/Documents/Projects/CS321_Project.sublime-project"
+			],
+			[
+				"go",
+				"/home/ravenskrag/Documents/Projects/Gosu.sublime-project"
+			],
+			[
+				"42",
+				"/home/ravenskrag/Documents/Projects/CS425_OgreProject.sublime-project"
+			]
+		],
+		"width": 760.0
+	},
+	"select_symbol":
+	{
+		"height": 488.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wrap",
+				"wrap"
+			],
+			[
+				"keyboard",
+				"keyboard_cb"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"setupopeng",
+				"ofSetupOpenGL"
+			],
+			[
+				"ofsetupop",
+				"ofSetupOpenGL"
+			]
+		],
+		"width": 492.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 421.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
