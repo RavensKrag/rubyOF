@@ -205,43 +205,51 @@ class BlenderSync
       puts "== play"
       p @frame_history.state
       
-      if @frame_history.state != :generating_new
-        @frame_history.play
-        # ^ this will not immediately advance
-        #   to the new state. It's more like shifting
-        #   from Park to Drive.
-        #   Transition to next state will not happen until
-        #   FrameHistory#update -> State#update
-        # 
-        # note: even responding to pause
-        # takes at least 1 frame. need a better way
-        # of dealing with this.
-        # 
-        # For now, I will expand the play range when python
-        # detects playback has started, without waiting
-        # for a round-trip response from ruby.
-        # (using aribtrary large number, 1000 frames)
-        # 
-        # TODO: use the "preview range" feature to set
-        #       two time ranges for the timeline
-        #       1) the maximum number of frames that can 
-        #          be stored
-        #       2) the current number of frames in history
+      
+      @frame_history.play # stubbed for some states
+      
+      if @frame_history.state == :finished
+        @frame_history.play 
         
-        if @frame_history.play == :generating_new
-          message = {
-            'type' => 'loopback_started',
-            'history.length' => @frame_history.length
-          }
-          
-          @blender_link.send message
-        end
+        message = {
+          'type' => 'loopback_play+finished',
+          'history.length' => @frame_history.length
+        }
         
-        
-      else
-        @frame_history.play
-        
+        @blender_link.send message
       end
+      
+      # if @frame_history.state != :generating_new
+      #   # ^ this will not immediately advance
+      #   #   to the new state. It's more like shifting
+      #   #   from Park to Drive.
+      #   #   Transition to next state will not happen until
+      #   #   FrameHistory#update -> State#update
+      #   # 
+      #   # note: even responding to pause
+      #   # takes at least 1 frame. need a better way
+      #   # of dealing with this.
+      #   # 
+      #   # For now, I will expand the play range when python
+      #   # detects playback has started, without waiting
+      #   # for a round-trip response from ruby.
+      #   # (using aribtrary large number, 1000 frames)
+      #   # 
+      #   # TODO: use the "preview range" feature to set
+      #   #       two time ranges for the timeline
+      #   #       1) the maximum number of frames that can 
+      #   #          be stored
+      #   #       2) the current number of frames in history
+        
+      #   if @frame_history.play == :generating_new
+      #     message = {
+      #       'type' => 'loopback_play',
+      #       'history.length' => @frame_history.length
+      #     }
+          
+      #     @blender_link.send message
+      #   end
+      # end
       
       puts "====="
       
