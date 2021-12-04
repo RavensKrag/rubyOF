@@ -73,6 +73,7 @@ class FrameHistory
       def start
         @outer.instance_eval do
           
+          puts "#{@executing_frame.to_s.rjust(4, '0')} reset @final_frame"
           @final_frame = nil # reset this variable when new state generated
           
         end
@@ -233,7 +234,19 @@ class FrameHistory
         @outer.instance_eval do
           
           # NOTE: not in a Fiber
-          if @executing_frame < @history.length-1
+          if @final_frame != nil && @executing_frame == @final_frame
+            # 
+            # print info about transition
+            # 
+            puts "#{@executing_frame.to_s.rjust(4, '0')} replaying_old (update) -> finished"
+            puts "#{@final_frame}"
+            
+            # 
+            # transition
+            # 
+            self.state = :finished
+            
+          elsif @executing_frame < @history.length-1
             
             # 
             # increment
@@ -291,7 +304,7 @@ class FrameHistory
             # 
             # print info about transition
             # 
-            puts "#{@executing_frame.to_s.rjust(4, '0')} replaying_old -> finished"
+            puts "#{@executing_frame.to_s.rjust(4, '0')} replaying_old (seek) -> finished"
             puts "#{@final_frame}"
             
             # 
