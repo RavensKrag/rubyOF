@@ -71,7 +71,11 @@ class FrameHistory
     class Generating_New < State
       # run once when transitioning into this state
       def start
-        
+        @outer.instance_eval do
+          
+          @final_frame = nil # reset this variable when new state generated
+          
+        end
       end
       
       # run every time Core updates
@@ -277,7 +281,25 @@ class FrameHistory
         # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
         @outer.instance_eval do
           
-          if frame_number >= 0 && frame_number <= @history.length-1 # [0, len-1]
+          
+          if @final_frame != nil && frame_number == @final_frame
+            # 
+            # set frame
+            # 
+            @executing_frame = frame_number
+            
+            # 
+            # print info about transition
+            # 
+            puts "#{@executing_frame.to_s.rjust(4, '0')} replaying_old -> finished"
+            puts "#{@final_frame}"
+            
+            # 
+            # transition
+            # 
+            self.state = :finished
+            
+          elsif frame_number >= 0 && frame_number <= @history.length-1 # [0, len-1]
             # within range of history buffer
             
             # 
@@ -324,8 +346,7 @@ class FrameHistory
       def start
         puts "Finished update"
         
-        @final_frame = @outer.length-1
-        # ^ used by Finished#seek
+        
         
         @outer.paused = true
         
@@ -337,6 +358,29 @@ class FrameHistory
         
         
         @outer.instance_eval do
+          if @final_frame == nil
+            # 
+            # save
+            # 
+            
+            state = @context.snapshot_gamestate
+            @history[@executing_frame] = state
+            
+            puts "#{@executing_frame.to_s.rjust(4, '0')} final frame saved to history"
+            
+            # 
+            # set @final_frame
+            # 
+            @final_frame = @history.length-1
+            # ^ used by Finished#seek
+            puts "final frame: #{@final_frame}"
+            
+          end
+          
+          
+          # p [@executing_frame, @history.length-1]
+          # puts "history length: #{@history.length}"
+          
           # 
           # print current frame
           # 
@@ -368,14 +412,14 @@ class FrameHistory
       def seek(frame_number)
         puts "Finished seek"
         puts "frame_number #{frame_number.inspect}"
-        puts "@final_frame #{@final_frame.inspect}"
+        # puts "@final_frame #{@final_frame.inspect}"
         # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
         
-        if frame_number >= @final_frame
-          # NO-OP
-        else
-          @outer.instance_eval do
-            self.state = :replaying_old
+        @outer.instance_eval do
+          if frame_number >= @final_frame
+            # NO-OP
+          else
+              self.state = :replaying_old
           end
         end
       end
