@@ -1469,7 +1469,6 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
         # mytool = context.scene.my_tool
-        
     
     def run(self, context):
         # 
@@ -1545,7 +1544,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 if not self.bPlaying:
                     # transition from paused to playing
                     
-                    self.print("starting animation")
+                    self.print(f"starting animation @ {scene.frame_current}")
+                    # self.print("scene.frame_end", scene.frame_end)
+                    
                     
                     data = {
                         'type': 'timeline_command',
@@ -1556,8 +1557,35 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                     
                     
                     
-                    props.ruby_buffer_size = 1000
-                    scene.frame_end = props.ruby_buffer_size
+                    # 
+                    # Only expand timeline range when generating
+                    # new state, not when replaying old state
+                    # 
+                    
+                    
+                    
+                    # do not expand when hitting play in the past
+                    # if scene.frame_current < scene.frame_end:
+                    #     pass
+                    #     # NO-OP
+                    # else:
+                    #     # expand when going past end of history, but not if we hit the Finished state
+                    #     if self.bFinished:
+                            # if scene.frame_current == scene.frame_end:
+                                # props.ruby_buffer_size = 1000
+                                # scene.frame_end = props.ruby_buffer_size
+                        #     else:
+                        #         pass
+                        # else:
+                        #     pass
+                    
+                    
+                    
+                        
+                    # ^ this doesn't work.
+                    #   forces pause when playing and transition from old state to new state, and allows for running off the end of the history buffer when hitting play during the Finished state.
+                    
+                    
                     
                     
                     # context.scene.my_custom_props.read_from_ruby = True
@@ -1576,6 +1604,17 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                     
                     to_ruby.write(json.dumps(data))
         
+        # Only expand timeline range when generating
+        # new state, not when replaying old state
+        # 
+        # Can't compute this with a loopback callback
+        # because it needs to happen right away -
+        # can't wait in an async style for Ruby to respond.
+        if context.screen.is_animation_playing and not context.screen.is_scrubbing and scene.frame_current == scene.frame_end:
+            self.print("expand timeline")
+            props.ruby_buffer_size = 1000
+            scene.frame_end = props.ruby_buffer_size
+            
         # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
         
         if not context.screen.is_animation_playing:
@@ -1610,6 +1649,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 to_ruby.write(json.dumps(data))
         
+        
         # print("render.rubyof_detect_playback -- end of run", flush=True)
         
         self.bPlaying = context.screen.is_animation_playing
@@ -1622,15 +1662,16 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         if message is not None:
             # print("from ruby:", message, flush=True)
             
-            if message['type'] == 'loopback_paused':
-                self.print("loopback - paused")
+            
+            if message['type'] == 'loopback_play+finished':
+                self.print("finished - clamp to end of timeline")
                 
-                self.print("history.length: ", message['history.length'])
+                bpy.ops.screen.animation_cancel(restore_frame=False)
                 
                 props.ruby_buffer_size = message['history.length']-1
                 scene.frame_end = props.ruby_buffer_size
+                scene.frame_current = scene.frame_end
                 
-                scene.frame_current = message['history.frame_index']
             
             # if message['type'] == 'loopback_started':
                 # self.print("loopback - started generate new frames")
@@ -1639,6 +1680,28 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # props.ruby_buffer_size = 1000
                 # scene.frame_end = props.ruby_buffer_size
             
+            # don't clamp timeline when pausing in the past
+            if message['type'] == 'loopback_paused_old':
+                self.print("loopback - paused old")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                # props.ruby_buffer_size = message['history.length']-1
+                # scene.frame_end = props.ruby_buffer_size
+                
+                # scene.frame_current = message['history.frame_index']
+            
+            # do clamp timeline when pausing while generating new state
+            if message['type'] == 'loopback_paused_new':
+                self.print("loopback - paused new")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
             if message['type'] == 'loopback_finished':
                 self.print("loopback - finished")
                 
@@ -1646,6 +1709,12 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 scene.frame_end = props.ruby_buffer_size
                 
                 bpy.ops.screen.animation_cancel(restore_frame=False)
+                
+                # scene.frame_current = scene.frame_end
+                # ^ can't set to final frame every time,
+                #   because that makes it very hard to
+                #   leave the final timepoint by scrubbing etc.
+                
             
             if message['type'] == 'loopback_reset':
                 self.print("loopback - reset")
@@ -1654,7 +1723,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 scene.frame_end = props.ruby_buffer_size
                 
                 scene.frame_current = message['history.frame_index']
-            
+                
+                
             
             # if message['type'] == 'history.length':
             #     # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep

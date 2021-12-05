@@ -14,6 +14,8 @@ class BlenderSync
     # implemented using two named pipes
     @blender_link = ActorChannel.new
     @finished = false
+    
+    @blender_link.start
   end
   
   def stop
@@ -28,6 +30,20 @@ class BlenderSync
     @blender_link.send message
     
     @blender_link.stop
+  end
+  
+  def reload
+    if @blender_link.stopped?
+      # @blender_link.start
+      
+      # message = {
+      #   'type' => 'loopback_reset',
+      #   'history.length'      => @frame_history.length,
+      #   'history.frame_index' => @frame_history.frame_index
+      # }
+      
+      # @blender_link.send message
+    end
   end
   
   def update
@@ -134,6 +150,7 @@ class BlenderSync
         # In future commits, we can refine this system to use multiple
         # timelines, with UI to compress timelines or switch between them.
         
+        puts "loopback reset"
         
         @frame_history.branch_history
         
@@ -147,7 +164,7 @@ class BlenderSync
         @blender_link.send message
         
       else
-        
+        puts "(reset else)"
       end
       
       puts "====="
@@ -161,7 +178,7 @@ class BlenderSync
         
         
         message = {
-          'type' => 'loopback_paused',
+          'type' => 'loopback_paused_new',
           'history.length'      => @frame_history.length,
           'history.frame_index' => @frame_history.frame_index
         }
@@ -170,6 +187,14 @@ class BlenderSync
         
       else
         @frame_history.pause
+        
+        message = {
+          'type' => 'loopback_paused_old',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
         
       end
       
@@ -180,43 +205,51 @@ class BlenderSync
       puts "== play"
       p @frame_history.state
       
-      if @frame_history.state != :generating_new
-        @frame_history.play
-        # ^ this will not immediately advance
-        #   to the new state. It's more like shifting
-        #   from Park to Drive.
-        #   Transition to next state will not happen until
-        #   FrameHistory#update -> State#update
-        # 
-        # note: even responding to pause
-        # takes at least 1 frame. need a better way
-        # of dealing with this.
-        # 
-        # For now, I will expand the play range when python
-        # detects playback has started, without waiting
-        # for a round-trip response from ruby.
-        # (using aribtrary large number, 1000 frames)
-        # 
-        # TODO: use the "preview range" feature to set
-        #       two time ranges for the timeline
-        #       1) the maximum number of frames that can 
-        #          be stored
-        #       2) the current number of frames in history
+      
+      @frame_history.play # stubbed for some states
+      
+      if @frame_history.state == :finished
+        @frame_history.play 
         
-        if @frame_history.play == :generating_new
-          message = {
-            'type' => 'loopback_started',
-            'history.length' => @frame_history.length
-          }
-          
-          @blender_link.send message
-        end
+        message = {
+          'type' => 'loopback_play+finished',
+          'history.length' => @frame_history.length
+        }
         
-        
-      else
-        @frame_history.play
-        
+        @blender_link.send message
       end
+      
+      # if @frame_history.state != :generating_new
+      #   # ^ this will not immediately advance
+      #   #   to the new state. It's more like shifting
+      #   #   from Park to Drive.
+      #   #   Transition to next state will not happen until
+      #   #   FrameHistory#update -> State#update
+      #   # 
+      #   # note: even responding to pause
+      #   # takes at least 1 frame. need a better way
+      #   # of dealing with this.
+      #   # 
+      #   # For now, I will expand the play range when python
+      #   # detects playback has started, without waiting
+      #   # for a round-trip response from ruby.
+      #   # (using aribtrary large number, 1000 frames)
+      #   # 
+      #   # TODO: use the "preview range" feature to set
+      #   #       two time ranges for the timeline
+      #   #       1) the maximum number of frames that can 
+      #   #          be stored
+      #   #       2) the current number of frames in history
+        
+      #   if @frame_history.play == :generating_new
+      #     message = {
+      #       'type' => 'loopback_play',
+      #       'history.length' => @frame_history.length
+      #     }
+          
+      #     @blender_link.send message
+      #   end
+      # end
       
       puts "====="
       
@@ -526,6 +559,11 @@ class BlenderSync
   # which is based on the actor pattern
   class ActorChannel
     def initialize
+      @fifo_dir = PROJECT_DIR/'bin'/'run'
+    end
+    
+    
+    def start
       # 
       # Open FIFO in main thread then pass to Thread using function closure.
       # This prevents weird race conditions.
@@ -549,8 +587,6 @@ class BlenderSync
       #   which prevents the FIFO from being properly deleted.
       #   This will then cause an error when the program is restarted / reloaded
       #   as a FIFO can not be created where one already exists.
-      
-      @fifo_dir = PROJECT_DIR/'bin'/'run'
       
       @f_r = File.open(make_fifo(@fifo_dir/'blender_comm'), "r+")
       
@@ -624,7 +660,6 @@ class BlenderSync
       end
     end
     
-    
     # blender has connected
     # resume sending data via the output port
     def reset
@@ -666,6 +701,13 @@ class BlenderSync
         # then the FIFO never opens,
         # and then @f_w == nil
       puts "outgoing fifo closed"
+    end
+    
+    # 
+    # communication is stopped if FIFOs do not exist on filesystem
+    # 
+    def stopped?
+      return !File.exists?(@f_r.path)
     end
     
     

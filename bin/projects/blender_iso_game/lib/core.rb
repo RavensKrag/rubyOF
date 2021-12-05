@@ -374,8 +374,8 @@ class Core
       # puts "reloading history"
       # @message_history.on_reload
       
-      puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
+      puts "restart sync"
+      @sync.reload
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
       
@@ -1060,7 +1060,7 @@ class Core
         
         
         
-        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length}",
+        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length-1}",
                                          1178, 1013+40)
         
         @fonts[:monospace].draw_string("state #{@frame_history.state}",
