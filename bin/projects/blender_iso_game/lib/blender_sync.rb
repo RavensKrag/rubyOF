@@ -105,6 +105,12 @@ class BlenderSync
     # send messages to Blender (python)
     # 
     
+    message = {
+      'type' => 'heartbeat',
+    }
+    
+    @blender_link.send message
+    
     if @frame_history.state == :finished
       # needs to be a separate if block,
       # so outer else only triggers when we detect some other state
@@ -618,41 +624,53 @@ class BlenderSync
         puts "#{self.class}: outgoing thread start"
         
         @outgoing_fifo_path = make_fifo(@fifo_dir/'blender_comm_reverse')
-        
-        loop do
-          begin
-            if @f_w.nil? || @outgoing_status == :closed
-              puts "#{self.class}: opening outgoing pipe"
+        begin
+          loop do
+            begin
+              if @f_w.nil? || @outgoing_status == :closed
+                puts "#{self.class}: opening outgoing pipe"
+                
+                @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
+                puts "pipe opened"
+                
+                @outgoing_status = :open
+                
+                # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+                
+              end
               
-              @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
-              puts "pipe opened"
+              message = @outgoing_port.pop # will block thread when Queue empty
+              p message
+              @f_w.puts message
               
-              @outgoing_status = :open
+                # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/blender_sync.rb:644:in `write': closed stream (IOError)
+                
+                # after Ruby calls ActorChannel#stop, this thread can continue to process messages. if that happens, this thread can try to write to @f_w after it has been closed by the main thread.
+                # need a different way to close the file, or something.
+
               
-              # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+              @f_w.flush
               
+              # puts "queue size: #{@outgoing_port.size}"
+            rescue Errno::EPIPE => e
+              puts "#{self.class}: outgoing pipe broken" 
+              
+              @outgoing_port.clear # clear all existing messages from the buffer
+              
+              
+              @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
+              
+              
+              # p @f_w.closed?
+              # => false
+              
+              # can't close the file here - will get an execption
+              # but must open the FIFO again before writing
             end
-            
-            message = @outgoing_port.pop # will block thread when Queue empty
-            @f_w.puts message
-            @f_w.flush
-            
-            # puts "queue size: #{@outgoing_port.size}"
-          rescue Errno::EPIPE => e
-            puts "#{self.class}: outgoing pipe broken" 
-            
-            @outgoing_port.clear # clear all existing messages from the buffer
-            
-            
-            @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
-            
-            
-            # p @f_w.closed?
-            # => false
-            
-            # can't close the file here - will get an execption
-            # but must open the FIFO again before writing
           end
+        ensure
+          puts "#{self.class}: outgoing thread stopped"
+          @f_w.close
         end
         
         # NOTE: can use unix `cat` to monitor the output of this named pipe
@@ -664,7 +682,7 @@ class BlenderSync
     # resume sending data via the output port
     def reset
       @outgoing_port.clear
-      @outgoing_status = :open
+      @outgoing_status = :open # NOTE(2): ...but set to open here. thus, once the FIFO is closed, the thread does not attempt to open it again, as it will be set to :open again before the next write to the FIFO. need to fundamentally fix the problem with this signalling structure in order to fix the bug. think about how the file is used, but also how the Queue is used to communicate with the rest of the system in the main thread. Perhaps we're conflating two different signals? Need to look into this.
       p "status: #{@outgoing_status}"
     end
     
@@ -690,16 +708,21 @@ class BlenderSync
       
       
       
-      if @outgoing_status == :open
+      # if @outgoing_status == :open
         p @f_w
         p @outgoing_fifo_path
         
-        begin
-          @f_w.close
-        rescue Errno::EPIPE => e
-          puts "broken pipe - don't need to close outgoing FIFO"
-        end
-      end
+        # begin
+          # @f_w.close
+          @outgoing_status = :closed # NOTE(1): status set to closed here...
+          @outgoing_port.clear
+          @f_w = nil # NOTE(3): setting the file handle to nil fixes the problem for now, but other bugs may lurk around, so probably want to do more testing to get to the bottom of things.
+          
+          
+        # rescue Errno::EPIPE => e
+          # puts "broken pipe - don't need to close outgoing FIFO"
+        # end
+      # end
       FileUtils.rm(@outgoing_fifo_path)
         # can't use @f_w.path, because if no readers ever connect,
         # then the FIFO never opens,
