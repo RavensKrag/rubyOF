@@ -23,9 +23,8 @@ class BlenderSync
     
     
     message = {
-      'type' => 'sync_status',
-      'value' => 'stopping',
-      'final_buffer_size' => @frame_history.length
+      'type' => 'sync_stopping',
+      'history.length' => @frame_history.length
     }
     @blender_link.send message
     
@@ -34,7 +33,8 @@ class BlenderSync
   
   def reload
     if @blender_link.stopped?
-      # @blender_link.start
+      # puts "BlenderSync: sure is stopped in here..."
+      @blender_link.start
       
       # message = {
       #   'type' => 'loopback_reset',

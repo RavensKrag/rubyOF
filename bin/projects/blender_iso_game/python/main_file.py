@@ -1751,6 +1751,18 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             #         scene.frame_end = props.ruby_buffer_size
             #     else:
             #         pass
+            
+            
+            # ruby says sync needs to stop
+            # maybe there was a crash, or maybe the program exited cleanly.
+            if message['type'] == 'sync_stopping':
+                # scene.my_custom_props.read_from_ruby = False
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                props = context.scene.my_custom_props
+                props.b_modalUpdateActive = False
         
         
         
