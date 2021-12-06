@@ -2305,7 +2305,10 @@ def register():
     
     # enable sync button
     props = bpy.context.scene.my_custom_props
+    props.b_modalUpdateActive = False
     props.b_modalUpdateActive = True
+    # (intentionally toggle on and off to force callback)
+    
     
     
 
