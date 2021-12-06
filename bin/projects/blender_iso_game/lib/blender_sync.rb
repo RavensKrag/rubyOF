@@ -694,7 +694,11 @@ class BlenderSync
         p @f_w
         p @outgoing_fifo_path
         
-        @f_w.close
+        begin
+          @f_w.close
+        rescue Errno::EPIPE => e
+          puts "broken pipe - don't need to close outgoing FIFO"
+        end
       end
       FileUtils.rm(@outgoing_fifo_path)
         # can't use @f_w.path, because if no readers ever connect,
