@@ -1715,7 +1715,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 #   because that makes it very hard to
                 #   leave the final timepoint by scrubbing etc.
                 
-            
+            # After Blender's sync button is toggled off,
+            # python will send a "reset" message to ruby,
+            # to which ruby will respond back with 'loopback_reset'
             if message['type'] == 'loopback_reset':
                 self.print("loopback - reset")
                 
@@ -1723,6 +1725,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 scene.frame_end = props.ruby_buffer_size
                 
                 scene.frame_current = message['history.frame_index']
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
                 
                 
             
@@ -2269,6 +2273,7 @@ classes = (
     DATA_PT_texanim_panel3
 )
 
+# called on reload, to load in the new code
 def register():
     print("register")
     sys.stdout.flush()
@@ -2296,12 +2301,25 @@ def register():
     
     # register_depgraph_handlers()
     register_event_handlers()
+    
+    
+    # enable sync button
+    props = bpy.context.scene.my_custom_props
+    props.b_modalUpdateActive = True
+    
+    
 
-
-
+# called on reload, to unload the old code
 def unregister():
     print("unregister")
     sys.stdout.flush()
+    
+    
+    # disable sync button
+    props = bpy.context.scene.my_custom_props
+    props.b_modalUpdateActive = False
+    # ^ calls from_ruby.close()
+    
     
     # unregister_depgraph_handlers()
     unregister_event_handlers()
@@ -2319,7 +2337,10 @@ def unregister():
     del bpy.types.Scene.my_tool
     
     
+    
 
+
+# called on first load, to load up code that was never loaded before
 def main():
     print("hello world")
     register()
