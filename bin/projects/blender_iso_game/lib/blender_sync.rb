@@ -664,7 +664,7 @@ class BlenderSync
     # resume sending data via the output port
     def reset
       @outgoing_port.clear
-      @outgoing_status == :open
+      @outgoing_status = :open
       p "status: #{@outgoing_status}"
     end
     
