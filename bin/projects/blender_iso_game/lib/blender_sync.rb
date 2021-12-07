@@ -104,13 +104,6 @@ class BlenderSync
     # 
     # send messages to Blender (python)
     # 
-    
-    message = {
-      'type' => 'heartbeat',
-    }
-    
-    @blender_link.send message
-    
     if @frame_history.state == :finished
       # needs to be a separate if block,
       # so outer else only triggers when we detect some other state
@@ -641,7 +634,7 @@ class BlenderSync
               end
               
               message = @outgoing_port.pop # will block thread when Queue empty
-              p message
+              # p message
               @f_w.puts message              
               @f_w.flush
               
