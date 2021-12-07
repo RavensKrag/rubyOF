@@ -345,7 +345,7 @@ class Core
   
   
   def on_reload
-    puts "core: on reload"
+    puts "core: on_reload() BEGIN"
     
     # if !@crash_detected
       # on a successful reload after a normal run with no errors,
@@ -402,7 +402,7 @@ class Core
     
     
     @first_update = true
-    puts "reload complete"
+    puts "core: on_reload() END"
     
     
     # load_world_state()
