@@ -32,17 +32,18 @@ class BlenderSync
   end
   
   def reload
+    puts "BlenderSync - reload()"
     if @blender_link.stopped?
-      # puts "BlenderSync: sure is stopped in here..."
+      puts "BlenderSync: reloading"
       @blender_link.start
       
-      # message = {
-      #   'type' => 'loopback_reset',
-      #   'history.length'      => @frame_history.length,
-      #   'history.frame_index' => @frame_history.frame_index
-      # }
+      message = {
+        'type' => 'loopback_reset',
+        'history.length'      => @frame_history.length,
+        'history.frame_index' => @frame_history.frame_index
+      }
       
-      # @blender_link.send message
+      @blender_link.send message
     end
   end
   
@@ -625,7 +626,14 @@ class BlenderSync
                 
                 # clear all messages put into the the buffer
                 # while the port was closed
-                @outgoing_port.clear
+                # puts "clear @outgoing_port"
+                # @outgoing_port.clear
+                # ^ shouldn't near to clear again
+                #   how would anything get into the queue?
+                #   if the thread is down, then the system
+                #   should not be updating game state, just trying
+                #   to load new code / old history to get
+                #   into a decent state again
                 
                 # blocks on open if no writers
                 @f_w = File.open(@outgoing_fifo_path, "w")
@@ -634,7 +642,7 @@ class BlenderSync
               end
               
               message = @outgoing_port.pop # will block thread when Queue empty
-              # p message
+              p message
               @f_w.puts message              
               @f_w.flush
               
@@ -672,6 +680,7 @@ class BlenderSync
           
           
           # @outgoing_status = :closed # NOTE(1): status set to closed here...
+          puts "clear @outgoing_port"
           @outgoing_port.clear
           
           @f_w = nil # NOTE(3): setting the file handle to nil fixes the problem for now
@@ -687,7 +696,8 @@ class BlenderSync
     # blender has connected
     # resume sending data via the output port
     def reset
-      @outgoing_port.clear
+      # @outgoing_port.clear
+      
       # @outgoing_status = :open # NOTE(2): ...but set to open here. thus, once the FIFO is closed, @outgoing_status will be :open when the new thread starts up, and the thread will not attempt to open it again.
       # Need to fundamentally fix the problem with this signalling structure in order to fix the bug. think about how the file is used, but also how the Queue is used to communicate with the rest of the system in the main thread. Perhaps we're conflating two different signals? Need to look into this.
       # p "status: #{@outgoing_status}"
