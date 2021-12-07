@@ -16,6 +16,12 @@ class BlenderSync
     @finished = false
     
     @blender_link.start
+    
+    
+    message = {
+      'type' => 'first_setup'
+    }
+    @blender_link.send(message)
   end
   
   def stop

@@ -1763,6 +1763,16 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # props.b_modalUpdateActive = False
                 
                 from_ruby.wait_for_connection()
+            
+            if message['type'] == 'first_setup':
+                self.print("first_setup")
+                self.print("")
+                self.print("")
+                
+                props.ruby_buffer_size = 0
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = scene.frame_end
                 
         
         
