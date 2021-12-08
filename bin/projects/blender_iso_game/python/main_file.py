@@ -1769,10 +1769,14 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 self.print("")
                 self.print("")
                 
+                # reset timeline
                 props.ruby_buffer_size = 0
                 scene.frame_end = props.ruby_buffer_size
                 
                 scene.frame_current = scene.frame_end
+                
+                # send all scene data
+                # (not yet implemented)
                 
         
         
