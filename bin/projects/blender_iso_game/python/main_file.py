@@ -258,8 +258,22 @@ class IPC_Reader():
     def __init__(self, fifo_path):
         self.fifo_path = fifo_path
         self.pipe = None
+        
+        self.wait_flag = False # used for when Ruby resets and Blender must wait for FIFOs to be reestablished
     
     def read(self):
+        # If you were told to wait, then short circuit if the FIFO path does not yet exist on the filesystem. We are waiting for Ruby to create the resources, so we'll just supress Blender messages.
+        if self.wait_flag:
+            if os.path.exists(self.fifo_path):
+                self.wait_flag = False
+                # (continue to the standard portion of function)
+            else:
+                # end here - do not perform the standard part of function
+                return None
+        
+        
+        
+        
         # If the pipe exists,
         # open it for writing
         if os.path.exists(self.fifo_path) and self.pipe is None:
@@ -310,6 +324,10 @@ class IPC_Reader():
             print("incoming FIFO closed", flush=True)
             
             self.pipe = None
+    
+    def wait_for_connection(self):
+        self.wait_flag = True
+        self.close()
     
     def __del__(self):
         if self.pipe is not None:
@@ -500,6 +518,8 @@ AnimTexManager = reload_class(AnimTexManager)
 
 
 # initialize in global scope - doesn't open FIFO until IPC_Writer.write()
+# (hold paths to FIFOs in separate variables so they can be used in other code)
+
 to_ruby = IPC_Writer("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm")
 
 from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/run/blender_comm_reverse")
@@ -1469,6 +1489,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         self.bPlaying = context.screen.is_animation_playing
         self.frame = context.scene.frame_current
         # mytool = context.scene.my_tool
+        
     
     def run(self, context):
         # 
@@ -1715,7 +1736,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 #   because that makes it very hard to
                 #   leave the final timepoint by scrubbing etc.
                 
-            
+            # After Blender's sync button is toggled off,
+            # python will send a "reset" message to ruby,
+            # to which ruby will respond back with 'loopback_reset'
             if message['type'] == 'loopback_reset':
                 self.print("loopback - reset")
                 
@@ -1724,29 +1747,37 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 scene.frame_current = message['history.frame_index']
                 
-                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
             
-            # if message['type'] == 'history.length':
-            #     # while generating new frames, leave a little extra buffer in front, as RubyOF and Blender likely do not run exactly in lockstep
-            #     props.ruby_buffer_size = message['value']+10
-            #     scene.frame_end = props.ruby_buffer_size
+            
+            # ruby says sync needs to stop
+            # maybe there was a crash, or maybe the program exited cleanly.
+            if message['type'] == 'sync_stopping':
+                self.print("sync_stopping")
+                # scene.my_custom_props.read_from_ruby = False
                 
-            # elif message['type'] == 'history.final_frame':
-            #     # once all frames are generated, lock in the exact frame count
-            #     props.ruby_buffer_size = message['value']
-            #     scene.frame_end = props.ruby_buffer_size
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
                 
-            #     bpy.ops.screen.animation_cancel(restore_frame=False)
-            #     context.scene.frame_current = props.ruby_buffer_size
+                props = context.scene.my_custom_props
+                # props.b_modalUpdateActive = False
                 
-            # elif message['type'] == 'sync_status':
-            #     if message['value'] == 'stopping':
-            #         # scene.my_custom_props.read_from_ruby = False
-                    
-            #         props.ruby_buffer_size = message['final_buffer_size']
-            #         scene.frame_end = props.ruby_buffer_size
-            #     else:
-            #         pass
+                from_ruby.wait_for_connection()
+            
+            if message['type'] == 'first_setup':
+                self.print("first_setup")
+                self.print("")
+                self.print("")
+                
+                # reset timeline
+                props.ruby_buffer_size = 0
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = scene.frame_end
+                
+                # send all scene data
+                # (not yet implemented)
+                
         
         
         
@@ -2269,6 +2300,7 @@ classes = (
     DATA_PT_texanim_panel3
 )
 
+# called on reload, to load in the new code
 def register():
     print("register")
     sys.stdout.flush()
@@ -2296,12 +2328,28 @@ def register():
     
     # register_depgraph_handlers()
     register_event_handlers()
+    
+    
+    # enable sync button
+    props = bpy.context.scene.my_custom_props
+    props.b_modalUpdateActive = False
+    props.b_modalUpdateActive = True
+    # (intentionally toggle on and off to force callback)
+    
+    
+    
 
-
-
+# called on reload, to unload the old code
 def unregister():
     print("unregister")
     sys.stdout.flush()
+    
+    
+    # disable sync button
+    props = bpy.context.scene.my_custom_props
+    props.b_modalUpdateActive = False
+    # ^ calls from_ruby.close()
+    
     
     # unregister_depgraph_handlers()
     unregister_event_handlers()
@@ -2319,7 +2367,10 @@ def unregister():
     del bpy.types.Scene.my_tool
     
     
+    
 
+
+# called on first load, to load up code that was never loaded before
 def main():
     print("hello world")
     register()

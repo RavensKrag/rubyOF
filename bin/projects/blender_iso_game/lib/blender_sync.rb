@@ -16,6 +16,12 @@ class BlenderSync
     @finished = false
     
     @blender_link.start
+    
+    
+    message = {
+      'type' => 'first_setup'
+    }
+    @blender_link.send(message)
   end
   
   def stop
@@ -23,9 +29,8 @@ class BlenderSync
     
     
     message = {
-      'type' => 'sync_status',
-      'value' => 'stopping',
-      'final_buffer_size' => @frame_history.length
+      'type' => 'sync_stopping',
+      'history.length' => @frame_history.length
     }
     @blender_link.send message
     
@@ -33,16 +38,18 @@ class BlenderSync
   end
   
   def reload
+    puts "BlenderSync - reload()"
     if @blender_link.stopped?
-      # @blender_link.start
+      puts "BlenderSync: reloading"
+      @blender_link.start
       
-      # message = {
-      #   'type' => 'loopback_reset',
-      #   'history.length'      => @frame_history.length,
-      #   'history.frame_index' => @frame_history.frame_index
-      # }
+      message = {
+        'type' => 'loopback_reset',
+        'history.length'      => @frame_history.length,
+        'history.frame_index' => @frame_history.frame_index
+      }
       
-      # @blender_link.send message
+      @blender_link.send message
     end
   end
   
@@ -104,7 +111,6 @@ class BlenderSync
     # 
     # send messages to Blender (python)
     # 
-    
     if @frame_history.state == :finished
       # needs to be a separate if block,
       # so outer else only triggers when we detect some other state
@@ -610,49 +616,82 @@ class BlenderSync
       
       
       
-      @outgoing_status = :idle
-      
       @outgoing_port = Queue.new
       
       @outgoing_thread = Thread.new do
         puts "#{self.class}: outgoing thread start"
         
         @outgoing_fifo_path = make_fifo(@fifo_dir/'blender_comm_reverse')
-        
-        loop do
-          begin
-            if @f_w.nil? || @outgoing_status == :closed
-              puts "#{self.class}: opening outgoing pipe"
+        begin
+          loop do
+            # NOTE: FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+            
+            begin
+              if @f_w.nil?
+                puts "#{self.class}: opening outgoing pipe"
+                
+                # clear all messages put into the the buffer
+                # while the port was closed
+                # puts "clear @outgoing_port"
+                # @outgoing_port.clear
+                # ^ shouldn't near to clear again
+                #   how would anything get into the queue?
+                #   if the thread is down, then the system
+                #   should not be updating game state, just trying
+                #   to load new code / old history to get
+                #   into a decent state again
+                
+                # blocks on open if no writers
+                @f_w = File.open(@outgoing_fifo_path, "w")
+                puts "pipe opened"
+                
+              end
               
-              @f_w = File.open(@outgoing_fifo_path, "w") # blocks on open if no writers
-              puts "pipe opened"
+              message = @outgoing_port.pop # will block thread when Queue empty
+              p message
+              @f_w.puts message              
+              @f_w.flush
               
-              @outgoing_status = :open
+              # puts "queue size: #{@outgoing_port.size}"
+            rescue Errno::EPIPE => e
+              puts "#{self.class}: outgoing pipe broken" 
               
-              # FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+              # NOTE: incoming port's queue will be cleared on restart
               
+              # can't close the file here - will get an execption
+              # but must open the FIFO again before writing
+              
+              # signal that FIFO should be reopened at the top of the loop
+              @f_w = nil
             end
             
-            message = @outgoing_port.pop # will block thread when Queue empty
-            @f_w.puts message
-            @f_w.flush
-            
-            # puts "queue size: #{@outgoing_port.size}"
-          rescue Errno::EPIPE => e
-            puts "#{self.class}: outgoing pipe broken" 
-            
-            @outgoing_port.clear # clear all existing messages from the buffer
-            
-            
-            @outgoing_status = :closed # do not set @f_w to nil, because it stores the path to the FIFO in the filesystem
-            
-            
-            # p @f_w.closed?
-            # => false
-            
-            # can't close the file here - will get an execption
-            # but must open the FIFO again before writing
           end
+        ensure
+          # This outer ensure block is only for when thread exits.
+          
+          puts "#{self.class}: outgoing thread stopped"
+          
+          p @f_w
+          p @outgoing_fifo_path
+          
+          # can't close if file handle was never set
+          @f_w&.close
+          
+          # FIFO is always made even if not opened,
+          # so always need to remove from the filesystem.
+          FileUtils.rm(@outgoing_fifo_path)
+            # can't use @f_w.path, because if no readers ever connect,
+            # then the FIFO never opens,
+            # and then @f_w == nil
+          
+          
+          # @outgoing_status = :closed # NOTE(1): status set to closed here...
+          puts "clear @outgoing_port"
+          @outgoing_port.clear
+          
+          @f_w = nil # NOTE(3): setting the file handle to nil fixes the problem for now
+          
+          puts "outgoing fifo closed"
         end
         
         # NOTE: can use unix `cat` to monitor the output of this named pipe
@@ -663,9 +702,11 @@ class BlenderSync
     # blender has connected
     # resume sending data via the output port
     def reset
-      @outgoing_port.clear
-      @outgoing_status == :open
-      p "status: #{@outgoing_status}"
+      # @outgoing_port.clear
+      
+      # @outgoing_status = :open # NOTE(2): ...but set to open here. thus, once the FIFO is closed, @outgoing_status will be :open when the new thread starts up, and the thread will not attempt to open it again.
+      # Need to fundamentally fix the problem with this signalling structure in order to fix the bug. think about how the file is used, but also how the Queue is used to communicate with the rest of the system in the main thread. Perhaps we're conflating two different signals? Need to look into this.
+      # p "status: #{@outgoing_status}"
     end
     
     
@@ -690,17 +731,6 @@ class BlenderSync
       
       
       
-      if @outgoing_status == :open
-        p @f_w
-        p @outgoing_fifo_path
-        
-        @f_w.close
-      end
-      FileUtils.rm(@outgoing_fifo_path)
-        # can't use @f_w.path, because if no readers ever connect,
-        # then the FIFO never opens,
-        # and then @f_w == nil
-      puts "outgoing fifo closed"
     end
     
     # 
@@ -722,15 +752,17 @@ class BlenderSync
       # if the port is closed, supress the message (don't even queue it up)
       
       
-      case @outgoing_status
-      when :open
-        # p message
+      # NOTE: can't use thread aliveness to figure out whether or not to queue messages. is there some other signal I can use? Ideally want to not to write to some variable in worker thread and main thread (thinking about future GIL-free parallelism - but maybe that's too far in the future?)
+      
+      # NOTE: current implementation doesn't crash, but doesn't clip the timeline range like hitting the blender button does. also requires manually turning the blender toggle back on.
+        # can't reset the timeline on reset, because I can't send a loopback message to Blender
+        # could possibly send a message when I figure out how to auto reconnect?
+      
+      # if @outgoing_thread.alive?
         @outgoing_port.push message.to_json
-      when :closed
-        # NO-OP
-      when :resetting
-        # NO-OP
-      end
+      # else
+      #   # NO-OP
+      # end
       
     end
     
