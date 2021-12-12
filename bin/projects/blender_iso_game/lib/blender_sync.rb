@@ -481,7 +481,7 @@ class BlenderSync
       # 
       
       delta = blender_pos - rubyof_pos
-      # puts "delta: #{delta}"
+      puts "current window offset: #{blender_pos - rubyof_pos}"
       
       # measurements of manually positioned windows:
       # dx = 0 to 3  (unsure of exact value)
@@ -493,7 +493,7 @@ class BlenderSync
       # 
       
       # just need to apply inverse of the measured delta to RubyOF windows
-      delta = CP::Vec2.new(0, -100)*-1
+      delta = CP::Vec2.new(-107,-151)*-1
       @window.position = (blender_pos + delta).to_glm
       
       # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
