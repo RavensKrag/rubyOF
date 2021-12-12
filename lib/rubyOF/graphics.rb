@@ -91,6 +91,20 @@ module Graphics
     ofSetMatrixMode__cpp(i)
   end
   
+  
+  private :ofLoadImage_path_to_ofFloatPixels
+  private :ofLoadImage_path_to_ofPixels
+  
+  def ofLoadImage(pixels, path_to_file)
+    case pixels
+    when RubyOF::Pixels
+      return ofLoadImage_path_to_ofPixels(pixels, path_to_file)
+    when RubyOF::FloatPixels
+      return ofLoadImage_path_to_ofFloatPixels(pixels, path_to_file)
+    end
+  end
+  
+  
 end
 
 

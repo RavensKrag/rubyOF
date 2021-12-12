@@ -84,16 +84,45 @@ class LiveCode
     state :error do
       
       def method_missing(method, *args)
-        # suspend delegation in order to suppress additional errors
-        # puts "livecode - supressing: #{method}"
+        # suspend delegation in order to suppress additional errors,
+        # with the exception of certain key methods.
+        
+        allowed_methods = [
+          :draw,    # time travel means a valid frame to draw is always loaded
+                    # ^ maybe this isn't true? what about bugs in draw?
+          :on_exit  # need to be able to shut down properly
+        ]
+        
+        if allowed_methods.include? method
+          # puts "livecode - delegate: #{method}"
+          return args.empty? ? @inner.send(method) : @inner.send(method, *args)
+        else
+          
+          # puts "livecode - supressing: #{method}"
+        end
+        
+        # begin
+        #   # puts "livecode - delegate: #{method}"
+        #   return args.empty? ? @inner.send(method) : @inner.send(method, *args)
+        # rescue StandardError => e
+        #   # puts "method missing error handler in LiveCode"
+        #   puts "Error handler in LiveCode:"
+        #   puts e.full_message.gsub GEM_ROOT.to_s, '[GEM_ROOT]'
+          
+        #   self.runtime_error_detected
+        #   return nil
+        # end
       end
-            
+      
       def update(*args)
+        @inner.update_while_crashed
+        
+        
         # :reload_successful
         # :file_unchanged
         # :reload_failed
         signal = attempt_reload(first_time: @last_time.nil?)
-        if signal == :reload_successful
+        if signal == :reload_successful || !@inner.in_error_state?
           self.error_patched
           
           begin
@@ -101,6 +130,7 @@ class LiveCode
             return update_signal
           rescue StandardError => e
             puts "Error handler in LiveCode:"
+            # puts "(error message supressed until later)"
             puts e.full_message
             
             self.runtime_error_detected

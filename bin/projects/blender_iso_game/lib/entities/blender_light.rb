@@ -88,7 +88,7 @@ class BlenderLight < BlenderObject
   
   # part of BlenderObject serialization interface
   def load_data(obj_data)
-    case obj_data['light_type']
+    case obj_data['.data.type']
     when 'POINT'
       # point light
       self.setPointLight()

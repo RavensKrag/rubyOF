@@ -2,93 +2,77 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, history)
+  def initialize(window, depsgraph, message_history, history, core)
     @window = window
     @depsgraph = depsgraph
-    @history = history
+    @message_history = message_history
+    @frame_history = history
     
-    # 
-    # Open FIFO in main thread then pass to Thread using function closure.
-    # This prevents weird race conditions.
-    # 
-    # Consider this timing diagram:
-    #   main thread         @msg_thread
-    #   -----------         -----------
-    #   setup               
-    #                       File.mkfifo(fifo_path)
-    #                       
-    #   update (ERROR)
-    #                       f_r = File.open(fifo_path, "r+")
-    #                       
-    #                       ensure: f_r#close
-    #                       ensure: FileUtils.rm(fifo_path)
-    # 
-    # ^ When the error happens in update
-    #   f_r has not yet been initialized (f_r == nil)
-    #   but the ensure block of @msg_thread will try close f_r.
-    #   This results in an exception, 
-    #   which prevents the FIFO from being properly deleted.
-    #   This will then cause an error when the program is restarted / reloaded
-    #   as a FIFO can not be created where one already exists.
+    @core = core
     
-    @fifo_dir = PROJECT_DIR/'bin'/'run'
-    @fifo_name = 'blender_comm'
+    # two-way communication between RubyOF (ruby) and Blender (python)
+    # implemented using two named pipes
+    @blender_link = ActorChannel.new
+    @finished = false
     
-      fifo_path = @fifo_dir/@fifo_name
-      
-      if fifo_path.exist?
-        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
-      else
-        File.mkfifo(fifo_path)
-      end
-      
-      puts "fifo created @ #{fifo_path}"
-      
-      @f_r = File.open(fifo_path, "r+")
+    @blender_link.start
     
-    @msg_queue = Queue.new
-    @msg_thread = Thread.new do
-      begin
-        puts "fifo message thread start"
-        loop do
-          data = @f_r.gets # blocking IO
-          @msg_queue << data
-        end
-      ensure
-        puts "fifo message thread stopped"
-      end
-    end
+    
+    message = {
+      'type' => 'first_setup'
+    }
+    @blender_link.send(message)
   end
   
   def stop
-    @msg_thread.kill.join
+    puts "stopping sync"
     
-    # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up. 
-    fifo_path = @fifo_dir/@fifo_name
     
-    p @f_r
-    p fifo_path
+    message = {
+      'type' => 'sync_stopping',
+      'history.length' => @frame_history.length
+    }
+    @blender_link.send message
     
-    @f_r.close
-    FileUtils.rm(fifo_path)
-    puts "fifo closed"
+    @blender_link.stop
+  end
+  
+  def reload
+    puts "BlenderSync - reload()"
+    if @blender_link.stopped?
+      puts "BlenderSync: reloading"
+      @blender_link.start
+      
+      message = {
+        'type' => 'loopback_reset',
+        'history.length'      => @frame_history.length,
+        'history.frame_index' => @frame_history.frame_index
+      }
+      
+      @blender_link.send message
+    end
   end
   
   def update
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    [MAX_READS, @msg_queue.length].min.times do
-      data_string = @msg_queue.pop
-      
-      
+    
+    # @blender_link.send
+    # message = @blender_link.take
+    
+    
+    # 
+    # read messages from Blender (python)
+    # 
+    
+    while message = @blender_link.take
       # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      blender_data = JSON.parse(data_string)
       
-      # --- This write is only needed for debugging
-      File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'w') do |f|
-        f.puts JSON.pretty_generate blender_data
-      end
-      # ---
+      # # --- This write is only needed for debugging
+      # File.open(PROJECT_DIR/'bin'/'data'/'tmp.json', 'a+') do |f|
+      #   f.puts JSON.pretty_generate message
+      # end
+      # # ---
       
       # p list
       # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
@@ -98,19 +82,24 @@ class BlenderSync
       
       
       # send all of this data to history
-      @history.write(blender_data)
+      @message_history.write message
       
-      
-      # parse_blender_data(blender_data)
     end
     
-    # retrieve the relevant slice of history
-    # (might be the things we just processed, or might be a replay of the past)
-    @history.read&.tap do |blender_data|
-      # TODO: need to send over type info instead of just the object name, but this works for now
-      parse_blender_data(blender_data)
-    end
+    # TODO: reactivate / reimplement history so state is maintained when code reloads
     
+    # TODO: merge messages in order to catch up if possible?
+      # like, responding to linked window mode is slow, but if we can drop some of the older messages (they're superceeded by the newer messages anyway) then we can maybe stop the framerate from tanking.
+    
+    # TODO: why can't the viewport be made about 1/4 of my screen size? why does it have to be large to sync with the RubyOF window?
+    
+    
+    @message_history.read do |message|
+      parse_blender_data message
+    end
+    # ^ this method of merging history can't prevent spikes due to
+    #   expensive operations like window sync that take more than 1 frame,
+    #   but the old way couldn't deal with that either.
     
     
     
@@ -118,12 +107,168 @@ class BlenderSync
     # dt = update_t1 - update_t0
     # puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
     
+    
+    # 
+    # send messages to Blender (python)
+    # 
+    if @frame_history.state == :finished
+      # needs to be a separate if block,
+      # so outer else only triggers when we detect some other state
+      if !@finished
+        puts "finished --> (send message to blender)"
+        message = {
+          'type' => 'loopback_finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @blender_link.send message
+        
+        @finished = true
+      end
+    else
+      @finished = false
+      # message = {
+      #   'type' => 'history.length',
+      #   'value' => @frame_history.length
+      # }
+      
+      # @blender_link.send message
+      
+    end
+    
+    
+  end
+  
+  private
+  
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      # @depsgraph.clear
+      
+      puts "== reset"
+      
+      @blender_link.reset
+      
+      if @frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        puts "loopback reset"
+        
+        @frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        puts "(reset else)"
+      end
+      
+      puts "====="
+      
+    when 'pause'
+      puts "== pause"
+      p @frame_history.state
+      
+      if @frame_history.state == :generating_new
+        @frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_paused_new',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      else
+        @frame_history.pause
+        
+        message = {
+          'type' => 'loopback_paused_old',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @blender_link.send message
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @frame_history.state
+      
+      
+      @frame_history.play # stubbed for some states
+      
+      if @frame_history.state == :finished
+        @frame_history.play 
+        
+        message = {
+          'type' => 'loopback_play+finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @blender_link.send message
+      end
+      
+      # if @frame_history.state != :generating_new
+      #   # ^ this will not immediately advance
+      #   #   to the new state. It's more like shifting
+      #   #   from Park to Drive.
+      #   #   Transition to next state will not happen until
+      #   #   FrameHistory#update -> State#update
+      #   # 
+      #   # note: even responding to pause
+      #   # takes at least 1 frame. need a better way
+      #   # of dealing with this.
+      #   # 
+      #   # For now, I will expand the play range when python
+      #   # detects playback has started, without waiting
+      #   # for a round-trip response from ruby.
+      #   # (using aribtrary large number, 1000 frames)
+      #   # 
+      #   # TODO: use the "preview range" feature to set
+      #   #       two time ranges for the timeline
+      #   #       1) the maximum number of frames that can 
+      #   #          be stored
+      #   #       2) the current number of frames in history
+        
+      #   if @frame_history.play == :generating_new
+      #     message = {
+      #       'type' => 'loopback_play',
+      #       'history.length' => @frame_history.length
+      #     }
+          
+      #     @blender_link.send message
+      #   end
+      # end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @frame_history.seek(message['time'])
+      
+    end
   end
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
-  def parse_blender_data(blender_data)
-    
+  def parse_blender_data(message)
     # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     # data = {
@@ -139,56 +284,53 @@ class BlenderSync
     # }
     
     
-    if blender_data['interrupt'] == 'RESET '
-      # blender has reset, so reset all RubyOF data
-      @depsgraph.clear
-      
-      return
-    end
+    # Temporary storage for Blender backend datablocks, like mesh data,
+    # before they become attached to an entity.
+    @new_datablocks ||= Hash.new
+    
+    # depsgraph only stores materials that are associated with a batch, so we need to temporarily store materials here as they are loaded
+    @new_materials ||= Hash.new
+    
+    
+    # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
     
     
     
-    # process timestamps twice:
-    # + calculate transmission time at the start of this function
-    # + calculate roundtrip time at the end of this function
-    timestamps = blender_data['timestamps']
-    unless timestamps.nil?
-      time = timestamps['end_time']
-      dt = Time.now.strftime('%s.%N').to_f - time
-      puts "transmision time: #{dt*1000} ms"
-    end
+    # p @depsgraph.instance_variable_get("@mesh_objects")
+    # p @new_datablocks
+    # puts "--- #{message['type']} ---"
+    # puts message['type'] === 'bpy.types.Mesh'
     
     
-    
-    
-    # only sent on update, not on initial
-    blender_data['all_entity_names']&.tap do |entity_names|
+    case message['type']
+    when 'all_entity_names'
       # The viewport camera is an object in RubyOF, but not in Blender
       # Need to remove it from the entity list or the camera
       # will be deleted.
-      @depsgraph.gc(active: entity_names)
-    end
-    
-    
-    # sent on viewport update, not every frame
-    blender_data['viewport_camera']&.tap do |camera_data|
+      @depsgraph.gc(active: message['list'])
+      
+    when 'viewport_camera'
+      # sent on viewport update, not every frame
       # puts "update viewport"
       
       @depsgraph.viewport_camera.tap do |camera|
         camera.dirty = true
         
-        camera.load(camera_data)
+        camera.load(message)
       end
-    end
-    
-    # sent on some updates, when window link enabled
-    blender_data['viewport_region']&.tap do |region_data|
+      
+    when 'viewport_region'
+      # sent on some updates, when window link enabled
+      # puts "viewport_region"
+      # p blender_data
+      # p blender_data.keys
+      
       # 
       # sync window size
       # 
       
-      w = region_data['width']
-      h = region_data['height']
+      w = message['width']
+      h = message['height']
       @window.set_window_shape(w,h)
       
       # @camera.aspectRatio = w.to_f/h.to_f
@@ -200,287 +342,127 @@ class BlenderSync
       # - trying to match pid_query with pid_hit
       # 
       
-      sync_window_position(blender_pid: region_data['pid'])
-    end
-    
-    
-    
-    
-    
-    # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
-    
-    new_datablocks = Hash.new
-    
-    blender_data['datablocks']&.tap do |datablock_list|
-      datablock_list.each do |data|
-        case data['type']
-        when 'bpy.types.Mesh'
-          # create underlying mesh data (verts)
-          # to later associate with mesh objects (transform)
-          # which sets the foundation for instanced geometry
-          
-          mesh_datablock =
-            @depsgraph.fetch_mesh_datablock(data['mesh_name']) do |name|
-              BlenderMeshData.new(name).tap do |mesh_datablock|
-                new_datablocks[name] = mesh_datablock
-              end
-            end
-          
-          puts "load: #{data.inspect}"
-          mesh_datablock.load_data(data)
-          
-          
-        when 'bpy.types.Light'
-          # # I don't want to have linked lights in RubyOF.
-          # # Thus, rather than create light datablocks here,
-          # # link the deserialized JSON message into the object 'data' field
-          # # so it all can be unpacked together in a later phase
-          
-          # blender_data['objects']&.tap do |object_list|
-            
-          #   object_list
-          #   .select{|o| o['type'] == 'LIGHT' }
-          #   .find{  |o| o['name'] == data['light_name'] }
-          #   .tap{   |o| o['data'] = data }
-          #   # links data even if data field is already set
-          #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
-            
-          # end
-          
-          
-        end
-      end
-    end
-    
-    # p @depsgraph.instance_variable_get("@batches").values.collect{|x| x.to_s }
-    
-    
-    
-    
-    if @default_material.nil?
-      @default_material = 
-        BlenderMaterial.new('').tap do |mat|
-          mat.shininess = 64
-          
-          
-          # Default values from 
-          # ext/openFrameworks/libs/openFrameworks/gl/ofMaterial.h
-          
-          mat.diffuse_color  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
-          # mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
-          # mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          # mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          
-          
-          # Defaults, but with 0 alpha channel
-          # (all alpha will now come from diffuse, because different components are combined with addition)
-          
-          mat.ambient_color  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 0.0])
-          mat.specular_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-          mat.emissive_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 0.0])
-        end
-      # ^ default material name needs to be '' (empty string)
-      #   because that's the string that the Blender Python script
-      #   sends when no material is bound.
-      #   (I could change it something else, but this seems ok for now)
-      # 
-      #   If the strings do not match, the default material gets rebound
-      #   every frame, which can be very expensive / wasteful.
+      # puts "trying to sync"
+      sync_window_position(blender_pid: message['pid'])
       
-    end
-    
-    
-    
-    new_materials = Hash.new
-    
-    blender_data['materials']&.tap do |material_list|
-      material_list.each do |data|
-        # (same pattern as mesh datablock manipulation)
-        # retrieve existing material and edit its properties
-        
-        mat =
-          @depsgraph.fetch_material_datablock(data['name']) do
-            BlenderMaterial.new(data['name']).tap do |mat|
-              new_materials[mat.name] = mat
-            end
-          end
-        
-        # p data['color'][1..3] # => data is already an array of floats
-        # convert to premultiplied alpha format
-        alpha = data['alpha'][1]
-        color = RubyOF::FloatColor.rgb(data['color'][1..3].map{|i| i * alpha})
-        color.a = alpha
-        
-        
-        puts color
-        
-        
-        mat.diffuse_color  = color
-        
-        mat.ambient_color  = @default_material.ambient_color
-        mat.specular_color = @default_material.specular_color
-        mat.emissive_color = @default_material.emissive_color
-        
-        # NOTE: how do I link new materials to existing objects?
-      end
-    end
-    
-    
-    
-    # (lambda closes on the new_materials Hash, so it is passed implicity)
-    get_material = ->(material_name) do 
-      puts "material name: #{material_name.inspect}"
+    when 'material_mapping'
       
-      if material_name == ''
-        # (can't use nil, b/c nil means this field was not set)
-        @default_material
-      else
-        @depsgraph.fetch_material_datablock(material_name) do
-          new_materials.fetch(material_name) do
-            raise "Could not find material '#{material_name}'"
+      # NO LONGER NECESSARY
+      # materials are exported to OpenEXR transform texture in python
+      # the RubyOF renderer just needs to render the data provided.
+      
+    when 'bpy.types.Material'
+      # (same pattern as mesh datablock manipulation)
+      # retrieve existing material and edit its properties
+      
+      # NO LONGER NECESSARY
+      # python code now exports this data in a denormalized way,
+      # encoding it on the transform texture
+      
+      
+      
+      # TODO: create Ruby API to edit material settings of object in transform texture, so that code can dynamically edit these properties in game
+      
+    when 'bpy.types.Light'
+      # # I don't want to have linked lights in RubyOF.
+      # # Thus, rather than create light datablocks here,
+      # # link the deserialized JSON message into the object 'data' field
+      # # so it all can be unpacked together in a later phase
+      
+      # blender_data['objects']&.tap do |object_list|
+        
+      #   object_list
+      #   .select{|o| o['type'] == 'LIGHT' }
+      #   .find{  |o| o['name'] == data['light_name'] }
+      #   .tap{   |o| o['data'] = data }
+      #   # links data even if data field is already set
+      #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
+        
+      # end
+      
+    when 'bpy_types.Mesh'
+      # create underlying mesh data (verts)
+      # to later associate with mesh objects (transform)
+      # which sets the foundation for instanced geometry
+      
+      
+      # NO LONGER NECESSARY
+      # replaced by the OpenEXR export
+      
+    when 'bpy_types.Object'
+      case message['.type']
+      when 'MESH'
+        # update object transform based on direct manipulation in blender
+        @core.update_entity(message)
+        
+      when 'LIGHT'
+        # load transform AND data for lights here as necessary
+        # ('data' field has already been linked to necessary data)
+        
+        # puts "loading light: #{message['name']}"
+        
+        light =
+          @depsgraph.fetch_light(message['name']) do |name|
+            BlenderLight.new(name).tap do |light|
+              @depsgraph.add light
+            end
           end
+        
+        message['transform']&.tap do |transform_data|
+          light.load_transform(transform_data)
         end
-      end
-    end
-    
-    
         
-    # Hash mapping {mesh object name => material name}
-    material_map = blender_data['material_map']
-    # p material_map
-    
-    
-    
-    blender_data['objects']&.tap do |object_list|
-      object_list.each do |data|
-        # set type-specific properties
-        case data['type']
-        when 'MESH'
-          # associate mesh object (transform) with underlying mesh data (verts)
-          
-          # TODO: how do you handle an existing object being linked to a different mesh?
-          
-          
-          # if 'data' field is set, assume that linkage must be updated
-          
-          mesh_entity =
-            @depsgraph.fetch_mesh_object(data['name']) do |name|
-              
-              mesh_datablock = 
-                data['data'].yield_self do |datablock_name|
-                  
-                  @depsgraph.fetch_mesh_datablock(datablock_name) do
-                    new_datablocks.fetch(datablock_name) do
-                      raise "ERROR: mesh datablock '#{datablock_name}' requested but not declared." 
-                    end
-                  end
-                  
-                end
-              
-              material = get_material[material_map[name]]
-              
-              BlenderMesh.new(name, mesh_datablock, material).tap do |entity|
-                @depsgraph.add entity
-              end
-            end
-          
-          
-          # 
-          # rebind materials for existing objects
-          # 
-          
-          # (material mappings should be sent every update for every mesh obj)
-          
-          material_map[mesh_entity.name].tap do |material_name|
-            puts ">> entity name: #{mesh_entity.name}"
-            puts ">> current mat name: #{mesh_entity.material.name}"
-            puts ">> material name: #{material_name.inspect}"
-            
-            if material_name.nil?
-              raise "ERROR: Material name for mesh entity '#{mesh_entity.name}' not recieved from Blender. Can not specify material. Please at least specify '' (empty string) to denote use of default material. "
-            end
-            
-            if material_name != mesh_entity.material.name
-              # find material
-              material = get_material[material_name]
-              # ^ get material first just in case there is an error
-              #   Thus, if the material does not exist
-              #   then the exception hits here and the depsgraph is preserved.
-              
-              # remove from existing batch
-              @depsgraph.delete mesh_entity.name, 'MESH'
-              
-              # bind new material
-              mesh_entity.material = material
-              
-              # assign to new batch
-              @depsgraph.add mesh_entity
-              
-            end
-          end
-          
-          
-          
-          data['transform']&.tap do |transform_data|
-            mesh_entity.load_transform(transform_data)
-          end
-        
-        
-        when 'LIGHT'
-          # load transform AND data for lights here as necessary
-          # ('data' field has already been linked to necessary data)
-          
-          puts "loading light: #{data['name']}"
-          
-          light =
-            @depsgraph.fetch_light(data['name']) do |name|
-              BlenderLight.new(name).tap do |light|
-                @depsgraph.add light
-              end
-            end
-          
-          data['transform']&.tap do |transform_data|
-            light.load_transform(transform_data)
-          end
-          
-          data['data']&.tap do |core_data|
-            # puts ">> light data"
-            # p core_data
-            light.load_data(core_data)
-          end
-          
+        message.tap do |core_data|
+          # puts ">> light data"
+          # p core_data
+          light.load_data(core_data)
         end
         
       end
       
+    
+    
+    when 'timeline_command'
+      # p message
+      parse_timeline_commands(message)
+    
+    when 'object_to_id_map'
+      @core.update_entity_mapping(message)
+    
+    when 'meshID_to_meshName'
+      @core.update_mesh_mapping(message)
+    
+    when 'anim_texture_update'
+      # update all 3 textures
+      @core.update_anim_textures(message)
+    
+    when 'geometry_update'
+      # position and normal data for one mesh has been updated
+      @core.update_geometry(message)
+    
+    when 'material_update'
+      # position data in transform texture has been updated
+      # may effect one object, or many
+      @core.update_material(message)
+    
+    
+    else
+      
+      
     end
     
     
-    
-    # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    # dt = t1-t0;
-    # puts "time - parse data: #{dt} us"
+    # # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
     
     
-    # process this last for proper timing
-    unless timestamps.nil?
-      # t0 = data['time']
-      # t1 = Time.now.strftime('%s.%N').to_f
-      dt = Time.now.strftime('%s.%N').to_f - timestamps['start_time']
-      puts "roundtrip time: #{dt*1000} ms"
-    end
+    # # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    
-    
-    
-    
-    
+    # # dt = t1-t0;
+    # # puts "time - parse data: #{dt} us"
     
   end
   
   
-  private
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
@@ -499,7 +481,7 @@ class BlenderSync
       # 
       
       delta = blender_pos - rubyof_pos
-      puts "delta: #{delta}"
+      # puts "delta: #{delta}"
       
       # measurements of manually positioned windows:
       # dx = 0 to 3  (unsure of exact value)
@@ -511,7 +493,7 @@ class BlenderSync
       # 
       
       # just need to apply inverse of the measured delta to RubyOF windows
-      delta = CP::Vec2.new(0, -101)*-1
+      delta = CP::Vec2.new(0, -100)*-1
       @window.position = (blender_pos + delta).to_glm
       
       # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
@@ -524,7 +506,7 @@ class BlenderSync
   end
   
   def find_window_position(query_title_string, query_pid)
-    puts "trying to sync window position ---"
+    # puts "trying to sync window position ---"
     
     
     # 
@@ -546,7 +528,7 @@ class BlenderSync
       .collect{ |id_string|  id_string.to_i }
     
     hit_wm_id = pids.zip(wm_ids).assoc(query_pid).last
-    puts "wm_id: #{hit_wm_id}"
+    # puts "wm_id: #{hit_wm_id}"
     
     
     # 
@@ -573,11 +555,247 @@ class BlenderSync
     hit_py = info_hash['Absolute upper-left Y'].to_i
     
     
-    puts "-------"
+    # puts "-------"
     
     return CP::Vec2.new(hit_px, hit_py)
   end
   
+  
+  # Implement an interface similar to ruby's Ractor,
+  # which is based on the actor pattern
+  class ActorChannel
+    def initialize
+      @fifo_dir = PROJECT_DIR/'bin'/'run'
+    end
+    
+    
+    def start
+      # 
+      # Open FIFO in main thread then pass to Thread using function closure.
+      # This prevents weird race conditions.
+      # 
+      # Consider this timing diagram:
+      #   main thread         @incoming_thread
+      #   -----------         -----------
+      #   setup               
+      #                       File.mkfifo(fifo_path)
+      #                       
+      #   update (ERROR)
+      #                       f_r = File.open(fifo_path, "r+")
+      #                       
+      #                       ensure: f_r#close
+      #                       ensure: FileUtils.rm(fifo_path)
+      # 
+      # ^ When the error happens in update
+      #   f_r has not yet been initialized (f_r == nil)
+      #   but the ensure block of @incoming_thread will try close f_r.
+      #   This results in an exception, 
+      #   which prevents the FIFO from being properly deleted.
+      #   This will then cause an error when the program is restarted / reloaded
+      #   as a FIFO can not be created where one already exists.
+      
+      @f_r = File.open(make_fifo(@fifo_dir/'blender_comm'), "r+")
+      
+      # NOTE: @incoming_port and @outgoing_port always hold JSON-encoded strings, not other types of ruby objects.
+      # (see #send and #take for details)
+      
+      @incoming_port = Queue.new
+      
+      @incoming_thread = Thread.new do
+        begin
+          puts "#{self.class}: incoming thread start"
+          loop do
+            data = @f_r.gets # blocking IO
+            @incoming_port << data
+          end
+        ensure
+          puts "#{self.class}: incoming thread stopped"
+        end
+      end
+      
+      
+      
+      
+      @outgoing_port = Queue.new
+      
+      @outgoing_thread = Thread.new do
+        puts "#{self.class}: outgoing thread start"
+        
+        @outgoing_fifo_path = make_fifo(@fifo_dir/'blender_comm_reverse')
+        begin
+          loop do
+            # NOTE: FIFO must be re-opened right after pipe is broken, otherwise we can't detect when writers connect
+            
+            begin
+              if @f_w.nil?
+                puts "#{self.class}: opening outgoing pipe"
+                
+                # clear all messages put into the the buffer
+                # while the port was closed
+                # puts "clear @outgoing_port"
+                # @outgoing_port.clear
+                # ^ shouldn't near to clear again
+                #   how would anything get into the queue?
+                #   if the thread is down, then the system
+                #   should not be updating game state, just trying
+                #   to load new code / old history to get
+                #   into a decent state again
+                
+                # blocks on open if no writers
+                @f_w = File.open(@outgoing_fifo_path, "w")
+                puts "pipe opened"
+                
+              end
+              
+              message = @outgoing_port.pop # will block thread when Queue empty
+              p message
+              @f_w.puts message              
+              @f_w.flush
+              
+              # puts "queue size: #{@outgoing_port.size}"
+            rescue Errno::EPIPE => e
+              puts "#{self.class}: outgoing pipe broken" 
+              
+              # NOTE: incoming port's queue will be cleared on restart
+              
+              # can't close the file here - will get an execption
+              # but must open the FIFO again before writing
+              
+              # signal that FIFO should be reopened at the top of the loop
+              @f_w = nil
+            end
+            
+          end
+        ensure
+          # This outer ensure block is only for when thread exits.
+          
+          puts "#{self.class}: outgoing thread stopped"
+          
+          p @f_w
+          p @outgoing_fifo_path
+          
+          # can't close if file handle was never set
+          @f_w&.close
+          
+          # FIFO is always made even if not opened,
+          # so always need to remove from the filesystem.
+          FileUtils.rm(@outgoing_fifo_path)
+            # can't use @f_w.path, because if no readers ever connect,
+            # then the FIFO never opens,
+            # and then @f_w == nil
+          
+          
+          # @outgoing_status = :closed # NOTE(1): status set to closed here...
+          puts "clear @outgoing_port"
+          @outgoing_port.clear
+          
+          @f_w = nil # NOTE(3): setting the file handle to nil fixes the problem for now
+          
+          puts "outgoing fifo closed"
+        end
+        
+        # NOTE: can use unix `cat` to monitor the output of this named pipe
+        
+      end
+    end
+    
+    # blender has connected
+    # resume sending data via the output port
+    def reset
+      # @outgoing_port.clear
+      
+      # @outgoing_status = :open # NOTE(2): ...but set to open here. thus, once the FIFO is closed, @outgoing_status will be :open when the new thread starts up, and the thread will not attempt to open it again.
+      # Need to fundamentally fix the problem with this signalling structure in order to fix the bug. think about how the file is used, but also how the Queue is used to communicate with the rest of the system in the main thread. Perhaps we're conflating two different signals? Need to look into this.
+      # p "status: #{@outgoing_status}"
+    end
+    
+    
+    
+    
+    # 
+    # close communication channels
+    # 
+    
+    def stop
+      @incoming_thread.kill.join
+      @outgoing_thread.kill.join
+      
+      # Release resources here instead of in ensure block on thread because the ensure block will not be called if the program crashes on first #setup. Likely this is because the program is terminating before the Thread has time to start up.
+      
+      p @f_r
+      p @f_r.path
+      
+      @f_r.close
+      FileUtils.rm(@f_r.path)
+      puts "incoming fifo closed"
+      
+      
+      
+    end
+    
+    # 
+    # communication is stopped if FIFOs do not exist on filesystem
+    # 
+    def stopped?
+      return !File.exists?(@f_r.path)
+    end
+    
+    
+    # 
+    # communicate via json messages
+    # 
+    
+    # Send a message from ruby to python
+    # (supress message if port is closed)
+    def send(message)
+      # if the port is open, queue the message (should go out soon)
+      # if the port is closed, supress the message (don't even queue it up)
+      
+      
+      # NOTE: can't use thread aliveness to figure out whether or not to queue messages. is there some other signal I can use? Ideally want to not to write to some variable in worker thread and main thread (thinking about future GIL-free parallelism - but maybe that's too far in the future?)
+      
+      # NOTE: current implementation doesn't crash, but doesn't clip the timeline range like hitting the blender button does. also requires manually turning the blender toggle back on.
+        # can't reset the timeline on reset, because I can't send a loopback message to Blender
+        # could possibly send a message when I figure out how to auto reconnect?
+      
+      # if @outgoing_thread.alive?
+        @outgoing_port.push message.to_json
+      # else
+      #   # NO-OP
+      # end
+      
+    end
+    
+    # Take the latest message from python to ruby out of the queue
+    # (return nil if there are no messages in the queue)
+    def take
+      if @incoming_port.empty?
+        return nil
+      else
+        # Queue#pop blocks the current thread while empty
+        message_string = @incoming_port.pop
+        message = JSON.parse message_string
+        return message
+      end
+    end
+    
+    
+    
+    private
+    
+    
+    def make_fifo(fifo_path)
+      if fifo_path.exist?
+        raise "ERROR: fifo (named pipe) already exists @ #{fifo_path}. Likely was not properly deleted on shutdown. Please manually delete the fifo file and try again."
+      else
+        File.mkfifo(fifo_path)
+      end
+      puts "fifo created @ #{fifo_path}"
+      
+      return fifo_path
+    end
+    
+  end
+  
 end
-
 

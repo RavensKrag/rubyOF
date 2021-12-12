@@ -937,6 +937,31 @@ Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
 	
 	// 
@@ -1037,6 +1062,198 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 	// ^ do not free the nodes themselves, as their memory is managed
 	//   by the associated entities
 }
+
+
+
+
+inline glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
+	// glm::mat4 mat(1);
+	
+	// pull colors out of image on CPU side
+	// similar to how the shader pulls data out on the GPU side
+	
+	ofFloatColor v1 = pixels.getColor(1, i);
+	ofFloatColor v2 = pixels.getColor(2, i);
+	ofFloatColor v3 = pixels.getColor(3, i);
+	ofFloatColor v4 = pixels.getColor(4, i);
+
+	glm::mat4x4 mat(v1.r, v2.r, v3.r, v4.r,
+	                v1.g, v2.g, v3.g, v4.g,
+	                v1.b, v2.b, v3.b, v4.b,
+	                v1.a, v2.a, v3.a, v4.a);
+	
+	
+	return mat;
+}
+
+
+void set_entity_transform(ofFloatPixels &pixels, const int i, const glm::mat4 mat, ofTexture &tex){
+	// # 
+	// # convert mat4 transform data back to color data
+	// # 
+	
+	// # v1.r = mat[0][0]
+	// # v1.g = mat[1][0]
+	// # v1.b = mat[2][0]
+	// # v1.a = mat[3][0]
+
+	ofFloatColor c1(mat[0][0], mat[1][0], mat[2][0], mat[3][0]);
+	ofFloatColor c2(mat[0][1], mat[1][1], mat[2][1], mat[3][1]);
+	ofFloatColor c3(mat[0][2], mat[1][2], mat[2][2], mat[3][2]);
+	ofFloatColor c4(mat[0][3], mat[1][3], mat[2][3], mat[3][3]);
+
+
+	// # 
+	// # write colors on the CPU
+	// # 
+	pixels.setColor(1, i, c1);
+	pixels.setColor(2, i, c2);
+	pixels.setColor(3, i, c3);
+	pixels.setColor(4, i, c4);
+	
+	// 
+	// transfer data from CPU to GPU
+	// 
+	
+	tex.loadData(pixels);
+	
+	
+	return;
+}
+
+
+void set_entity_transform_array(ofFloatPixels &pixels, int i, Rice::Array ary, ofTexture &tex){
+	// TODO: optimize - always allocate 16 floats (dynamic allocation can be slow)
+	
+	// copy ruby data over to C++ memory
+	float* tmp_array = new float[ary.size()];
+	int idx = 0;
+	for(auto aI = ary.begin(); aI != ary.end(); ++aI){
+		tmp_array[idx] = from_ruby<float>(*aI);
+		idx++;
+	}
+	
+	// don't need to swizzle on write,
+	// this is just like exporting from python
+	
+	ofFloatColor c1(tmp_array[ 0], tmp_array[ 1], tmp_array[ 2], tmp_array[ 3]);
+	ofFloatColor c2(tmp_array[ 4], tmp_array[ 5], tmp_array[ 6], tmp_array[ 7]);
+	ofFloatColor c3(tmp_array[ 8], tmp_array[ 9], tmp_array[10], tmp_array[11]);
+	ofFloatColor c4(tmp_array[12], tmp_array[13], tmp_array[14], tmp_array[15]);
+	
+	
+	// # 
+	// # write colors on the CPU
+	// # 
+	pixels.setColor(1, i, c1);
+	pixels.setColor(2, i, c2);
+	pixels.setColor(3, i, c3);
+	pixels.setColor(4, i, c4);
+	
+	// 
+	// transfer data from CPU to GPU
+	// 
+	
+	tex.loadData(pixels);
+	
+	
+	// 
+	// clean up memory
+	// 
+	delete tmp_array;
+	
+	
+	
+	return;
+}
+
+
+// https://stackoverflow.com/questions/17918033/glm-decompose-mat4-into-translation-and-rotation
+// answered 2021-07-09 @ 23:33
+// by tuket
+// 
+// const glm::mat4& m    input parameter
+// glm::vec3& pos        in / out parameter
+// glm::quat& rot        in / out parameter
+// glm::vec3& scale      in / out parameter
+void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale)
+{
+    pos = m[3];
+    for(int i = 0; i < 3; i++)
+        scale[i] = glm::length(glm::vec3(m[i]));
+    const glm::mat3 rotMtx(
+        glm::vec3(m[0]) / scale[0],
+        glm::vec3(m[1]) / scale[1],
+        glm::vec3(m[2]) / scale[2]);
+    rot = glm::quat_cast(rotMtx);
+}
+
+
+// list of fields copied from Ruby code, 2021.11.08
+// FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
+// pull all fields (specifying which ones too pull is too complicated)
+Rice::Array query_transform_pixels(const ofFloatPixels &pixels)
+{
+	Rice::Array table;
+	
+	ofFloatColor color;
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::vec3 scale;
+	for(int i=0; i<pixels.getHeight(); i++){
+		Rice::Array row;
+		
+		
+		// mesh id
+		color = pixels.getColor(0, i);
+		row.push(to_ruby(static_cast<int>(color.r)));
+		
+		// transform data
+		glm::mat4 mat = get_entity_transform(pixels, i);
+		decompose_matrix(mat, pos, rot, scale);
+		
+		row.push(to_ruby(pos));
+		row.push(to_ruby(rot));
+		row.push(to_ruby(scale));
+		
+		// material data
+		color = pixels.getColor(5, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(6, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(7, i);
+		row.push(to_ruby(color));
+		
+		color = pixels.getColor(8, i);
+		row.push(to_ruby(color));
+		
+		table.push(row);
+	}
+	
+	
+	return table;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1393,26 +1610,26 @@ void renderFboToScreen(ofFbo& fbo, ofShader& shader, int accumTex_i, int reveala
 
 #include "ofxDynamicMaterial.h"
 
-void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setDiffuseColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setDiffuseColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setDiffuseColor(c);
 }
 
 
-void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setSpecularColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setSpecularColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setSpecularColor(c);
 }
 
-void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setAmbientColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setAmbientColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setAmbientColor(c);
 }
 
-void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, ofFloatColor c){
+void ofxDynamicMaterial__setEmissiveColor(ofxDynamicMaterial& mat, const ofFloatColor &c){
    // mat.setEmissiveColor(ofColor_<float>(c.r/255.0,c.g/255.0,c.b/255.0,c.a/255.0));
    
    mat.setEmissiveColor(c);
@@ -1594,6 +1811,26 @@ void Init_rubyOF_project()
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
 		
+		
+		
+		.define_module_function("get_entity_transform",
+			                     &get_entity_transform)
+		
+		// set transform using mat4
+		.define_module_function("set_entity_transform",
+			                     &set_entity_transform)
+		
+		// set transform using array
+		.define_module_function("set_entity_transform_array",
+			                     &set_entity_transform_array)
+		
+		
+		.define_module_function("query_transform_pixels",
+			                     &query_transform_pixels)
+		
+		
+		.define_module_function("decompose_matrix",
+			                     &decompose_matrix)
 		
 	;
 	

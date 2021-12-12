@@ -24,6 +24,9 @@
 #include "callbacks.h"
 
 
+// #define RUBYOF_COLOR_PICKER_ENABLED
+
+
 class rbApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
@@ -50,27 +53,34 @@ class rbApp : public ofBaseApp, public ofxMidiListener {
 	
 		void newMidiMessage(ofxMidiMessage& msg);
 		
+		#ifdef RUBYOF_COLOR_PICKER_ENABLED
+			void setup_color_picker_gui();
+			void destroy_color_picker_gui();
+		#endif
+		
 	protected:
 		Rice::Object mSelf;
 		
-		ofxPanel gui;
-		ofxColorPicker_<unsigned char> mColorPicker_Widget;
-		ofParameter<ofColor_<unsigned char>> mColorPicker_Parameter;
-		ofColor_<unsigned char> mColorPicker_Color;
-		// ofColor == ofColor_<unsigned char>
-		// need to specify size of color channels for ofxColorPicker
-		// and thus for 'consistency' all sizes were specified.
-		// However, I don't think non-standard sizes can be used
-		// because Rice binds ofColor and not the arbitrary size type.
+		#ifdef RUBYOF_COLOR_PICKER_ENABLED
+			ofxPanel gui;
+			ofxColorPicker_<unsigned char> mColorPicker_Widget;
+			ofParameter<ofColor_<unsigned char>> mColorPicker_Parameter;
+			ofColor_<unsigned char> mColorPicker_Color;
+			// ofColor == ofColor_<unsigned char>
+			// need to specify size of color channels for ofxColorPicker
+			// and thus for 'consistency' all sizes were specified.
+			// However, I don't think non-standard sizes can be used
+			// because Rice binds ofColor and not the arbitrary size type.
+			
+			ColorPickerInterface* mColorPicker_iterface_ptr;
+		#endif
 		
-		ColorPickerInterface* mColorPicker_iterface_ptr;
 		
+		ofxDatGui* mDatGui;
 		
-		// ofxDatGui* mDatGui;
-		
-		// ofxDatGuiValuePlotter* mPlotter;
-		// ofxDatGuiLabel*         mLabel1;
-		// ofxDatGuiLabel*         mLabel2;
+		ofxDatGuiValuePlotter* mPlotter;
+		ofxDatGuiLabel*         mLabel1;
+		ofxDatGuiLabel*         mLabel2;
 		
 		
 		ofxImGui::Gui im_gui;

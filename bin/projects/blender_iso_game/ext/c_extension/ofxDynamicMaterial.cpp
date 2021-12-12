@@ -28,19 +28,19 @@ void ofxDynamicMaterial::setup(const ofxDynamicMaterialSettings & settings){
 	data = settings;
 }
 
-void ofxDynamicMaterial::setDiffuseColor(ofFloatColor oDiffuse) {
+void ofxDynamicMaterial::setDiffuseColor(const ofFloatColor &oDiffuse) {
 	data.diffuse = oDiffuse;
 }
 
-void ofxDynamicMaterial::setAmbientColor(ofFloatColor oAmbient) {
+void ofxDynamicMaterial::setAmbientColor(const ofFloatColor &oAmbient) {
 	data.ambient = oAmbient;
 }
 
-void ofxDynamicMaterial::setSpecularColor(ofFloatColor oSpecular) {
+void ofxDynamicMaterial::setSpecularColor(const ofFloatColor &oSpecular) {
 	data.specular = oSpecular;
 }
 
-void ofxDynamicMaterial::setEmissiveColor(ofFloatColor oEmissive) {
+void ofxDynamicMaterial::setEmissiveColor(const ofFloatColor &oEmissive) {
 	data.emissive = oEmissive;
 }
 

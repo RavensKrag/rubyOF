@@ -29,6 +29,23 @@ glm::mat4 glm_ortho__float(
    return glm::ortho(left, right, bottom, top, zNear, zFar);
 }
 
+glm::vec3 glm_vec3_mult__float(const glm::vec3 &self, const float scalar){
+   return self*scalar;
+}
+
+glm::vec3 glm_vec3_add__vec3(const glm::vec3 &self, const glm::vec3 &other){
+   return self+other;
+}
+
+glm::vec4 glm_vec4_mult__float(const glm::vec4 &self, const float scalar){
+   return self*scalar;
+}
+
+glm::vec4 glm_vec4_add__vec4(const glm::vec4 &self, const glm::vec4 &other){
+   return self+other;
+}
+
+
 
 Module Init_GLM(){
    Module rb_mGLM = define_module("GLM");
@@ -59,6 +76,9 @@ Module Init_GLM(){
       .define_constructor(Constructor<glm::vec3, float, float, float>())
       .define_method("get_component",   &glm_getComponent<glm::vec3>)
       .define_method("set_component",   &glm_setComponent<glm::vec3>)
+      
+      .define_method("*",   &glm_vec3_mult__float) // mult by scalar
+      .define_method("+",   &glm_vec3_add__vec3) // with another vec3
    ;
    
    // 
@@ -72,6 +92,9 @@ Module Init_GLM(){
       .define_constructor(Constructor<glm::vec4, float, float, float, float>())
       .define_method("get_component",   &glm_getComponent<glm::vec4>)
       .define_method("set_component",   &glm_setComponent<glm::vec4>)
+      
+      .define_method("*",   &glm_vec4_mult__float) // mult by scalar
+      .define_method("+",   &glm_vec4_add__vec4) // with another vec4
    ;
    
    // 

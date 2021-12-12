@@ -106,9 +106,72 @@ load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
 
+load LIB_DIR/'oit_render_pipeline.rb'
+
+load LIB_DIR/'vertex_animation_batch.rb'
+load LIB_DIR/'frame_history.rb'
+
+
+class Space
+  def initialize(environment, tile_id_to_name)
+    @env = environment
+    
+    @hash = Hash.new
+    
+    
+    
+    # # what fields can you ask for?
+    # @env.transform_data.fields
+    # # => [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
+    
+    
+    # # run a query (like a database) and pull out the desired fields.
+    # # returns an Array, where each entry has the values of the desired fields.
+    # # ex) [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
+    # data_list = @env.transform_data.query(:mesh_id, :position)
+    
+    # p @env.transform_data.query(:mesh_id, :position)
+    
+    @entity_list =
+      @env.transform_data.query(:mesh_id, :position)
+                         .reject{   |i, pos|   i == 0  }
+                         .collect{  |i, pos|   [tile_id_to_name[i], pos] }
+    
+    # p @entity_list
+    
+    # @entity_list.each do |name, pos|
+    #   puts "#{name}, #{pos}"
+    # end
+    
+  end
+  
+  # what type of tile is located at the point 'pt'?
+  # Returns a list of title types (mesh datablock names)
+  def point_query(pt)
+    puts "point query @ #{pt}"
+    
+    # unless @first
+    #   require 'irb'
+    #   binding.irb
+    # end
+    
+    # @first ||= true
+    
+    out = @entity_list.select{   |name, pos|   pos == pt  }
+                      .collect{  |name, pos|   name  }
+    
+    puts "=> #{out.inspect}"
+    
+    return out
+  end
+end
+
+
 
 class Core
   include HelperFunctions
+  
+  attr_accessor :sync
   
   def initialize(window)
     @w = window
@@ -190,14 +253,54 @@ class Core
     
     
     
-    @history = BlenderHistory.new
-    @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @history)
-    
     
     
     
     @world_save_file = PROJECT_DIR/'bin'/'data'/'world_data.yaml'
+    
+    
+    
+    
+    @render_pipeline = OIT_RenderPipeline.new
+    
+    # want these created once, and not reloaded when code is reloaded.
+    # @environment is reloaded with reloading of new code,
+    # then it can clobber the positions loaded by @frame_history
+    # (or maybe we can reload @environment in on_reload, BEFORE @frame_history)
+    
+    # 
+    # OpenEXR animation texture test
+    # 
+    
+    data_dir = (PROJECT_DIR/'bin'/'data')
+    geometry_texture_dir = data_dir/'geom_textures'
+    
+    @environment = VertexAnimationBatch.new(
+      geometry_texture_dir/"animation.position.exr",
+      geometry_texture_dir/"animation.normal.exr",
+      geometry_texture_dir/"animation.transform.exr"
+    )
+    
+    @frame_history = FrameHistory.new(self)
+    
+    @entity_map_file = data_dir/'entity_map.yaml'
+    @entity_name_to_id = YAML.load_file @entity_map_file
+    
+    
+    @mesh_id_map_file = data_dir/'mesh_map.yaml'
+    @mesh_id_to_name = YAML.load_file @mesh_id_map_file
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    @message_history = BlenderHistory.new
+    @depsgraph = DependencyGraph.new
+    @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
     
   end
   
@@ -206,17 +309,27 @@ class Core
     puts "core: on_crash"
     @crash_detected = true
     
+    @frame_history.pause
+    @frame_history.update
+    @frame_history.step_back
+    @frame_history.update
     
-    self.ensure()
+    
+    
+    # Don't stop sync thread on crash.
+    # Need to be able to communicate with Blender
+    # in order to control time travel
+    
+    # self.ensure()
   end
   
   # run on normal exit, before exiting program
   def on_exit
     puts "core: on exit"
     
-    unless @crash_detected
+    # if @crash_detected
       self.ensure()
-    end
+    # end
     
     
     # puts @draw_durations.join("\t")
@@ -232,9 +345,9 @@ class Core
   
   
   def on_reload
-    puts "core: on reload"
+    puts "core: on_reload() BEGIN"
     
-    unless @crash_detected
+    # if !@crash_detected
       # on a successful reload after a normal run with no errors,
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
@@ -245,32 +358,56 @@ class Core
       # need to manually refresh the Blender viewport
       # just to see the same state that you had before reload.
       # save_world_state()
-    end
+    # end
     
     @crash_detected = false
     
     @update_scheduler = nil
     
     # setup()
-      # @history = History.new
+      # @message_history = History.new
       # @depsgraph = DependencyGraph.new
       
-      puts "clearing"
-      @depsgraph.clear
+      # puts "clearing"
+      # @depsgraph.clear
       
-      puts "reloading history"
-      @history.on_reload
+      # puts "reloading history"
+      # @message_history.on_reload
       
-      puts "start up sync"
-      @sync = BlenderSync.new(@w, @depsgraph, @history)
+      puts "restart sync"
+      @sync.reload
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
-      puts "reload complete"
+      
+      if @frame_history.time_traveling?
+        # @frame_history = @frame_history.branch_history
+        
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        
+        
+        @frame_history.branch_history
+        
+      else
+        # # was paused when the crash happened,
+        # # so should be able to 'play' and resume execution
+        # @frame_history.play
+        # puts "frame: #{@frame_history.frame_index}"
+      end
+      
     
+    
+    
+    
+    @first_update = true
+    puts "core: on_reload() END"
     
     
     # load_world_state()
   end
+  
   
   # always run on exit, with or without exception
   # and also trigger when code is reloaded
@@ -284,85 +421,224 @@ class Core
     # In that case, you can get a double-crash if you try to run
     # BlenderSync#stop.
     @sync.stop unless @sync.nil?
+    
+    # TODO: seems like the thread is ending, but the FIFO file is left standing. Need to at least close the file from the reader side, even if the actual named pipe "file" is left standing.
+      # If the named pipe is closed, subsequent writes should recieve the SIGPIPE signal (broken pipe) which should allow me to deal with hanging stuff from Blender
   end
   
   
-  def save_world_state
-    # 
-    # save 3D graphics data to file
-    # 
+  
+  
+  
+  
+  
+  # 
+  # handle update messages from BlenderSync
+  # 
+  
+  def update_entity_mapping(message)
+    # p message['value']
+    @entity_name_to_id = message['value']
     
-    # obj['view_perspective'] # [PERSP', 'ORTHO', 'CAMERA']
-    # ('CAMERA' not yet supported)
-    # ('ORTHO' support currently rather poor)
+    dump_yaml @entity_name_to_id => @entity_map_file
     
-    # RubyProf.start
-    
-    dump_yaml @depsgraph => @world_save_file
-    puts "world saved!"
   end
   
-  def load_world_state
-    if @world_save_file.exist?
-      puts "loading 3D graphics data..."
+  def update_mesh_mapping(message)
+    mapping = message['value']
+    
+    @mesh_id_to_name = mapping
+    
+    dump_yaml @mesh_id_to_name => @mesh_id_map_file
+  end
+  
+  
+  
+  
+  def update_anim_textures(message)
+    # p message
+    @environment.load_textures(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path'],
+    )
+    
+    # reload history
+    # (code adapted from Core#on_reload)
+    if @frame_history.time_traveling?
+      # @frame_history = @frame_history.branch_history
       
-      # 
-      # loading the file takes 17 - 35 ms.
-      # the entire loading update takes ~1800 ms
-      # so the file IO is negligible
-      # 
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
       
-      # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # File.readlines(@world_save_file)
-      # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
-      # dt = t1-t0
-      # puts "file load time: #{dt / 1000} ms"
       
-      @sync.stop
       
-      @depsgraph = YAML.load_file @world_save_file
+      @frame_history.branch_history
       
-      @sync = BlenderSync.new(@w, @depsgraph) # relink with @depsgraph
-      puts "load complete!"
+    else
+      # Do NOT trigger play on reload after direct manipulation.
       
-      # result = RubyProf.stop
-      
-      # printer = RubyProf::FlatPrinter.new(result)
-      # printer.print(STDOUT)
-      
-      # printer = RubyProf::CallStackPrinter.new(result)
-      
-      # File.open((PROJECT_DIR/'profiler.html'), 'w') do |f|
-      #   printer.print(f)
-      # end
+      # # was paused when the crash happened,
+      # # so should be able to 'play' and resume execution
+      # @frame_history.play
+      # puts "frame: #{@frame_history.frame_index}"
     end
   end
+  
+  # position and normal data for one mesh has been updated
+  def update_geometry(message)
+    p message
+    @environment.load_textures(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path']
+    )
+    
+  end
+  
+  # position data in transform texture has been updated
+  # may effect one object, or many
+  def update_material(message)
+    p message
+    @environment.load_textures(
+      message['position_tex_path'],
+      message['normal_tex_path'],
+      message['transform_tex_path']
+    )
+  end
+  
+  
+  def update_entity(message)
+    # case message['.type']
+    # when 'MESH'
+    #   name = message['name']
+    #   id = @entity_name_to_id[name]
+      
+      
+    #   nested_array = message['transform']
+    #   # ^ array of arrays
+      
+    #   # p nested_array
+      
+    #   @environment.set_entity_transform_array id, nested_array
+    #   # ^ thin wrapper on C++ callback
+      
+      
+      
+    #   # reload history
+    #   # (code adapted from Core#on_reload)
+    #   if @frame_history.time_traveling?
+    #     # @frame_history = @frame_history.branch_history
+        
+    #     # For now, just replace the curret timeline with the alt one.
+    #     # In future commits, we can refine this system to use multiple
+    #     # timelines, with UI to compress timelines or switch between them.
+        
+        
+        
+    #     @frame_history.branch_history
+        
+    #   else
+    #     # Do NOT trigger play on reload after direct manipulation.
+    #     # Need the user to press "play" manually to signal
+    #     # they are done with direct manipulation. Otherwise,
+    #     # inputs from direct manipulation are comingled with
+    #     # inputs from ruby code execution.
+        
+        
+    #     # # was paused when the crash happened,
+    #     # # so should be able to 'play' and resume execution
+    #     # @frame_history.play
+    #     # puts "frame: #{@frame_history.frame_index}"
+    #   end
+    # else
+      
+      
+    # end
+  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
-    @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
+    @crash_detected = false # reset when normal updates are called again
     
-    # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
+    # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
     
-    # puts "update thread: #{Thread.current.object_id}" 
+    # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    # @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
     
-    # if SPIKE_PROFILER_ON
-    #   RB_SPIKE_PROFILER.enable
-    # end
+    # # puts "update thread: #{Thread.current.object_id}" 
     
-    # puts "--> start update"
-    signal = @update_scheduler.resume
-    # puts signal
-    # puts "<-- end update"
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.enable
+    # # end
     
-    # if SPIKE_PROFILER_ON
-    #   RB_SPIKE_PROFILER.disable
-    #   puts "\n"*7
-    # end
+    # # puts "--> start update"
+    # signal = @update_scheduler.resume
+    # # puts signal
+    # # puts "<-- end update"
+    
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.disable
+    # #   puts "\n"*7
+    # # end
+    
+    
+    if @first_update
+      puts "first update"
+      # load_world_state()
+      
+      @first_update = false
+      
+      
+      # # 
+      # # jpg test
+      # # 
+      
+      # @pixels = RubyOF::Pixels.new
+      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+      
+      # @texture_out = RubyOF::Texture.new
+      
+      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
+      #                      :horizontal => :clamp_to_edge)
+      
+      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      # @texture_out.load_data(@pixels)
+      
+      
+      
+      
+      
+    end
+    
+    
+    
+    @sync.update
+    
+    
+    @frame_history.update
     
   end
+  
+  
+  
   
   # methods #update and #draw are called by the C++ render loop
   # Their only job now at the Ruby level is to set up Fibers
@@ -370,39 +646,327 @@ class Core
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def on_update(scheduler)
-    if @first_update
-      # load_world_state
+  def on_update(snapshot)
+    # step every x frames
+    
+    x = 8
+    
+    @space = Space.new(@environment, @mesh_id_to_name)
+    
+    moves = [
+      GLM::Vec3.new(1, 0, 0),
+      GLM::Vec3.new(1, 0, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(0, 1, 0),
+      GLM::Vec3.new(-1, 0, 0),
+      GLM::Vec3.new(-1, 0, 0),
+      GLM::Vec3.new(0, 1, 0),
+    ]
+    
+    
+    # TODO: wrap GLM::Vec3 multiply by a scalar
+    
+    moves.each_with_index do |v, move_idx|
+      # step in a direction, but subdivide into
+      # two motions for animation / tweening
       
-      @first_update = false
+      puts "move idx: #{move_idx} of #{moves.length-1}"
+      
+      
+      
+      # distribute the moves over a series of turns.
+      # each turn, take one movement action.
+      # + move in the specified way
+      # + play an animation to interpolate the frames
+      
+      dt = 0.5
+      
+      
+      
+      #  0 - log root position
+      snapshot.frame do
+        
+      end
+      
+      
+      # transform could be set on frame 0 (e.g. the very first frame)
+      # so want to load the transform data after that
+      
+      # all code inside snapshot blocks will be skipped on resume
+      # so any code related to a branch condition
+      # needs to be outside of the snapshot blocks.
+      i = @entity_name_to_id['CharacterTest'] # object name
+      mat = @environment.get_entity_transform(i)
+      
+      pos  = GLM::Vec3.new(0,0,0)
+      rot  = GLM::Quat.new(1,0,0,0)
+      scale = GLM::Vec3.new(0,0,0)
+      RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+      # TODO: ^ this should be extracted from the transform matrix
+      # puts pos
+      
+      # TODO: implement vector addition
+        # (in glm, the operators like + are still implemented as infix)
+      
+      puts "grid position: #{pos}"
+      
+      
+      # step up if there's an obstruction
+      if @space.point_query(pos + v).include? 'Cube.002' # datablock name
+        GLM::Vec3.new(0,0,1).tap do |v|
+          #  1 - animate
+          snapshot.frame do
+            puts pos
+          end
+          #  2 - animate
+          snapshot.frame do
+            
+          end
+          #  3 - animate
+          snapshot.frame do
+            
+          end
+          #  4 - animate
+          snapshot.frame do
+            
+          end
+          #  5 - animate
+          snapshot.frame do
+            
+          end
+          #  6 - animate
+          snapshot.frame do
+            
+          end
+          #  7 - animate
+          snapshot.frame do
+            
+          end
+          #  8 - animate (halfway)
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
+            end
+          end
+          #  9 - animate
+          snapshot.frame do
+            
+          end
+          # 10 - animate
+          snapshot.frame do
+            
+          end
+          # 11 - animate
+          snapshot.frame do
+            
+          end
+          # 12 - animate
+          snapshot.frame do
+            
+          end
+          # 13 - animate
+          snapshot.frame do
+            
+          end
+          # 14 - animate
+          snapshot.frame do
+            
+          end
+          # 15 - animate
+          snapshot.frame do
+            
+          end
+          # 16 - animate
+          snapshot.frame do
+            
+          end
+          # 17 - animate
+          snapshot.frame do
+            i = @entity_name_to_id['CharacterTest']
+            @environment.mutate_entity_transform(i) do |mat|
+              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              
+              GLM.translate(mat, v2)
+            end
+          end
+          
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          # 
+          # update pos = new root position
+          # 
+          i = @entity_name_to_id['CharacterTest']
+          mat = @environment.get_entity_transform(i)
+          
+          pos  = GLM::Vec3.new(0,0,0)
+          rot  = GLM::Quat.new(1,0,0,0)
+          scale = GLM::Vec3.new(0,0,0)
+          RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
+          # TODO: ^ this should be extracted from the transform matrix
+          # puts pos
+          
+          # TODO: implement vector addition
+            # (in glm, the operators like + are still implemented as infix)
+          
+        end
+        
+      end
+      
+      
+      #  1 - animate
+      snapshot.frame do
+        p pos
+      end
+      #  2 - animate
+      snapshot.frame do
+        
+      end
+      #  3 - animate
+      snapshot.frame do
+        
+      end
+      #  4 - animate
+      snapshot.frame do
+        
+      end
+      #  5 - animate
+      snapshot.frame do
+        
+      end
+      #  6 - animate
+      snapshot.frame do
+        
+      end
+      #  7 - animate
+      snapshot.frame do
+        
+      end
+      #  8 - animate (halfway)
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      #  9 - animate
+      snapshot.frame do
+        
+      end
+      # 10 - animate
+      snapshot.frame do
+        
+      end
+      # 11 - animate
+      snapshot.frame do
+        
+      end
+      # 12 - animate
+      snapshot.frame do
+        
+      end
+      # 13 - animate
+      snapshot.frame do
+        
+      end
+      # 14 - animate
+      snapshot.frame do
+        
+      end
+      # 15 - animate
+      snapshot.frame do
+        
+      end
+      # 16 - animate
+      snapshot.frame do
+        
+      end
+      # 17 - animate
+      snapshot.frame do
+        i = @entity_name_to_id['CharacterTest']
+        @environment.mutate_entity_transform(i) do |mat|
+          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          
+          GLM.translate(mat, v2)
+        end
+      end
+      # # 18 - new root position
+      # snapshot.frame do
+        
+      # end
+      
     end
-    
-    scheduler.section name: "sync ", budget: msec(5.0)
-      @sync.update
-    
-    
-    scheduler.section name: "end", budget: msec(0.1)
-    # ^ this section does literally nothing,
-    #   but if I set the budget to 1000 us, it can take as much as 925 us
-    #   with budget at 100 us, it seems to cap at 162 um
-    #   thus, it appears that the max time used depends on the budget given
-    #   why is that?
-    #   what about the scheduling algorithm produces this behavior?
-    # 
-    # nope, just saw a max of 826 us with a budget of 0.1 us
-    # (not sure when I saved - have to try this again...)
-    # 
-    # currently seeing max of 697 us with a budget of 100 us
-    # I think that the time consumed can go over budget, even when total budget < 16.6 ms - which is what I expected the code to do
-    
-    # puts "end"
-    
-    
-
     
   end
   
   
+  
+  # 
+  # methods used by FrameHistory to save world state
+  # 
+  def snapshot_gamestate
+    # for now, just save the state of the one entity that's moving
+    i = @entity_name_to_id['CharacterTest']
+    return @environment.get_entity_transform(i)
+  end
+  
+  def load_state(state)
+    i = @entity_name_to_id['CharacterTest']
+    @environment.set_entity_transform(i, state)
+  end
+  
+  
+  
+  
+  
+  def update_while_crashed
+    @crash_detected = true # set in Core#on_crash
+    
+    # puts "=== update while crashed ==="
+    
+    # pass @crash_detected flag to FrameHistory
+    @frame_history.crash_detected
+    
+    # update messages and history as necessary to try dealing with crash
+    @sync.update
+    @frame_history.update
+      # FrameHistory will clear the @crash_detected state
+      # if you start to go back in time after a crash.
+      
+      
+      # oh wait,
+      # but need take one step back when crash is detected
+    
+    # If FrameHistory was able to use time travel to resolve the crash
+    # then clear the flag
+    if !@frame_history.crash_detected?
+      @crash_detected = false
+    end
+    
+    # puts "=== update while crashed END"
+  end
+  
+  
+  # Propagates signal from FrameHistory back up to LiveCode
+  # that the problem which caused the crash has been managed,
+  # even without loading new code.
+  def in_error_state?
+    @crash_detected
+  end
   
   
   
@@ -457,81 +1021,136 @@ class Core
     # end
     
     
-    # 
-    # draw the scene
-    # 
-    # t0 = RubyOF::TimeCounter.now
     
-    @depsgraph.draw(@w)
+    
+    # 
+    # set up phases of drawing
+    # 
+    
+    @render_pipeline.draw(@w, lights:@depsgraph.lights,
+                              camera:@depsgraph.viewport_camera) do |pipeline|
+      pipeline.opaque_pass do
+        @environment.draw_scene
+        
+        
+        # glCullFace(GL_BACK)
+        # glDisable(GL_CULL_FACE)
+      end
+      
+      pipeline.transparent_pass do
+        
+      end
+      
+      pipeline.ui_pass do
+        # t0 = RubyOF::TimeCounter.now
+        
+        
+        p1 = CP::Vec2.new(500,500)
+        @fonts[:monospace].draw_string("hello world!",
+                                       p1.x, p1.y)
+        
+        
+        
+        p2 = CP::Vec2.new(500,600)
+        if @mouse_pos
+          
+          @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}",
+                                         p2.x, p2.y)
+        end
+        
+        
+        
+        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length-1}",
+                                         1178, 1013+40)
+        
+        @fonts[:monospace].draw_string("state #{@frame_history.state}",
+                                         1178, 1013)
+        
+        # @fonts[:monospace].draw_string("history size: #{}",
+                                         # 400, 160)
+        
+        # line_height = 35
+        # p3 = CP::Vec2.new(500,650)
+        # str_out = []
+        
+        # batches = @depsgraph.batches
+        # header = [
+        #   "i".rjust(3),
+        #   "mesh".ljust(10), # BlenderMeshData
+          
+        #   "mat".ljust(15), # BlenderMaterial
+        #   # ^ use #inspect to visualize empty string
+          
+        #   "batch size" # RenderBatch
+          
+        # ].join('| ')
+        
+        # str_out = 
+        #   batches.each_with_index.collect do |batch_line, i|
+        #     a,b,c = batch_line
+        #     # data = [
+        #     #   a.class.to_s.each_char.first(20).join(''),
+        #     #   b.class.to_s.each_char.first(20).join(''),
+        #     #   c.class.to_s.each_char.first(20).join('')
+        #     # ].join(', ')
+            
+            
+        #     data = [
+        #       "#{i}".rjust(3),
+        #       a.name.ljust(10), # BlenderMeshData
+              
+        #       b.name.inspect.ljust(15), # BlenderMaterial
+        #       # ^ use #inspect to visualize empty string
+              
+        #       c.size.to_s # RenderBatch
+              
+        #     ].join('| ')
+        #   end
+        
+        # ([header] + str_out).each_with_index do |line, i|
+        #   @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
+        # end
+        
+        
+        
+        # t1 = RubyOF::TimeCounter.now
+        # puts "=> UI    : #{(t1 - t0).to_ms} ms"
+        
+        
+        # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+        @environment.draw_ui
+        
+        # stuff we need to render with this
+          # + a programatically created mesh with triangles to mutate
+          # + a material to hold the vertex and fragment shaders
+          # + vertex shader <---  this is what does the heavy lifting
+          # + frag shader (just load the default one)
+        
+        # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+        
+        @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+        if @crash_detected
+          
+          ofPushStyle()
+            ofEnableAlphaBlending()
+            ofSetColor(@crash_color)
+            ofDrawRectangle(0,0,0, @w.width, @w.height)
+          ofPopStyle()
+        end
+      end
+    end
+    
+    
+    # @depsgraph.draw(@w) do
+    
+      
+      
+    # end
     
     
     # t1 = RubyOF::TimeCounter.now
     # puts "=> scene : #{(t1 - t0).to_ms} ms"
     
-    
-    # 
-    # draw UI
-    # 
-    
-    # t0 = RubyOF::TimeCounter.now
-    
-    
-    p1 = CP::Vec2.new(500,500)
-    @fonts[:monospace].draw_string("hello world!", p1.x, p1.y)
-    
-    
-    
-    p2 = CP::Vec2.new(500,600)
-    if @mouse_pos
-      
-      @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
-    end
-    
-    
-    line_height = 35
-    p3 = CP::Vec2.new(500,650)
-    str_out = []
-    
-    batches = @depsgraph.batches
-    header = [
-      "i".rjust(3),
-      "mesh".ljust(10), # BlenderMeshData
-      
-      "mat".ljust(15), # BlenderMaterial
-      # ^ use #inspect to visualize empty string
-      
-      "batch size" # RenderBatch
-      
-    ].join('| ')
-    
-    str_out = 
-      batches.each_with_index.collect do |batch_line, i|
-        a,b,c = batch_line
-        # data = [
-        #   a.class.to_s.each_char.first(20).join(''),
-        #   b.class.to_s.each_char.first(20).join(''),
-        #   c.class.to_s.each_char.first(20).join('')
-        # ].join(', ')
-        
-        
-        data = [
-          "#{i}".rjust(3),
-          a.name.ljust(10), # BlenderMeshData
-          
-          b.name.inspect.ljust(15), # BlenderMaterial
-          # ^ use #inspect to visualize empty string
-          
-          c.size.to_s # RenderBatch
-          
-        ].join('| ')
-      end
-    
-    ([header] + str_out).each_with_index do |line, i|
-      @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
-    end
-    
-    # t1 = RubyOF::TimeCounter.now
-    # puts "=> UI    : #{(t1 - t0).to_ms} ms"
     
   end
   
@@ -612,91 +1231,6 @@ class Core
     end
     
   end
-  
-  def read_fifo(fifo_path)
-    # f = File.open(@fifo_dir/@fifo_name, "r")
-    
-    # data = f.gets
-    # unless data.nil
-    #   puts data
-    # end
-    
-    
-    
-    # 
-    # blocking read
-    # (can read data)
-    # 
-    
-    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
-    # data = f_r.gets
-    # p data
-    
-    
-    
-    # 
-    # nonblocking read
-    # https://stackoverflow.com/questions/9803019/ruby-non-blocking-line-read
-    # (doesn't work)
-    # 
-    
-    # buffer = ""
-    # begin
-    #   f_r = File.open(@fifo_dir/@fifo_name, "r+")
-      
-    #   while buffer[-1] != "\n"
-    #     buffer << f_r.read_nonblock(1)
-    #   end
-      
-    #   p buffer
-    # rescue IO::WaitReadable => e
-    #   if buffer.empty?
-    #     puts "error" 
-    #     puts e
-    #   else
-    #     p buffer
-    #   end
-    # ensure
-    #   f_r.close
-    # end
-    
-    
-    
-    # 
-    # nonblocking read,
-    # attempt 2
-    # https://www.ruby-forum.com/t/nonblocking-io-read/74621/7
-    # https://stackoverflow.com/questions/1779347/using-rubys-ready-io-method-with-gets-puts-etc
-    # https://stackoverflow.com/questions/930989/is-there-a-simple-method-for-checking-whether-a-ruby-io-instance-will-block-on-r
-    # 
-    
-    # f_r = File.open(@fifo_dir/@fifo_name, "r+")
-    # puts f_r.nread
-    # if f_r.ready?
-      # p f_r.gets
-    # end
-    # f_r.close
-    
-    
-    
-    # 
-    # nonblocking read
-    # attempt 3
-    # building on attempt 2, but use IO#wait instead of IO#ready?
-    # 
-    data = nil
-    
-    f_r = File.open(fifo_path, "r+")
-    flag = f_r.wait(0.0001) # timeout in seconds
-    if flag
-      data = f_r.gets
-    end
-    
-    f_r.close
-    
-    return data
-  end
-  
   
 end
 

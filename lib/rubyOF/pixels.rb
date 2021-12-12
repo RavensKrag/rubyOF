@@ -10,6 +10,22 @@ class Pixels
 	def []=(i, c)
 		setColor_i(i, c)
 	end
+	
+	def color_at(x,y)
+		getColor_xy(x,y)
+	end
+	
+	def flip_vertical
+		flip(false, true)
+	end
+	
+	def flip_horizontal
+		flip(true, false)
+	end
+	
+	def flip_both
+		flip(true, true)
+	end
 end
 
 class FloatPixels
@@ -21,6 +37,22 @@ class FloatPixels
 	
 	def []=(i, c)
 		setColor_i(i, c)
+	end
+	
+	def color_at(x,y)
+		getColor_xy(x,y)
+	end
+	
+	def flip_vertical
+		flip(false, true)
+	end
+	
+	def flip_horizontal
+		flip(true, false)
+	end
+	
+	def flip_both
+		flip(true, true)
 	end
 end
 

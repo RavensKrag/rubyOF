@@ -4,6 +4,29 @@
 using namespace Rice;
 
 
+bool ofLoadImage_path_to_ofPixels(ofPixels & pix, const std::string& filename){
+	
+	// essentially, performing a typecast
+   // std::string => std::filesystem::path
+   //    (technically a "copy constructor")
+   // src: https://stackoverflow.com/questions/43114174/convert-a-string-to-std-filesystem-path
+   const std::filesystem::path path = filename;
+	
+	return ofLoadImage(pix, path);
+}
+
+bool ofLoadImage_path_to_ofFloatPixels(ofFloatPixels & pix, const std::string& filename){
+	
+	// essentially, performing a typecast
+   // std::string => std::filesystem::path
+   //    (technically a "copy constructor")
+   // src: https://stackoverflow.com/questions/43114174/convert-a-string-to-std-filesystem-path
+   const std::filesystem::path path = filename;
+	
+	return ofLoadImage(pix, path);
+}
+
+
 void ofEnableBlendMode__wrapper(int code){
 	static const ofBlendMode BLEND_MODES[] = {
 			OF_BLENDMODE_DISABLED,
@@ -349,6 +372,85 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			"ofGetCurrentViewMatrix",
 			&ofGetCurrentViewMatrix // ()
 		)
+		
+		
+		
+		// image and texture loading
+		.define_method(
+			"ofLoadImage_path_to_ofPixels",
+			&ofLoadImage_path_to_ofPixels,
+			(
+				Arg("pix"),
+				Arg("path")
+			)
+		)
+		
+		.define_method(
+			"ofLoadImage_path_to_ofFloatPixels",
+			&ofLoadImage_path_to_ofFloatPixels,
+			(
+				Arg("pix"),
+				Arg("path")
+			)
+		)
+		
+// 		.define_method(
+// 			"ofLoadImage_path_to_ofFloatPixels",
+// 			static_cast< bool (*)
+// 			(float x, float y, float z)
+// 			>(&ofLoadImage)
+// 		)
+		
+		
+		
+
+// typedef ofPixels_<unsigned char> ofPixels; // 8 bit / channel (int)
+// typedef ofPixels_<float> ofFloatPixels; // 32 bit / channel (float)
+// typedef ofPixels_<unsigned short> ofShortPixels; // 16 bit / channel (int)
+
+		
+// // load path -> ofPixels
+// bool ofLoadImage(ofPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+
+// bool ofLoadImage(ofPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+// // load path -> ofFloatPixels
+// bool ofLoadImage(ofFloatPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+// // load buffer -> ofFloatPixels
+// bool ofLoadImage(ofFloatPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+// // load path -> ofShortPixels
+// bool ofLoadImage(ofShortPixels & pix, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+// // load buffer -> ofShortPixels
+// bool ofLoadImage(ofShortPixels & pix, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+// // load path -> texture
+// bool ofLoadImage(ofTexture & tex, const std::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());
+// // load buffer -> texture
+// bool ofLoadImage(ofTexture & tex, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
+
+
+
+
+
+// /// \todo Needs documentation.
+// bool ofSaveImage(const ofPixels & pix, const std::filesystem::path& path, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+// bool ofSaveImage(const ofPixels & pix, ofBuffer & buffer, ofImageFormat format = OF_IMAGE_FORMAT_PNG, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+
+// /// \todo Needs documentation.
+// bool ofSaveImage(const ofFloatPixels & pix, const std::filesystem::path& path, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+// bool ofSaveImage(const ofFloatPixels & pix, ofBuffer & buffer, ofImageFormat format = OF_IMAGE_FORMAT_PNG, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+
+// /// \todo Needs documentation.
+// bool ofSaveImage(const ofShortPixels & pix, const std::filesystem::path& path, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+// bool ofSaveImage(const ofShortPixels & pix, ofBuffer & buffer, ofImageFormat format = OF_IMAGE_FORMAT_PNG, ofImageQualityType qualityLevel = OF_IMAGE_QUALITY_BEST);
+
+		
+		
+		
 	;
 	
 	// ------------------
