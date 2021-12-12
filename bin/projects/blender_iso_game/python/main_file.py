@@ -1216,30 +1216,33 @@ class RubyOF(bpy.types.RenderEngine):
             
             
         elif active_object != None and active_object.mode == 'EDIT':
-            # editing one object: only send edits to that single mesh
+            # NOTE: Assumes that object being edited is a mesh object, which is not necessarily true. This assumption causes problems when editing armatures.
             
-            bpy.ops.object.editmode_toggle()
-            bpy.ops.object.editmode_toggle()
-            # bpy.ops.object.mode_set(mode= 'OBJECT')
-            
-            print("mesh edit detected")
-            print(active_object)
-            
-            
-            tex_manager.update_mesh_datablock(active_object)
-            
-            
-            # send material data if any material was changed
-            # (maybe it was this material? no way to be sure, so just send it)
-            if(depsgraph.id_type_updated('MATERIAL')):
-                if(len(active_object.material_slots) > 0):
-                    mat = active_object.material_slots[0].material
-                    message_queue.append(pack_material(mat))
-            
-            
-            bpy.ops.object.editmode_toggle()
-            bpy.ops.object.editmode_toggle()
-            # bpy.ops.object.mode_set(mode= 'EDIT')
+            if isinstance(obj, bpy.types.Object) and obj.type == 'MESH':
+                # editing one object: only send edits to that single mesh
+                
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.mode_set(mode= 'OBJECT')
+                
+                print("mesh edit detected")
+                print(active_object)
+                
+                
+                tex_manager.update_mesh_datablock(active_object)
+                
+                
+                # send material data if any of the materials on this object were changed
+                # (maybe it the mat for this mesh? no way to tell, so just send it)
+                if(depsgraph.id_type_updated('MATERIAL')):
+                    if(len(active_object.material_slots) > 0):
+                        mat = active_object.material_slots[0].material
+                        message_queue.append(pack_material(mat))
+                
+                
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.mode_set(mode= 'EDIT')
             
         else:
             # It is possible multiple things have been updated.
