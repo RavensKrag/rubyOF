@@ -1423,12 +1423,12 @@ class ModalLoop (bpy.types.Operator):
     def modal(self, context, event):
         if event.type == 'TIMER':
             self.run(context)
-        
-        if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
-            self.on_exit()
             
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
+            if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
+                self.on_exit()
+                
+                context.window_manager.event_timer_remove(self._timer)
+                return {'FINISHED'}
         
         return {'PASS_THROUGH'}
     
