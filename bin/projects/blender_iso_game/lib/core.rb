@@ -1061,10 +1061,10 @@ class Core
         
         
         @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length-1}",
-                                         1178, 1013+40)
+                                         1178, 846+40)
         
         @fonts[:monospace].draw_string("state #{@frame_history.state}",
-                                         1178, 1013)
+                                         1178, 846)
         
         # @fonts[:monospace].draw_string("history size: #{}",
                                          # 400, 160)
