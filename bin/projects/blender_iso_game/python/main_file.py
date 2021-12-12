@@ -1869,6 +1869,8 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         props = context.scene.my_custom_props
         
         
+        layout.prop(context.scene.my_custom_props, "ruby_buffer_size")
+        
         if props.b_modalUpdateActive:
             label = "update loop enabled" 
         else:
