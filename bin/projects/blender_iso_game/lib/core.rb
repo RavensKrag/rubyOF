@@ -685,7 +685,7 @@ class Core
       # + move in the specified way
       # + play an animation to interpolate the frames
       
-      dt = 0.5
+      # dt = 0.5
       
       
       
@@ -750,12 +750,12 @@ class Core
           end
           #  8 - animate (halfway)
           snapshot.frame do
-            i = @entity_name_to_id['CharacterTest']
-            @environment.mutate_entity_transform(i) do |mat|
-              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+            # i = @entity_name_to_id['CharacterTest']
+            # @environment.mutate_entity_transform(i) do |mat|
+            #   v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
               
-              GLM.translate(mat, v2)
-            end
+            #   GLM.translate(mat, v2)
+            # end
           end
           #  9 - animate
           snapshot.frame do
@@ -793,7 +793,7 @@ class Core
           snapshot.frame do
             i = @entity_name_to_id['CharacterTest']
             @environment.mutate_entity_transform(i) do |mat|
-              v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+              v2 = GLM::Vec3.new(v.x, v.y, v.z)
               
               GLM.translate(mat, v2)
             end
@@ -856,12 +856,12 @@ class Core
       end
       #  8 - animate (halfway)
       snapshot.frame do
-        i = @entity_name_to_id['CharacterTest']
-        @environment.mutate_entity_transform(i) do |mat|
-          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+        # i = @entity_name_to_id['CharacterTest']
+        # @environment.mutate_entity_transform(i) do |mat|
+        #   v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
           
-          GLM.translate(mat, v2)
-        end
+        #   GLM.translate(mat, v2)
+        # end
       end
       #  9 - animate
       snapshot.frame do
@@ -899,7 +899,7 @@ class Core
       snapshot.frame do
         i = @entity_name_to_id['CharacterTest']
         @environment.mutate_entity_transform(i) do |mat|
-          v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
+          v2 = GLM::Vec3.new(v.x, v.y, v.z)
           
           GLM.translate(mat, v2)
         end
