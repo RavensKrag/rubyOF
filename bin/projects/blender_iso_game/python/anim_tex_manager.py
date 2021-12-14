@@ -489,7 +489,7 @@ class AnimTexManager ():
     
     
     # 
-    # main public interface
+    # clean build of animation textures
     # (mostly callbacks that get run by key operators)
     # 
     
@@ -693,6 +693,13 @@ class AnimTexManager ():
         
     
     
+    
+    
+    
+    
+    # 
+    # update animation textures
+    # 
     
     # update data that would have been sent in pack_mesh():
     # so, the transform and what datablock the object is linked to
