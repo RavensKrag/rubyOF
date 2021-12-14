@@ -942,26 +942,7 @@ class AnimTexManager ():
                 self.transform_data = data['transform_data']
                 self.objName_to_transformID = data['objName_to_transformID']
                 self.meshDatablock_to_meshID = data['meshDatablock_to_meshID']
-                
-            
-     
-        
-        
     
-    # 
-    # serialization helper
-    # 
-    
-    def dump_cache(self):
-        data = {
-            'vertex_data': self.vertex_data,
-            'transform_data': self.transform_data,
-            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
-            'objName_to_transformID' : self.objName_to_transformID,
-            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
-        }
-        
-        return json.dumps(data)
     
     
     # 
