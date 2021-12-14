@@ -3,8 +3,7 @@
     null,
     "Cube.002",
     "Cube",
-    "Cube.001",
-    "Circle"
+    "Cube.001"
   ],
   "transform_data": [
     [
@@ -452,14 +451,6 @@
       "Material"
     ],
     [
-      "Cube.108",
-      "Material"
-    ],
-    [
-      "Circle",
-      "Material"
-    ],
-    [
       "Cube.110",
       "Material"
     ],
@@ -469,10 +460,6 @@
     ],
     [
       "Cube.112",
-      "Material"
-    ],
-    [
-      "DirectionRing",
       "Material"
     ]
   ],
@@ -587,18 +574,13 @@
     "Cube.109": 108,
     "Cube.065": 109,
     "Cube.107": 110,
-    "Cube.108": 111,
-    "Circle": 112,
-    "Cube.110": 113,
-    "Cube.111": 114,
-    "Cube.112": 115,
-    "DirectionRing": 116
+    "Cube.110": 111,
+    "Cube.111": 112,
+    "Cube.112": 113
   },
   "meshDatablock_to_meshID": {
-    "null": 0,
     "Cube.002": 1,
     "Cube": 2,
-    "Cube.001": 3,
-    "Circle": 4
+    "Cube.001": 3
   }
 }
