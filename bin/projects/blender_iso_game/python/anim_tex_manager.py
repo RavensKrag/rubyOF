@@ -683,7 +683,7 @@ class AnimTexManager ():
         # 
         
         data = {
-            'type': 'anim_texture_update',
+            'type': 'update_anim_textures',
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
             'transform_tex_path': self.transform_tex.filepath,
@@ -712,7 +712,25 @@ class AnimTexManager ():
     # so, the transform and what datablock the object is linked to
     
     # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
-    def update_mesh_object(self, update, mesh_obj):
+    
+    
+    # use transform on armature as entity transform
+    # (may apply to more than 1 mesh)
+    def update_entity_transform_with_armature(self, update, armature_obj):
+        print("send update message")
+        
+        data = {
+            'type': 'update_transform',
+            'position_tex_path' : self.position_tex.filepath,
+            'normal_tex_path'   : self.normal_tex.filepath,
+            'transform_tex_path': self.transform_tex.filepath,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+    
+    # use transform on mesh object as entity transform
+    # (will only apply to 1 mesh)
+    def update_entity_transform_without_armature(self, update, mesh_obj):
         if update.is_updated_transform:
             if hasattr(self, 'transform_data'):
                 # find existing position in transform texture (if any)
@@ -778,7 +796,7 @@ class AnimTexManager ():
                 print("send update message")
                 
                 data = {
-                    'type': 'geometry_update',
+                    'type': 'update_transform',
                     'position_tex_path' : self.position_tex.filepath,
                     'normal_tex_path'   : self.normal_tex.filepath,
                     'transform_tex_path': self.transform_tex.filepath,
@@ -829,7 +847,7 @@ class AnimTexManager ():
             
             # tell Ruby to update
             data = {
-                'type': 'anim_texture_update',
+                'type': 'update_transform',
                 'position_tex_path' : self.position_tex.filepath,
                 'normal_tex_path'   : self.normal_tex.filepath,
                 'transform_tex_path': self.transform_tex.filepath,
@@ -845,7 +863,7 @@ class AnimTexManager ():
     # run this while mesh is being edited
     # (precondition: datablock already exists)
     def update_mesh_datablock(self, active_object):
-        print("transform data:", self.transform_data)
+        # print("transform data:", self.transform_data)
         # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
         
         mesh = active_object.data
@@ -853,7 +871,7 @@ class AnimTexManager ():
         
         # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
         data = {
-            'type': 'geometry_update',
+            'type': 'update_geometry',
             'scanline': self.meshDatablock_to_meshID[mesh.name],
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
@@ -865,6 +883,11 @@ class AnimTexManager ():
     
     # note: in blender, one object can have many material slots, but this exporter only considers the first material slot, at least for now
     
+    
+    
+    
+    def update_armature_object(self, update, armature_obj):
+        pass
     
     
     
@@ -909,7 +932,7 @@ class AnimTexManager ():
         texture.save()
         
         data = {
-            'type': 'material_update',
+            'type': 'update_material',
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
             'transform_tex_path': self.transform_tex.filepath,

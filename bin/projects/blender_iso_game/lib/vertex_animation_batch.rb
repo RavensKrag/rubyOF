@@ -17,7 +17,8 @@ class VertexAnimationBatch
       :transforms => RubyOF::Texture.new
     }
     
-    load_textures(position_tex_path, normal_tex_path, transform_tex_path)
+    load_transform_texture(transform_tex_path)
+    load_vertex_textures(position_tex_path, normal_tex_path)
     
     # 
     # Create a mesh consiting of a line of unconnected triangles
@@ -208,15 +209,45 @@ class VertexAnimationBatch
   end
   
   
-  def load_textures(position_tex_path, normal_tex_path, transform_tex_path)
-    ofLoadImage(@pixels[:positions],  position_tex_path.to_s)
-    ofLoadImage(@pixels[:normals],    normal_tex_path.to_s)
+  def load_transform_texture(transform_tex_path)
     ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
     
     # 
     # configure all sets of pixels (CPU data) and textures (GPU data)
     # 
-    @pixels.values.zip(@textures.values).each do |pixels, texture|
+    pixels_list = [@pixels[:transforms]]
+    textures_list = [@textures[:transforms]]
+    
+    pixels_list.zip(textures_list).each do |pixels, texture|
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+  end
+  
+  def load_vertex_textures(position_tex_path, normal_tex_path)
+    ofLoadImage(@pixels[:positions],  position_tex_path.to_s)
+    ofLoadImage(@pixels[:normals],    normal_tex_path.to_s)
+    
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    pixels_list = [@pixels[:positions], @pixels[:normals]]
+    textures_list = [@textures[:positions], @textures[:normals]]
+    
+    pixels_list.zip(textures_list).each do |pixels, texture|
       # y axis is flipped relative to Blender???
       # openframeworks uses 0,0 top left, y+ down
       # blender uses 0,0 bottom left, y+ up

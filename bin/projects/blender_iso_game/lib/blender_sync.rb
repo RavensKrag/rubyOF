@@ -432,19 +432,10 @@ class BlenderSync
     when 'meshID_to_meshName'
       @core.update_mesh_mapping(message)
     
-    when 'anim_texture_update'
-      # update all 3 textures
-      @core.update_anim_textures(message)
     
-    when 'geometry_update'
-      # position and normal data for one mesh has been updated
-      @core.update_geometry(message)
-    
-    when 'material_update'
-      # position data in transform texture has been updated
-      # may effect one object, or many
-      @core.update_material(message)
-    
+    when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
+      
+      @core.send(message['type'], message)
     
     else
       

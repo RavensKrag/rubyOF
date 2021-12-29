@@ -454,14 +454,13 @@ class Core
   
   
   
-  
+  # update both transform texture and vertext textures
   def update_anim_textures(message)
     # p message
-    @environment.load_textures(
-      message['position_tex_path'],
-      message['normal_tex_path'],
-      message['transform_tex_path'],
-    )
+    @environment.load_transform_texture(message['transform_tex_path'])
+    @environment.load_vertex_textures(message['position_tex_path'],
+                                      message['normal_tex_path'])
+    
     
     # reload history
     # (code adapted from Core#on_reload)
@@ -486,26 +485,33 @@ class Core
     end
   end
   
-  # position and normal data for one mesh has been updated
+  # vertex position and normal data for one or more meshes has been updated
   def update_geometry(message)
     p message
-    @environment.load_textures(
-      message['position_tex_path'],
-      message['normal_tex_path'],
-      message['transform_tex_path']
-    )
+    # @environment.load_transform_texture(message['transform_tex_path'])
+    @environment.load_vertex_textures(message['position_tex_path'],
+                                      message['normal_tex_path'])
     
   end
   
-  # position data in transform texture has been updated
-  # may effect one object, or many
+  # transform data for a entity has been updated
+  # (may or may not contain an armature)
+  def update_transform(message)
+    p message
+    @environment.load_transform_texture(message['transform_tex_path'])
+    # @environment.load_vertex_textures(message['position_tex_path'],
+    #                                   message['normal_tex_path'])
+    
+  end
+  
+  
+  # material data is stored in the transform texture
+  # (like material property block)
+  # updates to a single material may effect one object, or many,
+  # so easiest just to load the entire transform texture again
   def update_material(message)
     p message
-    @environment.load_textures(
-      message['position_tex_path'],
-      message['normal_tex_path'],
-      message['transform_tex_path']
-    )
+    @environment.load_transform_texture(message['transform_tex_path'])
   end
   
   

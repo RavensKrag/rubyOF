@@ -1218,7 +1218,7 @@ class RubyOF(bpy.types.RenderEngine):
         elif active_object != None and active_object.mode == 'EDIT':
             # NOTE: Assumes that object being edited is a mesh object, which is not necessarily true. This assumption causes problems when editing armatures.
             
-            if isinstance(obj, bpy.types.Object) and obj.type == 'MESH':
+            if isinstance(active_object, bpy.types.Object) and active_object.type == 'MESH':
                 # editing one object: only send edits to that single mesh
                 
                 bpy.ops.object.editmode_toggle()
@@ -1256,6 +1256,8 @@ class RubyOF(bpy.types.RenderEngine):
                 obj = update.id
                 # print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
                 
+                # TODO: limit this to exporting collection?
+                
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':
                         message_queue.append(pack_light(obj))
@@ -1263,7 +1265,19 @@ class RubyOF(bpy.types.RenderEngine):
                     elif obj.type == 'MESH':
                         # update mesh object (transform)
                         # sending updates to mesh datablocks if necessary
-                        tex_manager.update_mesh_object(update, obj)
+                        
+                        
+                        if obj.parent is None:
+                            tex_manager.update_entity_transform_without_armature(update, obj)
+                        elif obj.parent.type == 'ARMATURE':
+                            # meshes attached to armatures will be exported with NLA animations, in a separate pass
+                            pass
+                        else: 
+                            pass
+                    elif obj.type == 'ARMATURE':
+                        tex_manager.update_entity_transform_with_armature(update, obj)
+                        
+                        
                 
                 # only send data for updated materials
                 if isinstance(obj, bpy.types.Material):
