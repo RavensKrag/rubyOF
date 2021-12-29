@@ -80,7 +80,6 @@ class AnimTexManager ():
         
         
         # (maybe want to generate index / reverse index on init? not sure how yet.)
-        # TODO: figure out how to generate index on init, so initial texture export on render startup is not necessary
         self.vertex_data    = []
         self.transform_data = []
         
@@ -394,6 +393,7 @@ class AnimTexManager ():
             self.vertex_data[target_obj_index] = data
         # else, add new data to the cache
         else:
+            target_obj_index = len(self.vertex_data)
             self.vertex_data.append( data )
         
         
@@ -404,6 +404,9 @@ class AnimTexManager ():
             datablock_name = data
             
             self.meshDatablock_to_meshID[datablock_name] = i
+        
+        
+        return target_obj_index
         
     
     # find via name
@@ -438,6 +441,7 @@ class AnimTexManager ():
             self.transform_data[target_obj_index] = data
         # else, add new data to the cache
         else:
+            target_obj_index = len(self.transform_data)
             self.transform_data.append( data )
         
         
@@ -484,12 +488,15 @@ class AnimTexManager ():
         self.to_ruby.write(json.dumps(data))
         
         
+        return target_obj_index
+        
+        
 
     
     
     
     # 
-    # main public interface
+    # clean build of animation textures
     # (mostly callbacks that get run by key operators)
     # 
     
@@ -694,6 +701,13 @@ class AnimTexManager ():
     
     
     
+    
+    
+    
+    # 
+    # update animation textures
+    # 
+    
     # update data that would have been sent in pack_mesh():
     # so, the transform and what datablock the object is linked to
     
@@ -736,24 +750,25 @@ class AnimTexManager ():
                     # 
                     datablock_index = self.vertex_data_index(mesh_obj.data.name)
                     if datablock_index is None:
+                        # update cache
+                        i = self.cache_vertex_data( mesh_obj.data )
+                        
                         # write to texture
-                        i = len(self.vertex_data)
                         self.export_vertex_data(mesh_obj.data, i)
                         
-                        # update cache
-                        self.cache_vertex_data( mesh_obj.data )
                     
                     # 
                     # link the new mesh object to the correct datablock
                     # 
+                    i = self.cache_transform_data(mesh_obj)
                     
+                    # TODO: remove len() call
                     self.export_transform_data(
                         mesh_obj,
-                        scanline=len(self.transform_data),
+                        scanline=i,
                         mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
                     )
                     
-                    self.cache_transform_data(mesh_obj)
                 
                 
                 # TODO: create a separate update message type for when transforms update
@@ -942,26 +957,7 @@ class AnimTexManager ():
                 self.transform_data = data['transform_data']
                 self.objName_to_transformID = data['objName_to_transformID']
                 self.meshDatablock_to_meshID = data['meshDatablock_to_meshID']
-                
-            
-     
-        
-        
     
-    # 
-    # serialization helper
-    # 
-    
-    def dump_cache(self):
-        data = {
-            'vertex_data': self.vertex_data,
-            'transform_data': self.transform_data,
-            # ^ can't serialize this because it contains pointers to materials. may want to use names instead? that's what I'm doing for the objects / datablocks, that would be the most consistent thing to do
-            'objName_to_transformID' : self.objName_to_transformID,
-            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
-        }
-        
-        return json.dumps(data)
     
     
     # 
