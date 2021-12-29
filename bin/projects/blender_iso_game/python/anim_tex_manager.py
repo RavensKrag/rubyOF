@@ -862,17 +862,22 @@ class AnimTexManager ():
     
     # run this while mesh is being edited
     # (precondition: datablock already exists)
-    def update_mesh_datablock(self, active_object):
+    def edit_mesh_data(self, active_object):
         # print("transform data:", self.transform_data)
         # re-export this mesh in the anim texture (one line) and send a signal to RubyOF to reload the texture
         
-        mesh = active_object.data
-        self.export_vertex_data(mesh, self.meshDatablock_to_meshID[mesh.name])
+        mesh_data = active_object.data
+        
+        # update cache
+        i = self.cache_vertex_data( mesh_data )
+        
+        # write to texture
+        self.export_vertex_data(mesh_data, i)
         
         # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
         data = {
             'type': 'update_geometry',
-            'scanline': self.meshDatablock_to_meshID[mesh.name],
+            'scanline': i,
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
             'transform_tex_path': self.transform_tex.filepath,

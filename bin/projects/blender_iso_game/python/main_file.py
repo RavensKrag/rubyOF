@@ -1229,7 +1229,7 @@ class RubyOF(bpy.types.RenderEngine):
                 print(active_object)
                 
                 
-                tex_manager.update_mesh_datablock(active_object)
+                tex_manager.edit_mesh_data(active_object)
                 
                 
                 # send material data if any of the materials on this object were changed
