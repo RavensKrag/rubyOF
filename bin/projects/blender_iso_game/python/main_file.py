@@ -1441,11 +1441,59 @@ class ModalLoop (bpy.types.Operator):
         if event.type == 'TIMER':
             self.run(context)
             
-            if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
-                self.on_exit()
+            print("-------", flush=True)
+            
+            
+            # why does it appear that I'm getting timer events on undo?
+            # can the undo somehow cancel the modal entirely?
+            
+            
+            
+            # this strategy doesn't break blender on undo,
+            # but it does put the update loop into an invalid state
+            # (can also get into an invalid state if redo sets boolean flag)
+            
+            attr = getattr(self.rubyof_PropContext, self.rubyof_BoolPropName)
+            print(attr)
+            print(event)
+            if attr is None:
+                pass
+                # property can't be read on undo.
+                # why? not sure, but need to guard against it.
+                
+                # must gauard against this first, otherwise it will be matched by the 'attr == False' clause in the next branch
+            elif attr == False:
+                self.on_exit(context)
                 
                 context.window_manager.event_timer_remove(self._timer)
                 return {'FINISHED'}
+            else:
+                pass
+            
+            
+            
+            
+            # 
+            # this strategy results in some sort of exception
+            # or segfault that python can not recover from
+            # 
+            
+            # try:
+            #     if not self.rubyof_PropContext[self.rubyof_BoolPropName]:
+            #         self.on_exit(context)
+                    
+            #         context.window_manager.event_timer_remove(self._timer)
+            #         return {'FINISHED'}
+            #     else:
+            #         pass
+            # except KeyError as e:
+            #     # could not find property
+            #     # assuming this happened because of undo
+                
+            #     # oops, can't progress from here - hit some sort of exception or segfault here
+            #     pass
+            
+            
         
         return {'PASS_THROUGH'}
     
@@ -1453,10 +1501,10 @@ class ModalLoop (bpy.types.Operator):
         wm = context.window_manager
         
         self._timer = wm.event_timer_add(self.timer_dt, window=context.window)
-        wm.modal_handler_add(self)
-        
         self.setup(context)
         
+        
+        wm.modal_handler_add(self)
         return {'RUNNING_MODAL'}
     
     
@@ -1467,7 +1515,7 @@ class ModalLoop (bpy.types.Operator):
     def run(self, context):
         pass
     
-    def on_exit(self):
+    def on_exit(self, context):
         pass
 
 
@@ -1513,6 +1561,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         # sync object deletions
         # 
         
+        print("syncing deletions", flush=True)
         # print("running", time.time())
         # print("objects: ", len(context.scene.objects))
         
@@ -1522,7 +1571,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         delta = list(set(self.old_names) - set(self.new_names))
         
-        # print("delta:", delta)
+        # print("old_names:", len(self.old_names), flush=True)
+        # print("delta:", delta, flush=True)
         
         if len(delta) > 0:
             self.old_names = self.new_names
@@ -1533,9 +1583,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # print(delete)
                 
                 # TODO: make sure they're all mesh objects
-                tex_manager.post_mesh_object_deletion(name)
-                
-                # tex_manager.post_mesh_object_deletion(mesh_obj_name)
+                tex_manager.delete_mesh_object(name)
         
         
         # 
@@ -1799,7 +1847,10 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         
     
-    def on_exit(self):
+    def on_exit(self, context):
+        self.print("on exit")
+        context.scene.my_custom_props.b_modalUpdateActive = False
+        
         from_ruby.close()
     
     # print with a 4-digit timestamp (wrapping counter of frames)

@@ -454,7 +454,9 @@ class Core
   
   
   
-  # update both transform texture and vertext textures
+  # Update both transform texture and vertex textures.
+  # Used when you do a full export of everything,
+  # similar to running a "clean build" in C/C++.
   def update_anim_textures(message)
     # p message
     @environment.load_transform_texture(message['transform_tex_path'])
@@ -497,6 +499,7 @@ class Core
   # transform data for a entity has been updated
   # (may or may not contain an armature)
   def update_transform(message)
+    puts "update transform"
     p message
     @environment.load_transform_texture(message['transform_tex_path'])
     # @environment.load_vertex_textures(message['position_tex_path'],
