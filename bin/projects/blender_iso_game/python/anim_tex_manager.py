@@ -334,36 +334,6 @@ class AnimTexManager ():
         # each row: [mesh_id (1px), transform (4px), material_datablock (4px)]
     
     
-    # api (ruby-style prototype)
-    # ---
-    # manager.meshes.include?(mesh_name)
-    # manager.meshes[mesh_name] = mesh
-    
-    # manager.objects[obj_name].transform = transform
-    # manager.objects[obj_name].material = material
-    # manager.objects[obj_name].mesh = mesh_name
-    
-    
-    
-    
-    # manager.has_mesh(mesh_name)
-            # has a mesh with this name been exported to the textures?
-    
-    # manager.export_mesh(mesh_name, mesh)
-            # save mesh data to texture
-            # (scanline to use will be calculated automatically)
-            
-    # manager.set_object_transform(obj_name, transform)
-            # set transform for a given object
-    
-    # manager.set_object_material(obj_name, material_datablock)
-            # pass blender material datablock object, pack into 4 px data structure needed by texture
-    
-    # manager.set_object_mesh(obj_name, mesh_name)
-            # set mesh to use for the given object in the transform texture
-            # this will set the mesh @ t=0 (initial condition)
-            # which may be changed by ruby code during game execution
-        
     
     # extra data stored in manager
     # ---
@@ -374,11 +344,11 @@ class AnimTexManager ():
             # IDs should be for internal use only.
     
     
-    
-    
     # notes
     # ---
     # mesh object name -> scanline index in vertex data texture
+        # ^ data structure must manage serialization to/from a JSON file
+    
     # (one mesh datablock may result in many exported meshes, because you need one line in the output texture per frame of animation. how do I distinguish between different frames of animation?)
     # does the data format need to know about animation? or does it fundamentally only care about transforms and meshes? may be able to move this part of the API into another class / file / whatever.
     
@@ -425,6 +395,10 @@ class AnimTexManager ():
     
     
     # Write mesh data to texture.
+    # Each scanline of the texture encodes one mesh.
+    # The scanline to use will be calculated automatically.
+    # Must update some mapping of "mesh name" => "mesh data"
+    # ( mapping also used by has_mesh() )
     # 
     # mesh_name : string
     # mesh      : mesh datablock
@@ -513,9 +487,11 @@ class AnimTexManager ():
         self.normal_tex.save()
     
     
-    # Map exported mesh to a particular object.
-    # If mesh with the given name has not yet been exported,
-    # raise exception.
+    # Specify the mesh to use for a given object @ t=0 (initial condition).
+    # This mapping will be changed by ruby code during game execution,
+    # by dynamically editing the texture in memory. However, the texture
+    # on disk will change if and only if the initial condition changes.
+    # Raise exception if no mesh with the given name has been exported yet.
     # 
     # obj_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
@@ -568,6 +544,9 @@ class AnimTexManager ():
         self.transform_tex.save()
     
     
+    # Pack 4x4 transformation matrix for an object into 4 pixels
+    # of data in the object transform texture.
+    # 
     # obj_name  : string
     # transform : 4x4 transform matrix
     def set_object_transform(obj_name, transform):
@@ -615,6 +594,9 @@ class AnimTexManager ():
         self.transform_tex.save()
     
     
+    # Pack material data into 4 pixels
+    # in the object transform texture
+    # 
     # obj_name : string
     # material : RubyOF material datablock (custom data, not blender material)
     def set_object_material(obj_name, material):
