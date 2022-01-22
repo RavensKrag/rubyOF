@@ -59,7 +59,8 @@ def first_material(mesh_object):
     
 
 
-
+# TODO: need to force export of everything if the number of objects changes
+    # JSON file will be messed up, the cache will be messed up... really need to make sure everything is regenerated. but that's not really the responsibily of this file, I don't think.
 
 class AnimTexManager ():
     # 
@@ -89,14 +90,27 @@ class AnimTexManager ():
         pixel_data = [1.0, 0.0, 0.0, 1.0] * self.normal_tex.width
         self.normal_tex.write_scanline(pixel_data, 0)
         
+        # ASSUME: position_tex.height == normal_tex.height
+        if position_tex.height != normal_tex.height:
+            raise "Mesh data textures are not all the same height."
         
-        # data for export_mesh()
-        self.next_mesh_scanline = 1
-        self.mesh_name_to_scanline = {}
         
-        # data for set_object_transform()
-        self.next_object_scanline = 1
-        self.object_name_to_scanline = {}
+        # 
+        # data cache
+        # 
+            # self.mesh_data_cache = [
+            #     None,
+            #     datablock_name # => 'datablock_name: .data.name'
+            # ]
+            
+            
+            # self.object_data_cache = [
+            #     [None, None],
+            #     [mesh_obj_name, first_material.name]
+            #         # => 'name: .name'
+            # ]
+        self.mesh_data_cache = [None] * position_tex.height
+        self.object_data_cache = [[None, None]] * transform_tex.height
         
         
         self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
@@ -159,94 +173,69 @@ class AnimTexManager ():
     
     
     
-    
-    
-    
-    # 
-    # write a single row of the texture
-    # 
-    
-    
-    def export_transform_data(self, target_object, scanline=1, mesh_id=1):
-        # TODO: update all code to use RGB (no alpha) to save some memory
-        # TODO: use half instead of float to save memory
+    # Find the scanline to use for a mesh with the given name.
+    # If a mesh with this name is not currently stored in the texture,
+    # the first available open row should be use.
+    # Note that this may not be the last row in the texture,
+    # as there may have been a row that opened up due to a past deletion.
+    def __mesh_name_to_scanline(mesh_name):
+        output_index = 0
+        first_open_scanline = -1
         
+        for i, data in enumerate(self.mesh_data_cache):
+            if i == 0:
+                # skip the first row - always intentially left blank
+                continue
+            
+            if data[0] == mesh_name:
+                # If you find the name, use that scanline
+                return i
+            
+            elif first_open_scanline == -1 and data[0] == None:
+                first_open_scanline = -1
         
-        
-        # 
-        # extract transforms from object
-        # 
-        
-        # this_mat = target_object.matrix_local
-        this_mat = target_object.matrix_world
-        # print(this_mat)
-        # print(type(this_mat))
-        
-        identity_matrix = this_mat.Identity(4)
-        
-        # out_mat = identity_matrix
-        out_mat = this_mat
-        
-        
-        # 
-        # write transforms to image
-        # 
-        
-        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
-        
-        
-        id = mesh_id # TODO: update this to match mesh index
-        
-        scanline_set_px(scanline_transform, 0, [id, id, id, 1.0],
-                        channels=self.transform_tex.channels_per_pixel)
-        
-        for i in range(1, 5): # range is exclusive of high end: [a, b)
-            scanline_set_px(scanline_transform, i, vec4_to_rgba(out_mat[i-1]),
-                            channels=self.transform_tex.channels_per_pixel)
-        
-        
-        # 
-        # set color (if no material set, default to white)
-        # 
-        
-        
-        mat_slots = target_object.material_slots
-        
-        # color = c1 = c2 = c3 = c4 = alpha = None
-        
-        if len(mat_slots) > 0:
-            mat = mat_slots[0].material.rb_mat
-            c1 = mat.ambient
-            c2 = mat.diffuse
-            c3 = mat.specular
-            c4 = mat.emissive
-            alpha = mat.alpha
+        # If you don't find the name, use the first open scanline
+        if first_open_scanline == -1:
+            raise "No open scanlines available in the mesh textures. (Scanline i=0 always intentially left blank.) Try increasing the maximum number of objects (aka frames) allowed in exporter."
         else:
-            color = Color((1.0, 1.0, 1.0)) # (0,0,0)
-            c1 = color
-            c2 = color
-            c3 = color
-            c4 = color
-            alpha = 1
-            # default white for unspecified color
-            # (ideally would copy this from the default in materials)
+            self.mesh_data_cache[first_open_scanline] = mesh_name
+            
+            return first_open_scanline
+    
+    
+    # Find the scanline to use for a object with the given name.
+    # 
+    # code based on __mesh_name_to_scanline()
+    def __object_name_to_scanline(obj_name):
+        output_index = 0
+        first_open_scanline = -1
         
-        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
-                        channels=self.transform_tex.channels_per_pixel)
+        for i, data in enumerate(self.object_data_cache):
+            if data[0] == obj_name:
+                # If you find the name, use that scanline
+                return i
+            
+            elif first_open_scanline == -1 and data[0] == None:
+                first_open_scanline = -1
         
-        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
-                        channels=self.transform_tex.channels_per_pixel)
+        # If you don't find the name, use the first open scanline
+        if first_open_scanline == -1:
+            raise "No open scanlines available in the object texture. Try increasing the maximum number of objects (aka frames) allowed in exporter."
+        else:
+            self.object_data_cache[first_open_scanline] = [obj_name, None]
+            
+            return first_open_scanline
         
-        scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
-                        channels=self.transform_tex.channels_per_pixel)
+    def __cache_material_name(scanline, material_name):
+        data = self.object_data_cache[scanline_index]
         
-        scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
-                        channels=self.transform_tex.channels_per_pixel)
+        # data[0] = obj_name
+        data[1] = material_name
         
-        self.transform_tex.write_scanline(scanline_transform, scanline)
+        self.object_data_cache[scanline_index] = data
         
-        
-        self.transform_tex.save()
+    
+    
     
     
     
@@ -280,24 +269,24 @@ class AnimTexManager ():
     
     
     
-    # (maybe want to generate index / reverse index on init? not sure how yet.)
-    self.vertex_data    = []
-    self.transform_data = []
+    # # (maybe want to generate index / reverse index on init? not sure how yet.)
+    # self.vertex_data    = []
+    # self.transform_data = []
     
-        # need mesh name -> scanline number to update the vertex data,
-        # but for spatial queries in Ruby you need
-        # to map point in space -> mesh name
+    #     # need mesh name -> scanline number to update the vertex data,
+    #     # but for spatial queries in Ruby you need
+    #     # to map point in space -> mesh name
         
-        # point in space -> objectID
-        # objectID -> meshID
-        # meshID -> mesh name
+    #     # point in space -> objectID
+    #     # objectID -> meshID
+    #     # meshID -> mesh name
         
-        # so you need a meshID_to_meshDatablock mapping
-        # which is the reverse of what we currently have.
+    #     # so you need a meshID_to_meshDatablock mapping
+    #     # which is the reverse of what we currently have.
         
-        # However, rather than maintain 2 indexes in Python,
-        # just send the one index to Ruby and let Ruby create the other index.
-        # (we don't need the reverse index here in Python)
+    #     # However, rather than maintain 2 indexes in Python,
+    #     # just send the one index to Ruby and let Ruby create the other index.
+    #     # (we don't need the reverse index here in Python)
     
     
     # 
@@ -339,7 +328,7 @@ class AnimTexManager ():
     # 
     # mesh_name : string
     def has_mesh(mesh_name):
-        return (mesh_name in self.mesh_name_to_scanline)
+        return (mesh_name in self.mesh_data_cache)
     
     
     # Encode both vertex positions and normals of a mesh into a texture.
@@ -403,12 +392,7 @@ class AnimTexManager ():
         
         
         # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
-        if mesh_name not in self.mesh_name_to_scanline:
-            # assign new scanline index to this 
-            self.mesh_name_to_scanline[mesh_name] = self.next_mesh_scanline
-            self.next_mesh_scanline += 1
-        
-        output_frame = self.mesh_name_to_scanline[mesh_name]
+        output_frame = self.__mesh_name_to_scanline(mesh_name)
         
         self.position_tex.write_scanline(scanline_position, output_frame)
         self.normal_tex.write_scanline(scanline_normals, output_frame)
@@ -429,14 +413,7 @@ class AnimTexManager ():
     # obj_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
     def set_object_mesh(obj_name, mesh_name):
-        # 
-        # what scanline to save to?
-        # 
-        if obj_name not in self.object_name_to_scanline:
-            self.object_name_to_scanline[obj_name] = self.next_object_scanline
-            self.next_object_scanline += 1
-        
-        scanline_index = self.object_name_to_scanline[obj_name]
+        scanline_index = self.__object_name_to_scanline(obj_name)
         
         
         # read out existing scanline data
@@ -474,14 +451,7 @@ class AnimTexManager ():
     # obj_name  : string
     # transform : 4x4 transform matrix
     def set_object_transform(obj_name, transform):
-        # 
-        # what scanline to save to?
-        # 
-        if obj_name not in self.object_name_to_scanline:
-            self.object_name_to_scanline[obj_name] = self.next_object_scanline
-            self.next_object_scanline += 1
-        
-        scanline_index = self.object_name_to_scanline[obj_name]
+        scanline_index = self.__object_name_to_scanline(obj_name)
         
         
         # read out existing scanline data
@@ -513,14 +483,7 @@ class AnimTexManager ():
     # obj_name : string
     # material : RubyOF material datablock (custom data, not blender material)
     def set_object_material(obj_name, material):
-        # 
-        # what scanline to save to?
-        # 
-        if obj_name not in self.object_name_to_scanline:
-            self.object_name_to_scanline[obj_name] = self.next_object_scanline
-            self.next_object_scanline += 1
-        
-        scanline_index = self.object_name_to_scanline[obj_name]
+        scanline_index = self.__object_name_to_scanline(obj_name)
         
         
         # read out existing scanline data
@@ -565,6 +528,9 @@ class AnimTexManager ():
                         channels=self.transform_tex.channels_per_pixel)
         
         
+        self.__cache_material_name(scanline_index, material.name)
+        
+        
         # 
         # write to scanline to texture
         # 
@@ -578,7 +544,18 @@ class AnimTexManager ():
     # 
     # material : RubyOF material datablock (custom data, not blender material)
     def set_material(material):
-        # NOTE: may actually need the blender material block after all
+        # FIXME: may actually need the blender material block after all, because that may be where the names are stored
+        
+        
+        # 1) traverse the cache to find all objects that use this material
+        # 2) update all of those objects
+        
+        for data in self.object_data_cache:
+            obj_name, material_name = data
+            
+            if material_name == material.name:
+                self.set_object_material(obj_name, material)
+        
         
         
         pass
@@ -602,14 +579,8 @@ class AnimTexManager ():
         
         # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
         
-        # 
-        # what scanline to save to?
-        # 
-        if obj_name not in self.object_name_to_scanline:
-            self.object_name_to_scanline[obj_name] = self.next_object_scanline
-            self.next_object_scanline += 1
         
-        scanline_index = self.object_name_to_scanline[obj_name]
+        scanline_index = self.__object_name_to_scanline(obj_name)
         
         
         # This time, you *want* to clobber the data,
