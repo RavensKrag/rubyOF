@@ -134,6 +134,15 @@ class ImageWrapper():
         #   However, regaurdless of the addon's settings, the scene's settings must be set to OpenEXR rendering, or the output will become weird. May want to include proper settings in the addon, or may want to eliminate PNG vs EXR setting in the addon, and just alawys use the scene settings.
         
     
+    def read_scanline(self, row):
+        px_per_scanline = self.width*self.channels_per_pixel
+        
+        offset = px_per_scanline*row
+        
+        # this is like Ruby's Array#slice,
+        # but python excludes the end of the range
+        return self.image.pixels[offset:(offset+px_per_scanline)]
+    
     def write_scanline(self, pixel_data, row):
         # print("writing scanline")
         # print([px for px in self.image.pixels])
