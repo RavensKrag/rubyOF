@@ -1,6 +1,5 @@
 from utilities import *
 from class_reloader import reload_class
-from coroutine_decorator import *
 
 
 from image_wrapper import ( ImageWrapper, get_cached_image )
@@ -77,6 +76,13 @@ class AnimTexManager ():
         
         self.max_tris = mytool.max_tris
         
+        # data for export_mesh()
+        self.next_mesh_scanline = 1
+        self.mesh_name_to_scanline = {}
+        
+        # data for set_object_transform()
+        self.next_object_scanline = 1
+        self.object_name_to_scanline = {}
         
         
         # (maybe want to generate index / reverse index on init? not sure how yet.)
@@ -318,6 +324,381 @@ class AnimTexManager ():
     
     
     
+    # data schema
+    # ---
+    # vertex data texture
+        # each row: [vert_0, vert_1, ..., vert_n]
+        # every 3 verts (across x dim) encodes a tri (no compression)
+        # every row (across the y dim) encodes a different mesh
+    # transform data texture
+        # each row: [mesh_id (1px), transform (4px), material_datablock (4px)]
+    
+    
+    # api (ruby-style prototype)
+    # ---
+    # manager.meshes.include?(mesh_name)
+    # manager.meshes[mesh_name] = mesh
+    
+    # manager.objects[obj_name].transform = transform
+    # manager.objects[obj_name].material = material
+    # manager.objects[obj_name].mesh = mesh_name
+    
+    
+    
+    
+    # manager.has_mesh(mesh_name)
+            # has a mesh with this name been exported to the textures?
+    
+    # manager.export_mesh(mesh_name, mesh)
+            # save mesh data to texture
+            # (scanline to use will be calculated automatically)
+            
+    # manager.set_object_transform(obj_name, transform)
+            # set transform for a given object
+    
+    # manager.set_object_material(obj_name, material_datablock)
+            # pass blender material datablock object, pack into 4 px data structure needed by texture
+    
+    # manager.set_object_mesh(obj_name, mesh_name)
+            # set mesh to use for the given object in the transform texture
+            # this will set the mesh @ t=0 (initial condition)
+            # which may be changed by ruby code during game execution
+        
+    
+    # extra data stored in manager
+    # ---
+    # mesh name -> vertex data scanline
+            # Map names to scanlines.
+            # When using external API, should be able to think
+            # completely in terms of names, not scanline numbers.
+            # IDs should be for internal use only.
+    
+    
+    
+    
+    # notes
+    # ---
+    # mesh object name -> scanline index in vertex data texture
+    # (one mesh datablock may result in many exported meshes, because you need one line in the output texture per frame of animation. how do I distinguish between different frames of animation?)
+    # does the data format need to know about animation? or does it fundamentally only care about transforms and meshes? may be able to move this part of the API into another class / file / whatever.
+    
+    
+    
+    
+    
+    # 
+    # extract transforms from object
+    # 
+    
+    # this_mat = target_object.matrix_local
+    this_mat = target_object.matrix_world
+    # print(this_mat)
+    # print(type(this_mat))
+    
+    identity_matrix = this_mat.Identity(4)
+    
+    # out_mat = identity_matrix
+    out_mat = this_mat
+    
+    
+    # 
+    # extract material from object
+    # 
+    
+    mat_slots = target_object.material_slots
+    if len(mat_slots) > 0:
+        mat = mat_slots[0].material.rb_mat
+    else:
+        mat = None
+    
+    
+    
+    
+    
+    
+    # Does a mesh with with name exist in the texture?
+    # (more important on the ruby side, but also helpful to optimize export)
+    # 
+    # mesh_name : string
+    def has_mesh(mesh_name):
+        pass
+    
+    
+    # Write mesh data to texture.
+    # 
+    # mesh_name : string
+    # mesh      : mesh datablock
+    def export_mesh(mesh_name, mesh):
+        mesh.calc_loop_triangles()
+        # ^ need to call this to populate the mesh.loop_triangles() cache
+        
+        mesh.calc_normals_split()
+        # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
+        # ^ normals stored on the tri / face
+        
+        
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        # NOTE: all textures in the same animation set have the same dimensions
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)
+        
+        # data for just this object
+        pixel_data = [1.0, 0.0, 0.0, 1.0] * self.position_tex.width
+        
+        self.position_tex.write_scanline(pixel_data, 0)
+        
+        
+        
+        # 
+        # allocate pixel data buffers for mesh
+        # 
+        
+        scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
+        scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+        # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
+        
+        
+        # 
+        # pack each and every triangle
+        # 
+        
+        # number of actual verts likely to be less than maximum
+        # so just measure the list
+        num_tris  = len(mesh.loop_triangles)
+        num_verts = len(mesh.loop_triangles)*3
+        print("num tris:", num_tris)
+        print("num verts:", num_verts)
+
+        if num_tris > self.max_tris:
+            raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
+        
+        
+        verts = mesh.vertices
+        for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+            normals = tri.split_normals
+            for j in range(3): # verts per triangle
+                vert_index = tri.vertices[j]
+                vert = verts[vert_index]
+                
+                scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
+                                channels=self.position_tex.channels_per_pixel)
+                
+                
+                normal = normals[j]
+                
+                scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
+                                channels=self.normal_tex.channels_per_pixel)
+        
+        
+        # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
+        if mesh_name not in self.mesh_name_to_scanline:
+            # assign new scanline index to this 
+            self.mesh_name_to_scanline[mesh_name] = self.next_mesh_scanline
+            self.next_mesh_scanline += 1
+        
+        output_frame = self.mesh_name_to_scanline[mesh_name]
+        
+        self.position_tex.write_scanline(scanline_position, output_frame)
+        self.normal_tex.write_scanline(scanline_normals, output_frame)
+        
+        
+        self.position_tex.save()
+        self.normal_tex.save()
+    
+    
+    # Map exported mesh to a particular object.
+    # If mesh with the given name has not yet been exported,
+    # raise exception.
+    # 
+    # obj_name  : string
+    # mesh_name : string ( must already be exported using export_mesh() )
+    def set_object_mesh(obj_name, mesh_name):
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)        
+        pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
+        self.transform_tex.write_scanline(pixel_data, 0)
+        
+        
+        
+        # 
+        # what scanline to save to?
+        # 
+        if obj_name not in self.object_name_to_scanline:
+            self.object_name_to_scanline[obj_name] = self.next_object_scanline
+            self.next_object_scanline += 1
+        
+        scanline_index = self.object_name_to_scanline[obj_name]
+        
+        
+        # 
+        # write mesh id to scanline
+        # 
+        
+        # TODO: read out existing scanline so you don't clobber other properties on this line
+        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        
+        mesh_id = self.mesh_name_to_scanline[mesh_name]
+        # ^ TODO: need some sort of error if the mesh has not been exported yet
+        # mesh exporting is handled in export_mesh()
+        
+        scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        
+        # 
+        # write to scanline to texture
+        # 
+        
+        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        
+        self.transform_tex.save()
+    
+    
+    # obj_name  : string
+    # transform : 4x4 transform matrix
+    def set_object_transform(obj_name, transform):
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)        
+        pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
+        self.transform_tex.write_scanline(pixel_data, 0)
+        
+        
+        
+        # 
+        # what scanline to save to?
+        # 
+        if obj_name not in self.object_name_to_scanline:
+            self.object_name_to_scanline[obj_name] = self.next_object_scanline
+            self.next_object_scanline += 1
+        
+        scanline_index = self.object_name_to_scanline[obj_name]
+        
+        
+        # 
+        # write transforms to scanline
+        # 
+        
+        # TODO: read out existing scanline so you don't clobber other properties on this line
+        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        
+        for i in range(1, 5): # range is exclusive of high end: [a, b)
+            scanline_set_px(scanline_transform, i, vec4_to_rgba(transform[i-1]),
+                            channels=self.transform_tex.channels_per_pixel)
+        
+        # 
+        # write to scanline to texture
+        # 
+        
+        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        
+        self.transform_tex.save()
+    
+    
+    # obj_name : string
+    # material : RubyOF material datablock (custom data, not blender material)
+    def set_object_material(obj_name, material):
+        # TODO: update all code to use RGB (no alpha) to save some memory
+        # TODO: use half instead of float to save memory
+        
+        
+        # (bottom row of pixels will always be full red)
+        # This allows for the easy identification of one edge,
+        # like a "this side up" sign, but it also allows for
+        # the user to create frames completely free of any
+        # visible geometry. (useful with GPU instancing)        
+        pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
+        self.transform_tex.write_scanline(pixel_data, 0)
+        
+        
+        
+        # 
+        # what scanline to save to?
+        # 
+        if obj_name not in self.object_name_to_scanline:
+            self.object_name_to_scanline[obj_name] = self.next_object_scanline
+            self.next_object_scanline += 1
+        
+        scanline_index = self.object_name_to_scanline[obj_name]
+        
+        
+        # 
+        # write material properties to scanline
+        # (if no material set, default to white)
+        # 
+        
+        # TODO: read out existing scanline so you don't clobber other properties on this line
+        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        
+        
+        # color = c1 = c2 = c3 = c4 = alpha = None
+        
+        if material is None:
+            # default white for unspecified color
+            # (ideally would copy this from the default in materials)
+            color = Color((1.0, 1.0, 1.0)) # (0,0,0)
+            c1 = color
+            c2 = color
+            c3 = color
+            c4 = color
+            alpha = 1
+        else:
+            c1    = material.ambient
+            c2    = material.diffuse
+            c3    = material.specular
+            c4    = material.emissive
+            alpha = material.alpha
+        
+        scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
+                        channels=self.transform_tex.channels_per_pixel)
+        
+        
+        # 
+        # write to scanline to texture
+        # 
+        
+        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        
+        self.transform_tex.save()
+    
+    
+    # Update material for all objects that use it.
+    # 
+    # material : RubyOF material datablock (custom data, not blender material)
+    def set_material(material):
+        pass
+    
+    
+    
     
     
     # 
@@ -493,326 +874,6 @@ class AnimTexManager ():
         
 
     
-    
-    
-    # 
-    # clean build of animation textures
-    # (mostly callbacks that get run by key operators)
-    # 
-    
-    
-    # TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
-    
-    # yields percentage of task completion, for use with a progress bar
-    @coroutine
-    def export_all_textures(self):
-        
-        yield(0) # initial yield to just set things up
-        
-        # 'context' is recieved via the first yield,
-        # rather than a standard argument.
-        #  This is passed via the class defined in progress_bar.py
-        context = yield(0)
-        
-        
-        t0 = time.time()
-        
-        
-        
-        self.vertex_data    = []
-        self.transform_data = []
-        
-        
-        mytool = context.scene.my_tool
-        
-        
-        mytool.status_message = "eval dependencies"
-        depsgraph = context.evaluated_depsgraph_get()
-        context = yield(0.0)
-        
-        
-        # collect up all the objects to export
-        
-        # for each object find the associated mesh datablock
-        # reduce to the objects with unique mesh datablocks
-        # generate evaluated meshes for those objects
-        # create mapping of obj -> evaulated mesh
-        
-        # create mapping of evaluated mesh -> scanline index
-        # export evaluated meshes to file
-        
-        # for each object
-            # map object -> mesh -> mesh scanline index
-            # export object transform with mesh_id= mesh scanline index
-        
-        
-        
-        
-        all_objects = mytool.collection_ptr.all_objects
-        
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        num_objects = len(all_mesh_objects)
-        if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
-        
-        
-        # 
-        # create a list of unique evaluated meshes
-        # AND
-        # map mesh datablock -> mesh id
-        # so object transfoms and mesh ID can be paired up in transform export
-        mytool.status_message = "collect mesh data"
-        
-        # don't need (obj -> mesh datablock) mapping
-        # as each object already knows its mesh datablock
-        
-        
-        unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-        mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
-        mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
-        
-        self.meshDatablock_to_meshID = { mesh.name : i+1
-                                         for i, mesh
-                                         in enumerate(mesh_datablocks) }
-        
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
-                          for obj in mesh_objects ]
-        
-        # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
-            # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
-        
-        # unique_datablocks = list(set( [ x.data for x in all_mesh_objects ] )) 
-        # # ^ will change the order of the data, which is bad
-        
-        context = yield( 0.0 )
-        
-        
-        
-        # 
-        # calculate how many tasks there are
-        # 
-        
-        total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
-        task_count = 0
-        
-        context = yield( 0.0 )
-        
-        # 
-        # export all unique meshes
-        # 
-        
-        self.vertex_data = [ None ]
-        
-        mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unqiue_meshes):
-            self.export_vertex_data(mesh, i+1)
-                # NOTE: This index 'i+1' ends up always being the same as the indicies in self.meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
-            
-            self.vertex_data.append( mesh.name )
-            
-            task_count += 1
-            context = yield(task_count / total_tasks)
-        
-        # 
-        # export all objects
-        # (transforms and associated mesh IDs)
-        # 
-        
-        self.transform_data = [ [None, None] ]
-        
-        for i, obj in enumerate(all_mesh_objects):
-            # use mapping: obj -> mesh datablock -> mesh ID
-            self.export_transform_data(
-                obj,
-                scanline=i+1,
-                mesh_id=self.meshDatablock_to_meshID[obj.data.name]
-            )
-            
-            task_count += 1
-            
-            self.transform_data.append( [obj.name, first_material(obj).name] )
-            
-            context = yield(task_count / total_tasks)
-        
-        
-        # 
-        # get name of object -> transform id mapping
-        # 
-        
-        mytool.status_message = "show object map"
-        
-        # create map: obj name -> transform ID
-        object_map = { obj.name : i+1
-                       for i, obj in enumerate(all_mesh_objects)
-                       if obj.type == 'MESH' }
-        
-        self.objName_to_transformID = object_map
-        
-        # send mapping to RubyOF
-        data = {
-            'type': 'object_to_id_map',
-            'value': self.objName_to_transformID,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-        
-        context = yield( task_count / total_tasks )
-        
-        
-        # 
-        # get mesh id -> mesh name mapping
-        # 
-        
-        data = {
-            'type': 'meshID_to_meshName',
-            'value': self.vertex_data,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-        
-        context = yield( task_count / total_tasks )
-        
-        
-        
-        # 
-        # let RubyOF know that new animation textures have been exported
-        # 
-        
-        data = {
-            'type': 'update_anim_textures',
-            'position_tex_path' : self.position_tex.filepath,
-            'normal_tex_path'   : self.normal_tex.filepath,
-            'transform_tex_path': self.transform_tex.filepath,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-        
-        
-        context = yield(task_count / total_tasks)
-        
-        t1 = time.time()
-        
-        print("time elapsed:", t1-t0, "sec")
-        
-    
-    
-    
-    
-    
-    
-    # 
-    # update animation textures
-    # 
-    
-    # update data that would have been sent in pack_mesh():
-    # so, the transform and what datablock the object is linked to
-    
-    # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
-    
-    
-    # use transform on armature as entity transform
-    # (may apply to more than 1 mesh)
-    def update_entity_transform_with_armature(self, update, armature_obj):
-        print("send update message")
-        
-        data = {
-            'type': 'update_transform',
-            'position_tex_path' : self.position_tex.filepath,
-            'normal_tex_path'   : self.normal_tex.filepath,
-            'transform_tex_path': self.transform_tex.filepath,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-    
-    # use transform on mesh object as entity transform
-    # (will only apply to 1 mesh)
-    def update_entity_transform_without_armature(self, update, mesh_obj):
-        if update.is_updated_transform:
-            if hasattr(self, 'transform_data'):
-                # find existing position in transform texture (if any)
-                target_obj_index = self.transform_data_index(mesh_obj.name)
-                
-                if target_obj_index is not None:
-                    # 
-                    # update already existing object to have a new transform
-                    # 
-                    self.export_transform_data(
-                        mesh_obj,
-                        scanline=target_obj_index,
-                        mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
-                    )
-                    # ^ will update transform, associated mesh, and material data
-                    # TODO: split out material data into a separate method
-                    
-                    
-                    # Don't need to update the cache.
-                    # This object already exists in the cache, so it's fine.
-                    self.cache_transform_data(mesh_obj)
-                    
-                    print("moved object")
-                else:
-                    # 
-                    # No object has existed in texture before
-                    # but there was an update to the transform?
-                    # 
-                    # must be a new object!
-                    # 
-                    print("NO OBJECT FOUND")
-                    
-                    # 
-                    # create new mesh datablock if necessary
-                    # 
-                    datablock_index = self.vertex_data_index(mesh_obj.data.name)
-                    if datablock_index is None:
-                        # update cache
-                        i = self.cache_vertex_data( mesh_obj.data )
-                        
-                        # write to texture
-                        self.export_vertex_data(mesh_obj.data, i)
-                        
-                    
-                    # 
-                    # link the new mesh object to the correct datablock
-                    # 
-                    i = self.cache_transform_data(mesh_obj)
-                    
-                    # TODO: remove len() call
-                    self.export_transform_data(
-                        mesh_obj,
-                        scanline=i,
-                        mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
-                    )
-                    
-                
-                
-                # TODO: create a separate update message type for when transforms update
-                # TODO: only send update message once per frame, not every frame
-                    # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
-                
-                print("send update message")
-                
-                data = {
-                    'type': 'update_transform',
-                    'position_tex_path' : self.position_tex.filepath,
-                    'normal_tex_path'   : self.normal_tex.filepath,
-                    'transform_tex_path': self.transform_tex.filepath,
-                }
-                
-                self.to_ruby.write(json.dumps(data))
-                
-                
-            else:
-                print("no transform")
-        
-        
-        # You won't get a message from depsgraph about a material being changed
-        # until the object you're inspecting is the material.
-        # Thus, you need to deal with the denormalization / update
-        # of the material, in the material, and not here in the mesh.
         
         
     
@@ -830,7 +891,7 @@ class AnimTexManager ():
     # PRECONDITION: assumes that self.transform_data cache is populated
     
     # callback for right after deletion 
-    def post_mesh_object_deletion(self, obj_name): 
+    def delete_mesh_object(self, obj_name): 
         print("object", obj_name, "was deleted")
         
         
