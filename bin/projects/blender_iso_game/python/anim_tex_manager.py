@@ -555,10 +555,6 @@ class AnimTexManager ():
             
             if material_name == material.name:
                 self.set_object_material(obj_name, material)
-        
-        
-        
-        pass
     
     
     # Remove object from the transform texture.
@@ -608,10 +604,8 @@ class AnimTexManager ():
     
     def on_save(self):
         data = {
-            'vertex_data': self.vertex_data,
-            'transform_data': self.transform_data,
-            'objName_to_transformID' : self.objName_to_transformID,
-            'meshDatablock_to_meshID' : self.meshDatablock_to_meshID
+            'mesh_data_cache': self.mesh_data_cache,
+            'object_data_cache': self.object_data_cache
         }
         
         # print(json.dumps(data))
@@ -636,10 +630,8 @@ class AnimTexManager ():
                 print(data)
                 sys.stdout.flush()
                 
-                self.vertex_data    = data['vertex_data']
-                self.transform_data = data['transform_data']
-                self.objName_to_transformID = data['objName_to_transformID']
-                self.meshDatablock_to_meshID = data['meshDatablock_to_meshID']
+                self.mesh_data_cache    = data['mesh_data_cache']
+                self.object_data_cache = data['object_data_cache']
     
     
     
