@@ -1,326 +1,305 @@
 
 from coroutine_decorator import *
 
-class Foo ():
+
+
+
+def find_unique_mesh_pairs(all_mesh_objects):
+    """Given a list of mesh objects, return
+       all pairs (mesh_object, mesh_datablock)
+       such that each mesh_datablock is unique"""
+    
+    unique_mesh_datablocks = set()
+    unique_pairs = []
+    
+    for obj in all_mesh_objects:
+        if obj.data in unique_mesh_datablocks:
+            pass
+        else:
+            unique_mesh_datablocks.add(obj.data)
+            unique_pairs.append( (obj, obj.data) )
+    
+    return unique_pairs
+
+
+def get_object_transform(object):
+    # this_mat = target_object.matrix_local
+    this_mat = target_object.matrix_world
+    # print(this_mat)
+    # print(type(this_mat))
+
+    identity_matrix = this_mat.Identity(4)
+
+    # out_mat = identity_matrix
+    out_mat = this_mat
+    
+    return out_mat
+
+
+def first_material(mesh_object):
+    mat_slots = mesh_object.material_slots
+    
+    # color = c1 = c2 = c3 = c4 = alpha = None
+    
+    if len(mat_slots) > 0:
+        mat = mat_slots[0].material
+        
+    else:
+        mat = bpy.data.materials['Material']
+    
+    return mat
+
+
+
+# 
+# clean build of animation textures
+# (mostly callbacks that get run by key operators)
+# 
+
+
+# TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
+
+# yields percentage of task completion, for use with a progress bar
+@coroutine
+def export_all_textures():
+    
+    yield(0) # initial yield to just set things up
+    
+    # 'context' is recieved via the first yield,
+    # rather than a standard argument.
+    #  This is passed via the class defined in progress_bar.py
+    context = yield(0)
+    
+    
+    
+    t0 = time.time()
+    
+    
+    mytool = context.scene.my_tool
+    
+    
+    mytool.status_message = "eval dependencies"
+    depsgraph = context.evaluated_depsgraph_get()
+    context = yield(0.0)
+    
+    
+    # collect up all the objects to export
+    
+    # for each object find the associated mesh datablock
+    # reduce to the objects with unique mesh datablocks
+    # generate evaluated meshes for those objects
+    # create mapping of obj -> evaulated mesh
+    
+    # create mapping of evaluated mesh -> scanline index
+    # export evaluated meshes to file
+    
+    # for each object
+        # map object -> mesh -> mesh scanline index
+        # export object transform with mesh_id= mesh scanline index
+    
+    
+    
+    
+    all_objects = mytool.collection_ptr.all_objects
+    
+    
+    all_mesh_objects = [ obj
+                         for obj in mytool.collection_ptr.all_objects
+                         if obj.type == 'MESH' ]
+    
+    num_objects = len(all_mesh_objects)
+    if num_objects > mytool.max_num_objects:
+        raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
+    
+    
     # 
-    # clean build of animation textures
-    # (mostly callbacks that get run by key operators)
+    # create a list of unique evaluated meshes
     # 
     
+    mytool.status_message = "collect mesh data"
     
-    # TODO: when do I set context / scene? is setting on init appropriate? when do those values get invalidated?
+    unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
+    mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
+    mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
     
-    # yields percentage of task completion, for use with a progress bar
-    @coroutine
-    def export_all_textures(self):
+    unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+                      for obj in mesh_objects ]
+    
+    # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
+        # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
+    
+    # unique_datablocks = list(set( [ x.data for x in all_mesh_objects ] )) 
+    # # ^ will change the order of the data, which is bad
+    
+    context = yield( 0.0 )
+    
+    
+    tex_manager = anim_texture_manager_singleton(context)
+    
+    # 
+    # calculate how many tasks there are
+    # 
+    
+    total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
+    task_count = 0
+    
+    context = yield( 0.0 )
+    
+    # 
+    # export all unique meshes
+    # 
+    
+    mytool.status_message = "export unique meshes"
+    for i, mesh in enumerate(unqiue_meshes):
+        tex_manager.export_mesh(mesh.name, mesh)
         
-        yield(0) # initial yield to just set things up
+        task_count += 1
+        context = yield(task_count / total_tasks)
+    
+    # 
+    # export all objects
+    # 
+    
+    for i, obj in enumerate(all_mesh_objects):
+        m = tex_manager
+        m.set_object_mesh(     obj.name, obj.data.name)
+        m.set_object_transform(obj.name, get_object_transform(obj))
+        m.set_object_material( obj.name, first_material(obj))
         
-        # 'context' is recieved via the first yield,
-        # rather than a standard argument.
-        #  This is passed via the class defined in progress_bar.py
-        context = yield(0)
+        task_count += 1
+        context = yield(task_count / total_tasks)
+    
+    
+    # 
+    # export name -> index mappings
+    # 
         
-        
-        t0 = time.time()
-        
-        
-        
-        self.vertex_data    = []
-        self.transform_data = []
-        
-        
-        mytool = context.scene.my_tool
-        
-        
-        mytool.status_message = "eval dependencies"
-        depsgraph = context.evaluated_depsgraph_get()
-        context = yield(0.0)
-        
-        
-        # collect up all the objects to export
-        
-        # for each object find the associated mesh datablock
-        # reduce to the objects with unique mesh datablocks
-        # generate evaluated meshes for those objects
-        # create mapping of obj -> evaulated mesh
-        
-        # create mapping of evaluated mesh -> scanline index
-        # export evaluated meshes to file
-        
-        # for each object
-            # map object -> mesh -> mesh scanline index
-            # export object transform with mesh_id= mesh scanline index
-        
-        
-        
-        
-        all_objects = mytool.collection_ptr.all_objects
-        
-        
-        all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
-                             if obj.type == 'MESH' ]
-        
-        num_objects = len(all_mesh_objects)
-        if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
-        
-        
-        # 
-        # create a list of unique evaluated meshes
-        # AND
-        # map mesh datablock -> mesh id
-        # so object transfoms and mesh ID can be paired up in transform export
-        mytool.status_message = "collect mesh data"
-        
-        # don't need (obj -> mesh datablock) mapping
-        # as each object already knows its mesh datablock
-        
-        
-        unique_pairs = find_unique_mesh_pairs(all_mesh_objects)
-        mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
-        mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
-        
-        self.meshDatablock_to_meshID = { mesh.name : i+1
-                                         for i, mesh
-                                         in enumerate(mesh_datablocks) }
-        
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
-                          for obj in mesh_objects ]
-        
-        # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
-            # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
-        
-        # unique_datablocks = list(set( [ x.data for x in all_mesh_objects ] )) 
-        # # ^ will change the order of the data, which is bad
-        
-        context = yield( 0.0 )
-        
-        
-        
-        # 
-        # calculate how many tasks there are
-        # 
-        
-        total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
-        task_count = 0
-        
-        context = yield( 0.0 )
-        
-        # 
-        # export all unique meshes
-        # 
-        
-        self.vertex_data = [ None ]
-        
-        mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unqiue_meshes):
-            self.export_vertex_data(mesh, i+1)
-                # NOTE: This index 'i+1' ends up always being the same as the indicies in self.meshDatablock_to_meshID. Need to do it this way because at this stage, we only have the exportable final meshes, not the orignial mesh datablocks.
+    data = {
+        'type': 'entity_name_map',
+        'value': tex_manager.get_object_name_map(),
+    }
+    
+    self.to_ruby.write(json.dumps(data))
+    
+    data = {
+        'type': 'mesh_name_map',
+        'value': tex_manager.get_mesh_name_map(),
+    }
+    
+    self.to_ruby.write(json.dumps(data))
+    
+    context = yield( task_count / total_tasks )
+    
+    
+    # 
+    # let RubyOF know that new animation textures have been exported
+    # 
+    
+    data = {
+        'type': 'update_anim_textures',
+        'position_tex_path' : self.position_tex.filepath,
+        'normal_tex_path'   : self.normal_tex.filepath,
+        'transform_tex_path': self.transform_tex.filepath,
+    }
+    
+    self.to_ruby.write(json.dumps(data))
+    
+    
+    context = yield(task_count / total_tasks)
+    
+    t1 = time.time()
+    
+    print("time elapsed:", t1-t0, "sec")
+    
+
+    
+    
+    
+# 
+# update animation textures
+# 
+
+# update data that would have been sent in pack_mesh():
+# so, the transform and what datablock the object is linked to
+
+# TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
+
+
+# use transform on armature as entity transform
+# (may apply to more than 1 mesh)
+def update_entity_transform_with_armature(context, update, armature_obj):
+    pass
+    # print("send update message")
+    
+    # data = {
+    #     'type': 'update_transform',
+    #     'position_tex_path' : self.position_tex.filepath,
+    #     'normal_tex_path'   : self.normal_tex.filepath,
+    #     'transform_tex_path': self.transform_tex.filepath,
+    # }
+    
+    # self.to_ruby.write(json.dumps(data))
+
+# use transform on mesh object as entity transform
+# (will only apply to 1 mesh)
+def update_entity_transform_without_armature(context, update, mesh_obj):
+    tex_manager = anim_texture_manager_singleton(context)
+    
+    if update.is_updated_transform:
+        if tex_manager.has_object(mesh_obj.name):
+            # 
+            # update already existing object to have a new transform
+            # 
             
-            self.vertex_data.append( mesh.name )
+            m = tex_manager
+            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
             
-            task_count += 1
-            context = yield(task_count / total_tasks)
-        
-        # 
-        # export all objects
-        # (transforms and associated mesh IDs)
-        # 
-        
-        self.transform_data = [ [None, None] ]
-        
-        for i, obj in enumerate(all_mesh_objects):
-            # use mapping: obj -> mesh datablock -> mesh ID
-            self.export_transform_data(
-                obj,
-                scanline=i+1,
-                mesh_id=self.meshDatablock_to_meshID[obj.data.name]
-            )
             
-            task_count += 1
+            print("moved object")
+        else:
+            # 
+            # No object has existed in texture before
+            # but there was an update to the transform?
+            # 
+            # must be a new object!
+            # 
+            print("NO OBJECT FOUND")
             
-            self.transform_data.append( [obj.name, first_material(obj).name] )
+            # export new mesh (if necessary)
+            # (may not need to export the mesh again)
+            # bind mesh to object
             
-            context = yield(task_count / total_tasks)
+            m = tex_manager
+            
+            if not m.has_mesh(mesh_obj.data.name):
+                m.export_mesh(mesh_obj.data.name, mesh_obj.data)
+            
+            m.set_object_mesh(mesh_obj.name, mesh_obj.data.name)
+            
         
         
-        # 
-        # get name of object -> transform id mapping
-        # 
+        # TODO: create a separate update message type for when transforms update
+        # TODO: only send update message once per frame, not every frame
+            # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
         
-        mytool.status_message = "show object map"
-        
-        # create map: obj name -> transform ID
-        object_map = { obj.name : i+1
-                       for i, obj in enumerate(all_mesh_objects)
-                       if obj.type == 'MESH' }
-        
-        self.objName_to_transformID = object_map
-        
-        # send mapping to RubyOF
-        data = {
-            'type': 'object_to_id_map',
-            'value': self.objName_to_transformID,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-        
-        context = yield( task_count / total_tasks )
-        
-        
-        # 
-        # get mesh id -> mesh name mapping
-        # 
+        print("send update message")
         
         data = {
-            'type': 'meshID_to_meshName',
-            'value': self.vertex_data,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-        
-        context = yield( task_count / total_tasks )
-        
-        
-        
-        # 
-        # let RubyOF know that new animation textures have been exported
-        # 
-        
-        data = {
-            'type': 'update_anim_textures',
+            'type': 'update_transform',
             'position_tex_path' : self.position_tex.filepath,
             'normal_tex_path'   : self.normal_tex.filepath,
             'transform_tex_path': self.transform_tex.filepath,
         }
         
         self.to_ruby.write(json.dumps(data))
-        
-        
-        context = yield(task_count / total_tasks)
-        
-        t1 = time.time()
-        
-        print("time elapsed:", t1-t0, "sec")
-        
+            
+            
     
     
-    
-    
-    
-    
-    # 
-    # update animation textures
-    # 
-    
-    # update data that would have been sent in pack_mesh():
-    # so, the transform and what datablock the object is linked to
-    
-    # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
-    
-    
-    # use transform on armature as entity transform
-    # (may apply to more than 1 mesh)
-    def update_entity_transform_with_armature(self, update, armature_obj):
-        pass
-        # print("send update message")
-        
-        # data = {
-        #     'type': 'update_transform',
-        #     'position_tex_path' : self.position_tex.filepath,
-        #     'normal_tex_path'   : self.normal_tex.filepath,
-        #     'transform_tex_path': self.transform_tex.filepath,
-        # }
-        
-        # self.to_ruby.write(json.dumps(data))
-    
-    # use transform on mesh object as entity transform
-    # (will only apply to 1 mesh)
-    def update_entity_transform_without_armature(self, update, mesh_obj):
-        if update.is_updated_transform:
-            if hasattr(self, 'transform_data'):
-                # find existing position in transform texture (if any)
-                target_obj_index = self.transform_data_index(mesh_obj.name)
-                
-                if target_obj_index is not None:
-                    # 
-                    # update already existing object to have a new transform
-                    # 
-                    self.export_transform_data(
-                        mesh_obj,
-                        scanline=target_obj_index,
-                        mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
-                    )
-                    # ^ will update transform, associated mesh, and material data
-                    # TODO: split out material data into a separate method
-                    
-                    
-                    # Don't need to update the cache.
-                    # This object already exists in the cache, so it's fine.
-                    self.cache_transform_data(mesh_obj)
-                    
-                    print("moved object")
-                else:
-                    # 
-                    # No object has existed in texture before
-                    # but there was an update to the transform?
-                    # 
-                    # must be a new object!
-                    # 
-                    print("NO OBJECT FOUND")
-                    
-                    # 
-                    # create new mesh datablock if necessary
-                    # 
-                    datablock_index = self.vertex_data_index(mesh_obj.data.name)
-                    if datablock_index is None:
-                        # update cache
-                        i = self.cache_vertex_data( mesh_obj.data )
-                        
-                        # write to texture
-                        self.export_vertex_data(mesh_obj.data, i)
-                        
-                    
-                    # 
-                    # link the new mesh object to the correct datablock
-                    # 
-                    i = self.cache_transform_data(mesh_obj)
-                    
-                    # TODO: remove len() call
-                    self.export_transform_data(
-                        mesh_obj,
-                        scanline=i,
-                        mesh_id=self.meshDatablock_to_meshID[mesh_obj.data.name]
-                    )
-                    
-                
-                
-                # TODO: create a separate update message type for when transforms update
-                # TODO: only send update message once per frame, not every frame
-                    # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
-                
-                print("send update message")
-                
-                data = {
-                    'type': 'update_transform',
-                    'position_tex_path' : self.position_tex.filepath,
-                    'normal_tex_path'   : self.normal_tex.filepath,
-                    'transform_tex_path': self.transform_tex.filepath,
-                }
-                
-                self.to_ruby.write(json.dumps(data))
-                
-                
-            else:
-                print("no transform")
-        
-        
-        # You won't get a message from depsgraph about a material being changed
-        # until the object you're inspecting is the material.
-        # Thus, you need to deal with the denormalization / update
-        # of the material, in the material, and not here in the mesh.
+    # You won't get a message from depsgraph about a material being changed
+    # until the object you're inspecting is the material.
+    # Thus, you need to deal with the denormalization / update
+    # of the material, in the material, and not here in the mesh.
     
 
 # first export when blender switches into the RubyOF rendering mode
@@ -435,7 +414,23 @@ def export_update(context, depsgraph):
             print(active_object)
             
             
-            tex_manager.edit_mesh_data(active_object)
+            # need to update the mesh,
+            # but don't need to update bindings
+            # (it's like using a pointer - no need to update references)
+            
+            tex_manager.export_mesh(active_object.name, active_object)
+            
+            
+            # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+            data = {
+                'type': 'update_geometry',
+                'scanline': i,
+                'position_tex_path' : self.position_tex.filepath,
+                'normal_tex_path'   : self.normal_tex.filepath,
+                'transform_tex_path': self.transform_tex.filepath,
+            }
+            
+            to_ruby.write(json.dumps(data))
             
             
             # send material data if any of the materials on this object were changed
@@ -443,7 +438,7 @@ def export_update(context, depsgraph):
             if(depsgraph.id_type_updated('MATERIAL')):
                 if(len(active_object.material_slots) > 0):
                     mat = active_object.material_slots[0].material
-                    message_queue.append(pack_material(mat))
+                    tex_manager.update_material(mat)
             
             
             bpy.ops.object.editmode_toggle()
@@ -474,14 +469,14 @@ def export_update(context, depsgraph):
                     
                     
                     if obj.parent is None:
-                        tex_manager.update_entity_transform_without_armature(update, obj)
+                        update_entity_transform_without_armature(context, update, obj)
                     elif obj.parent.type == 'ARMATURE':
                         # meshes attached to armatures will be exported with NLA animations, in a separate pass
                         pass
                     else: 
                         pass
                 elif obj.type == 'ARMATURE':
-                    tex_manager.update_entity_transform_with_armature(update, obj)
+                    update_entity_transform_with_armature(context, update, obj)
                     
                     
             
@@ -492,7 +487,7 @@ def export_update(context, depsgraph):
                 # transform with color info          material color info
                 
                 mat = obj
-                tex_manager.update_material(context, mat)
+                tex_manager.update_material(mat)
                 
         
         # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material.
@@ -592,7 +587,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # print(delete)
                 
                 # TODO: make sure they're all mesh objects
-                tex_manager.delete_mesh_object(name)
+                tex_manager.delete_object(name)
         
         
         # 
