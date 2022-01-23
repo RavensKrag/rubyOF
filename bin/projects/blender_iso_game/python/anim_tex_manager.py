@@ -80,8 +80,10 @@ class AnimTexManager ():
             #     [mesh_obj_name, first_material.name]
             #         # => 'name: .name'
             # ]
-        self.mesh_data_cache = [None] * self.position_tex.height
-        self.object_data_cache = [[None, None]] * self.transform_tex.height
+        self.mesh_data_cache   = [None] * self.position_tex.height
+        
+        self.object_data_cache = ( [[None, None, None]]
+                                   * self.transform_tex.height )
         
         
         self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
@@ -187,7 +189,7 @@ class AnimTexManager ():
         
         # search for the name
         for i, data in enumerate(self.object_data_cache):
-            cached_obj_name, cached_material_name = data
+            cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_obj_name is None:
                 if first_open_scanline == -1:
@@ -201,16 +203,29 @@ class AnimTexManager ():
         if first_open_scanline == -1:
             raise "No open scanlines available in the object texture. Try increasing the maximum number of objects (aka frames) allowed in exporter."
         else:
-            self.object_data_cache[first_open_scanline] = [obj_name, None]
-            
+            self.object_data_cache[first_open_scanline] = [obj_name, None, None]
+            # TODO: add the linked mesh name to this data storage as well
+            # (should allocate space here, and then cache it when the mesh is linked)
             
             return first_open_scanline
-        
-    def __cache_material_name(self, scanline_index, material_name):
+    
+    # Set object -> mesh binding in cache
+    def __cache_object_mesh_binding(self, scanline_index, mesh_name):
         data = self.object_data_cache[scanline_index]
         
         # data[0] = obj_name
-        data[1] = material_name
+        data[1] = mesh_name
+        # data[2] = material_name
+        
+        self.object_data_cache[scanline_index] = data
+    
+    # Set object -> material binding in cache
+    def __cache_material_binding(self, scanline_index, material_name):
+        data = self.object_data_cache[scanline_index]
+        
+        # data[0] = obj_name
+        # data[1] = mesh_name
+        data[2] = material_name
         
         self.object_data_cache[scanline_index] = data
         
@@ -435,6 +450,8 @@ class AnimTexManager ():
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
                         channels=self.transform_tex.channels_per_pixel)
         
+        self.__cache_object_mesh_binding(scanline_index, mesh_name)
+        
         
         # 
         # write to scanline to texture
@@ -528,7 +545,7 @@ class AnimTexManager ():
                         channels=self.transform_tex.channels_per_pixel)
         
         
-        self.__cache_material_name(scanline_index, material.name)
+        self.__cache_material_binding(scanline_index, material.name)
         
         
         # 

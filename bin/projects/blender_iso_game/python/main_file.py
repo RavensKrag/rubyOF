@@ -543,8 +543,9 @@ class ResourceManager():
         return self.anim_tex_manager
     
     def clear_texture_manager(self, context):
-        self.anim_tex_manager.clear(context)
-        self.anim_tex_manager = None
+        if not self.anim_tex_manager == None:
+            self.anim_tex_manager.clear(context)
+            self.anim_tex_manager = None
 
 resource_manager = ResourceManager()
 
@@ -653,7 +654,7 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
     def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
-        reset_anim_tex_manager(context)
+        resource_manager.clear_texture_manager(context)
         
         mytool = context.scene.my_tool
         mytool.sync_deletions = False
