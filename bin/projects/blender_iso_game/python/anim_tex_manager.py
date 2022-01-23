@@ -62,7 +62,7 @@ class AnimTexManager ():
         self.normal_tex.write_scanline(pixel_data, 0)
         
         # ASSUME: position_tex.height == normal_tex.height
-        if position_tex.height != normal_tex.height:
+        if self.position_tex.height != self.normal_tex.height:
             raise "Mesh data textures are not all the same height."
         
         
@@ -80,8 +80,8 @@ class AnimTexManager ():
             #     [mesh_obj_name, first_material.name]
             #         # => 'name: .name'
             # ]
-        self.mesh_data_cache = [None] * position_tex.height
-        self.object_data_cache = [[None, None]] * transform_tex.height
+        self.mesh_data_cache = [None] * self.position_tex.height
+        self.object_data_cache = [[None, None]] * self.transform_tex.height
         
         
         self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
@@ -296,7 +296,14 @@ class AnimTexManager ():
     
     
     
-    
+    # reset all internal state used by the texture manager
+    # TODO: should clear the cache and JSON file as well
+    def clear(self, context):
+        mytool = context.scene.my_tool
+        
+        mytool.position_tex  = None
+        mytool.normal_tex    = None
+        mytool.transform_tex = None
     
     
     
@@ -578,9 +585,19 @@ class AnimTexManager ():
         
         
         
+    # dict mapping object name -> scanline index
+    def get_entity_name_map(self):
+        pass
     
     
+    # dict mapping mesh name -> scanline index
+    def get_mesh_name_map(self):
+        pass
     
+    def get_texture_paths(self):
+        return (self.position_tex.filepath,
+                self.normal_tex.filepath,
+                self.transform_tex.filepath)
     
     # 
     # serialization

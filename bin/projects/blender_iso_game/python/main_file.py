@@ -49,6 +49,9 @@ import math
 from class_reloader import reload_class
 from utilities import *
 
+from exporter import Exporter
+Exporter = reload_class(Exporter)
+
 
 
 
@@ -164,7 +167,7 @@ def unregister_event_handlers():
 
 
 
-
+# TODO: move these class definitions to a separate file
 
 
 # ------------------------------------------------------------------------
@@ -538,15 +541,16 @@ def anim_texture_manager_singleton(context):
 
 def reset_anim_tex_manager(context):
     global anim_tex_manager
-    mytool = context.scene.my_tool
     
-    mytool.position_tex  = None
-    mytool.normal_tex    = None
-    mytool.transform_tex = None
+    anim_tex_manager.clear(context)
     
     anim_tex_manager = None
 
 
+
+
+
+export_helper = Exporter(to_ruby)
 
 
 
@@ -595,12 +599,13 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
     def run(self):
         context = yield(0.0)
         
-        tex_manager = anim_texture_manager_singleton(context)
         
+        tex_manager = anim_texture_manager_singleton(context)
         # Delegating to a subgenerator
         # https://www.python.org/dev/peps/pep-0380/
         # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
-        yield from tex_manager.export_all_textures()
+        yield from export_helper.export_all_textures()
+        # ^ TODO: update this to the new export_all_textures() function in exporter.py
 
 
 
@@ -706,15 +711,6 @@ def typestring(obj):
     return f'{klass.__module__}.{klass.__qualname__}'
 
 
-def focallength_to_fov(focal_length, sensor):
-    return 2.0 * math.atan((sensor / 2.0) / focal_length)
-
-def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
-    if (sensor_fit == CAMERA_SENSOR_FIT_VERT):
-        return sensor_y;
-    
-    return sensor_x;
-    
 def pack_light(obj):
     data = {
         'type': typestring(obj), # 'bpy.types.Object'
@@ -750,40 +746,6 @@ def pack_light(obj):
         data.update({
             'size': ['radians', obj.data.spot_size]
         })
-    
-    return data
-
-
-def pack_mesh(obj):
-    obj_data = {
-        'type': typestring(obj), # 'bpy.types.Object'
-        'name': obj.name_full,
-        '.type' : obj.type, # 'MESH'
-        'transform': pack_transform_mat4(obj),
-        '.data.name': obj.data.name
-    }
-    
-    return obj_data
-
-def pack_material(mat):
-    data = {
-        'type': typestring(mat),
-        'name': mat.name,
-        'color': [
-            'FloatColor_rgb',
-            mat.rb_mat.diffuse[0],
-            mat.rb_mat.diffuse[1],
-            mat.rb_mat.diffuse[2]
-        ],
-        'alpha': [
-            'float',
-            mat.rb_mat.alpha
-        ],
-        'shininess': [
-            'float',
-            mat.rb_mat.shininess
-        ]
-    }
     
     return data
 
@@ -833,9 +795,7 @@ def pack_transform_mat4(obj):
     
     
     return nested_array
-    
 
-    
 #  sub.prop(light, "size", text="Size X")
 # sub.prop(light, "size_y", text="Y")
 
@@ -869,6 +829,29 @@ def pack_transform_mat4(obj):
         # setSpotConcentration()
             # 0 to 128 exponent, default 16
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def focallength_to_fov(focal_length, sensor):
+    return 2.0 * math.atan((sensor / 2.0) / focal_length)
+
+def BKE_camera_sensor_size(sensor_fit, sensor_x, sensor_y):
+    if (sensor_fit == CAMERA_SENSOR_FIT_VERT):
+        return sensor_y;
+    
+    return sensor_x;
 
 def pack_viewport_camera(rotation, position,
                         lens, perspective_fov, ortho_scale,
@@ -1155,17 +1138,14 @@ class RubyOF(bpy.types.RenderEngine):
         
     
     def __update_scene(self, context, depsgraph):
-        
         if self.first_time:
             # First time initialization
             self.first_time = False
             
-            message_queue = export_initial(context, depsgraph)
+            export_helper.export_initial(context, depsgraph)
         else:
-            message_queue = export_update(context, depsgraph)
+            export_helper.export_update(context, depsgraph)
         
-        
-        export_ending(depsgraph, message_queue)
         
     # --------------------------------
 
@@ -1370,6 +1350,405 @@ class ModalLoop (bpy.types.Operator):
 
 
 
+class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
+    """Use timer API and modal operator to generate periodic update tick"""
+    bl_idname = "render.rubyof_modal_update"
+    bl_label = "modal operator update loop"
+    
+    def setup(self, context):
+        # these two variables must always be set,
+        # otherwise the modal loop can not function
+        self.rubyof_PropContext = context.scene.my_custom_props
+        self.rubyof_BoolPropName = "b_modalUpdateActive"
+        
+        
+        # other stuff can be set after that
+        
+        self.counter = 0
+        
+        data = {
+            'type':"timeline_command",
+            'name': "reset"
+        }
+        to_ruby.write(json.dumps(data))
+        
+        
+        mytool = context.scene.my_tool
+        
+        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        
+        self.new_names = None
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
+        # mytool = context.scene.my_tool
+        
+    
+    def run(self, context):
+        # 
+        # sync object deletions
+        # 
+        
+        print("syncing deletions", flush=True)
+        # print("running", time.time())
+        # print("objects: ", len(context.scene.objects))
+        
+        mytool = context.scene.my_tool
+        
+        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        
+        delta = list(set(self.old_names) - set(self.new_names))
+        
+        # print("old_names:", len(self.old_names), flush=True)
+        # print("delta:", delta, flush=True)
+        
+        if len(delta) > 0:
+            self.old_names = self.new_names
+            
+            tex_manager = anim_texture_manager_singleton(context)
+            
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                tex_manager.delete_object(name)
+        
+        
+        # 
+        # sync timeline
+        # 
+        
+        self.counter = (self.counter + 1) % 10000
+        
+        scene = context.scene
+        props = context.scene.my_custom_props
+        
+        # print("---", flush=True)
+        
+        # test if animation is playing:
+            # https://blenderartists.org/t/how-to-find-out-if-blender-is-currently-playing/576878/3
+            # https://docs.blender.org/api/current/bpy.types.Screen.html#bpy.types.Screen
+        # find the current frame:
+            # https://blender.stackexchange.com/questions/55637/what-is-the-python-script-to-set-the-current-frame
+        
+        
+        # screen = context.screen
+        # print(screen.is_animation_playing, screen.is_scrubbing)
+        
+        # is_scrubbing
+        
+        if context.screen.is_scrubbing:
+            # if scrubbing, we are also playing,
+            # so need to check for scrubbing first
+            self.print("scrubbing", context.scene.frame_current)
+            # (does not trigger when stepping with arrow keys)
+            
+            data = {
+                'type': 'timeline_command',
+                'name': 'seek',
+                'time': context.scene.frame_current
+            }
+            
+            to_ruby.write(json.dumps(data))
+                        
+            # Triggers multiple times per frame while scrubbing, if scrubber is held on one frame.
+        else:
+            # this is a bool, not a function
+            if context.screen.is_animation_playing:
+                if not self.bPlaying:
+                    # transition from paused to playing
+                    
+                    self.print(f"starting animation @ {scene.frame_current}")
+                    # self.print("scene.frame_end", scene.frame_end)
+                    
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'play',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+                    
+                    
+                    
+                    # 
+                    # Only expand timeline range when generating
+                    # new state, not when replaying old state
+                    # 
+                    
+                    
+                    
+                    # do not expand when hitting play in the past
+                    # if scene.frame_current < scene.frame_end:
+                    #     pass
+                    #     # NO-OP
+                    # else:
+                    #     # expand when going past end of history, but not if we hit the Finished state
+                    #     if self.bFinished:
+                            # if scene.frame_current == scene.frame_end:
+                                # props.ruby_buffer_size = 1000
+                                # scene.frame_end = props.ruby_buffer_size
+                        #     else:
+                        #         pass
+                        # else:
+                        #     pass
+                    
+                    
+                    
+                        
+                    # ^ this doesn't work.
+                    #   forces pause when playing and transition from old state to new state, and allows for running off the end of the history buffer when hitting play during the Finished state.
+                    
+                    
+                    
+                    
+                    # context.scene.my_custom_props.read_from_ruby = True
+                    
+                    
+            else:
+                if self.bPlaying:
+                    # transition from playing to paused
+                    
+                    self.print("stopping animation")
+                    
+                    data = {
+                        'type': 'timeline_command',
+                        'name': 'pause',
+                    }
+                    
+                    to_ruby.write(json.dumps(data))
+        
+        # Only expand timeline range when generating
+        # new state, not when replaying old state
+        # 
+        # Can't compute this with a loopback callback
+        # because it needs to happen right away -
+        # can't wait in an async style for Ruby to respond.
+        if context.screen.is_animation_playing and not context.screen.is_scrubbing and scene.frame_current == scene.frame_end:
+            self.print("expand timeline")
+            props.ruby_buffer_size = 1000
+            scene.frame_end = props.ruby_buffer_size
+            
+        # NOTE: can't seem to use delta to detect if the animation is playing forward or in reverse. need to check if there is a flag for this that python can access
+        
+        if not context.screen.is_animation_playing:
+            delta = abs(self.frame - context.scene.frame_current)
+            if delta == 1:
+                # triggers when stepping with arrow keys,
+                # and also on normal playback.
+                # Triggers once per frame while scrubbing.
+                
+                # (is_scrubbing == false while stepping)
+                
+                self.print("step - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+                
+                
+            elif delta > 1:
+                # triggers when using shift+right or shift+left to jump to end/beginning of timeline
+                self.print("jump - frame", context.scene.frame_current)
+                
+                data = {
+                    'type': 'timeline_command',
+                    'name': 'seek',
+                    'time': context.scene.frame_current
+                }
+                
+                to_ruby.write(json.dumps(data))
+        
+        
+        # print("render.rubyof_detect_playback -- end of run", flush=True)
+        
+        self.bPlaying = context.screen.is_animation_playing
+        self.frame = context.scene.frame_current
+        
+        
+        
+        
+        message = from_ruby.read()
+        if message is not None:
+            # print("from ruby:", message, flush=True)
+            
+            
+            if message['type'] == 'loopback_play+finished':
+                self.print("finished - clamp to end of timeline")
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                scene.frame_current = scene.frame_end
+                
+            
+            # if message['type'] == 'loopback_started':
+                # self.print("loopback - started generate new frames")
+                
+                
+                # props.ruby_buffer_size = 1000
+                # scene.frame_end = props.ruby_buffer_size
+            
+            # don't clamp timeline when pausing in the past
+            if message['type'] == 'loopback_paused_old':
+                self.print("loopback - paused old")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                # props.ruby_buffer_size = message['history.length']-1
+                # scene.frame_end = props.ruby_buffer_size
+                
+                # scene.frame_current = message['history.frame_index']
+            
+            # do clamp timeline when pausing while generating new state
+            if message['type'] == 'loopback_paused_new':
+                self.print("loopback - paused new")
+                
+                self.print("history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            if message['type'] == 'loopback_finished':
+                self.print("loopback - finished")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+                
+                # scene.frame_current = scene.frame_end
+                # ^ can't set to final frame every time,
+                #   because that makes it very hard to
+                #   leave the final timepoint by scrubbing etc.
+                
+            # After Blender's sync button is toggled off,
+            # python will send a "reset" message to ruby,
+            # to which ruby will respond back with 'loopback_reset'
+            if message['type'] == 'loopback_reset':
+                self.print("loopback - reset")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+            
+            
+            # ruby says sync needs to stop
+            # maybe there was a crash, or maybe the program exited cleanly.
+            if message['type'] == 'sync_stopping':
+                self.print("sync_stopping")
+                # scene.my_custom_props.read_from_ruby = False
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                props = context.scene.my_custom_props
+                # props.b_modalUpdateActive = False
+                
+                from_ruby.wait_for_connection()
+            
+            if message['type'] == 'first_setup':
+                self.print("first_setup")
+                self.print("")
+                self.print("")
+                
+                # reset timeline
+                props.ruby_buffer_size = 0
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = scene.frame_end
+                
+                # send all scene data
+                # (not yet implemented)
+                
+        
+        
+        
+    
+    def on_exit(self, context):
+        self.print("on exit")
+        context.scene.my_custom_props.b_modalUpdateActive = False
+        
+        from_ruby.close()
+    
+    # print with a 4-digit timestamp (wrapping counter of frames)
+    # so its clear how much time elapsed between different
+    # sections of the code.
+    def print(self, *args):
+        print(f'{self.counter:04}', *args, flush=True)
+
+def rubyof__before_frame_change(scene):
+    # pass 
+    # print(args, flush=True)
+    props = scene.my_custom_props
+    
+    # props.ruby_buffer_size = 10
+    # print("buffer size:", props.ruby_buffer_size, flush=True)
+    # print("current frame:", scene.frame_current, flush=True)
+    
+    # scene.frame_end = props.ruby_buffer_size
+    
+    
+    if scene.frame_current == props.ruby_buffer_size:
+        # stop and the end - otherwise blender will loop by jumping back to frame=0, which is not currently supported by the RubyOF connection
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+    elif scene.frame_current > props.ruby_buffer_size:
+        # prevent seeking past the end
+        scene.frame_current = props.ruby_buffer_size
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1426,26 +1805,6 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
         else:
             label = "update loop disabled"
         layout.prop(props, "b_modalUpdateActive", text=label, toggle=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
