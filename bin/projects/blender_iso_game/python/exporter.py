@@ -218,7 +218,7 @@ class Exporter():
         # update json file
         # 
         
-        tex_manager.on_save()
+        tex_manager.save()
         
         context = yield(task_count / total_tasks)
         

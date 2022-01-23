@@ -88,7 +88,11 @@ class AnimTexManager ():
         
         self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
         
-        self.on_load()
+        
+        
+        
+        
+        self.load()
     
     def __wrap_textures(self, mytool):
         self.position_tex = ImageWrapper(
@@ -645,7 +649,7 @@ class AnimTexManager ():
     # serialization
     # 
     
-    def on_save(self):
+    def save(self):
         data = {
             'mesh_data_cache': self.mesh_data_cache,
             'object_data_cache': self.object_data_cache
@@ -665,7 +669,7 @@ class AnimTexManager ():
         with open(self.json_filepath, 'w') as f:
             f.write(json.dumps(data, indent=2))
         
-    def on_load(self):
+    def load(self):
         if os.path.isfile(self.json_filepath):
             with open(self.json_filepath, 'r') as f:
                 data = json.load(f)

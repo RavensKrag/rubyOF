@@ -93,14 +93,14 @@ from bpy.app.handlers import persistent
 def rubyof__on_load(*args):
     context = bpy.context
     tex_manager = resource_manager.get_texture_manager(context)
-    tex_manager.on_load()
+    tex_manager.load()
 
 
 @persistent
 def rubyof__on_save(*args):
     context = bpy.context
     tex_manager = resource_manager.get_texture_manager(context)
-    tex_manager.on_save()
+    tex_manager.save()
 
 
 def rubyof__on_undo(scene):
