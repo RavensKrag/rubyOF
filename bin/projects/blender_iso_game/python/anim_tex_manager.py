@@ -86,10 +86,8 @@ class AnimTexManager ():
                                    * self.transform_tex.height )
         
         
-        self.json_filepath = bpy.path.abspath("//anim_tex_cache.json")
-        
-        
-        
+        self.json_filepath = os.path.join(bpy.path.abspath(mytool.output_dir),
+                                          "anim_tex_cache"+'.json')
         
         
         self.load()
