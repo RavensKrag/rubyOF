@@ -92,14 +92,14 @@ from bpy.app.handlers import persistent
 @persistent
 def rubyof__on_load(*args):
     context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager = resource_manager.get_texture_manager(context)
     tex_manager.on_load()
 
 
 @persistent
 def rubyof__on_save(*args):
     context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager = resource_manager.get_texture_manager(context)
     tex_manager.on_save()
 
 
@@ -109,7 +109,7 @@ def rubyof__on_undo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager = resource_manager.get_texture_manager(context)
     tex_manager.on_undo(scene)
 
 def rubyof__on_redo(scene):
@@ -118,7 +118,7 @@ def rubyof__on_redo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = anim_texture_manager_singleton(context)
+    tex_manager = resource_manager.get_texture_manager(context)
     tex_manager.on_redo(scene)
 
 
@@ -529,28 +529,60 @@ from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blen
 
 
 
-# TODO: reset this "singleton" if the dimensions of the animation texture have changed
-anim_tex_manager = None
 
-def anim_texture_manager_singleton(context):
-    global anim_tex_manager
-    if anim_tex_manager == None:
-        anim_tex_manager = AnimTexManager(context, to_ruby)
+class ResourceManager():
+    def __init__(self):
+        self.anim_tex_manager = None
     
-    return anim_tex_manager
-
-def reset_anim_tex_manager(context):
-    global anim_tex_manager
     
-    anim_tex_manager.clear(context)
+    # TODO: reset this "singleton" if the dimensions of the animation texture have changed
+    def get_texture_manager(self, context):
+        if self.anim_tex_manager == None:
+            self.anim_tex_manager = AnimTexManager(context, to_ruby)
+        
+        return self.anim_tex_manager
     
-    anim_tex_manager = None
+    def clear_texture_manager(self, context):
+        self.anim_tex_manager.clear(context)
+        self.anim_tex_manager = None
+
+resource_manager = ResourceManager()
+
+# def anim_texture_manager_singleton(context):
+#     global anim_tex_manager
+#     if anim_tex_manager == None:
+#         anim_tex_manager = AnimTexManager(context, to_ruby)
+    
+#     return anim_tex_manager
+
+# def reset_anim_tex_manager(context):
+#     global anim_tex_manager
+    
+#     anim_tex_manager.clear(context)
+    
+#     anim_tex_manager = None
+
+
+# TODO: make it so the animation manager singleton can be accessed from anywhere where you have a reference to context
+
+# maybe something similar to context.scene.my_tool ??
+# need to then implement that calling structure in exporter.py
+# before you can actually get any of these code to run
+# (exporter.py currently calls anim_texture_manager_singleton(), which I don't think it is allowed to do)
+
+# (but maybe you can't do that? are all classes like that necessarily saved in the Blend file? is that going to mess with things somehow?)
+
+# if you can't do that,
+
+# then every time you use tex_manager, it has to be passed in to that function,
+# as only code in this file can call anim_texture_manager_singleton(),
+# which is necessary to retrieve the texture manager
+
+# ^ that is really annoying and non-intuitive if Exporter class exists. You would expect you could pass the object once when you init Exporter, but that probaby doesn't work. It seems like you sometimes need to regenerate the texture manager, given a new context object (re-wrapping the images)
 
 
 
-
-
-export_helper = Exporter(to_ruby)
+export_helper = Exporter(resource_manager, to_ruby)
 
 
 
@@ -600,7 +632,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         context = yield(0.0)
         
         
-        tex_manager = anim_texture_manager_singleton(context)
+        tex_manager = resource_manager.get_texture_manager(context)
         # Delegating to a subgenerator
         # https://www.python.org/dev/peps/pep-0380/
         # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
@@ -1265,7 +1297,7 @@ class ModalLoop (bpy.types.Operator):
         if event.type == 'TIMER':
             self.run(context)
             
-            print("-------", flush=True)
+            # print("-------", flush=True)
             
             
             # why does it appear that I'm getting timer events on undo?
@@ -1278,8 +1310,8 @@ class ModalLoop (bpy.types.Operator):
             # (can also get into an invalid state if redo sets boolean flag)
             
             attr = getattr(self.rubyof_PropContext, self.rubyof_BoolPropName)
-            print(attr)
-            print(event)
+            # print(attr)
+            # print(event)
             if attr is None:
                 pass
                 # property can't be read on undo.
@@ -1390,7 +1422,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         # sync object deletions
         # 
         
-        print("syncing deletions", flush=True)
+        # print("syncing deletions", flush=True)
         # print("running", time.time())
         # print("objects: ", len(context.scene.objects))
         
@@ -1406,7 +1438,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         if len(delta) > 0:
             self.old_names = self.new_names
             
-            tex_manager = anim_texture_manager_singleton(context)
+            tex_manager = resource_manager.get_texture_manager(context)
             
             for name in delta:
                 # print(delete)

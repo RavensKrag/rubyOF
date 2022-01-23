@@ -141,7 +141,8 @@ class ImageWrapper():
         
         # this is like Ruby's Array#slice,
         # but python excludes the end of the range
-        return self.image.pixels[offset:(offset+px_per_scanline)]
+        # (but it seems to return a tuple here, but we need a list)
+        return list(self.image.pixels[offset:(offset+px_per_scanline)])
     
     def write_scanline(self, pixel_data, row):
         # print("writing scanline")

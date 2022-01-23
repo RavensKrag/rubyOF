@@ -1,6 +1,8 @@
+import bpy
 import time
-from coroutine_decorator import *
+import json
 
+from coroutine_decorator import *
 
 def find_unique_mesh_pairs(all_mesh_objects):
     """Given a list of mesh objects, return
@@ -20,9 +22,9 @@ def find_unique_mesh_pairs(all_mesh_objects):
     return unique_pairs
 
 
-def get_object_transform(object):
-    # this_mat = target_object.matrix_local
-    this_mat = target_object.matrix_world
+def get_object_transform(obj):
+    # this_mat = obj.matrix_local
+    this_mat = obj.matrix_world
     # print(this_mat)
     # print(type(this_mat))
 
@@ -49,7 +51,8 @@ def first_material(mesh_object):
 
 
 class Exporter():
-    def __init__(self, to_ruby_fifo):
+    def __init__(self, resource_manager_ref, to_ruby_fifo):
+        self.resource_manager = resource_manager_ref
         self.to_ruby = to_ruby_fifo
     
     # 
@@ -135,7 +138,7 @@ class Exporter():
         context = yield( 0.0 )
         
         
-        tex_manager = anim_texture_manager_singleton(context)
+        tex_manager = self.resource_manager.get_texture_manager(context)
         
         # 
         # calculate how many tasks there are
@@ -243,7 +246,7 @@ class Exporter():
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
     def __update_entity_transform_without_armature(self, context, update, mesh_obj):
-        tex_manager = anim_texture_manager_singleton(context)
+        tex_manager = self.resource_manager.get_texture_manager(context)
         
         if update.is_updated_transform:
             if tex_manager.has_object(mesh_obj.name):
@@ -307,7 +310,7 @@ class Exporter():
     
     # first export when blender switches into the RubyOF rendering mode
     def export_initial(self, context, depsgraph):
-        tex_manager = anim_texture_manager_singleton(context)
+        tex_manager = self.resource_manager.get_texture_manager(context)
         
         region = context.region
         view3d = context.space_data
@@ -366,7 +369,7 @@ class Exporter():
     # every export after the first export
     # (send updated data only, in order to maintain synchronization)
     def export_update(self, context, depsgraph):
-        tex_manager = anim_texture_manager_singleton(context)
+        tex_manager = self.resource_manager.get_texture_manager(context)
         
         region = context.region
         view3d = context.space_data

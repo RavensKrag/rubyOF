@@ -153,17 +153,21 @@ class AnimTexManager ():
         output_index = 0
         first_open_scanline = -1
         
+        # search for the name
         for i, data in enumerate(self.mesh_data_cache):
+            cached_mesh_name = data
+            
             if i == 0:
                 # skip the first row - always intentially left blank
                 continue
             
-            if data[0] == mesh_name:
+            if cached_mesh_name is None:
+                if first_open_scanline == -1:
+                    first_open_scanline = i
+            elif cached_mesh_name == mesh_name:
                 # If you find the name, use that scanline
                 return i
             
-            elif first_open_scanline == -1 and data[0] == None:
-                first_open_scanline = -1
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
@@ -181,13 +185,17 @@ class AnimTexManager ():
         output_index = 0
         first_open_scanline = -1
         
+        # search for the name
         for i, data in enumerate(self.object_data_cache):
-            if data[0] == obj_name:
+            cached_obj_name, cached_material_name = data
+            
+            if cached_obj_name is None:
+                if first_open_scanline == -1:
+                    first_open_scanline = i
+            elif cached_obj_name == obj_name:
                 # If you find the name, use that scanline
                 return i
-            
-            elif first_open_scanline == -1 and data[0] == None:
-                first_open_scanline = -1
+        
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
@@ -195,9 +203,10 @@ class AnimTexManager ():
         else:
             self.object_data_cache[first_open_scanline] = [obj_name, None]
             
+            
             return first_open_scanline
         
-    def __cache_material_name(self, scanline, material_name):
+    def __cache_material_name(self, scanline_index, material_name):
         data = self.object_data_cache[scanline_index]
         
         # data[0] = obj_name
@@ -411,16 +420,17 @@ class AnimTexManager ():
         scanline_transform = self.transform_tex.read_scanline(scanline_index)
         # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
         
+        print(scanline_transform, flush=True)
         
         # 
         # write mesh id to scanline
         # 
         
         # error if mesh has not been exported yet
-        try:
-            mesh_id = self.mesh_name_to_scanline[mesh_name]
-        except KeyError as err:
+        if not self.has_mesh(mesh_name):
             raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an object."
+        
+        mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
                         channels=self.transform_tex.channels_per_pixel)
@@ -586,7 +596,7 @@ class AnimTexManager ():
         
         
     # dict mapping object name -> scanline index
-    def get_entity_name_map(self):
+    def get_object_name_map(self):
         pass
     
     
@@ -631,7 +641,7 @@ class AnimTexManager ():
                 print(data)
                 sys.stdout.flush()
                 
-                self.mesh_data_cache    = data['mesh_data_cache']
+                self.mesh_data_cache   = data['mesh_data_cache']
                 self.object_data_cache = data['object_data_cache']
     
     
