@@ -213,6 +213,17 @@ class Exporter():
         
         context = yield(task_count / total_tasks)
         
+        
+        # 
+        # update json file
+        # 
+        
+        tex_manager.on_save()
+        
+        context = yield(task_count / total_tasks)
+        
+        
+        
         t1 = time.time()
         
         print("time elapsed:", t1-t0, "sec")

@@ -327,6 +327,12 @@ class AnimTexManager ():
         mytool.position_tex  = None
         mytool.normal_tex    = None
         mytool.transform_tex = None
+        
+        # print("checking json path", flush=True)
+        if os.path.isfile(self.json_filepath):
+            # print("clearing old json file", flush=True)
+            os.remove(self.json_filepath)
+            
     
     
     

@@ -532,18 +532,21 @@ from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blen
 
 class ResourceManager():
     def __init__(self):
+        # print("init resource manager", flush=True)
         self.anim_tex_manager = None
     
     
     # TODO: reset this "singleton" if the dimensions of the animation texture have changed
     def get_texture_manager(self, context):
-        if self.anim_tex_manager == None:
+        if self.anim_tex_manager is None:
             self.anim_tex_manager = AnimTexManager(context, to_ruby)
         
         return self.anim_tex_manager
     
     def clear_texture_manager(self, context):
-        if not self.anim_tex_manager == None:
+        # print("try to clear texture manager", flush=True)
+        if self.anim_tex_manager is not None:
+            # print("clearing texture manager", flush=True)
             self.anim_tex_manager.clear(context)
             self.anim_tex_manager = None
 
