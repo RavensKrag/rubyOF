@@ -204,8 +204,6 @@ class AnimTexManager ():
             raise "No open scanlines available in the object texture. Try increasing the maximum number of objects (aka frames) allowed in exporter."
         else:
             self.object_data_cache[first_open_scanline] = [obj_name, None, None]
-            # TODO: add the linked mesh name to this data storage as well
-            # (should allocate space here, and then cache it when the mesh is linked)
             
             return first_open_scanline
     
@@ -322,6 +320,7 @@ class AnimTexManager ():
     
     # reset all internal state used by the texture manager
     # TODO: should clear the cache and JSON file as well
+        # not strictly necessary, as clear() is normally run before deleting the animation manager instance. see main_file.py for usage
     def clear(self, context):
         mytool = context.scene.my_tool
         
@@ -332,9 +331,18 @@ class AnimTexManager ():
     
     
     # Does an object with this name exist in the texture?
-    # TODO: implement this function
+    # ( based on code from __object_name_to_scanline() )
     def has_object(self, obj_name):
-        pass
+        # search for the name
+        for i, data in enumerate(self.object_data_cache):
+            cached_obj_name, cached_mesh_name, cached_material_name = data
+            
+            if cached_obj_name == obj_name:
+                return True
+        
+        # object not found
+        return False
+    
     
     
     # Does a mesh with this name exist in the texture?
@@ -569,9 +577,9 @@ class AnimTexManager ():
         # 2) update all of those objects
         
         for data in self.object_data_cache:
-            obj_name, material_name = data
+            cached_obj_name, cached_mesh_name, cached_material_name = data
             
-            if material_name == material.name:
+            if cached_material_name == material.name:
                 self.set_object_material(obj_name, material)
     
     
@@ -620,6 +628,7 @@ class AnimTexManager ():
     # dict mapping mesh name -> scanline index
     def get_mesh_name_map(self):
         pass
+    
     
     def get_texture_paths(self):
         return (self.position_tex.filepath,
