@@ -4,6 +4,8 @@ from class_reloader import reload_class
 
 from image_wrapper import ( ImageWrapper, get_cached_image )
 
+
+
 ImageWrapper = reload_class(ImageWrapper)
 
 
@@ -17,23 +19,6 @@ import os
 
 
 
-def find_unique_mesh_pairs(all_mesh_objects):
-    """Given a list of mesh objects, return
-       all pairs (mesh_object, mesh_datablock)
-       such that each mesh_datablock is unique"""
-    
-    unique_mesh_datablocks = set()
-    unique_pairs = []
-    
-    for obj in all_mesh_objects:
-        if obj.data in unique_mesh_datablocks:
-            pass
-        else:
-            unique_mesh_datablocks.add(obj.data)
-            unique_pairs.append( (obj, obj.data) )
-    
-    return unique_pairs
-
 
 
 # scanline : array of pixel data (not nested array, just a flat array)
@@ -42,20 +27,6 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
     for i in range(channels):
         scanline[px_i*channels+i] = px_data[i]
 
-
-
-def first_material(mesh_object):
-    mat_slots = mesh_object.material_slots
-    
-    # color = c1 = c2 = c3 = c4 = alpha = None
-    
-    if len(mat_slots) > 0:
-        mat = mat_slots[0].material
-        
-    else:
-        mat = bpy.data.materials['Material']
-    
-    return mat
     
 
 
@@ -178,7 +149,7 @@ class AnimTexManager ():
     # the first available open row should be use.
     # Note that this may not be the last row in the texture,
     # as there may have been a row that opened up due to a past deletion.
-    def __mesh_name_to_scanline(mesh_name):
+    def __mesh_name_to_scanline(self, mesh_name):
         output_index = 0
         first_open_scanline = -1
         
@@ -206,7 +177,7 @@ class AnimTexManager ():
     # Find the scanline to use for a object with the given name.
     # 
     # code based on __mesh_name_to_scanline()
-    def __object_name_to_scanline(obj_name):
+    def __object_name_to_scanline(self, obj_name):
         output_index = 0
         first_open_scanline = -1
         
@@ -226,7 +197,7 @@ class AnimTexManager ():
             
             return first_open_scanline
         
-    def __cache_material_name(scanline, material_name):
+    def __cache_material_name(self, scanline, material_name):
         data = self.object_data_cache[scanline_index]
         
         # data[0] = obj_name
@@ -329,15 +300,17 @@ class AnimTexManager ():
     
     
     
+    # Does an object with this name exist in the texture?
+    # TODO: implement this function
+    def has_object(self, obj_name):
+        pass
     
     
-    
-    
-    # Does a mesh with with name exist in the texture?
+    # Does a mesh with this name exist in the texture?
     # (more important on the ruby side, but also helpful to optimize export)
     # 
     # mesh_name : string
-    def has_mesh(mesh_name):
+    def has_mesh(self, mesh_name):
         return (mesh_name in self.mesh_data_cache)
     
     
@@ -350,7 +323,7 @@ class AnimTexManager ():
     # 
     # mesh_name : string
     # mesh      : mesh datablock
-    def export_mesh(mesh_name, mesh):
+    def export_mesh(self, mesh_name, mesh):
         mesh.calc_loop_triangles()
         # ^ need to call this to populate the mesh.loop_triangles() cache
         
@@ -422,7 +395,7 @@ class AnimTexManager ():
     # 
     # obj_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
-    def set_object_mesh(obj_name, mesh_name):
+    def set_object_mesh(self, obj_name, mesh_name):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -460,7 +433,7 @@ class AnimTexManager ():
     # 
     # obj_name  : string
     # transform : 4x4 transform matrix
-    def set_object_transform(obj_name, transform):
+    def set_object_transform(self, obj_name, transform):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -492,7 +465,7 @@ class AnimTexManager ():
     # 
     # obj_name : string
     # material : blender material datablock, containing RubyOF material
-    def set_object_material(obj_name, material):
+    def set_object_material(self, obj_name, material):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -554,7 +527,7 @@ class AnimTexManager ():
     # ( must have previously bound material using set_object_material() )
     # 
     # material : blender material datablock, containing RubyOF material
-    def update_material(material):
+    def update_material(self, material):
         # FIXME: may actually need the blender material block after all, because that may be where the names are stored
         
         
@@ -574,7 +547,7 @@ class AnimTexManager ():
     # and will only be cleared out on a "clean build" of all data.
     # 
     # obj_name : string
-    def delete_object(obj_name):
+    def delete_object(self, obj_name):
         # TODO: Consider storing resource counts in the first pixel
         # 
         # If saving resource counts doesn't work,
