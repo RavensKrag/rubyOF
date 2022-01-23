@@ -258,10 +258,6 @@ class AnimTexManager ():
             # completely in terms of names, not scanline numbers.
             # IDs should be for internal use only.
     
-    
-    # notes
-    # ---
-    # mesh object name -> scanline index in vertex data texture
         # ^ data structure must manage serialization to/from a JSON file
     
     # (one mesh datablock may result in many exported meshes, because you need one line in the output texture per frame of animation. how do I distinguish between different frames of animation?)
@@ -288,31 +284,31 @@ class AnimTexManager ():
     #     # just send the one index to Ruby and let Ruby create the other index.
     #     # (we don't need the reverse index here in Python)
     
-    
-    # 
-    # extract transforms from object
-    # 
-    
-    # this_mat = target_object.matrix_local
-    this_mat = target_object.matrix_world
-    # print(this_mat)
-    # print(type(this_mat))
-    
-    identity_matrix = this_mat.Identity(4)
-    
-    # out_mat = identity_matrix
-    out_mat = this_mat
-    
-    
-    # 
-    # extract material from object
-    # 
-    
-    mat_slots = target_object.material_slots
-    if len(mat_slots) > 0:
-        mat = mat_slots[0].material.rb_mat
-    else:
-        mat = None
+    def __example_code():
+        # 
+        # extract transforms from object
+        # 
+        
+        # this_mat = target_object.matrix_local
+        this_mat = target_object.matrix_world
+        # print(this_mat)
+        # print(type(this_mat))
+        
+        identity_matrix = this_mat.Identity(4)
+        
+        # out_mat = identity_matrix
+        out_mat = this_mat
+        
+        
+        # 
+        # extract material from object
+        # 
+        
+        mat_slots = target_object.material_slots
+        if len(mat_slots) > 0:
+            mat = mat_slots[0].material.rb_mat
+        else:
+            mat = None
     
     
     
@@ -320,6 +316,20 @@ class AnimTexManager ():
     # TODO: use half instead of float to save memory
 
     # NOTE: all textures in the same animation set have the same dimensions
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -477,11 +487,11 @@ class AnimTexManager ():
         self.transform_tex.save()
     
     
-    # Pack material data into 4 pixels
-    # in the object transform texture
+    # Bind object to a particular material,
+    # and pack material data into 4 pixels in the object transform texture.
     # 
     # obj_name : string
-    # material : RubyOF material datablock (custom data, not blender material)
+    # material : blender material datablock, containing RubyOF material
     def set_object_material(obj_name, material):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
@@ -509,11 +519,11 @@ class AnimTexManager ():
             c4 = color
             alpha = 1
         else:
-            c1    = material.ambient
-            c2    = material.diffuse
-            c3    = material.specular
-            c4    = material.emissive
-            alpha = material.alpha
+            c1    = material.rb_mat.ambient
+            c2    = material.rb_mat.diffuse
+            c3    = material.rb_mat.specular
+            c4    = material.rb_mat.emissive
+            alpha = material.rb_mat.alpha
         
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.transform_tex.channels_per_pixel)
@@ -540,10 +550,11 @@ class AnimTexManager ():
         self.transform_tex.save()
     
     
-    # Update material for all objects that use it.
+    # Update material properties for all objects that use the given material.
+    # ( must have previously bound material using set_object_material() )
     # 
-    # material : RubyOF material datablock (custom data, not blender material)
-    def set_material(material):
+    # material : blender material datablock, containing RubyOF material
+    def update_material(material):
         # FIXME: may actually need the blender material block after all, because that may be where the names are stored
         
         
