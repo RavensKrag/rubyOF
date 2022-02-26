@@ -80,6 +80,81 @@ class VertexAnimationBatch
     # 
     
     @transform_data = TransformData.new(@pixels[:transforms])
+    
+    
+    
+    
+    
+    
+    
+    
+    # C++ structures
+    @entity_cache = EntityCache.new(size)
+    |-> [ EntityData, EntityData, EntityData ]
+    # (a pool of Entities, in an easy to edit format)
+    
+    
+    EntityData
+    |-> [(bool)active, (bool)changed, (int)mesh_index, Node, MaterialProperties]
+    # (active is true if and only if this block of data is being used - it's basically an object pool in terms of memory management)
+    # (set changed=true on ofNode edit event, or MaterialPropreties edit event)
+    
+    
+    MaterialProperties
+    |-> [ (float)ambient,
+          (float)diffuse,
+          (float)specular,
+          (float)emissive,
+          (float)alpha ]
+    
+    # (will handle loading from disk into the pixels in this Ruby class, rather than delegating to some other C++ object)
+    
+    # load from file
+    load_transform_texture(transform_tex_path)
+    load_vertex_textures(position_tex_path, normal_tex_path)
+    
+    
+    # no saving to disk at this time - only Blender saves openEXR images
+    # and then we just read it here to populate the initial state
+    
+    
+    
+    # (only manipulate entity data, not mesh data)
+    # (mat4x4 needed for entity will update automatically as position, orientation, and scale are updated)
+    @entity_cache.load(@pixels[:transforms])   # read from pixel data into cache
+    @entity_cache.update(@pixels[:transforms]) # write changed data to pixels
+    @entity_cache.flush(@pixels[:transforms])  # write ALL data to pixels
+    
+    
+    # copy entity data from pixels to texture
+    send_entity_data_to_gpu()
+      @textures[:transforms].load_data(@pixels[:transforms])
+    
+    # copy mesh data from pixels to texture
+    send_mesh_data_to_gpu()
+      @textures[:positions].load_data(@pixels[:positions])
+      @textures[:normals].load_data(@pixels[:normals])
+    
+    
+    
+    # read from the cache
+    # (should fail if EntityCache#load has not yet been called)
+    @entity_cache.getEntityMesh(entity_index) # => mesh_index
+    @entity_cache.getEntityTransform(entity_index) # => ofNode
+    @entity_cache.getEntityMaterial(entity_index) # => MaterialProperties
+    
+    
+    # write into the cache
+    # (later can transfer cache to pixels)
+    @entity_cache.setEntityMesh(entity_index, mesh_index)
+    @entity_cache.setEntityTransform(entity_index, node)
+    @entity_cache.setEntityMaterial(entity_index, material_properties)
+    @entity_cache.deleteEntity(entity_index)
+    
+    
+    # @cache.updateMaterial(material_name, material_properties)
+    # ^ this requires data from json file, so I will handle this at a higher level of abstraction
+    
   end
   
   def draw_scene
@@ -130,6 +205,275 @@ class VertexAnimationBatch
       @node.restoreTransformGL
     end
   end
+  
+  
+  
+  
+  
+  def load_transform_texture(transform_tex_path)
+    ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
+    
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    pixels_list = [@pixels[:transforms]]
+    textures_list = [@textures[:transforms]]
+    
+    pixels_list.zip(textures_list).each do |pixels, texture|
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+  end
+  
+  def load_vertex_textures(position_tex_path, normal_tex_path)
+    ofLoadImage(@pixels[:positions],  position_tex_path.to_s)
+    ofLoadImage(@pixels[:normals],    normal_tex_path.to_s)
+    
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    pixels_list = [@pixels[:positions], @pixels[:normals]]
+    textures_list = [@textures[:positions], @textures[:normals]]
+    
+    pixels_list.zip(textures_list).each do |pixels, texture|
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical => :clamp_to_edge,
+                           :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+  end
+  
+  
+  
+  
+  # def includes_entity?(entity_name)
+  # def includes_mesh?(mesh_name)
+  # def get_entity_mesh(entity_name)
+  # def get_entity_transform(entity_name)
+  # def get_entity_material(entity_name)
+  # def set_entity_mesh(entity_name, mesh_name)
+  # def set_entity_transform(entity_name, transform)
+  # def set_entity_material(entity_name, material)
+  # def update_material(material)
+  # def delete_entity(entity_name)
+  
+  
+  
+  # Does an object with this name exist in the texture?
+  # ( based on code from __object_name_to_scanline() )
+  def includes_entity?(entity_name)
+    
+  end
+  
+  
+  
+  # Does a mesh with this name exist in the texture?
+  # (more important on the ruby side, but also helpful to optimize export)
+  # 
+  # mesh_name : string
+  def includes_mesh?(mesh_name)
+    return (mesh_name in self.mesh_data_cache)
+  end
+  
+  
+  
+  
+  def get_entity_mesh(entity_name)
+    # + read pixel data from Image
+    # + convert mesh_index to mesh_name using data from json file
+    # + return mesh_name
+    
+    # return mesh_name
+  end
+  
+  def get_entity_transform(entity_name)
+    i = entity_name_to_scanline(entity_name)
+    mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels[:transforms], i)
+    
+    return mat
+  end
+  
+  def get_entity_material(entity_name)
+    # c1    = material.rb_mat.ambient
+    # c2    = material.rb_mat.diffuse
+    # c3    = material.rb_mat.specular
+    # c4    = material.rb_mat.emissive
+    # alpha = material.rb_mat.alpha
+    
+    # return [c1, c2, c3, c4, alpha]
+  end
+  
+
+  
+  # Specify the mesh to use for a given object @ t=0 (initial condition)
+  # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
+  # (3 channels have the same data; helps with visualization of the texture)
+  # This mapping will be changed by ruby code during game execution,
+  # by dynamically editing the texture in memory. However, the texture
+  # on disk will change if and only if the initial condition changes.
+  # Raise exception if no mesh with the given name has been exported yet.
+  # 
+  # entity_name  : string
+  # mesh_name : string ( mesh with this name must already exist )
+  def set_entity_mesh(entity_name, mesh_name)
+    # 
+    # convert mesh name data back to color data
+    # 
+    mesh_index = mesh_name_to_index(mesh_name)
+    c1 = RubyOF::FloatColor.rgba([mesh_index, mesh_index, mesh_index, 1.0])
+    
+    # 
+    # write colors on the CPU
+    # 
+    i = entity_name_to_scanline(entity_name)
+    v1 = @pixels[:transforms].setColor(0, i, c1)
+  end
+  
+  
+  # Pack 4x4 transformation matrix for an object into 4 pixels
+  # of data in the object transform texture.
+  # 
+  # entity_name  : string
+  # transform : 4x4 transform matrix
+  def set_entity_transform(entity_name, transform)
+    i = entity_name_to_scanline(entity_name)
+    
+    RubyOF::CPP_Callbacks.set_entity_transform(
+      @pixels[:transforms], i, transform.to_mat4, @textures[:transforms]
+    )
+    
+    return self
+  end
+  
+  
+  # Bind object to a particular material,
+  # and pack material data into 4 pixels in the object transform texture.
+  # 
+  # entity_name : string
+  # material : blender material datablock, containing RubyOF material
+  def set_entity_material(entity_name, material)
+    # 
+    # convert material data back to color data
+    # 
+    
+    c1 = RubyOF::FloatColor.rgba(material.ambient.to_a + [1.0])
+    c2 = RubyOF::FloatColor.rgba(material.diffuse.to_a + [material.alpha])
+    c3 = RubyOF::FloatColor.rgba(material.specular.to_a + [1.0])
+    c4 = RubyOF::FloatColor.rgba(material.emissive.to_a + [1.0])
+    
+    # 
+    # write colors on the CPU
+    # 
+    i = entity_name_to_scanline(entity_name)
+    v1 = @pixels[:transforms].setColor(5, i, c1)
+    v2 = @pixels[:transforms].setColor(6, i, c2)
+    v3 = @pixels[:transforms].setColor(7, i, c3)
+    v4 = @pixels[:transforms].setColor(8, i, c4)
+    
+    # TODO: rename "transforms" texture and pixels to "entity" or "object" instead
+    
+  end
+  
+  
+  # Update material properties for all objects that use the given material.
+  # ( must have previously bound material using set_object_material() )
+  # 
+  # material : blender material datablock, containing RubyOF material
+  def update_material(material)
+    
+  end
+  
+  
+  # Remove object from the transform texture.
+  # No good way right now to "garbage collect" unused mesh data.
+  # For now, that data will continue to exist in the mesh data textures,
+  # and will only be cleared out on a "clean build" of all data.
+  # 
+  # obj_name : string
+  def delete_object(obj_name)
+    
+  end
+  
+  
+  def update_textures
+    # 
+    # transfer color data to the GPU
+    # 
+    @textures[:transforms].load_data(@pixels[:transforms])
+  end
+  
+  
+  # 
+  # serialization
+  # 
+  
+  def save
+    
+  end
+      
+      
+  def load
+    
+  end
+
+  
+  
+  private
+  
+  
+  def entity_name_to_scanline(entity_name)
+    
+  end
+  
+  def entity_scanline_to_name(entity_index)
+    
+  end
+  
+  def mesh_name_to_scanline(mesh_name)
+    
+  end
+  
+  def mesh_scanline_to_name(mesh_index)
+    
+  end
+  
+  
+  
+  # only in Ruby API
+  def mesh_name_to_index(mesh_name)
+    
+  end
+  
+  # only in Ruby API
+  def mesh_index_to_name(mesh_index)
+    
+  end
+  
+  
   
   
   def get_entity_transform(i)
@@ -207,66 +551,6 @@ class VertexAnimationBatch
     
     return self
   end
-  
-  
-  def load_transform_texture(transform_tex_path)
-    ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
-    
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    pixels_list = [@pixels[:transforms]]
-    textures_list = [@textures[:transforms]]
-    
-    pixels_list.zip(textures_list).each do |pixels, texture|
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical => :clamp_to_edge,
-                           :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-  end
-  
-  def load_vertex_textures(position_tex_path, normal_tex_path)
-    ofLoadImage(@pixels[:positions],  position_tex_path.to_s)
-    ofLoadImage(@pixels[:normals],    normal_tex_path.to_s)
-    
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    pixels_list = [@pixels[:positions], @pixels[:normals]]
-    textures_list = [@textures[:positions], @textures[:normals]]
-    
-    pixels_list.zip(textures_list).each do |pixels, texture|
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical => :clamp_to_edge,
-                           :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-  end
-  
-  
   
   
   class TransformData
