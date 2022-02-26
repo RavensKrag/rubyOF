@@ -61,53 +61,65 @@ void mat4_to_colors(const glm::mat4& mat,
 // because this class needs to be wrapped up and accessed from Ruby
 // as well as from c++
 
-ofFloatColor MaterialProperties::getAmbient() const{
+ofFloatColor
+MaterialProperties::getAmbient() const{
 	return mAmbient;
 }
 
-ofFloatColor MaterialProperties::getDiffuse() const{
+ofFloatColor
+MaterialProperties::getDiffuse() const{
 	return mDiffuse;
 }
 
-ofFloatColor MaterialProperties::getSpecular() const{
+ofFloatColor
+MaterialProperties::getSpecular() const{
 	return mSpecular;
 }
 
-ofFloatColor MaterialProperties::getEmissive() const{
+ofFloatColor
+MaterialProperties::getEmissive() const{
 	return mEmissive;
 }
 
-float MaterialProperties::getAlpha(){
+float
+MaterialProperties::getAlpha(){
 	return mAlpha;
 }
 
-void MaterialProperties::setAmbient(const ofFloatColor& value){
+void
+MaterialProperties::setAmbient(const ofFloatColor& value){
 	mAmbient = value;
 }
 
-void MaterialProperties::setDiffuse(const ofFloatColor& value){
+void
+MaterialProperties::setDiffuse(const ofFloatColor& value){
 	mDiffuse = value;
 }
 
-void MaterialProperties::setSpecular(const ofFloatColor& value){
+void
+MaterialProperties::setSpecular(const ofFloatColor& value){
 	mSpecular = value;
 }
 
-void MaterialProperties::setEmissive(const ofFloatColor& value){
+void
+MaterialProperties::setEmissive(const ofFloatColor& value){
 	mEmissive = value;
 }
 
-void MaterialProperties::setAlpha(float value){
+void
+MaterialProperties::setAlpha(float value){
 	mAlpha = value;
 }
 
 // number of pixels needed to pack the data
-int MaterialProperties::getNumPixels() const{
+int
+MaterialProperties::getNumPixels() const{
 	return 4;
 }
 
 // move data from pixels into this MaterialProperites object
-void MaterialProperties::load(const ofFloatPixels::ConstPixels &scanline){
+void
+MaterialProperties::load(const ofFloatPixels::ConstPixels &scanline){
 	int i = 0;
 	for(auto itr = scanline.begin(); itr != scanline.end(); itr++){
 		const ofFloatColor color = itr.getColor();
@@ -131,7 +143,8 @@ void MaterialProperties::load(const ofFloatPixels::ConstPixels &scanline){
 }
 
 // write data from this MaterialProperties object into pixels
-void MaterialProperties::update(ofFloatPixels& pixels, int scanline_index, int x_start){
+void
+MaterialProperties::update(ofFloatPixels& pixels, int scanline_index, int x_start){
 	int i=0;
 	for(int j=x_start; j<this->getNumPixels(); j++){
 		ofFloatColor color;
@@ -174,67 +187,81 @@ EntityData::EntityData():
 	mMeshIndex = 0;
 }
 
-int EntityData::getMeshIndex() const{
+int
+EntityData::getMeshIndex() const{
 	return mMeshIndex;
 }
 
-const glm::mat4& EntityData::getTransform() const{
+const glm::mat4&
+EntityData::getTransform() const{
 	return mLocalTransform;
 }
 
-glm::vec3& EntityData::getPosition(){
+glm::vec3&
+EntityData::getPosition(){
 	return mPosition;
 }
 
-glm::quat& EntityData::getOrientation(){
+glm::quat&
+EntityData::getOrientation(){
 	return mOrientation;
 }
 
-glm::vec3& EntityData::getScale(){
+glm::vec3&
+EntityData::getScale(){
 	return mScale;
 }
 
-const MaterialProperties& EntityData::getMaterial() const{
+const MaterialProperties&
+EntityData::getMaterial() const{
 	return mMaterial;
 }
 
-void EntityData::setMeshIndex(int meshIndex){
+void
+EntityData::setMeshIndex(int meshIndex){
 	mMeshIndex = meshIndex;
 	mChanged = true;
 }
 
-void EntityData::setTransform(const glm::mat4& mat){
+void
+EntityData::setTransform(const glm::mat4& mat){
 	mLocalTransform = mat;
 	decompose_matrix(mLocalTransform, mPosition, mOrientation, mScale);
 	mChanged = true;
 }
 
-void EntityData::setPosition(const glm::vec3& value){
+void
+EntityData::setPosition(const glm::vec3& value){
 	mPosition = value;
 }
 
-void EntityData::setOrientation(const glm::quat& value){
+void
+EntityData::setOrientation(const glm::quat& value){
 	mOrientation = value;
 }
 
-void EntityData::setScale(const glm::vec3& value){
+void
+EntityData::setScale(const glm::vec3& value){
 	mScale = value;
 }
 
-void EntityData::createMatrix(){
+void
+EntityData::createMatrix(){
 	// from openFrameworks/libs/openFrameworks/3d/ofNode.cpp
 	mLocalTransform = glm::translate(glm::mat4(1.0), mPosition);
 	mLocalTransform = mLocalTransform * glm::toMat4(mOrientation);
 	mLocalTransform = glm::scale(mLocalTransform, mScale);
 }
 
-void EntityData::setMaterial(const MaterialProperties& material){
+void
+EntityData::setMaterial(const MaterialProperties& material){
 	mMaterial = material; // should call copy constructor
 	mChanged = true;
 }
 
 // attempt to load pixel data. return false on error.
-bool EntityData::load(const ofFloatPixels& pixels, int scanline_index){
+bool
+EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 	// check number of channels (expecting RGBA format)
 	int channels = pixels.getNumChannels();
 	if(channels != 4){
@@ -281,7 +308,8 @@ bool EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 }
 
 // return true if data was updated, else false
-bool EntityData::update(ofFloatPixels& pixels, int scanline_index){
+bool
+EntityData::update(ofFloatPixels& pixels, int scanline_index){
 	if(mChanged){
 		// 
 		// write the data to the image
@@ -337,7 +365,8 @@ EntityCache::~EntityCache(){
 
 // read from pixel data into cache
 // return false if there was an error with loading.
-bool EntityCache::load(const ofFloatPixels& pixels){
+bool
+EntityCache::load(const ofFloatPixels& pixels){
 	// assume scanline index 0 is blank data,
 	// thus pixels.getHeight() == n+1
 	// where n is the number of entities
@@ -364,7 +393,8 @@ bool EntityCache::load(const ofFloatPixels& pixels){
 }
 
 // write changed data to pixels
-bool EntityCache::update(ofFloatPixels& pixels){
+bool
+EntityCache::update(ofFloatPixels& pixels){
 	
 	// check to make sure the ofPixels object is the correct size for this cache
 	if(pixels.getHeight() != mSize+1){
@@ -387,12 +417,14 @@ bool EntityCache::update(ofFloatPixels& pixels){
 
 
 // write ALL data to pixels
-void EntityCache::flush(ofFloatPixels& pixels){
+void
+EntityCache::flush(ofFloatPixels& pixels){
 	
 }
 
 
-EntityData& EntityCache::getEntity(int index){
+EntityData&
+EntityCache::getEntity(int index){
 	return mStorage[index];
 }
 
