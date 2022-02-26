@@ -33,6 +33,7 @@ public:
 	
 	int getNumPixels() const; // number of pixels needed to pack the data
 	void load(const ofFloatPixels::ConstPixels &scanline);
+	void update(ofFloatPixels& pixels, int scanline_index, int x_start);
 
 
 private:
@@ -52,22 +53,43 @@ public:
 	EntityData();
 	// virtual ~EntityData(){};
 	
-	int                       getMeshIndex() const;
-	const ofNode&             getTransform() const;
+	int getMeshIndex() const;
+	
+	const glm::mat4& getTransform() const;
+		glm::vec3& getPosition();
+		glm::quat& getOrientation();
+		glm::vec3& getScale();
+	
 	const MaterialProperties& getMaterial() const;
 	
+	
+	
 	void setMeshIndex(int meshIndex);
-	void setTransform(const ofNode& node);
+	
+	void setTransform(const glm::mat4& mat);
+		void setPosition(const glm::vec3& value);
+		void setOrientation(const glm::quat& value);
+		void setScale(const glm::vec3& value);
+	
 	void setMaterial(const MaterialProperties& material);
 	
 	bool load(const ofFloatPixels& pixels, int scanline_index); // attempt to load pixel data. return false on error.
+	bool update(ofFloatPixels& pixels, int scanline_index);
 
 	
 private:
+	void createMatrix();
+	
 	bool mActive;
 	bool mChanged;
 	int mMeshIndex;
-	ofNode mNode;
+	
+	// ofNode mNode;
+	glm::vec3 mPosition;
+	glm::quat mOrientation;
+	glm::vec3 mScale;
+	glm::mat4 mLocalTransform;
+	
 	MaterialProperties mMaterial;
 };
 
@@ -81,7 +103,7 @@ public:
 	~EntityCache();
 	
 	bool load(const ofFloatPixels& pixels); // read from pixel data into cache
-	void update(ofFloatPixels& pixels);     // write changed data to pixels
+	bool update(ofFloatPixels& pixels);     // write changed data to pixels
 	void flush(ofFloatPixels& pixels);      // write ALL data to pixels
 	
 	EntityData& getEntity(int index);
