@@ -23,10 +23,11 @@ void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::v
     rot = glm::quat_cast(rotMtx);
 }
 
-inline glm::mat4 colors_to_mat4(const ofFloatColor &v1,
-                                const ofFloatColor &v2,
-                                const ofFloatColor &v3,
-                                const ofFloatColor &v4)
+inline glm::mat4
+colors_to_mat4(const ofFloatColor &v1,
+               const ofFloatColor &v2,
+               const ofFloatColor &v3,
+               const ofFloatColor &v4)
 {
 	return glm::mat4x4(v1.r, v2.r, v3.r, v4.r,
 	                   v1.g, v2.g, v3.g, v4.g,
@@ -34,11 +35,12 @@ inline glm::mat4 colors_to_mat4(const ofFloatColor &v1,
 	                   v1.a, v2.a, v3.a, v4.a);
 }
 
-void mat4_to_colors(const glm::mat4& mat,
-                    ofFloatColor *v1,
-                    ofFloatColor *v2,
-                    ofFloatColor *v3,
-                    ofFloatColor *v4)
+void
+mat4_to_colors(const glm::mat4& mat,
+               ofFloatColor *v1,
+               ofFloatColor *v2,
+               ofFloatColor *v3,
+               ofFloatColor *v4)
 {
 	v1->r = mat[0][0]; v1->g = mat[1][0]; v1->b = mat[2][0]; v1->a = mat[3][0];
 	v2->r = mat[0][1]; v2->g = mat[1][1]; v2->b = mat[2][1]; v2->a = mat[3][1];
@@ -50,105 +52,124 @@ void mat4_to_colors(const glm::mat4& mat,
 
 
 
-MaterialComponent::MaterialComponent(bool* update_flag){
-	mpUpdateFlag = update_flag;
+
+EntityData::EntityData():
+	mTransform(),
+	mMaterial()
+{
+	mActive = false;  // Is this entry in the pool currently being used?
+	mChanged = false; // Does this cached value need to be pushed to the ofPixels?
+	mMeshIndex = 0;
 }
 
-// no explict copy constructor needed because we can just copy each and every member (default)
 
-// Defining setters and getters instead of just using simple struct
-// because this class needs to be wrapped up and accessed from Ruby
-// as well as from c++
 
-void MaterialComponent::copyMaterial(MaterialComponent& other){
-	this->setAmbient(other.getAmbient());
-	this->setDiffuse(other.getDiffuse());
-	this->setSpecular(other.getSpecular());
-	this->setEmissive(other.getEmissive());
-	this->setAlpha(other.getAlpha());
+
+int
+EntityData::getMeshIndex() const{
+	return mMeshIndex;
 }
 
+void
+EntityData::setMeshIndex(int meshIndex){
+	mMeshIndex = meshIndex;
+	mChanged = true;
+}
+
+
+
+
+
+
+
+
+
+void
+EntityData::copyMaterial(const EntityData& other){
+	mMaterial.ambient = other.getAmbient();
+	mMaterial.diffuse = other.getDiffuse();
+	mMaterial.specular = other.getSpecular();
+	mMaterial.emissive = other.getEmissive();
+	mMaterial.alpha = other.getAlpha();
+	
+	mChanged = true;
+}
 
 ofFloatColor
-MaterialComponent::getAmbient() const{
-	return mAmbient;
+EntityData::getAmbient() const{
+	return mMaterial.ambient;
 }
 
 ofFloatColor
-MaterialComponent::getDiffuse() const{
-	return mDiffuse;
+EntityData::getDiffuse() const{
+	return mMaterial.diffuse;
 }
 
 ofFloatColor
-MaterialComponent::getSpecular() const{
-	return mSpecular;
+EntityData::getSpecular() const{
+	return mMaterial.specular;
 }
 
 ofFloatColor
-MaterialComponent::getEmissive() const{
-	return mEmissive;
+EntityData::getEmissive() const{
+	return mMaterial.emissive;
 }
 
 float
-MaterialComponent::getAlpha(){
-	return mAlpha;
+EntityData::getAlpha() const{
+	return mMaterial.alpha;
 }
 
 void
-MaterialComponent::setAmbient(const ofFloatColor& value){
-	mAmbient = value;
-	*mpUpdateFlag = true;
+EntityData::setAmbient(const ofFloatColor& value){
+	mMaterial.ambient = value;
+	mChanged = true;
 }
 
 void
-MaterialComponent::setDiffuse(const ofFloatColor& value){
-	mDiffuse = value;
-	*mpUpdateFlag = true;
+EntityData::setDiffuse(const ofFloatColor& value){
+	mMaterial.diffuse = value;
+	mChanged = true;
 }
 
 void
-MaterialComponent::setSpecular(const ofFloatColor& value){
-	mSpecular = value;
-	*mpUpdateFlag = true;
+EntityData::setSpecular(const ofFloatColor& value){
+	mMaterial.specular = value;
+	mChanged = true;
 }
 
 void
-MaterialComponent::setEmissive(const ofFloatColor& value){
-	mEmissive = value;
-	*mpUpdateFlag = true;
+EntityData::setEmissive(const ofFloatColor& value){
+	mMaterial.emissive = value;
+	mChanged = true;
 }
 
 void
-MaterialComponent::setAlpha(float value){
-	mAlpha = value;
-	*mpUpdateFlag = true;
+EntityData::setAlpha(float value){
+	mMaterial.alpha = value;
+	mChanged = true;
 }
 
-// number of pixels needed to pack the data
-int
-MaterialComponent::getNumPixels() const{
-	return 4;
-}
 
 // move data from pixels into this MaterialProperites object
 void
-MaterialComponent::load(const ofFloatPixels::ConstPixels &scanline){
+EntityData::loadMaterial(const ofFloatPixels::ConstPixels &scanline){
 	int i = 0;
 	for(auto itr = scanline.begin(); itr != scanline.end(); itr++){
 		const ofFloatColor color = itr.getColor();
 		
 		if(i == 0){
-			mAmbient = color;
+			mMaterial.ambient = color;
 		}
 		if(i == 1){
-			mDiffuse = color;
-			mAlpha = color.a;
+			mMaterial.diffuse = color;
+			mMaterial.alpha = color.a;
 		}
 		if(i == 2){
-			mSpecular = color;
+			mMaterial.specular = color;
 		}
 		if(i == 3){
-			mEmissive = color;
+			mMaterial.emissive = color;
 		}
 		
 		i++;
@@ -157,23 +178,23 @@ MaterialComponent::load(const ofFloatPixels::ConstPixels &scanline){
 
 // write data from this MaterialComponent object into pixels
 void
-MaterialComponent::update(ofFloatPixels& pixels, int scanline_index, int x_start){
+EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_start){
 	int i=0;
-	for(int j=x_start; j<this->getNumPixels(); j++){
+	for(int j=x_start; j<mMaterial.num_pixels; j++){
 		ofFloatColor color;
 		
 		if(i == 0){
-			color = mAmbient;
+			color = mMaterial.ambient;
 		}
 		if(i == 1){
-			color = mDiffuse;
-			color.a = mAlpha;
+			color = mMaterial.diffuse;
+			color.a = mMaterial.alpha;
 		}
 		if(i == 2){
-			color = mSpecular;
+			color = mMaterial.specular;
 		}
 		if(i == 3){
-			color = mEmissive;
+			color = mMaterial.emissive;
 		}
 		
 		
@@ -188,107 +209,106 @@ MaterialComponent::update(ofFloatPixels& pixels, int scanline_index, int x_start
 
 
 
-TransformComponent::TransformComponent(bool* update_flag){
-	mpUpdateFlag = update_flag;
-}
 
-const glm::mat4&
-TransformComponent::getTransformMatrix() const{
-	return mLocalTransform;
-}
 
-glm::vec3
-TransformComponent::getPosition() const{
-	return mPosition;
-}
 
-glm::quat
-TransformComponent::getOrientation() const{
-	return mOrientation;
-}
 
-glm::vec3
-TransformComponent::getScale() const{
-	return mScale;
-}
+
+
+
 
 void
-TransformComponent::setTransformMatrix(const glm::mat4& mat){
-	mLocalTransform = mat;
-	decompose_matrix(mLocalTransform, mPosition, mOrientation, mScale);
-	*mpUpdateFlag = true;
-}
-
-void
-TransformComponent::setPosition(const glm::vec3& value){
-	mPosition = value;
-	*mpUpdateFlag = true;
+EntityData::copyTransform(const EntityData& other){
+	mTransform.position    = other.getPosition();
+	mTransform.orientation = other.getOrientation();
+	mTransform.scale       = other.getScale();
+	
 	this->createMatrix();
-}
-
-void
-TransformComponent::setOrientation(const glm::quat& value){
-	mOrientation = value;
-	*mpUpdateFlag = true;
-	this->createMatrix();
-}
-
-void
-TransformComponent::setScale(const glm::vec3& value){
-	mScale = value;
-	*mpUpdateFlag = true;
-	this->createMatrix();
-}
-
-void
-TransformComponent::createMatrix(){
-	// from openFrameworks/libs/openFrameworks/3d/ofNode.cpp
-	mLocalTransform = glm::translate(glm::mat4(1.0), mPosition);
-	mLocalTransform = mLocalTransform * glm::toMat4(mOrientation);
-	mLocalTransform = glm::scale(mLocalTransform, mScale);
-}
-
-
-
-
-
-
-
-EntityData::EntityData():
-	mTransform(&mChanged),
-	mMaterial(&mChanged)
-{
-	mActive = false;
-	mChanged = false;
-	mMeshIndex = 0;
-}
-
-int
-EntityData::getMeshIndex() const{
-	return mMeshIndex;
-}
-
-void
-EntityData::setMeshIndex(int meshIndex){
-	mMeshIndex = meshIndex;
+	
 	mChanged = true;
 }
 
-TransformComponent&
-EntityData::getTransformComponent(){
-	return mTransform;
+const glm::mat4&
+EntityData::getTransformMatrix() const{
+	return mTransform.local_transform;
 }
 
-MaterialComponent&
-EntityData::getMaterialComponent(){
-	return mMaterial;
+glm::vec3
+EntityData::getPosition() const{
+	return mTransform.position;
 }
 
-// void
-// EntityData::setMaterialComponent(const MaterialComponent& material){
-// 	mMaterial = material; // should call copy constructor
-// 	mChanged = true;
-// }
+glm::quat
+EntityData::getOrientation() const{
+	return mTransform.orientation;
+}
+
+glm::vec3
+EntityData::getScale() const{
+	return mTransform.scale;
+}
+
+void
+EntityData::setTransformMatrix(const glm::mat4& mat){
+	mTransform.local_transform = mat;
+	decompose_matrix(mTransform.local_transform,
+	                 mTransform.position, mTransform.orientation, mTransform.scale);
+	mChanged = true;
+}
+
+void
+EntityData::setPosition(const glm::vec3& value){
+	mTransform.position = value;
+	mChanged = true;
+	this->createMatrix();
+}
+
+void
+EntityData::setOrientation(const glm::quat& value){
+	mTransform.orientation = value;
+	mChanged = true;
+	this->createMatrix();
+}
+
+void
+EntityData::setScale(const glm::vec3& value){
+	mTransform.scale = value;
+	mChanged = true;
+	this->createMatrix();
+}
+
+void
+EntityData::createMatrix(){
+	// based on openFrameworks/libs/openFrameworks/3d/ofNode.cpp:createMatrix()
+	glm::mat4 mat = mTransform.local_transform;
+	
+	mat = glm::translate(glm::mat4(1.0), mTransform.position);
+	mat = mat * glm::toMat4(mTransform.orientation);
+	mat = glm::scale(mat, mTransform.scale);
+	
+	mTransform.local_transform = mat;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // attempt to load pixel data. return false on error.
 bool
@@ -321,11 +341,11 @@ EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 	const ofFloatColor c3 = pixels.getColor(3, scanline_index);
 	const ofFloatColor c4 = pixels.getColor(4, scanline_index);
 	
-	mTransform.setTransformMatrix( colors_to_mat4(c1, c2, c3, c4) );	
+	this->setTransformMatrix( colors_to_mat4(c1, c2, c3, c4) );	
 	
 	
 	int starting_index = 5;
-	int num_pixels = mMaterial.getNumPixels();
+	int num_pixels = mMaterial.num_pixels;
 	int max_num_material_pixels = pixels.getWidth() - starting_index;
 	
 	if(num_pixels > max_num_material_pixels){
@@ -334,7 +354,7 @@ EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 		return false;
 	}
 	
-	mMaterial.load( pixels.getConstLine(scanline_index).getPixels(starting_index, num_pixels) );
+	this->loadMaterial( pixels.getConstLine(scanline_index).getPixels(starting_index, num_pixels) );
 	
 	
 	return true; // if you do all operations, there was no error
@@ -354,7 +374,7 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 		
 		
 		ofFloatColor c1, c2, c3, c4;
-		mat4_to_colors(mTransform.getTransformMatrix(), &c1, &c2, &c3, &c4);
+		mat4_to_colors(this->getTransformMatrix(), &c1, &c2, &c3, &c4);
 		
 		pixels.setColor(1, scanline_index, c1);
 		pixels.setColor(2, scanline_index, c2);
@@ -363,7 +383,7 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 		
 		
 		int starting_index = 5;
-		int num_pixels = mMaterial.getNumPixels();
+		int num_pixels = mMaterial.num_pixels;
 		int max_num_material_pixels = pixels.getWidth() - starting_index;
 		
 		if(num_pixels > max_num_material_pixels){
@@ -373,7 +393,7 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 			// TODO: figure out some way to bail out of updating when there are not enough pixels
 		}
 		
-		mMaterial.update(pixels, scanline_index, starting_index);
+		this->updateMaterial(pixels, scanline_index, starting_index);
 		
 		
 		mChanged = false;
@@ -383,6 +403,24 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 		return false;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -456,18 +494,19 @@ EntityCache::flush(ofFloatPixels& pixels){
 }
 
 
-EntityData&
+EntityData*
 EntityCache::getEntity(int index){
-	return mStorage[index];
+	return &(mStorage[index]);
 }
 
-// // cache will mark an unused entry in the pool for use and return the index
-// int EntityCache::createEntity(){
+// cache will mark an unused entry in the pool for use and return the index
+int
+EntityCache::createEntity(){
 	
-// }
+}
 
-// // mark a used entry in the pool as no longer being used
-// void EntityCache::destroyEntity(int index){
+// mark a used entry in the pool as no longer being used
+void EntityCache::destroyEntity(int index){
 	
-// }
+}
 
