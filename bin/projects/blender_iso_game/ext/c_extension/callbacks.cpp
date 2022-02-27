@@ -1066,25 +1066,25 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
-inline glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
-	// glm::mat4 mat(1);
+// inline glm::mat4 get_entity_transform(const ofFloatPixels &pixels, const int i){
+// 	// glm::mat4 mat(1);
 	
-	// pull colors out of image on CPU side
-	// similar to how the shader pulls data out on the GPU side
+// 	// pull colors out of image on CPU side
+// 	// similar to how the shader pulls data out on the GPU side
 	
-	ofFloatColor v1 = pixels.getColor(1, i);
-	ofFloatColor v2 = pixels.getColor(2, i);
-	ofFloatColor v3 = pixels.getColor(3, i);
-	ofFloatColor v4 = pixels.getColor(4, i);
+// 	ofFloatColor v1 = pixels.getColor(1, i);
+// 	ofFloatColor v2 = pixels.getColor(2, i);
+// 	ofFloatColor v3 = pixels.getColor(3, i);
+// 	ofFloatColor v4 = pixels.getColor(4, i);
 
-	glm::mat4x4 mat(v1.r, v2.r, v3.r, v4.r,
-	                v1.g, v2.g, v3.g, v4.g,
-	                v1.b, v2.b, v3.b, v4.b,
-	                v1.a, v2.a, v3.a, v4.a);
+// 	glm::mat4x4 mat(v1.r, v2.r, v3.r, v4.r,
+// 	                v1.g, v2.g, v3.g, v4.g,
+// 	                v1.b, v2.b, v3.b, v4.b,
+// 	                v1.a, v2.a, v3.a, v4.a);
 	
 	
-	return mat;
-}
+// 	return mat;
+// }
 
 
 void set_entity_transform(ofFloatPixels &pixels, const int i, const glm::mat4 mat, ofTexture &tex){
@@ -1168,73 +1168,54 @@ void set_entity_transform_array(ofFloatPixels &pixels, int i, Rice::Array ary, o
 }
 
 
-// https://stackoverflow.com/questions/17918033/glm-decompose-mat4-into-translation-and-rotation
-// answered 2021-07-09 @ 23:33
-// by tuket
-// 
-// const glm::mat4& m    input parameter
-// glm::vec3& pos        in / out parameter
-// glm::quat& rot        in / out parameter
-// glm::vec3& scale      in / out parameter
-void decompose_matrix(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale)
-{
-    pos = m[3];
-    for(int i = 0; i < 3; i++)
-        scale[i] = glm::length(glm::vec3(m[i]));
-    const glm::mat3 rotMtx(
-        glm::vec3(m[0]) / scale[0],
-        glm::vec3(m[1]) / scale[1],
-        glm::vec3(m[2]) / scale[2]);
-    rot = glm::quat_cast(rotMtx);
-}
 
 
-// list of fields copied from Ruby code, 2021.11.08
-// FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
-// pull all fields (specifying which ones too pull is too complicated)
-Rice::Array query_transform_pixels(const ofFloatPixels &pixels)
-{
-	Rice::Array table;
+// // list of fields copied from Ruby code, 2021.11.08
+// // FIELDS = [:mesh_id, :transform, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive, :alpha]
+// // pull all fields (specifying which ones too pull is too complicated)
+// Rice::Array query_transform_pixels(const ofFloatPixels &pixels)
+// {
+// 	Rice::Array table;
 	
-	ofFloatColor color;
-	glm::vec3 pos;
-	glm::quat rot;
-	glm::vec3 scale;
-	for(int i=0; i<pixels.getHeight(); i++){
-		Rice::Array row;
+// 	ofFloatColor color;
+// 	glm::vec3 pos;
+// 	glm::quat rot;
+// 	glm::vec3 scale;
+// 	for(int i=0; i<pixels.getHeight(); i++){
+// 		Rice::Array row;
 		
 		
-		// mesh id
-		color = pixels.getColor(0, i);
-		row.push(to_ruby(static_cast<int>(color.r)));
+// 		// mesh id
+// 		color = pixels.getColor(0, i);
+// 		row.push(to_ruby(static_cast<int>(color.r)));
 		
-		// transform data
-		glm::mat4 mat = get_entity_transform(pixels, i);
-		decompose_matrix(mat, pos, rot, scale);
+// 		// transform data
+// 		glm::mat4 mat = get_entity_transform(pixels, i);
+// 		decompose_matrix(mat, pos, rot, scale);
 		
-		row.push(to_ruby(pos));
-		row.push(to_ruby(rot));
-		row.push(to_ruby(scale));
+// 		row.push(to_ruby(pos));
+// 		row.push(to_ruby(rot));
+// 		row.push(to_ruby(scale));
 		
-		// material data
-		color = pixels.getColor(5, i);
-		row.push(to_ruby(color));
+// 		// material data
+// 		color = pixels.getColor(5, i);
+// 		row.push(to_ruby(color));
 		
-		color = pixels.getColor(6, i);
-		row.push(to_ruby(color));
+// 		color = pixels.getColor(6, i);
+// 		row.push(to_ruby(color));
 		
-		color = pixels.getColor(7, i);
-		row.push(to_ruby(color));
+// 		color = pixels.getColor(7, i);
+// 		row.push(to_ruby(color));
 		
-		color = pixels.getColor(8, i);
-		row.push(to_ruby(color));
+// 		color = pixels.getColor(8, i);
+// 		row.push(to_ruby(color));
 		
-		table.push(row);
-	}
+// 		table.push(row);
+// 	}
 	
 	
-	return table;
-}
+// 	return table;
+// }
 
 
 
@@ -1813,8 +1794,8 @@ void Init_rubyOF_project()
 		
 		
 		
-		.define_module_function("get_entity_transform",
-			                     &get_entity_transform)
+		// .define_module_function("get_entity_transform",
+		// 	                     &get_entity_transform)
 		
 		// set transform using mat4
 		.define_module_function("set_entity_transform",
@@ -1825,12 +1806,12 @@ void Init_rubyOF_project()
 			                     &set_entity_transform_array)
 		
 		
-		.define_module_function("query_transform_pixels",
-			                     &query_transform_pixels)
+		// .define_module_function("query_transform_pixels",
+		// 	                     &query_transform_pixels)
 		
 		
-		.define_module_function("decompose_matrix",
-			                     &decompose_matrix)
+		// .define_module_function("decompose_matrix",
+			                     // &decompose_matrix)
 		
 	;
 	
