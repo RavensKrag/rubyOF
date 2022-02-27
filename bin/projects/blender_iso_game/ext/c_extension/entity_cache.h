@@ -14,11 +14,13 @@
 
 
 
-class MaterialProperties {
+class MaterialComponent {
 public:
-	// MaterialProperties();
-	// virtual ~MaterialProperties(){};
-
+	MaterialComponent(bool* update_flag);
+	// virtual ~MaterialComponent(){};
+	
+	void copyMaterial(MaterialComponent& material);
+	
 	ofFloatColor getAmbient() const;
 	ofFloatColor getDiffuse() const;
 	ofFloatColor getSpecular() const;
@@ -37,11 +39,44 @@ public:
 
 
 private:
+	bool* mpUpdateFlag;
+	
 	ofFloatColor mAmbient;
 	ofFloatColor mDiffuse;
 	ofFloatColor mSpecular;
 	ofFloatColor mEmissive;
 	float mAlpha;
+};
+
+
+
+
+
+class TransformComponent {
+public:
+	TransformComponent(bool* update_flag);
+	// virtual ~TransformComponent(){};
+	
+	const glm::mat4& getTransformMatrix() const;
+	glm::vec3 getPosition() const;
+	glm::quat getOrientation() const;
+	glm::vec3 getScale() const;
+	
+	void setTransformMatrix(const glm::mat4& mat);
+	void setPosition(const glm::vec3& value);
+	void setOrientation(const glm::quat& value);
+	void setScale(const glm::vec3& value);
+	
+protected:
+	void createMatrix();
+
+private:
+	bool* mpUpdateFlag;
+	
+	glm::vec3 mPosition;
+	glm::quat mOrientation;
+	glm::vec3 mScale;
+	glm::mat4 mLocalTransform;
 };
 
 
@@ -54,43 +89,21 @@ public:
 	// virtual ~EntityData(){};
 	
 	int getMeshIndex() const;
+	void setMeshIndex(int mesh_index);
 	
-	const glm::mat4& getTransform() const;
-		glm::vec3& getPosition();
-		glm::quat& getOrientation();
-		glm::vec3& getScale();
-	
-	const MaterialProperties& getMaterial() const;
-	
-	
-	
-	void setMeshIndex(int meshIndex);
-	
-	void setTransform(const glm::mat4& mat);
-		void setPosition(const glm::vec3& value);
-		void setOrientation(const glm::quat& value);
-		void setScale(const glm::vec3& value);
-	
-	void setMaterial(const MaterialProperties& material);
+	TransformComponent& getTransformComponent();
+	MaterialComponent& getMaterialComponent();
 	
 	bool load(const ofFloatPixels& pixels, int scanline_index); // attempt to load pixel data. return false on error.
 	bool update(ofFloatPixels& pixels, int scanline_index);
 
 	
-private:
-	void createMatrix();
-	
+private:	
 	bool mActive;
 	bool mChanged;
 	int mMeshIndex;
-	
-	// ofNode mNode;
-	glm::vec3 mPosition;
-	glm::quat mOrientation;
-	glm::vec3 mScale;
-	glm::mat4 mLocalTransform;
-	
-	MaterialProperties mMaterial;
+	TransformComponent mTransform;
+	MaterialComponent mMaterial;
 };
 
 

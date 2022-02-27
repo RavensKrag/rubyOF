@@ -50,10 +50,9 @@ void mat4_to_colors(const glm::mat4& mat,
 
 
 
-// MaterialProperties::MaterialProperties(){
-// 	// NO-OP
-//   (may want to use this to define default material?)
-// }
+MaterialComponent::MaterialComponent(bool* update_flag){
+	mpUpdateFlag = update_flag;
+}
 
 // no explict copy constructor needed because we can just copy each and every member (default)
 
@@ -61,65 +60,79 @@ void mat4_to_colors(const glm::mat4& mat,
 // because this class needs to be wrapped up and accessed from Ruby
 // as well as from c++
 
+void MaterialComponent::copyMaterial(MaterialComponent& other){
+	this->setAmbient(other.getAmbient());
+	this->setDiffuse(other.getDiffuse());
+	this->setSpecular(other.getSpecular());
+	this->setEmissive(other.getEmissive());
+	this->setAlpha(other.getAlpha());
+}
+
+
 ofFloatColor
-MaterialProperties::getAmbient() const{
+MaterialComponent::getAmbient() const{
 	return mAmbient;
 }
 
 ofFloatColor
-MaterialProperties::getDiffuse() const{
+MaterialComponent::getDiffuse() const{
 	return mDiffuse;
 }
 
 ofFloatColor
-MaterialProperties::getSpecular() const{
+MaterialComponent::getSpecular() const{
 	return mSpecular;
 }
 
 ofFloatColor
-MaterialProperties::getEmissive() const{
+MaterialComponent::getEmissive() const{
 	return mEmissive;
 }
 
 float
-MaterialProperties::getAlpha(){
+MaterialComponent::getAlpha(){
 	return mAlpha;
 }
 
 void
-MaterialProperties::setAmbient(const ofFloatColor& value){
+MaterialComponent::setAmbient(const ofFloatColor& value){
 	mAmbient = value;
+	*mpUpdateFlag = true;
 }
 
 void
-MaterialProperties::setDiffuse(const ofFloatColor& value){
+MaterialComponent::setDiffuse(const ofFloatColor& value){
 	mDiffuse = value;
+	*mpUpdateFlag = true;
 }
 
 void
-MaterialProperties::setSpecular(const ofFloatColor& value){
+MaterialComponent::setSpecular(const ofFloatColor& value){
 	mSpecular = value;
+	*mpUpdateFlag = true;
 }
 
 void
-MaterialProperties::setEmissive(const ofFloatColor& value){
+MaterialComponent::setEmissive(const ofFloatColor& value){
 	mEmissive = value;
+	*mpUpdateFlag = true;
 }
 
 void
-MaterialProperties::setAlpha(float value){
+MaterialComponent::setAlpha(float value){
 	mAlpha = value;
+	*mpUpdateFlag = true;
 }
 
 // number of pixels needed to pack the data
 int
-MaterialProperties::getNumPixels() const{
+MaterialComponent::getNumPixels() const{
 	return 4;
 }
 
 // move data from pixels into this MaterialProperites object
 void
-MaterialProperties::load(const ofFloatPixels::ConstPixels &scanline){
+MaterialComponent::load(const ofFloatPixels::ConstPixels &scanline){
 	int i = 0;
 	for(auto itr = scanline.begin(); itr != scanline.end(); itr++){
 		const ofFloatColor color = itr.getColor();
@@ -142,9 +155,9 @@ MaterialProperties::load(const ofFloatPixels::ConstPixels &scanline){
 	}
 }
 
-// write data from this MaterialProperties object into pixels
+// write data from this MaterialComponent object into pixels
 void
-MaterialProperties::update(ofFloatPixels& pixels, int scanline_index, int x_start){
+MaterialComponent::update(ofFloatPixels& pixels, int scanline_index, int x_start){
 	int i=0;
 	for(int j=x_start; j<this->getNumPixels(); j++){
 		ofFloatColor color;
@@ -175,12 +188,75 @@ MaterialProperties::update(ofFloatPixels& pixels, int scanline_index, int x_star
 
 
 
+TransformComponent::TransformComponent(bool* update_flag){
+	mpUpdateFlag = update_flag;
+}
+
+const glm::mat4&
+TransformComponent::getTransformMatrix() const{
+	return mLocalTransform;
+}
+
+glm::vec3
+TransformComponent::getPosition() const{
+	return mPosition;
+}
+
+glm::quat
+TransformComponent::getOrientation() const{
+	return mOrientation;
+}
+
+glm::vec3
+TransformComponent::getScale() const{
+	return mScale;
+}
+
+void
+TransformComponent::setTransformMatrix(const glm::mat4& mat){
+	mLocalTransform = mat;
+	decompose_matrix(mLocalTransform, mPosition, mOrientation, mScale);
+	*mpUpdateFlag = true;
+}
+
+void
+TransformComponent::setPosition(const glm::vec3& value){
+	mPosition = value;
+	*mpUpdateFlag = true;
+	this->createMatrix();
+}
+
+void
+TransformComponent::setOrientation(const glm::quat& value){
+	mOrientation = value;
+	*mpUpdateFlag = true;
+	this->createMatrix();
+}
+
+void
+TransformComponent::setScale(const glm::vec3& value){
+	mScale = value;
+	*mpUpdateFlag = true;
+	this->createMatrix();
+}
+
+void
+TransformComponent::createMatrix(){
+	// from openFrameworks/libs/openFrameworks/3d/ofNode.cpp
+	mLocalTransform = glm::translate(glm::mat4(1.0), mPosition);
+	mLocalTransform = mLocalTransform * glm::toMat4(mOrientation);
+	mLocalTransform = glm::scale(mLocalTransform, mScale);
+}
+
+
+
+
+
+
+
 EntityData::EntityData():
-	mPosition(),
-	mOrientation(),
-	mScale(),
-	mLocalTransform(),
-	mMaterial()
+	mTransform(&mChanged),
+	mMaterial(&mChanged)
 {
 	mActive = false;
 	mChanged = false;
@@ -192,72 +268,27 @@ EntityData::getMeshIndex() const{
 	return mMeshIndex;
 }
 
-const glm::mat4&
-EntityData::getTransform() const{
-	return mLocalTransform;
-}
-
-glm::vec3&
-EntityData::getPosition(){
-	return mPosition;
-}
-
-glm::quat&
-EntityData::getOrientation(){
-	return mOrientation;
-}
-
-glm::vec3&
-EntityData::getScale(){
-	return mScale;
-}
-
-const MaterialProperties&
-EntityData::getMaterial() const{
-	return mMaterial;
-}
-
 void
 EntityData::setMeshIndex(int meshIndex){
 	mMeshIndex = meshIndex;
 	mChanged = true;
 }
 
-void
-EntityData::setTransform(const glm::mat4& mat){
-	mLocalTransform = mat;
-	decompose_matrix(mLocalTransform, mPosition, mOrientation, mScale);
-	mChanged = true;
+TransformComponent&
+EntityData::getTransformComponent(){
+	return mTransform;
 }
 
-void
-EntityData::setPosition(const glm::vec3& value){
-	mPosition = value;
+MaterialComponent&
+EntityData::getMaterialComponent(){
+	return mMaterial;
 }
 
-void
-EntityData::setOrientation(const glm::quat& value){
-	mOrientation = value;
-}
-
-void
-EntityData::setScale(const glm::vec3& value){
-	mScale = value;
-}
-
-void
-EntityData::createMatrix(){
-	// from openFrameworks/libs/openFrameworks/3d/ofNode.cpp
-	mLocalTransform = glm::translate(glm::mat4(1.0), mPosition);
-	mLocalTransform = mLocalTransform * glm::toMat4(mOrientation);
-	mLocalTransform = glm::scale(mLocalTransform, mScale);
-}
-
-void
-EntityData::setMaterial(const MaterialProperties& material){
-	mMaterial = material; // should call copy constructor
-	mChanged = true;
-}
+// void
+// EntityData::setMaterialComponent(const MaterialComponent& material){
+// 	mMaterial = material; // should call copy constructor
+// 	mChanged = true;
+// }
 
 // attempt to load pixel data. return false on error.
 bool
@@ -284,12 +315,14 @@ EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 		mActive = true;
 	}
 	
+	
 	const ofFloatColor c1 = pixels.getColor(1, scanline_index);
 	const ofFloatColor c2 = pixels.getColor(2, scanline_index);
 	const ofFloatColor c3 = pixels.getColor(3, scanline_index);
 	const ofFloatColor c4 = pixels.getColor(4, scanline_index);
 	
-	this->setTransform( colors_to_mat4(c1, c2, c3, c4) );	
+	mTransform.setTransformMatrix( colors_to_mat4(c1, c2, c3, c4) );	
+	
 	
 	int starting_index = 5;
 	int num_pixels = mMaterial.getNumPixels();
@@ -321,7 +354,7 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 		
 		
 		ofFloatColor c1, c2, c3, c4;
-		mat4_to_colors(mLocalTransform, &c1, &c2, &c3, &c4);
+		mat4_to_colors(mTransform.getTransformMatrix(), &c1, &c2, &c3, &c4);
 		
 		pixels.setColor(1, scanline_index, c1);
 		pixels.setColor(2, scanline_index, c2);
