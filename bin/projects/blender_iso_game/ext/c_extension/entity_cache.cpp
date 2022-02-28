@@ -53,14 +53,138 @@ mat4_to_colors(const glm::mat4& mat,
 
 
 
-EntityData::EntityData():
-	mTransform(),
-	mMaterial()
-{
-	mActive = false;  // Is this entry in the pool currently being used?
-	mChanged = false; // Does this cached value need to be pushed to the ofPixels?
+// EntityData::EntityData()
+// {
+// 	// NO-OP
+// 	// use initialize() instead of the constructor
+// 	// so that you can re-initialize items from the pool later
+// }
+
+void
+EntityData::initialize(){
 	mMeshIndex = 0;
+	mTransform = EntityData::TransformComponent();
+	mMaterial  = EntityData::MaterialComponent();
+	
+	mActive = true;  // Is this entry in the pool currently being used?
+	mChanged = true; // Does this cached value need to be pushed to the ofPixels?
+	// NOTE: mChanged set to false in update(), after data is pushed to ofPixels.
 }
+
+void
+EntityData::destroy(){
+	mMeshIndex = 0;
+	
+	mActive = false;
+	mChanged = true; // need to write mMeshIndex = 0 to the ofPixels to prevent rendering
+	// NOTE: mChanged set to false in update()
+}
+
+bool
+EntityData::isActive() const{
+	return mActive;
+}
+
+// attempt to load pixel data. return false on error.
+bool
+EntityData::load(const ofFloatPixels& pixels, int scanline_index){
+	// check number of channels (expecting RGBA format)
+	int channels = pixels.getNumChannels();
+	if(channels != 4){
+		ofLogError("EntityData") << "Expected image to have 4 channels (RGBA) but only found " << channels << " channels.";
+		
+		return false;
+	}
+	
+	// 
+	// load in the data
+	// 
+	
+	float mesh_index = pixels.getColor(0, scanline_index).r;
+	mMeshIndex = (int)mesh_index;
+	// if no mesh is assigned, ignore the rest of the data in this line
+	if(mMeshIndex == 0){
+		mActive = false;
+		return true;
+	}else{
+		mActive = true;
+	}
+	
+	
+	const ofFloatColor c1 = pixels.getColor(1, scanline_index);
+	const ofFloatColor c2 = pixels.getColor(2, scanline_index);
+	const ofFloatColor c3 = pixels.getColor(3, scanline_index);
+	const ofFloatColor c4 = pixels.getColor(4, scanline_index);
+	
+	this->setTransformMatrix( colors_to_mat4(c1, c2, c3, c4) );	
+	
+	
+	int starting_index = 5;
+	int num_pixels = mMaterial.NUM_PIXELS;
+	int max_num_material_pixels = pixels.getWidth() - starting_index;
+	
+	if(num_pixels > max_num_material_pixels){
+		ofLogError("EntityData") << "Too many pixels required to pack the material properties. Expected " << num_pixels << " pixels, but only found " << max_num_material_pixels << " pixels for material data in this image.";
+		
+		return false;
+	}
+	
+	this->loadMaterial( pixels.getConstLine(scanline_index).getPixels(starting_index, num_pixels) );
+	
+	
+	return true; // if you do all operations, there was no error
+}
+
+// return true if data was updated, else false
+bool
+EntityData::update(ofFloatPixels& pixels, int scanline_index){
+	if(mChanged){
+		// 
+		// write the data to the image
+		// 
+		ofFloatColor c;
+		c = pixels.getColor(0, scanline_index);
+			c.r = c.g = c.b = mMeshIndex;
+		pixels.setColor(0, scanline_index, c);
+		
+		
+		ofFloatColor c1, c2, c3, c4;
+		mat4_to_colors(this->getTransformMatrix(), &c1, &c2, &c3, &c4);
+		
+		pixels.setColor(1, scanline_index, c1);
+		pixels.setColor(2, scanline_index, c2);
+		pixels.setColor(3, scanline_index, c3);
+		pixels.setColor(4, scanline_index, c4);
+		
+		
+		int starting_index = 5;
+		int num_pixels = mMaterial.NUM_PIXELS;
+		int max_num_material_pixels = pixels.getWidth() - starting_index;
+		
+		if(num_pixels > max_num_material_pixels){
+			ofLogError("EntityData") << "Too many pixels required to pack the material properties. Requsted " << num_pixels << " pixels, but only have space for " << max_num_material_pixels << " pixels in this image.";
+			
+			return false;
+			// TODO: figure out some way to bail out of updating when there are not enough pixels
+		}
+		
+		this->updateMaterial(pixels, scanline_index, starting_index);
+		
+		
+		mChanged = false;
+		
+		return true;
+	}else{
+		return false;
+	}
+}
+
+
+
+
+
+
+
 
 
 
@@ -152,6 +276,8 @@ EntityData::setAlpha(float value){
 
 
 // move data from pixels into this MaterialProperites object
+// (cache is updating, but don't set mChanged
+// because the data is already the same as in ofPixels)
 void
 EntityData::loadMaterial(const ofFloatPixels::ConstPixels &scanline){
 	int i = 0;
@@ -176,11 +302,11 @@ EntityData::loadMaterial(const ofFloatPixels::ConstPixels &scanline){
 	}
 }
 
-// write data from this MaterialComponent object into pixels
+// write data from this EntityData object into pixels
 void
 EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_start){
 	int i=0;
-	for(int j=x_start; j<mMaterial.num_pixels; j++){
+	for(int j=x_start; j<mMaterial.NUM_PIXELS; j++){
 		ofFloatColor color;
 		
 		if(i == 0){
@@ -230,7 +356,7 @@ EntityData::copyTransform(const EntityData& other){
 
 const glm::mat4&
 EntityData::getTransformMatrix() const{
-	return mTransform.local_transform;
+	return mTransform.transform_matrix;
 }
 
 glm::vec3
@@ -250,8 +376,8 @@ EntityData::getScale() const{
 
 void
 EntityData::setTransformMatrix(const glm::mat4& mat){
-	mTransform.local_transform = mat;
-	decompose_matrix(mTransform.local_transform,
+	mTransform.transform_matrix = mat;
+	decompose_matrix(mTransform.transform_matrix,
 	                 mTransform.position, mTransform.orientation, mTransform.scale);
 	mChanged = true;
 }
@@ -280,128 +406,13 @@ EntityData::setScale(const glm::vec3& value){
 void
 EntityData::createMatrix(){
 	// based on openFrameworks/libs/openFrameworks/3d/ofNode.cpp:createMatrix()
-	glm::mat4 mat = mTransform.local_transform;
+	glm::mat4 mat = mTransform.transform_matrix;
 	
 	mat = glm::translate(glm::mat4(1.0), mTransform.position);
 	mat = mat * glm::toMat4(mTransform.orientation);
 	mat = glm::scale(mat, mTransform.scale);
 	
-	mTransform.local_transform = mat;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// attempt to load pixel data. return false on error.
-bool
-EntityData::load(const ofFloatPixels& pixels, int scanline_index){
-	// check number of channels (expecting RGBA format)
-	int channels = pixels.getNumChannels();
-	if(channels != 4){
-		ofLogError("EntityData") << "Expected image to have 4 channels (RGBA) but only found " << channels << " channels.";
-		
-		return false;
-	}
-	
-	// 
-	// load in the data
-	// 
-	
-	float mesh_index = pixels.getColor(0, scanline_index).r;
-	mMeshIndex = (int)mesh_index;
-	// if no mesh is assigned, ignore the rest of the data in this line
-	if(mMeshIndex == 0){
-		mActive = false;
-		return true;
-	}else{
-		mActive = true;
-	}
-	
-	
-	const ofFloatColor c1 = pixels.getColor(1, scanline_index);
-	const ofFloatColor c2 = pixels.getColor(2, scanline_index);
-	const ofFloatColor c3 = pixels.getColor(3, scanline_index);
-	const ofFloatColor c4 = pixels.getColor(4, scanline_index);
-	
-	this->setTransformMatrix( colors_to_mat4(c1, c2, c3, c4) );	
-	
-	
-	int starting_index = 5;
-	int num_pixels = mMaterial.num_pixels;
-	int max_num_material_pixels = pixels.getWidth() - starting_index;
-	
-	if(num_pixels > max_num_material_pixels){
-		ofLogError("EntityData") << "Too many pixels required to pack the material properties. Expected " << num_pixels << " pixels, but only found " << max_num_material_pixels << " pixels for material data in this image.";
-		
-		return false;
-	}
-	
-	this->loadMaterial( pixels.getConstLine(scanline_index).getPixels(starting_index, num_pixels) );
-	
-	
-	return true; // if you do all operations, there was no error
-}
-
-// return true if data was updated, else false
-bool
-EntityData::update(ofFloatPixels& pixels, int scanline_index){
-	if(mChanged){
-		// 
-		// write the data to the image
-		// 
-		ofFloatColor c;
-		c = pixels.getColor(0, scanline_index);
-			c.r = c.g = c.b = mMeshIndex;
-		pixels.setColor(0, scanline_index, c);
-		
-		
-		ofFloatColor c1, c2, c3, c4;
-		mat4_to_colors(this->getTransformMatrix(), &c1, &c2, &c3, &c4);
-		
-		pixels.setColor(1, scanline_index, c1);
-		pixels.setColor(2, scanline_index, c2);
-		pixels.setColor(3, scanline_index, c3);
-		pixels.setColor(4, scanline_index, c4);
-		
-		
-		int starting_index = 5;
-		int num_pixels = mMaterial.num_pixels;
-		int max_num_material_pixels = pixels.getWidth() - starting_index;
-		
-		if(num_pixels > max_num_material_pixels){
-			ofLogError("EntityData") << "Too many pixels required to pack the material properties. Requsted " << num_pixels << " pixels, but only have space for " << max_num_material_pixels << " pixels in this image.";
-			
-			return false;
-			// TODO: figure out some way to bail out of updating when there are not enough pixels
-		}
-		
-		this->updateMaterial(pixels, scanline_index, starting_index);
-		
-		
-		mChanged = false;
-		
-		return true;
-	}else{
-		return false;
-	}
+	mTransform.transform_matrix = mat;
 }
 
 
@@ -426,12 +437,12 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 
 
 EntityCache::EntityCache(int size){
-	mStorage = new EntityData[size];
+	mpStorage = new EntityData[size];
 	mSize = size;
 }
 
 EntityCache::~EntityCache(){
-	delete mStorage;
+	delete mpStorage;
 }
 
 // read from pixel data into cache
@@ -453,7 +464,7 @@ EntityCache::load(const ofFloatPixels& pixels){
 	// if the size is correct, then copy over all data into cache
 	for(int i=0; i<mSize; i++){
 		int scanline_index = i+1;
-		bool flag = mStorage[i].load(pixels, scanline_index);
+		bool flag = mpStorage[i].load(pixels, scanline_index);
 		if(flag){
 			ofLogError("EntityCache") <<  "Could not load entity data into cache. Problem parsing data on line " << scanline_index << "." << std::endl;
 			return false;
@@ -478,7 +489,7 @@ EntityCache::update(ofFloatPixels& pixels){
 	for(int i=0; i<mSize; i++){
 		int scanline_index = i+1;
 		
-		bool line_flag = mStorage[i].update(pixels, scanline_index);
+		bool line_flag = mpStorage[i].update(pixels, scanline_index);
 		
 		flag = flag || line_flag;
 	}
@@ -496,17 +507,25 @@ EntityCache::flush(ofFloatPixels& pixels){
 
 EntityData*
 EntityCache::getEntity(int index){
-	return &(mStorage[index]);
+	return &(mpStorage[index]);
 }
 
 // cache will mark an unused entry in the pool for use and return the index
 int
 EntityCache::createEntity(){
+	for(int i=0; i<mSize; i++){
+		if(!mpStorage[i].isActive()){ // find the first inactive EntityData object
+			mpStorage[i].initialize(); // should set mActive = true
+			return i;
+		}
+	}
 	
+	return -1;
 }
 
 // mark a used entry in the pool as no longer being used
-void EntityCache::destroyEntity(int index){
-	
+void
+EntityCache::destroyEntity(int index){
+	mpStorage[index].destroy();
 }
 

@@ -19,8 +19,14 @@
 
 class EntityData {
 public:
-	EntityData();
+	// EntityData();
 	// virtual ~EntityData(){};
+	
+	void initialize();
+	void destroy();
+	bool isActive() const;
+	bool load(const ofFloatPixels& pixels, int scanline_index); // attempt to load pixel data. return false on error.
+	bool update(ofFloatPixels& pixels, int scanline_index);
 	
 	int getMeshIndex() const;
 	void setMeshIndex(int mesh_index);
@@ -53,8 +59,6 @@ public:
 	void setScale(const glm::vec3& value);
 	void setTransformMatrix(const glm::mat4& mat);
 	
-	bool load(const ofFloatPixels& pixels, int scanline_index); // attempt to load pixel data. return false on error.
-	bool update(ofFloatPixels& pixels, int scanline_index);
 
 protected:
 	void createMatrix();
@@ -72,11 +76,11 @@ private:
 		glm::vec3 position;
 		glm::quat orientation;
 		glm::vec3 scale;
-		glm::mat4 local_transform;
+		glm::mat4 transform_matrix;
 	} mTransform;
 	
 	struct MaterialComponent {
-		int num_pixels = 4;
+		static const int NUM_PIXELS = 4;
 		
 		ofFloatColor ambient;
 		ofFloatColor diffuse;
@@ -105,5 +109,5 @@ public:
 	
 private:
 	int mSize;
-	EntityData* mStorage = nullptr;
+	EntityData* mpStorage = nullptr;
 };
