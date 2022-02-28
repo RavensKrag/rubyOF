@@ -31,7 +31,7 @@ EntityCache::load(const ofFloatPixels& pixels){
 	for(int i=0; i<mSize; i++){
 		int scanline_index = i+1;
 		bool flag = mpStorage[i].load(pixels, scanline_index);
-		if(flag){
+		if(!flag){
 			ofLogError("EntityCache") <<  "Could not load entity data into cache. Problem parsing data on line " << scanline_index << "." << std::endl;
 			return false;
 		}

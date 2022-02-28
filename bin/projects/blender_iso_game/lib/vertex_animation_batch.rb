@@ -76,8 +76,12 @@ class VertexAnimationBatch
     
     
     
+    # 
+    # cache allows easy manipulation of entity data in transform texture
+    # 
+    num_entities = @pixels[:transforms].height.to_i-1
+    @cache = RubyOF::Project::EntityCache.new(num_entities)
     
-    @cache = RubyOF::Project::EntityCache.new(@pixels[:transforms].height.to_i)
     @cache.load(@pixels[:transforms])
     
     
