@@ -2,7 +2,7 @@
 class VertexAnimationBatch
   include RubyOF::Graphics
   
-  attr_reader :transform_data
+  attr_reader :interface
   
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
@@ -77,26 +77,13 @@ class VertexAnimationBatch
     
     
     # 
-    # cache allows easy manipulation of entity data in transform texture
+    # allows easy manipulation of entity data in transform texture
+    # (uses EntityCache and EntityData, defined in C++)
     # 
-    num_entities = @pixels[:transforms].height.to_i-1
-    @cache = RubyOF::Project::EntityCache.new(num_entities)
-    
-    @cache.load(@pixels[:transforms])
-    
-    
-    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
-    json_string   = File.readlines(json_filepath).join("\n")
-    json_data     = JSON.parse(json_string)
-    
-    @json = json_data
-    # p @json["mesh_data_cache"]
-    
-    entity_idx = find_entity_by_name("CharacterTest")
-    
-    entity = @cache.getEntity(entity_idx)
+    @interface = QueryInterface.new(@pixels[:transforms])
+        
+    entity = @interface.find_entity_by_name("CharacterTest")
     p entity
-    
     
     
     
@@ -241,20 +228,62 @@ class VertexAnimationBatch
   
   
   
-  def find_entity_by_name(target_entity_name)
-    entity_idx = nil
+  
+  
+  class QueryInterface
     
-    @json["object_data_cache"].each_with_index do |data, i|
-      entity_name, mesh_name, material_name = data
+    def initialize(transform_texture)
+      # 
+      # cache allows easy manipulation of transform texture from Ruby
+      # 
       
-      if entity_name == target_entity_name
-        # p data
-        entity_idx = i
-        break
-      end
+      num_entities = transform_texture.height.to_i-1
+      @cache = RubyOF::Project::EntityCache.new(num_entities)
+      
+      @cache.load(transform_texture)
+      
+      
+      # 
+      # json data stores names of entities and meshes
+      # 
+      
+      json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
+      json_string   = File.readlines(json_filepath).join("\n")
+      json_data     = JSON.parse(json_string)
+      
+      @json = json_data
+      # p @json["mesh_data_cache"]
+      
     end
     
-    return entity_idx
+    def find_entity_by_name(target_entity_name)
+      entity_idx = entity_name_to_scanline(target_entity_name)
+      if entity_idx.nil?
+        raise "ERROR: Could not find any entity called '#{target_entity_name}'"
+      end
+      # p entity_idx
+      return @cache.getEntity(entity_idx)
+    end
+    
+    
+    private
+    
+    
+    def entity_name_to_scanline(target_entity_name)
+      entity_idx = nil
+      
+      @json["object_data_cache"].each_with_index do |data, i|
+        entity_name, mesh_name, material_name = data
+        
+        if entity_name == target_entity_name
+          # p data
+          entity_idx = i
+          break
+        end
+      end
+      
+      return entity_idx
+    end
   end
   
   
