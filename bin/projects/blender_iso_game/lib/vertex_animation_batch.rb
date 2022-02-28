@@ -81,6 +81,22 @@ class VertexAnimationBatch
     @cache.load(@pixels[:transforms])
     
     
+    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
+    json_string   = File.readlines(json_filepath).join("\n")
+    json_data     = JSON.parse(json_string)
+    
+    @json = json_data
+    # p @json["mesh_data_cache"]
+    
+    @json["object_data_cache"].each_with_index do |data, i|
+      entity_name, mesh_name, material_name = data
+      
+      if entity_name == "CharacterTest"
+        p data
+      end
+    end
+    
+    
     # # (will handle loading from disk into the pixels in this Ruby class, rather than delegating to some other C++ object)
     
     # # load from file
