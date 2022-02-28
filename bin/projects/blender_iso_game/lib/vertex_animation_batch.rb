@@ -75,11 +75,66 @@ class VertexAnimationBatch
     # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
     
     
-    # 
-    # query interface
-    # 
     
-    @transform_data = TransformData.new(@pixels[:transforms])
+    # 
+    # cache allows easy manipulation of entity data in transform texture
+    # 
+    num_entities = @pixels[:transforms].height.to_i-1
+    @cache = RubyOF::Project::EntityCache.new(num_entities)
+    
+    @cache.load(@pixels[:transforms])
+    
+    
+    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
+    json_string   = File.readlines(json_filepath).join("\n")
+    json_data     = JSON.parse(json_string)
+    
+    @json = json_data
+    # p @json["mesh_data_cache"]
+    
+    entity_idx = nil
+    @json["object_data_cache"].each_with_index do |data, i|
+      entity_name, mesh_name, material_name = data
+      
+      if entity_name == "CharacterTest"
+        p data
+        entity_idx = i
+        break
+      end
+    end
+    
+    p entity_idx
+    
+    entity = @cache.getEntity(entity_idx)
+    p entity
+    
+    
+    
+    
+    # # (will handle loading from disk into the pixels in this Ruby class, rather than delegating to some other C++ object)
+    
+    # # load from file
+    # load_transform_texture(transform_tex_path)
+    # load_vertex_textures(position_tex_path, normal_tex_path)
+    
+    
+    # # no saving to disk at this time - only Blender saves openEXR images
+    # # and then we just read it here to populate the initial state
+    
+    
+    # # copy entity data from pixels to texture
+    # send_entity_data_to_gpu()
+    #   @textures[:transforms].load_data(@pixels[:transforms])
+    
+    # # copy mesh data from pixels to texture
+    # send_mesh_data_to_gpu()
+    #   @textures[:positions].load_data(@pixels[:positions])
+    #   @textures[:normals].load_data(@pixels[:normals])
+    
+    
+    # # @cache.updateMaterial(material_name, material_properties)
+    # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
+    
   end
   
   def draw_scene
@@ -132,81 +187,7 @@ class VertexAnimationBatch
   end
   
   
-  def get_entity_transform(i)
-    # # pull colors out of image on CPU side
-    # # similar to how the shader pulls data out on the GPU side
-    
-    # v1 = @pixels[:transforms].color_at(1, i)
-    # v2 = @pixels[:transforms].color_at(2, i)
-    # v3 = @pixels[:transforms].color_at(3, i)
-    # v4 = @pixels[:transforms].color_at(4, i)
-    
-    # mat = GLM::Mat4.new(GLM::Vec4.new(v1.r, v2.r, v3.r, v4.r),
-    #                     GLM::Vec4.new(v1.g, v2.g, v3.g, v4.g),
-    #                     GLM::Vec4.new(v1.b, v2.b, v3.b, v4.b),
-    #                     GLM::Vec4.new(v1.a, v2.a, v3.a, v4.a));
-    
-    mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels[:transforms], i)
-    
-    return mat
-  end
   
-  def set_entity_transform(i, mat)
-    # # 
-    # # convert mat4 transform data back to color data
-    # # 
-    # mv0 = mat[0]
-    # mv1 = mat[1]
-    # mv2 = mat[2]
-    # mv3 = mat[3]
-    
-    # # v1.r = mat[0][0]
-    # # v1.g = mat[1][0]
-    # # v1.b = mat[2][0]
-    # # v1.a = mat[3][0]
-    
-    # c1 = RubyOF::FloatColor.rgba([mv0[0], mv1[0], mv2[0], mv3[0]])
-    # c2 = RubyOF::FloatColor.rgba([mv0[1], mv1[1], mv2[1], mv3[1]])
-    # c3 = RubyOF::FloatColor.rgba([mv0[2], mv1[2], mv2[2], mv3[2]])
-    # c4 = RubyOF::FloatColor.rgba([mv0[3], mv1[3], mv2[3], mv3[3]])
-    
-    
-    # # 
-    # # write colors on the CPU
-    # # 
-    # v1 = @pixels[:transforms].setColor(1, i, c1)
-    # v2 = @pixels[:transforms].setColor(2, i, c2)
-    # v3 = @pixels[:transforms].setColor(3, i, c3)
-    # v4 = @pixels[:transforms].setColor(4, i, c4)
-    
-    # # 
-    # # transfer color data to the GPU
-    # # 
-    # @textures[:transforms].load_data(@pixels[:transforms])
-    
-    RubyOF::CPP_Callbacks.set_entity_transform(
-      @pixels[:transforms], i, mat, @textures[:transforms]
-    )
-    
-    return self
-  end
-  
-  def mutate_entity_transform(i) # &block
-    transform = self.get_entity_transform(i)
-    
-      transform = yield transform
-    
-    self.set_entity_transform(i, transform)
-  end
-  
-  # called by BlenderSync when moving mesh objects by direct manipulation
-  def set_entity_transform_array(i, nested_array)
-    RubyOF::CPP_Callbacks.set_entity_transform_array(
-      @pixels[:transforms], i, nested_array.flatten, @textures[:transforms]
-    )
-    
-    return self
-  end
   
   
   def load_transform_texture(transform_tex_path)
@@ -268,48 +249,206 @@ class VertexAnimationBatch
   
   
   
+  # # Does an object with this name exist in the texture?
+  # # ( based on code from __object_name_to_scanline() )
+  # def includes_entity?(entity_name)
+    
+  # end
   
-  class TransformData
-    FIELDS = [:mesh_id, :position, :rotation, :scale, :ambient, :diffuse, :specular, :emmissive]
+  
+  
+  # # Does a mesh with this name exist in the texture?
+  # # (more important on the ruby side, but also helpful to optimize export)
+  # # 
+  # # mesh_name : string
+  # def includes_mesh?(mesh_name)
+  #   return (mesh_name in self.mesh_data_cache)
+  # end
+  
+  
+  
+  
+  # def get_entity_mesh(entity_name)
+  #   # + read pixel data from Image
+  #   # + convert mesh_index to mesh_name using data from json file
+  #   # + return mesh_name
     
-    def initialize(pixels)
-      @pixels = pixels
-    end
+  #   # return mesh_name
+  # end
+  
+  # def get_entity_transform(entity_name)
+  #   i = entity_name_to_scanline(entity_name)
+  #   mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels[:transforms], i)
     
-    # what fields can you ask for in #query?
-    def fields
-      return FIELDS
-    end
+  #   return mat
+  # end
+  
+  # def get_entity_material(entity_name)
+  #   # c1    = material.rb_mat.ambient
+  #   # c2    = material.rb_mat.diffuse
+  #   # c3    = material.rb_mat.specular
+  #   # c4    = material.rb_mat.emissive
+  #   # alpha = material.rb_mat.alpha
     
-    # run a query (like a database) and pull out the desired fields.
-    # returns an Array, where each entry has the values of the desired fields.
+  #   # return [c1, c2, c3, c4, alpha]
+  # end
+  
+
+  
+  # # Specify the mesh to use for a given object @ t=0 (initial condition)
+  # # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
+  # # (3 channels have the same data; helps with visualization of the texture)
+  # # This mapping will be changed by ruby code during game execution,
+  # # by dynamically editing the texture in memory. However, the texture
+  # # on disk will change if and only if the initial condition changes.
+  # # Raise exception if no mesh with the given name has been exported yet.
+  # # 
+  # # entity_name  : string
+  # # mesh_name : string ( mesh with this name must already exist )
+  # def set_entity_mesh(entity_name, mesh_name)
+  #   # 
+  #   # convert mesh name data back to color data
+  #   # 
+  #   mesh_index = mesh_name_to_index(mesh_name)
+  #   c1 = RubyOF::FloatColor.rgba([mesh_index, mesh_index, mesh_index, 1.0])
+    
+  #   # 
+  #   # write colors on the CPU
+  #   # 
+  #   i = entity_name_to_scanline(entity_name)
+  #   v1 = @pixels[:transforms].setColor(0, i, c1)
+  # end
+  
+  
+  # # Pack 4x4 transformation matrix for an object into 4 pixels
+  # # of data in the object transform texture.
+  # # 
+  # # entity_name  : string
+  # # transform : 4x4 transform matrix
+  # def set_entity_transform(entity_name, transform)
+  #   i = entity_name_to_scanline(entity_name)
+    
+  #   RubyOF::CPP_Callbacks.set_entity_transform(
+  #     @pixels[:transforms], i, transform.to_mat4, @textures[:transforms]
+  #   )
+    
+  #   return self
+  # end
+  
+  
+  # # Bind object to a particular material,
+  # # and pack material data into 4 pixels in the object transform texture.
+  # # 
+  # # entity_name : string
+  # # material : blender material datablock, containing RubyOF material
+  # def set_entity_material(entity_name, material)
+  #   # 
+  #   # convert material data back to color data
+  #   # 
+    
+  #   c1 = RubyOF::FloatColor.rgba(material.ambient.to_a + [1.0])
+  #   c2 = RubyOF::FloatColor.rgba(material.diffuse.to_a + [material.alpha])
+  #   c3 = RubyOF::FloatColor.rgba(material.specular.to_a + [1.0])
+  #   c4 = RubyOF::FloatColor.rgba(material.emissive.to_a + [1.0])
+    
+  #   # 
+  #   # write colors on the CPU
+  #   # 
+  #   i = entity_name_to_scanline(entity_name)
+  #   v1 = @pixels[:transforms].setColor(5, i, c1)
+  #   v2 = @pixels[:transforms].setColor(6, i, c2)
+  #   v3 = @pixels[:transforms].setColor(7, i, c3)
+  #   v4 = @pixels[:transforms].setColor(8, i, c4)
+    
+  #   # TODO: rename "transforms" texture and pixels to "entity" or "object" instead
+    
+  # end
+  
+  
+  # # Update material properties for all objects that use the given material.
+  # # ( must have previously bound material using set_object_material() )
+  # # 
+  # # material : blender material datablock, containing RubyOF material
+  # def update_material(material)
+    
+  # end
+  
+  
+  # # Remove object from the transform texture.
+  # # No good way right now to "garbage collect" unused mesh data.
+  # # For now, that data will continue to exist in the mesh data textures,
+  # # and will only be cleared out on a "clean build" of all data.
+  # # 
+  # # obj_name : string
+  # def delete_object(obj_name)
+    
+  # end
+  
+  
+  def update_textures
     # 
-    # ex) self.transform_data.query(:mesh_id, :position)
-    #     => [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
-    def query(*query_fields)
-      # # convert symbols to integers
-      # query_i = query_fields.collect{|field|  FIELD_TO_INDEX[field] }
-      
-      # # error checking
-      # if query_i.any?{|x| x.nil? }
-      #   raise "Unknown field specified in query."
-      # end
-      
-      
-      # p query_fields
-      
-      # run actual query at C++ level
-      table = RubyOF::CPP_Callbacks.query_transform_pixels(@pixels)
-      
-      table.collect do |data|
-        map = FIELDS.zip(data).to_h
-        
-        query_fields.collect{ |field|  map[field] }
-      end
-      
-    end
-    
+    # transfer color data to the GPU
+    # 
+    @textures[:transforms].load_data(@pixels[:transforms])
+  end
+  
+  
+  # 
+  # serialization
+  # 
+  
+  def save
     
   end
+      
+      
+  def load
+    
+  end
+
+  
+  
+  private
+  
+  
+  def entity_name_to_scanline(entity_name)
+    
+  end
+  
+  def entity_scanline_to_name(entity_index)
+    
+  end
+  
+  def mesh_name_to_scanline(mesh_name)
+    
+  end
+  
+  def mesh_scanline_to_name(mesh_index)
+    
+  end
+  
+  
+  
+  # only in Ruby API
+  def mesh_name_to_index(mesh_name)
+    
+  end
+  
+  # only in Ruby API
+  def mesh_index_to_name(mesh_index)
+    
+  end
+  
+  
+  
+  # called by BlenderSync when moving mesh objects by direct manipulation
+  def set_entity_transform_array(i, nested_array)
+    RubyOF::CPP_Callbacks.set_entity_transform_array(
+      @pixels[:transforms], i, nested_array.flatten, @textures[:transforms]
+    )
+    
+    return self
+  end
+  
   
 end

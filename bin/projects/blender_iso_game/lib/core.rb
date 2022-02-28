@@ -112,6 +112,11 @@ load LIB_DIR/'vertex_animation_batch.rb'
 load LIB_DIR/'frame_history.rb'
 
 
+
+
+
+
+
 class Space
   def initialize(environment, tile_id_to_name)
     @env = environment
@@ -283,12 +288,12 @@ class Core
     
     @frame_history = FrameHistory.new(self)
     
-    @entity_map_file = data_dir/'entity_map.yaml'
-    @entity_name_to_id = YAML.load_file @entity_map_file
+    # @entity_map_file = data_dir/'entity_map.yaml'
+    # @entity_name_to_id = YAML.load_file @entity_map_file
     
     
-    @mesh_id_map_file = data_dir/'mesh_map.yaml'
-    @mesh_id_to_name = YAML.load_file @mesh_id_map_file
+    # @mesh_id_map_file = data_dir/'mesh_map.yaml'
+    # @mesh_id_to_name = YAML.load_file @mesh_id_map_file
     
     
     
