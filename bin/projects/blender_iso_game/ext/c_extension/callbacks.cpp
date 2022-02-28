@@ -1605,9 +1605,24 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
 
 
 
+
+
+
+template<typename T>
+Rice::Data_Object<T> cpp_owned_rice_data(T * raw_ptr) {
+	Rice::Data_Object<T> rb_cPtr(
+		raw_ptr,
+		Rice::Data_Type< T >::klass(),
+		Rice::Default_Mark_Function< T >::mark,
+		Null_Free_Function< T >::free
+	);
+	
+	return rb_cPtr;
+}
+
+
 #include "EntityData.h"
 #include "EntityCache.h"
-
 
 void wrap_EntityData(Module rb_mProject){
 	Data_Type<EntityData> rb_c_EntityData = 
@@ -1658,6 +1673,14 @@ void wrap_EntityData(Module rb_mProject){
 	;
 }
 
+
+
+Rice::Data_Object<EntityData>
+EntityCache__getEntity(EntityCache& obj, int index){
+	EntityData* raw_ptr = obj.getEntity(index);
+	return cpp_owned_rice_data<EntityData>(raw_ptr);
+}
+
 void wrap_EntityCache(Module rb_mProject){
 	Data_Type<EntityCache> rb_c_EntityCache = 
       define_class_under<EntityCache>(rb_mProject, "EntityCache");
@@ -1666,13 +1689,12 @@ void wrap_EntityCache(Module rb_mProject){
 		.define_constructor(Constructor<EntityCache, int>(),
 			(Arg("size"))
 		)
-			
+		
 		.define_method("load",           &EntityCache::load)
 		.define_method("update",         &EntityCache::update)
 		.define_method("flush",          &EntityCache::flush)
 		
-		.define_method("getEntity",      &EntityCache::getEntity)
-		// TODO: ^ need custom glue code s.t. C++ manages memory, not ruby
+		.define_method("getEntity",      &EntityCache__getEntity)
 		
 		.define_method("createEntity",   &EntityCache::createEntity)
 		.define_method("destroyEntity",  &EntityCache::destroyEntity)
