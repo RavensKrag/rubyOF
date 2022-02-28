@@ -77,8 +77,8 @@ class VertexAnimationBatch
     
     
     
-    @cache = RubyOF::Project::EntityCache.new(@textures[:positions].height.to_i)
-    
+    @cache = RubyOF::Project::EntityCache.new(@pixels[:transforms].height.to_i)
+    @cache.load(@pixels[:transforms])
     
     
     # # (will handle loading from disk into the pixels in this Ruby class, rather than delegating to some other C++ object)
