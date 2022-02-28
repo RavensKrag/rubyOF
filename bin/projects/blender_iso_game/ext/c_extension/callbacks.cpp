@@ -1605,6 +1605,24 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
 
 
 
+#include "EntityData.h"
+#include "EntityCache.h"
+
+
+void wrap_EntityData(Module rb_mProject){
+	Data_Type<EntityData> rb_c_EntityData = 
+      define_class_under<EntityData>(rb_mProject, "EntityData");
+	
+	
+}
+
+void wrap_EntityCache(Module rb_mProject){
+	Data_Type<EntityCache> rb_c_EntityCache = 
+      define_class_under<EntityCache>(rb_mProject, "EntityCache");
+	
+	
+}
+
 
 
 
@@ -1787,6 +1805,8 @@ void Init_rubyOF_project()
 	;
 	
 	
+	wrap_EntityCache(rb_mProject);
+	wrap_EntityData(rb_mProject);
 	
 	
 	
