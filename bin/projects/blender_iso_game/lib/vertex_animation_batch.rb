@@ -80,7 +80,10 @@ class VertexAnimationBatch
     # allows easy manipulation of entity data in transform texture
     # (uses EntityCache and EntityData, defined in C++)
     # 
-    @interface = QueryInterface.new(@pixels[:transforms])
+    @interface = QueryInterface.new(
+      @pixels[:transforms],
+      PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
+    )
         
     entity = @interface.find_entity_by_name("CharacterTest")
     p entity
@@ -232,7 +235,7 @@ class VertexAnimationBatch
   
   class QueryInterface
     
-    def initialize(transform_texture)
+    def initialize(transform_texture, json_filepath)
       # 
       # cache allows easy manipulation of transform texture from Ruby
       # 
@@ -247,7 +250,6 @@ class VertexAnimationBatch
       # json data stores names of entities and meshes
       # 
       
-      json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
       json_string   = File.readlines(json_filepath).join("\n")
       json_data     = JSON.parse(json_string)
       
