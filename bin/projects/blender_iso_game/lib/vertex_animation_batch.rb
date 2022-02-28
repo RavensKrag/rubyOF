@@ -92,18 +92,7 @@ class VertexAnimationBatch
     @json = json_data
     # p @json["mesh_data_cache"]
     
-    entity_idx = nil
-    @json["object_data_cache"].each_with_index do |data, i|
-      entity_name, mesh_name, material_name = data
-      
-      if entity_name == "CharacterTest"
-        p data
-        entity_idx = i
-        break
-      end
-    end
-    
-    p entity_idx
+    entity_idx = find_entity_by_name("CharacterTest")
     
     entity = @cache.getEntity(entity_idx)
     p entity
@@ -245,6 +234,27 @@ class VertexAnimationBatch
       
       texture.load_data(pixels)
     end
+  end
+  
+  
+  
+  
+  
+  
+  def find_entity_by_name(target_entity_name)
+    entity_idx = nil
+    
+    @json["object_data_cache"].each_with_index do |data, i|
+      entity_name, mesh_name, material_name = data
+      
+      if entity_name == target_entity_name
+        # p data
+        entity_idx = i
+        break
+      end
+    end
+    
+    return entity_idx
   end
   
   
