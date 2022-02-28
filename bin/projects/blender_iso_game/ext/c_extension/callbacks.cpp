@@ -1613,14 +1613,70 @@ void wrap_EntityData(Module rb_mProject){
 	Data_Type<EntityData> rb_c_EntityData = 
       define_class_under<EntityData>(rb_mProject, "EntityData");
 	
-	
+	rb_c_EntityData
+		.define_constructor(Constructor<EntityData>())
+		
+		
+		.define_method("initialize",      &EntityData::initialize)
+		.define_method("destroy",         &EntityData::destroy)
+		.define_method("active?",         &EntityData::isActive)
+		.define_method("load",            &EntityData::load)
+		.define_method("update",          &EntityData::update)
+		
+		.define_method("mesh_index",      &EntityData::getMeshIndex)
+		.define_method("mesh_index=",     &EntityData::setMeshIndex)
+		
+		
+		.define_method("copy_material", &EntityData::copyMaterial)
+		
+		.define_method("ambient",       &EntityData::getAmbient)
+		.define_method("diffuse",       &EntityData::getDiffuse)
+		.define_method("specular",      &EntityData::getSpecular)
+		.define_method("emissive",      &EntityData::getEmissive)
+		.define_method("alpha",         &EntityData::getAlpha)
+		
+		.define_method("ambient=",      &EntityData::setAmbient)
+		.define_method("diffuse=",      &EntityData::setDiffuse)
+		.define_method("specular=",     &EntityData::setSpecular)
+		.define_method("emissive=",     &EntityData::setEmissive)
+		.define_method("alpha=",        &EntityData::setAlpha)
+		
+		
+		.define_method("copy_transform",    &EntityData::copyTransform)
+		
+		.define_method("position",          &EntityData::getPosition)
+		.define_method("orientation",       &EntityData::getOrientation)
+		.define_method("scale",             &EntityData::getScale)
+		.define_method("transform_matrix",  &EntityData::getTransformMatrix)
+		
+		.define_method("position=",         &EntityData::setPosition)
+		.define_method("orientation=",      &EntityData::setOrientation)
+		.define_method("scale=",            &EntityData::setScale)
+		.define_method("transform_matrix=", &EntityData::setTransformMatrix)
+
+		
+	;
 }
 
 void wrap_EntityCache(Module rb_mProject){
 	Data_Type<EntityCache> rb_c_EntityCache = 
       define_class_under<EntityCache>(rb_mProject, "EntityCache");
 	
-	
+	rb_c_EntityCache
+		.define_constructor(Constructor<EntityCache, int>(),
+			(Arg("size"))
+		)
+			
+		.define_method("load",           &EntityCache::load)
+		.define_method("update",         &EntityCache::update)
+		.define_method("flush",          &EntityCache::flush)
+		
+		.define_method("getEntity",      &EntityCache::getEntity)
+		// TODO: ^ need custom glue code s.t. C++ manages memory, not ruby
+		
+		.define_method("createEntity",   &EntityCache::createEntity)
+		.define_method("destroyEntity",  &EntityCache::destroyEntity)
+	;
 }
 
 
