@@ -441,21 +441,25 @@ class Core
   # handle update messages from BlenderSync
   # 
   
-  def update_entity_mapping(message)
-    # p message['value']
-    @entity_name_to_id = message['value']
-    
-    dump_yaml @entity_name_to_id => @entity_map_file
-    
+  def update_animation_json(json_filepath)
+    p json_filepath
   end
   
-  def update_mesh_mapping(message)
-    mapping = message['value']
+  # def update_entity_mapping(message)
+  #   # p message['value']
+  #   @entity_name_to_id = message['value']
     
-    @mesh_id_to_name = mapping
+  #   dump_yaml @entity_name_to_id => @entity_map_file
     
-    dump_yaml @mesh_id_to_name => @mesh_id_map_file
-  end
+  # end
+  
+  # def update_mesh_mapping(message)
+  #   mapping = message['value']
+    
+  #   @mesh_id_to_name = mapping
+    
+  #   dump_yaml @mesh_id_to_name => @mesh_id_map_file
+  # end
   
   
   

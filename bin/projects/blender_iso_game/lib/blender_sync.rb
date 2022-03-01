@@ -426,12 +426,11 @@ class BlenderSync
       # p message
       parse_timeline_commands(message)
     
-    when 'object_to_id_map'
-      @core.update_entity_mapping(message)
-    
-    when 'meshID_to_meshName'
-      @core.update_mesh_mapping(message)
-    
+    when 'update_anim_json'
+      @core.update_animation_json(message['value'])
+      
+      # @core.update_entity_mapping(message)
+      # @core.update_mesh_mapping(message)
     
     when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
       

@@ -175,24 +175,19 @@ class Exporter():
         
         
         # 
-        # export name -> index mappings
+        # notify ruby that the JSON cache is updated
+        # (ruby uses this to perform queries based on name or spatial location)
         # 
-            
-        data = {
-            'type': 'entity_name_map',
-            'value': tex_manager.get_object_name_map(),
-        }
-        
-        self.to_ruby.write(json.dumps(data))
         
         data = {
-            'type': 'mesh_name_map',
-            'value': tex_manager.get_mesh_name_map(),
+            'type': 'update_anim_json',
+            'value': tex_manager.get_json_filepath(),
         }
         
         self.to_ruby.write(json.dumps(data))
         
         context = yield( task_count / total_tasks )
+        
         
         
         # 
