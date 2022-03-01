@@ -108,8 +108,8 @@ class World
     # 
     @data = DataInterface.new(@cache, @json)
     
-    entity = @data.find_entity_by_name("CharacterTest")
-    p entity
+    # entity = @data.find_entity_by_name("CharacterTest")
+    # p entity
     
     
     
@@ -135,6 +135,12 @@ class World
     update_textures() if was_updated
   end
   
+  def update_textures
+    # 
+    # transfer color data to the GPU
+    # 
+    @textures[:transforms].load_data(@pixels[:transforms])
+  end
   
   
   
@@ -255,11 +261,13 @@ class World
   class Entity
     extend Forwardable
     
-    attr_reader: :name
+    attr_reader :name
     
-    def initialize(name, entity_data)
+    def initialize(name, entity_data, mesh)
       @name = name
       @entity_data = entity_data
+      
+      @mesh = mesh # instance of the Mesh struct below
     end
     
     def_delegators :@entity_data, 
@@ -292,6 +300,11 @@ class World
       # end
       
       @entity_data.mesh_index = mesh.index
+      @mesh = mesh
+    end
+    
+    def mesh
+      return @mesh
     end
   end
   
@@ -310,21 +323,49 @@ class World
     
     def find_entity_by_name(target_entity_name)
       entity_idx = entity_name_to_scanline(target_entity_name)
+      
       if entity_idx.nil?
         raise "ERROR: Could not find any entity called '#{target_entity_name}'"
       end
       # p entity_idx
-      return Entity.new(target_entity_name, @cache.getEntity(entity_idx))
+      
+      entity_ptr = @cache.get_entity(entity_idx)
+      mesh_name = @json['mesh_data_cache'][entity_ptr.mesh_index]
+      mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
+      
+      entity_obj = Entity.new(target_entity_name, entity_ptr, mesh_obj)
+      
+      return entity_obj
     end
     
     def find_mesh_by_name(target_mesh_name)
-      mesh_idx = entity_name_to_scanline(target_mesh_name)
+      mesh_idx = mesh_name_to_scanline(target_mesh_name)
+      
       if mesh_idx.nil?
         raise "ERROR: Could not find any mesh called '#{target_mesh_name}'"
       end
       # p mesh_idx
       
       return Mesh.new(target_mesh_name, mesh_idx)
+    end
+    
+    def each # &block
+      return enum_for(:each) unless block_given?
+      
+      @cache.size.times do |i|
+        entity_ptr = @cache.get_entity(i)
+        
+        if entity_ptr.active?
+          entity_name, mesh_name, material_name =  @json['object_data_cache'][i]
+          
+          mesh_name = @json['mesh_data_cache'][entity_ptr.mesh_index]
+          mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
+          
+          entity_obj = Entity.new(entity_name, entity_ptr, mesh_obj)
+          
+          yield entity_obj
+        end
+      end
     end
     
     
@@ -377,10 +418,10 @@ class World
       
       
       @entity_list =
-        @data.transform_data
-        .query(:mesh_id, :position)
-        .reject{   |i, pos|   i == 0  }
-        .collect{  |i, pos|   [@json['mesh_data_cache'][i], pos] }
+        @data.each
+        .collect do |entity|
+          [entity.mesh.name, entity.position]
+        end
       
       # p @entity_list
       
@@ -411,14 +452,6 @@ class World
     end
   end
   
-  
-  
-  def update_textures
-    # 
-    # transfer color data to the GPU
-    # 
-    @textures[:transforms].load_data(@pixels[:transforms])
-  end
   
   
   # # Does an object with this name exist in the texture?
