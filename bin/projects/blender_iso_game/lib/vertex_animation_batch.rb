@@ -247,7 +247,7 @@ class VertexAnimationBatch
       
       
       # 
-      # json data stores names of entities and meshes
+      # json data stores names of entities, meshes, and materials
       # 
       
       json_string   = File.readlines(json_filepath).join("\n")
