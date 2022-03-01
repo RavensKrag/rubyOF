@@ -1,8 +1,8 @@
 
-class VertexAnimationBatch
+class World
   include RubyOF::Graphics
   
-  attr_reader :interface
+  attr_reader :data, :space
   
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
@@ -76,45 +76,67 @@ class VertexAnimationBatch
     
     
     
+    
+    # 
+    # cache allows easy manipulation of transform texture from Ruby
+    # 
+    @pixels[:transforms].tap do |transform_texture|
+      num_entities = transform_texture.height.to_i-1
+      @cache = RubyOF::Project::EntityCache.new(num_entities)
+      
+      @cache.load(transform_texture)
+    end
+    
+    
+    # 
+    # json data stores names of entities, meshes, and materials
+    # 
+    
+    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
+    json_string   = File.readlines(json_filepath).join("\n")
+    json_data     = JSON.parse(json_string)
+    
+    @json = json_data
+    # p @json["mesh_data_cache"]
+    
+    
+    
+    
     # 
     # allows easy manipulation of entity data in transform texture
     # (uses EntityCache and EntityData, defined in C++)
     # 
-    @interface = QueryInterface.new(
-      @pixels[:transforms],
-      PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
-    )
-        
-    entity = @interface.find_entity_by_name("CharacterTest")
+    @data = DataInterface.new(@cache, @json)
+    
+    entity = @data.find_entity_by_name("CharacterTest")
     p entity
     
     
     
-    # # (will handle loading from disk into the pixels in this Ruby class, rather than delegating to some other C++ object)
-    
-    # # load from file
-    # load_transform_texture(transform_tex_path)
-    # load_vertex_textures(position_tex_path, normal_tex_path)
-    
-    
-    # # no saving to disk at this time - only Blender saves openEXR images
-    # # and then we just read it here to populate the initial state
+    # 
+    # allows for spatial queries
+    # 
+    @space = Space.new(@data, @json)
+    # TODO: regenerate space when project reloads
     
     
-    # # copy entity data from pixels to texture
-    # send_entity_data_to_gpu()
-    #   @textures[:transforms].load_data(@pixels[:transforms])
-    
-    # # copy mesh data from pixels to texture
-    # send_mesh_data_to_gpu()
-    #   @textures[:positions].load_data(@pixels[:positions])
-    #   @textures[:normals].load_data(@pixels[:normals])
     
     
     # # @cache.updateMaterial(material_name, material_properties)
     # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
     
   end
+  
+  
+  
+  def update
+    was_updated = @cache.update(@pixels[:transforms])
+    # TODO: ^ update this to return something I can use as an error code if something went wrong in the update
+    update_textures() if was_updated
+  end
+  
+  
+  
   
   def draw_scene
     @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
@@ -230,32 +252,60 @@ class VertexAnimationBatch
   
   
   
-  
-  
-  
-  class QueryInterface
+  class Entity
+    extend Forwardable
     
-    def initialize(transform_texture, json_filepath)
-      # 
-      # cache allows easy manipulation of transform texture from Ruby
-      # 
+    attr_reader: :name
+    
+    def initialize(name, entity_data)
+      @name = name
+      @entity_data = entity_data
+    end
+    
+    def_delegators :@entity_data, 
+      :copy_material,
+      :ambient,
+      :diffuse,
+      :specular,
+      :emissive,
+      :alpha,
+      :ambient=,
+      :diffuse=,
+      :specular=,
+      :emissive=,
+      :alpha=
+    
+    def_delegators :@entity_data,
+      :copy_transform,
+      :position,
+      :orientation,
+      :scale,
+      :transform_matrix,
+      :position=,
+      :orientation=,
+      :scale=,
+      :transform_matrix=
+    
+    def mesh=(mesh)
+      # if mesh.sheet != @data.sheet
+      #   raise "ERROR: Can not assign mesh from a different spritesheet"
+      # end
       
-      num_entities = transform_texture.height.to_i-1
-      @cache = RubyOF::Project::EntityCache.new(num_entities)
-      
-      @cache.load(transform_texture)
-      
-      
-      # 
-      # json data stores names of entities, meshes, and materials
-      # 
-      
-      json_string   = File.readlines(json_filepath).join("\n")
-      json_data     = JSON.parse(json_string)
-      
-      @json = json_data
-      # p @json["mesh_data_cache"]
-      
+      @entity_data.mesh_index = mesh.index
+    end
+  end
+  
+  
+  Mesh = Struct.new(:name, :index)
+  # index only can be interpreted within some spritesheet,
+  # so need some way to make sure we're on the right sheet
+  
+  
+  class DataInterface
+    
+    def initialize(cache, json)
+      @cache = cache
+      @json = json
     end
     
     def find_entity_by_name(target_entity_name)
@@ -264,7 +314,17 @@ class VertexAnimationBatch
         raise "ERROR: Could not find any entity called '#{target_entity_name}'"
       end
       # p entity_idx
-      return @cache.getEntity(entity_idx)
+      return Entity.new(target_entity_name, @cache.getEntity(entity_idx))
+    end
+    
+    def find_mesh_by_name(target_mesh_name)
+      mesh_idx = entity_name_to_scanline(target_mesh_name)
+      if mesh_idx.nil?
+        raise "ERROR: Could not find any mesh called '#{target_mesh_name}'"
+      end
+      # p mesh_idx
+      
+      return Mesh.new(target_mesh_name, mesh_idx)
     end
     
     
@@ -274,7 +334,8 @@ class VertexAnimationBatch
     def entity_name_to_scanline(target_entity_name)
       entity_idx = nil
       
-      @json["object_data_cache"].each_with_index do |data, i|
+      # TODO: try using #find_index instead
+      @json['object_data_cache'].each_with_index do |data, i|
         entity_name, mesh_name, material_name = data
         
         if entity_name == target_entity_name
@@ -286,8 +347,78 @@ class VertexAnimationBatch
       
       return entity_idx
     end
+    
+    def mesh_name_to_scanline(target_mesh_name)
+      mesh_idx = nil
+      
+      # TODO: try using #find_index instead
+      @json['mesh_data_cache'].each_with_index do |mesh_name, i|
+        if mesh_name == target_mesh_name
+          # p data
+          mesh_idx = i
+          break
+        end
+      end
+      
+      return mesh_idx
+    end
+    
   end
   
+  
+  class Space
+    def initialize(data, json)
+      @data = data
+      @json = json
+      
+      
+      @hash = Hash.new
+      
+      
+      
+      @entity_list =
+        @data.transform_data
+        .query(:mesh_id, :position)
+        .reject{   |i, pos|   i == 0  }
+        .collect{  |i, pos|   [@json['mesh_data_cache'][i], pos] }
+      
+      # p @entity_list
+      
+      # @entity_list.each do |name, pos|
+      #   puts "#{name}, #{pos}"
+      # end
+      
+    end
+    
+    # what type of tile is located at the point 'pt'?
+    # Returns a list of title types (mesh datablock names)
+    def point_query(pt)
+      puts "point query @ #{pt}"
+      
+      # unless @first
+      #   require 'irb'
+      #   binding.irb
+      # end
+      
+      # @first ||= true
+      
+      out = @entity_list.select{   |name, pos|   pos == pt  }
+                        .collect{  |name, pos|   name  }
+      
+      puts "=> #{out.inspect}"
+      
+      return out
+    end
+  end
+  
+  
+  
+  def update_textures
+    # 
+    # transfer color data to the GPU
+    # 
+    @textures[:transforms].load_data(@pixels[:transforms])
+  end
   
   
   # # Does an object with this name exist in the texture?
@@ -309,32 +440,6 @@ class VertexAnimationBatch
   
   
   
-  # def get_entity_mesh(entity_name)
-  #   # + read pixel data from Image
-  #   # + convert mesh_index to mesh_name using data from json file
-  #   # + return mesh_name
-    
-  #   # return mesh_name
-  # end
-  
-  # def get_entity_transform(entity_name)
-  #   i = entity_name_to_scanline(entity_name)
-  #   mat = RubyOF::CPP_Callbacks.get_entity_transform(@pixels[:transforms], i)
-    
-  #   return mat
-  # end
-  
-  # def get_entity_material(entity_name)
-  #   # c1    = material.rb_mat.ambient
-  #   # c2    = material.rb_mat.diffuse
-  #   # c3    = material.rb_mat.specular
-  #   # c4    = material.rb_mat.emissive
-  #   # alpha = material.rb_mat.alpha
-    
-  #   # return [c1, c2, c3, c4, alpha]
-  # end
-  
-
   
   # # Specify the mesh to use for a given object @ t=0 (initial condition)
   # # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
@@ -426,13 +531,6 @@ class VertexAnimationBatch
   # end
   
   
-  def update_textures
-    # 
-    # transfer color data to the GPU
-    # 
-    @textures[:transforms].load_data(@pixels[:transforms])
-  end
-  
   
   # 
   # serialization
@@ -450,35 +548,6 @@ class VertexAnimationBatch
   
   
   private
-  
-  
-  def entity_name_to_scanline(entity_name)
-    
-  end
-  
-  def entity_scanline_to_name(entity_index)
-    
-  end
-  
-  def mesh_name_to_scanline(mesh_name)
-    
-  end
-  
-  def mesh_scanline_to_name(mesh_index)
-    
-  end
-  
-  
-  
-  # only in Ruby API
-  def mesh_name_to_index(mesh_name)
-    
-  end
-  
-  # only in Ruby API
-  def mesh_index_to_name(mesh_index)
-    
-  end
   
   
   

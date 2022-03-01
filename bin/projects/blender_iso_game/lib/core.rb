@@ -108,7 +108,7 @@ load LIB_DIR/'blender_sync.rb'
 
 load LIB_DIR/'oit_render_pipeline.rb'
 
-load LIB_DIR/'vertex_animation_batch.rb'
+load LIB_DIR/'world.rb'
 load LIB_DIR/'frame_history.rb'
 
 
@@ -116,60 +116,6 @@ load LIB_DIR/'frame_history.rb'
 
 
 
-
-class Space
-  def initialize(environment, tile_id_to_name)
-    @env = environment
-    
-    @hash = Hash.new
-    
-    
-    
-    # # what fields can you ask for?
-    # @env.transform_data.fields
-    # # => [:mesh_id, :transform, :position, :rotation, :scale, :ambient :diffuse, :specular, :emmissive, :alpha]
-    
-    
-    # # run a query (like a database) and pull out the desired fields.
-    # # returns an Array, where each entry has the values of the desired fields.
-    # # ex) [ [id_0, pos_0], [id_1, pos_1], [id_2, pos_2], ..., [id_n, pos_n] ]
-    # data_list = @env.transform_data.query(:mesh_id, :position)
-    
-    # p @env.transform_data.query(:mesh_id, :position)
-    
-    @entity_list =
-      @env.transform_data.query(:mesh_id, :position)
-                         .reject{   |i, pos|   i == 0  }
-                         .collect{  |i, pos|   [tile_id_to_name[i], pos] }
-    
-    # p @entity_list
-    
-    # @entity_list.each do |name, pos|
-    #   puts "#{name}, #{pos}"
-    # end
-    
-  end
-  
-  # what type of tile is located at the point 'pt'?
-  # Returns a list of title types (mesh datablock names)
-  def point_query(pt)
-    puts "point query @ #{pt}"
-    
-    # unless @first
-    #   require 'irb'
-    #   binding.irb
-    # end
-    
-    # @first ||= true
-    
-    out = @entity_list.select{   |name, pos|   pos == pt  }
-                      .collect{  |name, pos|   name  }
-    
-    puts "=> #{out.inspect}"
-    
-    return out
-  end
-end
 
 
 
@@ -269,9 +215,9 @@ class Core
     @render_pipeline = OIT_RenderPipeline.new
     
     # want these created once, and not reloaded when code is reloaded.
-    # @environment is reloaded with reloading of new code,
+    # @world is reloaded with reloading of new code,
     # then it can clobber the positions loaded by @frame_history
-    # (or maybe we can reload @environment in on_reload, BEFORE @frame_history)
+    # (or maybe we can reload @world in on_reload, BEFORE @frame_history)
     
     # 
     # OpenEXR animation texture test
@@ -280,22 +226,13 @@ class Core
     data_dir = (PROJECT_DIR/'bin'/'data')
     geometry_texture_dir = data_dir/'geom_textures'
     
-    @environment = VertexAnimationBatch.new(
+    @world = World.new(
       geometry_texture_dir/"animation.position.exr",
       geometry_texture_dir/"animation.normal.exr",
       geometry_texture_dir/"animation.transform.exr"
     )
     
     @frame_history = FrameHistory.new(self)
-    
-    # @entity_map_file = data_dir/'entity_map.yaml'
-    # @entity_name_to_id = YAML.load_file @entity_map_file
-    
-    
-    # @mesh_id_map_file = data_dir/'mesh_map.yaml'
-    # @mesh_id_to_name = YAML.load_file @mesh_id_map_file
-    
-    
     
     
     
@@ -443,23 +380,9 @@ class Core
   
   def update_animation_json(json_filepath)
     p json_filepath
+    raise "ERROR: Not yet implemented"
+    # TODO: implement this
   end
-  
-  # def update_entity_mapping(message)
-  #   # p message['value']
-  #   @entity_name_to_id = message['value']
-    
-  #   dump_yaml @entity_name_to_id => @entity_map_file
-    
-  # end
-  
-  # def update_mesh_mapping(message)
-  #   mapping = message['value']
-    
-  #   @mesh_id_to_name = mapping
-    
-  #   dump_yaml @mesh_id_to_name => @mesh_id_map_file
-  # end
   
   
   
@@ -468,8 +391,8 @@ class Core
   # similar to running a "clean build" in C/C++.
   def update_anim_textures(message)
     # p message
-    @environment.load_transform_texture(message['transform_tex_path'])
-    @environment.load_vertex_textures(message['position_tex_path'],
+    @world.load_transform_texture(message['transform_tex_path'])
+    @world.load_vertex_textures(message['position_tex_path'],
                                       message['normal_tex_path'])
     
     
@@ -499,8 +422,8 @@ class Core
   # vertex position and normal data for one or more meshes has been updated
   def update_geometry(message)
     p message
-    # @environment.load_transform_texture(message['transform_tex_path'])
-    @environment.load_vertex_textures(message['position_tex_path'],
+    # @world.load_transform_texture(message['transform_tex_path'])
+    @world.load_vertex_textures(message['position_tex_path'],
                                       message['normal_tex_path'])
     
   end
@@ -510,8 +433,8 @@ class Core
   def update_transform(message)
     puts "update transform"
     p message
-    @environment.load_transform_texture(message['transform_tex_path'])
-    # @environment.load_vertex_textures(message['position_tex_path'],
+    @world.load_transform_texture(message['transform_tex_path'])
+    # @world.load_vertex_textures(message['position_tex_path'],
     #                                   message['normal_tex_path'])
     
   end
@@ -523,7 +446,7 @@ class Core
   # so easiest just to load the entire transform texture again
   def update_material(message)
     p message
-    @environment.load_transform_texture(message['transform_tex_path'])
+    @world.load_transform_texture(message['transform_tex_path'])
   end
   
   
@@ -539,7 +462,7 @@ class Core
       
     #   # p nested_array
       
-    #   @environment.set_entity_transform_array id, nested_array
+    #   @world.set_entity_transform_array id, nested_array
     #   # ^ thin wrapper on C++ callback
       
       
@@ -651,8 +574,9 @@ class Core
     @sync.update
     
     
-    @frame_history.update
+    @frame_history.update # => on_update
     
+    @world.update
   end
   
   
@@ -668,8 +592,6 @@ class Core
     # step every x frames
     
     x = 8
-    
-    @space = Space.new(@environment, @mesh_id_to_name)
     
     moves = [
       GLM::Vec3.new(1, 0, 0),
@@ -719,19 +641,10 @@ class Core
       # all code inside snapshot blocks will be skipped on resume
       # so any code related to a branch condition
       # needs to be outside of the snapshot blocks.
-      i = @entity_name_to_id['CharacterTest'] # object name
-      mat = @environment.get_entity_transform(i)
       
-      pos  = GLM::Vec3.new(0,0,0)
-      rot  = GLM::Quat.new(1,0,0,0)
-      scale = GLM::Vec3.new(0,0,0)
-      RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-      # TODO: ^ this should be extracted from the transform matrix
-      # puts pos
+      entity = @world.data.find_entity_by_name('CharacterTest')
       
-      # TODO: implement vector addition
-        # (in glm, the operators like + are still implemented as infix)
-      
+      pos = entity.position
       puts "grid position: #{pos}"
       
       
@@ -768,12 +681,8 @@ class Core
           end
           #  8 - animate (halfway)
           snapshot.frame do
-            # i = @entity_name_to_id['CharacterTest']
-            # @environment.mutate_entity_transform(i) do |mat|
-            #   v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
-              
-            #   GLM.translate(mat, v2)
-            # end
+            # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
+            # entity.position = pos + v2
           end
           #  9 - animate
           snapshot.frame do
@@ -809,12 +718,8 @@ class Core
           end
           # 17 - animate
           snapshot.frame do
-            i = @entity_name_to_id['CharacterTest']
-            @environment.mutate_entity_transform(i) do |mat|
-              v2 = GLM::Vec3.new(v.x, v.y, v.z)
-              
-              GLM.translate(mat, v2)
-            end
+            v2 = GLM::Vec3.new(v.x, v.y, v.z)
+            entity.position = pos + v2
           end
           
           
@@ -826,19 +731,7 @@ class Core
           # 
           # update pos = new root position
           # 
-          i = @entity_name_to_id['CharacterTest']
-          mat = @environment.get_entity_transform(i)
-          
-          pos  = GLM::Vec3.new(0,0,0)
-          rot  = GLM::Quat.new(1,0,0,0)
-          scale = GLM::Vec3.new(0,0,0)
-          RubyOF::CPP_Callbacks.decompose_matrix(mat, pos, rot, scale)
-          # TODO: ^ this should be extracted from the transform matrix
-          # puts pos
-          
-          # TODO: implement vector addition
-            # (in glm, the operators like + are still implemented as infix)
-          
+          pos = entity.position
         end
         
       end
@@ -874,12 +767,8 @@ class Core
       end
       #  8 - animate (halfway)
       snapshot.frame do
-        # i = @entity_name_to_id['CharacterTest']
-        # @environment.mutate_entity_transform(i) do |mat|
-        #   v2 = GLM::Vec3.new(v.x*dt, v.y*dt, v.z*dt)
-          
-        #   GLM.translate(mat, v2)
-        # end
+        # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
+        # entity.position = pos + v2
       end
       #  9 - animate
       snapshot.frame do
@@ -915,12 +804,8 @@ class Core
       end
       # 17 - animate
       snapshot.frame do
-        i = @entity_name_to_id['CharacterTest']
-        @environment.mutate_entity_transform(i) do |mat|
-          v2 = GLM::Vec3.new(v.x, v.y, v.z)
-          
-          GLM.translate(mat, v2)
-        end
+        v2 = GLM::Vec3.new(v.x, v.y, v.z)
+        entity.position = pos + v2
       end
       # # 18 - new root position
       # snapshot.frame do
@@ -938,13 +823,13 @@ class Core
   # 
   def snapshot_gamestate
     # for now, just save the state of the one entity that's moving
-    i = @entity_name_to_id['CharacterTest']
-    return @environment.get_entity_transform(i)
+    entity = @world.data.find_entity_by_name('CharacterTest')
+    return entity.transform_matrix
   end
   
   def load_state(state)
-    i = @entity_name_to_id['CharacterTest']
-    @environment.set_entity_transform(i, state)
+    entity = @world.data.find_entity_by_name('CharacterTest')
+    entity.transform_matrix = state
   end
   
   
@@ -1048,7 +933,7 @@ class Core
     @render_pipeline.draw(@w, lights:@depsgraph.lights,
                               camera:@depsgraph.viewport_camera) do |pipeline|
       pipeline.opaque_pass do
-        @environment.draw_scene
+        @world.draw_scene
         
         
         # glCullFace(GL_BACK)
@@ -1136,7 +1021,7 @@ class Core
         
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-        @environment.draw_ui
+        @world.draw_ui
         
         # stuff we need to render with this
           # + a programatically created mesh with triangles to mutate
