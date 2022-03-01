@@ -649,7 +649,7 @@ class Core
       
       
       # step up if there's an obstruction
-      if @space.point_query(pos + v).include? 'Cube.002' # datablock name
+      if @world.space.point_query(pos + v).include? 'Cube.002' # datablock name
         GLM::Vec3.new(0,0,1).tap do |v|
           #  1 - animate
           snapshot.frame do
