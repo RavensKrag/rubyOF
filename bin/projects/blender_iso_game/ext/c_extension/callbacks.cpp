@@ -1631,7 +1631,6 @@ void wrap_EntityData(Module rb_mProject){
 	rb_c_EntityData
 		.define_constructor(Constructor<EntityData>())
 		
-		
 		.define_method("initialize",      &EntityData::initialize)
 		.define_method("destroy",         &EntityData::destroy)
 		.define_method("active?",         &EntityData::isActive)
@@ -1690,14 +1689,16 @@ void wrap_EntityCache(Module rb_mProject){
 			(Arg("size"))
 		)
 		
-		.define_method("load",           &EntityCache::load)
-		.define_method("update",         &EntityCache::update)
-		.define_method("flush",          &EntityCache::flush)
+		.define_method("size",            &EntityCache::getSize)
 		
-		.define_method("getEntity",      &EntityCache__getEntity)
+		.define_method("load",            &EntityCache::load)
+		.define_method("update",          &EntityCache::update)
+		.define_method("flush",           &EntityCache::flush)
 		
-		.define_method("createEntity",   &EntityCache::createEntity)
-		.define_method("destroyEntity",  &EntityCache::destroyEntity)
+		.define_method("get_entity",      &EntityCache__getEntity)
+		
+		.define_method("create_entity",   &EntityCache::createEntity)
+		.define_method("destroy_entity",  &EntityCache::destroyEntity)
 	;
 }
 

@@ -2,13 +2,18 @@
 
 
 
-EntityCache::EntityCache(int size){
-	mpStorage = new EntityData[size];
-	mSize = size;
+EntityCache::EntityCache(int max_size){
+	mpStorage = new EntityData[max_size];
+	mSize = max_size;
 }
 
 EntityCache::~EntityCache(){
 	delete mpStorage;
+}
+
+int
+EntityCache::getSize() const{
+	return mSize;
 }
 
 // read from pixel data into cache
