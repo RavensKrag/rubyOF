@@ -246,7 +246,7 @@ class Core
     
     @message_history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@window, @depsgraph, @message_history, @frame_history, self)
+    @sync = BlenderSync.new(@message_history, @frame_history)
     
   end
   
@@ -374,6 +374,423 @@ class Core
   
   
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # use a structure where Fiber does not need to be regenerated on reload
+  def update
+    @crash_detected = false # reset when normal updates are called again
+    
+    # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
+    
+    # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
+    # @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # # puts "update thread: #{Thread.current.object_id}" 
+    
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.enable
+    # # end
+    
+    # # puts "--> start update"
+    # signal = @update_scheduler.resume
+    # # puts signal
+    # # puts "<-- end update"
+    
+    # # if SPIKE_PROFILER_ON
+    # #   RB_SPIKE_PROFILER.disable
+    # #   puts "\n"*7
+    # # end
+    
+    
+    if @first_update
+      puts "first update"
+      # load_world_state()
+      
+      @first_update = false
+      
+      
+      # # 
+      # # jpg test
+      # # 
+      
+      # @pixels = RubyOF::Pixels.new
+      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+      
+      # @texture_out = RubyOF::Texture.new
+      
+      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
+      #                      :horizontal => :clamp_to_edge)
+      
+      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      # @texture_out.load_data(@pixels)
+      
+      
+      
+      
+      
+    end
+    
+    
+    
+    @sync.update do |message|
+      parse_blender_data message
+    end
+    
+    
+    @frame_history.update # => on_update
+    
+    @world.update
+  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # TODO: somehow consolidate setting of dirty flag for all entity types
+  def parse_blender_data(message)
+    # t0 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # data = {
+    #     'timestamps' : {
+    #         'start_time': total_t0,
+    #         'end_time':   total_t1
+    #     },
+        
+    #     'all_entity_names' : object_list,
+        
+    #     'datablocks' : datablock_export,
+    #     'objects' : obj_export
+    # }
+    
+    
+    # Temporary storage for Blender backend datablocks, like mesh data,
+    # before they become attached to an entity.
+    @new_datablocks ||= Hash.new
+    
+    # depsgraph only stores materials that are associated with a batch, so we need to temporarily store materials here as they are loaded
+    @new_materials ||= Hash.new
+    
+    
+    # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
+    
+    
+    
+    # p @depsgraph.instance_variable_get("@mesh_objects")
+    # p @new_datablocks
+    # puts "--- #{message['type']} ---"
+    # puts message['type'] === 'bpy.types.Mesh'
+    
+    
+    case message['type']
+    when 'all_entity_names'
+      # The viewport camera is an object in RubyOF, but not in Blender
+      # Need to remove it from the entity list or the camera
+      # will be deleted.
+      @depsgraph.gc(active: message['list'])
+      
+    when 'viewport_camera'
+      # sent on viewport update, not every frame
+      # puts "update viewport"
+      
+      @depsgraph.viewport_camera.tap do |camera|
+        camera.dirty = true
+        
+        camera.load(message)
+      end
+      
+    when 'viewport_region'
+      # sent on some updates, when window link enabled
+      # puts "viewport_region"
+      # p blender_data
+      # p blender_data.keys
+      
+      # 
+      # sync window size
+      # 
+      
+      w = message['width']
+      h = message['height']
+      @window.set_window_shape(w,h)
+      
+      # @camera.aspectRatio = w.to_f/h.to_f
+      
+      
+      # 
+      # sync window position
+      # (assuming running on Linux)
+      # - trying to match pid_query with pid_hit
+      # 
+      
+      # puts "trying to sync"
+      sync_window_position(blender_pid: message['pid'])
+      
+    when 'material_mapping'
+      
+      # NO LONGER NECESSARY
+      # materials are exported to OpenEXR transform texture in python
+      # the RubyOF renderer just needs to render the data provided.
+      
+    when 'bpy.types.Material'
+      # (same pattern as mesh datablock manipulation)
+      # retrieve existing material and edit its properties
+      
+      # NO LONGER NECESSARY
+      # python code now exports this data in a denormalized way,
+      # encoding it on the transform texture
+      
+      
+      
+      # TODO: create Ruby API to edit material settings of object in transform texture, so that code can dynamically edit these properties in game
+      
+    when 'bpy.types.Light'
+      # # I don't want to have linked lights in RubyOF.
+      # # Thus, rather than create light datablocks here,
+      # # link the deserialized JSON message into the object 'data' field
+      # # so it all can be unpacked together in a later phase
+      
+      # blender_data['objects']&.tap do |object_list|
+        
+      #   object_list
+      #   .select{|o| o['type'] == 'LIGHT' }
+      #   .find{  |o| o['name'] == data['light_name'] }
+      #   .tap{   |o| o['data'] = data }
+      #   # links data even if data field is already set
+      #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
+        
+      # end
+      
+    when 'bpy_types.Mesh'
+      # create underlying mesh data (verts)
+      # to later associate with mesh objects (transform)
+      # which sets the foundation for instanced geometry
+      
+      
+      # NO LONGER NECESSARY
+      # replaced by the OpenEXR export
+      
+    when 'bpy_types.Object'
+      case message['.type']
+      when 'MESH'
+        # update object transform based on direct manipulation in blender
+        @core.update_entity(message)
+        
+      when 'LIGHT'
+        # load transform AND data for lights here as necessary
+        # ('data' field has already been linked to necessary data)
+        
+        # puts "loading light: #{message['name']}"
+        
+        light =
+          @depsgraph.fetch_light(message['name']) do |name|
+            BlenderLight.new(name).tap do |light|
+              @depsgraph.add light
+            end
+          end
+        
+        message['transform']&.tap do |transform_data|
+          light.load_transform(transform_data)
+        end
+        
+        message.tap do |core_data|
+          # puts ">> light data"
+          # p core_data
+          light.load_data(core_data)
+        end
+        
+      end
+      
+    
+    
+    when 'timeline_command'
+      # p message
+      parse_timeline_commands(message)
+    
+    when 'update_anim_json'
+      update_animation_json(message['value'])
+      
+      # @core.update_entity_mapping(message)
+      # @core.update_mesh_mapping(message)
+    
+    when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
+      
+      self.send(message['type'], message)
+    
+    else
+      
+      
+    end
+    
+    
+    # # ASSUME: if an object's 'data' field is set, then the linkage to unedrlying data has changed. If the field is not set, then no change.
+    
+    
+    # # t1 = RubyOF::Utils.ofGetElapsedTimeMicros
+    
+    # # dt = t1-t0;
+    # # puts "time - parse data: #{dt} us"
+    
+  end
+  
+  
+  
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      # @depsgraph.clear
+      
+      puts "== reset"
+      
+      @sync.reset
+      
+      if @frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        puts "loopback reset"
+        
+        @frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @sync.send_to_blender message
+        
+      else
+        puts "(reset else)"
+      end
+      
+      puts "====="
+      
+    when 'pause'
+      puts "== pause"
+      p @frame_history.state
+      
+      if @frame_history.state == :generating_new
+        @frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_paused_new',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @sync.send_to_blender message
+        
+      else
+        @frame_history.pause
+        
+        message = {
+          'type' => 'loopback_paused_old',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        @sync.send_to_blender message
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @frame_history.state
+      
+      
+      @frame_history.play # stubbed for some states
+      
+      if @frame_history.state == :finished
+        @frame_history.play 
+        
+        message = {
+          'type' => 'loopback_play+finished',
+          'history.length' => @frame_history.length
+        }
+        
+        @sync.send_to_blender message
+      end
+      
+      # if @frame_history.state != :generating_new
+      #   # ^ this will not immediately advance
+      #   #   to the new state. It's more like shifting
+      #   #   from Park to Drive.
+      #   #   Transition to next state will not happen until
+      #   #   FrameHistory#update -> State#update
+      #   # 
+      #   # note: even responding to pause
+      #   # takes at least 1 frame. need a better way
+      #   # of dealing with this.
+      #   # 
+      #   # For now, I will expand the play range when python
+      #   # detects playback has started, without waiting
+      #   # for a round-trip response from ruby.
+      #   # (using aribtrary large number, 1000 frames)
+      #   # 
+      #   # TODO: use the "preview range" feature to set
+      #   #       two time ranges for the timeline
+      #   #       1) the maximum number of frames that can 
+      #   #          be stored
+      #   #       2) the current number of frames in history
+        
+      #   if @frame_history.play == :generating_new
+      #     message = {
+      #       'type' => 'loopback_play',
+      #       'history.length' => @frame_history.length
+      #     }
+          
+      #     @blender_link.send message
+      #   end
+      # end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @frame_history.seek(message['time'])
+      
+    end
+  end
   
   
   
@@ -509,79 +926,139 @@ class Core
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  # use a structure where Fiber does not need to be regenerated on reload
-  def update
-    @crash_detected = false # reset when normal updates are called again
+  def sync_window_position(blender_pid: nil)
+    # tested on Ubuntu 20.04.1 LTS
+    # will almost certainly work on all Linux distros with X11
+    # maybe will work on OSX as well...? not sure
+    # (xwininfo and xprop should be standard on all systems with X11)
     
-    # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
-    
-    # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    # @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    # # puts "update thread: #{Thread.current.object_id}" 
-    
-    # # if SPIKE_PROFILER_ON
-    # #   RB_SPIKE_PROFILER.enable
-    # # end
-    
-    # # puts "--> start update"
-    # signal = @update_scheduler.resume
-    # # puts signal
-    # # puts "<-- end update"
-    
-    # # if SPIKE_PROFILER_ON
-    # #   RB_SPIKE_PROFILER.disable
-    # #   puts "\n"*7
-    # # end
-    
-    
-    if @first_update
-      puts "first update"
-      # load_world_state()
-      
-      @first_update = false
+    # if @pid_query != pid
+      # @pid_query = pid
+      blender_pos = find_window_position("Blender",   blender_pid)
+      rubyof_pos  = find_window_position("RubyOF blender integration", Process.pid)
       
       
-      # # 
-      # # jpg test
-      # # 
+      # 
+      # measure the delta
+      # 
       
-      # @pixels = RubyOF::Pixels.new
-      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
+      delta = blender_pos - rubyof_pos
+      puts "current window offset: #{blender_pos - rubyof_pos}"
       
-      # @texture_out = RubyOF::Texture.new
+      # measurements of manually positioned windows:
+      # dx = 0 to 3  (unsure of exact value)
+      # dy = -101    (strange number, but there it is)
       
-      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
-      #                      :horizontal => :clamp_to_edge)
       
-      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
+      # 
+      # apply the delta
+      # 
       
-      # @texture_out.load_data(@pixels)
+      # just need to apply inverse of the measured delta to RubyOF windows
+      delta = CP::Vec2.new(-107,-151)*-1
+      @window.position = (blender_pos + delta).to_glm
+      
+      # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
       
       
       
       
-      
-    end
-    
-    
-    
-    @sync.update
-    
-    
-    @frame_history.update # => on_update
-    
-    @world.update
+      # puts "my pid: #{Process.pid}"
+    # end
   end
+  
+  def find_window_position(query_title_string, query_pid)
+    # puts "trying to sync window position ---"
+    
+    
+    # 
+    # find the wm id given PID
+    # 
+    
+    wm_ids = 
+      `xwininfo -root -tree | grep '#{query_title_string}'`.each_line
+      .collect{ |line|
+        # 0x6e00002 "Blender* [/home/...]": ("Blender" "Blender")  2544x1303+0+0  +206+95
+        line.split.first
+      }
+    
+    pids = 
+      wm_ids.collect{ |wm_id|
+        # _NET_WM_PID(CARDINAL) = 1353883
+        `xprop -id #{wm_id} | grep PID`.split.last
+      }
+      .collect{ |id_string|  id_string.to_i }
+    
+    hit_wm_id = pids.zip(wm_ids).assoc(query_pid).last
+    # puts "wm_id: #{hit_wm_id}"
+    
+    
+    # 
+    # use wm id to find window geometry (size and position)
+    # 
+    
+    window_info = `xwininfo -id #{hit_wm_id}`
+    window_info = 
+      window_info.each_line.to_a
+      .map{ |line|   line.strip  }
+      .map{ |l| l == "" ? nil : l  } # replace empty lines with nil
+      .compact                       # remove all nil entries from array
+    # p window_info
+    
+    info_hash = 
+      window_info[1..-2] # skip first line (title) and last (full geometry)
+      .map{  |line|
+        line.split(':')    # colon separator
+        .map{|x| x.strip } # remove leading / trailing whitespace
+      }.to_h
+    # p info_hash
+    
+    hit_px = info_hash['Absolute upper-left X'].to_i
+    hit_py = info_hash['Absolute upper-left Y'].to_i
+    
+    
+    # puts "-------"
+    
+    return CP::Vec2.new(hit_px, hit_py)
+  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
@@ -878,6 +1355,38 @@ class Core
   
   
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   def draw
     # puts ">>>>>>>> draw #{RubyOF::Utils.ofGetElapsedTimeMicros}"
     
@@ -1018,6 +1527,41 @@ class Core
     
     
   end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
