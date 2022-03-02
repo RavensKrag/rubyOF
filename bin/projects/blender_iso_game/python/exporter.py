@@ -312,7 +312,7 @@ class Exporter():
         
         data = {
             'type': 'update_anim_json',
-            'value': tex_manager.get_json_filepath(),
+            'value': tex_manager.get_json_path(),
         }
         
         self.to_ruby.write(json.dumps(data))
