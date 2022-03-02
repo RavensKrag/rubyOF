@@ -454,26 +454,6 @@ class World
   
   
   
-  # # Does an object with this name exist in the texture?
-  # # ( based on code from __object_name_to_scanline() )
-  # def includes_entity?(entity_name)
-    
-  # end
-  
-  
-  
-  # # Does a mesh with this name exist in the texture?
-  # # (more important on the ruby side, but also helpful to optimize export)
-  # # 
-  # # mesh_name : string
-  # def includes_mesh?(mesh_name)
-  #   return (mesh_name in self.mesh_data_cache)
-  # end
-  
-  
-  
-  
-  
   # # Specify the mesh to use for a given object @ t=0 (initial condition)
   # # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
   # # (3 channels have the same data; helps with visualization of the texture)
