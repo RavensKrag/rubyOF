@@ -111,7 +111,7 @@ class BlenderSync
     if @frame_history.state == :finished
       # needs to be a separate if block,
       # so outer else only triggers when we detect some other state
-      if !@finished
+      if !@finished # transitioning from not finished -> finished
         puts "finished --> (send message to blender)"
         message = {
           'type' => 'loopback_finished',
