@@ -81,7 +81,7 @@ class World
     # cache allows easy manipulation of transform texture from Ruby
     # 
     @pixels[:transforms].tap do |transform_texture|
-      num_entities = transform_texture.height.to_i-1
+      num_entities = transform_texture.height.to_i
       @cache = RubyOF::Project::EntityCache.new(num_entities)
       
       @cache.load(transform_texture)
@@ -261,9 +261,10 @@ class World
   class Entity
     extend Forwardable
     
-    attr_reader :name
+    attr_reader :index, :name
     
-    def initialize(name, entity_data, mesh)
+    def initialize(index, name, entity_data, mesh)
+      @index = index # don't typically need this, but useful to have in #inspect for debugging
       @name = name
       @entity_data = entity_data
       
@@ -327,13 +328,18 @@ class World
       if entity_idx.nil?
         raise "ERROR: Could not find any entity called '#{target_entity_name}'"
       end
-      # p entity_idx
+      
+      # puts "#{target_entity_name} => index #{entity_idx}"
+      
       
       entity_ptr = @cache.get_entity(entity_idx)
+        # puts target_entity_name
+        # puts "entity -> mesh_index:"
+        # puts entity_ptr.mesh_index
       mesh_name = @json['mesh_data_cache'][entity_ptr.mesh_index]
       mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
       
-      entity_obj = Entity.new(target_entity_name, entity_ptr, mesh_obj)
+      entity_obj = Entity.new(entity_idx, target_entity_name, entity_ptr, mesh_obj)
       
       return entity_obj
     end
@@ -361,7 +367,7 @@ class World
           mesh_name = @json['mesh_data_cache'][entity_ptr.mesh_index]
           mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
           
-          entity_obj = Entity.new(entity_name, entity_ptr, mesh_obj)
+          entity_obj = Entity.new(i, entity_name, entity_ptr, mesh_obj)
           
           yield entity_obj
         end
@@ -372,6 +378,10 @@ class World
     private
     
     
+    # @json includes a blank entry for scanline index 0
+    # even though that scanline is not represented in the cache
+    # so this returns 1..(size-1)
+    # but @cache.get_entity expects 0..(size-2)
     def entity_name_to_scanline(target_entity_name)
       entity_idx = nil
       
@@ -389,6 +399,8 @@ class World
       return entity_idx
     end
     
+    # @json includes a blank entry for scanline index 0
+    # even though that scanline is not represented in the cache
     def mesh_name_to_scanline(target_mesh_name)
       mesh_idx = nil
       

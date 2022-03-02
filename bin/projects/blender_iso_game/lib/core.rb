@@ -235,6 +235,10 @@ class Core
     @frame_history = FrameHistory.new(self)
     
     
+    @world.data.each.each_with_index do |entity, i|
+      puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
+    end
+    
     
     
     
@@ -643,6 +647,7 @@ class Core
       # needs to be outside of the snapshot blocks.
       
       entity = @world.data.find_entity_by_name('CharacterTest')
+      p entity
       
       pos = entity.position
       puts "grid position: #{pos}"
