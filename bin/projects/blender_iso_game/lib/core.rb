@@ -977,49 +977,6 @@ class Core
         # @fonts[:monospace].draw_string("history size: #{}",
                                          # 400, 160)
         
-        # line_height = 35
-        # p3 = CP::Vec2.new(500,650)
-        # str_out = []
-        
-        # batches = @depsgraph.batches
-        # header = [
-        #   "i".rjust(3),
-        #   "mesh".ljust(10), # BlenderMeshData
-          
-        #   "mat".ljust(15), # BlenderMaterial
-        #   # ^ use #inspect to visualize empty string
-          
-        #   "batch size" # RenderBatch
-          
-        # ].join('| ')
-        
-        # str_out = 
-        #   batches.each_with_index.collect do |batch_line, i|
-        #     a,b,c = batch_line
-        #     # data = [
-        #     #   a.class.to_s.each_char.first(20).join(''),
-        #     #   b.class.to_s.each_char.first(20).join(''),
-        #     #   c.class.to_s.each_char.first(20).join('')
-        #     # ].join(', ')
-            
-            
-        #     data = [
-        #       "#{i}".rjust(3),
-        #       a.name.ljust(10), # BlenderMeshData
-              
-        #       b.name.inspect.ljust(15), # BlenderMaterial
-        #       # ^ use #inspect to visualize empty string
-              
-        #       c.size.to_s # RenderBatch
-              
-        #     ].join('| ')
-        #   end
-        
-        # ([header] + str_out).each_with_index do |line, i|
-        #   @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
-        # end
-        
-        
         
         # t1 = RubyOF::TimeCounter.now
         # puts "=> UI    : #{(t1 - t0).to_ms} ms"
