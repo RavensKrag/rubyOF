@@ -50,6 +50,137 @@ def first_material(mesh_object):
     return mat
 
 
+
+
+
+
+def typestring(obj):
+    klass = type(obj)
+    return f'{klass.__module__}.{klass.__qualname__}'
+
+
+def pack_light(obj):
+    data = {
+        'type': typestring(obj), # 'bpy.types.Object'
+        'name': obj.name_full,
+        '.type': obj.type, # 'LIGHT'
+        '.data.type': obj.data.type,  # 'POINT', etc
+        
+        'transform': pack_transform(obj),
+        
+        'color': [
+            'rgb',
+            obj.data.color[0],
+            obj.data.color[1],
+            obj.data.color[2]
+        ],
+        'ambient_color': [
+            'rgb',
+        ],
+        'diffuse_color': [
+            'rgb'
+        ],
+        'attenuation':[
+            'rgb'
+        ]
+    }
+    
+    if data['.data.type'] == 'AREA':
+        data.update({
+            'size_x': ['float', obj.data.size],
+            'size_y': ['float', obj.data.size_y]
+        })
+    elif data['.data.type'] == 'SPOT':
+        data.update({
+            'size': ['radians', obj.data.spot_size]
+        })
+    
+    return data
+
+
+def pack_transform(obj):
+    # 
+    # set transform properties
+    # 
+    
+    pos   = obj.location
+    rot   = obj.rotation_quaternion
+    scale = obj.scale
+    
+    transform = {
+        'position':[
+            "Vec3",
+            pos.x,
+            pos.y,
+            pos.z
+        ],
+        'rotation':[
+            "Quat",
+            rot.w,
+            rot.x,
+            rot.y,
+            rot.z
+        ],
+        'scale':[
+            "Vec3",
+            scale.x,
+            scale.y,
+            scale.z
+        ]
+    }
+    
+    return transform
+
+def pack_transform_mat4(obj):
+    nested_array = [None, None, None, None]
+    
+    mat = obj.matrix_world
+    
+    nested_array[0] = vec4_to_rgba(mat[0])
+    nested_array[1] = vec4_to_rgba(mat[1])
+    nested_array[2] = vec4_to_rgba(mat[2])
+    nested_array[3] = vec4_to_rgba(mat[3])
+    
+    
+    return nested_array
+
+#  sub.prop(light, "size", text="Size X")
+# sub.prop(light, "size_y", text="Y")
+
+# col.prop(light, "spot_size", text="Size")
+# ^ angle of spotlight
+
+
+
+# col.prop(light, "color")
+# col.prop(light, "energy")
+
+# blender EEVEE properties:
+    # color
+    # power (wats)
+    # specular
+    # radius
+    # shadow
+# OpenFrameworks properties:
+    # setAmbientColor()
+    # setDiffuseColor()
+    # setSpecularColor()
+    # setAttenuation()
+        # 3 args: const, linear, quadratic
+    # setup() 
+    # setAreaLight()
+    # setDirectional()
+    # setPointLight()
+    # setSpotlight() # 2 args to set the following:
+        # setSpotlightCutOff()
+            # 0 to 90 degs, default 45
+        # setSpotConcentration()
+            # 0 to 128 exponent, default 16
+
+
+
+
+
 class Exporter():
     def __init__(self, resource_manager_ref, to_ruby_fifo):
         self.resource_manager = resource_manager_ref
