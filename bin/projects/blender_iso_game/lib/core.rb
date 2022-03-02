@@ -135,9 +135,6 @@ class Core
     # ofEnableBlendMode(:alpha)
     
     
-    @draw_durations = Array.new # stores profiler data for #draw
-    
-    
     @first_update = true
     @first_draw = true
     @mouse = CP::Vec2.new(0,0)
@@ -278,7 +275,6 @@ class Core
     # end
     
     
-    # puts @draw_durations.join("\t")
     if RB_SPIKE_PROFILER.enabled?
       RB_SPIKE_PROFILER.disable
     end
@@ -442,9 +438,6 @@ class Core
       # @texture_out.load_data(@pixels)
       
       
-      
-      
-      
     end
     
     
@@ -496,23 +489,6 @@ class Core
     #     'objects' : obj_export
     # }
     
-    
-    # Temporary storage for Blender backend datablocks, like mesh data,
-    # before they become attached to an entity.
-    @new_datablocks ||= Hash.new
-    
-    # depsgraph only stores materials that are associated with a batch, so we need to temporarily store materials here as they are loaded
-    @new_materials ||= Hash.new
-    
-    
-    # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
-    
-    
-    
-    # p @depsgraph.instance_variable_get("@mesh_objects")
-    # p @new_datablocks
-    # puts "--- #{message['type']} ---"
-    # puts message['type'] === 'bpy.types.Mesh'
     
     
     case message['type']
@@ -1386,47 +1362,8 @@ class Core
   
   
   
-  
-  def draw
-    # puts ">>>>>>>> draw #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    
-    # puts "draw thread:   #{Thread.current.object_id}" 
-    
-    # draw_start = Time.now
-    draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-      on_draw()
-    
-    # draw_end = Time.now
-    draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = draw_end - draw_start
-    puts "draw duration: #{dt}" if Scheduler::DEBUG
-    
-    
-    draw_duration_history_len = 100
-    
-    
-    @draw_durations << dt
-    # puts "draw duration: #{dt}"
-    
-    if @draw_durations.length > draw_duration_history_len
-      d_len = @draw_durations.length - draw_duration_history_len
-      @draw_durations.shift(d_len)
-    end
-    
-    
-    
-    
-    if @start_time
-      end_time = RubyOF::Utils.ofGetElapsedTimeMicros
-      @whole_iter_dt = end_time - @start_time
-    end
-  end
-  
-  
-  
   include RubyOF::Graphics
-  def on_draw
+  def draw
     
     # 
     # setup materials, etc
