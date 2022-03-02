@@ -125,7 +125,7 @@ class Core
   attr_accessor :sync
   
   def initialize(window)
-    @w = window
+    @window = window
   end
   
   def setup
@@ -246,7 +246,7 @@ class Core
     
     @message_history = BlenderHistory.new
     @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
+    @sync = BlenderSync.new(@window, @depsgraph, @message_history, @frame_history, self)
     
   end
   
@@ -935,7 +935,7 @@ class Core
     # set up phases of drawing
     # 
     
-    @render_pipeline.draw(@w, lights:@depsgraph.lights,
+    @render_pipeline.draw(@window, lights:@depsgraph.lights,
                               camera:@depsgraph.viewport_camera) do |pipeline|
       pipeline.opaque_pass do
         @world.draw_scene
@@ -999,14 +999,14 @@ class Core
           ofPushStyle()
             ofEnableAlphaBlending()
             ofSetColor(@crash_color)
-            ofDrawRectangle(0,0,0, @w.width, @w.height)
+            ofDrawRectangle(0,0,0, @window.width, @window.height)
           ofPopStyle()
         end
       end
     end
     
     
-    # @depsgraph.draw(@w) do
+    # @depsgraph.draw(@window) do
     
       
       
