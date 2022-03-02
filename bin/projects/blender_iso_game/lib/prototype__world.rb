@@ -66,6 +66,26 @@ character.transform.position += v
 
 
 
+@world.data    # entities in cache (reference entities by name)
+@world.batches # render batches (data formatted to render on GPU)
+@world.space   # for spatial queries (point query, etc)
+# @world.render_layers
+
+
+@world.update()     # move data from cache -> image (GPU) -> texture (GPU)
+                    # may also update spatial data to be coherent with cache
+
+@world.draw_scene() # render 3D world state
+
+@world.draw_ui()    # render elements to 2D screen (on top of all entities)
+
+
+
+@world.data.find_entity("CharacterTest")
+@world.space.point_query( x )
+@world.renderer.update()
+@world.renderer.draw_scene()
+
 
 class DataCache
   def initialize(batch, json_filepath)

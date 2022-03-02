@@ -627,16 +627,8 @@ class AnimTexManager ():
         self.transform_tex.save()
         
         
-        
-    # dict mapping object name -> scanline index
-    def get_object_name_map(self):
-        pass
-    
-    
-    # dict mapping mesh name -> scanline index
-    def get_mesh_name_map(self):
-        pass
-    
+    def get_json_path(self):
+        return self.json_filepath
     
     def get_texture_paths(self):
         return (self.position_tex.filepath,

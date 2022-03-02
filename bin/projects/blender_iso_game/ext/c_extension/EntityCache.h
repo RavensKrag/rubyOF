@@ -19,16 +19,19 @@
 
 class EntityCache {
 public:
-	EntityCache(int size);
+	EntityCache(int max_size);
 	~EntityCache();
+	
+	int getSize() const; // used if you want to interate over the entire cache
 	
 	bool load(const ofFloatPixels& pixels); // read from pixel data into cache
 	bool update(ofFloatPixels& pixels);     // write changed data to pixels
 	void flush(ofFloatPixels& pixels);      // write ALL data to pixels
 	
-	EntityData* getEntity(int index);
+	EntityData* getEntity(int index); // will always return non-null, but may not be an active entity
 	int createEntity(); // cache will mark an unused entry in the pool for use and return the index
 	void destroyEntity(int index); // mark a used entry in the pool as no longer being used
+	
 	
 private:
 	int mSize;
