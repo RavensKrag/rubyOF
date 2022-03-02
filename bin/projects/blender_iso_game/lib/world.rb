@@ -81,7 +81,7 @@ class World
     # cache allows easy manipulation of transform texture from Ruby
     # 
     @pixels[:transforms].tap do |transform_texture|
-      num_entities = transform_texture.height.to_i-1
+      num_entities = transform_texture.height.to_i
       @cache = RubyOF::Project::EntityCache.new(num_entities)
       
       @cache.load(transform_texture)
@@ -328,9 +328,11 @@ class World
       if entity_idx.nil?
         raise "ERROR: Could not find any entity called '#{target_entity_name}'"
       end
-      # p entity_idx
-       
-      entity_ptr = @cache.get_entity(entity_idx-1)
+      
+      # puts "#{target_entity_name} => index #{entity_idx}"
+      
+      
+      entity_ptr = @cache.get_entity(entity_idx)
         # puts target_entity_name
         # puts "entity -> mesh_index:"
         # puts entity_ptr.mesh_index
@@ -357,7 +359,7 @@ class World
       return enum_for(:each) unless block_given?
       
       @cache.size.times do |i|
-        entity_ptr = @cache.get_entity(i-1)
+        entity_ptr = @cache.get_entity(i)
         
         if entity_ptr.active?
           entity_name, mesh_name, material_name =  @json['object_data_cache'][i]

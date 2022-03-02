@@ -20,24 +20,21 @@ EntityCache::getSize() const{
 // return false if there was an error with loading.
 bool
 EntityCache::load(const ofFloatPixels& pixels){
-	// assume scanline index 0 is blank data,
-	// thus pixels.getHeight() == n+1
-	// where n is the number of entities
-	// and n == mSize;
+	// scanline index 0 is blank data for mesh data, but not for entity data.
+	// -- in the entity texture, every single non-blank row encodes real data
 	
 	
 	// check to make sure the ofPixels object is the correct size for this cache
-	if(pixels.getHeight() != mSize+1){
+	if(pixels.getHeight() != mSize){
 		ofLogError("EntityCache") << "ofPixels object was the wrong size for this cache object.";
 		return false;
 	}
 	
 	// if the size is correct, then copy over all data into cache
 	for(int i=0; i<mSize; i++){
-		int scanline_index = i+1;
-		bool flag = mpStorage[i].load(pixels, scanline_index);
+		bool flag = mpStorage[i].load(pixels, i);
 		if(!flag){
-			ofLogError("EntityCache") <<  "Could not load entity data into cache. Problem parsing data on line " << scanline_index << "." << std::endl;
+			ofLogError("EntityCache") <<  "Could not load entity data into cache. Problem parsing data on line " << i << "." << std::endl;
 			return false;
 		}
 	}
@@ -50,7 +47,7 @@ bool
 EntityCache::update(ofFloatPixels& pixels){
 	
 	// check to make sure the ofPixels object is the correct size for this cache
-	if(pixels.getHeight() != mSize+1){
+	if(pixels.getHeight() != mSize){
 		ofLogError("EntityCache") << "ofPixels object was the wrong size for this cache object.";
 		return false;
 	}
@@ -58,9 +55,7 @@ EntityCache::update(ofFloatPixels& pixels){
 	// if the size is correct, then update all entries that need updating
 	bool flag = false;
 	for(int i=0; i<mSize; i++){
-		int scanline_index = i+1;
-		
-		bool line_flag = mpStorage[i].update(pixels, scanline_index);
+		bool line_flag = mpStorage[i].update(pixels, i);
 		
 		flag = flag || line_flag;
 	}
