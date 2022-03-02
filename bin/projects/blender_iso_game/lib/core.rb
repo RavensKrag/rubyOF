@@ -606,7 +606,7 @@ class Core
       case message['.type']
       when 'MESH'
         # update object transform based on direct manipulation in blender
-        @core.update_entity(message)
+        self.update_entity(message)
         
       when 'LIGHT'
         # load transform AND data for lights here as necessary
@@ -642,8 +642,8 @@ class Core
     when 'update_anim_json'
       update_animation_json(message['value'])
       
-      # @core.update_entity_mapping(message)
-      # @core.update_mesh_mapping(message)
+      # self.update_entity_mapping(message)
+      # self.update_mesh_mapping(message)
     
     when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
       
