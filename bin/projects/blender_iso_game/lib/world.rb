@@ -1,7 +1,7 @@
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space
+  attr_reader :data, :space, :lights, :camera
   
   def initialize(position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
@@ -123,6 +123,10 @@ class World
     
     # # @cache.updateMaterial(material_name, material_properties)
     # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
+    
+    
+    
+    @camera = ViewportCamera.new
     
   end
   

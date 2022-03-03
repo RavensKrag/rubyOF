@@ -178,6 +178,8 @@ class BlenderSync
     # }
     
     
+    # TODO: remove depsgraph
+    
     
     case message['type']
     when 'all_entity_names'
@@ -190,7 +192,7 @@ class BlenderSync
       # sent on viewport update, not every frame
       # puts "update viewport"
       
-      @depsgraph.viewport_camera.tap do |camera|
+      @world.camera.tap do |camera|
         camera.dirty = true
         
         camera.load(message)

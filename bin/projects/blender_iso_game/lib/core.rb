@@ -797,7 +797,7 @@ class Core
     # 
     
     @render_pipeline.draw(@window, lights:@depsgraph.lights,
-                              camera:@depsgraph.viewport_camera) do |pipeline|
+                              camera:@world.camera) do |pipeline|
       pipeline.opaque_pass do
         @world.draw_scene
         
