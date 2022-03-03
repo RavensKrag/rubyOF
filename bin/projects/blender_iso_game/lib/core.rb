@@ -796,8 +796,10 @@ class Core
     # set up phases of drawing
     # 
     
-    @render_pipeline.draw(@window, lights:@depsgraph.lights,
-                              camera:@world.camera) do |pipeline|
+    @render_pipeline.draw(@window,
+                          lights:@world.lights,
+                          camera:@world.camera) do |pipeline|
+      
       pipeline.opaque_pass do
         @world.draw_scene
         

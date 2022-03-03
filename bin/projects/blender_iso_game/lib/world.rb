@@ -128,6 +128,8 @@ class World
     
     @camera = ViewportCamera.new
     
+    @lights = LightsCollection.new
+    
   end
   
   
@@ -465,6 +467,43 @@ class World
       
       return out
     end
+  end
+  
+  
+  class LightsCollection
+    def initialize
+      @lights = Array.new
+    end
+    
+    # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
+    def fetch(light_name)
+      existing_light = @lights.find{ |light|  light.name == light_name }
+      
+      if existing_light.nil?
+        if block_given?
+          new_light = yield light_name
+          @lights << new_light
+          
+          return new_light
+        else
+          raise "ERROR: Did not declare a block for generating new lights."
+        end
+      else
+        return existing_light
+      end
+    end
+    
+    # TODO: implement way to delete lights
+    
+    def each
+      return enum_for(:each) unless block_given?
+      
+      @lights.each do |light|
+        yield light
+      end
+    end
+    
+    
   end
   
   

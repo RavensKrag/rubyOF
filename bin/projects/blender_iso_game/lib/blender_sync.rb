@@ -241,24 +241,7 @@ class BlenderSync
       
       
       # TODO: create Ruby API to edit material settings of object in transform texture, so that code can dynamically edit these properties in game
-      
-    when 'bpy.types.Light'
-      # # I don't want to have linked lights in RubyOF.
-      # # Thus, rather than create light datablocks here,
-      # # link the deserialized JSON message into the object 'data' field
-      # # so it all can be unpacked together in a later phase
-      
-      # blender_data['objects']&.tap do |object_list|
-        
-      #   object_list
-      #   .select{|o| o['type'] == 'LIGHT' }
-      #   .find{  |o| o['name'] == data['light_name'] }
-      #   .tap{   |o| o['data'] = data }
-      #   # links data even if data field is already set
-      #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
-        
-      # end
-      
+    
     when 'bpy_types.Mesh'
       # create underlying mesh data (verts)
       # to later associate with mesh objects (transform)
@@ -281,10 +264,9 @@ class BlenderSync
         # puts "loading light: #{message['name']}"
         
         light =
-          @depsgraph.fetch_light(message['name']) do |name|
-            BlenderLight.new(name).tap do |light|
-              @depsgraph.add light
-            end
+          @world.lights.fetch(message['name']) do |name|
+            # if light with this name does not exist, create it
+            BlenderLight.new(name)
           end
         
         message['transform']&.tap do |transform_data|
