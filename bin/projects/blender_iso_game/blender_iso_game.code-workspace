@@ -7,7 +7,14 @@
 	"settings": {
 		"files.associations": {
 			"*.ipp": "cpp",
-			"atomic": "cpp"
+			"atomic": "cpp",
+			"algorithm": "cpp",
+			"*.tcc": "cpp",
+			"bitset": "cpp",
+			"fstream": "cpp",
+			"memory": "cpp",
+			"new": "cpp",
+			"numeric": "cpp"
 		}
 	}
 }
