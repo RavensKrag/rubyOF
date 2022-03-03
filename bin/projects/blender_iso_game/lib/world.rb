@@ -228,6 +228,11 @@ class World
       
       texture.load_data(pixels)
     end
+    
+    # reset the cache when textures reload
+    unless @cache.nil?
+      @cache.load(@pixels[:transforms])
+    end
   end
   
   def load_vertex_textures(position_tex_path, normal_tex_path)
