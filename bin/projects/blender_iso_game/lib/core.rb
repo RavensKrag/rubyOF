@@ -242,9 +242,14 @@ class Core
     
     
     @message_history = BlenderHistory.new
-    @depsgraph = DependencyGraph.new
+    
+    # @depsgraph = DependencyGraph.new
+    # ^ this was an old class for different types of entities (objects, meshes, lights, cameras) before the creation of the new vertex animation system.
+    # Keeping a reference here in a comment for historical reasons (may need to reference this code later) but generally speaking, this class should no longer be used
+      # use OIT_RenderPipeline, World, and RubyOF::Project::EntityCache instead
+    
     @sync = BlenderSync.new(@message_history, @frame_history,
-                            @depsgraph, @window, @world)
+                            @window, @world)
     
   end
   
@@ -309,10 +314,6 @@ class Core
     
     # setup()
       # @message_history = History.new
-      # @depsgraph = DependencyGraph.new
-      
-      # puts "clearing"
-      # @depsgraph.clear
       
       # puts "reloading history"
       # @message_history.on_reload
@@ -868,12 +869,6 @@ class Core
       end
     end
     
-    
-    # @depsgraph.draw(@window) do
-    
-      
-      
-    # end
     
     
     # t1 = RubyOF::TimeCounter.now

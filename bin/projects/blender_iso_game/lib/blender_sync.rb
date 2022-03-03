@@ -2,11 +2,10 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(message_history, history, depsgraph, window, world)
+  def initialize(message_history, history, window, world)
     @message_history = message_history
     @frame_history = history
     
-    @depsgraph = depsgraph
     @window = window
     @world = world
     
@@ -178,9 +177,6 @@ class BlenderSync
     # }
     
     
-    # TODO: remove depsgraph
-    
-    
     case message['type']
     when 'all_entity_names'
       # This message is still being sent from Blender, but not sure if I need it now or not, because entities are being managed through the entity texture / transform texture.
@@ -336,7 +332,6 @@ class BlenderSync
     case message['name']
     when 'reset'
       # # blender has reset, so reset all RubyOF data
-      # @depsgraph.clear
       
       puts "== reset"
       
