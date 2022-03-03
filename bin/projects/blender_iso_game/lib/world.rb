@@ -494,6 +494,19 @@ class World
     end
     
     # TODO: implement way to delete lights
+    def delete(light_name)
+      @lights.delete_if{|light| light.name == light_name}
+    end
+    
+    # delete all lights whose names are not on this list
+    def gc(list_of_names)
+      @lights
+      .reject{ |light|  list_of_names.include? light.name }
+      .each do |light|
+        delete light.name
+      end
+    end
+    
     
     def each
       return enum_for(:each) unless block_given?
