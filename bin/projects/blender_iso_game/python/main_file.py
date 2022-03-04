@@ -1318,13 +1318,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         if len(delta) > 0:
             self.old_names = self.new_names
             
-            tex_manager = resource_manager.get_texture_manager(context)
+            export_helper.gc_objects(context, delta)
             
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                tex_manager.delete_object(name)
         
         
         # 

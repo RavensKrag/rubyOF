@@ -620,6 +620,31 @@ class Exporter():
     
     
     
+    def gc_objects(self, context, delta):
+        tex_manager = self.resource_manager.get_texture_manager(context)
+        
+        for name in delta:
+            # print(delete)
+            
+            # TODO: make sure they're all mesh objects
+            tex_manager.delete_object(name)
+        
+        
+        filepaths = tex_manager.get_texture_paths()
+        position_filepath, normal_filepath, transform_filepath = filepaths
+        
+        data = {
+            'type': 'update_geometry_data',
+            # 'json_file_path': tex_manager.get_json_path(),
+            'transform_tex_path': transform_filepath,
+            # 'position_tex_path' : position_filepath,
+            # 'normal_tex_path'   : normal_filepath,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+    
+    
+    
     # send data generated in export_initial() or export_update()
     # from python -> ruby
     def __export_ending(self, depsgraph, message_queue):
