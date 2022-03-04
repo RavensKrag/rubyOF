@@ -447,13 +447,237 @@ class Core
     @sync.update
     
     
-    @frame_history.update # => on_update
+    @frame_history.update do |snapshot|
+      # step every x frames
+      
+      x = 8
+      
+      moves = [
+        GLM::Vec3.new(1, 0, 0),
+        GLM::Vec3.new(1, 0, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(-1, 0, 0),
+        GLM::Vec3.new(-1, 0, 0),
+        GLM::Vec3.new(0, 1, 0),
+      ]
+      
+      
+      # TODO: wrap GLM::Vec3 multiply by a scalar
+      
+      moves.each_with_index do |v, move_idx|
+        # step in a direction, but subdivide into
+        # two motions for animation / tweening
+        
+        puts "move idx: #{move_idx} of #{moves.length-1}"
+        
+        
+        
+        # distribute the moves over a series of turns.
+        # each turn, take one movement action.
+        # + move in the specified way
+        # + play an animation to interpolate the frames
+        
+        # dt = 0.5
+        
+        
+        
+        #  0 - log root position
+        snapshot.frame do
+          
+        end
+        
+        
+        # transform could be set on frame 0 (e.g. the very first frame)
+        # so want to load the transform data after that
+        
+        # all code inside snapshot blocks will be skipped on resume
+        # so any code related to a branch condition
+        # needs to be outside of the snapshot blocks.
+        
+        entity = @world.data.find_entity_by_name('CharacterTest')
+        p entity
+        
+        pos = entity.position
+        puts "grid position: #{pos}"
+        
+        
+        # step up if there's an obstruction
+        if @world.space.point_query(pos + v).include? 'Cube.002' # datablock name
+          GLM::Vec3.new(0,0,1).tap do |v|
+            #  1 - animate
+            snapshot.frame do
+              puts pos
+            end
+            #  2 - animate
+            snapshot.frame do
+              
+            end
+            #  3 - animate
+            snapshot.frame do
+              
+            end
+            #  4 - animate
+            snapshot.frame do
+              
+            end
+            #  5 - animate
+            snapshot.frame do
+              
+            end
+            #  6 - animate
+            snapshot.frame do
+              
+            end
+            #  7 - animate
+            snapshot.frame do
+              
+            end
+            #  8 - animate (halfway)
+            snapshot.frame do
+              # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
+              # entity.position = pos + v2
+            end
+            #  9 - animate
+            snapshot.frame do
+              
+            end
+            # 10 - animate
+            snapshot.frame do
+              
+            end
+            # 11 - animate
+            snapshot.frame do
+              
+            end
+            # 12 - animate
+            snapshot.frame do
+              
+            end
+            # 13 - animate
+            snapshot.frame do
+              
+            end
+            # 14 - animate
+            snapshot.frame do
+              
+            end
+            # 15 - animate
+            snapshot.frame do
+              
+            end
+            # 16 - animate
+            snapshot.frame do
+              
+            end
+            # 17 - animate
+            snapshot.frame do
+              v2 = GLM::Vec3.new(v.x, v.y, v.z)
+              entity.position = pos + v2
+            end
+            
+            
+            #  0 - new root position
+            snapshot.frame do
+              
+            end
+            
+            # 
+            # update pos = new root position
+            # 
+            pos = entity.position
+          end
+          
+        end
+        
+        
+        #  1 - animate
+        snapshot.frame do
+          p pos
+        end
+        #  2 - animate
+        snapshot.frame do
+          
+        end
+        #  3 - animate
+        snapshot.frame do
+          
+        end
+        #  4 - animate
+        snapshot.frame do
+          
+        end
+        #  5 - animate
+        snapshot.frame do
+          
+        end
+        #  6 - animate
+        snapshot.frame do
+          
+        end
+        #  7 - animate
+        snapshot.frame do
+          
+        end
+        #  8 - animate (halfway)
+        snapshot.frame do
+          # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
+          # entity.position = pos + v2
+        end
+        #  9 - animate
+        snapshot.frame do
+          
+        end
+        # 10 - animate
+        snapshot.frame do
+          
+        end
+        # 11 - animate
+        snapshot.frame do
+          
+        end
+        # 12 - animate
+        snapshot.frame do
+          
+        end
+        # 13 - animate
+        snapshot.frame do
+          
+        end
+        # 14 - animate
+        snapshot.frame do
+          
+        end
+        # 15 - animate
+        snapshot.frame do
+          
+        end
+        # 16 - animate
+        snapshot.frame do
+          
+        end
+        # 17 - animate
+        snapshot.frame do
+          v2 = GLM::Vec3.new(v.x, v.y, v.z)
+          entity.position = pos + v2
+        end
+        # # 18 - new root position
+        # snapshot.frame do
+          
+        # end
+        
+      end
+      
+    end
     
     @world.update
   end
-  
-  
-  
   
   # methods #update and #draw are called by the C++ render loop
   # Their only job now at the Ruby level is to set up Fibers
@@ -461,235 +685,6 @@ class Core
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
   # when the file reloads.
-  def on_update(snapshot)
-    # step every x frames
-    
-    x = 8
-    
-    moves = [
-      GLM::Vec3.new(1, 0, 0),
-      GLM::Vec3.new(1, 0, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(-1, 0, 0),
-      GLM::Vec3.new(-1, 0, 0),
-      GLM::Vec3.new(0, 1, 0),
-    ]
-    
-    
-    # TODO: wrap GLM::Vec3 multiply by a scalar
-    
-    moves.each_with_index do |v, move_idx|
-      # step in a direction, but subdivide into
-      # two motions for animation / tweening
-      
-      puts "move idx: #{move_idx} of #{moves.length-1}"
-      
-      
-      
-      # distribute the moves over a series of turns.
-      # each turn, take one movement action.
-      # + move in the specified way
-      # + play an animation to interpolate the frames
-      
-      # dt = 0.5
-      
-      
-      
-      #  0 - log root position
-      snapshot.frame do
-        
-      end
-      
-      
-      # transform could be set on frame 0 (e.g. the very first frame)
-      # so want to load the transform data after that
-      
-      # all code inside snapshot blocks will be skipped on resume
-      # so any code related to a branch condition
-      # needs to be outside of the snapshot blocks.
-      
-      entity = @world.data.find_entity_by_name('CharacterTest')
-      p entity
-      
-      pos = entity.position
-      puts "grid position: #{pos}"
-      
-      
-      # step up if there's an obstruction
-      if @world.space.point_query(pos + v).include? 'Cube.002' # datablock name
-        GLM::Vec3.new(0,0,1).tap do |v|
-          #  1 - animate
-          snapshot.frame do
-            puts pos
-          end
-          #  2 - animate
-          snapshot.frame do
-            
-          end
-          #  3 - animate
-          snapshot.frame do
-            
-          end
-          #  4 - animate
-          snapshot.frame do
-            
-          end
-          #  5 - animate
-          snapshot.frame do
-            
-          end
-          #  6 - animate
-          snapshot.frame do
-            
-          end
-          #  7 - animate
-          snapshot.frame do
-            
-          end
-          #  8 - animate (halfway)
-          snapshot.frame do
-            # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-            # entity.position = pos + v2
-          end
-          #  9 - animate
-          snapshot.frame do
-            
-          end
-          # 10 - animate
-          snapshot.frame do
-            
-          end
-          # 11 - animate
-          snapshot.frame do
-            
-          end
-          # 12 - animate
-          snapshot.frame do
-            
-          end
-          # 13 - animate
-          snapshot.frame do
-            
-          end
-          # 14 - animate
-          snapshot.frame do
-            
-          end
-          # 15 - animate
-          snapshot.frame do
-            
-          end
-          # 16 - animate
-          snapshot.frame do
-            
-          end
-          # 17 - animate
-          snapshot.frame do
-            v2 = GLM::Vec3.new(v.x, v.y, v.z)
-            entity.position = pos + v2
-          end
-          
-          
-          #  0 - new root position
-          snapshot.frame do
-            
-          end
-          
-          # 
-          # update pos = new root position
-          # 
-          pos = entity.position
-        end
-        
-      end
-      
-      
-      #  1 - animate
-      snapshot.frame do
-        p pos
-      end
-      #  2 - animate
-      snapshot.frame do
-        
-      end
-      #  3 - animate
-      snapshot.frame do
-        
-      end
-      #  4 - animate
-      snapshot.frame do
-        
-      end
-      #  5 - animate
-      snapshot.frame do
-        
-      end
-      #  6 - animate
-      snapshot.frame do
-        
-      end
-      #  7 - animate
-      snapshot.frame do
-        
-      end
-      #  8 - animate (halfway)
-      snapshot.frame do
-        # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-        # entity.position = pos + v2
-      end
-      #  9 - animate
-      snapshot.frame do
-        
-      end
-      # 10 - animate
-      snapshot.frame do
-        
-      end
-      # 11 - animate
-      snapshot.frame do
-        
-      end
-      # 12 - animate
-      snapshot.frame do
-        
-      end
-      # 13 - animate
-      snapshot.frame do
-        
-      end
-      # 14 - animate
-      snapshot.frame do
-        
-      end
-      # 15 - animate
-      snapshot.frame do
-        
-      end
-      # 16 - animate
-      snapshot.frame do
-        
-      end
-      # 17 - animate
-      snapshot.frame do
-        v2 = GLM::Vec3.new(v.x, v.y, v.z)
-        entity.position = pos + v2
-      end
-      # # 18 - new root position
-      # snapshot.frame do
-        
-      # end
-      
-    end
-    
-  end
-  
   
   
   # 

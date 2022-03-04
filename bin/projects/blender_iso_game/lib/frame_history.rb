@@ -29,7 +29,7 @@ class FrameHistory
       end
       
       # run every time Core updates
-      def update
+      def update(&block)
         if @outer.paused
           # NO-OP
           return
@@ -80,10 +80,25 @@ class FrameHistory
       end
       
       # run every time Core updates
-      def update
+      def update(&block)
         return if @outer.paused
         
         @outer.instance_eval do
+          
+          @f2 ||= Fiber.new do
+            # should create a closure around block variable
+            # because it is an instance variable
+            block.call(self)
+          end
+          
+          @f1 ||= Fiber.new do
+            # forward cycle
+            while @f2.alive?
+              @f2.resume()
+              Fiber.yield
+            end
+          end
+          
           
           if @f1.alive?
             @f1.resume()
@@ -228,7 +243,7 @@ class FrameHistory
       # run every time Core updates
       # 
       # reverse playback is handled by Blender via #seek - do not need explict reverse playback mode
-      def update
+      def update(&block)
         return if @outer.paused
         
         @outer.instance_eval do
@@ -403,7 +418,7 @@ class FrameHistory
       end
       
       # run every time Core updates
-      def update
+      def update(&block)
         
       end
       
@@ -476,17 +491,8 @@ class FrameHistory
     
     
     after_transition :ANY, :generating_new do
-      @f2 = Fiber.new do
-        @context.on_update(self)
-      end
-      
-      @f1 = Fiber.new do
-        # forward cycle
-        while @f2.alive?
-          @f2.resume()
-          Fiber.yield
-        end
-      end
+      @f1 = nil
+      @f2 = nil
       
       # p @f1
       @executing_frame = 0
