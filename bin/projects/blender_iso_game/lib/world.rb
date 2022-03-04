@@ -3,7 +3,7 @@ class World
   
   attr_reader :data, :space, :lights, :camera
   
-  def initialize(position_tex_path, normal_tex_path, transform_tex_path)
+  def initialize(json_file_path, position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
       :positions  => RubyOF::FloatPixels.new,
       :normals    => RubyOF::FloatPixels.new,
@@ -91,11 +91,7 @@ class World
     # json data stores names of entities, meshes, and materials
     # 
     
-    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
-    json_string   = File.readlines(json_filepath).join("\n")
-    json_data     = JSON.parse(json_string)
-    
-    @json = json_data
+    load_json_data json_file_path
     # p @json["mesh_data_cache"]
     
     
@@ -201,6 +197,12 @@ class World
   
   
   
+  def load_json_data(json_filepath)
+    json_string   = File.readlines(json_filepath).join("\n")
+    json_data     = JSON.parse(json_string)
+    
+    @json = json_data
+  end
   
   def load_transform_texture(transform_tex_path)
     ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)

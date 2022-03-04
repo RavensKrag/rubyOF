@@ -300,16 +300,8 @@ class BlenderSync
       # p message
       parse_timeline_commands(message)
     
-    when 'update_anim_json'
-      update_animation_json(message['value'])
-      
-      # self.update_entity_mapping(message)
-      # self.update_mesh_mapping(message)
-    
-    when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
-      
-      send(message['type'], message)
-    
+    when 'update_geometry_data'
+      update_geometry_data(message)
     else
       
       
@@ -459,23 +451,27 @@ class BlenderSync
   # handle update messages from BlenderSync
   # 
   
-  def update_animation_json(json_filepath)
-    p json_filepath
-    raise "ERROR: Not yet implemented"
-    # TODO: implement this
-  end
   
+  # TODO: update this file and exporter.py to only use a small set of signals to reload textures
   
-  
-  # Update both transform texture and vertex textures.
-  # Used when you do a full export of everything,
-  # similar to running a "clean build" in C/C++.
-  def update_anim_textures(message)
-    # p message
-    @world.load_transform_texture(message['transform_tex_path'])
-    @world.load_vertex_textures(message['position_tex_path'],
-                                      message['normal_tex_path'])
+  def update_geometry_data(message)
+    p message
     
+    if message['json_file_path']
+      @world.load_json_data(message['json_file_path'])
+    end
+    
+    if message['position_tex_path'] and message['normal_tex_path']
+      @world.load_vertex_textures(message['position_tex_path'],
+                                  message['normal_tex_path'])
+    end
+    
+    if message['transform_tex_path']
+      @world.load_transform_texture(message['transform_tex_path'])
+    end
+    
+    
+    # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
     
     # reload history
     # (code adapted from Core#on_reload)
@@ -498,89 +494,66 @@ class BlenderSync
       # @frame_history.play
       # puts "frame: #{@frame_history.frame_index}"
     end
-  end
-  
-  # vertex position and normal data for one or more meshes has been updated
-  def update_geometry(message)
-    p message
-    # @world.load_transform_texture(message['transform_tex_path'])
-    @world.load_vertex_textures(message['position_tex_path'],
-                                      message['normal_tex_path'])
-    
-  end
-  
-  # transform data for a entity has been updated
-  # (may or may not contain an armature)
-  def update_transform(message)
-    puts "update transform"
-    p message
-    @world.load_transform_texture(message['transform_tex_path'])
-    # @world.load_vertex_textures(message['position_tex_path'],
-    #                                   message['normal_tex_path'])
     
   end
   
   
-  # material data is stored in the transform texture
-  # (like material property block)
-  # updates to a single material may effect one object, or many,
-  # so easiest just to load the entire transform texture again
-  def update_material(message)
-    p message
-    @world.load_transform_texture(message['transform_tex_path'])
-  end
+  # def update_animation_json(message)
+    
+  # end
   
   
-  def update_entity(message)
-    # case message['.type']
-    # when 'MESH'
-    #   name = message['name']
-    #   id = @entity_name_to_id[name]
+  # # vertex position and normal data for one or more meshes has been updated
+  # # 
+  # # Changes to geometry can change the frames available, but will only occasionally change the initial state. Other times they will expose new animation states.
+  # def update_geometry(message)
+    
+    
+  # end
+  
+  # # transform data for a entity has been updated
+  # # (may or may not contain an armature)
+  # # 
+  # # Interpret changes to transforms as changes in the initial state.
+  # # This will always require reloading history.
+  # def update_transform(message)
+  #   puts "update transform"
+  #   @world.load_transform_texture(message['transform_tex_path'])
+    
+  #   # TODO: find a better way to reload time from the initial state
+    
+  #   # reload history
+  #   # (code adapted from Core#on_reload)
+  #   if @frame_history.time_traveling?
+  #     # @frame_history = @frame_history.branch_history
+      
+  #     # For now, just replace the curret timeline with the alt one.
+  #     # In future commits, we can refine this system to use multiple
+  #     # timelines, with UI to compress timelines or switch between them.
       
       
-    #   nested_array = message['transform']
-    #   # ^ array of arrays
       
-    #   # p nested_array
+  #     @frame_history.branch_history
       
-    #   @world.set_entity_transform_array id, nested_array
-    #   # ^ thin wrapper on C++ callback
+  #   else
+  #     # Do NOT trigger play on reload after direct manipulation.
       
-      
-      
-    #   # reload history
-    #   # (code adapted from Core#on_reload)
-    #   if @frame_history.time_traveling?
-    #     # @frame_history = @frame_history.branch_history
-        
-    #     # For now, just replace the curret timeline with the alt one.
-    #     # In future commits, we can refine this system to use multiple
-    #     # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-    #     @frame_history.branch_history
-        
-    #   else
-    #     # Do NOT trigger play on reload after direct manipulation.
-    #     # Need the user to press "play" manually to signal
-    #     # they are done with direct manipulation. Otherwise,
-    #     # inputs from direct manipulation are comingled with
-    #     # inputs from ruby code execution.
-        
-        
-    #     # # was paused when the crash happened,
-    #     # # so should be able to 'play' and resume execution
-    #     # @frame_history.play
-    #     # puts "frame: #{@frame_history.frame_index}"
-    #   end
-    # else
-      
-      
-    # end
-  end
+  #     # # was paused when the crash happened,
+  #     # # so should be able to 'play' and resume execution
+  #     # @frame_history.play
+  #     # puts "frame: #{@frame_history.frame_index}"
+  #   end
+  # end
   
   
+  # # material data is stored in the transform texture
+  # # (like material property block)
+  # # updates to a single material may effect one object, or many,
+  # # so easiest just to load the entire transform texture again
+  # def update_material(message)
+  #   p message
+  #   @world.load_transform_texture(message['transform_tex_path'])
+  # end
   
   
   

@@ -305,19 +305,15 @@ class Exporter():
             context = yield(task_count / total_tasks)
         
         
+        
+        
         # 
-        # notify ruby that the JSON cache is updated
-        # (ruby uses this to perform queries based on name or spatial location)
+        # update json file
         # 
         
-        data = {
-            'type': 'update_anim_json',
-            'value': tex_manager.get_json_path(),
-        }
+        tex_manager.save()
         
-        self.to_ruby.write(json.dumps(data))
-        
-        context = yield( task_count / total_tasks )
+        context = yield(task_count / total_tasks)
         
         
         
@@ -328,25 +324,17 @@ class Exporter():
         position_filepath, normal_filepath, transform_filepath = filepaths
         
         data = {
-            'type': 'update_anim_textures',
+            'type': 'update_geometry_data',
+            'json_file_path': tex_manager.get_json_path(),
+            'transform_tex_path': transform_filepath,
             'position_tex_path' : position_filepath,
             'normal_tex_path'   : normal_filepath,
-            'transform_tex_path': transform_filepath,
         }
         
         self.to_ruby.write(json.dumps(data))
         
         
-        context = yield(task_count / total_tasks)
-        
-        
-        # 
-        # update json file
-        # 
-        
-        tex_manager.save()
-        
-        context = yield(task_count / total_tasks)
+        context = yield( task_count / total_tasks )
         
         
         
@@ -428,9 +416,9 @@ class Exporter():
             position_filepath, normal_filepath, transform_filepath = filepaths
             
             data = {
-                'type': 'update_transform',
-                'position_tex_path' : position_filepath,
-                'normal_tex_path'   : normal_filepath,
+                'type': 'update_geometry_data',
+                # 'position_tex_path' : position_filepath,
+                # 'normal_tex_path'   : normal_filepath,
                 'transform_tex_path': transform_filepath,
             }
             
@@ -559,7 +547,7 @@ class Exporter():
                 
                 # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
                 data = {
-                    'type': 'update_geometry',
+                    'type': 'update_geometry_data',
                     'scanline': i,
                     'position_tex_path' : self.position_tex.filepath,
                     'normal_tex_path'   : self.normal_tex.filepath,
