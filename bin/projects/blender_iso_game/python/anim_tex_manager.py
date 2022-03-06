@@ -588,7 +588,7 @@ class AnimTexManager ():
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_material_name == material.name:
-                self.set_object_material(obj_name, material)
+                self.set_object_material(cached_obj_name, material)
     
     
     # Remove object from the transform texture.
@@ -625,6 +625,12 @@ class AnimTexManager ():
         self.transform_tex.write_scanline(scanline_transform, scanline_index)
         
         self.transform_tex.save()
+        
+        # 
+        # remove data from cache
+        # 
+        
+        self.object_data_cache[scanline_index] = [None, None, None]
         
         
     def get_json_path(self):

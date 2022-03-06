@@ -373,56 +373,86 @@ class Exporter():
     def __update_entity_transform_without_armature(self, context, update, mesh_obj):
         tex_manager = self.resource_manager.get_texture_manager(context)
         
-        if update.is_updated_transform:
-            if tex_manager.has_object(mesh_obj.name):
-                # 
-                # update already existing object to have a new transform
-                # 
-                
-                m = tex_manager
-                m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
-                
-                
-                print("moved object")
-            else:
-                # 
-                # No object has existed in texture before
-                # but there was an update to the transform?
-                # 
-                # must be a new object!
-                # 
-                print("NO OBJECT FOUND")
-                
-                # export new mesh (if necessary)
-                # (may not need to export the mesh again)
-                # bind mesh to object
-                
-                m = tex_manager
-                
-                if not m.has_mesh(mesh_obj.data.name):
-                    m.export_mesh(mesh_obj.data.name, mesh_obj.data)
-                
-                m.set_object_mesh(mesh_obj.name, mesh_obj.data.name)
-                
+        if not update.is_updated_transform:
+            return
+        
+        
+        print("transform updated:", mesh_obj.name)
+        if tex_manager.has_object(mesh_obj.name):
+            # 
+            # update already existing object to have a new transform
+            # 
+            
+            m = tex_manager
+            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
             
             
-            # TODO: create a separate update message type for when transforms update
-            # TODO: only send update message once per frame, not every frame
-                # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
+            print("moved object")
             
-            print("send update message")
             
             filepaths = tex_manager.get_texture_paths()
             position_filepath, normal_filepath, transform_filepath = filepaths
             
             data = {
                 'type': 'update_geometry_data',
+                'comment': 'moved object',
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
                 'transform_tex_path': transform_filepath,
             }
             
             self.to_ruby.write(json.dumps(data))
+            
+        else:
+            # 
+            # No object has existed in texture before
+            # but there was an update to the transform?
+            # 
+            # must be a new object!
+            # 
+            print("NO OBJECT FOUND")
+            
+            # export new mesh (if necessary)
+            # (may not need to export the mesh again)
+            # bind mesh to object
+            
+            m = tex_manager
+            
+            if not m.has_mesh(mesh_obj.data.name):
+                m.export_mesh(mesh_obj.data.name, mesh_obj.data)
+            
+            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
+            m.set_object_mesh(mesh_obj.name, mesh_obj.data.name)
+            
+            
+            # TODO: must export material as well (just for this one object)
+            if(len(mesh_obj.material_slots) > 0):
+                mat = mesh_obj.material_slots[0].material
+                m.set_object_material(mesh_obj.name, mat)
+            
+            
+            filepaths = tex_manager.get_texture_paths()
+            position_filepath, normal_filepath, transform_filepath = filepaths
+            
+            data = {
+                'type': 'update_geometry_data',
+                'comment': 'created new mesh object',
+                # 'position_tex_path' : position_filepath,
+                # 'normal_tex_path'   : normal_filepath,
+                'transform_tex_path': transform_filepath,
+            }
+            
+            self.to_ruby.write(json.dumps(data))
+            
+        
+        
+        # TODO: create a separate update message type for when transforms update
+        # TODO: only send update message once per frame, not every frame
+            # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
+        
+        print("send update message")
+            
+            
                 
                 
         
@@ -619,7 +649,6 @@ class Exporter():
         self.__export_ending(depsgraph, message_queue)
     
     
-    
     def gc_objects(self, context, delta):
         tex_manager = self.resource_manager.get_texture_manager(context)
         
@@ -629,13 +658,15 @@ class Exporter():
             # TODO: make sure they're all mesh objects
             tex_manager.delete_object(name)
         
+        tex_manager.save() # update json file
         
         filepaths = tex_manager.get_texture_paths()
         position_filepath, normal_filepath, transform_filepath = filepaths
         
         data = {
             'type': 'update_geometry_data',
-            # 'json_file_path': tex_manager.get_json_path(),
+            'comment': 'run garbage collection',
+            'json_file_path': tex_manager.get_json_path(),
             'transform_tex_path': transform_filepath,
             # 'position_tex_path' : position_filepath,
             # 'normal_tex_path'   : normal_filepath,

@@ -1287,9 +1287,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         mytool = context.scene.my_tool
         
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
         
+        self.old_names = None
         self.new_names = None
         
         self.bPlaying = context.screen.is_animation_playing
@@ -1308,17 +1308,21 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         mytool = context.scene.my_tool
         
-        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        delta = list(set(self.old_names) - set(self.new_names))
-        
-        # print("old_names:", len(self.old_names), flush=True)
-        # print("delta:", delta, flush=True)
-        
-        if len(delta) > 0:
-            self.old_names = self.new_names
+        if self.old_names is None:
+            self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        else:
+            self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
             
-            export_helper.gc_objects(context, delta)
+            delta = list(set(self.old_names) - set(self.new_names))
+            
+            # print("old_names:", len(self.old_names), flush=True)
+            
+            if len(delta) > 0:
+                print("delta:", delta, flush=True)
+                
+                self.old_names = self.new_names
+                
+                export_helper.gc_objects(context, delta)
             
         
         
