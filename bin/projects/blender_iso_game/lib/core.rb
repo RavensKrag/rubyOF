@@ -313,6 +313,9 @@ class Core
     
     @update_scheduler = nil
     
+    
+    @world.space.update
+    
     # setup()
       # @message_history = History.new
       

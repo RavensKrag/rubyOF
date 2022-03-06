@@ -470,6 +470,10 @@ class BlenderSync
       @world.load_transform_texture(message['transform_tex_path'])
     end
     
+    if message['json_file_path'] || message['transform_tex_path']
+      @world.space.update
+    end
+    
     
     # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
     

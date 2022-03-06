@@ -440,7 +440,11 @@ class World
       @hash = Hash.new
       
       
+      self.update()
       
+    end
+    
+    def update
       @entity_list =
         @data.each
         .collect do |entity|
