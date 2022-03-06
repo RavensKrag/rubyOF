@@ -269,7 +269,7 @@ class Exporter():
         context = yield( 0.0 )
         
         
-        tex_manager = self.resource_manager.get_texture_manager(context)
+        tex_manager = self.resource_manager.get_texture_manager(context.scene)
         
         # 
         # calculate how many tasks there are
@@ -355,7 +355,7 @@ class Exporter():
 
     # use transform on armature as entity transform
     # (may apply to more than 1 mesh)
-    def __update_entity_transform_with_armature(self, context, update, armature_obj):
+    def __update_entity_transform_with_armature(self, scene, update, armature_obj):
         pass
         # print("send update message")
         
@@ -370,8 +370,8 @@ class Exporter():
     
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
-    def __update_entity_transform_without_armature(self, context, update, mesh_obj):
-        tex_manager = self.resource_manager.get_texture_manager(context)
+    def __update_entity_transform_without_armature(self, scene, update, mesh_obj):
+        tex_manager = self.resource_manager.get_texture_manager(scene)
         
         if not update.is_updated_transform:
             return
@@ -465,7 +465,7 @@ class Exporter():
     
     # first export when blender switches into the RubyOF rendering mode
     def export_initial(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context)
+        tex_manager = self.resource_manager.get_texture_manager(context.scene)
         
         region = context.region
         view3d = context.space_data
@@ -524,7 +524,7 @@ class Exporter():
     # every export after the first export
     # (send updated data only, in order to maintain synchronization)
     def export_update(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context)
+        tex_manager = self.resource_manager.get_texture_manager(context.scene)
         
         region = context.region
         view3d = context.space_data
@@ -623,14 +623,14 @@ class Exporter():
                         
                         
                         if obj.parent is None:
-                            self.__update_entity_transform_without_armature(context, update, obj)
+                            self.__update_entity_transform_without_armature(context.scene, update, obj)
                         elif obj.parent.type == 'ARMATURE':
                             # meshes attached to armatures will be exported with NLA animations, in a separate pass
                             pass
                         else: 
                             pass
                     elif obj.type == 'ARMATURE':
-                        self.__update_entity_transform_with_armature(context, update, obj)
+                        self.__update_entity_transform_with_armature(context.scene, update, obj)
                         
                         
                 
@@ -649,8 +649,8 @@ class Exporter():
         self.__export_ending(depsgraph, message_queue)
     
     
-    def gc_objects(self, context, delta):
-        tex_manager = self.resource_manager.get_texture_manager(context)
+    def gc_objects(self, scene, delta):
+        tex_manager = self.resource_manager.get_texture_manager(scene)
         
         for name in delta:
             # print(delete)

@@ -12,7 +12,7 @@ current issues
 	if you try to delete an object in blender, the renderer state doesn't match
 	(was deleted from the textures, but update did not propagate to ruby)
 
-[ ] can't undo deletion of entities
+[x] can't undo deletion of entities
 	can delete now, but can't undo the deletion
 	can just re-export everything again, but maybe there's a cheaper way?
 
@@ -29,17 +29,21 @@ it's really confusing behavior
 
 UPDATE:
 material data is now being set correctly and things now work as expected
+
 HOWEVER, the update loop is still being toggled off after undo, which can result in unexpected behavior. need to find a way to fix that - it should basically always be in the ON position.
 
 
 TODO: make sure that delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) puts the objects back in the exactly same rows of the texture
 	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
 
-(undo delete works, but undo and redo again doesn't work)
+[x] now can undo entity deletion, but hitting redo again doesn't work
+	probably something is weird about how the update loop is re-enabled after redo. I suspect even though the button is lit, that the loop is not actually re-enabled as expected.
+
+Moved entity GC logic into load / update callbacks, and out of out of modal update loop. This allows for deleting of entities to work across undo / redo.
 
 
-
-NOTE: deleting objects right after startup of Blender may cause issues. scene in Ruby goes blank, implying that all objects are being deleted. need to look into this more and figure out what the problem is.
+[ ] Deleting objects right after startup of Blender causes scene to go blank
+	Scene in Ruby goes blank, implying that all objects are being deleted. need to look into this more and figure out what the problem is.
 
 
 

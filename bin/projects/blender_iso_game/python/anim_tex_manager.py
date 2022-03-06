@@ -37,10 +37,10 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, context, to_ruby_fifo):
+    def __init__(self, scene, to_ruby_fifo):
         self.to_ruby = to_ruby_fifo
         
-        mytool = context.scene.my_tool
+        mytool = scene.my_tool
         
         self.max_tris = mytool.max_tris
         
@@ -323,8 +323,8 @@ class AnimTexManager ():
     # reset all internal state used by the texture manager
     # TODO: should clear the cache and JSON file as well
         # not strictly necessary, as clear() is normally run before deleting the animation manager instance. see main_file.py for usage
-    def clear(self, context):
-        mytool = context.scene.my_tool
+    def clear(self, scene):
+        mytool = scene.my_tool
         
         mytool.position_tex  = None
         mytool.normal_tex    = None
