@@ -1,0 +1,120 @@
+current issues
+
+[x] remove need for #on_update method
+
+[x] simplify blender messages sent via JSON
+	if you try to delete an object in blender, the renderer state doesn't match
+
+[x] can't redo full export
+	didn't implement responding to JSON reload message - just crashes
+
+[x] can't delete entities
+	if you try to delete an object in blender, the renderer state doesn't match
+	(was deleted from the textures, but update did not propagate to ruby)
+
+[ ] can't undo deletion of entities
+	can delete now, but can't undo the deletion
+	can just re-export everything again, but maybe there's a cheaper way?
+
+
+after undo, RubyOF update loop in Python stops (because it is an operator, I guess?).
+this breaks the update loop, which prevents future deletions
+still need to figure out why the system can't undo deletions, but this is a good first step
+
+also: when blocks are un-deleted, sometimes they get restored with weird render geometry? not sure how this weird geometry is being transmitted to Ruby
+it's almost like the geometry is not being rendered, but the zbuffer is still being written to?, like there a void that occludes some things, but not others.
+it's really confusing behavior
+
+-> on un-delete (undo of deletion) the objects are being written to the transform data, but their material data is not being written. the lack of material data is what is causing this problem.
+
+UPDATE:
+material data is now being set correctly and things now work as expected
+HOWEVER, the update loop is still being toggled off after undo, which can result in unexpected behavior. need to find a way to fix that - it should basically always be in the ON position.
+
+
+TODO: make sure that delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) puts the objects back in the exactly same rows of the texture
+	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
+
+(undo delete works, but undo and redo again doesn't work)
+
+
+
+NOTE: deleting objects right after startup of Blender may cause issues. scene in Ruby goes blank, implying that all objects are being deleted. need to look into this more and figure out what the problem is.
+
+
+
+
+
+
+[ ] one cube in the cube world is "transparent". not sure why
+	when moving it, it flashes magenta, which is the shader error color.
+	should check the shaders for clues.
+
+[ ] Sometimes game does not respond to hitting play in Blender.
+	Restarting Blender seems to fix the issue, but this is really annoying.
+
+
+[ ] save lights data to file
+	should have lights on init
+
+[ ] save camera data to file
+	should have lights on init, even when blender is not connected
+
+
+
+
+hash: when was the first time this position was queried?
+
+if you make changes to entities @ that position
+(either adding or removing a tile)
+then all calculations after that timepoint need to be re-calculated.
+
+should diff each time that entities are moved.
+diff the old image and new image, checking each pair of corresponding rows.
+unpack the pixels to mat4 if there is a difference in the pixel data,
+then decompose the matricies to see if the positions have changed.
+mark the hash at both the previous positon and the new position.
+
+don't mark the hash if any of the x y or z components of the position are not integers (likely to have non-integer values when editing the map, or moving props / greevels)
+if you hash these values (which vary continously) you will have a lot of things in the hash, which will waste memory.
+
+
+also need to recalculate when meshes are changed at grid positions
+(changing the meshes may change the result of queries as well)
+(imagine that a solid tile was changed into a staircase, or into water)
+
+
+also need to recalculate any time an armature is moved
+(how much to recalculate? everything from t=0 ?)
+
+
+
+
+
+
+
+how to visualize changes in time?
+like the braid-like demo from bret victor
+don't want to have to manually fiddle, scrubbing back and forth in time.
+that's better than not having control over time, but it's still not good.
+
+should visualize things with onion skin
+should be careful not to waste too much time rendering.
+probably don't want to render every frame.
+
+how often to render?
+	probably need to be able to configure this in the GUI
+	may need dynamic control for different specific circumstances
+how do we create a buffer that can be rendered to?
+how do we draw an onion-skin-like effect instead of rendering the normal material?
+should it be transparent?
+	if so, what is the opacity?
+
+
+in order to render the ghosts / trails
+just put transforms of all moving entities across all timepoints
+into a single transform texture
+then render that using the same mesh textures as "normal" rendering
+but with reduced transparency.
+(exploiting GPU instancing again to draw this in a single batch)
+(can likely use the EntityCache structure again too)
