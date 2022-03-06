@@ -388,7 +388,13 @@ class Core
   
   
   
+  def free_space?(pos)
+    !@world.space.point_query(pos).include?('Cube.002')
+  end
   
+  def blocked_space?(pos)
+    @world.space.point_query(pos).include?('Cube.002')
+  end
   
   
   # use a structure where Fiber does not need to be regenerated on reload
@@ -470,22 +476,11 @@ class Core
       ]
       
       
-      # TODO: wrap GLM::Vec3 multiply by a scalar
-      
       moves.each_with_index do |v, move_idx|
         # step in a direction, but subdivide into
         # two motions for animation / tweening
         
-        puts "move idx: #{move_idx} of #{moves.length-1}"
-        
-        
-        
-        # distribute the moves over a series of turns.
-        # each turn, take one movement action.
-        # + move in the specified way
-        # + play an animation to interpolate the frames
-        
-        # dt = 0.5
+        # puts "move idx: #{move_idx} of #{moves.length-1}"
         
         
         
@@ -509,169 +504,134 @@ class Core
         puts "grid position: #{pos}"
         
         
-        # step up if there's an obstruction
-        if @world.space.point_query(pos + v).include? 'Cube.002' # datablock name
-          GLM::Vec3.new(0,0,1).tap do |v|
-            #  1 - animate
-            snapshot.frame do
-              puts pos
-            end
-            #  2 - animate
-            snapshot.frame do
-              
-            end
-            #  3 - animate
-            snapshot.frame do
-              
-            end
-            #  4 - animate
-            snapshot.frame do
-              
-            end
-            #  5 - animate
-            snapshot.frame do
-              
-            end
-            #  6 - animate
-            snapshot.frame do
-              
-            end
-            #  7 - animate
-            snapshot.frame do
-              
-            end
-            #  8 - animate (halfway)
-            snapshot.frame do
-              # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-              # entity.position = pos + v2
-            end
-            #  9 - animate
-            snapshot.frame do
-              
-            end
-            # 10 - animate
-            snapshot.frame do
-              
-            end
-            # 11 - animate
-            snapshot.frame do
-              
-            end
-            # 12 - animate
-            snapshot.frame do
-              
-            end
-            # 13 - animate
-            snapshot.frame do
-              
-            end
-            # 14 - animate
-            snapshot.frame do
-              
-            end
-            # 15 - animate
-            snapshot.frame do
-              
-            end
-            # 16 - animate
-            snapshot.frame do
-              
-            end
-            # 17 - animate
-            snapshot.frame do
-              v2 = GLM::Vec3.new(v.x, v.y, v.z)
-              entity.position = pos + v2
-            end
-            
-            
-            #  0 - new root position
-            snapshot.frame do
-              
-            end
-            
-            # 
-            # update pos = new root position
-            # 
-            pos = entity.position
+        
+        
+        
+        
+        
+        
+        # if the spot in front of you is open (flat ground), move forward
+        
+        # if the spot in front of you is blocked, step up onto the block
+          # obstruction must be 1 block tall
+          # if it is taller, then you can't step over
+          
+          # step up and then over in the direction you originally planned to go
+          
+        # if the spot in front of you is open (hole), fall down into the hole
+          # need 1 blocks open for your body to fit
+          # and then also your feet need to be unsupported
+        
+        
+        v_up   = GLM::Vec3.new(0,0,1)
+        v_down = GLM::Vec3.new(0,0,-1)
+        
+        
+        # try to move up
+        # make sure front is blocked AND there is open space above
+        if blocked_space?(pos + v) && free_space?(pos + v_up)
+          #  1 - animate
+          snapshot.frame do
+            puts pos
           end
           
+          15.times do
+            #  2..16 - animate
+            snapshot.frame do
+              # NO-OP
+            end
+          end
+          
+          # 17 - animate
+          snapshot.frame do
+            entity.position = pos + v_up
+          end
+          
+          
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          # 
+          # update pos = new root position
+          # 
+          pos = entity.position
+          
         end
         
         
-        #  1 - animate
-        snapshot.frame do
-          p pos
-        end
-        #  2 - animate
-        snapshot.frame do
+        # try to move forward
+        # as long as the way is clear, move forward (even if you would fall)
+        if free_space?(pos + v)
+          
+          #  1 - animate
+          snapshot.frame do
+            puts pos
+          end
+          
+          15.times do
+              #  2..16 - animate
+              snapshot.frame do
+                # NO-OP
+              end
+            end
+          
+          # 17 - animate
+          snapshot.frame do
+            entity.position = pos + v
+          end
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          
+          # 
+          # update pos = new root position
+          # 
+          pos = entity.position
+          
           
         end
-        #  3 - animate
-        snapshot.frame do
+        
+        # try to move down
+        if free_space?(pos + v_down)
+          
+          #  1 - animate
+          snapshot.frame do
+            puts pos
+          end
+          
+          15.times do
+              #  2..16 - animate
+              snapshot.frame do
+                # NO-OP
+              end
+            end
+          
+          # 17 - animate
+          snapshot.frame do
+            entity.position = pos + v_down
+          end
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          
+          # 
+          # update pos = new root position
+          # 
+          pos = entity.position
+          
+          
           
         end
-        #  4 - animate
-        snapshot.frame do
-          
-        end
-        #  5 - animate
-        snapshot.frame do
-          
-        end
-        #  6 - animate
-        snapshot.frame do
-          
-        end
-        #  7 - animate
-        snapshot.frame do
-          
-        end
-        #  8 - animate (halfway)
-        snapshot.frame do
-          # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-          # entity.position = pos + v2
-        end
-        #  9 - animate
-        snapshot.frame do
-          
-        end
-        # 10 - animate
-        snapshot.frame do
-          
-        end
-        # 11 - animate
-        snapshot.frame do
-          
-        end
-        # 12 - animate
-        snapshot.frame do
-          
-        end
-        # 13 - animate
-        snapshot.frame do
-          
-        end
-        # 14 - animate
-        snapshot.frame do
-          
-        end
-        # 15 - animate
-        snapshot.frame do
-          
-        end
-        # 16 - animate
-        snapshot.frame do
-          
-        end
-        # 17 - animate
-        snapshot.frame do
-          v2 = GLM::Vec3.new(v.x, v.y, v.z)
-          entity.position = pos + v2
-        end
-        # # 18 - new root position
-        # snapshot.frame do
-          
-        # end
+        
         
       end
       
