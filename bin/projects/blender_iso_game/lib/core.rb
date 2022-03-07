@@ -601,7 +601,7 @@ class Core
         end
         
         # try to move down
-        if free_space?(pos + v_down)
+        while free_space?(pos + v_down)
           
           #  1 - animate
           snapshot.frame do
