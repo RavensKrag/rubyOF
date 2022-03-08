@@ -75,28 +75,24 @@ void main (void){
     
     // 
     // instance ID -> texcoords for object_transform_tex
+    // every row in the transform texture is used
+    // (only the mesh texture has y=0 as a line of magenta pixels)
     // 
     
-    // Bottom row, y=0 is a line of magenta pixels.
-    // This is used only as a visual indicator
-    // of where the bottom of the texture is
-    // it is not intended to be read as data.
-    // Thus, the shader must +1 to the index.
-    
     // id block - what mesh should we draw?
-    vec2 texCoord0 = vec2(0, gl_InstanceID+1) + offset;
+    vec2 texCoord0 = vec2(0, gl_InstanceID) + offset;
     
     // transform block - mat4x4 for transform
-    vec2 texCoord1 = vec2(1, gl_InstanceID+1) + offset;
-    vec2 texCoord2 = vec2(2, gl_InstanceID+1) + offset;
-    vec2 texCoord3 = vec2(3, gl_InstanceID+1) + offset;
-    vec2 texCoord4 = vec2(4, gl_InstanceID+1) + offset;
+    vec2 texCoord1 = vec2(1, gl_InstanceID) + offset;
+    vec2 texCoord2 = vec2(2, gl_InstanceID) + offset;
+    vec2 texCoord3 = vec2(3, gl_InstanceID) + offset;
+    vec2 texCoord4 = vec2(4, gl_InstanceID) + offset;
     
     // material property block (ambient, diffuse, specular, emmisive)
-    vec2 texCoord5 = vec2(5, gl_InstanceID+1) + offset;
-    vec2 texCoord6 = vec2(6, gl_InstanceID+1) + offset;
-    vec2 texCoord7 = vec2(7, gl_InstanceID+1) + offset;
-    vec2 texCoord8 = vec2(8, gl_InstanceID+1) + offset;
+    vec2 texCoord5 = vec2(5, gl_InstanceID) + offset;
+    vec2 texCoord6 = vec2(6, gl_InstanceID) + offset;
+    vec2 texCoord7 = vec2(7, gl_InstanceID) + offset;
+    vec2 texCoord8 = vec2(8, gl_InstanceID) + offset;
     
     
     // 
@@ -131,13 +127,13 @@ void main (void){
     // instance ID -> object ID from object_transform_tex
     // 
     
-    float object_id = TEXTURE(object_transform_tex, texCoord0).r;
+    float mesh_id = TEXTURE(object_transform_tex, texCoord0).r;
     
     // 
     // vertex UVs on input mesh -> texture coordinates for output mesh data
     // 
     
-    vec2 vert_data_texcoord = texcoord + offset + vec2(0, object_id);
+    vec2 vert_data_texcoord = texcoord + offset + vec2(0, mesh_id);
     
     // 
     // vertex UVs on input mesh -> positions of verts saved in texture
@@ -152,6 +148,7 @@ void main (void){
     // vec3 position = vec3(0,0,0);
     
     // vec4 finalPos = vec4(pos_data.rgb, 1.0);
+    
     vec4 finalPos = transform * vec4(pos_data.rgb, 1.0);
     
     
