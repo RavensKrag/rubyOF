@@ -17,6 +17,8 @@ Maybe everything could just be moved into some more appropriate callback, like d
 	Scene in Ruby goes blank, implying that all objects are being deleted. need to look into this more and figure out what the problem is.
 	
 	Doesn't seem to happen any more, now that old_objects list is correctly initialized on load, and GC is managed on update.
+	
+	sometimes it can happen? not clear when or why.
 
 
 [ ] delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) should put the objects back in the exactly same rows of the transform texture
@@ -24,8 +26,9 @@ Maybe everything could just be moved into some more appropriate callback, like d
 	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
 
 
+[ ] send pause message on undo
 
-if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
+	if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
 
 
 
@@ -35,11 +38,31 @@ something is selectable in Blender, but it doesn't create a representation that 
 
 
 
+how do I properly write a query to check if I can step into a tile?
+want to have a notion of querying the tiles, but current query would also get dynamic things
+is this going to just fix itself when I separate dynamic objects from static objects?
 
 
-[ ] one cube in the cube world is "transparent". not sure why
+
+
+
+can now move tiles in the world and have system change the outcome,
+but it seems like the player entity is jumping back to the initial position in certain circumstances.
+why is that? does it have to do with how the transform texture is loaded?
+want to be able to edit the tiles without changing the entity position
+(again, this may be partially fixable by separating dynamics vs statics, but there may be other cases to consider as well)
+
+
+
+
+
+[x] one cube in the cube world is "transparent". not sure why
 	when moving it, it flashes magenta, which is the shader error color.
 	should check the shaders for clues.
+	
+	vert shader was not drawing the first entity.
+	fixed now.
+	
 
 [ ] Sometimes game does not respond to hitting play in Blender.
 	Restarting Blender seems to fix the issue, but this is really annoying.
