@@ -434,13 +434,17 @@ class Exporter():
                 m.set_object_material(mesh_obj.name, mat)
             
             
-            filepaths = tex_manager.get_texture_paths()
+            filepaths = m.get_texture_paths()
             position_filepath, normal_filepath, transform_filepath = filepaths
+            
+            # update JSON file
+            m.save()
             
             if mesh_updated:
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with new mesh',
+                    'json_file_path': tex_manager.get_json_path(),
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
                     'transform_tex_path': transform_filepath,
@@ -449,6 +453,7 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with existing mesh',
+                    # 'json_file_path': tex_manager.get_json_path(),
                     # 'position_tex_path' : position_filepath,
                     # 'normal_tex_path'   : normal_filepath,
                     'transform_tex_path': transform_filepath,

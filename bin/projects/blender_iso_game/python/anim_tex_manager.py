@@ -420,10 +420,10 @@ class AnimTexManager ():
         
         
         # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
-        output_frame = self.__mesh_name_to_scanline(mesh_name)
+        scanline_index = self.__mesh_name_to_scanline(mesh_name)
         
-        self.position_tex.write_scanline(scanline_position, output_frame)
-        self.normal_tex.write_scanline(scanline_normals, output_frame)
+        self.position_tex.write_scanline(scanline_position, scanline_index)
+        self.normal_tex.write_scanline(scanline_normals, scanline_index)
         
         
         self.position_tex.save()
@@ -613,7 +613,7 @@ class AnimTexManager ():
         
         # This time, you *want* to clobber the data,
         # so don't read what's currently in there.
-        scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = [0.0, 0.0, 0.0, 1.0] * self.transform_tex.width
         
         
         # 
@@ -628,7 +628,35 @@ class AnimTexManager ():
         # remove data from cache
         # 
         
+        # clear object data
+        obj_data = self.object_data_cache[scanline_index]
+        _, mesh_name, _ = obj_data
+        
         self.object_data_cache[scanline_index] = [None, None, None]
+        
+        # if the mesh attached to this object is no longer being used,
+        # then delete the mesh from the cache and from the texture
+        count = 0
+        for data in self.object_data_cache:
+            cached_obj_name, cached_mesh_name, cached_material_name = data
+            
+            if cached_mesh_name == mesh_name:
+                count += 1
+        
+        if count == 0:
+            i = self.__mesh_name_to_scanline(mesh_name)
+            self.mesh_data_cache[i] = None
+            
+            scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
+            scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+            
+            self.position_tex.write_scanline(scanline_position, i)
+            self.normal_tex.write_scanline(scanline_normals, i)
+            
+            self.position_tex.save()
+            self.normal_tex.save()
+        
+        
         
         # save new JSON file
         self.save()
