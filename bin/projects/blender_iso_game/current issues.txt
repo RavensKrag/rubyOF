@@ -49,27 +49,11 @@ The update loop is still being toggled off after undo, which can result in unexp
 	but not when using alt+D (duplicate linked)
 	
 	sometimes shift+D works, but not all the time. not sure what the difference is between working and not working.
-	
 
 
-[ ] delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) should put the objects back in the exactly same rows of the transform texture
+[ ] clean up nomenclature
 
-	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
-
-
-[ ] one tile is disappearing again.
-	still instance index 0.
-	block appears in magenta if dragged.
-
-
-[ ] send pause message on undo
-
-	if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
-
-
-[ ] sync Blender window geometry to RubyOF when Blender is started after RubyOF
-
-
+	Sometimes it's called "transform texture" but in other places it's called "entity texture." Similarly, sometimes I call them entities (entities have meshes in Ruby/C++ EntityCache), but in other places they're objects (objects vs mesh datablocks in blender) Need to unify the nomenclature all over.
 
 	
 [ ] separate static entities from dynamic entities
@@ -166,9 +150,28 @@ The update loop is still being toggled off after undo, which can result in unexp
 
 
 
-[ ] clean up nomenclature
 
-	Sometimes it's called "transform texture" but in other places it's called "entity texture." Similarly, sometimes I call them entities (entities have meshes in Ruby/C++ EntityCache), but in other places they're objects (objects vs mesh datablocks in blender) Need to unify the nomenclature all over.
+
+
+[ ] delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) should put the objects back in the exactly same rows of the transform texture
+
+	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
+	
+	(don't have a good way to test this right now, may need to delay until I have mulitple moving entities)
+
+
+[ ] one tile is disappearing again.
+	still instance index 0.
+	block appears in magenta if dragged.
+
+
+[ ] send pause message on undo
+
+	if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
+
+
+[ ] sync Blender window geometry to RubyOF when Blender is started after RubyOF
+
 
 
 
