@@ -21,6 +21,15 @@ Maybe everything could just be moved into some more appropriate callback, like d
 	sometimes it can happen? not clear when or why.
 
 
+[x] Use entity names from JSON cache to determine which entities to GC
+	JSON cache shows which entities are present in RubyOF,
+	so by comparing that list with the list of entities in Blender
+	(or at least the collection that is supposed to be exported)
+	then it is easy to determine which things have been deleted.
+	
+	Seem to clear up many of the previous bugs? Will have to wait and see.
+
+
 [ ] delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) should put the objects back in the exactly same rows of the transform texture
 
 	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
@@ -62,6 +71,9 @@ want to be able to edit the tiles without changing the entity position
 	
 	vert shader was not drawing the first entity.
 	fixed now.
+	
+	block is disappearing again.
+	appears in magenta if dragged.
 	
 
 [ ] Sometimes game does not respond to hitting play in Blender.
