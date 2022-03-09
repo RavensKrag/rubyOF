@@ -649,6 +649,20 @@ class Exporter():
                     mat = obj
                     tex_manager.update_material(mat)
                     
+                    filepaths = tex_manager.get_texture_paths()
+                    position_filepath, normal_filepath, transform_filepath = filepaths
+                    
+                    data = {
+                        'type': 'update_geometry_data',
+                        'comment': 'edit material for all instances',
+                        # 'json_file_path': tex_manager.get_json_path(),
+                        'transform_tex_path': transform_filepath,
+                        # 'position_tex_path' : position_filepath,
+                        # 'normal_tex_path'   : normal_filepath,
+                    }
+                    
+                    self.to_ruby.write(json.dumps(data))
+                    
             
             # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material.
          
