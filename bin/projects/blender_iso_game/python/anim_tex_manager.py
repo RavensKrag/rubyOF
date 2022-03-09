@@ -52,8 +52,6 @@ class AnimTexManager ():
         # like a "this side up" sign, but it also allows for
         # the user to create frames completely free of any
         # visible geometry. (useful with GPU instancing)
-        pixel_data = [1.0, 0.0, 1.0, 1.0] * self.transform_tex.width
-        self.transform_tex.write_scanline(pixel_data, 0)
         
         pixel_data = [1.0, 0.0, 0.0, 1.0] * self.position_tex.width
         self.position_tex.write_scanline(pixel_data, 0)

@@ -40,6 +40,22 @@ The update loop is still being toggled off after undo, which can result in unexp
 [x] check that editing of meshes works with new export system
 
 
+[x] one tile is disappearing again.
+	still instance index 0.
+	block appears in magenta if dragged.
+	
+	Looking at the transform texture in Blender, i=0 is magenta sometimes,
+	so something has gone wrong.
+	
+	
+	I think it's fixed now.
+	Transform texture was still having i=0 set to magenta.
+	This was happening in AnimTexManager __init__
+	so it's likely that on undo, when the manager was re-initialized,
+	the intended data in the transform texture got clobbered. When the data was re-written on move, only the transform got updated - but the color stayed magenta.
+	
+	Because the mesh index is only read out of the red channel, magenta is interpreted as a valid mesh index color.
+
 
 [ ] can't duplicate objects to create new objects
 
@@ -108,8 +124,13 @@ The update loop is still being toggled off after undo, which can result in unexp
 
 
 
+[ ] when moving tiles: after automatic rollback, forcast to previous end of timeline (shouldn't have to manually fiddle with the timeline to see changes)
 
-[ ] visualize changes in time (ghosts of moving entities)
+	may need to display ghosts of moving entities before attempting this
+	
+	
+
+[ ] visualize changes over time as ghosts in space (aka onion skinning)
 
 
 	how to visualize changes in time?
@@ -159,10 +180,6 @@ The update loop is still being toggled off after undo, which can result in unexp
 	
 	(don't have a good way to test this right now, may need to delay until I have mulitple moving entities)
 
-
-[ ] one tile is disappearing again.
-	still instance index 0.
-	block appears in magenta if dragged.
 
 
 [ ] send pause message on undo
