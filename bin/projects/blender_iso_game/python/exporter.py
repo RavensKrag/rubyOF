@@ -411,7 +411,7 @@ class Exporter():
             # 
             # must be a new object!
             # 
-            print("NO OBJECT FOUND")
+            print("creating new object")
             
             # export new mesh (if necessary)
             # (may not need to export the mesh again)
@@ -419,7 +419,9 @@ class Exporter():
             
             m = tex_manager
             
+            mesh_updated = False
             if not m.has_mesh(mesh_obj.data.name):
+                mesh_updated = True
                 m.export_mesh(mesh_obj.data.name, mesh_obj.data)
             
             m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
@@ -435,19 +437,28 @@ class Exporter():
             filepaths = tex_manager.get_texture_paths()
             position_filepath, normal_filepath, transform_filepath = filepaths
             
-            data = {
-                'type': 'update_geometry_data',
-                'comment': 'created new mesh object',
-                # 'position_tex_path' : position_filepath,
-                # 'normal_tex_path'   : normal_filepath,
-                'transform_tex_path': transform_filepath,
-            }
+            if mesh_updated:
+                data = {
+                    'type': 'update_geometry_data',
+                    'comment': 'created new mesh object',
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
+                    'transform_tex_path': transform_filepath,
+                }
+            else:
+                data = {
+                    'type': 'update_geometry_data',
+                    'comment': 'created new mesh object',
+                    # 'position_tex_path' : position_filepath,
+                    # 'normal_tex_path'   : normal_filepath,
+                    'transform_tex_path': transform_filepath,
+                }
+                
             
             self.to_ruby.write(json.dumps(data))
             
         
         
-        # TODO: create a separate update message type for when transforms update
         # TODO: only send update message once per frame, not every frame
             # actually, this might still get slow to go through the disk like this... may want to just send a JSON message with the mat4 data in memory to update the live scene, but also update the changed scene on disk so that when it does eventually be reloaded from disk, that version is good too - no need to do a full export again.
         
@@ -485,10 +496,6 @@ class Exporter():
         
         
         
-        # collect up two different categories of messages
-        # the datablock messages must be sent before entity messages
-        # otherwise there will be issues with dependencies
-        message_queue   = [] # list of dict
         
         active_object = context.active_object
         
@@ -501,7 +508,7 @@ class Exporter():
         # loop over all objects
         for obj in bpy.data.objects:
             if obj.type == 'LIGHT':
-                message_queue.append(pack_light(obj))
+                self.to_ruby.write(json.dumps(pack_light(obj)))
                 
         #     elif obj.type == 'MESH':
         #         pass
@@ -518,7 +525,6 @@ class Exporter():
         # TODO: want to separate out lights from meshes (objects)
         # TODO: want to send linked mesh data only once (expensive) but send linked light data every time (no cost savings for me to have linked lights in GPU render)
         
-        self.__export_ending(depsgraph, message_queue)
         
         
         
@@ -545,11 +551,6 @@ class Exporter():
         
         
         
-        # collect up two different categories of messages
-        # the datablock messages must be sent before entity messages
-        # otherwise there will be issues with dependencies
-        message_queue   = [] # list of dict
-        
         active_object = context.active_object
         
         # print(time.time())
@@ -565,24 +566,27 @@ class Exporter():
                 bpy.ops.object.editmode_toggle()
                 # bpy.ops.object.mode_set(mode= 'OBJECT')
                 
-                print("mesh edit detected")
-                print(active_object)
+                print("mesh edit detected", flush=True)
+                print(active_object, flush=True)
                 
                 
                 # need to update the mesh,
                 # but don't need to update bindings
                 # (it's like using a pointer - no need to update references)
                 
-                tex_manager.export_mesh(active_object.name, active_object)
+                tex_manager.export_mesh(active_object.data.name, active_object.data)
                 
                 
-                # (this will force reload of all textures, which may not be ideal for load times. but this will at least allow for prototyping)
+                filepaths = tex_manager.get_texture_paths()
+                position_filepath, normal_filepath, transform_filepath = filepaths
+                
                 data = {
                     'type': 'update_geometry_data',
-                    'scanline': i,
-                    'position_tex_path' : self.position_tex.filepath,
-                    'normal_tex_path'   : self.normal_tex.filepath,
-                    'transform_tex_path': self.transform_tex.filepath,
+                    'comment': 'edit active mesh',
+                    # 'json_file_path': tex_manager.get_json_path(),
+                    # 'transform_tex_path': transform_filepath,
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
                 }
                 
                 self.to_ruby.write(json.dumps(data))
@@ -616,7 +620,8 @@ class Exporter():
                 
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':
-                        message_queue.append(pack_light(obj))
+                        self.to_ruby.write(json.dumps(pack_light(obj)))
+                        
                         
                     elif obj.type == 'MESH':
                         # update mesh object (transform)
@@ -646,8 +651,9 @@ class Exporter():
                     
             
             # NOTE: An object does not get marked as updated when a new material slot is added / changes are made to its material.
-            
-        self.__export_ending(depsgraph, message_queue)
+         
+         # ---
+     # ---
     
     
     def gc_objects(self, scene, delta):
@@ -675,31 +681,4 @@ class Exporter():
         self.to_ruby.write(json.dumps(data))
     
     
-    
-    # send data generated in export_initial() or export_update()
-    # from python -> ruby
-    def __export_ending(self, depsgraph, message_queue):
-        # send out all the regular messages after the datablocks
-        # to prevent dependency issues
-        for msg in message_queue:
-            self.to_ruby.write(json.dumps(msg))
-
-        # full list of all objects, by name (helps Ruby delete old objects)
-        data = {
-            'type': 'all_entity_names',
-            'list': [ instance.object.name_full for instance 
-                        in depsgraph.object_instances ]
-        }
-
-        self.to_ruby.write(json.dumps(data))
-
-
-
-        data = {
-            'type': 'timestamp',
-            'value': time.time(),
-            'memo': 'end',
-        }
-
-        self.to_ruby.write(json.dumps(data))
     

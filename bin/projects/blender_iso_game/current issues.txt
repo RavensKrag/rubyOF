@@ -40,10 +40,22 @@ Maybe everything could just be moved into some more appropriate callback, like d
 	if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
 
 
+[ ] should sync Blender geometry to RubyOF when Blender is started after RubyOF
 
 
-can't duplicate objects to create new objects
-something is selectable in Blender, but it doesn't create a representation that can actually be renedered in Ruby
+
+[x] check that editing of meshes works with new export system
+
+
+
+[ ] can't duplicate objects to create new objects
+
+	something is selectable in Blender, but it doesn't create a representation that can actually be rendered in Ruby
+	
+	This happens when you use shift+D to duplicate
+	but not when using alt+D (duplicate linked)
+	
+	
 
 
 
