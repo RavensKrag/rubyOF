@@ -57,6 +57,15 @@ Exporter = reload_class(Exporter)
 
 
 
+
+# use 'inspect' to figure out the file where a function is defined:
+
+    # import inspect
+    # inspect.getfile(func)
+
+# src: https://stackoverflow.com/questions/50620029/determine-from-which-file-a-function-is-defined-in-python
+
+
 handler_types = {
     'on_save' : bpy.app.handlers.save_post,
     'on_load' : bpy.app.handlers.load_post,
@@ -71,9 +80,12 @@ def register_callback(handler_type, function):
     
     depsgraph_events = handler_types[handler_type]
     
-    if not function in depsgraph_events:
-        depsgraph_events.append(function)
-        # callbacks[handler_type].append(function)
+    for bound_handler in depsgraph_events:
+        if bound_handler.__name__ == function.__name__:
+            depsgraph_events.remove(bound_handler)
+    
+    depsgraph_events.append(function)
+    # callbacks[handler_type].append(function)
     
     print(depsgraph_events)
     sys.stdout.flush()
@@ -91,18 +103,12 @@ def unregister_callbacks():
 from bpy.app.handlers import persistent
 
 
-old_names = None
-
-
 @persistent
 def rubyof__on_load(*args):
     context = bpy.context
     tex_manager = resource_manager.get_texture_manager(context.scene)
     tex_manager.load()
     
-    global old_names
-    mytool = context.scene.my_tool
-    old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
 
 
 @persistent
@@ -131,10 +137,10 @@ def rubyof__on_redo(scene):
     tex_manager.on_redo(scene)
 
 
+
+
 def rubyof__on_update(scene, depsgraph):
     # print(args, flush=True)
-    
-    global old_names
     
     # 
     # sync object deletions
@@ -145,23 +151,20 @@ def rubyof__on_update(scene, depsgraph):
     # print("objects: ", len(context.scene.objects))
     
     mytool = scene.my_tool
+    tex_manager = resource_manager.get_texture_manager(scene)
     
-    if old_names is None:
-        # (should be set on load in callback function above, but just in case)
-        # (this may be useful when a new file is created, which does not yet have the collection set up correctly)
-        old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-    else:
-        new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        delta = list(set(old_names) - set(new_names))
+    old_names = tex_manager.get_object_names()
+    new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+    delta = list(set(old_names) - set(new_names))
+    
+    # print("old_names:", len(old_names), flush=True)
+    
+    if len(delta) > 0:
+        print("delta:", delta, flush=True)
         
-        # print("old_names:", len(old_names), flush=True)
+        old_names = new_names
         
-        if len(delta) > 0:
-            print("delta:", delta, flush=True)
-            
-            old_names = new_names
-            
-            export_helper.gc_objects(scene, delta)
+        export_helper.gc_objects(scene, delta)
         
 
 

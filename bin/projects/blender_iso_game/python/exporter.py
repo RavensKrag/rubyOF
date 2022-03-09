@@ -325,6 +325,7 @@ class Exporter():
         
         data = {
             'type': 'update_geometry_data',
+            'comment': 'export all textures',
             'json_file_path': tex_manager.get_json_path(),
             'transform_tex_path': transform_filepath,
             'position_tex_path' : position_filepath,
@@ -658,7 +659,6 @@ class Exporter():
             # TODO: make sure they're all mesh objects
             tex_manager.delete_object(name)
         
-        tex_manager.save() # update json file
         
         filepaths = tex_manager.get_texture_paths()
         position_filepath, normal_filepath, transform_filepath = filepaths

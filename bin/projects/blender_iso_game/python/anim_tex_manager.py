@@ -632,7 +632,24 @@ class AnimTexManager ():
         
         self.object_data_cache[scanline_index] = [None, None, None]
         
+        # save new JSON file
+        self.save()
         
+    
+    
+    # Return list of all object names
+    # (same data as what gets saved to JSON file)
+    def get_object_names(self):
+        out = list()
+        
+        for i, data in enumerate(self.object_data_cache):
+            cached_obj_name, cached_mesh_name, cached_material_name = data
+            out.append(cached_obj_name)
+        
+        return out
+    
+    
+    
     def get_json_path(self):
         return self.json_filepath
     
