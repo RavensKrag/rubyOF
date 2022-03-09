@@ -1,10 +1,9 @@
-
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space
+  attr_reader :data, :space, :lights, :camera
   
-  def initialize(position_tex_path, normal_tex_path, transform_tex_path)
+  def initialize(json_file_path, position_tex_path, normal_tex_path, transform_tex_path)
     @pixels = {
       :positions  => RubyOF::FloatPixels.new,
       :normals    => RubyOF::FloatPixels.new,
@@ -92,11 +91,7 @@ class World
     # json data stores names of entities, meshes, and materials
     # 
     
-    json_filepath = PROJECT_DIR/"bin/data/geom_textures/anim_tex_cache.json"
-    json_string   = File.readlines(json_filepath).join("\n")
-    json_data     = JSON.parse(json_string)
-    
-    @json = json_data
+    load_json_data json_file_path
     # p @json["mesh_data_cache"]
     
     
@@ -124,6 +119,12 @@ class World
     
     # # @cache.updateMaterial(material_name, material_properties)
     # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
+    
+    
+    
+    @camera = ViewportCamera.new
+    
+    @lights = LightsCollection.new
     
   end
   
@@ -196,6 +197,12 @@ class World
   
   
   
+  def load_json_data(json_filepath)
+    json_string   = File.readlines(json_filepath).join("\n")
+    json_data     = JSON.parse(json_string)
+    
+    @json = json_data
+  end
   
   def load_transform_texture(transform_tex_path)
     ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
@@ -222,6 +229,11 @@ class World
       texture.filter_mode(:min => :nearest, :mag => :nearest)
       
       texture.load_data(pixels)
+    end
+    
+    # reset the cache when textures reload
+    unless @cache.nil?
+      @cache.load(@pixels[:transforms])
     end
   end
   
@@ -310,9 +322,38 @@ class World
   end
   
   
-  Mesh = Struct.new(:name, :index)
-  # index only can be interpreted within some spritesheet,
-  # so need some way to make sure we're on the right sheet
+  # TODO: index only can be interpreted within some spritesheet, so need some way to make sure we're on the right sheet
+  class Mesh
+    attr_reader :name, :index
+    
+    def initialize(name, index)
+      @name = name
+      @index = index
+    end
+    
+    # all meshes are solid for now
+    # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
+    def solid?
+      return true
+    end
+  end
+  
+  
+  # class Mesh
+  #   SOLID_MESHES = [
+  #     'Cube.002'
+  #   ]
+  #   def solid?(mesh_name)
+  #     return SOLID_MESHES.include? mesh_name
+  #   end
+  # end
+  
+  # # ^ is this way of defining this backwards?
+  # #   should I be tagging objects with their properties instead?
+  
+  
+  
+  
   
   
   class DataInterface
@@ -428,7 +469,11 @@ class World
       @hash = Hash.new
       
       
+      self.update()
       
+    end
+    
+    def update
       @entity_list =
         @data.each
         .collect do |entity|
@@ -455,85 +500,69 @@ class World
       
       # @first ||= true
       
-      out = @entity_list.select{   |name, pos|   pos == pt  }
-                        .collect{  |name, pos|   name  }
+      out = @entity_list.select{   |name, pos|  pos == pt  }
+                        .collect{  |name, pos|  name  }
+                        .collect{  |name|  @data.find_mesh_by_name(name)  }
       
       puts "=> #{out.inspect}"
+      
+      # TODO: return [World::Mesh] instead of [String]
+      # (should work now, but needs testing)
       
       return out
     end
   end
   
   
+  class LightsCollection
+    def initialize
+      @lights = Array.new
+    end
+    
+    # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
+    def fetch(light_name)
+      existing_light = @lights.find{ |light|  light.name == light_name }
+      
+      if existing_light.nil?
+        if block_given?
+          new_light = yield light_name
+          @lights << new_light
+          
+          return new_light
+        else
+          raise "ERROR: Did not declare a block for generating new lights."
+        end
+      else
+        return existing_light
+      end
+    end
+    
+    # TODO: implement way to delete lights
+    def delete(light_name)
+      @lights.delete_if{|light| light.name == light_name}
+    end
+    
+    # delete all lights whose names are not on this list
+    def gc(list_of_names)
+      @lights
+      .reject{ |light|  list_of_names.include? light.name }
+      .each do |light|
+        delete light.name
+      end
+    end
+    
+    
+    def each
+      return enum_for(:each) unless block_given?
+      
+      @lights.each do |light|
+        yield light
+      end
+    end
+    
+    
+  end
   
-  # # Specify the mesh to use for a given object @ t=0 (initial condition)
-  # # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
-  # # (3 channels have the same data; helps with visualization of the texture)
-  # # This mapping will be changed by ruby code during game execution,
-  # # by dynamically editing the texture in memory. However, the texture
-  # # on disk will change if and only if the initial condition changes.
-  # # Raise exception if no mesh with the given name has been exported yet.
-  # # 
-  # # entity_name  : string
-  # # mesh_name : string ( mesh with this name must already exist )
-  # def set_entity_mesh(entity_name, mesh_name)
-  #   # 
-  #   # convert mesh name data back to color data
-  #   # 
-  #   mesh_index = mesh_name_to_index(mesh_name)
-  #   c1 = RubyOF::FloatColor.rgba([mesh_index, mesh_index, mesh_index, 1.0])
-    
-  #   # 
-  #   # write colors on the CPU
-  #   # 
-  #   i = entity_name_to_scanline(entity_name)
-  #   v1 = @pixels[:transforms].setColor(0, i, c1)
-  # end
-  
-  
-  # # Pack 4x4 transformation matrix for an object into 4 pixels
-  # # of data in the object transform texture.
-  # # 
-  # # entity_name  : string
-  # # transform : 4x4 transform matrix
-  # def set_entity_transform(entity_name, transform)
-  #   i = entity_name_to_scanline(entity_name)
-    
-  #   RubyOF::CPP_Callbacks.set_entity_transform(
-  #     @pixels[:transforms], i, transform.to_mat4, @textures[:transforms]
-  #   )
-    
-  #   return self
-  # end
-  
-  
-  # # Bind object to a particular material,
-  # # and pack material data into 4 pixels in the object transform texture.
-  # # 
-  # # entity_name : string
-  # # material : blender material datablock, containing RubyOF material
-  # def set_entity_material(entity_name, material)
-  #   # 
-  #   # convert material data back to color data
-  #   # 
-    
-  #   c1 = RubyOF::FloatColor.rgba(material.ambient.to_a + [1.0])
-  #   c2 = RubyOF::FloatColor.rgba(material.diffuse.to_a + [material.alpha])
-  #   c3 = RubyOF::FloatColor.rgba(material.specular.to_a + [1.0])
-  #   c4 = RubyOF::FloatColor.rgba(material.emissive.to_a + [1.0])
-    
-  #   # 
-  #   # write colors on the CPU
-  #   # 
-  #   i = entity_name_to_scanline(entity_name)
-  #   v1 = @pixels[:transforms].setColor(5, i, c1)
-  #   v2 = @pixels[:transforms].setColor(6, i, c2)
-  #   v3 = @pixels[:transforms].setColor(7, i, c3)
-  #   v4 = @pixels[:transforms].setColor(8, i, c4)
-    
-  #   # TODO: rename "transforms" texture and pixels to "entity" or "object" instead
-    
-  # end
   
   
   # # Update material properties for all objects that use the given material.

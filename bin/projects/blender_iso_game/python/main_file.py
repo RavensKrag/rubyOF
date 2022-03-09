@@ -57,12 +57,22 @@ Exporter = reload_class(Exporter)
 
 
 
+
+# use 'inspect' to figure out the file where a function is defined:
+
+    # import inspect
+    # inspect.getfile(func)
+
+# src: https://stackoverflow.com/questions/50620029/determine-from-which-file-a-function-is-defined-in-python
+
+
 handler_types = {
     'on_save' : bpy.app.handlers.save_post,
     'on_load' : bpy.app.handlers.load_post,
     'on_undo' : bpy.app.handlers.undo_post,
     'on_redo' : bpy.app.handlers.redo_post,
     'before_frame_change' : bpy.app.handlers.frame_change_pre,
+    'after_update': bpy.app.handlers.depsgraph_update_post
 }
 
 def register_callback(handler_type, function):
@@ -70,9 +80,12 @@ def register_callback(handler_type, function):
     
     depsgraph_events = handler_types[handler_type]
     
-    if not function in depsgraph_events:
-        depsgraph_events.append(function)
-        # callbacks[handler_type].append(function)
+    for bound_handler in depsgraph_events:
+        if bound_handler.__name__ == function.__name__:
+            depsgraph_events.remove(bound_handler)
+    
+    depsgraph_events.append(function)
+    # callbacks[handler_type].append(function)
     
     print(depsgraph_events)
     sys.stdout.flush()
@@ -89,17 +102,19 @@ def unregister_callbacks():
 
 from bpy.app.handlers import persistent
 
+
 @persistent
 def rubyof__on_load(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context)
+    tex_manager = resource_manager.get_texture_manager(context.scene)
     tex_manager.load()
+    
 
 
 @persistent
 def rubyof__on_save(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context)
+    tex_manager = resource_manager.get_texture_manager(context.scene)
     tex_manager.save()
 
 
@@ -109,7 +124,7 @@ def rubyof__on_undo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context)
+    tex_manager = resource_manager.get_texture_manager(context.scene)
     tex_manager.on_undo(scene)
 
 def rubyof__on_redo(scene):
@@ -118,8 +133,40 @@ def rubyof__on_redo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context)
+    tex_manager = resource_manager.get_texture_manager(context.scene)
     tex_manager.on_redo(scene)
+
+
+
+
+def rubyof__on_update(scene, depsgraph):
+    # print(args, flush=True)
+    
+    # 
+    # sync object deletions
+    # 
+
+    # print("syncing deletions", flush=True)
+    # print("running", time.time())
+    # print("objects: ", len(context.scene.objects))
+    
+    mytool = scene.my_tool
+    tex_manager = resource_manager.get_texture_manager(scene)
+    
+    old_names = tex_manager.get_object_names()
+    new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+    delta = list(set(old_names) - set(new_names))
+    
+    # print("old_names:", len(old_names), flush=True)
+    
+    if delta != [None]:
+        print("delta:", delta, flush=True)
+        
+        old_names = new_names
+        
+        export_helper.gc_objects(scene, delta)
+        
+
 
 
     
@@ -129,6 +176,8 @@ def register_event_handlers():
     register_callback('on_load', rubyof__on_load)
     register_callback('on_redo', rubyof__on_redo)
     register_callback('on_undo', rubyof__on_undo)
+    
+    register_callback('after_update', rubyof__on_update)
     
     register_callback('before_frame_change', rubyof__before_frame_change)
     
@@ -537,17 +586,17 @@ class ResourceManager():
     
     
     # TODO: reset this "singleton" if the dimensions of the animation texture have changed
-    def get_texture_manager(self, context):
+    def get_texture_manager(self, scene):
         if self.anim_tex_manager is None:
-            self.anim_tex_manager = AnimTexManager(context, to_ruby)
+            self.anim_tex_manager = AnimTexManager(scene, to_ruby)
         
         return self.anim_tex_manager
     
-    def clear_texture_manager(self, context):
+    def clear_texture_manager(self, scene):
         # print("try to clear texture manager", flush=True)
         if self.anim_tex_manager is not None:
             # print("clearing texture manager", flush=True)
-            self.anim_tex_manager.clear(context)
+            self.anim_tex_manager.clear(scene)
             self.anim_tex_manager = None
 
 resource_manager = ResourceManager()
@@ -636,7 +685,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         context = yield(0.0)
         
         
-        tex_manager = resource_manager.get_texture_manager(context)
+        tex_manager = resource_manager.get_texture_manager(context.scene)
         # Delegating to a subgenerator
         # https://www.python.org/dev/peps/pep-0380/
         # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
@@ -657,7 +706,7 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
     def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
-        resource_manager.clear_texture_manager(context)
+        resource_manager.clear_texture_manager(context.scene)
         
         mytool = context.scene.my_tool
         mytool.sync_deletions = False
@@ -1287,9 +1336,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         mytool = context.scene.my_tool
         
-        self.old_names = [ x.name for x in mytool.collection_ptr.all_objects ]
         
         
+        self.old_names = None
         self.new_names = None
         
         self.bPlaying = context.screen.is_animation_playing
@@ -1298,35 +1347,6 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
     
     def run(self, context):
-        # 
-        # sync object deletions
-        # 
-        
-        # print("syncing deletions", flush=True)
-        # print("running", time.time())
-        # print("objects: ", len(context.scene.objects))
-        
-        mytool = context.scene.my_tool
-        
-        self.new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-        
-        delta = list(set(self.old_names) - set(self.new_names))
-        
-        # print("old_names:", len(self.old_names), flush=True)
-        # print("delta:", delta, flush=True)
-        
-        if len(delta) > 0:
-            self.old_names = self.new_names
-            
-            tex_manager = resource_manager.get_texture_manager(context)
-            
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                tex_manager.delete_object(name)
-        
-        
         # 
         # sync timeline
         # 

@@ -125,7 +125,7 @@ class Core
   attr_accessor :sync
   
   def initialize(window)
-    @w = window
+    @window = window
   end
   
   def setup
@@ -133,9 +133,6 @@ class Core
     
     ofBackground(200, 200, 200, 255)
     # ofEnableBlendMode(:alpha)
-    
-    
-    @draw_durations = Array.new # stores profiler data for #draw
     
     
     @first_update = true
@@ -227,6 +224,7 @@ class Core
     geometry_texture_dir = data_dir/'geom_textures'
     
     @world = World.new(
+      geometry_texture_dir/"anim_tex_cache.json",
       geometry_texture_dir/"animation.position.exr",
       geometry_texture_dir/"animation.normal.exr",
       geometry_texture_dir/"animation.transform.exr"
@@ -245,8 +243,14 @@ class Core
     
     
     @message_history = BlenderHistory.new
-    @depsgraph = DependencyGraph.new
-    @sync = BlenderSync.new(@w, @depsgraph, @message_history, @frame_history, self)
+    
+    # @depsgraph = DependencyGraph.new
+    # ^ this was an old class for different types of entities (objects, meshes, lights, cameras) before the creation of the new vertex animation system.
+    # Keeping a reference here in a comment for historical reasons (may need to reference this code later) but generally speaking, this class should no longer be used
+      # use OIT_RenderPipeline, World, and RubyOF::Project::EntityCache instead
+    
+    @sync = BlenderSync.new(@message_history, @frame_history,
+                            @window, @world)
     
   end
   
@@ -278,7 +282,6 @@ class Core
     # end
     
     
-    # puts @draw_durations.join("\t")
     if RB_SPIKE_PROFILER.enabled?
       RB_SPIKE_PROFILER.disable
     end
@@ -310,12 +313,11 @@ class Core
     
     @update_scheduler = nil
     
+    
+    @world.space.update
+    
     # setup()
       # @message_history = History.new
-      # @depsgraph = DependencyGraph.new
-      
-      # puts "clearing"
-      # @depsgraph.clear
       
       # puts "reloading history"
       # @message_history.on_reload
@@ -378,144 +380,20 @@ class Core
   
   
   
-  # 
-  # handle update messages from BlenderSync
-  # 
   
-  def update_animation_json(json_filepath)
-    p json_filepath
-    raise "ERROR: Not yet implemented"
-    # TODO: implement this
+  
+  
+  
+  
+  
+  def free_space?(pos)
+    return !blocked_space?(pos)
   end
   
-  
-  
-  # Update both transform texture and vertex textures.
-  # Used when you do a full export of everything,
-  # similar to running a "clean build" in C/C++.
-  def update_anim_textures(message)
-    # p message
-    @world.load_transform_texture(message['transform_tex_path'])
-    @world.load_vertex_textures(message['position_tex_path'],
-                                      message['normal_tex_path'])
-    
-    
-    # reload history
-    # (code adapted from Core#on_reload)
-    if @frame_history.time_traveling?
-      # @frame_history = @frame_history.branch_history
-      
-      # For now, just replace the curret timeline with the alt one.
-      # In future commits, we can refine this system to use multiple
-      # timelines, with UI to compress timelines or switch between them.
-      
-      
-      
-      @frame_history.branch_history
-      
-    else
-      # Do NOT trigger play on reload after direct manipulation.
-      
-      # # was paused when the crash happened,
-      # # so should be able to 'play' and resume execution
-      # @frame_history.play
-      # puts "frame: #{@frame_history.frame_index}"
-    end
+  def blocked_space?(pos)
+    @world.space.point_query(pos)
+    .any?{|mesh| mesh.solid? } # are there any solid blocks @ pos?
   end
-  
-  # vertex position and normal data for one or more meshes has been updated
-  def update_geometry(message)
-    p message
-    # @world.load_transform_texture(message['transform_tex_path'])
-    @world.load_vertex_textures(message['position_tex_path'],
-                                      message['normal_tex_path'])
-    
-  end
-  
-  # transform data for a entity has been updated
-  # (may or may not contain an armature)
-  def update_transform(message)
-    puts "update transform"
-    p message
-    @world.load_transform_texture(message['transform_tex_path'])
-    # @world.load_vertex_textures(message['position_tex_path'],
-    #                                   message['normal_tex_path'])
-    
-  end
-  
-  
-  # material data is stored in the transform texture
-  # (like material property block)
-  # updates to a single material may effect one object, or many,
-  # so easiest just to load the entire transform texture again
-  def update_material(message)
-    p message
-    @world.load_transform_texture(message['transform_tex_path'])
-  end
-  
-  
-  def update_entity(message)
-    # case message['.type']
-    # when 'MESH'
-    #   name = message['name']
-    #   id = @entity_name_to_id[name]
-      
-      
-    #   nested_array = message['transform']
-    #   # ^ array of arrays
-      
-    #   # p nested_array
-      
-    #   @world.set_entity_transform_array id, nested_array
-    #   # ^ thin wrapper on C++ callback
-      
-      
-      
-    #   # reload history
-    #   # (code adapted from Core#on_reload)
-    #   if @frame_history.time_traveling?
-    #     # @frame_history = @frame_history.branch_history
-        
-    #     # For now, just replace the curret timeline with the alt one.
-    #     # In future commits, we can refine this system to use multiple
-    #     # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-    #     @frame_history.branch_history
-        
-    #   else
-    #     # Do NOT trigger play on reload after direct manipulation.
-    #     # Need the user to press "play" manually to signal
-    #     # they are done with direct manipulation. Otherwise,
-    #     # inputs from direct manipulation are comingled with
-    #     # inputs from ruby code execution.
-        
-        
-    #     # # was paused when the crash happened,
-    #     # # so should be able to 'play' and resume execution
-    #     # @frame_history.play
-    #     # puts "frame: #{@frame_history.frame_index}"
-    #   end
-    # else
-      
-      
-    # end
-  end
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   # use a structure where Fiber does not need to be regenerated on reload
@@ -544,6 +422,8 @@ class Core
     # # end
     
     
+    
+    
     if @first_update
       puts "first update"
       # load_world_state()
@@ -568,9 +448,6 @@ class Core
       # @texture_out.load_data(@pixels)
       
       
-      
-      
-      
     end
     
     
@@ -578,154 +455,99 @@ class Core
     @sync.update
     
     
-    @frame_history.update # => on_update
-    
-    @world.update
-  end
-  
-  
-  
-  
-  # methods #update and #draw are called by the C++ render loop
-  # Their only job now at the Ruby level is to set up Fibers
-  # which call the true render logic. This structure is necessary
-  # to allow for live loading - if the update / draw logic
-  # is directly inside the Fiber, there's no good way to reload it
-  # when the file reloads.
-  def on_update(snapshot)
-    # step every x frames
-    
-    x = 8
-    
-    moves = [
-      GLM::Vec3.new(1, 0, 0),
-      GLM::Vec3.new(1, 0, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(0, 1, 0),
-      GLM::Vec3.new(-1, 0, 0),
-      GLM::Vec3.new(-1, 0, 0),
-      GLM::Vec3.new(0, 1, 0),
-    ]
-    
-    
-    # TODO: wrap GLM::Vec3 multiply by a scalar
-    
-    moves.each_with_index do |v, move_idx|
-      # step in a direction, but subdivide into
-      # two motions for animation / tweening
+    @frame_history.update do |snapshot|
+      # step every x frames
       
-      puts "move idx: #{move_idx} of #{moves.length-1}"
+      x = 8
+      
+      moves = [
+        GLM::Vec3.new(1, 0, 0),
+        GLM::Vec3.new(1, 0, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(0, 1, 0),
+        GLM::Vec3.new(-1, 0, 0),
+        GLM::Vec3.new(-1, 0, 0),
+        GLM::Vec3.new(0, 1, 0),
+      ]
       
       
-      
-      # distribute the moves over a series of turns.
-      # each turn, take one movement action.
-      # + move in the specified way
-      # + play an animation to interpolate the frames
-      
-      # dt = 0.5
-      
-      
-      
-      #  0 - log root position
-      snapshot.frame do
+      moves.each_with_index do |v, move_idx|
+        # step in a direction, but subdivide into
+        # two motions for animation / tweening
         
-      end
-      
-      
-      # transform could be set on frame 0 (e.g. the very first frame)
-      # so want to load the transform data after that
-      
-      # all code inside snapshot blocks will be skipped on resume
-      # so any code related to a branch condition
-      # needs to be outside of the snapshot blocks.
-      
-      entity = @world.data.find_entity_by_name('CharacterTest')
-      p entity
-      
-      pos = entity.position
-      puts "grid position: #{pos}"
-      
-      
-      # step up if there's an obstruction
-      if @world.space.point_query(pos + v).include? 'Cube.002' # datablock name
-        GLM::Vec3.new(0,0,1).tap do |v|
+        # puts "move idx: #{move_idx} of #{moves.length-1}"
+        
+        
+        
+        #  0 - log root position
+        snapshot.frame do
+          
+        end
+        
+        
+        # transform could be set on frame 0 (e.g. the very first frame)
+        # so want to load the transform data after that
+        
+        # all code inside snapshot blocks will be skipped on resume
+        # so any code related to a branch condition
+        # needs to be outside of the snapshot blocks.
+        
+        entity = @world.data.find_entity_by_name('CharacterTest')
+        p entity
+        
+        pos = entity.position
+        puts "grid position: #{pos}"
+        
+        
+        
+        
+        
+        
+        
+        
+        # if the spot in front of you is open (flat ground), move forward
+        
+        # if the spot in front of you is blocked, step up onto the block
+          # obstruction must be 1 block tall
+          # if it is taller, then you can't step over
+          
+          # step up and then over in the direction you originally planned to go
+          
+        # if the spot in front of you is open (hole), fall down into the hole
+          # need 1 blocks open for your body to fit
+          # and then also your feet need to be unsupported
+        
+        
+        v_up   = GLM::Vec3.new(0,0,1)
+        v_down = GLM::Vec3.new(0,0,-1)
+        
+        
+        # try to move up
+        # make sure front is blocked AND there is open space above
+        if blocked_space?(pos + v) && free_space?(pos + v_up)
           #  1 - animate
           snapshot.frame do
             puts pos
           end
-          #  2 - animate
-          snapshot.frame do
-            
+          
+          15.times do
+            #  2..16 - animate
+            snapshot.frame do
+              # NO-OP
+            end
           end
-          #  3 - animate
-          snapshot.frame do
-            
-          end
-          #  4 - animate
-          snapshot.frame do
-            
-          end
-          #  5 - animate
-          snapshot.frame do
-            
-          end
-          #  6 - animate
-          snapshot.frame do
-            
-          end
-          #  7 - animate
-          snapshot.frame do
-            
-          end
-          #  8 - animate (halfway)
-          snapshot.frame do
-            # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-            # entity.position = pos + v2
-          end
-          #  9 - animate
-          snapshot.frame do
-            
-          end
-          # 10 - animate
-          snapshot.frame do
-            
-          end
-          # 11 - animate
-          snapshot.frame do
-            
-          end
-          # 12 - animate
-          snapshot.frame do
-            
-          end
-          # 13 - animate
-          snapshot.frame do
-            
-          end
-          # 14 - animate
-          snapshot.frame do
-            
-          end
-          # 15 - animate
-          snapshot.frame do
-            
-          end
-          # 16 - animate
-          snapshot.frame do
-            
-          end
+          
           # 17 - animate
           snapshot.frame do
-            v2 = GLM::Vec3.new(v.x, v.y, v.z)
-            entity.position = pos + v2
+            entity.position = pos + v_up
           end
+          
           
           
           #  0 - new root position
@@ -737,90 +559,94 @@ class Core
           # update pos = new root position
           # 
           pos = entity.position
+          
         end
         
-      end
-      
-      
-      #  1 - animate
-      snapshot.frame do
-        p pos
-      end
-      #  2 - animate
-      snapshot.frame do
+        
+        # try to move forward
+        # as long as the way is clear, move forward (even if you would fall)
+        if free_space?(pos + v)
+          
+          #  1 - animate
+          snapshot.frame do
+            puts pos
+          end
+          
+          15.times do
+              #  2..16 - animate
+              snapshot.frame do
+                # NO-OP
+              end
+            end
+          
+          # 17 - animate
+          snapshot.frame do
+            entity.position = pos + v
+          end
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          
+          # 
+          # update pos = new root position
+          # 
+          pos = entity.position
+          
+          
+        end
+        
+        # try to move down
+        while free_space?(pos + v_down)
+          
+          #  1 - animate
+          snapshot.frame do
+            puts pos
+          end
+          
+          15.times do
+              #  2..16 - animate
+              snapshot.frame do
+                # NO-OP
+              end
+            end
+          
+          # 17 - animate
+          snapshot.frame do
+            entity.position = pos + v_down
+          end
+          
+          #  0 - new root position
+          snapshot.frame do
+            
+          end
+          
+          
+          # 
+          # update pos = new root position
+          # 
+          pos = entity.position
+          
+          
+          
+        end
+        
         
       end
-      #  3 - animate
-      snapshot.frame do
-        
-      end
-      #  4 - animate
-      snapshot.frame do
-        
-      end
-      #  5 - animate
-      snapshot.frame do
-        
-      end
-      #  6 - animate
-      snapshot.frame do
-        
-      end
-      #  7 - animate
-      snapshot.frame do
-        
-      end
-      #  8 - animate (halfway)
-      snapshot.frame do
-        # v2 = GLM::Vec3.new(v.x, v.y, v.z)*dt
-        # entity.position = pos + v2
-      end
-      #  9 - animate
-      snapshot.frame do
-        
-      end
-      # 10 - animate
-      snapshot.frame do
-        
-      end
-      # 11 - animate
-      snapshot.frame do
-        
-      end
-      # 12 - animate
-      snapshot.frame do
-        
-      end
-      # 13 - animate
-      snapshot.frame do
-        
-      end
-      # 14 - animate
-      snapshot.frame do
-        
-      end
-      # 15 - animate
-      snapshot.frame do
-        
-      end
-      # 16 - animate
-      snapshot.frame do
-        
-      end
-      # 17 - animate
-      snapshot.frame do
-        v2 = GLM::Vec3.new(v.x, v.y, v.z)
-        entity.position = pos + v2
-      end
-      # # 18 - new root position
-      # snapshot.frame do
-        
-      # end
       
     end
     
+    @world.update
   end
   
+  # methods #update and #draw are called by the C++ render loop
+  # Their only job now at the Ruby level is to set up Fibers
+  # which call the true render logic. This structure is necessary
+  # to allow for live loading - if the update / draw logic
+  # is directly inside the Fiber, there's no good way to reload it
+  # when the file reloads.
   
   
   # 
@@ -878,46 +704,39 @@ class Core
   
   
   
-  def draw
-    # puts ">>>>>>>> draw #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    
-    # puts "draw thread:   #{Thread.current.object_id}" 
-    
-    # draw_start = Time.now
-    draw_start = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-      on_draw()
-    
-    # draw_end = Time.now
-    draw_end = RubyOF::Utils.ofGetElapsedTimeMicros
-    dt = draw_end - draw_start
-    puts "draw duration: #{dt}" if Scheduler::DEBUG
-    
-    
-    draw_duration_history_len = 100
-    
-    
-    @draw_durations << dt
-    # puts "draw duration: #{dt}"
-    
-    if @draw_durations.length > draw_duration_history_len
-      d_len = @draw_durations.length - draw_duration_history_len
-      @draw_durations.shift(d_len)
-    end
-    
-    
-    
-    
-    if @start_time
-      end_time = RubyOF::Utils.ofGetElapsedTimeMicros
-      @whole_iter_dt = end_time - @start_time
-    end
-  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
   include RubyOF::Graphics
-  def on_draw
+  def draw
     
     # 
     # setup materials, etc
@@ -935,8 +754,10 @@ class Core
     # set up phases of drawing
     # 
     
-    @render_pipeline.draw(@w, lights:@depsgraph.lights,
-                              camera:@depsgraph.viewport_camera) do |pipeline|
+    @render_pipeline.draw(@window,
+                          lights:@world.lights,
+                          camera:@world.camera) do |pipeline|
+      
       pipeline.opaque_pass do
         @world.draw_scene
         
@@ -977,49 +798,6 @@ class Core
         # @fonts[:monospace].draw_string("history size: #{}",
                                          # 400, 160)
         
-        # line_height = 35
-        # p3 = CP::Vec2.new(500,650)
-        # str_out = []
-        
-        # batches = @depsgraph.batches
-        # header = [
-        #   "i".rjust(3),
-        #   "mesh".ljust(10), # BlenderMeshData
-          
-        #   "mat".ljust(15), # BlenderMaterial
-        #   # ^ use #inspect to visualize empty string
-          
-        #   "batch size" # RenderBatch
-          
-        # ].join('| ')
-        
-        # str_out = 
-        #   batches.each_with_index.collect do |batch_line, i|
-        #     a,b,c = batch_line
-        #     # data = [
-        #     #   a.class.to_s.each_char.first(20).join(''),
-        #     #   b.class.to_s.each_char.first(20).join(''),
-        #     #   c.class.to_s.each_char.first(20).join('')
-        #     # ].join(', ')
-            
-            
-        #     data = [
-        #       "#{i}".rjust(3),
-        #       a.name.ljust(10), # BlenderMeshData
-              
-        #       b.name.inspect.ljust(15), # BlenderMaterial
-        #       # ^ use #inspect to visualize empty string
-              
-        #       c.size.to_s # RenderBatch
-              
-        #     ].join('| ')
-        #   end
-        
-        # ([header] + str_out).each_with_index do |line, i|
-        #   @fonts[:monospace].draw_string(line, p3.x, p3.y+line_height*i)
-        # end
-        
-        
         
         # t1 = RubyOF::TimeCounter.now
         # puts "=> UI    : #{(t1 - t0).to_ms} ms"
@@ -1042,18 +820,12 @@ class Core
           ofPushStyle()
             ofEnableAlphaBlending()
             ofSetColor(@crash_color)
-            ofDrawRectangle(0,0,0, @w.width, @w.height)
+            ofDrawRectangle(0,0,0, @window.width, @window.height)
           ofPopStyle()
         end
       end
     end
     
-    
-    # @depsgraph.draw(@w) do
-    
-      
-      
-    # end
     
     
     # t1 = RubyOF::TimeCounter.now
@@ -1061,6 +833,41 @@ class Core
     
     
   end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   

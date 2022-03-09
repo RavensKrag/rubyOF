@@ -2,13 +2,13 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, depsgraph, message_history, history, core)
-    @window = window
-    @depsgraph = depsgraph
+  def initialize(message_history, history, window, world)
     @message_history = message_history
     @frame_history = history
     
-    @core = core
+    @window = window
+    @world = world
+    
     
     # two-way communication between RubyOF (ruby) and Blender (python)
     # implemented using two named pipes
@@ -114,7 +114,7 @@ class BlenderSync
     if @frame_history.state == :finished
       # needs to be a separate if block,
       # so outer else only triggers when we detect some other state
-      if !@finished
+      if !@finished # transitioning from not finished -> finished
         puts "finished --> (send message to blender)"
         message = {
           'type' => 'loopback_finished',
@@ -139,132 +139,25 @@ class BlenderSync
     
   end
   
+  def send_to_blender(message)
+    @blender_link.send message
+  end
+  
+  def reset
+    @blender_link.reset
+  end
+  
+  
+  
+  
+  
   private
   
-  def parse_timeline_commands(message)
-    case message['name']
-    when 'reset'
-      # # blender has reset, so reset all RubyOF data
-      # @depsgraph.clear
-      
-      puts "== reset"
-      
-      @blender_link.reset
-      
-      if @frame_history.time_traveling?
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        puts "loopback reset"
-        
-        @frame_history.branch_history
-        
-        
-        message = {
-          'type' => 'loopback_reset',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        @blender_link.send message
-        
-      else
-        puts "(reset else)"
-      end
-      
-      puts "====="
-      
-    when 'pause'
-      puts "== pause"
-      p @frame_history.state
-      
-      if @frame_history.state == :generating_new
-        @frame_history.pause
-        
-        
-        message = {
-          'type' => 'loopback_paused_new',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        @blender_link.send message
-        
-      else
-        @frame_history.pause
-        
-        message = {
-          'type' => 'loopback_paused_old',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        @blender_link.send message
-        
-      end
-      
-      puts "====="
-      
-      
-    when 'play'
-      puts "== play"
-      p @frame_history.state
-      
-      
-      @frame_history.play # stubbed for some states
-      
-      if @frame_history.state == :finished
-        @frame_history.play 
-        
-        message = {
-          'type' => 'loopback_play+finished',
-          'history.length' => @frame_history.length
-        }
-        
-        @blender_link.send message
-      end
-      
-      # if @frame_history.state != :generating_new
-      #   # ^ this will not immediately advance
-      #   #   to the new state. It's more like shifting
-      #   #   from Park to Drive.
-      #   #   Transition to next state will not happen until
-      #   #   FrameHistory#update -> State#update
-      #   # 
-      #   # note: even responding to pause
-      #   # takes at least 1 frame. need a better way
-      #   # of dealing with this.
-      #   # 
-      #   # For now, I will expand the play range when python
-      #   # detects playback has started, without waiting
-      #   # for a round-trip response from ruby.
-      #   # (using aribtrary large number, 1000 frames)
-      #   # 
-      #   # TODO: use the "preview range" feature to set
-      #   #       two time ranges for the timeline
-      #   #       1) the maximum number of frames that can 
-      #   #          be stored
-      #   #       2) the current number of frames in history
-        
-      #   if @frame_history.play == :generating_new
-      #     message = {
-      #       'type' => 'loopback_play',
-      #       'history.length' => @frame_history.length
-      #     }
-          
-      #     @blender_link.send message
-      #   end
-      # end
-      
-      puts "====="
-      
-    
-    when 'seek'
-      @frame_history.seek(message['time'])
-      
-    end
-  end
+  
+  
+  
+  
+  
   
   
   # TODO: somehow consolidate setting of dirty flag for all entity types
@@ -284,36 +177,35 @@ class BlenderSync
     # }
     
     
-    # Temporary storage for Blender backend datablocks, like mesh data,
-    # before they become attached to an entity.
-    @new_datablocks ||= Hash.new
-    
-    # depsgraph only stores materials that are associated with a batch, so we need to temporarily store materials here as they are loaded
-    @new_materials ||= Hash.new
-    
-    
-    # NOTE: current implementation puts state in @new_datablocks and @new_materials that will be tricky on reload / rewind. need to better handle this state
-    
-    
-    
-    # p @depsgraph.instance_variable_get("@mesh_objects")
-    # p @new_datablocks
-    # puts "--- #{message['type']} ---"
-    # puts message['type'] === 'bpy.types.Mesh'
-    
-    
     case message['type']
     when 'all_entity_names'
-      # The viewport camera is an object in RubyOF, but not in Blender
-      # Need to remove it from the entity list or the camera
-      # will be deleted.
-      @depsgraph.gc(active: message['list'])
+      # This message is still being sent from Blender, but not sure if I need it now or not, because entities are being managed through the entity texture / transform texture.
+      
+      # historically, this was used to delete meshes and lights
+      
+      # not sure if names of lights are still in this list or not
+      # need to check exporter.py for details
+      
+      
+      
+      # # attempt to delete all lights by name
+      # # 
+      # # Names are unique in Blender, so there should never be
+      # # any collisions between a light object and some other object.
+      # # Therefore, while ugly, this should work just fine.
+      # # (it's ugly because we search for names that do not correspond to lights)
+      # message['list'].each do |entity_name|
+      #   @world.lights.delete entity_name
+      # end
+      
+      # oh wait no - we want to delete the lights that are NOT in this list
+      @world.lights.gc message['list']
       
     when 'viewport_camera'
       # sent on viewport update, not every frame
       # puts "update viewport"
       
-      @depsgraph.viewport_camera.tap do |camera|
+      @world.camera.tap do |camera|
         camera.dirty = true
         
         camera.load(message)
@@ -362,24 +254,7 @@ class BlenderSync
       
       
       # TODO: create Ruby API to edit material settings of object in transform texture, so that code can dynamically edit these properties in game
-      
-    when 'bpy.types.Light'
-      # # I don't want to have linked lights in RubyOF.
-      # # Thus, rather than create light datablocks here,
-      # # link the deserialized JSON message into the object 'data' field
-      # # so it all can be unpacked together in a later phase
-      
-      # blender_data['objects']&.tap do |object_list|
-        
-      #   object_list
-      #   .select{|o| o['type'] == 'LIGHT' }
-      #   .find{  |o| o['name'] == data['light_name'] }
-      #   .tap{   |o| o['data'] = data }
-      #   # links data even if data field is already set
-      #   # (the data stored in history seems to already be linked, but I'm not sure how that happens)
-        
-      # end
-      
+    
     when 'bpy_types.Mesh'
       # create underlying mesh data (verts)
       # to later associate with mesh objects (transform)
@@ -393,7 +268,7 @@ class BlenderSync
       case message['.type']
       when 'MESH'
         # update object transform based on direct manipulation in blender
-        @core.update_entity(message)
+        update_entity(message)
         
       when 'LIGHT'
         # load transform AND data for lights here as necessary
@@ -402,10 +277,9 @@ class BlenderSync
         # puts "loading light: #{message['name']}"
         
         light =
-          @depsgraph.fetch_light(message['name']) do |name|
-            BlenderLight.new(name).tap do |light|
-              @depsgraph.add light
-            end
+          @world.lights.fetch(message['name']) do |name|
+            # if light with this name does not exist, create it
+            BlenderLight.new(name)
           end
         
         message['transform']&.tap do |transform_data|
@@ -426,16 +300,8 @@ class BlenderSync
       # p message
       parse_timeline_commands(message)
     
-    when 'update_anim_json'
-      @core.update_animation_json(message['value'])
-      
-      # @core.update_entity_mapping(message)
-      # @core.update_mesh_mapping(message)
-    
-    when 'update_anim_textures', 'update_geometry', 'update_transform', 'update_material'
-      
-      @core.send(message['type'], message)
-    
+    when 'update_geometry_data'
+      update_geometry_data(message)
     else
       
       
@@ -451,6 +317,249 @@ class BlenderSync
     # # puts "time - parse data: #{dt} us"
     
   end
+  
+  
+  
+  def parse_timeline_commands(message)
+    case message['name']
+    when 'reset'
+      # # blender has reset, so reset all RubyOF data
+      
+      puts "== reset"
+      
+      reset
+      
+      if @frame_history.time_traveling?
+        # For now, just replace the curret timeline with the alt one.
+        # In future commits, we can refine this system to use multiple
+        # timelines, with UI to compress timelines or switch between them.
+        
+        puts "loopback reset"
+        
+        @frame_history.branch_history
+        
+        
+        message = {
+          'type' => 'loopback_reset',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        send_to_blender message
+        
+      else
+        puts "(reset else)"
+      end
+      
+      puts "====="
+      
+    when 'pause'
+      puts "== pause"
+      p @frame_history.state
+      
+      if @frame_history.state == :generating_new
+        @frame_history.pause
+        
+        
+        message = {
+          'type' => 'loopback_paused_new',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        send_to_blender message
+        
+      else
+        @frame_history.pause
+        
+        message = {
+          'type' => 'loopback_paused_old',
+          'history.length'      => @frame_history.length,
+          'history.frame_index' => @frame_history.frame_index
+        }
+        
+        send_to_blender message
+        
+      end
+      
+      puts "====="
+      
+      
+    when 'play'
+      puts "== play"
+      p @frame_history.state
+      
+      
+      @frame_history.play # stubbed for some states
+      
+      if @frame_history.state == :finished
+        @frame_history.play 
+        
+        message = {
+          'type' => 'loopback_play+finished',
+          'history.length' => @frame_history.length
+        }
+        
+        send_to_blender message
+      end
+      
+      # if @frame_history.state != :generating_new
+      #   # ^ this will not immediately advance
+      #   #   to the new state. It's more like shifting
+      #   #   from Park to Drive.
+      #   #   Transition to next state will not happen until
+      #   #   FrameHistory#update -> State#update
+      #   # 
+      #   # note: even responding to pause
+      #   # takes at least 1 frame. need a better way
+      #   # of dealing with this.
+      #   # 
+      #   # For now, I will expand the play range when python
+      #   # detects playback has started, without waiting
+      #   # for a round-trip response from ruby.
+      #   # (using aribtrary large number, 1000 frames)
+      #   # 
+      #   # TODO: use the "preview range" feature to set
+      #   #       two time ranges for the timeline
+      #   #       1) the maximum number of frames that can 
+      #   #          be stored
+      #   #       2) the current number of frames in history
+        
+      #   if @frame_history.play == :generating_new
+      #     message = {
+      #       'type' => 'loopback_play',
+      #       'history.length' => @frame_history.length
+      #     }
+          
+      #     @blender_link.send message
+      #   end
+      # end
+      
+      puts "====="
+      
+    
+    when 'seek'
+      @frame_history.seek(message['time'])
+      
+    end
+  end
+  
+  
+  
+  
+  # 
+  # handle update messages from BlenderSync
+  # 
+  
+  
+  # TODO: update this file and exporter.py to only use a small set of signals to reload textures
+  
+  def update_geometry_data(message)
+    p message
+    
+    if message['json_file_path']
+      @world.load_json_data(message['json_file_path'])
+    end
+    
+    if message['position_tex_path'] and message['normal_tex_path']
+      @world.load_vertex_textures(message['position_tex_path'],
+                                  message['normal_tex_path'])
+    end
+    
+    if message['transform_tex_path']
+      @world.load_transform_texture(message['transform_tex_path'])
+    end
+    
+    if message['json_file_path'] || message['transform_tex_path']
+      @world.space.update
+    end
+    
+    
+    # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
+    
+    # reload history
+    # (code adapted from Core#on_reload)
+    if @frame_history.time_traveling?
+      # @frame_history = @frame_history.branch_history
+      
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
+      
+      
+      
+      @frame_history.branch_history
+      
+    else
+      # Do NOT trigger play on reload after direct manipulation.
+      
+      # # was paused when the crash happened,
+      # # so should be able to 'play' and resume execution
+      # @frame_history.play
+      # puts "frame: #{@frame_history.frame_index}"
+    end
+    
+  end
+  
+  
+  # def update_animation_json(message)
+    
+  # end
+  
+  
+  # # vertex position and normal data for one or more meshes has been updated
+  # # 
+  # # Changes to geometry can change the frames available, but will only occasionally change the initial state. Other times they will expose new animation states.
+  # def update_geometry(message)
+    
+    
+  # end
+  
+  # # transform data for a entity has been updated
+  # # (may or may not contain an armature)
+  # # 
+  # # Interpret changes to transforms as changes in the initial state.
+  # # This will always require reloading history.
+  # def update_transform(message)
+  #   puts "update transform"
+  #   @world.load_transform_texture(message['transform_tex_path'])
+    
+  #   # TODO: find a better way to reload time from the initial state
+    
+  #   # reload history
+  #   # (code adapted from Core#on_reload)
+  #   if @frame_history.time_traveling?
+  #     # @frame_history = @frame_history.branch_history
+      
+  #     # For now, just replace the curret timeline with the alt one.
+  #     # In future commits, we can refine this system to use multiple
+  #     # timelines, with UI to compress timelines or switch between them.
+      
+      
+      
+  #     @frame_history.branch_history
+      
+  #   else
+  #     # Do NOT trigger play on reload after direct manipulation.
+      
+  #     # # was paused when the crash happened,
+  #     # # so should be able to 'play' and resume execution
+  #     # @frame_history.play
+  #     # puts "frame: #{@frame_history.frame_index}"
+  #   end
+  # end
+  
+  
+  # # material data is stored in the transform texture
+  # # (like material property block)
+  # # updates to a single material may effect one object, or many,
+  # # so easiest just to load the entire transform texture again
+  # def update_material(message)
+  #   p message
+  #   @world.load_transform_texture(message['transform_tex_path'])
+  # end
+  
+  
   
   
   
@@ -549,6 +658,27 @@ class BlenderSync
     
     return CP::Vec2.new(hit_px, hit_py)
   end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   # Implement an interface similar to ruby's Ractor,

@@ -1,0 +1,187 @@
+current issues
+
+
+The update loop is still being toggled off after undo, which can result in unexpected behavior. This used to break deletion of objects, but now should only effect control of the timeline. That breaking until the switch is re-enabled is annoying, but might not be a deal breaker. Needs more testing.
+
+
+
+
+[x] now can undo entity deletion, but hitting redo again doesn't work
+	probably something is weird about how the update loop is re-enabled after redo. I suspect even though the button is lit, that the loop is not actually re-enabled as expected.
+
+	Moved entity GC logic into load / update callbacks, and out of out of modal update loop. This allows for deleting of entities to work across undo / redo.
+
+
+[x] Deleting objects right after startup of Blender causes scene to go blank
+	Scene in Ruby goes blank, implying that all objects are being deleted. need to look into this more and figure out what the problem is.
+	
+	Doesn't seem to happen any more, now that old_objects list is correctly initialized on load, and GC is managed on update.
+	
+	sometimes it can happen? not clear when or why.
+
+[x] one cube in the cube world is "transparent". not sure why
+	when moving it, it flashes magenta, which is the shader error color.
+	should check the shaders for clues.
+	
+	vert shader was not drawing the first entity.
+	fixed now.
+	
+
+[x] Use entity names from JSON cache to determine which entities to GC
+	JSON cache shows which entities are present in RubyOF,
+	so by comparing that list with the list of entities in Blender
+	(or at least the collection that is supposed to be exported)
+	then it is easy to determine which things have been deleted.
+	
+	Seem to clear up many of the previous bugs? Will have to wait and see.
+
+
+
+[x] check that editing of meshes works with new export system
+
+
+
+[ ] can't duplicate objects to create new objects
+
+	something is selectable in Blender, but it doesn't create a representation that can actually be rendered in Ruby
+	
+	This happens when you use shift+D to duplicate
+	but not when using alt+D (duplicate linked)
+	
+	sometimes shift+D works, but not all the time. not sure what the difference is between working and not working.
+	
+
+
+[ ] delete and un-delete of multiple objects simultaneously (multiple selection -> delete -> undo) should put the objects back in the exactly same rows of the transform texture
+
+	this is necessary because otherwise pointers to the object cache in Ruby will become invalidated in weird and error-prone ways
+
+
+[ ] one tile is disappearing again.
+	still instance index 0.
+	block appears in magenta if dragged.
+
+
+[ ] send pause message on undo
+
+	if the modal that allows for syncing of the timeline between blender and ruby is going to turn off on undo, need to make sure to send a "pause" message on undo - that way, the two states don't drift out of sync.
+
+
+[ ] sync Blender window geometry to RubyOF when Blender is started after RubyOF
+
+
+
+	
+[ ] separate static entities from dynamic entities
+
+
+
+[ ] consider separating queries for tiles (static blocks) vs query for entities (dynamic objects)
+
+
+	how do I properly write a query to check if I can step into a tile?
+	want to have a notion of querying the tiles, but current query would also get dynamic things
+	is this going to just fix itself when I separate dynamic objects from static objects?
+
+
+
+[ ] player entity jumps back to initial position when tiles are moved
+
+	can now move tiles in the world and have system change the outcome,
+	but it seems like the player entity is jumping back to the initial position in certain circumstances.
+	why is that? does it have to do with how the transform texture is loaded?
+	want to be able to edit the tiles without changing the entity position
+	(again, this may be partially fixable by separating dynamics vs statics, but there may be other cases to consider as well)
+
+
+
+[ ] figure out how far back in time to roll back when entities are moved by direct manipulation in Blender
+
+
+	hash: when was the first time this position was queried?
+
+	if you make changes to entities @ that position
+	(either adding or removing a tile)
+	then all calculations after that timepoint need to be re-calculated.
+
+	should diff each time that entities are moved.
+	diff the old image and new image, checking each pair of corresponding rows.
+	unpack the pixels to mat4 if there is a difference in the pixel data,
+	then decompose the matricies to see if the positions have changed.
+	mark the hash at both the previous positon and the new position.
+
+	don't mark the hash if any of the x y or z components of the position are not integers (likely to have non-integer values when editing the map, or moving props / greevels)
+	if you hash these values (which vary continously) you will have a lot of things in the hash, which will waste memory.
+
+
+	also need to recalculate when meshes are changed at grid positions
+	(changing the meshes may change the result of queries as well)
+	(imagine that a solid tile was changed into a staircase, or into water)
+
+
+	also need to recalculate any time an armature is moved
+	(how much to recalculate? everything from t=0 ?)
+
+
+
+
+[ ] visualize changes in time (ghosts of moving entities)
+
+
+	how to visualize changes in time?
+	like the braid-like demo from bret victor
+	don't want to have to manually fiddle, scrubbing back and forth in time.
+	that's better than not having control over time, but it's still not good.
+
+	should visualize things with onion skin
+	should be careful not to waste too much time rendering.
+	probably don't want to render every frame.
+
+	how often to render?
+		probably need to be able to configure this in the GUI
+		may need dynamic control for different specific circumstances
+	how do we create a buffer that can be rendered to?
+	how do we draw an onion-skin-like effect instead of rendering the normal material?
+	should it be transparent?
+		if so, what is the opacity?
+
+
+	in order to render the ghosts / trails
+	just put transforms of all moving entities across all timepoints
+	into a single transform texture
+	then render that using the same mesh textures as "normal" rendering
+	but with reduced transparency.
+	(exploiting GPU instancing again to draw this in a single batch)
+	(can likely use the EntityCache structure again too)
+
+
+
+
+
+[ ] save lights data to file
+	should have lights on init
+
+[ ] save camera data to file
+	should have lights on init, even when blender is not connected
+
+
+
+[ ] clean up nomenclature
+
+	Sometimes it's called "transform texture" but in other places it's called "entity texture." Similarly, sometimes I call them entities (entities have meshes in Ruby/C++ EntityCache), but in other places they're objects (objects vs mesh datablocks in blender) Need to unify the nomenclature all over.
+
+
+
+
+[ ] Sometimes game does not respond to hitting play in Blender.
+	Restarting Blender seems to fix the issue, but this is really annoying.
+	
+	maybe there's some issue with the FIFOs? Maybe it only surfaces when python code is reloaded? it does feel like the python code is not reloading cleanly
+
+
+
+
+
+
+
+

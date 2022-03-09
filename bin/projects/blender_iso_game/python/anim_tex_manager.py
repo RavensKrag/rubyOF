@@ -37,10 +37,10 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, context, to_ruby_fifo):
+    def __init__(self, scene, to_ruby_fifo):
         self.to_ruby = to_ruby_fifo
         
-        mytool = context.scene.my_tool
+        mytool = scene.my_tool
         
         self.max_tris = mytool.max_tris
         
@@ -323,8 +323,8 @@ class AnimTexManager ():
     # reset all internal state used by the texture manager
     # TODO: should clear the cache and JSON file as well
         # not strictly necessary, as clear() is normally run before deleting the animation manager instance. see main_file.py for usage
-    def clear(self, context):
-        mytool = context.scene.my_tool
+    def clear(self, scene):
+        mytool = scene.my_tool
         
         mytool.position_tex  = None
         mytool.normal_tex    = None
@@ -588,7 +588,7 @@ class AnimTexManager ():
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_material_name == material.name:
-                self.set_object_material(obj_name, material)
+                self.set_object_material(cached_obj_name, material)
     
     
     # Remove object from the transform texture.
@@ -626,7 +626,30 @@ class AnimTexManager ():
         
         self.transform_tex.save()
         
+        # 
+        # remove data from cache
+        # 
         
+        self.object_data_cache[scanline_index] = [None, None, None]
+        
+        # save new JSON file
+        self.save()
+        
+    
+    
+    # Return list of all object names
+    # (same data as what gets saved to JSON file)
+    def get_object_names(self):
+        out = list()
+        
+        for i, data in enumerate(self.object_data_cache):
+            cached_obj_name, cached_mesh_name, cached_material_name = data
+            out.append(cached_obj_name)
+        
+        return out
+    
+    
+    
     def get_json_path(self):
         return self.json_filepath
     
