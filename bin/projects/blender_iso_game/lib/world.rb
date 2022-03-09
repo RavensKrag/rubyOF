@@ -322,9 +322,38 @@ class World
   end
   
   
-  Mesh = Struct.new(:name, :index)
-  # index only can be interpreted within some spritesheet,
-  # so need some way to make sure we're on the right sheet
+  # TODO: index only can be interpreted within some spritesheet, so need some way to make sure we're on the right sheet
+  class Mesh
+    attr_reader :name, :index
+    
+    def initialize(name, index)
+      @name = name
+      @index = index
+    end
+    
+    # all meshes are solid for now
+    # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
+    def solid?
+      return true
+    end
+  end
+  
+  
+  # class Mesh
+  #   SOLID_MESHES = [
+  #     'Cube.002'
+  #   ]
+  #   def solid?(mesh_name)
+  #     return SOLID_MESHES.include? mesh_name
+  #   end
+  # end
+  
+  # # ^ is this way of defining this backwards?
+  # #   should I be tagging objects with their properties instead?
+  
+  
+  
+  
   
   
   class DataInterface
@@ -471,10 +500,14 @@ class World
       
       # @first ||= true
       
-      out = @entity_list.select{   |name, pos|   pos == pt  }
-                        .collect{  |name, pos|   name  }
+      out = @entity_list.select{   |name, pos|  pos == pt  }
+                        .collect{  |name, pos|  name  }
+                        .collect{  |name|  @data.find_mesh_by_name(name)  }
       
       puts "=> #{out.inspect}"
+      
+      # TODO: return [World::Mesh] instead of [String]
+      # (should work now, but needs testing)
       
       return out
     end

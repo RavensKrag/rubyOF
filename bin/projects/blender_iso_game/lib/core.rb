@@ -386,17 +386,13 @@ class Core
   
   
   
-  
-  
-  
-  
-  
   def free_space?(pos)
-    !@world.space.point_query(pos).include?('Cube.002')
+    return !blocked_space?(pos)
   end
   
   def blocked_space?(pos)
-    @world.space.point_query(pos).include?('Cube.002')
+    @world.space.point_query(pos)
+    .any?{|mesh| mesh.solid? } # are there any solid blocks @ pos?
   end
   
   
@@ -424,6 +420,8 @@ class Core
     # #   RB_SPIKE_PROFILER.disable
     # #   puts "\n"*7
     # # end
+    
+    
     
     
     if @first_update
