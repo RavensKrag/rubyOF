@@ -159,7 +159,7 @@ def rubyof__on_update(scene, depsgraph):
     
     # print("old_names:", len(old_names), flush=True)
     
-    if delta != [None]:
+    if len(delta) > 0:
         print("delta:", delta, flush=True)
         
         old_names = new_names

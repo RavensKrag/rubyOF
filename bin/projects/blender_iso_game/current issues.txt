@@ -57,6 +57,12 @@ The update loop is still being toggled off after undo, which can result in unexp
 	Because the mesh index is only read out of the red channel, magenta is interpreted as a valid mesh index color.
 
 
+
+[ ] clean up mesh cache in AnimTexManager when deleting objects
+
+	if the mesh isn't needed any more, delete it from the texture when deleting the object
+
+
 [ ] can't duplicate objects to create new objects
 
 	something is selectable in Blender, but it doesn't create a representation that can actually be rendered in Ruby
@@ -65,6 +71,9 @@ The update loop is still being toggled off after undo, which can result in unexp
 	but not when using alt+D (duplicate linked)
 	
 	sometimes shift+D works, but not all the time. not sure what the difference is between working and not working.
+	
+	If it fails, seems like you can undo / redo, and then it works??
+	that's really weird...
 
 
 [ ] clean up nomenclature

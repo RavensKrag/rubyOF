@@ -668,9 +668,10 @@ class AnimTexManager ():
     def get_object_names(self):
         out = list()
         
-        for i, data in enumerate(self.object_data_cache):
+        for data in self.object_data_cache:
             cached_obj_name, cached_mesh_name, cached_material_name = data
-            out.append(cached_obj_name)
+            if cached_obj_name is not None:
+                out.append(cached_obj_name)
         
         return out
     
