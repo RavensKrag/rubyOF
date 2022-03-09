@@ -440,7 +440,7 @@ class Exporter():
             if mesh_updated:
                 data = {
                     'type': 'update_geometry_data',
-                    'comment': 'created new mesh object',
+                    'comment': 'created new entity with new mesh',
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
                     'transform_tex_path': transform_filepath,
@@ -448,7 +448,7 @@ class Exporter():
             else:
                 data = {
                     'type': 'update_geometry_data',
-                    'comment': 'created new mesh object',
+                    'comment': 'created new entity with existing mesh',
                     # 'position_tex_path' : position_filepath,
                     # 'normal_tex_path'   : normal_filepath,
                     'transform_tex_path': transform_filepath,
