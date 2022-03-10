@@ -4,16 +4,23 @@ class World
   attr_reader :data, :space, :lights, :camera
   
   def initialize(json_file_path, position_tex_path, normal_tex_path, transform_tex_path)
+    
     @pixels = {
-      :positions  => RubyOF::FloatPixels.new,
+      :positions  => RubyOF::FloatPixels.new, # TODO: array of these
       :normals    => RubyOF::FloatPixels.new,
-      :transforms => RubyOF::FloatPixels.new
+      :entities   => RubyOF::FloatPixels.new
     }
+    
+    # TODO: one more RubyOF::FloatPixels for the ghosts
+    # TODO: custom C++ function to blit the data from many frames into one big frame
+    # TODO: one for RubyOF::Texture to render the ghosts
+    
+    # (can I use the array of :position images to roll back time?)
     
     @textures = {
       :positions  => RubyOF::Texture.new,
       :normals    => RubyOF::Texture.new,
-      :transforms => RubyOF::Texture.new
+      :entities   => RubyOF::Texture.new
     }
     
     load_transform_texture(transform_tex_path)
@@ -79,7 +86,7 @@ class World
     # 
     # cache allows easy manipulation of transform texture from Ruby
     # 
-    @pixels[:transforms].tap do |transform_texture|
+    @pixels[:entities].tap do |transform_texture|
       num_entities = transform_texture.height.to_i
       @cache = RubyOF::Project::EntityCache.new(num_entities)
       
@@ -131,7 +138,7 @@ class World
   
   
   def update
-    was_updated = @cache.update(@pixels[:transforms])
+    was_updated = @cache.update(@pixels[:entities])
     # TODO: ^ update this to return something I can use as an error code if something went wrong in the update
     update_textures() if was_updated
   end
@@ -140,7 +147,7 @@ class World
     # 
     # transfer color data to the GPU
     # 
-    @textures[:transforms].load_data(@pixels[:transforms])
+    @textures[:entities].load_data(@pixels[:entities])
   end
   
   
@@ -161,7 +168,7 @@ class World
     )
     
     @mat.setCustomUniformTexture(
-      "object_transform_tex", @textures[:transforms], 3
+      "object_transform_tex", @textures[:entities], 3
     )
       # but how is the primary texture used to color the mesh in the fragment shader bound? there is some texture being set to 'tex0' but I'm unsure where in the code that is actually specified
     
@@ -171,7 +178,7 @@ class World
     # (one row is just a human-readable visual marker - it is not data)
     # 
     using_material @mat do
-      @mesh.draw_instanced(@pixels[:transforms].height-1)
+      @mesh.draw_instanced(@pixels[:entities].height-1)
     end
   end
   
@@ -180,7 +187,7 @@ class World
       texture.draw_wh(12,300,0, texture.width, -texture.height)
     end
     
-    @textures[:transforms].tap do |texture| 
+    @textures[:entities].tap do |texture| 
       @node ||= RubyOF::Node.new
       @node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
       @node.position = GLM::Vec3.new(108, 320, 1)
@@ -205,13 +212,13 @@ class World
   end
   
   def load_transform_texture(transform_tex_path)
-    ofLoadImage(@pixels[:transforms], transform_tex_path.to_s)
+    ofLoadImage(@pixels[:entities], transform_tex_path.to_s)
     
     # 
     # configure all sets of pixels (CPU data) and textures (GPU data)
     # 
-    pixels_list = [@pixels[:transforms]]
-    textures_list = [@textures[:transforms]]
+    pixels_list = [@pixels[:entities]]
+    textures_list = [@textures[:entities]]
     
     pixels_list.zip(textures_list).each do |pixels, texture|
       # y axis is flipped relative to Blender???
@@ -233,7 +240,7 @@ class World
     
     # reset the cache when textures reload
     unless @cache.nil?
-      @cache.load(@pixels[:transforms])
+      @cache.load(@pixels[:entities])
     end
   end
   
