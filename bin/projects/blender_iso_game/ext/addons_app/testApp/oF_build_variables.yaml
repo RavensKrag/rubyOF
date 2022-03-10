@@ -502,7 +502,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1701,unix/ravensnest:/tmp/.ICE-unix/1701
+- local/ravensnest:@/tmp/.ICE-unix/1650,unix/ravensnest:/tmp/.ICE-unix/1650
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -643,7 +643,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-xCOvu6iBio26/agent.1493"
+- "/tmp/ssh-hBVoKoinil0q/agent.1449"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj"
@@ -728,7 +728,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1606'
+- '1562'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
@@ -1139,9 +1139,8 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-COMPILE.cc:
-- g++
-- "-c"
+OLDPWD:
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib"
 ADDON_LIBS_EXCLUDE: []
 REQUESTED_PROJECT_ADDONS:
 - ofxGui
@@ -1395,7 +1394,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- COMPILE.cc
+- OLDPWD
 - ADDON_LIBS_EXCLUDE
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
@@ -1450,6 +1449,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - TMP_PROJECT_ADDONS_INCLUDES
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
+- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -2046,6 +2046,9 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
+COMPILE.cc:
+- g++
+- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
@@ -2141,7 +2144,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/47f6fbdf_7db2_425d_ace9_19cc2c36ab6b"
+- "/org/gnome/Terminal/screen/0124af03_9a0a_4140_bd25_214b03c26096"
 "^F": []
 COMPILE.S:
 - cc
@@ -2160,7 +2163,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.551"
+- ":1.93"
 SUFFIXES:
 - ".out"
 - ".a"

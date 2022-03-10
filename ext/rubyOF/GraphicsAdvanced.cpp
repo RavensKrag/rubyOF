@@ -765,6 +765,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("height",        &ofFloatPixels::getHeight)
       
       .define_method("flip",          &ofFloatPixels_flip)
+      
+      .define_method("paste_into",    &ofFloatPixels::pasteInto)
    ;
    
    
