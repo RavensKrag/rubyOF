@@ -1066,51 +1066,6 @@ void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array 
 
 
 
-void set_entity_transform_array(ofFloatPixels &pixels, int i, Rice::Array ary, ofTexture &tex){
-	// TODO: optimize - always allocate 16 floats (dynamic allocation can be slow)
-	
-	// copy ruby data over to C++ memory
-	float* tmp_array = new float[ary.size()];
-	int idx = 0;
-	for(auto aI = ary.begin(); aI != ary.end(); ++aI){
-		tmp_array[idx] = from_ruby<float>(*aI);
-		idx++;
-	}
-	
-	// don't need to swizzle on write,
-	// this is just like exporting from python
-	
-	ofFloatColor c1(tmp_array[ 0], tmp_array[ 1], tmp_array[ 2], tmp_array[ 3]);
-	ofFloatColor c2(tmp_array[ 4], tmp_array[ 5], tmp_array[ 6], tmp_array[ 7]);
-	ofFloatColor c3(tmp_array[ 8], tmp_array[ 9], tmp_array[10], tmp_array[11]);
-	ofFloatColor c4(tmp_array[12], tmp_array[13], tmp_array[14], tmp_array[15]);
-	
-	
-	// # 
-	// # write colors on the CPU
-	// # 
-	pixels.setColor(1, i, c1);
-	pixels.setColor(2, i, c2);
-	pixels.setColor(3, i, c3);
-	pixels.setColor(4, i, c4);
-	
-	// 
-	// transfer data from CPU to GPU
-	// 
-	
-	tex.loadData(pixels);
-	
-	
-	// 
-	// clean up memory
-	// 
-	delete tmp_array;
-	
-	
-	
-	return;
-}
-
 
 
 
@@ -1781,26 +1736,6 @@ void Init_rubyOF_project()
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
 		
-		
-		
-		// .define_module_function("get_entity_transform",
-		// 	                     &get_entity_transform)
-		
-		// // set transform using mat4
-		// .define_module_function("set_entity_transform",
-		// 	                     &set_entity_transform)
-		
-		// set transform using array
-		.define_module_function("set_entity_transform_array",
-			                     &set_entity_transform_array)
-		
-		
-		// .define_module_function("query_transform_pixels",
-		// 	                     &query_transform_pixels)
-		
-		
-		// .define_module_function("decompose_matrix",
-			                     // &decompose_matrix)
 		
 	;
 	

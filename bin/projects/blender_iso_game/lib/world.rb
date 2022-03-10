@@ -598,21 +598,5 @@ class World
   def load
     
   end
-
-  
-  
-  private
-  
-  
-  
-  # called by BlenderSync when moving mesh objects by direct manipulation
-  def set_entity_transform_array(i, nested_array)
-    RubyOF::CPP_Callbacks.set_entity_transform_array(
-      @pixels[:transforms], i, nested_array.flatten, @textures[:transforms]
-    )
-    
-    return self
-  end
-  
   
 end
