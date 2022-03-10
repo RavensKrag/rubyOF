@@ -205,6 +205,10 @@ class World
   
   
   def load_json_data(json_filepath)
+    unless File.exist? json_filepath
+      raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
+    end
+    
     json_string   = File.readlines(json_filepath).join("\n")
     json_data     = JSON.parse(json_string)
     
@@ -410,7 +414,7 @@ class World
         entity_ptr = @cache.get_entity(i)
         
         if entity_ptr.active?
-          entity_name, mesh_name, material_name =  @json['object_data_cache'][i]
+          entity_name, mesh_name, material_name =  @json['entity_data_cache'][i]
           
           mesh_name = @json['mesh_data_cache'][entity_ptr.mesh_index]
           mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
@@ -434,7 +438,7 @@ class World
       entity_idx = nil
       
       # TODO: try using #find_index instead
-      @json['object_data_cache'].each_with_index do |data, i|
+      @json['entity_data_cache'].each_with_index do |data, i|
         entity_name, mesh_name, material_name = data
         
         if entity_name == target_entity_name

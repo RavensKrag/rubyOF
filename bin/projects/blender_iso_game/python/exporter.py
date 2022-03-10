@@ -244,7 +244,7 @@ class Exporter():
         
         num_objects = len(all_mesh_objects)
         if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
+            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the entity texture.')
         
         
         # 
@@ -297,9 +297,9 @@ class Exporter():
         
         for i, obj in enumerate(all_mesh_objects):
             m = tex_manager
-            m.set_object_mesh(     obj.name, obj.data.name)
-            m.set_object_transform(obj.name, get_object_transform(obj))
-            m.set_object_material( obj.name, first_material(obj))
+            m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_transform(obj.name, get_object_transform(obj))
+            m.set_entity_material( obj.name, first_material(obj))
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -379,13 +379,13 @@ class Exporter():
         
         
         print("transform updated:", mesh_obj.name)
-        if tex_manager.has_object(mesh_obj.name):
+        if tex_manager.has_entity(mesh_obj.name):
             # 
             # update already existing object to have a new transform
             # 
             
             m = tex_manager
-            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
+            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
             
             
             print("moved object")
@@ -424,14 +424,14 @@ class Exporter():
                 mesh_updated = True
                 m.export_mesh(mesh_obj.data.name, mesh_obj.data)
             
-            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
-            m.set_object_mesh(mesh_obj.name, mesh_obj.data.name)
+            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
+            m.set_entity_mesh(mesh_obj.name, mesh_obj.data.name)
             
             
             # TODO: must export material as well (just for this one object)
             if(len(mesh_obj.material_slots) > 0):
                 mat = mesh_obj.material_slots[0].material
-                m.set_object_material(mesh_obj.name, mat)
+                m.set_entity_material(mesh_obj.name, mat)
             
             
             filepaths = m.get_texture_paths()
@@ -682,7 +682,7 @@ class Exporter():
             # print(delete)
             
             # TODO: make sure they're all mesh objects
-            tex_manager.delete_object(name)
+            tex_manager.delete_entity(name)
         
         
         filepaths = tex_manager.get_texture_paths()

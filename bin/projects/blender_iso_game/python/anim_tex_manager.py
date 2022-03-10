@@ -73,14 +73,14 @@ class AnimTexManager ():
             # ]
             
             
-            # self.object_data_cache = [
+            # self.entity_data_cache = [
             #     [None, None],
             #     [mesh_obj_name, first_material.name]
             #         # => 'name: .name'
             # ]
         self.mesh_data_cache   = [None] * self.position_tex.height
         
-        self.object_data_cache = ( [[None, None, None]]
+        self.entity_data_cache = ( [[None, None, None]]
                                    * self.transform_tex.height )
         
         
@@ -188,7 +188,7 @@ class AnimTexManager ():
         first_open_scanline = -1
         
         # search for the name
-        for i, data in enumerate(self.object_data_cache):
+        for i, data in enumerate(self.entity_data_cache):
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_obj_name is None:
@@ -203,29 +203,29 @@ class AnimTexManager ():
         if first_open_scanline == -1:
             raise "No open scanlines available in the object texture. Try increasing the maximum number of objects (aka frames) allowed in exporter."
         else:
-            self.object_data_cache[first_open_scanline] = [obj_name, None, None]
+            self.entity_data_cache[first_open_scanline] = [obj_name, None, None]
             
             return first_open_scanline
     
     # Set object -> mesh binding in cache
     def __cache_object_mesh_binding(self, scanline_index, mesh_name):
-        data = self.object_data_cache[scanline_index]
+        data = self.entity_data_cache[scanline_index]
         
         # data[0] = obj_name
         data[1] = mesh_name
         # data[2] = material_name
         
-        self.object_data_cache[scanline_index] = data
+        self.entity_data_cache[scanline_index] = data
     
     # Set object -> material binding in cache
     def __cache_material_binding(self, scanline_index, material_name):
-        data = self.object_data_cache[scanline_index]
+        data = self.entity_data_cache[scanline_index]
         
         # data[0] = obj_name
         # data[1] = mesh_name
         data[2] = material_name
         
-        self.object_data_cache[scanline_index] = data
+        self.entity_data_cache[scanline_index] = data
         
     
     
@@ -338,9 +338,9 @@ class AnimTexManager ():
     
     # Does an object with this name exist in the texture?
     # ( based on code from __object_name_to_scanline() )
-    def has_object(self, obj_name):
+    def has_entity(self, obj_name):
         # search for the name
-        for i, data in enumerate(self.object_data_cache):
+        for i, data in enumerate(self.entity_data_cache):
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_obj_name == obj_name:
@@ -440,7 +440,7 @@ class AnimTexManager ():
     # 
     # obj_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
-    def set_object_mesh(self, obj_name, mesh_name):
+    def set_entity_mesh(self, obj_name, mesh_name):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -481,7 +481,7 @@ class AnimTexManager ():
     # 
     # obj_name  : string
     # transform : 4x4 transform matrix
-    def set_object_transform(self, obj_name, transform):
+    def set_entity_transform(self, obj_name, transform):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -513,7 +513,7 @@ class AnimTexManager ():
     # 
     # obj_name : string
     # material : blender material datablock, containing RubyOF material
-    def set_object_material(self, obj_name, material):
+    def set_entity_material(self, obj_name, material):
         scanline_index = self.__object_name_to_scanline(obj_name)
         
         
@@ -572,7 +572,7 @@ class AnimTexManager ():
     
     
     # Update material properties for all objects that use the given material.
-    # ( must have previously bound material using set_object_material() )
+    # ( must have previously bound material using set_entity_material() )
     # 
     # material : blender material datablock, containing RubyOF material
     def update_material(self, material):
@@ -582,11 +582,11 @@ class AnimTexManager ():
         # 1) traverse the cache to find all objects that use this material
         # 2) update all of those objects
         
-        for data in self.object_data_cache:
+        for data in self.entity_data_cache:
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_material_name == material.name:
-                self.set_object_material(cached_obj_name, material)
+                self.set_entity_material(cached_obj_name, material)
     
     
     # Remove object from the transform texture.
@@ -595,7 +595,7 @@ class AnimTexManager ():
     # and will only be cleared out on a "clean build" of all data.
     # 
     # obj_name : string
-    def delete_object(self, obj_name):
+    def delete_entity(self, obj_name):
         # TODO: Consider storing resource counts in the first pixel
         # 
         # If saving resource counts doesn't work,
@@ -629,15 +629,15 @@ class AnimTexManager ():
         # 
         
         # clear object data
-        obj_data = self.object_data_cache[scanline_index]
+        obj_data = self.entity_data_cache[scanline_index]
         _, mesh_name, _ = obj_data
         
-        self.object_data_cache[scanline_index] = [None, None, None]
+        self.entity_data_cache[scanline_index] = [None, None, None]
         
         # if the mesh attached to this object is no longer being used,
         # then delete the mesh from the cache and from the texture
         count = 0
-        for data in self.object_data_cache:
+        for data in self.entity_data_cache:
             cached_obj_name, cached_mesh_name, cached_material_name = data
             
             if cached_mesh_name == mesh_name:
@@ -668,7 +668,7 @@ class AnimTexManager ():
     def get_object_names(self):
         out = list()
         
-        for data in self.object_data_cache:
+        for data in self.entity_data_cache:
             cached_obj_name, cached_mesh_name, cached_material_name = data
             if cached_obj_name is not None:
                 out.append(cached_obj_name)
@@ -692,7 +692,7 @@ class AnimTexManager ():
     def save(self):
         data = {
             'mesh_data_cache': self.mesh_data_cache,
-            'object_data_cache': self.object_data_cache
+            'entity_data_cache': self.entity_data_cache
         }
         
         # print(json.dumps(data))
@@ -718,7 +718,7 @@ class AnimTexManager ():
                 sys.stdout.flush()
                 
                 self.mesh_data_cache   = data['mesh_data_cache']
-                self.object_data_cache = data['object_data_cache']
+                self.entity_data_cache = data['entity_data_cache']
     
     
     
