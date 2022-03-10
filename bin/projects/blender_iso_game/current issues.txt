@@ -80,12 +80,27 @@ The update loop is still being toggled off after undo, which can result in unexp
 	Will mark as fixed for now.
 
 
-[ ] clean up nomenclature
+[x] clean up nomenclature
 
 	Sometimes it's called "transform texture" but in other places it's called "entity texture." Similarly, sometimes I call them entities (entities have meshes in Ruby/C++ EntityCache), but in other places they're objects (objects vs mesh datablocks in blender) Need to unify the nomenclature all over.
+	
+	Done.
+
+
+
+
+[ ] blender ui for exporting all textures has a field called "max frames" but when you separate dynamics and statics, should be more clear about number of meshes used in animation vs number of tiles used in static world geometry.
+
+	there is also an error message that mentions "try increasing the maximum number of entities (aka frames)"
 
 	
 [ ] separate static entities from dynamic entities
+
+
+
+[ ] clean up documentation in main.py
+
+	seems like there's a lot of draft comments / things that may no longer be relevant
 
 
 

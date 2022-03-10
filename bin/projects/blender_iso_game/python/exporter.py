@@ -218,18 +218,19 @@ class Exporter():
         context = yield(0.0)
         
         
+        # RubyOF / Ruby:    entities have meshes
+        # Blender / Python: objects have datablocks
+        
+        
         # collect up all the objects to export
         
         # for each object find the associated mesh datablock
-        # reduce to the objects with unique mesh datablocks
-        # generate evaluated meshes for those objects
-        # create mapping of obj -> evaulated mesh
-        
-        # create mapping of evaluated mesh -> scanline index
-        # export evaluated meshes to file
-        
-        # for each object
+            # reduce to the objects with unique mesh datablocks
+            # generate evaluated meshes for those objects
             # map object -> mesh -> mesh scanline index
+        
+        # then export the transforms:
+        # for each object
             # export object transform with mesh_id= mesh scanline index
         
         
@@ -244,7 +245,7 @@ class Exporter():
         
         num_objects = len(all_mesh_objects)
         if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the transform texture.')
+            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the entity texture.')
         
         
         # 
@@ -297,9 +298,9 @@ class Exporter():
         
         for i, obj in enumerate(all_mesh_objects):
             m = tex_manager
-            m.set_object_mesh(     obj.name, obj.data.name)
-            m.set_object_transform(obj.name, get_object_transform(obj))
-            m.set_object_material( obj.name, first_material(obj))
+            m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_transform(obj.name, get_object_transform(obj))
+            m.set_entity_material( obj.name, first_material(obj))
             
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -321,13 +322,13 @@ class Exporter():
         # let RubyOF know that new animation textures have been exported
         # 
         filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, transform_filepath = filepaths
+        position_filepath, normal_filepath, entity_filepath = filepaths
         
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
             'json_file_path': tex_manager.get_json_path(),
-            'transform_tex_path': transform_filepath,
+            'entity_tex_path': entity_filepath,
             'position_tex_path' : position_filepath,
             'normal_tex_path'   : normal_filepath,
         }
@@ -347,10 +348,7 @@ class Exporter():
     # 
     # update animation textures
     # 
-
-    # update data that would have been sent in pack_mesh():
-    # so, the transform and what datablock the object is linked to
-
+    
     # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
 
 
@@ -364,7 +362,7 @@ class Exporter():
         #     'type': 'update_transform',
         #     'position_tex_path' : self.position_tex.filepath,
         #     'normal_tex_path'   : self.normal_tex.filepath,
-        #     'transform_tex_path': self.transform_tex.filepath,
+        #     'entity_tex_path': self.entity_tex.filepath,
         # }
         
         # self.to_ruby.write(json.dumps(data))
@@ -379,43 +377,43 @@ class Exporter():
         
         
         print("transform updated:", mesh_obj.name)
-        if tex_manager.has_object(mesh_obj.name):
+        if tex_manager.has_entity(mesh_obj.name):
             # 
             # update already existing object to have a new transform
             # 
             
             m = tex_manager
-            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
+            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
             
             
-            print("moved object")
+            print("moved entity")
             
             
             filepaths = tex_manager.get_texture_paths()
-            position_filepath, normal_filepath, transform_filepath = filepaths
+            position_filepath, normal_filepath, entity_filepath = filepaths
             
             data = {
                 'type': 'update_geometry_data',
-                'comment': 'moved object',
+                'comment': 'moved entity',
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
-                'transform_tex_path': transform_filepath,
+                'entity_tex_path': entity_filepath,
             }
             
             self.to_ruby.write(json.dumps(data))
             
         else:
             # 
-            # No object has existed in texture before
+            # No entity has existed in texture before
             # but there was an update to the transform?
             # 
-            # must be a new object!
+            # must be a new entity!
             # 
-            print("creating new object")
+            print("creating new entity")
             
             # export new mesh (if necessary)
             # (may not need to export the mesh again)
-            # bind mesh to object
+            # bind mesh to entity
             
             m = tex_manager
             
@@ -424,18 +422,18 @@ class Exporter():
                 mesh_updated = True
                 m.export_mesh(mesh_obj.data.name, mesh_obj.data)
             
-            m.set_object_transform(mesh_obj.name, get_object_transform(mesh_obj))
-            m.set_object_mesh(mesh_obj.name, mesh_obj.data.name)
+            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
+            m.set_entity_mesh(mesh_obj.name, mesh_obj.data.name)
             
             
-            # TODO: must export material as well (just for this one object)
+            # must export material as well (just for this one entity)
             if(len(mesh_obj.material_slots) > 0):
                 mat = mesh_obj.material_slots[0].material
-                m.set_object_material(mesh_obj.name, mat)
+                m.set_entity_material(mesh_obj.name, mat)
             
             
             filepaths = m.get_texture_paths()
-            position_filepath, normal_filepath, transform_filepath = filepaths
+            position_filepath, normal_filepath, entity_filepath = filepaths
             
             # update JSON file
             m.save()
@@ -447,7 +445,7 @@ class Exporter():
                     'json_file_path': tex_manager.get_json_path(),
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
-                    'transform_tex_path': transform_filepath,
+                    'entity_tex_path': entity_filepath,
                 }
             else:
                 data = {
@@ -456,7 +454,7 @@ class Exporter():
                     # 'json_file_path': tex_manager.get_json_path(),
                     # 'position_tex_path' : position_filepath,
                     # 'normal_tex_path'   : normal_filepath,
-                    'transform_tex_path': transform_filepath,
+                    'entity_tex_path': entity_filepath,
                 }
                 
             
@@ -583,13 +581,13 @@ class Exporter():
                 
                 
                 filepaths = tex_manager.get_texture_paths()
-                position_filepath, normal_filepath, transform_filepath = filepaths
+                position_filepath, normal_filepath, entity_filepath = filepaths
                 
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'edit active mesh',
                     # 'json_file_path': tex_manager.get_json_path(),
-                    # 'transform_tex_path': transform_filepath,
+                    # 'entity_tex_path': entity_filepath,
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
                 }
@@ -655,13 +653,13 @@ class Exporter():
                     tex_manager.update_material(mat)
                     
                     filepaths = tex_manager.get_texture_paths()
-                    position_filepath, normal_filepath, transform_filepath = filepaths
+                    position_filepath, normal_filepath, entity_filepath = filepaths
                     
                     data = {
                         'type': 'update_geometry_data',
                         'comment': 'edit material for all instances',
                         # 'json_file_path': tex_manager.get_json_path(),
-                        'transform_tex_path': transform_filepath,
+                        'entity_tex_path': entity_filepath,
                         # 'position_tex_path' : position_filepath,
                         # 'normal_tex_path'   : normal_filepath,
                     }
@@ -675,29 +673,52 @@ class Exporter():
      # ---
     
     
-    def gc_objects(self, scene, delta):
+    # Call this function every frame (or every update)
+    # and compares the current list of entities to the previous list.
+    # The difference set between these two
+    # would tell you what entities were deleted.
+    # (Was doing this before in Ruby, but now do it in Python)
+    def gc(self, scene):
+        # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
+        
+        mytool = scene.my_tool
         tex_manager = self.resource_manager.get_texture_manager(scene)
         
-        for name in delta:
-            # print(delete)
+        old_names = tex_manager.get_entity_names()
+        new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        delta = list(set(old_names) - set(new_names))
+        
+        # print("old_names:", len(old_names), flush=True)
+        
+        if len(delta) > 0:
+            print("delta:", delta, flush=True)
             
-            # TODO: make sure they're all mesh objects
-            tex_manager.delete_object(name)
-        
-        
-        filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, transform_filepath = filepaths
-        
-        data = {
-            'type': 'update_geometry_data',
-            'comment': 'run garbage collection',
-            'json_file_path': tex_manager.get_json_path(),
-            'transform_tex_path': transform_filepath,
-            # 'position_tex_path' : position_filepath,
-            # 'normal_tex_path'   : normal_filepath,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-    
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
+                
+                tex_manager.delete_entity(name)
+                # will this still work for animated things?
+                # TODO: how do you delete meshes tha are bound to armatures?
+                # TODO: how do you delete animation frames?
+            
+            
+            filepaths = tex_manager.get_texture_paths()
+            position_filepath, normal_filepath, entity_filepath = filepaths
+            
+            data = {
+                'type': 'update_geometry_data',
+                'comment': 'run garbage collection',
+                'json_file_path': tex_manager.get_json_path(),
+                'entity_tex_path': entity_filepath,
+                # 'position_tex_path' : position_filepath,
+                # 'normal_tex_path'   : normal_filepath,
+            }
+            
+            self.to_ruby.write(json.dumps(data))
+        # ---
+    # ---
     
     

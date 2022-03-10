@@ -227,7 +227,7 @@ class Core
       geometry_texture_dir/"anim_tex_cache.json",
       geometry_texture_dir/"animation.position.exr",
       geometry_texture_dir/"animation.normal.exr",
-      geometry_texture_dir/"animation.transform.exr"
+      geometry_texture_dir/"animation.entity.exr"
     )
     
     @frame_history = FrameHistory.new(self)

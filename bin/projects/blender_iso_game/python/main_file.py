@@ -150,21 +150,8 @@ def rubyof__on_update(scene, depsgraph):
     # print("running", time.time())
     # print("objects: ", len(context.scene.objects))
     
-    mytool = scene.my_tool
-    tex_manager = resource_manager.get_texture_manager(scene)
+    export_helper.gc(scene)
     
-    old_names = tex_manager.get_object_names()
-    new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
-    delta = list(set(old_names) - set(new_names))
-    
-    # print("old_names:", len(old_names), flush=True)
-    
-    if len(delta) > 0:
-        print("delta:", delta, flush=True)
-        
-        old_names = new_names
-        
-        export_helper.gc_objects(scene, delta)
         
 
 
@@ -490,9 +477,9 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         type=bpy.types.Image
     )
     
-    transform_tex : PointerProperty(
+    entity_tex : PointerProperty(
         name="Transform mat4 texture",
-        description="texture encoding object mat4 transformse",
+        description="texture encoding entity data (mesh mappings, transforms, and materials)",
         type=bpy.types.Image
     )
     

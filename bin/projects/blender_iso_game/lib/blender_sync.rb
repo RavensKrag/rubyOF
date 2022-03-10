@@ -466,11 +466,11 @@ class BlenderSync
                                   message['normal_tex_path'])
     end
     
-    if message['transform_tex_path']
-      @world.load_transform_texture(message['transform_tex_path'])
+    if message['entity_tex_path']
+      @world.load_entity_texture(message['entity_tex_path'])
     end
     
-    if message['json_file_path'] || message['transform_tex_path']
+    if message['json_file_path'] || message['entity_tex_path']
       @world.space.update
     end
     
@@ -522,7 +522,7 @@ class BlenderSync
   # # This will always require reloading history.
   # def update_transform(message)
   #   puts "update transform"
-  #   @world.load_transform_texture(message['transform_tex_path'])
+  #   @world.load_entity_texture(message['entity_tex_path'])
     
   #   # TODO: find a better way to reload time from the initial state
     
@@ -556,7 +556,7 @@ class BlenderSync
   # # so easiest just to load the entire transform texture again
   # def update_material(message)
   #   p message
-  #   @world.load_transform_texture(message['transform_tex_path'])
+  #   @world.load_entity_texture(message['entity_tex_path'])
   # end
   
   

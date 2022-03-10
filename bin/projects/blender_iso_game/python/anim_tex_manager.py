@@ -30,7 +30,7 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
     
 
 
-# TODO: need to force export of everything if the number of objects changes
+# TODO: need to force export of everything if the number of entities changes
     # JSON file will be messed up, the cache will be messed up... really need to make sure everything is regenerated. but that's not really the responsibily of this file, I don't think.
 
 class AnimTexManager ():
@@ -73,15 +73,15 @@ class AnimTexManager ():
             # ]
             
             
-            # self.object_data_cache = [
+            # self.entity_data_cache = [
             #     [None, None],
             #     [mesh_obj_name, first_material.name]
             #         # => 'name: .name'
             # ]
         self.mesh_data_cache   = [None] * self.position_tex.height
         
-        self.object_data_cache = ( [[None, None, None]]
-                                   * self.transform_tex.height )
+        self.entity_data_cache = ( [[None, None, None]]
+                                   * self.entity_tex.height )
         
         
         self.json_filepath = os.path.join(bpy.path.abspath(mytool.output_dir),
@@ -107,10 +107,10 @@ class AnimTexManager ():
             mytool.output_dir
         )
         
-        self.transform_tex = ImageWrapper(
-            get_cached_image(mytool, "transform_tex",
-                             mytool.name+".transform",
-                             size=self.__calc_transform_tex_size(mytool),
+        self.entity_tex = ImageWrapper(
+            get_cached_image(mytool, "entity_tex",
+                             mytool.name+".entity",
+                             size=self.__calc_entity_tex_size(mytool),
                              channels_per_pixel=4),
             mytool.output_dir
         )
@@ -121,15 +121,15 @@ class AnimTexManager ():
         
         return [width_px, height_px]
     
-    def __calc_transform_tex_size(self, mytool):
+    def __calc_entity_tex_size(self, mytool):
         # the transform texture must encode 3 things:
         
-        # 1) a mat4 for the object's transform
+        # 1) a mat4 for the entity's transform
         channels_per_pixel = 4
         mat4_size = 4*4;
         pixels_per_transform = mat4_size // channels_per_pixel;
         
-        # 2) what mesh to use when rendering this object
+        # 2) what mesh to use when rendering this entity
         pixels_per_id_block = 1
         
         # 3) values needed by the material (like Unity's material property block)
@@ -173,59 +173,59 @@ class AnimTexManager ():
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
-            raise "No open scanlines available in the mesh textures. (Scanline i=0 always intentially left blank.) Try increasing the maximum number of objects (aka frames) allowed in exporter."
+            raise "No open scanlines available in the mesh textures. (Scanline i=0 always intentially left blank.) Try increasing the maximum number of entities (aka frames) allowed in exporter."
         else:
             self.mesh_data_cache[first_open_scanline] = mesh_name
             
             return first_open_scanline
     
     
-    # Find the scanline to use for a object with the given name.
+    # Find the scanline to use for an entity with the given name.
     # 
     # code based on __mesh_name_to_scanline()
-    def __object_name_to_scanline(self, obj_name):
+    def __entity_name_to_scanline(self, entity_name):
         output_index = 0
         first_open_scanline = -1
         
         # search for the name
-        for i, data in enumerate(self.object_data_cache):
-            cached_obj_name, cached_mesh_name, cached_material_name = data
+        for i, data in enumerate(self.entity_data_cache):
+            cached_entity_name, cached_mesh_name, cached_material_name = data
             
-            if cached_obj_name is None:
+            if cached_entity_name is None:
                 if first_open_scanline == -1:
                     first_open_scanline = i
-            elif cached_obj_name == obj_name:
+            elif cached_entity_name == entity_name:
                 # If you find the name, use that scanline
                 return i
         
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
-            raise "No open scanlines available in the object texture. Try increasing the maximum number of objects (aka frames) allowed in exporter."
+            raise "No open scanlines available in the entity texture. Try increasing the maximum number of entities (aka frames) allowed in exporter."
         else:
-            self.object_data_cache[first_open_scanline] = [obj_name, None, None]
+            self.entity_data_cache[first_open_scanline] = [entity_name, None, None]
             
             return first_open_scanline
     
-    # Set object -> mesh binding in cache
-    def __cache_object_mesh_binding(self, scanline_index, mesh_name):
-        data = self.object_data_cache[scanline_index]
+    # Set entity -> mesh binding in cache
+    def __cache_entity_mesh_binding(self, scanline_index, mesh_name):
+        data = self.entity_data_cache[scanline_index]
         
         # data[0] = obj_name
         data[1] = mesh_name
         # data[2] = material_name
         
-        self.object_data_cache[scanline_index] = data
+        self.entity_data_cache[scanline_index] = data
     
-    # Set object -> material binding in cache
+    # Set entity -> material binding in cache
     def __cache_material_binding(self, scanline_index, material_name):
-        data = self.object_data_cache[scanline_index]
+        data = self.entity_data_cache[scanline_index]
         
         # data[0] = obj_name
         # data[1] = mesh_name
         data[2] = material_name
         
-        self.object_data_cache[scanline_index] = data
+        self.entity_data_cache[scanline_index] = data
         
     
     
@@ -266,8 +266,8 @@ class AnimTexManager ():
     #     # but for spatial queries in Ruby you need
     #     # to map point in space -> mesh name
         
-    #     # point in space -> objectID
-    #     # objectID -> meshID
+    #     # point in space -> entityID
+    #     # entityID -> meshID
     #     # meshID -> mesh name
         
     #     # so you need a meshID_to_meshDatablock mapping
@@ -326,7 +326,7 @@ class AnimTexManager ():
         
         mytool.position_tex  = None
         mytool.normal_tex    = None
-        mytool.transform_tex = None
+        mytool.entity_tex = None
         
         # print("checking json path", flush=True)
         if os.path.isfile(self.json_filepath):
@@ -336,17 +336,17 @@ class AnimTexManager ():
     
     
     
-    # Does an object with this name exist in the texture?
-    # ( based on code from __object_name_to_scanline() )
-    def has_object(self, obj_name):
+    # Does an entity with this name exist in the texture?
+    # ( based on code from __entity_name_to_scanline() )
+    def has_entity(self, obj_name):
         # search for the name
-        for i, data in enumerate(self.object_data_cache):
-            cached_obj_name, cached_mesh_name, cached_material_name = data
+        for i, data in enumerate(self.entity_data_cache):
+            cached_entity_name, cached_mesh_name, cached_material_name = data
             
-            if cached_obj_name == obj_name:
+            if cached_entity_name == obj_name:
                 return True
         
-        # object not found
+        # entity not found
         return False
     
     
@@ -430,7 +430,7 @@ class AnimTexManager ():
         self.normal_tex.save()
     
     
-    # Specify the mesh to use for a given object @ t=0 (initial condition)
+    # Specify the mesh to use for a given entity @ t=0 (initial condition)
     # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
     # (3 channels have the same data; helps with visualization of the texture)
     # This mapping will be changed by ruby code during game execution,
@@ -440,14 +440,14 @@ class AnimTexManager ():
     # 
     # obj_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
-    def set_object_mesh(self, obj_name, mesh_name):
-        scanline_index = self.__object_name_to_scanline(obj_name)
+    def set_entity_mesh(self, obj_name, mesh_name):
+        scanline_index = self.__entity_name_to_scanline(obj_name)
         
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         print(scanline_transform, flush=True)
         
@@ -457,38 +457,38 @@ class AnimTexManager ():
         
         # error if mesh has not been exported yet
         if not self.has_mesh(mesh_name):
-            raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an object."
+            raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an entity."
         
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
-        self.__cache_object_mesh_binding(scanline_index, mesh_name)
+        self.__cache_entity_mesh_binding(scanline_index, mesh_name)
         
         
         # 
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
-    # Pack 4x4 transformation matrix for an object into 4 pixels
-    # of data in the object transform texture.
+    # Pack 4x4 transformation matrix for an entity into 4 pixels
+    # of data in the entity texture.
     # 
-    # obj_name  : string
+    # entity_name  : string
     # transform : 4x4 transform matrix
-    def set_object_transform(self, obj_name, transform):
-        scanline_index = self.__object_name_to_scanline(obj_name)
+    def set_entity_transform(self, entity_name, transform):
+        scanline_index = self.__entity_name_to_scanline(entity_name)
         
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         
         
@@ -497,30 +497,30 @@ class AnimTexManager ():
         # 
         for i in range(1, 5): # range is exclusive of high end: [a, b)
             scanline_set_px(scanline_transform, i, vec4_to_rgba(transform[i-1]),
-                            channels=self.transform_tex.channels_per_pixel)
+                            channels=self.entity_tex.channels_per_pixel)
         
         # 
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
-    # Bind object to a particular material,
-    # and pack material data into 4 pixels in the object transform texture.
+    # Bind entity to a particular material,
+    # and pack material data into 4 pixels in the entity texture.
     # 
-    # obj_name : string
+    # entity_name : string
     # material : blender material datablock, containing RubyOF material
-    def set_object_material(self, obj_name, material):
-        scanline_index = self.__object_name_to_scanline(obj_name)
+    def set_entity_material(self, entity_name, material):
+        scanline_index = self.__entity_name_to_scanline(entity_name)
         
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         
         # 
@@ -547,16 +547,16 @@ class AnimTexManager ():
             alpha = material.rb_mat.alpha
         
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         
         self.__cache_material_binding(scanline_index, material.name)
@@ -566,79 +566,68 @@ class AnimTexManager ():
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
-    # Update material properties for all objects that use the given material.
-    # ( must have previously bound material using set_object_material() )
+    # Update material properties for all entities that use the given material.
+    # ( must have previously bound material using set_entity_material() )
     # 
     # material : blender material datablock, containing RubyOF material
     def update_material(self, material):
         # FIXME: may actually need the blender material block after all, because that may be where the names are stored
         
         
-        # 1) traverse the cache to find all objects that use this material
-        # 2) update all of those objects
+        # 1) traverse the cache to find all entities that use this material
+        # 2) update all of those entities
         
-        for data in self.object_data_cache:
-            cached_obj_name, cached_mesh_name, cached_material_name = data
+        for data in self.entity_data_cache:
+            cached_entity_name, cached_mesh_name, cached_material_name = data
             
             if cached_material_name == material.name:
-                self.set_object_material(cached_obj_name, material)
+                self.set_entity_material(cached_entity_name, material)
     
     
-    # Remove object from the transform texture.
-    # No good way right now to "garbage collect" unused mesh data.
-    # For now, that data will continue to exist in the mesh data textures,
-    # and will only be cleared out on a "clean build" of all data.
+    # Remove entity from the transform texture.
     # 
-    # obj_name : string
-    def delete_object(self, obj_name):
-        # TODO: Consider storing resource counts in the first pixel
-        # 
-        # If saving resource counts doesn't work,
-        # I can have some update function in the manager class
-        # which is called every frame / every update,
-        # and which compares the current list of objects to the previous list.
-        # The difference set between these two
-        # would tell you what objects were deleted.
-        
-        # (This is the technique I've already been using to parse deletion, but it happened at the Ruby level, after I recieved the entity list from Python.)
-        
-        
-        scanline_index = self.__object_name_to_scanline(obj_name)
+    # Primitive garbage collection exists (see exporter -> gc)
+    # but the main way to clear out unused mesh data
+    # is to do a "clean build" of all data.
+    # 
+    # entity_name : string
+    def delete_entity(self, entity_name):
+        scanline_index = self.__entity_name_to_scanline(entity_name)
         
         
         # This time, you *want* to clobber the data,
         # so don't read what's currently in there.
-        scanline_transform = [0.0, 0.0, 0.0, 1.0] * self.transform_tex.width
+        scanline_transform = [0.0, 0.0, 0.0, 1.0] * self.entity_tex.width
         
         
         # 
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
         
         # 
         # remove data from cache
         # 
         
-        # clear object data
-        obj_data = self.object_data_cache[scanline_index]
-        _, mesh_name, _ = obj_data
+        # clear entity data
+        entity_data = self.entity_data_cache[scanline_index]
+        _, mesh_name, _ = entity_data
         
-        self.object_data_cache[scanline_index] = [None, None, None]
+        self.entity_data_cache[scanline_index] = [None, None, None]
         
-        # if the mesh attached to this object is no longer being used,
+        # if the mesh attached to this entity is no longer being used,
         # then delete the mesh from the cache and from the texture
         count = 0
-        for data in self.object_data_cache:
-            cached_obj_name, cached_mesh_name, cached_material_name = data
+        for data in self.entity_data_cache:
+            cached_entity_name, cached_mesh_name, cached_material_name = data
             
             if cached_mesh_name == mesh_name:
                 count += 1
@@ -663,15 +652,15 @@ class AnimTexManager ():
         
     
     
-    # Return list of all object names
+    # Return list of all entity names
     # (same data as what gets saved to JSON file)
-    def get_object_names(self):
+    def get_entity_names(self):
         out = list()
         
-        for data in self.object_data_cache:
-            cached_obj_name, cached_mesh_name, cached_material_name = data
-            if cached_obj_name is not None:
-                out.append(cached_obj_name)
+        for data in self.entity_data_cache:
+            cached_entity_name, cached_mesh_name, cached_material_name = data
+            if cached_entity_name is not None:
+                out.append(cached_entity_name)
         
         return out
     
@@ -683,7 +672,7 @@ class AnimTexManager ():
     def get_texture_paths(self):
         return (self.position_tex.filepath,
                 self.normal_tex.filepath,
-                self.transform_tex.filepath)
+                self.entity_tex.filepath)
     
     # 
     # serialization
@@ -692,7 +681,7 @@ class AnimTexManager ():
     def save(self):
         data = {
             'mesh_data_cache': self.mesh_data_cache,
-            'object_data_cache': self.object_data_cache
+            'entity_data_cache': self.entity_data_cache
         }
         
         # print(json.dumps(data))
@@ -718,7 +707,7 @@ class AnimTexManager ():
                 sys.stdout.flush()
                 
                 self.mesh_data_cache   = data['mesh_data_cache']
-                self.object_data_cache = data['object_data_cache']
+                self.entity_data_cache = data['entity_data_cache']
     
     
     
@@ -732,7 +721,7 @@ class AnimTexManager ():
         
         # mytool.position_tex  = None
         # mytool.normal_tex    = None
-        # mytool.transform_tex = None
+        # mytool.entity_tex = None
         
         self.__wrap_textures(mytool)
     
@@ -741,7 +730,7 @@ class AnimTexManager ():
         
         # mytool.position_tex  = None
         # mytool.normal_tex    = None
-        # mytool.transform_tex = None
+        # mytool.entity_tex = None
         
         self.__wrap_textures(mytool)
     
