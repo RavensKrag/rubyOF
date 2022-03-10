@@ -23,7 +23,7 @@ class World
       :entities   => RubyOF::Texture.new
     }
     
-    load_transform_texture(transform_tex_path)
+    load_entity_texture(transform_tex_path)
     load_vertex_textures(position_tex_path, normal_tex_path)
     
     # 
@@ -215,7 +215,7 @@ class World
     @json = json_data
   end
   
-  def load_transform_texture(transform_tex_path)
+  def load_entity_texture(transform_tex_path)
     ofLoadImage(@pixels[:entities], transform_tex_path.to_s)
     
     # 

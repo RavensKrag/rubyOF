@@ -490,7 +490,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         type=bpy.types.Image
     )
     
-    transform_tex : PointerProperty(
+    entity_tex : PointerProperty(
         name="Transform mat4 texture",
         description="texture encoding object mat4 transformse",
         type=bpy.types.Image

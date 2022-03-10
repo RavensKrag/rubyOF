@@ -81,7 +81,7 @@ class AnimTexManager ():
         self.mesh_data_cache   = [None] * self.position_tex.height
         
         self.entity_data_cache = ( [[None, None, None]]
-                                   * self.transform_tex.height )
+                                   * self.entity_tex.height )
         
         
         self.json_filepath = os.path.join(bpy.path.abspath(mytool.output_dir),
@@ -107,10 +107,10 @@ class AnimTexManager ():
             mytool.output_dir
         )
         
-        self.transform_tex = ImageWrapper(
-            get_cached_image(mytool, "transform_tex",
-                             mytool.name+".transform",
-                             size=self.__calc_transform_tex_size(mytool),
+        self.entity_tex = ImageWrapper(
+            get_cached_image(mytool, "entity_tex",
+                             mytool.name+".entity",
+                             size=self.__calc_entity_tex_size(mytool),
                              channels_per_pixel=4),
             mytool.output_dir
         )
@@ -121,7 +121,7 @@ class AnimTexManager ():
         
         return [width_px, height_px]
     
-    def __calc_transform_tex_size(self, mytool):
+    def __calc_entity_tex_size(self, mytool):
         # the transform texture must encode 3 things:
         
         # 1) a mat4 for the object's transform
@@ -326,7 +326,7 @@ class AnimTexManager ():
         
         mytool.position_tex  = None
         mytool.normal_tex    = None
-        mytool.transform_tex = None
+        mytool.entity_tex = None
         
         # print("checking json path", flush=True)
         if os.path.isfile(self.json_filepath):
@@ -446,8 +446,8 @@ class AnimTexManager ():
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         print(scanline_transform, flush=True)
         
@@ -462,7 +462,7 @@ class AnimTexManager ():
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         self.__cache_object_mesh_binding(scanline_index, mesh_name)
         
@@ -471,9 +471,9 @@ class AnimTexManager ():
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
     # Pack 4x4 transformation matrix for an object into 4 pixels
@@ -487,8 +487,8 @@ class AnimTexManager ():
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         
         
@@ -497,15 +497,15 @@ class AnimTexManager ():
         # 
         for i in range(1, 5): # range is exclusive of high end: [a, b)
             scanline_set_px(scanline_transform, i, vec4_to_rgba(transform[i-1]),
-                            channels=self.transform_tex.channels_per_pixel)
+                            channels=self.entity_tex.channels_per_pixel)
         
         # 
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
     # Bind object to a particular material,
@@ -519,8 +519,8 @@ class AnimTexManager ():
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
-        scanline_transform = self.transform_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.transform_tex.width
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
         
         # 
@@ -547,16 +547,16 @@ class AnimTexManager ():
             alpha = material.rb_mat.alpha
         
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 8, vec3_to_rgba(c4),
-                        channels=self.transform_tex.channels_per_pixel)
+                        channels=self.entity_tex.channels_per_pixel)
         
         
         self.__cache_material_binding(scanline_index, material.name)
@@ -566,9 +566,9 @@ class AnimTexManager ():
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
     
     
     # Update material properties for all objects that use the given material.
@@ -613,16 +613,16 @@ class AnimTexManager ():
         
         # This time, you *want* to clobber the data,
         # so don't read what's currently in there.
-        scanline_transform = [0.0, 0.0, 0.0, 1.0] * self.transform_tex.width
+        scanline_transform = [0.0, 0.0, 0.0, 1.0] * self.entity_tex.width
         
         
         # 
         # write to scanline to texture
         # 
         
-        self.transform_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
-        self.transform_tex.save()
+        self.entity_tex.save()
         
         # 
         # remove data from cache
@@ -683,7 +683,7 @@ class AnimTexManager ():
     def get_texture_paths(self):
         return (self.position_tex.filepath,
                 self.normal_tex.filepath,
-                self.transform_tex.filepath)
+                self.entity_tex.filepath)
     
     # 
     # serialization
@@ -732,7 +732,7 @@ class AnimTexManager ():
         
         # mytool.position_tex  = None
         # mytool.normal_tex    = None
-        # mytool.transform_tex = None
+        # mytool.entity_tex = None
         
         self.__wrap_textures(mytool)
     
@@ -741,7 +741,7 @@ class AnimTexManager ():
         
         # mytool.position_tex  = None
         # mytool.normal_tex    = None
-        # mytool.transform_tex = None
+        # mytool.entity_tex = None
         
         self.__wrap_textures(mytool)
     

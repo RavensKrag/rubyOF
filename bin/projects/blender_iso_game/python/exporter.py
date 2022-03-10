@@ -321,13 +321,13 @@ class Exporter():
         # let RubyOF know that new animation textures have been exported
         # 
         filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, transform_filepath = filepaths
+        position_filepath, normal_filepath, entity_filepath = filepaths
         
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
             'json_file_path': tex_manager.get_json_path(),
-            'transform_tex_path': transform_filepath,
+            'entity_tex_path': entity_filepath,
             'position_tex_path' : position_filepath,
             'normal_tex_path'   : normal_filepath,
         }
@@ -364,7 +364,7 @@ class Exporter():
         #     'type': 'update_transform',
         #     'position_tex_path' : self.position_tex.filepath,
         #     'normal_tex_path'   : self.normal_tex.filepath,
-        #     'transform_tex_path': self.transform_tex.filepath,
+        #     'entity_tex_path': self.entity_tex.filepath,
         # }
         
         # self.to_ruby.write(json.dumps(data))
@@ -392,14 +392,14 @@ class Exporter():
             
             
             filepaths = tex_manager.get_texture_paths()
-            position_filepath, normal_filepath, transform_filepath = filepaths
+            position_filepath, normal_filepath, entity_filepath = filepaths
             
             data = {
                 'type': 'update_geometry_data',
                 'comment': 'moved object',
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
-                'transform_tex_path': transform_filepath,
+                'entity_tex_path': entity_filepath,
             }
             
             self.to_ruby.write(json.dumps(data))
@@ -435,7 +435,7 @@ class Exporter():
             
             
             filepaths = m.get_texture_paths()
-            position_filepath, normal_filepath, transform_filepath = filepaths
+            position_filepath, normal_filepath, entity_filepath = filepaths
             
             # update JSON file
             m.save()
@@ -447,7 +447,7 @@ class Exporter():
                     'json_file_path': tex_manager.get_json_path(),
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
-                    'transform_tex_path': transform_filepath,
+                    'entity_tex_path': entity_filepath,
                 }
             else:
                 data = {
@@ -456,7 +456,7 @@ class Exporter():
                     # 'json_file_path': tex_manager.get_json_path(),
                     # 'position_tex_path' : position_filepath,
                     # 'normal_tex_path'   : normal_filepath,
-                    'transform_tex_path': transform_filepath,
+                    'entity_tex_path': entity_filepath,
                 }
                 
             
@@ -583,13 +583,13 @@ class Exporter():
                 
                 
                 filepaths = tex_manager.get_texture_paths()
-                position_filepath, normal_filepath, transform_filepath = filepaths
+                position_filepath, normal_filepath, entity_filepath = filepaths
                 
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'edit active mesh',
                     # 'json_file_path': tex_manager.get_json_path(),
-                    # 'transform_tex_path': transform_filepath,
+                    # 'entity_tex_path': entity_filepath,
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
                 }
@@ -655,13 +655,13 @@ class Exporter():
                     tex_manager.update_material(mat)
                     
                     filepaths = tex_manager.get_texture_paths()
-                    position_filepath, normal_filepath, transform_filepath = filepaths
+                    position_filepath, normal_filepath, entity_filepath = filepaths
                     
                     data = {
                         'type': 'update_geometry_data',
                         'comment': 'edit material for all instances',
                         # 'json_file_path': tex_manager.get_json_path(),
-                        'transform_tex_path': transform_filepath,
+                        'entity_tex_path': entity_filepath,
                         # 'position_tex_path' : position_filepath,
                         # 'normal_tex_path'   : normal_filepath,
                     }
@@ -686,13 +686,13 @@ class Exporter():
         
         
         filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, transform_filepath = filepaths
+        position_filepath, normal_filepath, entity_filepath = filepaths
         
         data = {
             'type': 'update_geometry_data',
             'comment': 'run garbage collection',
             'json_file_path': tex_manager.get_json_path(),
-            'transform_tex_path': transform_filepath,
+            'entity_tex_path': entity_filepath,
             # 'position_tex_path' : position_filepath,
             # 'normal_tex_path'   : normal_filepath,
         }
