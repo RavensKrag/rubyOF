@@ -415,7 +415,7 @@ class Exporter():
             
             # export new mesh (if necessary)
             # (may not need to export the mesh again)
-            # bind mesh to object
+            # bind mesh to entity
             
             m = tex_manager
             
@@ -428,7 +428,7 @@ class Exporter():
             m.set_entity_mesh(mesh_obj.name, mesh_obj.data.name)
             
             
-            # TODO: must export material as well (just for this one object)
+            # must export material as well (just for this one entity)
             if(len(mesh_obj.material_slots) > 0):
                 mat = mesh_obj.material_slots[0].material
                 m.set_entity_material(mesh_obj.name, mat)
@@ -675,29 +675,52 @@ class Exporter():
      # ---
     
     
-    def gc_objects(self, scene, delta):
+    # Call this function every frame (or every update)
+    # and compares the current list of entities to the previous list.
+    # The difference set between these two
+    # would tell you what entities were deleted.
+    # (Was doing this before in Ruby, but now do it in Python)
+    def gc(self, scene):
+        # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
+        
+        mytool = scene.my_tool
         tex_manager = self.resource_manager.get_texture_manager(scene)
         
-        for name in delta:
-            # print(delete)
+        old_names = tex_manager.get_entity_names()
+        new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        delta = list(set(old_names) - set(new_names))
+        
+        # print("old_names:", len(old_names), flush=True)
+        
+        if len(delta) > 0:
+            print("delta:", delta, flush=True)
             
-            # TODO: make sure they're all mesh objects
-            tex_manager.delete_entity(name)
-        
-        
-        filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, entity_filepath = filepaths
-        
-        data = {
-            'type': 'update_geometry_data',
-            'comment': 'run garbage collection',
-            'json_file_path': tex_manager.get_json_path(),
-            'entity_tex_path': entity_filepath,
-            # 'position_tex_path' : position_filepath,
-            # 'normal_tex_path'   : normal_filepath,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
-    
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
+                
+                tex_manager.delete_entity(name)
+                # will this still work for animated things?
+                # TODO: how do you delete meshes tha are bound to armatures?
+                # TODO: how do you delete animation frames?
+            
+            
+            filepaths = tex_manager.get_texture_paths()
+            position_filepath, normal_filepath, entity_filepath = filepaths
+            
+            data = {
+                'type': 'update_geometry_data',
+                'comment': 'run garbage collection',
+                'json_file_path': tex_manager.get_json_path(),
+                'entity_tex_path': entity_filepath,
+                # 'position_tex_path' : position_filepath,
+                # 'normal_tex_path'   : normal_filepath,
+            }
+            
+            self.to_ruby.write(json.dumps(data))
+        # ---
+    # ---
     
     
