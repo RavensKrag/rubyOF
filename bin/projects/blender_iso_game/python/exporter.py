@@ -218,18 +218,19 @@ class Exporter():
         context = yield(0.0)
         
         
+        # RubyOF / Ruby:    entities have meshes
+        # Blender / Python: objects have datablocks
+        
+        
         # collect up all the objects to export
         
         # for each object find the associated mesh datablock
-        # reduce to the objects with unique mesh datablocks
-        # generate evaluated meshes for those objects
-        # create mapping of obj -> evaulated mesh
-        
-        # create mapping of evaluated mesh -> scanline index
-        # export evaluated meshes to file
-        
-        # for each object
+            # reduce to the objects with unique mesh datablocks
+            # generate evaluated meshes for those objects
             # map object -> mesh -> mesh scanline index
+        
+        # then export the transforms:
+        # for each object
             # export object transform with mesh_id= mesh scanline index
         
         
@@ -347,10 +348,7 @@ class Exporter():
     # 
     # update animation textures
     # 
-
-    # update data that would have been sent in pack_mesh():
-    # so, the transform and what datablock the object is linked to
-
+    
     # TODO: how do you handle objects that get renamed? is there some other unique identifier that is saved across sessions? (I think names in Blender are actually unique, but Blender works hard to make that happen...)
 
 
@@ -388,7 +386,7 @@ class Exporter():
             m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
             
             
-            print("moved object")
+            print("moved entity")
             
             
             filepaths = tex_manager.get_texture_paths()
@@ -396,7 +394,7 @@ class Exporter():
             
             data = {
                 'type': 'update_geometry_data',
-                'comment': 'moved object',
+                'comment': 'moved entity',
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
                 'entity_tex_path': entity_filepath,
@@ -406,12 +404,12 @@ class Exporter():
             
         else:
             # 
-            # No object has existed in texture before
+            # No entity has existed in texture before
             # but there was an update to the transform?
             # 
-            # must be a new object!
+            # must be a new entity!
             # 
-            print("creating new object")
+            print("creating new entity")
             
             # export new mesh (if necessary)
             # (may not need to export the mesh again)
