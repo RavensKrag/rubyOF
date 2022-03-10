@@ -58,12 +58,13 @@ The update loop is still being toggled off after undo, which can result in unexp
 
 
 
-[ ] clean up mesh cache in AnimTexManager when deleting objects
+[x] clean up mesh cache in AnimTexManager when deleting objects
 
 	if the mesh isn't needed any more, delete it from the texture when deleting the object
 
 
-[ ] can't duplicate objects to create new objects
+(watch for regressions)
+[x] can't duplicate objects to create new objects
 
 	something is selectable in Blender, but it doesn't create a representation that can actually be rendered in Ruby
 	
@@ -74,6 +75,9 @@ The update loop is still being toggled off after undo, which can result in unexp
 	
 	If it fails, seems like you can undo / redo, and then it works??
 	that's really weird...
+	
+	Might have become fixed after the last change to cache maintainance.
+	Will mark as fixed for now.
 
 
 [ ] clean up nomenclature
