@@ -152,7 +152,7 @@ class World
   
   
   
-  def setup(json_file_path, position_tex_path, normal_tex_path, entity_tex_path)
+  def setup(static_data_path:, dynamic_data_path:)
     # static_entities
     # + load once from disk to specify initial state
     # + if reloaded, you have new initial state
@@ -161,9 +161,10 @@ class World
     # TODO: consider implementing read-only mode for DataInterface for static entities
     
     @storage[:static].tap do |data|
-      # data[:mesh_data].load position_tex_path, normal_tex_path
-      # data[:entity_data].load entity_tex_path
-      # data[:names].load json_file_path
+      json_file_path    = static_data_path/"anim_tex_cache.json"
+      position_tex_path = static_data_path/"animation.position.exr"
+      normal_tex_path   = static_data_path/"animation.normal.exr"
+      entity_tex_path   = static_data_path/"animation.entity.exr"
       
       load_static_mesh_textures position_tex_path, normal_tex_path
       load_static_entity_texture entity_tex_path
@@ -184,13 +185,10 @@ class World
     # + need other mechanism to load changes @ t != 0 (JSON message?)
     
     @storage[:dynamic].tap do |data|
-      # data[:mesh_data].load position_tex_path, normal_tex_path
-      # # data[:entity_data].load entity_tex_path
-      # data[:history].each do |entity_data|
-      #   entity_data.load entity_tex_path
-      # end
-      # data[:names].load json_file_path
-      
+      json_file_path    = dynamic_data_path/"anim_tex_cache.json"
+      position_tex_path = dynamic_data_path/"animation.position.exr"
+      normal_tex_path   = dynamic_data_path/"animation.normal.exr"
+      entity_tex_path   = dynamic_data_path/"animation.entity.exr"
       
       load_dynamic_mesh_textures position_tex_path, normal_tex_path
       load_dynamic_entity_texture entity_tex_path # initial state only

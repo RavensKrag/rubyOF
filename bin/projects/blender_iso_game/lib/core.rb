@@ -227,10 +227,8 @@ class Core
     @world = World.new
     
     @world.setup(
-      geometry_texture_dir/"anim_tex_cache.json",
-      geometry_texture_dir/"animation.position.exr",
-      geometry_texture_dir/"animation.normal.exr",
-      geometry_texture_dir/"animation.entity.exr"
+      static_data_path:  data_dir/'geom_textures',
+      dynamic_data_path: data_dir/'geom_textures'
     )
     
     @frame_history = FrameHistory.new(self, @world.history)
