@@ -2,7 +2,7 @@
 # 
 # assumes the structure / schema is immutable,
 # although the data inside (leaf data) may change.
-class Tree
+class FixedSchemaTree
   def initialize(tree_like_hash)
     @hash = Hash.new
     
@@ -10,7 +10,7 @@ class Tree
     
     tree_like_hash.each do |key, val|
       if val.is_a? Hash
-        @hash[key] = Tree.new(val)
+        @hash[key] = FixedSchemaTree.new(val)
       else
         @hash[key] = val
       end
@@ -25,13 +25,12 @@ class Tree
     begin
       out = @hash.fetch(key)
       
-      # return a subtree (which is also a Tree object)
+      # return a subtree (which is also a FixedSchemaTree object)
       # or for leaf nodes, just return the actual data
       return out
       
     rescue KeyError => e
-      # TODO: try patching the error message to be slightly more descriptive - wnat to know that it's coming from Tree access, not a normal hash
-      
+      # TODO: try patching the error message to be slightly more descriptive - wnat to know that it's coming from FixedSchemaTree access, not a normal hash
       
       p e.methods
       p e.original_message
@@ -105,7 +104,7 @@ class World
     
     
     # @t = frame_index # currently tracked in FrameHistory
-    @storage = Tree.new({
+    @storage = FixedSchemaTree.new({
       
       :static => {
         :mesh_data => {
