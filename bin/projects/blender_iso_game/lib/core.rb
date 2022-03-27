@@ -108,6 +108,7 @@ load LIB_DIR/'blender_sync.rb'
 
 load LIB_DIR/'oit_render_pipeline.rb'
 
+load LIB_DIR/'fixed_schema_tree.rb'
 load LIB_DIR/'world.rb'
 load LIB_DIR/'frame_history.rb'
 
