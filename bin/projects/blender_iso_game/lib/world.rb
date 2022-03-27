@@ -153,6 +153,13 @@ class World
   
   
   def setup(json_file_path, position_tex_path, normal_tex_path, entity_tex_path)
+    # static_entities
+    # + load once from disk to specify initial state
+    # + if reloaded, you have new initial state
+    # ( still uses EntityCache to access properties, but writing values is ignored )
+    
+    # TODO: consider implementing read-only mode for DataInterface for static entities
+    
     @storage[:static].tap do |data|
       # data[:mesh_data].load position_tex_path, normal_tex_path
       # data[:entity_data].load entity_tex_path
@@ -169,6 +176,12 @@ class World
       
       data[:cache].load data[:entity_data][:pixels]
     end
+    
+    
+    # dynamic_entities
+    # + load from disk to specify initial state
+    # + if reloaded, that's a new initial state (t == 0)
+    # + need other mechanism to load changes @ t != 0 (JSON message?)
     
     @storage[:dynamic].tap do |data|
       # data[:mesh_data].load position_tex_path, normal_tex_path
@@ -196,29 +209,7 @@ class World
       data[:cache].load data[:entity_data][:pixels]
     end
     
-    
-    
-    
-    # @static_entities  = RubyOF::FloatPixels.new
-    #   # + load once from disk to specify initial state
-    #   # + if reloaded, you have new initial state
-    # @dynamic_entities = RubyOF::FloatPixels.new
-    #   # + load from disk to specify initial state
-    #   # + if reloaded, that's a new initial state (t == 0)
-    #   # + need other mechanism to load changes @ t != 0 (JSON message?)
-    
-    
-    
-    
-    
-    # how do I deal with the cache when splitting dynamic / static?
-    # need to be able to read transform components (positon, orientation, scale)
-    # from the static entities, but don't need to set them.
-    # on the contrary, if you set them, it might be problematic.
-    # should I still use the same EntityCache ?
-    
-    
-    # NOTE: mesh data (positions, normals) should be separate for dynamics vs statics
+    # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
       # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
       
     
