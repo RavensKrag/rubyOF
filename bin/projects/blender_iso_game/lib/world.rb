@@ -36,15 +36,10 @@ class World
     
     
     # TODO: one more RubyOF::FloatPixels for the ghosts
-    # TODO: custom C++ function to blit the data from many frames into one big frame
-    # TODO: one for RubyOF::Texture to render the ghosts
+    # TODO: one more RubyOF::Texture to render the ghosts
     
     # (can I use the array of :position images to roll back time?)
     
-    
-    
-    
-    # TODO: change EntityCache so the size isn't specified until you bind a Pixels object using EntityCache#load
     
     
     
@@ -459,7 +454,7 @@ class World
     # pixels = @storage[:dynamic][:entity_data][:buffer][0]
     # @storage[:dynamic][:cache].load pixels
     
-    # TODO: figure out how to refresh history when initial state changed during execution
+    # TODO: figure out how to refresh history when initial state changes due to incoming data from Blender
   end
   
   # mesh data doesn't change over time, so dynamic case is the same as static,
@@ -871,10 +866,6 @@ class World
       
     end
     
-    
-    
-    
-    # TODO: update this to use @static_entities and @dynamic_entities, rather than outdated @data
     
     # TODO: consider separate api for querying static entities (tiles) vs dynamic entities (gameobjects)
       # ^ "tile" and "gameobject" nomenclature is not used throughout codebase.
