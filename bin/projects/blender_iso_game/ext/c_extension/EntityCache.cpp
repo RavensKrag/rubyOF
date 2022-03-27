@@ -2,9 +2,8 @@
 
 
 
-EntityCache::EntityCache(int max_size){
-	mpStorage = new EntityData[max_size];
-	mSize = max_size;
+EntityCache::EntityCache(){
+	
 }
 
 EntityCache::~EntityCache(){
@@ -20,15 +19,12 @@ EntityCache::getSize() const{
 // return false if there was an error with loading.
 bool
 EntityCache::load(const ofFloatPixels& pixels){
+	int max_size = pixels.getHeight();
+	mpStorage = new EntityData[max_size];
+	mSize = max_size;
+	
 	// scanline index 0 is blank data for mesh data, but not for entity data.
 	// -- in the entity texture, every single non-blank row encodes real data
-	
-	
-	// check to make sure the ofPixels object is the correct size for this cache
-	if(pixels.getHeight() != mSize){
-		ofLogError("EntityCache") << "ofPixels object was the wrong size for this cache object.";
-		return false;
-	}
 	
 	// if the size is correct, then copy over all data into cache
 	for(int i=0; i<mSize; i++){

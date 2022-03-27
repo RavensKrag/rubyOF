@@ -1640,9 +1640,7 @@ void wrap_EntityCache(Module rb_mProject){
       define_class_under<EntityCache>(rb_mProject, "EntityCache");
 	
 	rb_c_EntityCache
-		.define_constructor(Constructor<EntityCache, int>(),
-			(Arg("size"))
-		)
+		.define_constructor(Constructor<EntityCache>())
 		
 		.define_method("size",            &EntityCache::getSize)
 		

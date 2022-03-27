@@ -19,7 +19,7 @@
 
 class EntityCache {
 public:
-	EntityCache(int max_size);
+	EntityCache();
 	~EntityCache();
 	
 	int getSize() const; // used if you want to interate over the entire cache

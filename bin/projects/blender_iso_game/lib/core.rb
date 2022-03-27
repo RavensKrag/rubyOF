@@ -223,14 +223,16 @@ class Core
     data_dir = (PROJECT_DIR/'bin'/'data')
     geometry_texture_dir = data_dir/'geom_textures'
     
-    @world = World.new(
+    @world = World.new
+    
+    @world.setup(
       geometry_texture_dir/"anim_tex_cache.json",
       geometry_texture_dir/"animation.position.exr",
       geometry_texture_dir/"animation.normal.exr",
       geometry_texture_dir/"animation.entity.exr"
     )
     
-    @frame_history = FrameHistory.new(self)
+    @frame_history = FrameHistory.new(self, @world.history)
     
     
     @world.data.each.each_with_index do |entity, i|
@@ -646,23 +648,7 @@ class Core
   # which call the true render logic. This structure is necessary
   # to allow for live loading - if the update / draw logic
   # is directly inside the Fiber, there's no good way to reload it
-  # when the file reloads.
-  
-  
-  # 
-  # methods used by FrameHistory to save world state
-  # 
-  def snapshot_gamestate
-    # for now, just save the state of the one entity that's moving
-    entity = @world.data.find_entity_by_name('CharacterTest')
-    return entity.transform_matrix
-  end
-  
-  def load_state(state)
-    entity = @world.data.find_entity_by_name('CharacterTest')
-    entity.transform_matrix = state
-  end
-  
+  # when the file reloads
   
   
   
@@ -767,7 +753,10 @@ class Core
       end
       
       pipeline.transparent_pass do
-        
+        # while time traveling, render the trails of moving objects
+        if @frame_history.time_traveling?
+          
+        end
       end
       
       pipeline.ui_pass do

@@ -462,8 +462,8 @@ class BlenderSync
     end
     
     if message['position_tex_path'] and message['normal_tex_path']
-      @world.load_vertex_textures(message['position_tex_path'],
-                                  message['normal_tex_path'])
+      @world.load_mesh_textures(message['position_tex_path'],
+                                message['normal_tex_path'])
     end
     
     if message['entity_tex_path']
