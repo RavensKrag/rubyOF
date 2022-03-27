@@ -33,7 +33,7 @@ uniform mat4 normalMatrix;
 
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
-uniform sampler2DRect object_transform_tex;
+uniform sampler2DRect entity_tex;
 
 // there are two types for textures:
 // sampler2DRect        non-normalized coordinates
@@ -74,7 +74,7 @@ void main (void){
     
     
     // 
-    // instance ID -> texcoords for object_transform_tex
+    // instance ID -> texcoords for entity_tex
     // every row in the transform texture is used
     // (only the mesh texture has y=0 as a line of magenta pixels)
     // 
@@ -96,14 +96,14 @@ void main (void){
     
     
     // 
-    // mat4 transformation matrix from object_transform_tex
+    // mat4 transformation matrix from entity_tex
     // (converts local to world space)
     // 
     
-    vec4 v1 = TEXTURE(object_transform_tex, texCoord1);
-    vec4 v2 = TEXTURE(object_transform_tex, texCoord2);
-    vec4 v3 = TEXTURE(object_transform_tex, texCoord3);
-    vec4 v4 = TEXTURE(object_transform_tex, texCoord4);
+    vec4 v1 = TEXTURE(entity_tex, texCoord1);
+    vec4 v2 = TEXTURE(entity_tex, texCoord2);
+    vec4 v3 = TEXTURE(entity_tex, texCoord3);
+    vec4 v4 = TEXTURE(entity_tex, texCoord4);
     
     // https://stackoverflow.com/questions/13633395/how-do-you-access-the-individual-elements-of-a-glsl-mat4
     
@@ -124,10 +124,10 @@ void main (void){
     
     
     // 
-    // instance ID -> object ID from object_transform_tex
+    // instance ID -> object ID from entity_tex
     // 
     
-    float mesh_id = TEXTURE(object_transform_tex, texCoord0).r;
+    float mesh_id = TEXTURE(entity_tex, texCoord0).r;
     
     // 
     // vertex UVs on input mesh -> texture coordinates for output mesh data
@@ -173,10 +173,10 @@ void main (void){
     
     // NOTE: may have to transform normals because of rotation? unclear
     
-    v_ambient  = TEXTURE(object_transform_tex, texCoord5);
-    v_diffuse  = TEXTURE(object_transform_tex, texCoord6);
-    v_specular = TEXTURE(object_transform_tex, texCoord7);
-    v_emissive = TEXTURE(object_transform_tex, texCoord8);
+    v_ambient  = TEXTURE(entity_tex, texCoord5);
+    v_diffuse  = TEXTURE(entity_tex, texCoord6);
+    v_specular = TEXTURE(entity_tex, texCoord7);
+    v_emissive = TEXTURE(entity_tex, texCoord8);
     
     
     
