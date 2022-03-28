@@ -150,8 +150,8 @@ class World
     
   end
   
-  
-  
+  # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
+    # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
   def setup(static_data_path:, dynamic_data_path:)
     # static_entities
     # + load once from disk to specify initial state
@@ -177,7 +177,6 @@ class World
       
       data[:cache].load data[:entity_data][:pixels]
     end
-    
     
     # dynamic_entities
     # + load from disk to specify initial state
@@ -206,10 +205,6 @@ class World
       
       data[:cache].load data[:entity_data][:pixels]
     end
-    
-    # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
-      # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
-      
     
   end
   
@@ -901,17 +896,15 @@ class World
       @frame_height = nil
       
       @size = nil
-      @max_size = nil
     end
     
     def allocate(frame_width, frame_height, max_num_frames)
       @frame_width = frame_width
       @frame_height = frame_height
       
-      @size = 0
-      @max_size = max_num_frames
+      @size = max_num_frames
       
-      @buffer.allocate(@frame_width, @frame_height*@max_size)
+      @buffer.allocate(@frame_width, @frame_height*@size)
       @buffer.flip_vertical
     end
     
@@ -921,12 +914,11 @@ class World
     
     alias :length :size
     
-    # TODO: consider storing the current frame_count in this buffer, so that the buffer can have a more natural interface built around #<< / #push
-    # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
-    
     # set data in history buffer on a given frame
     def []=(frame_index, frame_data)
-      # TODO: raise exception if you try to write to an index beyond what is supported by @max_size
+      raise "Memory not allocated. Please call #allocate first" if @size.nil?
+      
+      # TODO: raise exception if you try to write to an index beyond what is supported by @size
       # TODO: update @size if auto-growing the currently allocated segment
       
       x = 0
@@ -936,13 +928,15 @@ class World
     
     # copy data from buffer into another image
     def crop_to(out_image, frame_index)
+      raise "Memory not allocated. Please call #allocate first" if @size.nil?
+      
       w = @frame_width
       h = @frame_height
       
       x = 0
       y = frame_index*@frame_height
       
-      @buffer[frame_index].crop_to(out_image, x,y, w,h)
+      @buffer.crop_to(out_image, x,y, w,h)
       # WARNING: ofPixels#cropTo() re-allocates memory, so I probably need to implement a better way, but this should at least work for prototyping
     end
     
@@ -958,7 +952,7 @@ class World
       # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
 
       # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
-
+    
     
   end
   
@@ -983,6 +977,8 @@ class World
     end
     
     
+    
+    
     # TODO: properly implement length (needed by FrameHistory - may need to refactor that class instead)
     # (true implementation should live in HistoryBuffer, not this class)
     def length
@@ -1000,6 +996,8 @@ class World
     
     
     
+    # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
+    # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
     
     
     # sketch out new update flow
