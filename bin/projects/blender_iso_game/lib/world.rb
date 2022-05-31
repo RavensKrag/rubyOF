@@ -918,7 +918,8 @@ class World
     def []=(frame_index, frame_data)
       raise "Memory not allocated. Please call #allocate first" if @size.nil?
       
-      # TODO: raise exception if you try to write to an index beyond what is supported by @size
+      raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{@size-1}" unless frame_index >= 0 && frame_index <= @size-1
+      
       # TODO: update @size if auto-growing the currently allocated segment
       
       x = 0
@@ -927,8 +928,12 @@ class World
     end
     
     # copy data from buffer into another image
-    def crop_to(out_image, frame_index)
+    def copy_frame(frame_index, out_image)
       raise "Memory not allocated. Please call #allocate first" if @size.nil?
+      
+      expected_size = [@frame_width, @frame_height]
+      output_size = [out_image.width, out_image.height]
+      raise "Output image is the wrong size. Recieved #{output_size.inspect} but expected #{expected_size.inspect}" if expected_size != output_size
       
       w = @frame_width
       h = @frame_height
@@ -940,9 +945,7 @@ class World
       # WARNING: ofPixels#cropTo() re-allocates memory, so I probably need to implement a better way, but this should at least work for prototyping
     end
     
-    # @history = [RubyOF::FloatPixels]
-    # -> most recent one is blitted onto @pixels[:entities][:dynamic]
-    
+    # OpenFrameworks documentation
       # use ofPixels::pasteInto(ofPixels &dst, size_t x, size_t y)
       # 
       # "Paste the ofPixels object into another ofPixels object at the specified index, copying data from the ofPixels that the method is being called on to the ofPixels object at &dst. If the data being copied doesn't fit into the destination then the image is cropped."
@@ -952,7 +955,6 @@ class World
       # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
 
       # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
-    
     
   end
   
@@ -977,10 +979,7 @@ class World
     end
     
     
-    
-    
     # TODO: properly implement length (needed by FrameHistory - may need to refactor that class instead)
-    # (true implementation should live in HistoryBuffer, not this class)
     def length
       @length
     end
@@ -1011,7 +1010,7 @@ class World
         # because the cache now does not match up with the buffer
         # and the buffer has now become the authoritative source of data.
       
-      @buffer.crop_to(@pixels, frame_index)
+      @buffer.copy_frame(frame_index, @pixels)
       @cache.load @pixels
       
     end
@@ -1020,16 +1019,12 @@ class World
       
       # if we're supposed to save frame data (not time traveling)
       
-      if @cache.needs_update? # ...and there's data to write
-        # then write the data
-        @cache.update @pixels
+      # then try to write the data
+      if @cache.update @pixels
+        # if data was written...
         
-        # and send it to the GPU
+        # ...then send it to the GPU
         @texture.load_data @pixels
-        
-        # and make a copy for the history buffer
-        @buffer[frame_index] = @pixels
-        
         
         # ^ for dynamic entites, need [ofFloatPixels] where each communicates with the same instance of ofTexture
         # + one ofTexture for static entites
@@ -1037,6 +1032,9 @@ class World
         # + then an extra one for rendering ghosts / trails / onion skinning of dynamic entities)
       end
       
+      # always save a copy in the history buffer
+      # (otherwise the buffer could have garbage at that timepoint)
+      @buffer[frame_index] = @pixels
       
     end
     
