@@ -751,18 +751,39 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         layout.row().separator()
         
         
+        size = len(mytool.collection_ptr.objects)
+        
+        max_tris = 0
+        a = mytool.collection_ptr.objects
+        a.items()
+        # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
+        for i, pair in enumerate(a.items()):
+            if pair[1].type == 'MESH':
+                mesh = pair[1]
+                mesh.data.calc_loop_triangles()
+                # ^ need to call this to populate the mesh.loop_triangles() cache
+                num_tris  = len(mesh.data.loop_triangles)
+                
+                if num_tris > max_tris:
+                    max_tris = num_tris
+        # TODO: optimize this somehow so we're not altering mesh cache every frame
+        
+        
         col = layout.column(align=True)
         
         row = col.box().row()
         row.prop(mytool, "name", text="")
         row.operator("object.collection_remove", text="", icon='X', emboss=False)
         row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
-
+        
         col = col.box().column()
         col.prop( mytool, "collection_ptr")
+        col_row = col.row()
+        col_row.label(text=f'count: {size}')
+        col_row.label(text=f'max tris: {max_tris}')
         col.prop( mytool, "max_tris")
         col.prop( mytool, "max_frames")
-        col.prop( mytool, "max_frames")
+        col.prop( mytool, "max_num_objects")
         
         
         
