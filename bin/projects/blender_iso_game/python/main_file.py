@@ -427,12 +427,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         default="animation",
     )
     
-    target_object : PointerProperty(
-        name="Target object",
-        description="object to be exported",
-        type=bpy.types.Object
-    )
-    
     collection_ptr : PointerProperty(
         name="Collection",
         description="will export all geometry and transforms for all objects in this collection",
