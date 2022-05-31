@@ -748,6 +748,24 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         
         
         
+        layout.row().separator()
+        
+        
+        col = layout.column(align=True)
+        
+        row = col.box().row()
+        row.prop(mytool, "name", text="")
+        row.operator("object.collection_remove", text="", icon='X', emboss=False)
+        row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
+
+        col = col.box().column()
+        col.prop( mytool, "collection_ptr")
+        col.prop( mytool, "max_tris")
+        col.prop( mytool, "max_frames")
+        col.prop( mytool, "max_frames")
+        
+        
+        
         # layout.row().separator()
         
         
