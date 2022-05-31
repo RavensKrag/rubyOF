@@ -526,6 +526,10 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
+    
+    expanded : BoolProperty(
+        default=False
+    )
 
 
 
@@ -769,21 +773,30 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         # TODO: optimize this somehow so we're not altering mesh cache every frame
         
         
+        # https://blender.stackexchange.com/questions/19121/how-to-create-collapsible-panel
+        
         col = layout.column(align=True)
         
         row = col.box().row()
+        row.prop(mytool, "expanded",
+            icon="TRIA_DOWN" if mytool.expanded else "TRIA_RIGHT",
+            icon_only=True, emboss=False
+        )
         row.prop(mytool, "name", text="")
-        row.operator("object.collection_remove", text="", icon='X', emboss=False)
+        row.operator("object.collection_remove",
+            text="", icon='X', emboss=False
+        )
         row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
         
-        col = col.box().column()
-        col.prop( mytool, "collection_ptr")
-        col_row = col.row()
-        col_row.label(text=f'count: {size}')
-        col_row.label(text=f'max tris: {max_tris}')
-        col.prop( mytool, "max_tris")
-        col.prop( mytool, "max_frames")
-        col.prop( mytool, "max_num_objects")
+        if mytool.expanded:
+            col = col.box().column()
+            col.prop( mytool, "collection_ptr")
+            col_row = col.row()
+            col_row.label(text=f'count: {size}')
+            col_row.label(text=f'max tris: {max_tris}')
+            col.prop( mytool, "max_tris")
+            col.prop( mytool, "max_frames")
+            col.prop( mytool, "max_num_objects")
         
         
         
