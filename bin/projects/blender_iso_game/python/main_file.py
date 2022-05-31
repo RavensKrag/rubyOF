@@ -718,8 +718,9 @@ class ResourceManager():
         # move target to the end of the list
         # 
         
-        self.move_down(scene, i)
-        
+        while i < len(scene.my_tool.texture_sets):
+            self.move_down(scene, i)
+            i = i + 1
         
         
         # 
