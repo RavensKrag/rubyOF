@@ -727,6 +727,18 @@ class ResourceManager():
         # actually delete the target
         # 
         
+        # texture set collection
+        scene.my_tool.texture_sets.remove(-1) # -1 == last item
+        
+        # manager collection
+        self.tex_managers.pop()
+        
+        # name list
+        name_list = scene.my_tool['name_list']
+        name_list.pop()
+        scene.my_tool['name_list'] = name_list
+        
+        
         
         print("\n"*5, flush=True)
         
