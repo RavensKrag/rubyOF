@@ -790,6 +790,21 @@ class OT_TexAnimAddTextureSet (bpy.types.Operator):
     #     # return True
     
     def execute(self, context):
+        resource_manager.add(context.scene)
+        
+        
+        return {'FINISHED'}
+
+class OT_TexAnimDeleteTextureSet (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "wm.texanim_delete_texture_set"
+    bl_label = "Delete Texture Set"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
         # resource_manager.clear_texture_manager(context.scene)
@@ -798,7 +813,7 @@ class OT_TexAnimAddTextureSet (bpy.types.Operator):
         # mytool.sync_deletions = False
         
         
-        resource_manager.add(context.scene)
+        # resource_manager.add(context.scene)
         
         
         return {'FINISHED'}
@@ -888,10 +903,10 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 icon_only=True, emboss=False
             )
             row.prop(item, "name", text="")
-            row.operator("object.collection_remove",
+            row.operator("wm.texanim_delete_texture_set",
                 text="", icon='X', emboss=False
             )
-            row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
+            # row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
             
             if item.expanded:
                 col = col.box().column()
@@ -2396,6 +2411,7 @@ classes = (
     OT_TexAnimExportCollection,
     OT_TexAnimClearAllTextures,
     OT_TexAnimAddTextureSet,
+    OT_TexAnimDeleteTextureSet,
     DATA_PT_texanim_panel3
 )
 
