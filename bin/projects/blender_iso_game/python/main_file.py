@@ -31,7 +31,9 @@ from bpy.props import (StringProperty,
                        FloatProperty,
                        EnumProperty,
                        FloatVectorProperty,
-                       PointerProperty)
+                       PointerProperty,
+                       CollectionProperty
+)
 
 from mathutils import Color
 
@@ -106,7 +108,7 @@ from bpy.app.handlers import persistent
 @persistent
 def rubyof__on_load(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
+    tex_manager = resource_manager.get_texture_manager(0, context.scene)
     tex_manager.load()
     
 
@@ -114,7 +116,7 @@ def rubyof__on_load(*args):
 @persistent
 def rubyof__on_save(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
+    tex_manager = resource_manager.get_texture_manager(0, context.scene)
     tex_manager.save()
 
 
@@ -124,7 +126,7 @@ def rubyof__on_undo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
+    tex_manager = resource_manager.get_texture_manager(0, context.scene)
     tex_manager.on_undo(scene)
 
 def rubyof__on_redo(scene):
@@ -133,7 +135,7 @@ def rubyof__on_redo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
+    tex_manager = resource_manager.get_texture_manager(0, context.scene)
     tex_manager.on_redo(scene)
 
 
@@ -384,6 +386,12 @@ class IPC_Reader():
 
 
 
+
+
+
+
+
+
 # ------------------------------------------------------------------------
 #   properties needed for mesh export to OpenEXR
 #   (serialized data)
@@ -413,13 +421,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
             mytool.transform_scanline = max_index
         
         return None
-    
-    output_dir : StringProperty(
-        name="Output directory",
-        description="Directory where all animation textures will be written (vertex animation data)",
-        default="//",
-        subtype='DIR_PATH'
-    )
     
     name : StringProperty(
         name="Name",
@@ -457,7 +458,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         max = 1000000,
         update=limit_output_frame
     )
-        
+    
     
     position_tex : PointerProperty(
         name="Position texture",
@@ -503,6 +504,20 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         max = 65504
     )
     
+    expanded : BoolProperty(
+        default=True
+    )
+
+
+
+class PG_MyPanelProperties (bpy.types.PropertyGroup):
+    output_dir : StringProperty(
+        name="Output directory",
+        description="Directory where all animation textures will be written (vertex animation data)",
+        default="//",
+        subtype='DIR_PATH'
+    )
+    
     progress : FloatProperty(
         name="Progress",
         subtype="PERCENTAGE",
@@ -521,9 +536,8 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         default="exporting..."
     )
     
-    expanded : BoolProperty(
-        default=False
-    )
+    texture_sets : CollectionProperty(type=PG_MyProperties)
+
 
 
 
@@ -543,10 +557,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
 import os
 
 
-from anim_tex_manager import ( AnimTexManager )
-AnimTexManager = reload_class(AnimTexManager)
-
-
 
 # ------------------------------------------------------------------------
 #   Things that need to be accessed in mulitple places,
@@ -564,32 +574,102 @@ from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blen
 
 
 
+
+from anim_tex_manager import ( AnimTexManager )
+AnimTexManager = reload_class(AnimTexManager)
+
+
+
+# AnimTexManager stores cached data on mesh / entity data (serialized to JSON file) and in the property group PG_MyProperties (serialized to .blend file).
+# Don't want to reinitialize this all the time, because that would require reading from disk to re-load the JSON file.
+# Thus, we do want to keep a collection of AnimTexManager objects in memory
+
+
 class ResourceManager():
     def __init__(self):
         # print("init resource manager", flush=True)
         self.anim_tex_manager = None
+        
+        self.tex_managers = []
     
     
-    # TODO: reset this "singleton" if the dimensions of the animation texture have changed
-    def get_texture_manager(self, scene):
+    # how do you keep this in sync with the ordering of the texture_sets collection?
+    def get_texture_manager(self, index, scene):
+        # add new property group to PG_MyPanelProperties.texture_sets to enable serialization, if needed
+        # 
+        
+        
+        
+        # if index >= 0 and index <= len(a)-1:
+        #     # already have a binding
+        
+        
         if self.anim_tex_manager is None:
-            self.anim_tex_manager = AnimTexManager(scene, to_ruby)
+            self.anim_tex_manager = AnimTexManager(scene)
         
         return self.anim_tex_manager
     
-    def clear_texture_manager(self, scene):
+    def clear_texture_manager(self, index, scene):
         # print("try to clear texture manager", flush=True)
         if self.anim_tex_manager is not None:
             # print("clearing texture manager", flush=True)
             self.anim_tex_manager.clear(scene)
             self.anim_tex_manager = None
+    
+    # add new manager + property group to the end of the list
+    def add(self, scene):
+        self.tex_managers.append( AnimTexManager(scene) )
+        
+        # https://blender.stackexchange.com/questions/134996/store-pointer-property-array-list
+        item = scene.my_tool.texture_sets.add()
+        # item.name = ''
+        
+    
+    # move item at index i to end of list
+    # via pairwise swaps (like in bubble sort)
+    # and then remove the last item in the list
+    def delete(self, i):
+        pass
+    
+    
+    # move item at index i up one slot, using pairwise swaps (like bubble sort)
+    # (beware of top edge)
+    def move_up(self, i):
+        if index >= 0 and index <= len(self.tex_managers)-1: 
+            if i > 0:
+                other = i - 1
+                
+                tmp = self.tex_managers[i]
+                self.tex_managers[i] = self.tex_managers[other]
+                self.tex_managers[other] = tmp
+                
+                # TODO: swap property group too
+        else:
+            pass
+            # TODO: raise exception
+    
+    # move item at index i down one slot, using pairwise swaps (like bubble sort)
+    # (beware of top edge)
+    def move_down(self, i):
+        if index >= 0 and index <= len(self.tex_managers)-1: 
+            if i < len(self.tex_managers)-1:
+                other = i + 1
+                
+                tmp = self.tex_managers[i]
+                self.tex_managers[i] = self.tex_managers[other]
+                self.tex_managers[other] = tmp
+                
+                # TODO: swap property group too
+        else:
+            pass
+            # TODO: raise exception
 
 resource_manager = ResourceManager()
 
 # def anim_texture_manager_singleton(context):
 #     global anim_tex_manager
 #     if anim_tex_manager == None:
-#         anim_tex_manager = AnimTexManager(context, to_ruby)
+#         anim_tex_manager = AnimTexManager(context)
     
 #     return anim_tex_manager
 
@@ -670,7 +750,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         context = yield(0.0)
         
         
-        tex_manager = resource_manager.get_texture_manager(context.scene)
+        tex_manager = resource_manager.get_texture_manager(0, context.scene)
         # Delegating to a subgenerator
         # https://www.python.org/dev/peps/pep-0380/
         # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
@@ -695,6 +775,31 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
         
         mytool = context.scene.my_tool
         mytool.sync_deletions = False
+        
+        return {'FINISHED'}
+
+
+
+class OT_TexAnimAddTextureSet (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "wm.texanim_add_texture_set"
+    bl_label = "Add Texture Set"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        # clear_textures(context.scene.my_tool)
+        
+        # resource_manager.clear_texture_manager(context.scene)
+        
+        # mytool = context.scene.my_tool
+        # mytool.sync_deletions = False
+        
+        
+        resource_manager.add(context.scene)
+        
         
         return {'FINISHED'}
 
@@ -725,14 +830,84 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         scene = context.scene
         mytool = scene.my_tool
         
-        layout.prop( mytool, "collection_ptr")
+        # layout.prop( mytool, "collection_ptr")
+        # layout.prop( mytool, "name")
+        
+        # layout.prop( mytool, "max_tris")
+        # layout.prop( mytool, "max_frames")
+        # layout.prop( mytool, "max_num_objects")
+        
+        # layout.row().separator()
+        
+        
         layout.prop( mytool, "output_dir")
-        layout.prop( mytool, "name")
+        layout.operator("wm.texanim_add_texture_set")
         
-        layout.prop( mytool, "max_tris")
-        layout.prop( mytool, "max_frames")
-        layout.prop( mytool, "max_num_objects")
+        # 
+        # list of texture sets and their export options
+        # 
         
+        print(mytool.texture_sets)
+        for j, item in enumerate(mytool.texture_sets):
+            # print(item)
+            
+            size = None
+            max_tris = None
+            
+            print("collection: ", item.collection_ptr)
+            
+            if item.collection_ptr is not None:
+                collection_ptr = item.collection_ptr
+                
+                a = collection_ptr.objects
+                
+                size = len(a)
+                max_tris = 0
+                
+                a.items()
+                # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
+                for i, pair in enumerate(a.items()):
+                    if pair[1].type == 'MESH':
+                        mesh = pair[1]
+                        mesh.data.calc_loop_triangles()
+                        # ^ need to call this to populate the mesh.loop_triangles() cache
+                        num_tris  = len(mesh.data.loop_triangles)
+                        
+                        if num_tris > max_tris:
+                            max_tris = num_tris
+                # TODO: optimize this somehow so we're not altering mesh cache every frame
+            
+            
+            # https://blender.stackexchange.com/questions/19121/how-to-create-collapsible-panel
+            
+            col = layout.column(align=True)
+            
+            row = col.box().row()
+            row.prop(item, "expanded",
+                icon="TRIA_DOWN" if item.expanded else "TRIA_RIGHT",
+                icon_only=True, emboss=False
+            )
+            row.prop(item, "name", text="")
+            row.operator("object.collection_remove",
+                text="", icon='X', emboss=False
+            )
+            row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
+            
+            if item.expanded:
+                col = col.box().column()
+                col.prop( item, "collection_ptr")
+                col_row = col.row()
+                col_row.label(text=f'count: {size}')
+                col_row.label(text=f'max tris: {max_tris}')
+                col.prop( item, "max_tris")
+                col.prop( item, "max_frames")
+                col.prop( item, "max_num_objects")
+        
+        
+        
+        # 
+        # buttons to process all texture sets
+        # 
         layout.row().separator()
         
         if mytool.running: 
@@ -742,56 +917,8 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
             layout.operator("wm.texanim_export_collection")
         
         layout.row().separator()
+        
         layout.operator("wm.texanim_clear_all_textures")
-        
-        
-        
-        layout.row().separator()
-        
-        
-        size = len(mytool.collection_ptr.objects)
-        
-        max_tris = 0
-        a = mytool.collection_ptr.objects
-        a.items()
-        # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
-        for i, pair in enumerate(a.items()):
-            if pair[1].type == 'MESH':
-                mesh = pair[1]
-                mesh.data.calc_loop_triangles()
-                # ^ need to call this to populate the mesh.loop_triangles() cache
-                num_tris  = len(mesh.data.loop_triangles)
-                
-                if num_tris > max_tris:
-                    max_tris = num_tris
-        # TODO: optimize this somehow so we're not altering mesh cache every frame
-        
-        
-        # https://blender.stackexchange.com/questions/19121/how-to-create-collapsible-panel
-        
-        col = layout.column(align=True)
-        
-        row = col.box().row()
-        row.prop(mytool, "expanded",
-            icon="TRIA_DOWN" if mytool.expanded else "TRIA_RIGHT",
-            icon_only=True, emboss=False
-        )
-        row.prop(mytool, "name", text="")
-        row.operator("object.collection_remove",
-            text="", icon='X', emboss=False
-        )
-        row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
-        
-        if mytool.expanded:
-            col = col.box().column()
-            col.prop( mytool, "collection_ptr")
-            col_row = col.row()
-            col_row.label(text=f'count: {size}')
-            col_row.label(text=f'max tris: {max_tris}')
-            col.prop( mytool, "max_tris")
-            col.prop( mytool, "max_frames")
-            col.prop( mytool, "max_num_objects")
-        
         
         
         # layout.row().separator()
@@ -2264,9 +2391,11 @@ classes = (
     #
     #
     PG_MyProperties,
+    PG_MyPanelProperties,
     OT_ProgressBarOperator,
     OT_TexAnimExportCollection,
     OT_TexAnimClearAllTextures,
+    OT_TexAnimAddTextureSet,
     DATA_PT_texanim_panel3
 )
 
@@ -2294,7 +2423,10 @@ def register():
             type=RubyOF_MATERIAL_Properties
         )
     
-    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
+    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyPanelProperties)
+    
+    if len(bpy.context.scene.my_tool.texture_sets) == 0:
+        bpy.context.scene.my_tool.texture_sets.add()
     
     # register_depgraph_handlers()
     register_event_handlers()

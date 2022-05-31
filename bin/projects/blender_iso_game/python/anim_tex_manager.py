@@ -37,15 +37,13 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, scene, to_ruby_fifo):
-        self.to_ruby = to_ruby_fifo
-        
-        mytool = scene.my_tool
+    def __init__(self, scene):
+        mytool = scene.my_tool.texture_sets[0]
         
         self.max_tris = mytool.max_tris
         
-        
-        self.__wrap_textures(mytool)
+        self.output_dir = scene.my_tool.output_dir
+        self.__wrap_textures(mytool, self.output_dir)
         
         # (bottom row of pixels will always be full red)
         # This allows for the easy identification of one edge,
@@ -84,19 +82,19 @@ class AnimTexManager ():
                                    * self.entity_tex.height )
         
         
-        self.json_filepath = os.path.join(bpy.path.abspath(mytool.output_dir),
+        self.json_filepath = os.path.join(bpy.path.abspath(self.output_dir),
                                           "anim_tex_cache"+'.json')
         
         
         self.load()
     
-    def __wrap_textures(self, mytool):
+    def __wrap_textures(self, mytool, output_dir):
         self.position_tex = ImageWrapper(
             get_cached_image(mytool, "position_tex",
                              mytool.name+".position",
                              size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
         
         self.normal_tex = ImageWrapper(
@@ -104,7 +102,7 @@ class AnimTexManager ():
                              mytool.name+".normal",
                              size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
         
         self.entity_tex = ImageWrapper(
@@ -112,7 +110,7 @@ class AnimTexManager ():
                              mytool.name+".entity",
                              size=self.__calc_entity_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
     
     def __calc_geometry_tex_size(self, mytool):
@@ -723,7 +721,7 @@ class AnimTexManager ():
         # mytool.normal_tex    = None
         # mytool.entity_tex = None
         
-        self.__wrap_textures(mytool)
+        self.__wrap_textures(mytool, self.output_dir)
     
     def on_redo(self, scene):
         mytool = scene.my_tool
@@ -732,7 +730,7 @@ class AnimTexManager ():
         # mytool.normal_tex    = None
         # mytool.entity_tex = None
         
-        self.__wrap_textures(mytool)
+        self.__wrap_textures(mytool, self.output_dir)
     
  
 

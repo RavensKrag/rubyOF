@@ -270,7 +270,7 @@ class Exporter():
         context = yield( 0.0 )
         
         
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
+        tex_manager = self.resource_manager.get_texture_manager(0, context.scene)
         
         # 
         # calculate how many tasks there are
@@ -370,7 +370,7 @@ class Exporter():
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
     def __update_entity_transform_without_armature(self, scene, update, mesh_obj):
-        tex_manager = self.resource_manager.get_texture_manager(scene)
+        tex_manager = self.resource_manager.get_texture_manager(0, scene)
         
         if not update.is_updated_transform:
             return
@@ -480,7 +480,7 @@ class Exporter():
     
     # first export when blender switches into the RubyOF rendering mode
     def export_initial(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
+        tex_manager = self.resource_manager.get_texture_manager(0, context.scene)
         
         region = context.region
         view3d = context.space_data
@@ -534,7 +534,7 @@ class Exporter():
     # every export after the first export
     # (send updated data only, in order to maintain synchronization)
     def export_update(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
+        tex_manager = self.resource_manager.get_texture_manager(0, context.scene)
         
         region = context.region
         view3d = context.space_data
@@ -682,10 +682,15 @@ class Exporter():
         # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
         
         mytool = scene.my_tool
-        tex_manager = self.resource_manager.get_texture_manager(scene)
+        collection_ptr = mytool.texture_sets[0].collection_ptr
+        
+        if collection_ptr is None:
+            return
+        
+        tex_manager = self.resource_manager.get_texture_manager(0, scene)
         
         old_names = tex_manager.get_entity_names()
-        new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        new_names = [ x.name for x in collection_ptr.all_objects ]
         delta = list(set(old_names) - set(new_names))
         
         # print("old_names:", len(old_names), flush=True)
