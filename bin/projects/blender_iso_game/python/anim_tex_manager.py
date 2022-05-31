@@ -37,8 +37,8 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, scene):
-        mytool = scene.my_tool.texture_sets[0]
+    def __init__(self, scene, texture_set):
+        mytool = texture_set
         
         self.max_tris = mytool.max_tris
         
