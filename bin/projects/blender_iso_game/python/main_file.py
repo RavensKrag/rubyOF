@@ -963,9 +963,9 @@ OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
 from coroutine_decorator import *
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
-    """Export all objects in target collection"""
+    """Use texture sets to export target collections to OpenEXR"""
     bl_idname = "wm.texanim_export_collection"
-    bl_label = "Export ENTIRE Collection"
+    bl_label = "Export ALL texture sets"
     
     def setup(self, context):
         self.setup_properties(property_group=context.scene.my_tool,
@@ -997,9 +997,9 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
 
 
 class OT_TexAnimClearAllTextures (bpy.types.Operator):
-    """Clear both animation textures"""
+    """Clear cache. Some OpenEXR files may remain on disk."""
     bl_idname = "wm.texanim_clear_all_textures"
-    bl_label = "Clear All 3 Textures"
+    bl_label = "Clear texture cache"
     
     # @classmethod
     # def poll(cls, context):
