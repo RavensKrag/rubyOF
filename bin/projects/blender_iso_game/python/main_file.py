@@ -616,6 +616,7 @@ class ResourceManager():
     
     # scene.my_tool['name_list'] is a List of strings that controls the ordering of the texture sets in the UI. Order is maintained across the 3 collections (described below) by only performing binary swaps to move elements up / down
     
+    # scene.my_tool.texture_sets has both a Hash / Dict style API and a Array / List style API
     
     # 1) self.tex_managers           List - array style access (numerical index)
     # 2) scene.my_tool.texture_sets  CollectionProperty - numerical or by name
@@ -836,24 +837,14 @@ class ResourceManager():
             if i > 0:
                 other = i - 1
                 
-                # only reorder the name list, as that controls the order of the UI rendering. don't re-order the tex_managers, as that will causes desync between self.tex_managers and scene.my_tool.texture_sets.
+                # To change UI ordering, only re-order the name list.
+                # self.tex_managers and scene.my_tool.texture_sets must always have corresponding indicies, so it is best not to touch them.
                 
-                
-                
-                
-                # tmp = self.tex_managers[i]
-                # self.tex_managers[i] = self.tex_managers[other]
-                # self.tex_managers[other] = tmp
-                
-                # swap property group
-                # (only need to swap the ordering of the labels, no change to the actual property groups)
                 collection = scene.my_tool['name_list']
                 tmp = collection[i]
                 collection[i] = collection[other]
                 collection[other] = tmp
                 scene.my_tool['name_list'] = collection
-                
-                # NOTE: property group has a Hash style api, not an Array style api
         else:
             pass
             # TODO: raise exception
@@ -866,21 +857,14 @@ class ResourceManager():
                 print("swap", flush=True)
                 other = i + 1
                 
-                # collection = self.tex_managers
-                # tmp = collection[i]
-                # collection[i] = collection[other]
-                # collection[other] = tmp
+                # To change UI ordering, only re-order the name list.
+                # self.tex_managers and scene.my_tool.texture_sets must always have corresponding indicies, so it is best not to touch them.
                 
-                
-                # swap property group
-                # (only need to swap the ordering of the labels, no change to the actual property groups)
                 collection = scene.my_tool['name_list']
                 tmp = collection[i]
                 collection[i] = collection[other]
                 collection[other] = tmp
                 scene.my_tool['name_list'] = collection
-                
-                # NOTE: property group has a Hash style api, not an Array style api
         else:
             pass
             # TODO: raise exception
