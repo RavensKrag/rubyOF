@@ -2,16 +2,16 @@
 	"folders":
 	[
 		{
-			"path": "/home/ravenskrag/Desktop/gem_structure"
+			"path": "/home/ravenskrag/Desktop/gem_structure",
 		},
 		{
-			"path": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.90/scripts"
+			"path": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender",
 		},
 		{
-			"path": "/home/ravenskrag/Code/Source/blender-git/blender/source/blender"
+			"path": "/home/ravenskrag/Code/Source/blender-git/build_linux_debug/bin/2.93/scripts",
 		},
 		{
-			"path": "/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer"
+			"path": "/home/ravenskrag/Desktop/New Folder (2)/writing/003 research papers/2020.10.31 using blender with external renderer",
 		}
-	]
+	],
 }
