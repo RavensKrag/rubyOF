@@ -749,7 +749,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
          )
       )
       .define_method("crop",          &ofFloatPixels::crop)
-      .define_method("cropTo",        &ofFloatPixels::cropTo)
+      .define_method("crop_to",       &ofFloatPixels::cropTo)
       .define_method("getColor_xy",   &ofFloatPixels__getColor_xy)
       
       .define_method("setColor_i",    &ofFloatPixels__setColor_i)
