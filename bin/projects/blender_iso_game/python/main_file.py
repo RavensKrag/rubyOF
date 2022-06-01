@@ -780,10 +780,7 @@ class ResourceManager():
         del name_list[i]
         scene.my_tool['name_list'] = name_list
         
-        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        # print([x.name for x in self.tex_managers], flush=True)
-        # print(scene.my_tool['name_list'], flush=True)
-        # print("\n", flush=True)
+        # self.__debug_print(scene)
         
         
         # texture set collection
@@ -792,18 +789,12 @@ class ResourceManager():
         j = scene.my_tool.texture_sets.find(tex_set.name)
         scene.my_tool.texture_sets.remove(j)
         
-        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        # print([x.name for x in self.tex_managers], flush=True)
-        # print(scene.my_tool['name_list'], flush=True)
-        # print("\n", flush=True)
+        # self.__debug_print(scene)
         
         # manager collection
         del self.tex_managers[j]
         
-        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        # print([x.name for x in self.tex_managers], flush=True)
-        # print(scene.my_tool['name_list'], flush=True)
-        # print("\n", flush=True)
+        # self.__debug_print(scene)
         
         
         
@@ -815,15 +806,21 @@ class ResourceManager():
         pass
     
     
+    # called when texture set 'name' has changed
     def rename(self, scene, old_name, new_name):
         print(f'renaming: {old_name} => {new_name}', flush=True)
-        
         print(scene.my_tool['name_list'], flush=True)
         
+        self.__debug_print(scene)
+        
         # only need to update the other properties if the texture set to be renamed is in the collection
-        if old_name not in scene.my_tool.texture_sets:
+        if old_name not in scene.my_tool['name_list']:
             return
         
+        self.__debug_print(scene)
+        
+        # update texture set
+        # scene.my_tool.texture_sets[old_name].name = new_name
         
         # update name list
         name_list = scene.my_tool['name_list']
@@ -831,14 +828,14 @@ class ResourceManager():
         name_list[i] = new_name
         scene.my_tool['name_list'] = name_list
         
-        print(scene.my_tool['name_list'], flush=True)
+        self.__debug_print(scene)
         
         # update manager name
-        j = scene.my_tool.texture_sets.find(old_name)
+        j = scene.my_tool.texture_sets.find(new_name)
         self.tex_managers[j].name = new_name
         
-        # update texture set
-        # scene.my_tool.texture_sets[old_name].name = new_name
+        self.__debug_print(scene)
+        
         
     
     
@@ -897,6 +894,14 @@ class ResourceManager():
             prop_group = scene.my_tool.texture_sets[name]
             
             yield (prop_group, texture_manager)
+    
+    
+    def __debug_print(self, scene):
+        print("texture_sets", [x.name for x in scene.my_tool.texture_sets])
+        print("tex managers", [x.name for x in self.tex_managers])
+        print("name list   ", scene.my_tool['name_list'])
+        print("\n")
+        sys.stdout.flush()
     
 
 resource_manager = ResourceManager()
