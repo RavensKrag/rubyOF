@@ -721,7 +721,17 @@ class ResourceManager():
         for tex_manager in self.tex_managers:
             tex_manager.save()
     
+    # Undo puts the system into an undefined state, where the 'name' property of AnimTexManager is not in sync with names in scene.my_tool.texture_sets.
+    # If we assume the system was in the correct state BEFORE the undo, we can automatically correct for this error.
     def on_undo(self, scene):
+        print("=> on_undo")
+        self.__debug_print(scene)
+        
+        for i, texture_set in enumerate(scene.my_tool.texture_sets):
+            self.tex_managers[i].name = texture_set.name
+        
+        self.__debug_print(scene)
+        
         for tex_manager in self.tex_managers:
             tex_manager.on_undo(scene)
     
