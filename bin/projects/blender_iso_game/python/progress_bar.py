@@ -81,7 +81,7 @@ class OT_ProgressBarOperator (bpy.types.Operator):
     def modal(self, context, event):
         #update progress bar
         if not self.done:
-            print(f"Updating: {self.value}")
+            # print(f"Updating: {self.value}")
             #update progess bar
             self.set_progress( self.value * 100 )
             
