@@ -758,81 +758,46 @@ class ResourceManager():
     # via pairwise swaps (like in bubble sort)
     # and then remove the last item in the list
     def delete(self, scene, tex_set):
-        print("\n"*5, flush=True)
-        print(tex_set.name)
-        
-        
-        # 
-        # find the index of the data to delete
-        # 
-        print("prop groups:", len(scene.my_tool.texture_sets), flush=True)
-        print("managers:", len(self.tex_managers), flush=True)
-        i = 0
-        while i < len(scene.my_tool.texture_sets):
-            print("test", tex_set, tex_set == scene.my_tool.texture_sets[i])
-            
-            if tex_set == scene.my_tool.texture_sets[i]:
-                break;
-            else:
-                i = i+1
-        
-        print(i, flush=True)
-        
-        
-        # 
-        # move target to the end of the list
-        # 
-        
-        while i < len(scene.my_tool.texture_sets):
-            self.move_down(scene, i)
-            i = i + 1
-        
-        print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        print([x.name for x in self.tex_managers], flush=True)
-        print(scene.my_tool['name_list'], flush=True)
-        print("\n", flush=True)
-        
-        
-        # 
-        # actually delete the target
-        # 
+        # print("\n"*5, flush=True)
+        # print(tex_set.name)
         
         # name list
         name_list = scene.my_tool['name_list']
-        target_name = name_list.pop()
+        i = name_list.index(tex_set.name)
+        del name_list[i]
         scene.my_tool['name_list'] = name_list
         
-        print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        print([x.name for x in self.tex_managers], flush=True)
-        print(scene.my_tool['name_list'], flush=True)
-        print("\n", flush=True)
+        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        # print([x.name for x in self.tex_managers], flush=True)
+        # print(scene.my_tool['name_list'], flush=True)
+        # print("\n", flush=True)
         
         
         # texture set collection
         # index to be removed is dependent on the ordering of the names
         # not the order of this collection
-        j = scene.my_tool.texture_sets.find(target_name)
+        j = scene.my_tool.texture_sets.find(tex_set.name)
         scene.my_tool.texture_sets.remove(j)
         
-        print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        print([x.name for x in self.tex_managers], flush=True)
-        print(scene.my_tool['name_list'], flush=True)
-        print("\n", flush=True)
+        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        # print([x.name for x in self.tex_managers], flush=True)
+        # print(scene.my_tool['name_list'], flush=True)
+        # print("\n", flush=True)
         
         # manager collection
         del self.tex_managers[j]
         
-        print([x.name for x in scene.my_tool.texture_sets], flush=True)
-        print([x.name for x in self.tex_managers], flush=True)
-        print(scene.my_tool['name_list'], flush=True)
-        print("\n", flush=True)
+        # print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        # print([x.name for x in self.tex_managers], flush=True)
+        # print(scene.my_tool['name_list'], flush=True)
+        # print("\n", flush=True)
         
         
         
         # TODO: make sure system doesn't crash when there are no texture set configurations (should be able to initialize with no configs, but the current code initializes with 1 config. thus, if the final config is deleted, bad things are likely to happen)
         
         
-        print("\n"*5, flush=True)
+        # print("\n"*5, flush=True)
         
         pass
     
