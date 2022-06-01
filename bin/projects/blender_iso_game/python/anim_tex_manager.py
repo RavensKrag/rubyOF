@@ -38,6 +38,7 @@ class AnimTexManager ():
     # setup data
     # 
     def __init__(self, scene, texture_set_name):
+        # Storing name and not texture set directly so that the proper data can be rebound on undo / redo. Name change is automatically updated when ResourceManager.rename is called.
         self.name = texture_set_name
         
         mytool = scene.my_tool.texture_sets[self.name]
@@ -85,7 +86,7 @@ class AnimTexManager ():
         
         
         self.json_filepath = os.path.join(bpy.path.abspath(self.output_dir),
-                                          "anim_tex_cache"+'.json')
+                                          self.name+'.cache'+'.json')
         
         
         self.load()
