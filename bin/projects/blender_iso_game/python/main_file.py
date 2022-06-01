@@ -704,12 +704,37 @@ class ResourceManager():
             tex_manager.on_redo(scene)
     
     
+    DEFAULT_NAME = 'animation'
     # add new manager + property group to the end of the list
     def add(self, scene):
         print("=> add", flush=True)
+        
+        # check if something with the desired name exists.
+        # may need to add numbers at the end to disambiguate.
+        name = ResourceManager.DEFAULT_NAME
+        j = scene.my_tool.texture_sets.find(name) # returns -1 if not found
+        id = 1
+        delimiter = '.'
+        while j != -1: # repeat while there is a name collision
+            if delimiter in name:
+                parts = name.split('.')
+                parts.pop()
+                name = '.'.join(parts)
+            print(name, flush=True)
+            
+            name = '.'.join([name, str(id).rjust(3, '0')])
+            print(name, flush=True)
+            
+            id = id + 1
+            
+            j = scene.my_tool.texture_sets.find(name)
+        
+            
+        
+        
         # https://blender.stackexchange.com/questions/134996/store-pointer-property-array-list
         texure_set = scene.my_tool.texture_sets.add()
-        texure_set.name = 'animation'
+        texure_set.name = name
         
         # manager depends on texture set
         manager = AnimTexManager(scene, texure_set.name)
@@ -762,22 +787,46 @@ class ResourceManager():
             self.move_down(scene, i)
             i = i + 1
         
+        print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        print([x.name for x in self.tex_managers], flush=True)
+        print(scene.my_tool['name_list'], flush=True)
+        print("\n", flush=True)
+        
         
         # 
         # actually delete the target
         # 
         
-        # texture set collection
-        last_index = len(scene.my_tool.texture_sets)-1
-        scene.my_tool.texture_sets.remove(last_index) # -1 == last item
-        
-        # manager collection
-        self.tex_managers.pop()
-        
         # name list
         name_list = scene.my_tool['name_list']
-        name_list.pop()
+        target_name = name_list.pop()
         scene.my_tool['name_list'] = name_list
+        
+        print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        print([x.name for x in self.tex_managers], flush=True)
+        print(scene.my_tool['name_list'], flush=True)
+        print("\n", flush=True)
+        
+        
+        # texture set collection
+        # index to be removed is dependent on the ordering of the names
+        # not the order of this collection
+        j = scene.my_tool.texture_sets.find(target_name)
+        scene.my_tool.texture_sets.remove(j)
+        
+        print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        print([x.name for x in self.tex_managers], flush=True)
+        print(scene.my_tool['name_list'], flush=True)
+        print("\n", flush=True)
+        
+        # manager collection
+        del self.tex_managers[j]
+        
+        print([x.name for x in scene.my_tool.texture_sets], flush=True)
+        print([x.name for x in self.tex_managers], flush=True)
+        print(scene.my_tool['name_list'], flush=True)
+        print("\n", flush=True)
+        
         
         
         # TODO: make sure system doesn't crash when there are no texture set configurations (should be able to initialize with no configs, but the current code initializes with 1 config. thus, if the final config is deleted, bad things are likely to happen)
@@ -792,6 +841,11 @@ class ResourceManager():
         print(f'renaming: {old_name} => {new_name}', flush=True)
         
         print(scene.my_tool['name_list'], flush=True)
+        
+        # only need to update the other properties if the texture set to be renamed is in the collection
+        if old_name not in scene.my_tool.texture_sets:
+            return
+        
         
         # update name list
         name_list = scene.my_tool['name_list']
@@ -817,9 +871,14 @@ class ResourceManager():
             if i > 0:
                 other = i - 1
                 
-                tmp = self.tex_managers[i]
-                self.tex_managers[i] = self.tex_managers[other]
-                self.tex_managers[other] = tmp
+                # only reorder the name list, as that controls the order of the UI rendering. don't re-order the tex_managers, as that will causes desync between self.tex_managers and scene.my_tool.texture_sets.
+                
+                
+                
+                
+                # tmp = self.tex_managers[i]
+                # self.tex_managers[i] = self.tex_managers[other]
+                # self.tex_managers[other] = tmp
                 
                 # swap property group
                 # (only need to swap the ordering of the labels, no change to the actual property groups)
@@ -842,10 +901,10 @@ class ResourceManager():
                 print("swap", flush=True)
                 other = i + 1
                 
-                collection = self.tex_managers
-                tmp = collection[i]
-                collection[i] = collection[other]
-                collection[other] = tmp
+                # collection = self.tex_managers
+                # tmp = collection[i]
+                # collection[i] = collection[other]
+                # collection[other] = tmp
                 
                 
                 # swap property group
