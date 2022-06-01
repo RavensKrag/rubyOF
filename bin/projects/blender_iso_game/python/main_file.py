@@ -1585,6 +1585,7 @@ class RubyOF(bpy.types.RenderEngine):
         
     
     def __update_scene(self, context, depsgraph):
+        scene = context.scene
         if self.first_time:
             # First time initialization
             self.first_time = False
@@ -1593,7 +1594,7 @@ class RubyOF(bpy.types.RenderEngine):
                 export_helper.export_initial(context, depsgraph, prop_group, tex_manager)
         else:
             for prop_group, tex_manager in resource_manager.each(scene):
-                export_helper.export_update(context, depsgraph, tex_manager)
+                export_helper.export_update(context, depsgraph, prop_group, tex_manager)
         
         
     # --------------------------------
