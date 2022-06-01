@@ -161,10 +161,11 @@ class World
     # TODO: consider implementing read-only mode for DataInterface for static entities
     
     @storage[:static].tap do |data|
-      json_file_path    = static_data_path/"animation.cache.json"
-      position_tex_path = static_data_path/"animation.position.exr"
-      normal_tex_path   = static_data_path/"animation.normal.exr"
-      entity_tex_path   = static_data_path/"animation.entity.exr"
+      prefix = "Tiles"
+      json_file_path    = static_data_path/"#{prefix}.cache.json"
+      position_tex_path = static_data_path/"#{prefix}.position.exr"
+      normal_tex_path   = static_data_path/"#{prefix}.normal.exr"
+      entity_tex_path   = static_data_path/"#{prefix}.entity.exr"
       
       load_static_mesh_textures position_tex_path, normal_tex_path
       load_static_entity_texture entity_tex_path
@@ -184,10 +185,11 @@ class World
     # + need other mechanism to load changes @ t != 0 (JSON message?)
     
     @storage[:dynamic].tap do |data|
-      json_file_path    = dynamic_data_path/"animation.cache.json"
-      position_tex_path = dynamic_data_path/"animation.position.exr"
-      normal_tex_path   = dynamic_data_path/"animation.normal.exr"
-      entity_tex_path   = dynamic_data_path/"animation.entity.exr"
+      prefix = "Characters"
+      json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
+      position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
+      normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
+      entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
       
       load_dynamic_mesh_textures position_tex_path, normal_tex_path
       load_dynamic_entity_texture entity_tex_path # initial state only
