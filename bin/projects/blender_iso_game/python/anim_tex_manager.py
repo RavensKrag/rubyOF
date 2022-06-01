@@ -724,7 +724,7 @@ class AnimTexManager ():
     # 
     
     
-    def on_undo(self, scene):        
+    def on_undo(self, scene):
         self.__wrap_textures(scene, self.name, self.output_dir)
     
     def on_redo(self, scene):
