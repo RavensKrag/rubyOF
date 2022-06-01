@@ -37,13 +37,15 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, scene, texture_set):
-        mytool = texture_set
+    def __init__(self, scene, texture_set_name):
+        self.name = texture_set_name
+        
+        mytool = scene.my_tool.texture_sets[self.name]
         
         self.max_tris = mytool.max_tris
         
         self.output_dir = scene.my_tool.output_dir
-        self.__wrap_textures(mytool, self.output_dir)
+        self.__wrap_textures(scene, self.name, self.output_dir)
         
         # (bottom row of pixels will always be full red)
         # This allows for the easy identification of one edge,
@@ -88,7 +90,9 @@ class AnimTexManager ():
         
         self.load()
     
-    def __wrap_textures(self, mytool, output_dir):
+    def __wrap_textures(self, scene, name, output_dir):
+        mytool = scene.my_tool.texture_sets[name]
+        
         self.position_tex = ImageWrapper(
             get_cached_image(mytool, "position_tex",
                              mytool.name+".position",
@@ -395,7 +399,12 @@ class AnimTexManager ():
         num_verts = len(mesh.loop_triangles)*3
         print("num tris:", num_tris)
         print("num verts:", num_verts)
+        print("max tris:", self.max_tris)
+        
+        print(self.position_tex.filepath, flush=True)
+        print(self.normal_tex.filepath, flush=True)
 
+        
         if num_tris > self.max_tris:
             raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
         
@@ -447,7 +456,7 @@ class AnimTexManager ():
         scanline_transform = self.entity_tex.read_scanline(scanline_index)
         # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
-        print(scanline_transform, flush=True)
+        # print(scanline_transform, flush=True)
         
         # 
         # write mesh id to scanline
@@ -714,23 +723,11 @@ class AnimTexManager ():
     # 
     
     
-    def on_undo(self, scene):
-        mytool = scene.my_tool
-        
-        # mytool.position_tex  = None
-        # mytool.normal_tex    = None
-        # mytool.entity_tex = None
-        
-        self.__wrap_textures(mytool, self.output_dir)
+    def on_undo(self, scene):        
+        self.__wrap_textures(scene, self.name, self.output_dir)
     
     def on_redo(self, scene):
-        mytool = scene.my_tool
-        
-        # mytool.position_tex  = None
-        # mytool.normal_tex    = None
-        # mytool.entity_tex = None
-        
-        self.__wrap_textures(mytool, self.output_dir)
+        self.__wrap_textures(scene, self.name, self.output_dir)
     
  
 

@@ -2,10 +2,13 @@ import os
 import bpy
 
 
-def is_valid_anim_tex(image, width_px, height_px):
+def is_valid_anim_tex(image, texture_name, width_px, height_px):
     if image == None:
         return False
     else:
+        if image.name != texture_name:
+            return False
+        
         width_prev,height_prev = image.size
         if width_px != width_prev or height_px != height_prev:
             return False
@@ -69,7 +72,7 @@ def get_cached_image(cache, property, texture_name, size=[1,1], channels_per_pix
     width  = size[0]
     height = size[1]
     
-    if not is_valid_anim_tex(getattr(cache, property), width, height):
+    if not is_valid_anim_tex(getattr(cache, property), texture_name, width, height):
         print("new texture for:", property)
         
         setattr(cache, property, allocate_texture(
