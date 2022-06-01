@@ -541,6 +541,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
     expanded : BoolProperty(
         default=True
     )
+    
 
 
 
@@ -568,6 +569,18 @@ class PG_MyPanelProperties (bpy.types.PropertyGroup):
     status_message : StringProperty(
         name="Status message",
         default="exporting..."
+    )
+    
+    current_part : IntProperty(
+        name = "Current part",
+        description="Current texture set being exported",
+        default = 0,
+    )
+    
+    parts_count : IntProperty(
+        name = "Parts count",
+        description="How many texture sets total need to be exported?",
+        default = 0,
     )
     
     texture_sets : CollectionProperty(type=PG_MyProperties)
@@ -895,6 +908,8 @@ class ResourceManager():
             
             yield (prop_group, texture_manager)
     
+    def size(self):
+        return len(self.tex_managers)
     
     def __debug_print(self, scene):
         print("texture_sets", [x.name for x in scene.my_tool.texture_sets])
@@ -974,6 +989,9 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         self.delay_interval = 2
         self.timer_dt = 1/60
+        
+        n = resource_manager.size()
+        self.property_group['parts_count'] = n
     
     def update_label(self):
         global Operations
@@ -986,13 +1004,18 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         
         scene = bpy.context.scene
+        i = 1
         for prop_group, tex_manager in resource_manager.each(scene):
+            self.property_group['current_part'] = i
+            
             print("exporting one batch", flush=True)
             # Delegating to a subgenerator
             # https://www.python.org/dev/peps/pep-0380/
             # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
             yield from export_helper.export_all_textures(scene, prop_group, tex_manager)
             # ^ TODO: update this to the new export_all_textures() function in exporter.py
+            
+            i = i + 1
 
 
 
@@ -1213,13 +1236,11 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         
         if mytool.running: 
             layout.prop( mytool, "progress")
-            layout.label(text=mytool.status_message)
+            layout.label(text=f'{mytool.current_part}/{mytool.parts_count} : {mytool.status_message}')
         else:
             row = layout.row()
             row.operator("wm.texanim_export_collection")
             row.enabled = flag
-        
-        layout.row().separator()
         
         row = layout.row()
         row.operator("wm.texanim_clear_all_textures")
