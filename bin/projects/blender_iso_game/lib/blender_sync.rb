@@ -592,7 +592,7 @@ class BlenderSync
       # 
       
       # just need to apply inverse of the measured delta to RubyOF windows
-      delta = CP::Vec2.new(-107,-151)*-1
+      delta = CP::Vec2.new(-2.000, -100.000)*-1
       @window.position = (blender_pos + delta).to_glm
       
       # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
