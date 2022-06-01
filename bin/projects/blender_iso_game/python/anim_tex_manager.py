@@ -37,15 +37,16 @@ class AnimTexManager ():
     # 
     # setup data
     # 
-    def __init__(self, scene, to_ruby_fifo):
-        self.to_ruby = to_ruby_fifo
+    def __init__(self, scene, texture_set_name):
+        # Storing name and not texture set directly so that the proper data can be rebound on undo / redo. Name change is automatically updated when ResourceManager.rename is called.
+        self.name = texture_set_name
         
-        mytool = scene.my_tool
+        mytool = scene.my_tool.texture_sets[self.name]
         
         self.max_tris = mytool.max_tris
         
-        
-        self.__wrap_textures(mytool)
+        self.output_dir = scene.my_tool.output_dir
+        self.__wrap_textures(scene, self.name, self.output_dir)
         
         # (bottom row of pixels will always be full red)
         # This allows for the easy identification of one edge,
@@ -84,19 +85,21 @@ class AnimTexManager ():
                                    * self.entity_tex.height )
         
         
-        self.json_filepath = os.path.join(bpy.path.abspath(mytool.output_dir),
-                                          "anim_tex_cache"+'.json')
+        self.json_filepath = os.path.join(bpy.path.abspath(self.output_dir),
+                                          self.name+'.cache'+'.json')
         
         
         self.load()
     
-    def __wrap_textures(self, mytool):
+    def __wrap_textures(self, scene, name, output_dir):
+        mytool = scene.my_tool.texture_sets[name]
+        
         self.position_tex = ImageWrapper(
             get_cached_image(mytool, "position_tex",
                              mytool.name+".position",
                              size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
         
         self.normal_tex = ImageWrapper(
@@ -104,7 +107,7 @@ class AnimTexManager ():
                              mytool.name+".normal",
                              size=self.__calc_geometry_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
         
         self.entity_tex = ImageWrapper(
@@ -112,7 +115,7 @@ class AnimTexManager ():
                              mytool.name+".entity",
                              size=self.__calc_entity_tex_size(mytool),
                              channels_per_pixel=4),
-            mytool.output_dir
+            output_dir
         )
     
     def __calc_geometry_tex_size(self, mytool):
@@ -397,7 +400,12 @@ class AnimTexManager ():
         num_verts = len(mesh.loop_triangles)*3
         print("num tris:", num_tris)
         print("num verts:", num_verts)
+        print("max tris:", self.max_tris)
+        
+        print(self.position_tex.filepath, flush=True)
+        print(self.normal_tex.filepath, flush=True)
 
+        
         if num_tris > self.max_tris:
             raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
         
@@ -449,7 +457,7 @@ class AnimTexManager ():
         scanline_transform = self.entity_tex.read_scanline(scanline_index)
         # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
         
-        print(scanline_transform, flush=True)
+        # print(scanline_transform, flush=True)
         
         # 
         # write mesh id to scanline
@@ -717,22 +725,10 @@ class AnimTexManager ():
     
     
     def on_undo(self, scene):
-        mytool = scene.my_tool
-        
-        # mytool.position_tex  = None
-        # mytool.normal_tex    = None
-        # mytool.entity_tex = None
-        
-        self.__wrap_textures(mytool)
+        self.__wrap_textures(scene, self.name, self.output_dir)
     
     def on_redo(self, scene):
-        mytool = scene.my_tool
-        
-        # mytool.position_tex  = None
-        # mytool.normal_tex    = None
-        # mytool.entity_tex = None
-        
-        self.__wrap_textures(mytool)
+        self.__wrap_textures(scene, self.name, self.output_dir)
     
  
 

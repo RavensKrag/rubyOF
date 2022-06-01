@@ -469,7 +469,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1650,unix/ravensnest:/tmp/.ICE-unix/1650
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1747,unix/ravensnest:/tmp/.ICE-unix/1747
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -603,7 +603,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-hBVoKoinil0q/agent.1449
+- 'SSH_AUTH_SOCK = /tmp/ssh-WhzmBvwAmzJa/agent.1550
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
@@ -694,7 +694,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1562
+- 'SSH_AGENT_PID = 1664
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -997,7 +997,7 @@
 - 'COMPILE.p = pc    -c
 
   '
-- 'XDG_SESSION_ID = 3
+- 'XDG_SESSION_ID = 4
 
   '
 - 'USER = ravenskrag
@@ -1071,7 +1071,7 @@
 - 'F77 = f77
 
   '
-- 'OLDPWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib
+- 'COMPILE.cc = g++    -c
 
   '
 - "ADDON_LIBS_EXCLUDE = \n"
@@ -1126,8 +1126,8 @@
   OF_ROOT FAILED_PKG TMP_PROJECT_ADDONS_FRAMEWORKS PARSED_ADDONS_LIBS_INCLUDES_PATHS
   PROJECT_ADDONS_INCLUDES rvm_version %D ADDON_FRAMEWORKS OF_EXAMPLES_PATH SRC_OBJ_FILE
   PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS rwildcard WEAVE MAKE_COMMAND LINK.cpp F77
-  OLDPWD ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS .VARIABLES
-  addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
+  COMPILE.cc ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
+  .VARIABLES addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
   PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def LEX MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH
   PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER
   LEX.l LEX.m OF_PROJECT_ADDONS_DEPS ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS
@@ -1136,7 +1136,7 @@
   CLEANTARGET QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS parse_addons_libraries
   DEFAULTS_PATH LDFLAGS PLATFORM_PKG_CONFIG_LIBRARIES parse_addons_includes .SHELLSTATUS
   GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS TMP_PROJECT_ADDONS_INCLUDES
-  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS COMPILE.cc HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
+  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
   CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES
   ADDON_CPPFLAGS COMPILE.C GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT
   GNOME_TERMINAL_SERVICE SUFFIXES PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS PLATFORM_OS
@@ -1600,9 +1600,6 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
 
   '
-- 'COMPILE.cc = g++    -c
-
-  '
 - 'HOST_ARCH = x86_64
 
   '
@@ -1662,7 +1659,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/0124af03_9a0a_4140_bd25_214b03c26096
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/dfa2f7f2_8fd0_4605_b3a4_21650fea09ff
 
   '
 - "^F = \n"
@@ -1678,7 +1675,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.93
+- 'GNOME_TERMINAL_SERVICE = :1.3258
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1803,10 +1800,10 @@
 - 'ADDON_SOURCES = ./src/ofApp.cpp ./src/main.cpp ./src/ofApp.cpp ./src/main.cpp
 
   '
-- 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxInfiniteCanvas
-  ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics ofxXmlSettings ofxAccelerometer
-  ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten ofxAssimpModelLoader ofxAndroid
-  ofxSparklines ofxMathUtils ofxiOS ofxImGui ofxDatGui
+- 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxGLFWJoystick
+  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics
+  ofxXmlSettings ofxAccelerometer ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten
+  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxMathUtils ofxiOS ofxImGui ofxDatGui
 
   '
 - "OF_CORE_BASE_CXXFLAGS = \n"

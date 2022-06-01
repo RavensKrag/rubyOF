@@ -182,8 +182,7 @@ def pack_transform_mat4(obj):
 
 
 class Exporter():
-    def __init__(self, resource_manager_ref, to_ruby_fifo):
-        self.resource_manager = resource_manager_ref
+    def __init__(self, to_ruby_fifo):
         self.to_ruby = to_ruby_fifo
     
     # 
@@ -196,7 +195,7 @@ class Exporter():
 
     # yields percentage of task completion, for use with a progress bar
     @coroutine
-    def export_all_textures(self):
+    def export_all_textures(self, scene, prop_group, tex_manager):
         
         yield(0) # initial yield to just set things up
         
@@ -210,7 +209,7 @@ class Exporter():
         t0 = time.time()
         
         
-        mytool = context.scene.my_tool
+        mytool = scene.my_tool
         
         
         mytool.status_message = "eval dependencies"
@@ -236,16 +235,16 @@ class Exporter():
         
         
         
-        all_objects = mytool.collection_ptr.all_objects
+        all_objects = prop_group.collection_ptr.all_objects
         
         
         all_mesh_objects = [ obj
-                             for obj in mytool.collection_ptr.all_objects
+                             for obj in prop_group.collection_ptr.all_objects
                              if obj.type == 'MESH' ]
         
         num_objects = len(all_mesh_objects)
-        if num_objects > mytool.max_num_objects:
-            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {mytool.max_num_objects} in the texture. Please increase the size of the entity texture.')
+        if num_objects > prop_group.max_num_objects:
+            raise RuntimeError(f'Trying to export {num_objects} objects, but only have room for {prop_group.max_num_objects} in the texture. Please increase the size of the entity texture.')
         
         
         # 
@@ -269,8 +268,6 @@ class Exporter():
         
         context = yield( 0.0 )
         
-        
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
         
         # 
         # calculate how many tasks there are
@@ -354,7 +351,7 @@ class Exporter():
 
     # use transform on armature as entity transform
     # (may apply to more than 1 mesh)
-    def __update_entity_transform_with_armature(self, scene, update, armature_obj):
+    def __update_entity_transform_with_armature(self, scene, update, tex_manager, armature_obj):
         pass
         # print("send update message")
         
@@ -369,8 +366,7 @@ class Exporter():
     
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
-    def __update_entity_transform_without_armature(self, scene, update, mesh_obj):
-        tex_manager = self.resource_manager.get_texture_manager(scene)
+    def __update_entity_transform_without_armature(self, scene, update, tex_manager, mesh_obj):
         
         if not update.is_updated_transform:
             return
@@ -479,9 +475,7 @@ class Exporter():
         
     
     # first export when blender switches into the RubyOF rendering mode
-    def export_initial(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
-        
+    def export_initial(self, context, depsgraph, prop_group, tex_manager):
         region = context.region
         view3d = context.space_data
         scene = depsgraph.scene
@@ -533,9 +527,7 @@ class Exporter():
         
     # every export after the first export
     # (send updated data only, in order to maintain synchronization)
-    def export_update(self, context, depsgraph):
-        tex_manager = self.resource_manager.get_texture_manager(context.scene)
-        
+    def export_update(self, context, depsgraph, prop_group, tex_manager):
         region = context.region
         view3d = context.space_data
         scene = depsgraph.scene
@@ -552,6 +544,7 @@ class Exporter():
         self.to_ruby.write(json.dumps(data))
         
         
+        # all_objects = prop_group.collection_ptr.all_objects
         
         
         active_object = context.active_object
@@ -560,6 +553,9 @@ class Exporter():
         
         
         if active_object != None and active_object.mode == 'EDIT':
+            if active_object.name not in prop_group.collection_ptr.all_objects:
+                return
+            
             # NOTE: Assumes that object being edited is a mesh object, which is not necessarily true. This assumption causes problems when editing armatures.
             
             if isinstance(active_object, bpy.types.Object) and active_object.type == 'MESH':
@@ -632,14 +628,14 @@ class Exporter():
                         
                         
                         if obj.parent is None:
-                            self.__update_entity_transform_without_armature(context.scene, update, obj)
+                            self.__update_entity_transform_without_armature(context.scene, update, tex_manager, obj)
                         elif obj.parent.type == 'ARMATURE':
                             # meshes attached to armatures will be exported with NLA animations, in a separate pass
                             pass
                         else: 
                             pass
                     elif obj.type == 'ARMATURE':
-                        self.__update_entity_transform_with_armature(context.scene, update, obj)
+                        self.__update_entity_transform_with_armature(context.scene, update, tex_manager, obj)
                         
                         
                 
@@ -678,14 +674,17 @@ class Exporter():
     # The difference set between these two
     # would tell you what entities were deleted.
     # (Was doing this before in Ruby, but now do it in Python)
-    def gc(self, scene):
+    def gc(self, scene, prop_group, tex_manager):
         # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
         
         mytool = scene.my_tool
-        tex_manager = self.resource_manager.get_texture_manager(scene)
+        collection_ptr = prop_group.collection_ptr
+        
+        if collection_ptr is None:
+            return
         
         old_names = tex_manager.get_entity_names()
-        new_names = [ x.name for x in mytool.collection_ptr.all_objects ]
+        new_names = [ x.name for x in collection_ptr.all_objects ]
         delta = list(set(old_names) - set(new_names))
         
         # print("old_names:", len(old_names), flush=True)

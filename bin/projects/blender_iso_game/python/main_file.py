@@ -31,7 +31,9 @@ from bpy.props import (StringProperty,
                        FloatProperty,
                        EnumProperty,
                        FloatVectorProperty,
-                       PointerProperty)
+                       PointerProperty,
+                       CollectionProperty
+)
 
 from mathutils import Color
 
@@ -106,16 +108,15 @@ from bpy.app.handlers import persistent
 @persistent
 def rubyof__on_load(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
-    tex_manager.load()
+    resource_manager.load(context.scene)
+    
     
 
 
 @persistent
 def rubyof__on_save(*args):
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
-    tex_manager.save()
+    resource_manager.save(context.scene)
 
 
 def rubyof__on_undo(scene):
@@ -124,8 +125,7 @@ def rubyof__on_undo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
-    tex_manager.on_undo(scene)
+    resource_manager.on_undo(context.scene)
 
 def rubyof__on_redo(scene):
     # print("on undo")
@@ -133,8 +133,7 @@ def rubyof__on_redo(scene):
     # sys.stdout.flush()
     
     context = bpy.context
-    tex_manager = resource_manager.get_texture_manager(context.scene)
-    tex_manager.on_redo(scene)
+    resource_manager.on_redo(context.scene)
 
 
 
@@ -150,7 +149,8 @@ def rubyof__on_update(scene, depsgraph):
     # print("running", time.time())
     # print("objects: ", len(context.scene.objects))
     
-    export_helper.gc(scene)
+    for prop_group, tex_manager in resource_manager.each(scene):
+        export_helper.gc(scene, prop_group, tex_manager)
     
         
 
@@ -384,6 +384,24 @@ class IPC_Reader():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ------------------------------------------------------------------------
 #   properties needed for mesh export to OpenEXR
 #   (serialized data)
@@ -414,23 +432,34 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         
         return None
     
-    output_dir : StringProperty(
-        name="Output directory",
-        description="Directory where all animation textures will be written (vertex animation data)",
-        default="//",
-        subtype='DIR_PATH'
-    )
+    
+    # https://blender.stackexchange.com/questions/141545/get-previous-value-of-updated-property/141562#141562
+    
+    # TODO: when renaming the backend data for a texture set, change the corresponding name in the list of texture set names used to order the UI.
+    def set_name(self, value):
+        new_name = value
+        old_name = self.get("name", "")
+        
+        print('old name: ', self.get("name", ""), flush=True)
+        self["name"] = new_name
+        print('new name: ', self.get("name", ""), flush=True)
+        
+        
+        resource_manager.rename(bpy.context.scene, old_name, new_name)
+    
+    def get_name(self):
+        return self.get("name", "") # specify default, or error when null
+    
+    # seems like you need to define both set and get for this to work?
+    # not sure why, but ok I guess
+    
     
     name : StringProperty(
         name="Name",
         description="base name for all texture files",
         default="animation",
-    )
-    
-    target_object : PointerProperty(
-        name="Target object",
-        description="object to be exported",
-        type=bpy.types.Object
+        set=set_name,
+        get=get_name
     )
     
     collection_ptr : PointerProperty(
@@ -463,7 +492,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         max = 1000000,
         update=limit_output_frame
     )
-        
+    
     
     position_tex : PointerProperty(
         name="Position texture",
@@ -487,7 +516,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
     max_num_objects : IntProperty(
         name = "Max number of objects",
         description="maximum number of objects whose transforms can be saved",
-        default = 20,
+        default = 200,
         min = 1,
         max = 1000000
     )
@@ -509,6 +538,21 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         max = 65504
     )
     
+    expanded : BoolProperty(
+        default=True
+    )
+    
+
+
+
+class PG_MyPanelProperties (bpy.types.PropertyGroup):
+    output_dir : StringProperty(
+        name="Output directory",
+        description="Directory where all animation textures will be written (vertex animation data)",
+        default="//",
+        subtype='DIR_PATH'
+    )
+    
     progress : FloatProperty(
         name="Progress",
         subtype="PERCENTAGE",
@@ -526,6 +570,21 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         name="Status message",
         default="exporting..."
     )
+    
+    current_part : IntProperty(
+        name = "Current part",
+        description="Current texture set being exported",
+        default = 0,
+    )
+    
+    parts_count : IntProperty(
+        name = "Parts count",
+        description="How many texture sets total need to be exported?",
+        default = 0,
+    )
+    
+    texture_sets : CollectionProperty(type=PG_MyProperties)
+
 
 
 
@@ -545,10 +604,6 @@ class PG_MyProperties (bpy.types.PropertyGroup):
 import os
 
 
-from anim_tex_manager import ( AnimTexManager )
-AnimTexManager = reload_class(AnimTexManager)
-
-
 
 # ------------------------------------------------------------------------
 #   Things that need to be accessed in mulitple places,
@@ -566,32 +621,320 @@ from_ruby = IPC_Reader("/home/ravenskrag/Desktop/gem_structure/bin/projects/blen
 
 
 
+
+from anim_tex_manager import ( AnimTexManager )
+AnimTexManager = reload_class(AnimTexManager)
+
+
+
+# AnimTexManager stores cached data on mesh / entity data (serialized to JSON file) and in the property group PG_MyProperties (serialized to .blend file).
+# Don't want to reinitialize this all the time, because that would require reading from disk to re-load the JSON file.
+# Thus, we do want to keep a collection of AnimTexManager objects in memory
+
+
 class ResourceManager():
     def __init__(self):
         # print("init resource manager", flush=True)
         self.anim_tex_manager = None
-    
-    
-    # TODO: reset this "singleton" if the dimensions of the animation texture have changed
-    def get_texture_manager(self, scene):
-        if self.anim_tex_manager is None:
-            self.anim_tex_manager = AnimTexManager(scene, to_ruby)
         
-        return self.anim_tex_manager
+        self.tex_managers = []
     
-    def clear_texture_manager(self, scene):
-        # print("try to clear texture manager", flush=True)
-        if self.anim_tex_manager is not None:
-            # print("clearing texture manager", flush=True)
-            self.anim_tex_manager.clear(scene)
-            self.anim_tex_manager = None
+    # scene.my_tool['name_list'] is a List of strings that controls the ordering of the texture sets in the UI. Order is maintained across the 3 collections (described below) by only performing binary swaps to move elements up / down
+    
+    # scene.my_tool.texture_sets has both a Hash / Dict style API and a Array / List style API
+    
+    # 1) self.tex_managers           List - array style access (numerical index)
+    # 2) scene.my_tool.texture_sets  CollectionProperty - numerical or by name
+    # 3) scene.my_tool['name_list']  List - numerical access
+    # 
+    # + 1 and 2 have the same ordering
+    # + 3 has a different ordering.
+    # + Use 3 to convert index i (order in UI) to name
+    # + search by name in 2 to find index j
+    # + use index j in 1 get the corresponding texture manager.
+    # That means 1 and 2 use the same indicies.
+    # Therefore: self.tex_managers[j] uses scene.my_tool.texture_sets[j]
+    
+    def setup(self, scene):
+        print("=> setup", flush=True )
+        print(scene.my_tool.texture_sets, flush=True)
+        
+        
+        
+        if len(scene.my_tool.texture_sets) == 0:
+            # If no data is found in the .blend file, initialize new data.
+            # Also, set up array to track ordering of the texture sets
+            
+            pass
+            # NO-OP
+        else:
+            # TODO: test this
+            
+            # If texture set data was stored in the .blend file,
+            # regenerate in-memory manager instances
+            for i in range(len(scene.my_tool.texture_sets)):
+                print(i, flush=True)
+                
+                texure_set = scene.my_tool.texture_sets[i]
+                manager = AnimTexManager(scene, texure_set.name)
+                self.tex_managers.append(manager)
+                manager.load()
+                
+                # NOTE: name list should be automatically serialized with the .blend file.
+        
+        pass
+    
+    def get_prop_group(self, scene):
+        i = 0
+        name = scene.my_tool['name_list'][i]
+        prop_group = scene.my_tool.texture_sets[name]
+        
+        return prop_group
+    
+    # clear all texture managers
+    def clear_texture_managers(self, scene):
+        name_list = scene.my_tool.get('name_list', None)
+        
+        for i, name in enumerate(name_list):
+            j = scene.my_tool.texture_sets.find(name)
+            
+            print(j, flush=True)
+            if j == -1: # only clear if the texture set was found
+                raise f'Error: name "{name}" not found in texture manager name list. Expected one of these: {name_list}'
+                
+            self.tex_managers[j].clear(scene)
+            self.tex_managers[j] = None
+            self.tex_managers[j] = AnimTexManager(scene, name)
+        
+        # # print("try to clear texture manager", flush=True)
+        # if self.anim_tex_manager is not None:
+        #     # print("clearing texture manager", flush=True)
+        #     self.anim_tex_manager.clear(scene)
+        #     self.anim_tex_manager = None
+    
+    
+    def load(self, scene):
+        for tex_manager in self.tex_managers:
+            tex_manager.load()
+    
+    def save(self, scene):
+        for tex_manager in self.tex_managers:
+            tex_manager.save()
+    
+    # Undo puts the system into an undefined state, where the 'name' property of AnimTexManager is not in sync with names in scene.my_tool.texture_sets.
+    # If we assume the system was in the correct state BEFORE the undo, we can automatically correct for this error.
+    def on_undo(self, scene):
+        print("=> on_undo")
+        self.__debug_print(scene)
+        
+        for i, texture_set in enumerate(scene.my_tool.texture_sets):
+            self.tex_managers[i].name = texture_set.name
+        
+        self.__debug_print(scene)
+        
+        for tex_manager in self.tex_managers:
+            tex_manager.on_undo(scene)
+    
+    def on_redo(self, scene):
+        for tex_manager in self.tex_managers:
+            tex_manager.on_redo(scene)
+    
+    
+    DEFAULT_NAME = 'animation'
+    # add new manager + property group to the end of the list
+    def add(self, scene):
+        print("=> add", flush=True)
+        
+        # check if something with the desired name exists.
+        # may need to add numbers at the end to disambiguate.
+        name = ResourceManager.DEFAULT_NAME
+        j = scene.my_tool.texture_sets.find(name) # returns -1 if not found
+        id = 1
+        delimiter = '.'
+        while j != -1: # repeat while there is a name collision
+            if delimiter in name:
+                parts = name.split('.')
+                parts.pop()
+                name = '.'.join(parts)
+            print(name, flush=True)
+            
+            name = '.'.join([name, str(id).rjust(3, '0')])
+            print(name, flush=True)
+            
+            id = id + 1
+            
+            j = scene.my_tool.texture_sets.find(name)
+        
+            
+        
+        
+        # https://blender.stackexchange.com/questions/134996/store-pointer-property-array-list
+        texure_set = scene.my_tool.texture_sets.add()
+        texure_set.name = name
+        
+        # manager depends on texture set
+        manager = AnimTexManager(scene, texure_set.name)
+        self.tex_managers.append(manager)
+        
+        
+        # texture sets need a list of names to keep track of ordering
+        name_list = scene.my_tool.get('name_list', None)
+        if name_list is None or len(name_list) == 0:
+            name_list = [texure_set.name]
+        else:
+            name_list.append(texure_set.name)
+        
+        scene.my_tool['name_list'] = name_list
+    
+    
+    # ASSUME: tex_set is a texture set property group from scene.my_tool.texture_sets
+    # 
+    # move texture set object to end of list
+    # via pairwise swaps (like in bubble sort)
+    # and then remove the last item in the list
+    def delete(self, scene, tex_set):
+        print("=> delete", flush=True)
+        # print("\n"*5, flush=True)
+        # print(tex_set.name)
+        
+        # name list
+        name_list = scene.my_tool['name_list']
+        i = name_list.index(tex_set.name)
+        del name_list[i]
+        scene.my_tool['name_list'] = name_list
+        
+        self.__debug_print(scene)
+        
+        
+        # texture set collection
+        # index to be removed is dependent on the ordering of the names
+        # not the order of this collection
+        j = scene.my_tool.texture_sets.find(tex_set.name)
+        scene.my_tool.texture_sets.remove(j)
+        
+        self.__debug_print(scene)
+        
+        # manager collection
+        del self.tex_managers[j]
+        
+        self.__debug_print(scene)
+        
+        
+        
+        # TODO: make sure system doesn't crash when there are no texture set configurations (should be able to initialize with no configs, but the current code initializes with 1 config. thus, if the final config is deleted, bad things are likely to happen)
+        
+        
+        # print("\n"*5, flush=True)
+        
+        pass
+    
+    
+    # called when texture set 'name' has changed
+    def rename(self, scene, old_name, new_name):
+        print(f'renaming: {old_name} => {new_name}', flush=True)
+        print(scene.my_tool['name_list'], flush=True)
+        
+        self.__debug_print(scene)
+        
+        # only need to update the other properties if the texture set to be renamed is in the collection
+        if old_name not in scene.my_tool['name_list']:
+            return
+        
+        self.__debug_print(scene)
+        
+        # update texture set
+        # scene.my_tool.texture_sets[old_name].name = new_name
+        
+        # update name list
+        name_list = scene.my_tool['name_list']
+        i = name_list.index(old_name)
+        name_list[i] = new_name
+        scene.my_tool['name_list'] = name_list
+        
+        self.__debug_print(scene)
+        
+        # update manager name
+        j = scene.my_tool.texture_sets.find(new_name)
+        self.tex_managers[j].name = new_name
+        
+        self.__debug_print(scene)
+        
+        
+    
+    
+    # move item at index i up one slot, using pairwise swaps (like bubble sort)
+    # (beware of top edge)
+    def move_up(self, scene, tex_set):
+        i = scene.my_tool['name_list'].index(tex_set.name)
+        if i != -1:
+            if i > 0:
+                other = i - 1
+                
+                # To change UI ordering, only re-order the name list.
+                # self.tex_managers and scene.my_tool.texture_sets must always have corresponding indicies, so it is best not to touch them.
+                
+                collection = scene.my_tool['name_list']
+                tmp = collection[i]
+                collection[i] = collection[other]
+                collection[other] = tmp
+                scene.my_tool['name_list'] = collection
+        else:
+            pass
+            # TODO: raise exception
+    
+    # move item at index i down one slot, using pairwise swaps (like bubble sort)
+    # (beware of top edge)
+    def move_down(self, scene, tex_set):
+        i = scene.my_tool['name_list'].index(tex_set.name)
+        if i != -1:
+            if i < len(self.tex_managers)-1:
+                print("swap", flush=True)
+                other = i + 1
+                
+                # To change UI ordering, only re-order the name list.
+                # self.tex_managers and scene.my_tool.texture_sets must always have corresponding indicies, so it is best not to touch them.
+                
+                collection = scene.my_tool['name_list']
+                tmp = collection[i]
+                collection[i] = collection[other]
+                collection[other] = tmp
+                scene.my_tool['name_list'] = collection
+        else:
+            pass
+            # TODO: raise exception
+    
+    
+    # ruby-style iteration interface using a generator
+    # https://www.integralist.co.uk/posts/python-generators/#iterators
+    def each(self, scene):
+        print(scene.my_tool.get('name_list'), flush=True)
+        print(scene.my_tool.texture_sets, flush=True)
+        
+        for i, name in enumerate(scene.my_tool.get('name_list', [])):
+            j = scene.my_tool.texture_sets.find(name)
+            texture_manager = self.tex_managers[j]
+            
+            prop_group = scene.my_tool.texture_sets[name]
+            
+            yield (prop_group, texture_manager)
+    
+    def size(self):
+        return len(self.tex_managers)
+    
+    def __debug_print(self, scene):
+        print("texture_sets", [x.name for x in scene.my_tool.texture_sets])
+        print("tex managers", [x.name for x in self.tex_managers])
+        print("name list   ", scene.my_tool['name_list'])
+        print("\n")
+        sys.stdout.flush()
+    
 
 resource_manager = ResourceManager()
 
 # def anim_texture_manager_singleton(context):
 #     global anim_tex_manager
 #     if anim_tex_manager == None:
-#         anim_tex_manager = AnimTexManager(context, to_ruby)
+#         anim_tex_manager = AnimTexManager(context)
     
 #     return anim_tex_manager
 
@@ -622,12 +965,7 @@ resource_manager = ResourceManager()
 
 
 
-export_helper = Exporter(resource_manager, to_ruby)
-
-
-
-
-
+export_helper = Exporter(to_ruby)
 
 
 
@@ -650,9 +988,9 @@ OT_ProgressBarOperator = reload_class(OT_ProgressBarOperator)
 from coroutine_decorator import *
 
 class OT_TexAnimExportCollection (OT_ProgressBarOperator):
-    """Export all objects in target collection"""
+    """Use texture sets to export target collections to OpenEXR"""
     bl_idname = "wm.texanim_export_collection"
-    bl_label = "Export ENTIRE Collection"
+    bl_label = "Export ALL texture sets"
     
     def setup(self, context):
         self.setup_properties(property_group=context.scene.my_tool,
@@ -661,6 +999,9 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         
         self.delay_interval = 2
         self.timer_dt = 1/60
+        
+        n = resource_manager.size()
+        self.property_group['parts_count'] = n
     
     def update_label(self):
         global Operations
@@ -672,19 +1013,26 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
         context = yield(0.0)
         
         
-        tex_manager = resource_manager.get_texture_manager(context.scene)
-        # Delegating to a subgenerator
-        # https://www.python.org/dev/peps/pep-0380/
-        # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
-        yield from export_helper.export_all_textures()
-        # ^ TODO: update this to the new export_all_textures() function in exporter.py
+        scene = bpy.context.scene
+        i = 1
+        for prop_group, tex_manager in resource_manager.each(scene):
+            self.property_group['current_part'] = i
+            
+            print("exporting one batch", flush=True)
+            # Delegating to a subgenerator
+            # https://www.python.org/dev/peps/pep-0380/
+            # https://stackoverflow.com/questions/9708902/in-practice-what-are-the-main-uses-for-the-new-yield-from-syntax-in-python-3
+            yield from export_helper.export_all_textures(scene, prop_group, tex_manager)
+            # ^ TODO: update this to the new export_all_textures() function in exporter.py
+            
+            i = i + 1
 
 
 
 class OT_TexAnimClearAllTextures (bpy.types.Operator):
-    """Clear both animation textures"""
+    """Clear cache. Some OpenEXR files may remain on disk."""
     bl_idname = "wm.texanim_clear_all_textures"
-    bl_label = "Clear All 3 Textures"
+    bl_label = "Clear texture cache"
     
     # @classmethod
     # def poll(cls, context):
@@ -693,10 +1041,72 @@ class OT_TexAnimClearAllTextures (bpy.types.Operator):
     def execute(self, context):
         # clear_textures(context.scene.my_tool)
         
-        resource_manager.clear_texture_manager(context.scene)
+        resource_manager.clear_texture_managers(context.scene)
         
         mytool = context.scene.my_tool
-        mytool.sync_deletions = False
+        mytool.sync_deletions = False # TODO: consider removing this
+        
+        return {'FINISHED'}
+
+
+
+class OT_TexAnimAddTextureSet (bpy.types.Operator):
+    """Clear both animation textures"""
+    bl_idname = "wm.texanim_add_texture_set"
+    bl_label = "Add Texture Set"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.add(context.scene)
+        
+        
+        return {'FINISHED'}
+
+class OT_TexAnimDeleteTextureSet (bpy.types.Operator):
+    """Remove this export configuration"""
+    bl_idname = "wm.texanim_delete_texture_set"
+    bl_label = "Delete Texture Set"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.delete(context.scene, context.texture_set)
+        
+        
+        return {'FINISHED'}
+
+class OT_TexAnimTextureSetMoveUp (bpy.types.Operator):
+    """Move up one slot in the UI"""
+    bl_idname = "wm.texanim_texture_set_move_up"
+    bl_label = "move down"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.move_up(context.scene, context.texture_set)
+        
+        
+        return {'FINISHED'}
+
+class OT_TexAnimTextureSetMoveDown (bpy.types.Operator):
+    """Move down one slot in the UI"""
+    bl_idname = "wm.texanim_texture_set_move_down"
+    bl_label = "move up"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.move_down(context.scene, context.texture_set)
+        
         
         return {'FINISHED'}
 
@@ -719,7 +1129,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        print(context.engine)
+        # print(context.engine)
         return (context.engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
@@ -727,25 +1137,124 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         scene = context.scene
         mytool = scene.my_tool
         
-        layout.prop( mytool, "collection_ptr")
+        # layout.prop( mytool, "collection_ptr")
+        # layout.prop( mytool, "name")
+        
+        # layout.prop( mytool, "max_tris")
+        # layout.prop( mytool, "max_frames")
+        # layout.prop( mytool, "max_num_objects")
+        
+        # layout.row().separator()
+        
+        
         layout.prop( mytool, "output_dir")
-        layout.prop( mytool, "name")
+        layout.operator("wm.texanim_add_texture_set")
         
-        layout.prop( mytool, "max_tris")
-        layout.prop( mytool, "max_frames")
-        layout.prop( mytool, "max_num_objects")
+        # 
+        # list of texture sets and their export options
+        # 
         
+        # print(mytool.texture_sets)
+        
+        
+        item_list = mytool.get('name_list', [])
+        for j, name in enumerate(item_list):
+            item = mytool.texture_sets[name]
+            
+            # print(item)
+            
+            size = None
+            max_tris = None
+            
+            # print("collection: ", item.collection_ptr)
+            
+            if item.collection_ptr is not None:
+                collection_ptr = item.collection_ptr
+                
+                a = collection_ptr.objects
+                
+                size = len(a)
+                max_tris = 0
+                
+                a.items()
+                # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
+                for i, pair in enumerate(a.items()):
+                    if pair[1].type == 'MESH':
+                        mesh = pair[1]
+                        mesh.data.calc_loop_triangles()
+                        # ^ need to call this to populate the mesh.loop_triangles() cache
+                        num_tris  = len(mesh.data.loop_triangles)
+                        
+                        if num_tris > max_tris:
+                            max_tris = num_tris
+                # TODO: optimize this somehow so we're not altering mesh cache every frame
+            
+            
+            # Use context_pointer_set to set a value that can be recalled via the context object. This example is for menus, but should also work for operators.
+                # src: https://blender.stackexchange.com/questions/45845/how-to-create-submenus-with-dynamic-content
+            
+            col = layout.column(align=True)
+            
+            col.context_pointer_set("texture_set", item)
+            
+            
+            row = col.box().row()
+            row.prop(item, "expanded",
+                icon="TRIA_DOWN" if item.expanded else "TRIA_RIGHT",
+                icon_only=True, emboss=False
+            )
+            row.prop(item, "name", text="")
+            
+            row2 = row.row(align=True)
+            # up / down arrows should be adjacent to each other - no gap
+            # https://devtalk.blender.org/t/solved-button-gap-in-panel-addon/11109/6
+            row2.operator("wm.texanim_texture_set_move_up",
+                text="", icon='TRIA_UP', emboss=True
+            )
+            row2.operator("wm.texanim_texture_set_move_down",
+                text="", icon='TRIA_DOWN', emboss=True
+            )
+            
+            row.operator("wm.texanim_delete_texture_set",
+                text="", icon='X', emboss=False
+            )
+            # row.menu("COLLECTION_MT_context_menu", icon='DOWNARROW_HLT', text="")
+            
+            # https://blender.stackexchange.com/questions/19121/how-to-create-collapsible-panel
+            
+            if item.expanded:
+                col = col.box().column()
+                col.prop( item, "collection_ptr")
+                col_row = col.row()
+                col_row.label(text=f'count: {size}')
+                col_row.label(text=f'max tris: {max_tris}')
+                col.prop( item, "max_tris")
+                col.prop( item, "max_frames")
+                col.prop( item, "max_num_objects")
+        
+        # END for loop
+        
+        if len(item_list) > 0:
+            flag = True
+        else:
+            flag = False
+        
+        # 
+        # buttons to process all texture sets
+        # 
         layout.row().separator()
         
         if mytool.running: 
             layout.prop( mytool, "progress")
-            layout.label(text=mytool.status_message)
+            layout.label(text=f'{mytool.current_part}/{mytool.parts_count} : {mytool.status_message}')
         else:
-            layout.operator("wm.texanim_export_collection")
+            row = layout.row()
+            row.operator("wm.texanim_export_collection")
+            row.enabled = flag
         
-        layout.row().separator()
-        layout.operator("wm.texanim_clear_all_textures")
-        
+        row = layout.row()
+        row.operator("wm.texanim_clear_all_textures")
+        row.enabled = flag
         
         
         # layout.row().separator()
@@ -1086,13 +1595,16 @@ class RubyOF(bpy.types.RenderEngine):
         
     
     def __update_scene(self, context, depsgraph):
+        scene = context.scene
         if self.first_time:
             # First time initialization
             self.first_time = False
             
-            export_helper.export_initial(context, depsgraph)
+            for prop_group, tex_manager in resource_manager.each(scene):
+                export_helper.export_initial(context, depsgraph, prop_group, tex_manager)
         else:
-            export_helper.export_update(context, depsgraph)
+            for prop_group, tex_manager in resource_manager.each(scene):
+                export_helper.export_update(context, depsgraph, prop_group, tex_manager)
         
         
     # --------------------------------
@@ -2218,9 +2730,14 @@ classes = (
     #
     #
     PG_MyProperties,
+    PG_MyPanelProperties,
     OT_ProgressBarOperator,
     OT_TexAnimExportCollection,
     OT_TexAnimClearAllTextures,
+    OT_TexAnimAddTextureSet,
+    OT_TexAnimDeleteTextureSet,
+    OT_TexAnimTextureSetMoveUp,
+    OT_TexAnimTextureSetMoveDown,
     DATA_PT_texanim_panel3
 )
 
@@ -2248,7 +2765,9 @@ def register():
             type=RubyOF_MATERIAL_Properties
         )
     
-    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyProperties)
+    bpy.types.Scene.my_tool = PointerProperty(type=PG_MyPanelProperties)
+    
+    resource_manager.setup(bpy.context.scene);
     
     # register_depgraph_handlers()
     register_event_handlers()
