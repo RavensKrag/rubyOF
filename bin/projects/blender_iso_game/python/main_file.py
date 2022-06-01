@@ -756,13 +756,12 @@ class ResourceManager():
         
         # texture sets need a list of names to keep track of ordering
         name_list = scene.my_tool.get('name_list', None)
-        self.name_list = name_list
-        if self.name_list is None:
-            self.name_list = [texure_set.name]
+        if name_list is None or len(name_list) == 0:
+            name_list = [texure_set.name]
         else:
-            self.name_list.append(texure_set.name)
+            name_list.append(texure_set.name)
         
-        scene.my_tool['name_list'] = self.name_list
+        scene.my_tool['name_list'] = name_list
     
     
     # ASSUME: tex_set is a texture set property group from scene.my_tool.texture_sets
@@ -771,6 +770,7 @@ class ResourceManager():
     # via pairwise swaps (like in bubble sort)
     # and then remove the last item in the list
     def delete(self, scene, tex_set):
+        print("=> delete", flush=True)
         # print("\n"*5, flush=True)
         # print(tex_set.name)
         
@@ -780,7 +780,7 @@ class ResourceManager():
         del name_list[i]
         scene.my_tool['name_list'] = name_list
         
-        # self.__debug_print(scene)
+        self.__debug_print(scene)
         
         
         # texture set collection
@@ -789,12 +789,12 @@ class ResourceManager():
         j = scene.my_tool.texture_sets.find(tex_set.name)
         scene.my_tool.texture_sets.remove(j)
         
-        # self.__debug_print(scene)
+        self.__debug_print(scene)
         
         # manager collection
         del self.tex_managers[j]
         
-        # self.__debug_print(scene)
+        self.__debug_print(scene)
         
         
         
