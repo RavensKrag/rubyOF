@@ -390,6 +390,18 @@ class IPC_Reader():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 # ------------------------------------------------------------------------
 #   properties needed for mesh export to OpenEXR
 #   (serialized data)
@@ -832,8 +844,9 @@ class ResourceManager():
     
     # move item at index i up one slot, using pairwise swaps (like bubble sort)
     # (beware of top edge)
-    def move_up(self, scene, i):
-        if i >= 0 and i <= len(self.tex_managers)-1: 
+    def move_up(self, scene, tex_set):
+        i = scene.my_tool['name_list'].index(tex_set.name)
+        if i != -1:
             if i > 0:
                 other = i - 1
                 
@@ -851,8 +864,9 @@ class ResourceManager():
     
     # move item at index i down one slot, using pairwise swaps (like bubble sort)
     # (beware of top edge)
-    def move_down(self, scene, i):
-        if i >= 0 and i <= len(self.tex_managers)-1: 
+    def move_down(self, scene, tex_set):
+        i = scene.my_tool['name_list'].index(tex_set.name)
+        if i != -1:
             if i < len(self.tex_managers)-1:
                 print("swap", flush=True)
                 other = i + 1
@@ -922,11 +936,6 @@ resource_manager = ResourceManager()
 
 
 export_helper = Exporter(to_ruby)
-
-
-
-
-
 
 
 
@@ -1033,6 +1042,36 @@ class OT_TexAnimDeleteTextureSet (bpy.types.Operator):
         
         return {'FINISHED'}
 
+class OT_TexAnimTextureSetMoveUp (bpy.types.Operator):
+    """Move up one slot in the UI"""
+    bl_idname = "wm.texanim_texture_set_move_up"
+    bl_label = "move down"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.move_up(context.scene, context.texture_set)
+        
+        
+        return {'FINISHED'}
+
+class OT_TexAnimTextureSetMoveDown (bpy.types.Operator):
+    """Move down one slot in the UI"""
+    bl_idname = "wm.texanim_texture_set_move_down"
+    bl_label = "move up"
+    
+    # @classmethod
+    # def poll(cls, context):
+    #     # return True
+    
+    def execute(self, context):
+        resource_manager.move_down(context.scene, context.texture_set)
+        
+        
+        return {'FINISHED'}
+
 
 
 class DATA_PT_texanim_panel3 (bpy.types.Panel):
@@ -1127,6 +1166,17 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 icon_only=True, emboss=False
             )
             row.prop(item, "name", text="")
+            
+            row2 = row.row(align=True)
+            # up / down arrows should be adjacent to each other - no gap
+            # https://devtalk.blender.org/t/solved-button-gap-in-panel-addon/11109/6
+            row2.operator("wm.texanim_texture_set_move_up",
+                text="", icon='TRIA_UP', emboss=True
+            )
+            row2.operator("wm.texanim_texture_set_move_down",
+                text="", icon='TRIA_DOWN', emboss=True
+            )
+            
             row.operator("wm.texanim_delete_texture_set",
                 text="", icon='X', emboss=False
             )
@@ -2649,6 +2699,8 @@ classes = (
     OT_TexAnimClearAllTextures,
     OT_TexAnimAddTextureSet,
     OT_TexAnimDeleteTextureSet,
+    OT_TexAnimTextureSetMoveUp,
+    OT_TexAnimTextureSetMoveDown,
     DATA_PT_texanim_panel3
 )
 
