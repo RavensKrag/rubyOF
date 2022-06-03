@@ -616,6 +616,9 @@ class Exporter():
                 # print("update: ", update.is_updated_geometry, update.is_updated_shading, update.is_updated_transform)
                 
                 # TODO: limit this to exporting collection?
+                if obj.name not in prop_group.collection_ptr.all_objects:
+                    return
+                
                 
                 if isinstance(obj, bpy.types.Object):
                     if obj.type == 'LIGHT':

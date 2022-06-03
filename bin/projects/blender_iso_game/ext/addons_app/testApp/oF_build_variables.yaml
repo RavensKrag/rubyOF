@@ -1139,9 +1139,8 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-COMPILE.cc:
-- g++
-- "-c"
+OLDPWD:
+- "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib"
 ADDON_LIBS_EXCLUDE: []
 REQUESTED_PROJECT_ADDONS:
 - ofxGui
@@ -1395,7 +1394,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- COMPILE.cc
+- OLDPWD
 - ADDON_LIBS_EXCLUDE
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
@@ -1450,6 +1449,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - TMP_PROJECT_ADDONS_INCLUDES
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
+- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -2046,6 +2046,9 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
+COMPILE.cc:
+- g++
+- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
