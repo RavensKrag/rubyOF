@@ -9,10 +9,11 @@
     IN vec4 v_diffuse;
     IN vec4 v_specular;
     IN vec4 v_emissive;
+    IN float v_transparent_pass;
     
 // #endif
 
-#define TRANSPARENT_PASS 1
+// #define TRANSPARENT_PASS 1
     struct lightData
     {
         float enabled;
@@ -222,7 +223,9 @@
         // return 1/accum;
         
         
-        return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
+        // return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
+        
+        return clamp(pow(min(1.0, a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - z * 0.9, 3.0), 1e-2, 3e3);
     }
     
     
@@ -314,46 +317,76 @@
         // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
         
         // #if TRANSPARENT_PASS
-        if(v_diffuse.a != 1){
-            // ---transparent pass---
+        
+        
+        // if(v_transparent_pass == 0.0){
+        //     gl_FragData[0] = vec4(1,0,0, 1);
             
-            float ai = v_diffuse.a; // no alpha map, so all fragments have same alpha
-            float zi = v_eyePosition.z; // relative to the camera
+        // }else{
+        //     gl_FragData[0] = vec4(0,1,0, 1);
             
+        // }
+        
+        
+        
+        if(v_transparent_pass == 0.0){
+            // --- opaque pass ---
+            if(v_diffuse.a < 1){
+                // ---transparent object, during opaque pass---
+                discard;
+            }else{
+                // ---opaque object, during opaque pass---
+                
+                // gl_FragColor = localColor;
+                
+                
+                
+                // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
+                
+                gl_FragData[0] = localColor;
+                
+                // gl_FragData[0] = vec4(1,0,0, 1);
+            }
             
-            
-            // trivial write to test things:
-            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
-            // gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
-            
-            
-            // gl_FragData[0] = localColor;
-            // gl_FragData[1] = localColor;
-            
-            
-            gl_FragData[0] = vec4(localColor.rgb, ai);
-            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
-            gl_FragData[1] = vec4(ai);
-            
-            
-            // gl_FragData[0] = vec4(vec3(1,1,1), (abs(zi)*0.04));
-            // gl_FragData[0] = vec4(1,1,1,1);
         }else{
-        // #else
-        
-            // ---opaque pass---
+            // --- transparent pass ---
             
-            // gl_FragColor = localColor;
+            if(v_diffuse.a != 1){
+                // gl_FragData[0] = vec4(0,1,0, 1);
+                
+                
+                // ---transparent object, during transparent pass---
+                
+                float ai = v_diffuse.a; // no alpha map, so all fragments have same alpha
+                float zi = v_eyePosition.z; // relative to the camera
+                
+                
+                
+                // trivial write to test things:
+                // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
+                // gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
+                
+                
+                // gl_FragData[0] = localColor;
+                // gl_FragData[1] = localColor;
+                
+                
+                // gl_FragData[0] = vec4(localColor.rgb, ai);
+                gl_FragData[0] = vec4(localColor.rgb*ai, ai) * w(zi, ai);
+                // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+                gl_FragData[1] = vec4(ai);
+                
+                
+                // gl_FragData[0] = vec4(vec3(1,1,1), (abs(zi)*0.04));
+                // gl_FragData[0] = vec4(1,1,1,1);
+            }else{
+                // ---opaque object, during transparent pass---
+                // gl_FragData[0] = vec4(0,0,1, 1);
+                
+                discard;
+            }
             
-            
-            
-            // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
-            
-            gl_FragData[0] = localColor;
-            
-            
-            
-        // #endif
-        
         }
+        
+        
     }

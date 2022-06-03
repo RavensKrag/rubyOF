@@ -557,7 +557,9 @@ class AnimTexManager ():
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.entity_tex.channels_per_pixel)
         
-        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
+        diffuse = vec3_to_rgba(c2)
+        diffuse[3] = alpha
+        scanline_set_px(scanline_transform, 6, diffuse,
                         channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),

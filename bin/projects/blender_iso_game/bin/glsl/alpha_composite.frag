@@ -20,9 +20,11 @@ IN float depth;
 IN vec4 colorVarying;
 IN vec2 texCoordVarying;
 
+const float EPSILON = 0.00001f;
+
 
 void main(){
-    FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying);
+    // FRAG_COLOR = TEXTURE(src_tex_unit0, texCoordVarying);
     
     
     
@@ -40,8 +42,8 @@ void main(){
     
     // FRAG_COLOR = accum;
     
-    
-    fragColor = vec4(accum.rgb / clamp(accum.a, 1e-4, 5e4), r);
+    fragColor = vec4(accum.rgb / clamp(accum.a, 1e-6, 5e4), 1.0 - r);
+    fragColor = vec4(accum.rgb / max(accum.a, EPSILON), 1.0 - r);
     // fragColor = vec4(vec3(1,0,0), 1);
     // fragColor = vec4(1,1,1,1);
     

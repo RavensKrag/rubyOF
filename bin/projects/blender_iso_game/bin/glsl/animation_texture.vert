@@ -9,6 +9,7 @@ OUT vec4 v_ambient;
 OUT vec4 v_diffuse;
 OUT vec4 v_specular;
 OUT vec4 v_emissive;
+OUT float v_transparent_pass;
 // #endif
 
 IN vec4 position;
@@ -34,6 +35,8 @@ uniform mat4 normalMatrix;
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
 uniform sampler2DRect entity_tex;
+
+uniform float transparent_pass;
 
 // there are two types for textures:
 // sampler2DRect        non-normalized coordinates
@@ -67,6 +70,8 @@ uniform sampler2DRect entity_tex;
 //   + "Vertex animation textures, beanbags and boneless animations."
 //     by Martin Donald, 2020/10
 void main (void){
+    v_transparent_pass = transparent_pass;
+    
     
     vec2 offset = vec2(0.5, 0.5);
     // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material

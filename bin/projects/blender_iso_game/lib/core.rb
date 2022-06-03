@@ -744,7 +744,7 @@ class Core
                           camera:@world.camera) do |pipeline|
       
       pipeline.opaque_pass do
-        @world.draw_scene
+        @world.draw_scene_opaque_pass
         
         
         # glCullFace(GL_BACK)
@@ -752,6 +752,8 @@ class Core
       end
       
       pipeline.transparent_pass do
+        @world.draw_scene_transparent_pass
+        
         # while time traveling, render the trails of moving objects
         if @frame_history.time_traveling?
           

@@ -222,7 +222,7 @@ class World
   
   # draw all the instances using GPU instancing
   # (very few draw calls)
-  def draw_scene
+  def draw_scene_opaque_pass
     [
       [
         @storage[:static][:mesh_data],
@@ -246,6 +246,49 @@ class World
       
       @mat.setCustomUniformTexture(
         "entity_tex", entity_texture, 3
+      )
+      
+      @mat.setCustomUniform1f(
+        "transparent_pass", 0
+      )
+      
+      # draw using GPU instancing
+      using_material @mat do
+        instance_count = entity_texture.height.to_i
+        geometry.mesh.draw_instanced instance_count
+      end
+    end
+    
+  end
+  
+  def draw_scene_transparent_pass
+    [
+      [
+        @storage[:static][:mesh_data],
+        @storage[:static][:entity_data][:texture],
+        @storage[:static][:geometry]
+      ],
+      [
+        @storage[:dynamic][:mesh_data],
+        @storage[:dynamic][:entity_data][:texture],
+        @storage[:dynamic][:geometry]
+      ]
+    ].each do |mesh_data, entity_texture, geometry|
+      # set uniforms
+      @mat.setCustomUniformTexture(
+        "vert_pos_tex",  mesh_data[:textures][:positions], 1
+      )
+      
+      @mat.setCustomUniformTexture(
+        "vert_norm_tex", mesh_data[:textures][:normals], 2
+      )
+      
+      @mat.setCustomUniformTexture(
+        "entity_tex", entity_texture, 3
+      )
+      
+      @mat.setCustomUniform1f(
+        "transparent_pass", 1
       )
       
       # draw using GPU instancing
@@ -313,7 +356,7 @@ class World
   end
   
   def load_entity_texture(entity_tex_path)
-    
+    puts "reload entities"
   end
   
   def load_mesh_textures(position_tex_path, normal_tex_path)
