@@ -42,8 +42,15 @@ void main(){
     
     // FRAG_COLOR = accum;
     
-    fragColor = vec4(accum.rgb / clamp(accum.a, 1e-6, 5e4), 1.0 - r);
+    // fragColor = vec4(accum.rgb / clamp(accum.a, 1e-6, 5e4), 1.0 - r);
+    
+    
+    
+    // https://learnopengl.com/Guest-Articles/2020/OIT/Weighted-Blended
     fragColor = vec4(accum.rgb / max(accum.a, EPSILON), 1.0 - r);
+    
+    
+    
     // fragColor = vec4(vec3(1,0,0), 1);
     // fragColor = vec4(1,1,1,1);
     
