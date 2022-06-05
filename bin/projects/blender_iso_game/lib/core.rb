@@ -745,7 +745,7 @@ class Core
       
       pipeline.opaque_pass do
         @world.draw_scene_opaque_pass
-        
+        # @world.draw_scene_transparent_pass
         
         # glCullFace(GL_BACK)
         # glDisable(GL_CULL_FACE)
@@ -794,7 +794,8 @@ class Core
         
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-        @world.draw_ui
+        @world.draw_ui( @fonts[:monospace] )
+        
         
         # stuff we need to render with this
           # + a programatically created mesh with triangles to mutate

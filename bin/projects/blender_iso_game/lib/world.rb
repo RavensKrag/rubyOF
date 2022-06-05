@@ -300,7 +300,7 @@ class World
     
   end
   
-  def draw_ui
+  def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
     
     # TODO: draw UI in a better way that does not use immediate mode rendering
@@ -327,21 +327,37 @@ class World
     
     
     
-    @storage[:dynamic][:mesh_data][:textures][:positions].tap do |texture| 
-      texture.draw_wh(12,300,0, texture.width, -texture.height)
-    end
     
-    @storage[:dynamic][:entity_data][:texture].tap do |texture| 
-      @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
-      @ui_node.position = GLM::Vec3.new(108+50, 320, 1)
+    
+    cache = @storage[:static][:cache]
+    
+    current_size = 
+      @storage[:static][:cache].yield_self do |cache|
+        cache.size.times.collect{ |i|
+          cache.get_entity i
+        }.select{ |x|
+          x.active?
+        }.size
+      end
+    
+    ui_font.draw_string("static entities: #{current_size} / #{cache.size}",
+                        500, 100)
+    
+    # @storage[:dynamic][:mesh_data][:textures][:positions].tap do |texture| 
+    #   texture.draw_wh(12,300,0, texture.width, -texture.height)
+    # end
+    
+    # @storage[:dynamic][:entity_data][:texture].tap do |texture| 
+    #   @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
+    #   @ui_node.position = GLM::Vec3.new(108+50, 320, 1)
       
-      @ui_node.transformGL
+    #   @ui_node.transformGL
       
-          texture.draw_wh(0,texture.height,0,
-                          texture.width, -texture.height)
+    #       texture.draw_wh(0,texture.height,0,
+    #                       texture.width, -texture.height)
         
-      @ui_node.restoreTransformGL
-    end
+    #   @ui_node.restoreTransformGL
+    # end
     
     
   end
