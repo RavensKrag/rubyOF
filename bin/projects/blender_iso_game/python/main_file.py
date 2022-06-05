@@ -1481,15 +1481,10 @@ class RubyOF(bpy.types.RenderEngine):
         # defined as a list of pixels, each pixel itself being a list of
         # R,G,B,A values.
         if self.is_preview:
-            self.__render_material_preview(depsgraph)
-            
-            
+            rect = self.__render_material_preview(depsgraph)
         else:
-            print("final render", flush=True)
-            color = [0.2, 0.1, 0.1, 1.0]
-        
-        pixel_count = self.size_x * self.size_y
-        rect = [color] * pixel_count
+            rect = self.__render_f12_view(depsgraph)
+            
         
         # Here we write the pixel values to the RenderResult
         result = self.begin_result(0, 0, self.size_x, self.size_y)
@@ -1529,7 +1524,38 @@ class RubyOF(bpy.types.RenderEngine):
         
     # ---- private helper methods ----
     
+    def __render_f12_view(self, depsgraph):
+        scene = depsgraph.scene
+        scale = scene.render.resolution_percentage / 100.0
+        self.size_x = int(scene.render.resolution_x * scale)
+        self.size_y = int(scene.render.resolution_y * scale)
+
+        # Fill the render result with a flat color. The framebuffer is
+        # defined as a list of pixels, each pixel itself being a list of
+        # R,G,B,A values.
+        print("final render", flush=True)
+        color = [0.2, 0.1, 0.1, 1.0]
+        
+        pixel_count = self.size_x * self.size_y
+        rect = [color] * pixel_count
+        
+        # Here we write the pixel values to the RenderResult
+        result = self.begin_result(0, 0, self.size_x, self.size_y)
+        layer = result.layers[0].passes["Combined"]
+        layer.rect = rect
+        self.end_result(result)
+    
+    
     def __render_material_preview(self, depsgraph):
+        # Fill the render result with a flat color. The framebuffer is
+        # defined as a list of pixels, each pixel itself being a list of
+        # R,G,B,A values.
+        
+        scene = depsgraph.scene
+        scale = scene.render.resolution_percentage / 100.0
+        self.size_x = int(scene.render.resolution_x * scale)
+        self.size_y = int(scene.render.resolution_y * scale)
+        
         print("preview render", flush=True)
         
         # debug printing of objects and materials in preview scene
@@ -1564,6 +1590,11 @@ class RubyOF(bpy.types.RenderEngine):
         else:
             # if no material is bound, just render an ugly green
             color = [0.0, 1.0, 0.0, 1.0]
+        
+        
+        pixel_count = self.size_x * self.size_y
+        rect = [color] * pixel_count
+        return rect
     
     
     def __render_viewport(self, context, depsgraph):
