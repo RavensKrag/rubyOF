@@ -13,7 +13,6 @@
     
 // #endif
 
-// #define TRANSPARENT_PASS 1
     struct lightData
     {
         float enabled;
@@ -227,16 +226,51 @@
         
         // return clamp(pow(min(1.0, a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - z * 0.9, 3.0), 1e-2, 3e3);
         
+        // return pow(abs(z), 3.0);
+        
+        
+        // return 1.0;
+        
+        
+        // eq 7
+        // // 10/(10^-5  + (|z|/5)^2 + (|z|/200)^6)
+        // float val = 10/( pow(10,-5) + pow(abs(z)/5,2) + pow(abs(z)/200,6) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // eq 8
+        // // // 10/(10^-5  + (|z|/10)^3 + (|z|/200)^6)
+        // float val = 10/( pow(10,-5) + pow(abs(z)/10,3) + pow(abs(z)/200,6) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // // eq 9
+        // // // 0.03 /(10^-5 + (|z|/200)^4)
+        // float val = 0.03/( pow(10,-5) + pow(abs(z)/200,4) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // // eq 10
+        // // // 3*10^3 * (1-d(z))^3
+        // return a*max(pow(10,-2), 3*pow(10,3)*pow(1-gl_FragCoord.z, 3));
+        
+        
+        
         
         
         // Rendering Technology in 'Agents of Mayhem'
         // by Scott Kircher (Volition)
         // GDC 2018
-        // 
+        
         // https://www.gdcvault.com/play/1025233/Rendering-Technology-in-Agents-of
-        float x = min(8*a, 1) + 0.01;
-        float y = 1 - 0.95*z;
-        return min(pow(10,4.0)*pow(x,3.0)*pow(y,3.0), 300); // cap at 300
+        // float x = min(8*a, 1) + 0.01;
+        // float y = 1 - 0.95*z;
+        // return min(pow(10,4.0)*pow(x,3.0)*pow(y,3.0), 300); // cap at 300
+        
+        // return (pow(10,4.0)*pow(y,3.0) + 5)*pow(x,3.0);
+        
+        
+        
+        
+        // http://bagnell.github.io/cesium/Apps/Sandcastle/gallery/OIT.html
+        return pow(a + 0.01, 4.0) + max(1e-2, min(3.0 * 1e3, 100.0 / (1e-5 + pow(abs(z) / 10.0, 3.0) + pow(abs(z) / 200.0, 6.0))));
     }
     
     
@@ -301,10 +335,7 @@
         
         // HDR-style : will clamp in the final compositing phase later
         
-        // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
-        
-        // #if TRANSPARENT_PASS
-        
+        // NOTE: get an error if you try to write to both gl_FragColor and gl_FragData
         
         // if(v_transparent_pass == 0.0){
         //     gl_FragData[0] = vec4(1,0,0, 1);
@@ -320,6 +351,7 @@
             if(v_diffuse.a < 1){
                 // ---transparent object, during opaque pass---
                 discard;
+                // gl_FragData[0] = vec4(localColor.rgb, 1);
             }else{
                 // ---opaque object, during opaque pass---
                 
