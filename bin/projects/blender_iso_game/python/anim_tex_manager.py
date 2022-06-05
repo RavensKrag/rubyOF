@@ -539,20 +539,22 @@ class AnimTexManager ():
         # color = c1 = c2 = c3 = c4 = alpha = None
         
         if material is None:
-            # default white for unspecified color
-            # (ideally would copy this from the default in materials)
-            color = Color((1.0, 1.0, 1.0)) # (0,0,0)
+            # if no material specified
+            # set magenta color to signify an error
+            color = Color((1.0, 0.0, 1.0)) # (0,0,0)
             c1 = color
             c2 = color
             c3 = color
             c4 = color
             alpha = 1
+            mat_name = "<ERROR - no material specified>"
         else:
             c1    = material.rb_mat.ambient
             c2    = material.rb_mat.diffuse
             c3    = material.rb_mat.specular
             c4    = material.rb_mat.emissive
             alpha = material.rb_mat.alpha
+            mat_name = material.name
         
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.entity_tex.channels_per_pixel)
@@ -569,7 +571,7 @@ class AnimTexManager ():
                         channels=self.entity_tex.channels_per_pixel)
         
         
-        self.__cache_material_binding(scanline_index, material.name)
+        self.__cache_material_binding(scanline_index, mat_name)
         
         
         # 
