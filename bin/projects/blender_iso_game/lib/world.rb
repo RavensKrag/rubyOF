@@ -343,6 +343,24 @@ class World
     ui_font.draw_string("static entities: #{current_size} / #{cache.size}",
                         500, 100)
     
+    
+    
+    max_meshes = @storage[:static][:names].num_meshes
+    
+    num_meshes = 
+      @storage[:static][:names].yield_self do |cache|
+        max_meshes.times.collect{ |i|
+          cache.mesh_scanline_to_name(i)
+        }.select{ |x|
+          x != nil
+        }.size
+      end
+    
+    
+    ui_font.draw_string("static meshes: #{num_meshes} / #{max_meshes}",
+                        500, 133)
+    
+    
     # @storage[:dynamic][:mesh_data][:textures][:positions].tap do |texture| 
     #   texture.draw_wh(12,300,0, texture.width, -texture.height)
     # end
@@ -565,6 +583,11 @@ class World
       json_data     = JSON.parse(json_string)
       
       @json = json_data
+    end
+    
+    
+    def num_meshes
+      return @json["mesh_data_cache"].size
     end
     
     
