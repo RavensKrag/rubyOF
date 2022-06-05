@@ -67,7 +67,7 @@ class World
         :names => TextureJsonCache.new, # <- "json file"
           # ^ convert name to scanline AND scanline to name
         
-        :geometry => BatchGeometry.new, # size == num static entities
+        :geometry => BatchGeometry.new, # size == max tris per mesh in batch
         
         :cache => RubyOF::Project::EntityCache.new # size == num static entities
       },
@@ -98,7 +98,7 @@ class World
         :names => TextureJsonCache.new, # <- "json file"
           # ^ convert name to scanline AND scanline to name
         
-        :geometry => BatchGeometry.new, # size == num dynamic entities
+        :geometry => BatchGeometry.new, # size == max tris per mesh in batch
         
         :cache => RubyOF::Project::EntityCache.new # size == num dynamic entites
       }
