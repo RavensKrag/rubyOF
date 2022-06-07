@@ -231,6 +231,12 @@ class Core
       dynamic_data_path: data_dir/'geom_textures'
     )
     
+    @camera_save_file = PROJECT_DIR/'bin'/'data'/'camera.yaml'
+    if @camera_save_file.exist?
+      data = YAML.load_file @camera_save_file
+      @world.camera.load data
+    end
+    
     @frame_history = FrameHistory.new(self, @world.history)
     
     
@@ -289,6 +295,8 @@ class Core
     
     
     # save_world_state()
+    dump_yaml @world.camera.data_dump => @camera_save_file
+    
     
     # FileUtils.rm @world_save_file if @world_save_file.exist?
   end
