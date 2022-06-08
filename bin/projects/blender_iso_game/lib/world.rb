@@ -456,7 +456,7 @@ class World
     end
     
     # reset the cache when textures reload
-    # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
+    @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
   end
   
   def load_static_mesh_textures(position_tex_path, normal_tex_path)

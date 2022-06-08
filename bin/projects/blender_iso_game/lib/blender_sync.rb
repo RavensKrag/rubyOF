@@ -458,11 +458,6 @@ class BlenderSync
   def update_geometry_data(message)
     p message
     
-    # entity_path = message['entity_tex_path']
-    # position_path = message['position_tex_path']
-    # normal_path = message['normal_tex_path']
-    # json_path = message['json_file_path']
-    
     
     # json_path = message['json_file_path']
     # position_path = message['position_tex_path']
@@ -486,9 +481,11 @@ class BlenderSync
       @world.load_entity_texture(entity_path)
       @world.load_mesh_textures(position_path,
                                 normal_path)
+      @world.load_json_data(json_path)
       
     when 'created new entity with existing mesh'
       @world.load_entity_texture(entity_path)
+      @world.load_json_data(json_path)
       
     when 'edit active mesh'
       @world.load_mesh_textures(position_path,
@@ -496,12 +493,13 @@ class BlenderSync
       
     when 'edit material for all instances'
       @world.load_entity_texture(entity_path)
+      @world.load_json_data(json_path)
       
     when 'run garbage collection'
       # @world.load_mesh_textures(position_path,
       #                           normal_path)
       @world.load_entity_texture(entity_path)
-      # @world.load_json_data(message['json_file_path'])
+      @world.load_json_data(json_path)
       
     when 'export all textures'
       @world.load_mesh_textures(position_path,
@@ -510,18 +508,6 @@ class BlenderSync
       @world.load_json_data(json_path)
     end
     
-    # if message['position_tex_path'] and message['normal_tex_path']
-    #   @world.load_mesh_textures(message['position_tex_path'],
-    #                             message['normal_tex_path'])
-    # end
-    
-    # if message['entity_tex_path']
-    #   @world.load_entity_texture(message['entity_tex_path'])
-    # end
-    
-    # if message['json_file_path']
-    #   @world.load_json_data(message['json_file_path'])
-    # end
     
     # if message['json_file_path'] || message['entity_tex_path']
     #   @world.space.update
