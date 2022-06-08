@@ -1481,12 +1481,10 @@ class RubyOF(bpy.types.RenderEngine):
         # defined as a list of pixels, each pixel itself being a list of
         # R,G,B,A values.
         if self.is_preview:
-            color = [0.1, 0.2, 0.1, 1.0]
+            rect = self.__render_material_preview(depsgraph)
         else:
-            color = [0.2, 0.1, 0.1, 1.0]
-        
-        pixel_count = self.size_x * self.size_y
-        rect = [color] * pixel_count
+            rect = self.__render_f12_view(depsgraph)
+            
         
         # Here we write the pixel values to the RenderResult
         result = self.begin_result(0, 0, self.size_x, self.size_y)
@@ -1525,6 +1523,79 @@ class RubyOF(bpy.types.RenderEngine):
     
         
     # ---- private helper methods ----
+    
+    def __render_f12_view(self, depsgraph):
+        scene = depsgraph.scene
+        scale = scene.render.resolution_percentage / 100.0
+        self.size_x = int(scene.render.resolution_x * scale)
+        self.size_y = int(scene.render.resolution_y * scale)
+
+        # Fill the render result with a flat color. The framebuffer is
+        # defined as a list of pixels, each pixel itself being a list of
+        # R,G,B,A values.
+        print("final render", flush=True)
+        color = [0.2, 0.1, 0.1, 1.0]
+        
+        pixel_count = self.size_x * self.size_y
+        rect = [color] * pixel_count
+        
+        # Here we write the pixel values to the RenderResult
+        result = self.begin_result(0, 0, self.size_x, self.size_y)
+        layer = result.layers[0].passes["Combined"]
+        layer.rect = rect
+        self.end_result(result)
+    
+    
+    def __render_material_preview(self, depsgraph):
+        # Fill the render result with a flat color. The framebuffer is
+        # defined as a list of pixels, each pixel itself being a list of
+        # R,G,B,A values.
+        
+        scene = depsgraph.scene
+        scale = scene.render.resolution_percentage / 100.0
+        self.size_x = int(scene.render.resolution_x * scale)
+        self.size_y = int(scene.render.resolution_y * scale)
+        
+        print("preview render", flush=True)
+        
+        # debug printing of objects and materials in preview scene
+        
+        # print(len(scene.objects), flush=True)
+        # for ob in scene.objects:
+        #     if len(ob.material_slots) > 0:
+        #         mat = ob.material_slots[0].material
+        #         vals = {
+        #         'ambient' : mat.rb_mat.ambient, 
+        #         'diffuse' : mat.rb_mat.diffuse,
+        #         'specular' : mat.rb_mat.specular,
+        #         'emissive' : mat.rb_mat.emissive,
+        #         'alpha' : mat.rb_mat.alpha }
+                
+        #         mat_name = mat.name
+        #     else:
+        #         mat = None
+        #         vals = ""
+                
+        #         mat_name = "none"
+            
+        #     line = ''.join([ob.name.ljust(25, ' '), mat_name.ljust(14, ' ') , str(vals)])
+        #     print(line, flush=True)
+        
+        preview_obj = scene.objects['preview_sphere']
+        
+        if len(preview_obj.material_slots) > 0:
+            mat = preview_obj.material_slots[0].material
+            rb_mat = mat.rb_mat
+            color = list(rb_mat.diffuse) + [1.0] # RGB -> RGBA
+        else:
+            # if no material is bound, just render an ugly green
+            color = [0.0, 1.0, 0.0, 1.0]
+        
+        
+        pixel_count = self.size_x * self.size_y
+        rect = [color] * pixel_count
+        return rect
+    
     
     def __render_viewport(self, context, depsgraph):
         region = context.region

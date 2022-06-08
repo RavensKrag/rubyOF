@@ -49,9 +49,52 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	
 	
+	// 
+	// load simple config file relative to pwd
+	// and use that to set the OpenGL version.
+	// 
+	// + can't use ofxXmlSettings, because that is an addon
+	//   and I can't declare addons for the launcher.
+	// 
+	// + can't set relative to data directory, because launcher
+	//   is shared among many projects and could be compiled separately.
+	// 
 	
 	
+	// default to opengl version 3.2
+	int opengl_version_major = 3;
+	int opengl_version_minor = 2;
 	
+	// read the config file
+	string pwd = ofFilePath::getCurrentWorkingDirectory();
+	cout << pwd << endl;
+	
+	string cfg_path = pwd +"/bin/opengl.cfg";
+	
+	ofFile file;
+	if(ofFile::doesFileExist(cfg_path)){
+		cout << "using opengl config: " << cfg_path << endl;
+		
+		file.open(cfg_path, ofFile::ReadWrite, false);
+		ofBuffer buf = file.readToBuffer();
+		string text = buf.getText();
+		
+		cout << "opengl version: " << text << endl;
+		
+		string delimiter(".");
+		
+		std::size_t found = text.find(delimiter);
+		if(found != std::string::npos){
+			opengl_version_major = std::stoi(text.substr(0,found));
+			opengl_version_minor = std::stoi(text.substr(found+1));
+		}
+		
+		cout << "major: " << opengl_version_major << endl;
+		cout << "minor: " << opengl_version_minor << endl;
+	}else{
+		opengl_version_major = 3;
+		opengl_version_minor = 2;
+	}
 	
 	
 	
@@ -71,7 +114,7 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 		settings.setSize(width,height);
 		settings.windowMode = OF_WINDOW;
 		
-		settings.setGLVersion(3,2);
+		settings.setGLVersion(opengl_version_major, opengl_version_minor);
 		
 		// ^ simply setting the GL version seems to break mouse events? why?
 		// After extensive testing, it appears to be an interaction with imgui.

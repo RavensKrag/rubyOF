@@ -319,9 +319,9 @@ void ofxDynamicMaterial::updateLights(const ofShader & shader,ofGLProgrammableRe
 
 
 
-// void ofxDynamicMaterial::setCustomUniform1f(const std::string & name, float value){
-//     uniforms1f[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform1f(const std::string & name, float value){
+    uniforms1f[name] = value;
+}
 
 // void ofxDynamicMaterial::setCustomUniform2f(const std::string & name, glm::vec2 value){
 //     uniforms2f[name] = value;

@@ -231,6 +231,12 @@ class Core
       dynamic_data_path: data_dir/'geom_textures'
     )
     
+    @camera_save_file = PROJECT_DIR/'bin'/'data'/'camera.yaml'
+    if @camera_save_file.exist?
+      data = YAML.load_file @camera_save_file
+      @world.camera.load data
+    end
+    
     @frame_history = FrameHistory.new(self, @world.history)
     
     
@@ -289,6 +295,8 @@ class Core
     
     
     # save_world_state()
+    dump_yaml @world.camera.data_dump => @camera_save_file
+    
     
     # FileUtils.rm @world_save_file if @world_save_file.exist?
   end
@@ -744,14 +752,16 @@ class Core
                           camera:@world.camera) do |pipeline|
       
       pipeline.opaque_pass do
-        @world.draw_scene
-        
+        @world.draw_scene_opaque_pass
+        # @world.draw_scene_transparent_pass
         
         # glCullFace(GL_BACK)
         # glDisable(GL_CULL_FACE)
       end
       
       pipeline.transparent_pass do
+        @world.draw_scene_transparent_pass
+        
         # while time traveling, render the trails of moving objects
         if @frame_history.time_traveling?
           
@@ -792,7 +802,8 @@ class Core
         
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-        @world.draw_ui
+        @world.draw_ui( @fonts[:monospace] )
+        
         
         # stuff we need to render with this
           # + a programatically created mesh with triangles to mutate

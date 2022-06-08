@@ -165,6 +165,8 @@ public:
 	void end() const;
 	
 	
+	void setCustomUniform1f(const std::string & name, float value);
+	
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	

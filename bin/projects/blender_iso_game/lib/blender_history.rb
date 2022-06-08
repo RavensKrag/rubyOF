@@ -56,7 +56,7 @@ class BlenderHistory
     end
     
     other_messages = other_messages.reverse.uniq{ |message|
-      [ message['type'], message['name'] ]
+      [ message['type'], message['name'], message['comment'] ]
     }.reverse
     
     material_maps = material_maps.reverse.uniq{ |message|

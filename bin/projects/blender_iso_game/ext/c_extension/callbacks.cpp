@@ -1183,7 +1183,8 @@ void enableTransparencyBufferBlending(){
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunci(0, GL_ONE, GL_ONE); // summation
-	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); // product of (1 - a_i)
+	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR); // product of (1 - a_i)
+	glBlendEquation(GL_FUNC_ADD);
 	
 	
 	// ofPushMatrix();
@@ -1204,7 +1205,7 @@ void disableTransparencyBufferBlending(){
 void enableScreenspaceBlending(){
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void disableScreenspaceBlending(){
@@ -1486,6 +1487,12 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
       .define_method("specular_color", &ofxDynamicMaterial::getSpecularColor)
       .define_method("emissive_color", &ofxDynamicMaterial::getEmissiveColor)
       .define_method("shininess",      &ofxDynamicMaterial::getShininess)
+      
+      .define_method("setCustomUniform1f",
+         static_cast< void (ofxDynamicMaterial::*)
+         (const std::string & name, float value)
+         >(&ofxDynamicMaterial::setCustomUniform1f)
+      )
       
       .define_method("setCustomUniformTexture",
          static_cast< void (ofxDynamicMaterial::*)

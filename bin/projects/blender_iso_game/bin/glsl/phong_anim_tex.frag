@@ -9,10 +9,10 @@
     IN vec4 v_diffuse;
     IN vec4 v_specular;
     IN vec4 v_emissive;
+    IN float v_transparent_pass;
     
 // #endif
 
-#define TRANSPARENT_PASS 1
     struct lightData
     {
         float enabled;
@@ -222,7 +222,55 @@
         // return 1/accum;
         
         
-        return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
+        // return pow(a, 1.0) * clamp(0.3 / (1e-5 + pow(z / 200, 4.0)), 1e-2, 3e3);
+        
+        // return clamp(pow(min(1.0, a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - z * 0.9, 3.0), 1e-2, 3e3);
+        
+        // return pow(abs(z), 3.0);
+        
+        
+        // return 1.0;
+        
+        
+        // eq 7
+        // // 10/(10^-5  + (|z|/5)^2 + (|z|/200)^6)
+        // float val = 10/( pow(10,-5) + pow(abs(z)/5,2) + pow(abs(z)/200,6) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // eq 8
+        // // // 10/(10^-5  + (|z|/10)^3 + (|z|/200)^6)
+        // float val = 10/( pow(10,-5) + pow(abs(z)/10,3) + pow(abs(z)/200,6) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // // eq 9
+        // // // 0.03 /(10^-5 + (|z|/200)^4)
+        // float val = 0.03/( pow(10,-5) + pow(abs(z)/200,4) );
+        // return a*clamp(val, pow(10,-2), 3*pow(10,3));
+        
+        // // eq 10
+        // // // 3*10^3 * (1-d(z))^3
+        // return a*max(pow(10,-2), 3*pow(10,3)*pow(1-gl_FragCoord.z, 3));
+        
+        
+        
+        
+        
+        // Rendering Technology in 'Agents of Mayhem'
+        // by Scott Kircher (Volition)
+        // GDC 2018
+        
+        // https://www.gdcvault.com/play/1025233/Rendering-Technology-in-Agents-of
+        // float x = min(8*a, 1) + 0.01;
+        // float y = 1 - 0.95*z;
+        // return min(pow(10,4.0)*pow(x,3.0)*pow(y,3.0), 300); // cap at 300
+        
+        // return (pow(10,4.0)*pow(y,3.0) + 5)*pow(x,3.0);
+        
+        
+        
+        
+        // http://bagnell.github.io/cesium/Apps/Sandcastle/gallery/OIT.html
+        return pow(a + 0.01, 4.0) + max(1e-2, min(3.0 * 1e3, 100.0 / (1e-5 + pow(abs(z) / 10.0, 3.0) + pow(abs(z) / 200.0, 6.0))));
     }
     
     
@@ -250,21 +298,6 @@
                 areaLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
             }
         }
-
-        ////////////////////////////////////////////////////////////
-        // now add the material info
-        // #if HAS_TEXTURE && !HAS_COLOR
-        //     vec4 tex = TEXTURE(tex0, v_texcoord);
-        //     vec4 localColor = vec4(ambient,1.0) * tex + vec4(diffuse,1.0) * tex + vec4(specular,1.0) * mat_specular + mat_emissive;
-        // #elif HAS_TEXTURE && HAS_COLOR
-        //     vec4 tex = TEXTURE(tex0, v_texcoord);
-        //     vec4 localColor = vec4(ambient,1.0) * tex * v_color + vec4(diffuse,1.0) * tex * v_color + vec4(specular,1.0) * mat_specular + mat_emissive;
-        // #elif HAS_COLOR
-        
-        // vec4 v_color = vec4(1,1,1,1);
-        
-        // ASSUME: material properties are specified by transform texture
-        // and passed through the vertex shader, 'animation_texture.vert'
         
         
         // vec4 localColor = 
@@ -272,17 +305,6 @@
         //         vec4(diffuse, 1.0) * vec4(v_diffuse.rgb, 1)  + 
         //         vec4(specular,1.0) * vec4(1,1,1,1) + 
         //                              vec4(0,0,0,1);
-        
-        vec4 localColor = 
-                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
-                vec4(diffuse, 1.0) * v_diffuse  + 
-                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
-                                     vec4(v_emissive.rgb, 0);
-        
-        
-        
-        
-        
         
         
         
@@ -292,18 +314,20 @@
         //         vec4(diffuse, 1.0) * mat_diffuse  + 
         //         vec4(specular,1.0) * mat_specular + 
         //                              mat_emissive;
-            
-        // #endif
         
-        // FRAG_COLOR = clamp( postFragment(localColor), 0.0, 1.0 );
         
-        // FRAG_COLOR = vec4(1,0,0,0.5);
-        // ^ alpha blending works, but alpha is not correctly being applied to to the objects
+        // with lighting
         
-        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, v_color.a);
-        //     // "v_color undeclared" ??? then how is there any color at all???
+        vec4 localColor = 
+                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
+                vec4(diffuse, 1.0) * v_diffuse  + 
+                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+                                     vec4(v_emissive.rgb, 0);
         
-        // FRAG_COLOR = vec4(clamp( postFragment(localColor), 0.0, 1.0 ).rgb, mat_diffuse.a);
+        // without lighting
+        
+        // vec4 localColor = v_diffuse;
+        
         
         
         // TODO: call clamp later
@@ -311,49 +335,60 @@
         
         // HDR-style : will clamp in the final compositing phase later
         
-        // NOTE: must specify which branch at compile time, otherwise you get an error that the fragment shader is writing to both gl_FragColor and gl_FragData
+        // NOTE: get an error if you try to write to both gl_FragColor and gl_FragData
         
-        // #if TRANSPARENT_PASS
-        if(v_diffuse.a != 1){
-            // ---transparent pass---
+        // if(v_transparent_pass == 0.0){
+        //     gl_FragData[0] = vec4(1,0,0, 1);
             
-            float ai = v_diffuse.a; // no alpha map, so all fragments have same alpha
-            float zi = v_eyePosition.z; // relative to the camera
+        // }else{
+        //     gl_FragData[0] = vec4(0,1,0, 1);
             
+        // }
+        
+        
+        if(v_transparent_pass == 0.0){
+            // --- opaque pass ---
+            if(v_diffuse.a < 1){
+                // ---transparent object, during opaque pass---
+                discard;
+                // gl_FragData[0] = vec4(localColor.rgb, 1);
+            }else{
+                // ---opaque object, during opaque pass---
+                
+                // gl_FragColor = localColor;
+                // gl_FragData[0] = vec4(1,0,0, 1);
+                
+                gl_FragData[0] = localColor;
+            }
             
-            
-            // trivial write to test things:
-            // gl_FragData[0] = vec4(1,0,0, 1); // red silhouettes
-            // gl_FragData[1] = vec4(1,1,0, 1); // yellow silhouettes
-            
-            
-            // gl_FragData[0] = localColor;
-            // gl_FragData[1] = localColor;
-            
-            
-            gl_FragData[0] = vec4(localColor.rgb, ai);
-            // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
-            gl_FragData[1] = vec4(ai);
-            
-            
-            // gl_FragData[0] = vec4(vec3(1,1,1), (abs(zi)*0.04));
-            // gl_FragData[0] = vec4(1,1,1,1);
         }else{
-        // #else
-        
-            // ---opaque pass---
+            // --- transparent pass ---
+            if(v_diffuse.a != 1){
+                // ---transparent object, during transparent pass---
+                // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
+                
+                
+                float ai = v_diffuse.a; // no alpha map, so all fragments have same alpha
+                float zi = v_eyePosition.z; // relative to the camera
+                
+                
+                // 
+                // accumulation => gl_FragData[0]
+                // revealage    => gl_FragData[1]
+                // 
+                
+                // gl_FragData[0] = vec4(localColor.rgb, ai);
+                gl_FragData[0] = vec4(localColor.rgb*ai, ai) * w(zi, ai);
+                // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
+                gl_FragData[1] = vec4(ai);
+            }else{
+                // ---opaque object, during transparent pass---
+                // gl_FragData[0] = vec4(0,0,1, 1);
+                
+                discard;
+            }
             
-            // gl_FragColor = localColor;
-            
-            
-            
-            // gl_FragData[0] = vec4(0,1,0, 1); // green silhouettes
-            
-            gl_FragData[0] = localColor;
-            
-            
-            
-        // #endif
-        
         }
+        
+        
     }

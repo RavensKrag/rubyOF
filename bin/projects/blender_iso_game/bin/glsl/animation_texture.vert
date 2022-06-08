@@ -9,6 +9,7 @@ OUT vec4 v_ambient;
 OUT vec4 v_diffuse;
 OUT vec4 v_specular;
 OUT vec4 v_emissive;
+OUT float v_transparent_pass;
 // #endif
 
 IN vec4 position;
@@ -34,6 +35,8 @@ uniform mat4 normalMatrix;
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
 uniform sampler2DRect entity_tex;
+
+uniform float transparent_pass;
 
 // there are two types for textures:
 // sampler2DRect        non-normalized coordinates
@@ -67,6 +70,8 @@ uniform sampler2DRect entity_tex;
 //   + "Vertex animation textures, beanbags and boneless animations."
 //     by Martin Donald, 2020/10
 void main (void){
+    v_transparent_pass = transparent_pass;
+    
     
     vec2 offset = vec2(0.5, 0.5);
     // TODO: change name of texture to transform_tex, both here and when the texture is bound in the instancing material
@@ -158,9 +163,20 @@ void main (void){
     // 
     
     vec4 normal_data = TEXTURE(vert_norm_tex, vert_data_texcoord);
-    vec4 finalNormal = vec4(normal_data.rgb, 0);
+    // vec4 finalNormal = vec4(normal_data.rgb, 0);
     
-    // vec4 finalNormal = vec4(1,0,0,0);
+    
+    // vec4 finalNormal = modelViewMatrix * transform * vec4(normal_data.xyz, 0.0);
+    // ^ this works, but only sometimes
+    //   It will break if scale is not uniform.
+    //   https://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/#:~:text=Therefore%20the%20correct%20matrix%20to,for%20us%20in%20the%20gl_NormalMatrix.&text=This%20is%20because%20with%20an,the%20same%20as%20the%20inverse.
+    
+    
+    // let's try to use the inverse of the transpose of the model view instead
+    // (not the model matrix - notation on lighthouse3d is confusing)
+    // https://stackoverflow.com/questions/21079623/how-to-calculate-the-normal-matrix
+    mat4 tx_normalMatrix = (transpose(inverse(modelViewMatrix * transform)));
+    vec4 finalNormal = tx_normalMatrix * vec4(normal_data.xyz, 0.0);
     
     
     // 
@@ -180,11 +196,13 @@ void main (void){
     
     
     
-    
+    // position of the vertex in eye space (aka relative to camera)
     vec4 eyePosition = modelViewMatrix * finalPos;
-    vec3 tempNormal = (normalMatrix * finalNormal).xyz;
-    v_transformedNormal = normalize(tempNormal);
+    
+    v_transformedNormal = normalize(finalNormal).xyz;
     v_normal = finalNormal.xyz;
+    
+    
     v_eyePosition = (eyePosition.xyz) / eyePosition.w;
     //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
     v_worldPosition = (finalPos).xyz;

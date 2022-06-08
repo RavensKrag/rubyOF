@@ -347,9 +347,11 @@ class AnimTexManager ():
             cached_entity_name, cached_mesh_name, cached_material_name = data
             
             if cached_entity_name == obj_name:
+                print(cached_entity_name, " found in the cache", flush=True)
                 return True
         
         # entity not found
+        print("ENTITY NOT FOUND: ", obj_name, flush=True)
         return False
     
     
@@ -467,6 +469,7 @@ class AnimTexManager ():
         if not self.has_mesh(mesh_name):
             raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an entity."
         
+        print("mesh name:", mesh_name, flush=True)
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
@@ -539,25 +542,29 @@ class AnimTexManager ():
         # color = c1 = c2 = c3 = c4 = alpha = None
         
         if material is None:
-            # default white for unspecified color
-            # (ideally would copy this from the default in materials)
-            color = Color((1.0, 1.0, 1.0)) # (0,0,0)
+            # if no material specified
+            # set magenta color to signify an error
+            color = Color((1.0, 0.0, 1.0)) # (0,0,0)
             c1 = color
             c2 = color
             c3 = color
             c4 = color
             alpha = 1
+            mat_name = "<ERROR - no material specified>"
         else:
             c1    = material.rb_mat.ambient
             c2    = material.rb_mat.diffuse
             c3    = material.rb_mat.specular
             c4    = material.rb_mat.emissive
             alpha = material.rb_mat.alpha
+            mat_name = material.name
         
         scanline_set_px(scanline_transform, 5, vec3_to_rgba(c1),
                         channels=self.entity_tex.channels_per_pixel)
         
-        scanline_set_px(scanline_transform, 6, vec3_to_rgba(c2)+ [alpha],
+        diffuse = vec3_to_rgba(c2)
+        diffuse[3] = alpha
+        scanline_set_px(scanline_transform, 6, diffuse,
                         channels=self.entity_tex.channels_per_pixel)
         
         scanline_set_px(scanline_transform, 7, vec3_to_rgba(c3),
@@ -567,7 +574,7 @@ class AnimTexManager ():
                         channels=self.entity_tex.channels_per_pixel)
         
         
-        self.__cache_material_binding(scanline_index, material.name)
+        self.__cache_material_binding(scanline_index, mat_name)
         
         
         # 
