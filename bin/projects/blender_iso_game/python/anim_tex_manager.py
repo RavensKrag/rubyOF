@@ -347,9 +347,11 @@ class AnimTexManager ():
             cached_entity_name, cached_mesh_name, cached_material_name = data
             
             if cached_entity_name == obj_name:
+                print(cached_entity_name, " found in the cache", flush=True)
                 return True
         
         # entity not found
+        print("ENTITY NOT FOUND: ", obj_name, flush=True)
         return False
     
     
@@ -467,6 +469,7 @@ class AnimTexManager ():
         if not self.has_mesh(mesh_name):
             raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an entity."
         
+        print("mesh name:", mesh_name, flush=True)
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
         scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],

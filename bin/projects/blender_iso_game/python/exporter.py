@@ -184,6 +184,7 @@ def pack_transform_mat4(obj):
 class Exporter():
     def __init__(self, to_ruby_fifo):
         self.to_ruby = to_ruby_fifo
+        self.msg_count = 0
     
     # 
     # clean build of animation textures
@@ -324,10 +325,10 @@ class Exporter():
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
-            'json_file_path': tex_manager.get_json_path(),
-            'entity_tex_path': entity_filepath,
-            'position_tex_path' : position_filepath,
-            'normal_tex_path'   : normal_filepath,
+            # 'json_file_path': tex_manager.get_json_path(),
+            # 'entity_tex_path': entity_filepath,
+            # 'position_tex_path' : position_filepath,
+            # 'normal_tex_path'   : normal_filepath,
         }
         
         self.to_ruby.write(json.dumps(data))
@@ -373,6 +374,7 @@ class Exporter():
         
         
         print("transform updated:", mesh_obj.name)
+        self.msg_count = self.msg_count + 1;
         if tex_manager.has_entity(mesh_obj.name):
             # 
             # update already existing object to have a new transform
@@ -394,6 +396,7 @@ class Exporter():
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
                 'entity_tex_path': entity_filepath,
+                'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
             }
             
             self.to_ruby.write(json.dumps(data))
@@ -438,10 +441,11 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with new mesh',
-                    'json_file_path': tex_manager.get_json_path(),
-                    'position_tex_path' : position_filepath,
-                    'normal_tex_path'   : normal_filepath,
-                    'entity_tex_path': entity_filepath,
+                    # 'json_file_path': tex_manager.get_json_path(),
+                    # 'position_tex_path' : position_filepath,
+                    # 'normal_tex_path'   : normal_filepath,
+                    # 'entity_tex_path': entity_filepath,
+                    'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
                 }
             else:
                 data = {
@@ -450,7 +454,8 @@ class Exporter():
                     # 'json_file_path': tex_manager.get_json_path(),
                     # 'position_tex_path' : position_filepath,
                     # 'normal_tex_path'   : normal_filepath,
-                    'entity_tex_path': entity_filepath,
+                    # 'entity_tex_path': entity_filepath,
+                    'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
                 }
                 
             
@@ -584,8 +589,8 @@ class Exporter():
                     'comment': 'edit active mesh',
                     # 'json_file_path': tex_manager.get_json_path(),
                     # 'entity_tex_path': entity_filepath,
-                    'position_tex_path' : position_filepath,
-                    'normal_tex_path'   : normal_filepath,
+                    # 'position_tex_path' : position_filepath,
+                    # 'normal_tex_path'   : normal_filepath,
                 }
                 
                 self.to_ruby.write(json.dumps(data))
@@ -658,7 +663,7 @@ class Exporter():
                         'type': 'update_geometry_data',
                         'comment': 'edit material for all instances',
                         # 'json_file_path': tex_manager.get_json_path(),
-                        'entity_tex_path': entity_filepath,
+                        # 'entity_tex_path': entity_filepath,
                         # 'position_tex_path' : position_filepath,
                         # 'normal_tex_path'   : normal_filepath,
                     }
@@ -713,8 +718,8 @@ class Exporter():
             data = {
                 'type': 'update_geometry_data',
                 'comment': 'run garbage collection',
-                'json_file_path': tex_manager.get_json_path(),
-                'entity_tex_path': entity_filepath,
+                # 'json_file_path': tex_manager.get_json_path(),
+                # 'entity_tex_path': entity_filepath,
                 # 'position_tex_path' : position_filepath,
                 # 'normal_tex_path'   : normal_filepath,
             }
