@@ -459,18 +459,18 @@ class BlenderSync
     p message
     
     
-    # json_path = message['json_file_path']
-    # position_path = message['position_tex_path']
-    # normal_path = message['normal_tex_path']
-    # entity_path = message['entity_tex_path']
+    json_path = message['json_file_path']
+    position_path = message['position_tex_path']
+    normal_path = message['normal_tex_path']
+    entity_path = message['entity_tex_path']
     
     
-    base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
-    prefix = "Tiles"
-    json_path    = base_dir/"#{prefix}.cache.json"
-    position_path = base_dir/"#{prefix}.position.exr"
-    normal_path   = base_dir/"#{prefix}.normal.exr"
-    entity_path   = base_dir/"#{prefix}.entity.exr"
+    # base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
+    # prefix = "Tiles"
+    # json_path    = base_dir/"#{prefix}.cache.json"
+    # position_path = base_dir/"#{prefix}.position.exr"
+    # normal_path   = base_dir/"#{prefix}.normal.exr"
+    # entity_path   = base_dir/"#{prefix}.entity.exr"
     
     
     case message['comment']

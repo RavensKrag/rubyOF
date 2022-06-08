@@ -325,10 +325,10 @@ class Exporter():
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
-            # 'json_file_path': tex_manager.get_json_path(),
-            # 'entity_tex_path': entity_filepath,
-            # 'position_tex_path' : position_filepath,
-            # 'normal_tex_path'   : normal_filepath,
+            'json_file_path': tex_manager.get_json_path(),
+            'entity_tex_path': entity_filepath,
+            'position_tex_path' : position_filepath,
+            'normal_tex_path'   : normal_filepath,
         }
         
         self.to_ruby.write(json.dumps(data))
@@ -393,8 +393,9 @@ class Exporter():
             data = {
                 'type': 'update_geometry_data',
                 'comment': 'moved entity',
-                # 'position_tex_path' : position_filepath,
-                # 'normal_tex_path'   : normal_filepath,
+                'json_file_path': tex_manager.get_json_path(),
+                'position_tex_path' : position_filepath,
+                'normal_tex_path'   : normal_filepath,
                 'entity_tex_path': entity_filepath,
                 'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
             }
@@ -441,20 +442,20 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with new mesh',
-                    # 'json_file_path': tex_manager.get_json_path(),
-                    # 'position_tex_path' : position_filepath,
-                    # 'normal_tex_path'   : normal_filepath,
-                    # 'entity_tex_path': entity_filepath,
+                    'json_file_path': tex_manager.get_json_path(),
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
+                    'entity_tex_path': entity_filepath,
                     'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
                 }
             else:
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with existing mesh',
-                    # 'json_file_path': tex_manager.get_json_path(),
-                    # 'position_tex_path' : position_filepath,
-                    # 'normal_tex_path'   : normal_filepath,
-                    # 'entity_tex_path': entity_filepath,
+                    'json_file_path': tex_manager.get_json_path(),
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
+                    'entity_tex_path': entity_filepath,
                     'debug': [self.msg_count, mesh_obj.name, mesh_obj.data.name]
                 }
                 
@@ -587,10 +588,10 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'edit active mesh',
-                    # 'json_file_path': tex_manager.get_json_path(),
-                    # 'entity_tex_path': entity_filepath,
-                    # 'position_tex_path' : position_filepath,
-                    # 'normal_tex_path'   : normal_filepath,
+                    'json_file_path': tex_manager.get_json_path(),
+                    'entity_tex_path': entity_filepath,
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
                 }
                 
                 self.to_ruby.write(json.dumps(data))
@@ -662,10 +663,10 @@ class Exporter():
                     data = {
                         'type': 'update_geometry_data',
                         'comment': 'edit material for all instances',
-                        # 'json_file_path': tex_manager.get_json_path(),
-                        # 'entity_tex_path': entity_filepath,
-                        # 'position_tex_path' : position_filepath,
-                        # 'normal_tex_path'   : normal_filepath,
+                        'json_file_path': tex_manager.get_json_path(),
+                        'entity_tex_path': entity_filepath,
+                        'position_tex_path' : position_filepath,
+                        'normal_tex_path'   : normal_filepath,
                     }
                     
                     self.to_ruby.write(json.dumps(data))
@@ -718,10 +719,10 @@ class Exporter():
             data = {
                 'type': 'update_geometry_data',
                 'comment': 'run garbage collection',
-                # 'json_file_path': tex_manager.get_json_path(),
-                # 'entity_tex_path': entity_filepath,
-                # 'position_tex_path' : position_filepath,
-                # 'normal_tex_path'   : normal_filepath,
+                'json_file_path': tex_manager.get_json_path(),
+                'entity_tex_path': entity_filepath,
+                'position_tex_path' : position_filepath,
+                'normal_tex_path'   : normal_filepath,
             }
             
             self.to_ruby.write(json.dumps(data))
