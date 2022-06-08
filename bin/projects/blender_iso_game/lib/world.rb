@@ -354,7 +354,9 @@ class World
           cache.mesh_scanline_to_name(i)
         }.select{ |x|
           x != nil
-        }.size
+        }.size + 1
+          # Index 0 will always be an empty mesh, so add 1.
+          # That way, the size measures how full the texture is.
       end
     
     
