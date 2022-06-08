@@ -80,6 +80,7 @@ class BlenderSync
       # dt = t1-t0;
       # puts "time - parse json: #{dt}"
       
+      # puts "=> raw message: #{message.inspect}"
       
       # send all of this data to history
       @message_history.write message
@@ -457,24 +458,74 @@ class BlenderSync
   def update_geometry_data(message)
     p message
     
-    if message['json_file_path']
-      @world.load_json_data(message['json_file_path'])
+    # entity_path = message['entity_tex_path']
+    # position_path = message['position_tex_path']
+    # normal_path = message['normal_tex_path']
+    # json_path = message['json_file_path']
+    
+    
+    # json_path = message['json_file_path']
+    # position_path = message['position_tex_path']
+    # normal_path = message['normal_tex_path']
+    # entity_path = message['entity_tex_path']
+    
+    
+    base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
+    prefix = "Tiles"
+    json_path    = base_dir/"#{prefix}.cache.json"
+    position_path = base_dir/"#{prefix}.position.exr"
+    normal_path   = base_dir/"#{prefix}.normal.exr"
+    entity_path   = base_dir/"#{prefix}.entity.exr"
+    
+    
+    case message['comment']
+    when 'moved entity'
+      @world.load_entity_texture(entity_path)
+      
+    when 'created new entity with new mesh'
+      @world.load_entity_texture(entity_path)
+      @world.load_mesh_textures(position_path,
+                                normal_path)
+      
+    when 'created new entity with existing mesh'
+      @world.load_entity_texture(entity_path)
+      
+    when 'edit active mesh'
+      @world.load_mesh_textures(position_path,
+                                normal_path)
+      
+    when 'edit material for all instances'
+      @world.load_entity_texture(entity_path)
+      
+    when 'run garbage collection'
+      # @world.load_mesh_textures(position_path,
+      #                           normal_path)
+      @world.load_entity_texture(entity_path)
+      # @world.load_json_data(message['json_file_path'])
+      
+    when 'export all textures'
+      @world.load_mesh_textures(position_path,
+                                normal_path)
+      @world.load_entity_texture(entity_path)
+      @world.load_json_data(json_path)
     end
     
-    if message['position_tex_path'] and message['normal_tex_path']
-      @world.load_mesh_textures(message['position_tex_path'],
-                                message['normal_tex_path'])
-    end
+    # if message['position_tex_path'] and message['normal_tex_path']
+    #   @world.load_mesh_textures(message['position_tex_path'],
+    #                             message['normal_tex_path'])
+    # end
     
-    if message['entity_tex_path']
-      @world.load_entity_texture(message['entity_tex_path'])
-    end
+    # if message['entity_tex_path']
+    #   @world.load_entity_texture(message['entity_tex_path'])
+    # end
     
-    if message['json_file_path'] || message['entity_tex_path']
-      @world.space.update
-    end
+    # if message['json_file_path']
+    #   @world.load_json_data(message['json_file_path'])
+    # end
     
-    
+    # if message['json_file_path'] || message['entity_tex_path']
+    #   @world.space.update
+    # end
     # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
     
     # reload history
