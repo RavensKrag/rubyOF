@@ -1,0 +1,135 @@
+can't create new objects sometimes
+[ RESOLVED ]
+
+
++ duplicate mesh (no material)
+entity count increeases, no new mesh in engine
+can't display new entity
+
+
++ linked duplicate mesh (no material)
+entity count increases
+mesh count constant
+new mesh appears
+new mesh appears as a completely black sillhouette
+(no material, not even the default)
+
+
++ duplicate mesh (has material)
+entity count increeases
+no new mesh in engine
+can't display new entity
+
+
++ linked duplicate mesh (has material)
+entity count increases
+mesh count constant
+new mesh appears
+
+
+
+
+
+alt+D  mesh A
+ctrl+D mesh A
+ctrl+D mesh B
+
+(mesh appears with the material of B but the shape of A)
+
+hmm this seems to only happen sometimes... so no repro yet..
+
+
+^ mesh is being exported correctly, because if I reload the game engine,
+it displays correctly. something is not being reloaded correctly in the engine.
+maybe I'm not sending the right signal from blender?
+maybe I'm not responding to the signal correctly?
+
+How is it possible that it can display the wrong mesh???
+There must be some disconnect between the data in memory, and the data on disk.
+
+
+can't just load disk -> cache, need to push data to the GPU
+otherwise what is drawn will not change
+
+
+
+
+if I don't save the .blend file, then when I restart blender,
+the object is gone in the engine, because it doesn't exist in blender?
+what? why? how?
+
+Probably some call to Exporter.gc
+deletes the weird object because it's name is not in the tracked collection in the .blend
+- this is totally normal
+
+
+
+
+weird object can be moved, but the mesh is the wrong mesh.
+how is that?
+the entity texture must be getting updated if the position can change
+
+
+
+I have confirmed that blender seems to be exporting correctly
+the data is in the OpenEXR files and json file as expected,
+but for some reason it doesn't show up in the game engine until reloading.
+
+
+I can see in the engine's debug visualization
+that the GPU texture for meshes is showing a cube,
+even though the mesh i=18 is supposed to be a cylinder
+and the OpenEXR has a cylinder in that slot.
+
+So the issue is that the mesh texture is somehow not making it to the GPU
+is it not loaded correctly? or is it loaded off disk and not sent to GPU?
+why might this happen? is it some sort of timing issue?
+
+If I tab into edit mode on the object, and then right back out, that is sufficient to force a reload of the data, and the correct mesh is displayed.
+=> at least now I have a work around, but I would rather actually fix the issue.
+
+
+
+
+when you create a new object with a new mesh,
+sometimes that registers as a "move the entity" event,
+rather than as a "creating a new entity" event.
+This means that the entity texture is updated (thus materials can change)
+but the changes are not reloaded in the engine.
+
+no message is sent from python -> ruby
+which means the data doesn't get reloaded.
+This is why you get the correct data on restarting the engine:
+the OpenEXR data was exported as expected, but the JSON message saying
+"hey, you should reload that texture" was never sent.
+
+
+
+
+from adding additional debug code to the python side,
+it seems that all checks are correct.
+But if I mark the messages with an incrementing timestamp counter,
+then some of the messages are clearly going missing
+- they are produced in python, but the ruby side never recieves them.
+There may be some issue with my IPC implementation???
+
+
+
+
+
+
+
+
+No, it's not the raw FIFOs
+if I print the raw data on the ruby side coming out of the FIFO,
+then I can retrieve all of the messages,
+including the ones that are getting dropped.
+I seem to have some filtering of messages in Ruby.
+This filtering seems to be getting rid of some of the messages that create new objects, but only some of the time.
+
+Why is that?
++ Why does the filter catch messages that are valuable instead of just removing noise? Where did the bug occur?
++ Why is it only some of the time? Why doesn't it happen every time?
+
+I need to figure out how to make the filter work better.
+Or maybe just send less noisy data from Blender in the first place.
