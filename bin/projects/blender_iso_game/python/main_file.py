@@ -1155,7 +1155,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         # 
         
         # print(mytool.texture_sets)
-        
+        depsgraph = context.evaluated_depsgraph_get()
         
         item_list = mytool.get('name_list', [])
         for j, name in enumerate(item_list):
@@ -1180,10 +1180,11 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
                 for i, pair in enumerate(a.items()):
                     if pair[1].type == 'MESH':
-                        mesh = pair[1]
-                        mesh.data.calc_loop_triangles()
+                        mesh_obj = pair[1]
+                        mesh = mesh_obj.evaluated_get(depsgraph).data
+                        mesh.calc_loop_triangles()
                         # ^ need to call this to populate the mesh.loop_triangles() cache
-                        num_tris  = len(mesh.data.loop_triangles)
+                        num_tris  = len(mesh.loop_triangles)
                         
                         if num_tris > max_tris:
                             max_tris = num_tris
