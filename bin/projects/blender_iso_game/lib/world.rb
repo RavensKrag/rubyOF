@@ -30,8 +30,6 @@ class World
     @lights = LightsCollection.new
     
     # TODO: serialize lights and load on startup
-    # TODO: serialize camera and load on startup
-    
     
     
     
@@ -91,16 +89,16 @@ class World
           :texture => RubyOF::Texture.new,
         },
         
-        :history => HistoryBuffer.new,
-          # ^ list of frames over time, not just one state
-          # should combine with FrameHistory#frame_index to get data on a particular frame
-        
         :names => TextureJsonCache.new, # <- "json file"
           # ^ convert name to scanline AND scanline to name
         
         :geometry => BatchGeometry.new, # size == max tris per mesh in batch
         
-        :cache => RubyOF::Project::EntityCache.new # size == num dynamic entites
+        :cache => RubyOF::Project::EntityCache.new, # size == num dynamic entites
+        
+        :history => HistoryBuffer.new,
+          # ^ list of frames over time, not just one state
+          # should combine with FrameHistory#frame_index to get data on a particular frame
       }
     })
     
@@ -185,29 +183,30 @@ class World
     # + if reloaded, that's a new initial state (t == 0)
     # + need other mechanism to load changes @ t != 0 (JSON message?)
     
-    # @storage[:dynamic].tap do |data|
-    #   prefix = "Characters"
-    #   json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
-    #   position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
-    #   normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
-    #   entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
+    @storage[:dynamic].tap do |data|
+      prefix = "Characters"
+      json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
+      position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
+      normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
+      entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
+      @dynamic_prefix = prefix
       
-    #   load_dynamic_mesh_textures position_tex_path, normal_tex_path
-    #   load_dynamic_entity_texture entity_tex_path # initial state only
-    #   load_dynamic_json_data json_file_path
+      load_dynamic_mesh_textures position_tex_path, normal_tex_path
+      load_dynamic_entity_texture entity_tex_path # initial state only
+      load_dynamic_json_data json_file_path
       
-    #   # initialize rest of history buffer
-    #   # (allocate correct image size, but don't clear garbage)
-    #   data[:entity_data][:pixels].tap do |pixels|
-    #     data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
-    #   end
+      # initialize rest of history buffer
+      # (allocate correct image size, but don't clear garbage)
+      data[:entity_data][:pixels].tap do |pixels|
+        data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
+      end
       
-    #   # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-    #   vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
-    #   data[:geometry].generate vertex_count
+      # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
+      vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
+      data[:geometry].generate vertex_count
       
-    #   data[:cache].load data[:entity_data][:pixels]
-    # end
+      data[:cache].load data[:entity_data][:pixels]
+    end
     
   end
   
@@ -230,11 +229,11 @@ class World
         @storage[:static][:entity_data][:texture],
         @storage[:static][:geometry]
       ],
-      # [
-      #   @storage[:dynamic][:mesh_data],
-      #   @storage[:dynamic][:entity_data][:texture],
-      #   @storage[:dynamic][:geometry]
-      # ]
+      [
+        @storage[:dynamic][:mesh_data],
+        @storage[:dynamic][:entity_data][:texture],
+        @storage[:dynamic][:geometry]
+      ]
     ].each do |mesh_data, entity_texture, geometry|
       # set uniforms
       @mat.setCustomUniformTexture(
@@ -269,11 +268,11 @@ class World
         @storage[:static][:entity_data][:texture],
         @storage[:static][:geometry]
       ],
-      # [
-      #   @storage[:dynamic][:mesh_data],
-      #   @storage[:dynamic][:entity_data][:texture],
-      #   @storage[:dynamic][:geometry]
-      # ]
+      [
+        @storage[:dynamic][:mesh_data],
+        @storage[:dynamic][:entity_data][:texture],
+        @storage[:dynamic][:geometry]
+      ]
     ].each do |mesh_data, entity_texture, geometry|
       # set uniforms
       @mat.setCustomUniformTexture(
@@ -329,56 +328,72 @@ class World
     
     
     
-    
-    cache = @storage[:static][:cache]
-    
-    current_size = 
-      @storage[:static][:cache].yield_self do |cache|
+    [
+      [ "static",  @storage[:static][:cache],  @storage[:static][:names] ],
+      [ "dynamic", @storage[:dynamic][:cache], @storage[:dynamic][:names] ]
+    ].each_with_index do |data, i|
+      layer_name, cache, names = data
+      
+      offset = i*(189-70)
+      
+      ui_font.draw_string("layer: #{layer_name}",
+                          500, 68+offset)
+      
+      
+      current_size = 
         cache.size.times.collect{ |i|
           cache.get_entity i
         }.select{ |x|
           x.active?
         }.size
-      end
-    
-    ui_font.draw_string("static entities: #{current_size} / #{cache.size}",
-                        500, 100)
-    
-    
-    
-    max_meshes = @storage[:static][:names].num_meshes
-    
-    num_meshes = 
-      @storage[:static][:names].yield_self do |cache|
+      
+      ui_font.draw_string("entities: #{current_size} / #{cache.size}",
+                          500+50, 100+offset)
+      
+      
+      
+      max_meshes = names.num_meshes
+      
+      num_meshes = 
         max_meshes.times.collect{ |i|
-          cache.mesh_scanline_to_name(i)
+          names.mesh_scanline_to_name(i)
         }.select{ |x|
           x != nil
         }.size + 1
           # Index 0 will always be an empty mesh, so add 1.
           # That way, the size measures how full the texture is.
-      end
+      
+      
+      ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
+                          500+50, 133+offset)
+      
+    end
     
     
-    ui_font.draw_string("static meshes: #{num_meshes} / #{max_meshes}",
-                        500, 133)
+    
+    
+    
+    
+    
+    
+    
     
     
     # @storage[:dynamic][:mesh_data][:textures][:positions].tap do |texture| 
     #   texture.draw_wh(12,300,0, texture.width, -texture.height)
     # end
     
-    # @storage[:dynamic][:entity_data][:texture].tap do |texture| 
-    #   @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
-    #   @ui_node.position = GLM::Vec3.new(108+50, 320, 1)
+    @storage[:dynamic][:entity_data][:texture].tap do |texture| 
+      @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
+      @ui_node.position = GLM::Vec3.new(130, 320, 1)
       
-    #   @ui_node.transformGL
+      @ui_node.transformGL
       
-    #       texture.draw_wh(0,texture.height,0,
-    #                       texture.width, -texture.height)
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
         
-    #   @ui_node.restoreTransformGL
-    # end
+      @ui_node.restoreTransformGL
+    end
     
     
   end
@@ -390,16 +405,20 @@ class World
   
   def load_json_data(json_file_path)
     puts "load json"
-    # if File.basename(json_file_path).start_with? @static_prefix
+    if File.basename(json_file_path).start_with? @static_prefix
       load_static_json_data(json_file_path)
-    # end
+    elsif File.basename(json_file_path).start_with? @dynamic_prefix
+      load_dynamic_json_data(json_file_path)
+    end
   end
   
   def load_entity_texture(entity_tex_path)
     puts "reload entities"
-    # if File.basename(entity_tex_path).start_with? @static_prefix
+    if File.basename(entity_tex_path).start_with? @static_prefix
       load_static_entity_texture(entity_tex_path)
-    # end
+    elsif File.basename(entity_tex_path).start_with? @dynamic_prefix
+      load_dynamic_entity_texture(entity_tex_path)
+    end
     
   end
   
@@ -409,9 +428,11 @@ class World
     # so really only need to check one path in order to
     # confirm what batch should be reloaded.
     
-    # if File.basename(position_tex_path).start_with? @static_prefix
+    if File.basename(position_tex_path).start_with? @static_prefix
       load_static_mesh_textures(position_tex_path, normal_tex_path)
-    # end
+    elsif File.basename(position_tex_path).start_with? @dynamic_prefix
+      load_dynamic_mesh_textures(position_tex_path, normal_tex_path)
+    end
     
   end
   
