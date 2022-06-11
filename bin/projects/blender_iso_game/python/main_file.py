@@ -55,6 +55,8 @@ from exporter import Exporter
 Exporter = reload_class(Exporter)
 
 
+from exporter_alembic import ExporterAlembic
+ExporterAlembic = reload_class(ExporterAlembic)
 
 
 
@@ -965,7 +967,8 @@ resource_manager = ResourceManager()
 
 
 
-export_helper = Exporter(to_ruby)
+# export_helper = Exporter(to_ruby)
+export_helper = ExporterAlembic(to_ruby)
 
 
 
