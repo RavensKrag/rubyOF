@@ -1032,7 +1032,7 @@ class OT_TexAnimExportCollection (OT_ProgressBarOperator):
 class OT_TexAnimClearAllTextures (bpy.types.Operator):
     """Clear cache. Some OpenEXR files may remain on disk."""
     bl_idname = "wm.texanim_clear_all_textures"
-    bl_label = "Clear texture cache"
+    bl_label = "Reset texture cache"
     
     # @classmethod
     # def poll(cls, context):
@@ -1155,7 +1155,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         # 
         
         # print(mytool.texture_sets)
-        depsgraph = context.evaluated_depsgraph_get()
+        # depsgraph = context.evaluated_depsgraph_get()
         
         item_list = mytool.get('name_list', [])
         for j, name in enumerate(item_list):
@@ -1181,7 +1181,10 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 for i, pair in enumerate(a.items()):
                     if pair[1].type == 'MESH':
                         mesh_obj = pair[1]
-                        mesh = mesh_obj.evaluated_get(depsgraph).data
+                        
+                        # mesh = mesh_obj.evaluated_get(depsgraph).data
+                        mesh = mesh_obj.data
+                        
                         mesh.calc_loop_triangles()
                         # ^ need to call this to populate the mesh.loop_triangles() cache
                         num_tris  = len(mesh.loop_triangles)

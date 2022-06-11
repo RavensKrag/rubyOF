@@ -579,7 +579,9 @@ class Exporter():
                 # but don't need to update bindings
                 # (it's like using a pointer - no need to update references)
                 
-                tex_manager.export_mesh(active_object.data.name, active_object.data)
+                mesh_data = active_object.evaluated_get(depsgraph).data
+                
+                tex_manager.export_mesh(active_object.data.name, mesh_data)
                 
                 
                 filepaths = tex_manager.get_texture_paths()

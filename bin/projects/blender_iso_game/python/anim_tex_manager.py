@@ -27,7 +27,16 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
     for i in range(channels):
         scanline[px_i*channels+i] = px_data[i]
 
+def image_set_px(image, row,col, color):
+    px_per_scanline = image.width * image.channels_per_pixel
     
+    scanline_offset = px_per_scanline * row
+    pixel_offset = image.channels_per_pixel * col
+    
+    for channel_idx in range(image.channels_per_pixel):
+        i = scanline_offset + pixel_offset + channel_idx
+        image.pixels[i] = color[channel_idx]
+        
 
 
 # TODO: need to force export of everything if the number of entities changes
@@ -387,8 +396,7 @@ class AnimTexManager ():
         # 
         
         # (set r,g,b channels of position to the same non-zero value to help with debugging - easy to confirm that something got written if the scanline shows up as non-black)
-        scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
-        scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+        
         # pixel_data_tan = [0.0, 0.0, 0.0, 1.0] * width_px
         
         
@@ -412,6 +420,9 @@ class AnimTexManager ():
             raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
         
         
+        # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
+        scanline_index = self.__mesh_name_to_scanline(mesh_name)
+        
         verts = mesh.vertices
         for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
             normals = tri.split_normals
@@ -419,21 +430,15 @@ class AnimTexManager ():
                 vert_index = tri.vertices[j]
                 vert = verts[vert_index]
                 
-                scanline_set_px(scanline_position, i*3+j, vec3_to_rgba(vert.co),
-                                channels=self.position_tex.channels_per_pixel)
-                
+                self.position_tex.write_pixel(
+                             scanline_index, i*3+j,
+                             vec3_to_rgba(vert.co))
                 
                 normal = normals[j]
                 
-                scanline_set_px(scanline_normals, i*3+j, vec3_to_rgba(normal),
-                                channels=self.normal_tex.channels_per_pixel)
-        
-        
-        # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
-        scanline_index = self.__mesh_name_to_scanline(mesh_name)
-        
-        self.position_tex.write_scanline(scanline_position, scanline_index)
-        self.normal_tex.write_scanline(scanline_normals, scanline_index)
+                self.normal_tex.write_pixel(
+                             scanline_index, i*3+j,
+                             vec3_to_rgba(normal))
         
         
         self.position_tex.save()
