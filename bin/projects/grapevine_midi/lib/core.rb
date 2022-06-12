@@ -1550,19 +1550,6 @@ class Core
     
     
     
-    # RubyOF::CPP_Callbacks.render_material_editor(
-    #   @w.cpp_ptr["materialEditor_mesh"],
-    #   @w.cpp_ptr["materialEditor_shader"], "material_editor",
-      
-    #   @fonts[:monospace].font_texture,
-    #   @w.cpp_ptr["display_fg_texture"], # <-- no longer available
-      
-    #   20, 500, 300, 300 # x,y,w,h
-    # )
-    
-    
-    
-    
     
     
     

@@ -6,6 +6,8 @@
 
 #include "Null_Free_Function.h"
 
+#include "wrap_ofxMidi.h"
+
 using namespace Rice;
 
 // define your callbacks here
@@ -45,167 +47,7 @@ int cpp_callback(int x) {
 
 
 
-void generate_mesh(ofMesh& mesh, Rice::Array normals, 
-	                              Rice::Array verts, 
-	                              Rice::Array tris)
-{
-	
-	// 
-	// ruby prototype:
-	// 
-	
-	// @normals.each do |tri|
-	//   tri.each do |vert|
-	//     @mesh.addNormal(GLM::Vec3.new(*vert))
-	//   end
-	// end
 
-	// @tris.each do |vert_idxs|
-	//   vert_coords = vert_idxs.map{|i|  @verts[i]  }
-
-	//   vert_coords.each do |x,y,z|
-	//     @mesh.addVertex(GLM::Vec3.new(x,y,z))
-	//   end
-	// end
-	
-	// 
-	// python exporter:
-	// 
-	 // normal_data = [ [[val for val in vert] 
-	 //                 for vert in tri.split_normals]
-	 //                 for tri in mesh.loop_triangles ]
-	 	 
-	 // vert_data = [ [ vert.co[0], vert.co[1], vert.co[2]] for vert in mesh.vertices ]
-	 
-	 // index_buffer = [ [vert for vert in tri.vertices] for tri in mesh.loop_triangles ]
-	
-	
-	// initialize C++ memory
-	
-	float* norm_ptr = new float[normals.size()];
-	float* vert_ptr = new float[verts.size()];;
-	int*   idx_ptr  = new int[tris.size()];;
-	
-	
-	// copy ruby data over to C++ memory
-	
-	int idx;
-	
-	idx = 0;
-	for(auto aI = normals.begin(); aI != normals.end(); ++aI){
-		norm_ptr[idx] = from_ruby<float>(*aI);
-		idx++;
-	}
-	
-	idx = 0;
-	for(auto aI = verts.begin(); aI != verts.end(); ++aI){
-		vert_ptr[idx] = from_ruby<float>(*aI);
-		idx++;
-	}
-	
-	idx = 0;
-	for(auto aI = tris.begin(); aI != tris.end(); ++aI){
-		idx_ptr[idx] = from_ruby<int>(*aI);
-		idx++;
-	}
-	
-	
-	
-	
-	
-	// for(int i=0; i<normals.size(); i++){
-	// 	norm_ptr[i] = from_ruby<float>(normals[i]);
-	// }
-	
-	// for(int i=0; i<verts.size(); i++){
-	// 	vert_ptr[i] = from_ruby<float>(verts[i]);
-	// }
-	
-	// for(int i=0; i<tris.size(); i++){
-	// 	idx_ptr[i] = from_ruby<int>(tris[i]);
-	// }
-	
-	// operate on C++ memory only using pointer arithmetic
-	
-	int num_tris = tris.size()/3;
-	
-	// for each face
-	int vert_idxs[3];
-	for(int i=0; i<num_tris; i++){
-		vert_idxs[0] = idx_ptr[3*i + 0];
-		vert_idxs[1] = idx_ptr[3*i + 1];
-		vert_idxs[2] = idx_ptr[3*i + 2];
-		
-		// for each of the 3 verts in the face (all faces are triangles)
-		for(int j=0; j<3; j++){
-			int vert_idx = vert_idxs[j];
-			
-			
-			float v_val_x = vert_ptr[3*vert_idx + 0];
-			float v_val_y = vert_ptr[3*vert_idx + 1];
-			float v_val_z = vert_ptr[3*vert_idx + 2];
-			
-			float n_val_x = norm_ptr[9*i+3*j + 0];
-			float n_val_y = norm_ptr[9*i+3*j + 1];
-			float n_val_z = norm_ptr[9*i+3*j + 2];
-			
-			mesh.addVertex(glm::vec3(v_val_x, v_val_y, v_val_z));
-			mesh.addNormal(glm::vec3(n_val_x, n_val_y, n_val_z));
-		}
-		
-		
-	}
-	
-	
-	delete norm_ptr;
-	delete vert_ptr;
-	delete idx_ptr;
-}
-
-
-
-
-void render_material_editor(
-	ofMesh & mesh, ofShader & shader, std::string & shader_filepath,
-	ofTexture & tex0, ofTexture & tex1,
-	int x, int y, int w, int h)
-{
-	stringstream textOut1, textOut2;
-	
-	textOut1 << "tex0 size: " << tex0.getWidth() << " x " << tex0.getHeight();
-	textOut2 << "tex1 size: " << tex1.getWidth() << " x " << tex1.getHeight();
-	
-	shader.load(shader_filepath);
-	shader.begin();
-	
-	shader.setUniformTexture("tex0", tex0, 0);
-	shader.setUniformTexture("tex1", tex1, 1);
-	
-	
-	ofPushMatrix();
-		ofTranslate(x,y);
-      ofScale(w,h);
-		
-		mesh.draw();
-		
-	ofPopMatrix();
-	
-	shader.end();
-	
-	
-	ofPushStyle();
-	
-	ofColor text_color(0.0);
-	
-	ofSetColor(text_color);
-	
-	int bitmap_lineheight = 10;
-	int offset = bitmap_lineheight;
-	ofDrawBitmapString(textOut1.str(), x, y+offset+h+bitmap_lineheight*1);
-	ofDrawBitmapString(textOut2.str(), x, y+offset+h+bitmap_lineheight*2);
-	
-	ofPopStyle();
-}
 
 
 // Rice can't convert std::string into std::filesystem::path, but they will convert. Thus, we use this helper function. Can establish automatic conversions in Rice, but only when both types are bound.
@@ -885,185 +727,6 @@ void callgrind_END(){
 
 
 
-// void setColorPickerColor(ofParameter<ofColor_<unsigned char>> &colorParam, ofColor_<unsigned char> & color){
-// 	// colorParam->r = color.r;
-// 	// colorParam->g = color.g;
-// 	// colorParam->b = color.b;
-// 	// colorParam->a = color.a;
-	
-// 	// colorParam->setHex( color.getHex() )
-	
-// 	// colorParam->set(color);
-	
-// 	colorParam = color;
-// }
-
-ColorPickerInterface::ColorPickerInterface(ofxColorPicker_<unsigned char> *colorPicker){
-	mColorPicker = colorPicker;
-	
-}
-
-void ColorPickerInterface::setColor(ofColor &color){
-	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
-	
-	
-	data = color;
-	// ^ ofParameter overloads the = operator, so to set values just use equals 
-	//   (feels really weird to be able to override assignment like this...)
-	
-}
-
-
-// TODO: need to create this object once, and then just return it again and again. wrapping this multiple times is additional overhead that makes things go slow.
-Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
-	// ofParameter::get() returns reference to the underlying value,
-	// and that is wrapped Rice::Data_Object, which is like a smart pointer.
-	// This creates a ruby object that acts like C++ pointer,
-	// such that changes to this object propagate to C++ automatically.
-	// (because the exact same data is being edited)
-	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
-	
-	Rice::Data_Object<ofColor> rb_color_ptr(
-		&const_cast<ofColor_<unsigned char>&>(data.get()),
-		Rice::Data_Type< ofColor >::klass(),
-		Rice::Default_Mark_Function< ofColor >::mark,
-		Null_Free_Function< ofColor >::free
-	);
-	
-	return rb_color_ptr;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void pack_transforms(ofFloatPixels &pixels, int width, float scale, Rice::Array nodes){
-	
-	// 
-	// allocate data
-	// 
-	ofNode** nodes_ptr = new ofNode*[nodes.size()]; // ptr to array of ptrs
-	
-	// 
-	// copy data from ruby managed memory to C++ managed memory (bypass GIL)
-	// 
-	int idx = 0;
-	for(auto aI = nodes.begin(); aI != nodes.end(); ++aI){
-		ofNode* node = from_ruby<ofNode*>(*aI);
-		
-		// std::cout <<"("<< vec.x <<", "<< vec.y <<", "<< vec.z <<")"<< std::endl;
-		
-		nodes_ptr[idx] = node;
-		
-		
-		idx += 1;
-	}
-	
-	
-	// 
-	// core logic
-	// 
-	
-	// example: if there are 8 entities in a 8x2 texture,
-	//          it should be packed like this:
-	//    12341234
-	//    56785678
-	// where the left half of the texture encodes position (normalized vec3),
-	// and the right half of the texture encodes orientation (quaternion)
-	
-	// ofFloatColor c;
-	
-	// // encode position
-	// for (int i=0; i < nodes.size(); i++){
-	// 	int x = (i / (width/2)) + (width/2*0);
-	// 	int y = (i % (width/2));
-		
-	// 	glm::vec3 pos = nodes_ptr[i]->getPosition();
-		
-		
-	// 	glm::vec3 posNormShifted;
-	// 	float magnitude_normalized;
-	// 	if(pos.x == 0 && pos.y == 0 && pos.z == 0){
-	// 		// zero vector (ie, the only vector with magnitude zero)
-	// 		posNormShifted.x = ((0)+1)/2;
-	// 		posNormShifted.y = ((0)+1)/2;
-	// 		posNormShifted.z = ((0)+1)/2;
-			
-	// 		magnitude_normalized = 0;
-	// 	}else{
-	// 		// all other positions
-	// 		// (this should guard against division by zero)
-	// 		float magnitude = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
-			
-	// 		posNormShifted.x = ((pos.x/magnitude)+1)/2;
-	// 		posNormShifted.y = ((pos.y/magnitude)+1)/2;
-	// 		posNormShifted.z = ((pos.z/magnitude)+1)/2;
-			
-	// 		magnitude_normalized = magnitude / scale;
-	// 	}
-		
-	// 	c.r = posNormShifted.x;
-	// 	c.g = posNormShifted.y;
-	// 	c.b = posNormShifted.z;
-	// 	c.a = magnitude_normalized;
-		
-	// 	pixels.setColor(x,y, c);
-	// }
-	
-	
-	// encode transform matrix (4x4 matrix)
-	// format: output a 4xN texture (WxH)
-	//         where N is the number of entity nodes.
-	//         (pixel format is RGBA, so each px encodes a vec4)
-	for (int i=0; i < nodes.size(); i++){
-		
-		glm::mat4 mat = nodes_ptr[i]->getGlobalTransformMatrix();
-		
-		// quaternions are stored xyzw but are printed wxyz
-			// src: https://stackoverflow.com/questions/48348509/glmquat-why-the-order-of-x-y-z-w-components-are-mixed
-		// will send to glsl as xyzw, because presumably that's what I need???
-		
-		
-		for(int j=0; j<4; j++){
-			glm::vec4 col = mat[j];
-			pixels.setColor(j,i, ofFloatColor(col.x, col.y, col.z, col.w));
-		}
-	}
-	
-	
-	
-	// free data
-	delete nodes_ptr;
-	// ^ do not free the nodes themselves, as their memory is managed
-	//   by the associated entities
-}
-
-
 
 
 
@@ -1665,6 +1328,30 @@ void wrap_EntityCache(Module rb_mProject){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // "main" section
 extern "C"
 void Init_rubyOF_project()
@@ -1675,10 +1362,6 @@ void Init_rubyOF_project()
 	rb_mCallbacks
 		.define_module_function("test_callback", &cpp_callback)
 		
-		
-		
-		.define_module_function("render_material_editor", 
-			                     &render_material_editor)
 		
 		
 		.define_module_function("ofShader_loadShaders", 
@@ -1695,15 +1378,6 @@ void Init_rubyOF_project()
 		.define_module_function("SpikeProfiler_begin", &SpikeProfiler_begin)
 		.define_module_function("SpikeProfiler_end",   &SpikeProfiler_end)
 		
-		
-		// .define_module_function("setColorPickerColor", &setColorPickerColor)
-		
-		
-		
-		.define_module_function("generate_mesh",   &generate_mesh)
-		
-		
-		.define_module_function("pack_transforms",   &pack_transforms)
 		
 		
 		
@@ -1807,6 +1481,7 @@ void Init_rubyOF_project()
 	;
 	
 	
+	// ImageFiller is used by CharMappedDisplay
 	Data_Type<ImageFiller> rb_c_ofImageFiller =
 		define_class_under<ImageFiller>(rb_mProject, "ImageFiller");
 	
@@ -1834,183 +1509,12 @@ void Init_rubyOF_project()
 	
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
 	
+	wrap_ofxMidi(rb_mOFX);
+	
 	wrap_ofxDynamicMaterial(rb_mOFX);
 	wrap_ofxDynamicLight(rb_mOFX);
 	
 	
 	
 	
-	
-	Data_Type<ofxMidiOut> rb_c_ofxMidiOut =
-		define_class_under<ofxMidiOut>(rb_mOFX, "MidiOut");
-	
-	rb_c_ofxMidiOut
-		.define_constructor(Constructor<ofxMidiOut>())
-		.define_method("sendNoteOn",   &ofxMidiOut::sendNoteOn)
-		.define_method("sendNoteOff",  &ofxMidiOut::sendNoteOff)
-		.define_method("listOutPorts", &ofxMidiOut::listOutPorts)
-		
-		// .define_method("openPort",     &ofxMidiOut::openPort)
-		.define_method("openPort_uint",
-			static_cast< bool (ofxMidiOut::*)
-			(unsigned int portNumber)
-			>(&ofxMidiOut::openPort)
-		)
-		.define_method("openPort_string",
-			static_cast< bool (ofxMidiOut::*)
-			(std::string deviceName)
-			>(&ofxMidiOut::openPort)
-		)
-	;
-	
-	
-	Data_Type<ofxMidiMessage> rb_c_ofxMidiMessage =
-		define_class_under<ofxMidiMessage>(rb_mOFX, "MidiMessage");
-	
-	rb_c_ofxMidiMessage
-		.define_constructor(Constructor<ofxMidiMessage>())
-		
-		.define_method("getStatus", &ofxMidiMessage__get_status)
-		
-		.define_method("channel",   &ofxMidiMessage__get_channel)
-		.define_method("pitch",     &ofxMidiMessage__get_pitch)
-		.define_method("velocity",  &ofxMidiMessage__get_velocity)
-		.define_method("value",     &ofxMidiMessage__get_value)
-		
-		.define_method("deltatime", &ofxMidiMessage__get_deltatime)
-		
-		.define_method("portNum",   &ofxMidiMessage__get_portNum)
-		.define_method("portName",  &ofxMidiMessage__get_portName)
-		
-		.define_method("get_num_bytes",  &ofxMidiMessage__get_num_bytes)
-		.define_method("get_byte",       &ofxMidiMessage__get_byte)
-		
-		.define_method("cpp_equality", &ofxMidiMessage__equality)
-	;
-	
-	
-	// TODO: write glue code to access these fields:
-	
-	
-	// ofxMidiOut midiOut
-	
-	
-	
-	
-	
-	
-	Data_Type<ColorPickerInterface> rb_c_ofColorPickerInterface =
-		define_class_under<ColorPickerInterface>(rb_mProject, "ColorPicker");
-	
-	rb_c_ofColorPickerInterface
-		// .define_constructor(Constructor<ColorPickerInterface>())
-		// ^ no constructor: can only be created from C++
-		
-		.define_method("color=",       &ColorPickerInterface::setColor)
-		.define_method("getColorPtr",  &ColorPickerInterface::getColorPtr)
-	;
-	
-	
-	
-	
-}
-
-
-// 
-// ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.h
-// 
-
-int ofxMidiMessage__get_status(ofxMidiMessage &self){
-	// do not need to explictly state array size
-	// src: https://stackoverflow.com/questions/32918448/is-it-bad-to-not-define-a-static-array-size-in-a-class-but-rather-to-let-it-au
-	static const MidiStatus STATUS_IDS[] = {
-		MIDI_UNKNOWN,
-		
-		// channel voice messages
-		MIDI_NOTE_OFF           ,
-		MIDI_NOTE_ON            ,
-		MIDI_CONTROL_CHANGE     ,
-		MIDI_PROGRAM_CHANGE     ,
-		MIDI_PITCH_BEND         ,
-		MIDI_AFTERTOUCH         ,
-		MIDI_POLY_AFTERTOUCH    ,
-		
-		// system messages
-		MIDI_SYSEX              ,
-		MIDI_TIME_CODE          ,
-		MIDI_SONG_POS_POINTER   ,
-		MIDI_SONG_SELECT        ,
-		MIDI_TUNE_REQUEST       ,
-		MIDI_SYSEX_END          ,
-		MIDI_TIME_CLOCK         ,
-		MIDI_START              ,
-		MIDI_CONTINUE           ,
-		MIDI_STOP               ,
-		MIDI_ACTIVE_SENSING     ,
-		MIDI_SYSTEM_RESET       
-	};
-	
-	
-	MidiStatus status = self.status;
-	
-	int ary_size = sizeof(STATUS_IDS)/sizeof(STATUS_IDS[0]);
-	for(int i=0; i < ary_size; i++){
-		if(status == STATUS_IDS[i]){
-			return i;
-		}
-	}
-	
-	
-	return -1; // return -1 on error
-}
-
-int ofxMidiMessage__get_channel(ofxMidiMessage &self){
-	return self.channel;
-}
-int ofxMidiMessage__get_pitch(ofxMidiMessage &self){
-	return self.pitch;
-}
-int ofxMidiMessage__get_velocity(ofxMidiMessage &self){
-	return self.velocity;
-}
-int ofxMidiMessage__get_value(ofxMidiMessage &self){
-	return self.value;
-}
-
-double ofxMidiMessage__get_deltatime(ofxMidiMessage &self){
-	return self.deltatime;
-}
-
-int ofxMidiMessage__get_portNum(ofxMidiMessage &self){
-	return self.portNum;
-}
-std::string ofxMidiMessage__get_portName(ofxMidiMessage &self){
-	return self.portName;
-}
-
-
-int ofxMidiMessage__get_num_bytes(ofxMidiMessage &self){
-	return self.bytes.size();
-}
-
-unsigned char ofxMidiMessage__get_byte(ofxMidiMessage &self, int i){
-	return self.bytes[i];
-}
-
-
-bool ofxMidiMessage__equality(ofxMidiMessage &self, ofxMidiMessage &other){
-	if(self.bytes.size() != other.bytes.size()){
-		return false;
-	}
-	else{
-		int size = self.bytes.size();
-		
-		for(int i=0; i<size; i++){
-			if(self.bytes[i] != other.bytes[i]){
-				return false;
-			}
-		}
-		
-		return true;
-	}
 }
