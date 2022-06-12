@@ -16,6 +16,9 @@ require LIB_DIR/'sequence_memory.rb'
 require LIB_DIR/'scheduler.rb'
 
 
+require LIB_DIR/'ofx'/'ofxAlembic.rb'
+
+
 # stuff to live load ('load' allows for reloading stuff)
 load LIB_DIR/'char_mapped_display.rb'
 load LIB_DIR/'looper_pedal.rb'

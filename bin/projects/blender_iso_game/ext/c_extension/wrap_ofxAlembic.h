@@ -16,5 +16,9 @@
 
 
 void wrap_ofxAlembic(Rice::Module rb_mOFX);
+
 Rice::Array ofxAlembic__Reader__getNames(ofxAlembic::Reader& reader);
 Rice::Array ofxAlembic__Reader__getFullnames(ofxAlembic::Reader& reader);
+Rice::Data_Object<ofxAlembic::IGeom> ofxAlembic__Reader__getNode(ofxAlembic::Reader& reader, const string& path);
+
+std::string ofxAlembic__IGeom__getName(ofxAlembic::IGeom& node);

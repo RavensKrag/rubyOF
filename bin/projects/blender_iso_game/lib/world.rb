@@ -492,7 +492,20 @@ class World
     puts "alembic size: #{alembic.size}"
     puts "alembic paths: #{alembic.names.inspect}"
     puts "alembic paths: #{alembic.fullnames.inspect}"
+    
     puts "\n"*3
+    
+    alembic.dump_fullnames
+    
+    puts "\n"*3
+    
+    
+    alembic.each do |node|
+      # p node
+      puts "#{node.index} : #{node.type_name} '#{node.full_name}'"
+      # puts node.index
+    end
+    
     
     # hash_data = {
     #   "mesh_data_cache" => [],
