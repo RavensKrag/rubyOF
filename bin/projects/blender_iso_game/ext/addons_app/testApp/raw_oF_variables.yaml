@@ -154,15 +154,10 @@
 - 'GTK_RC_FILES = /etc/gtk/gtkrc:/home/ravenskrag/.gtkrc:/home/ravenskrag/.config/gtkrc
 
   '
-- 'PARSED_ADDONS_FILTERED_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiTimecode.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiOut.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop/ofxRtMidiIn.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop/ofxRtMidiOut.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidi.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxBaseMidi.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp
+- 'PARSED_ADDONS_FILTERED_SOURCE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicType.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicUtil.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicWriter.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicReader.cpp
 
   '
 - 'GCC_MAJOR_GT_4 = 1
@@ -181,7 +176,8 @@
 
   '
 - "OF_PROJECT_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always -I/usr/include/OpenEXR -I/usr/include/hdf5/serial
+  \   \n"
 - "@D = .\n"
 - 'XAUTHORITY = /tmp/xauth-1000-_0
 
@@ -243,8 +239,13 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicType.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicUtil.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicWriter.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicReader.o
   \n"
-- "TMP_PROJECT_ADDONS_CFLAGS =        \n"
+- "TMP_PROJECT_ADDONS_CFLAGS =         -I/usr/include/OpenEXR -I/usr/include/hdf5/serial
+  \n"
 - '_ = /home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin/rake
 
   '
@@ -258,7 +259,9 @@
 - "ALL_CXXFLAGS =  \n"
 - "LINK.m = cc   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'XDG_CONFIG_DIRS = /etc/xdg/xdg-plasma:/etc/xdg:/usr/share/kubuntu-default-settings/kf5-settings
 
   '
@@ -296,14 +299,14 @@
 - 'OF_ADDONS_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons
 
   '
-- 'ADDON_PKG_CONFIG_LIBRARIES = alsa jack
-
-  '
+- "ADDON_PKG_CONFIG_LIBRARIES = \n"
 - "PROJECT_ADDONS_PKG_CONFIG_LIBRARIES = alsa jack \n"
 - "GNUMAKEFLAGS = \n"
 - "LINK.p = pc   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - "CXXFLAGS = \n"
 - 'MANDATORY_PATH = /usr/share/gconf/plasma.mandatory.path
 
@@ -314,7 +317,7 @@
 - 'CROSS_COMPILING = 0
 
   '
-- 'PROJECT_ADDONS = ofxGui ofxDatGui ofxImGui ofxMidi
+- 'PROJECT_ADDONS = ofxGui ofxDatGui ofxImGui ofxMidi ofxAlembic
 
   '
 - 'OPTIMIZATION_CFLAGS = -g3 -DDEBUG
@@ -367,22 +370,41 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicType.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicUtil.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicWriter.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicReader.cpp
   \n"
-- 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+- 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/OpenEXR
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcMaterial
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreOgawa
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcGeom
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreFactory
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/Abc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCollection
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreHDF5
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/Util
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreAbstract
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/lib
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/lib/osx
 
   '
 - 'XCURSOR_SIZE = 36
 
   '
-- 'addon = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi
+- 'addon = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic
 
   '
 - 'GCC_MINOR_GTEQ_9 = 1
 
   '
-- "PROJECT_ADDONS_LDFLAGS =  \n"
+- "PROJECT_ADDONS_LDFLAGS = /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'QT_SCREEN_SCALE_FACTORS = DisplayPort-0=1;DisplayPort-1=1;DisplayPort-2=1;HDMI-A-0=1;
 
   '
@@ -393,9 +415,7 @@
 - 'obj_prefix = obj/linux64/Debug/
 
   '
-- 'unscaped_var_line = ADDON_INCLUDES_EXCLUDE += src/desktop/%
-
-  '
+- "unscaped_var_line = \n"
 - 'OF_PROJECT_OBJS = obj/linux64/Debug/src/ofApp.o obj/linux64/Debug/src/main.o
 
   '
@@ -414,13 +434,28 @@
   '
 - "LINK.cc = g++   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections
   -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'PAM_KWALLET5_LOGIN = /run/user/1000/kwallet5.socket
 
   '
-- 'PARSED_ADDONS_LIBS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+- 'PARSED_ADDONS_LIBS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/OpenEXR
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcMaterial
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreOgawa
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcGeom
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreFactory
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/Abc
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCollection
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreHDF5
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/Util
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/include/Alembic/AbcCoreAbstract
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/lib
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/alembic/lib/osx
 
   '
 - 'XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session1
@@ -469,7 +504,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1747,unix/ravensnest:/tmp/.ICE-unix/1747
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1653,unix/ravensnest:/tmp/.ICE-unix/1653
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -483,7 +518,7 @@
 
   '
 - 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123
-  -fPIC -fdiagnostics-color=always
+  -fPIC -fdiagnostics-color=always -I/usr/include/OpenEXR -I/usr/include/hdf5/serial
 
   '
 - 'ARFLAGS = rv
@@ -491,13 +526,11 @@
   '
 - "LINK.r = f77   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
-- 'PARSED_ADDONS_LIBS_SOURCES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp
-
-  '
-- 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
+- "PARSED_ADDONS_LIBS_SOURCES = \n"
+- 'PARSED_ADDONS_FILTERED_INCLUDE_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
 
   '
 - 'LINT = lint
@@ -524,14 +557,14 @@
   '
 - "LINT.c = lint   \n"
 - "YACC.m = yacc \n"
-- "ADDONS_INCLUDES_FILTER = \n"
-- 'addon_path = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp
+- 'ADDONS_INCLUDES_FILTER = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/pgmidi/%  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ios/%
+
+  '
+- 'addon_path = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicReader.cpp
 
   '
 - "uniq = \n"
-- 'TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES =    alsa jack
-
-  '
+- "TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES =    alsa jack \n"
 - "YACC.y = yacc \n"
 - "PROJECT_ADDONS_OBJ_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxToggle.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxGui/src/ofxButton.o
@@ -568,6 +601,10 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicType.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicUtil.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicWriter.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicReader.o
   \n"
 - "VPATH =  \n"
 - 'AR = ar
@@ -582,7 +619,7 @@
 - 'HAS_SYSTEM_MPG123 = 0
 
   '
-- 'PROCESS_NEXT = 0
+- 'PROCESS_NEXT = 1
 
   '
 - 'TANGLE = tangle
@@ -603,7 +640,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-WhzmBvwAmzJa/agent.1550
+- 'SSH_AUTH_SOCK = /tmp/ssh-Ac6tRjGLl5bQ/agent.1470
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
@@ -635,7 +672,7 @@
 - 'PLATFORM_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX
 
   '
-- 'PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/*/lib/linux64
+- 'PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/libs/*/lib/linux64
 
   '
 - ".LIBPATTERNS = lib%.so lib%.a\n"
@@ -655,9 +692,7 @@
   obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.o
 
   '
-- 'PARSED_ADDONS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop
-  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios
+- 'PARSED_ADDONS_SOURCE_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
 
   '
 - 'KDE_SESSION_VERSION = 5
@@ -683,7 +718,9 @@
 - ".LOADED = \n"
 - "LINK.S = cc   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - "INVALID_PROJECT_ADDONS = \n"
 - 'GEM_HOME = /home/ravenskrag/.rvm/gems/ruby-2.7.2
 
@@ -694,7 +731,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1664
+- 'SSH_AGENT_PID = 1583
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -708,9 +745,12 @@
 
   '
 - "LINK.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
-  -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always -I/usr/include/OpenEXR -I/usr/include/hdf5/serial
+  \ -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold -ldrm
+  -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'TMP_PROJECT_ADDONS_SOURCE_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxToggle.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxButton.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxLabel.cpp
@@ -746,12 +786,18 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicType.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicUtil.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicWriter.cpp
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicReader.cpp
   ./src/ofApp.cpp ./src/main.cpp ./src/ofApp.cpp ./src/main.cpp
 
   '
 - "LINK.s = cc  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'HOME = /home/ravenskrag
 
   '
@@ -801,6 +847,10 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicType.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicUtil.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicWriter.o
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicReader.o
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o
@@ -833,6 +883,8 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
+  -Isrc -I/home/ravenskrag/Code/Source/alembic/alembic/lib/ -I/home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/
   -I/. -I. -I/./bin -I./bin -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Debug
   -I./obj/linux64/Debug/src -I./src
 
@@ -846,7 +898,7 @@
 - 'PLATFORM_VARIANT = default
 
   '
-- "PROJECT_AFTER =     \n"
+- "PROJECT_AFTER =      \n"
 - 'rvm_path = /home/ravenskrag/.rvm
 
   '
@@ -950,7 +1002,7 @@
 - 'MAKECMDGOALS = printvars
 
   '
-- 'VALID_PROJECT_ADDONS = ofxGui ofxMidi ofxImGui ofxDatGui
+- 'VALID_PROJECT_ADDONS = ofxGui ofxMidi ofxAlembic ofxImGui ofxDatGui
 
   '
 - "ABIS_TO_COMPILE = \n"
@@ -969,7 +1021,9 @@
 
   '
 - "OF_PROJECT_LDFLAGS = -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex             \n"
+  -lfmodex         /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \   \n"
 - 'AS = as
 
   '
@@ -986,18 +1040,22 @@
 - 'PARSED_ADDONS_SOURCE_FILES = ./src/ofApp.cpp ./src/main.cpp ./src/ofApp.cpp ./src/main.cpp
 
   '
-- "TMP_PROJECT_ADDONS_LDFLAGS =     \n"
+- "TMP_PROJECT_ADDONS_LDFLAGS =     /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'HOST_OS = Linux
 
   '
 - "ALL_LDFLAGS =  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex             \n"
+  -lfmodex         /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \   \n"
 - "ADDONS_SOURCES_FILTER = \n"
 - 'COMPILE.p = pc    -c
 
   '
-- 'XDG_SESSION_ID = 4
+- 'XDG_SESSION_ID = 3
 
   '
 - 'USER = ravenskrag
@@ -1026,7 +1084,7 @@
 - 'FAILED_PKG = 0
 
   '
-- "TMP_PROJECT_ADDONS_FRAMEWORKS =     \n"
+- "TMP_PROJECT_ADDONS_FRAMEWORKS =      \n"
 - "PARSED_ADDONS_LIBS_INCLUDES_PATHS = \n"
 - "PROJECT_ADDONS_INCLUDES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxDatGui/src/components
@@ -1041,6 +1099,8 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
+  src /home/ravenskrag/Code/Source/alembic/alembic/lib/ /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/
   /. . /./bin ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
   ./src \n"
 - 'rvm_version = 1.29.10 (latest)
@@ -1067,15 +1127,17 @@
   '
 - "LINK.cpp = g++   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections
   -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'F77 = f77
 
   '
-- 'OLDPWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib
+- 'COMPILE.cc = g++    -c
 
   '
 - "ADDON_LIBS_EXCLUDE = \n"
-- 'REQUESTED_PROJECT_ADDONS =  ofxGui ofxDatGui ofxImGui ofxMidi
+- 'REQUESTED_PROJECT_ADDONS =  ofxGui ofxDatGui ofxImGui ofxMidi ofxAlembic
 
   '
 - 'OF_PROJECT_INCLUDES_CFLAGS = -I/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src
@@ -1126,8 +1188,8 @@
   OF_ROOT FAILED_PKG TMP_PROJECT_ADDONS_FRAMEWORKS PARSED_ADDONS_LIBS_INCLUDES_PATHS
   PROJECT_ADDONS_INCLUDES rvm_version %D ADDON_FRAMEWORKS OF_EXAMPLES_PATH SRC_OBJ_FILE
   PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS rwildcard WEAVE MAKE_COMMAND LINK.cpp F77
-  OLDPWD ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS .VARIABLES
-  addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
+  COMPILE.cc ADDON_LIBS_EXCLUDE REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
+  .VARIABLES addon_obj_path PC *F ADDON_SOURCES_EXCLUDE XDG_SEAT_PATH ADDON_INCLUDES_FILTERED
   PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def LEX MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH
   PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH OF_CORE_LIBS_THAT_NEED_ORDER
   LEX.l LEX.m OF_PROJECT_ADDONS_DEPS ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS
@@ -1136,7 +1198,7 @@
   CLEANTARGET QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS parse_addons_libraries
   DEFAULTS_PATH LDFLAGS PLATFORM_PKG_CONFIG_LIBRARIES parse_addons_includes .SHELLSTATUS
   GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES ADDON_LDFLAGS TMP_PROJECT_ADDONS_INCLUDES
-  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS COMPILE.cc HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
+  YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2
   CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES
   ADDON_CPPFLAGS COMPILE.C GNOME_TERMINAL_SCREEN ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT
   GNOME_TERMINAL_SERVICE SUFFIXES PARSED_ADDONS_FILTERED_LIBS_INCLUDE_PATHS PLATFORM_OS
@@ -1238,6 +1300,10 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicType.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicUtil.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicWriter.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicReader.d
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
 
@@ -1304,7 +1370,8 @@
   '
 - 'LDFLAGS = -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
 
   '
 - 'PLATFORM_PKG_CONFIG_LIBRARIES =  cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0
@@ -1354,6 +1421,10 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicType.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicUtil.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicWriter.d
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxAlembic/src/ofxAlembicReader.d
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d
 
@@ -1372,6 +1443,8 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+  /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
+  src /home/ravenskrag/Code/Source/alembic/alembic/lib/ /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/
   /. . /./bin ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
   ./src /. . /./bin ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
   ./src /. . /./bin ./bin ./bin/data ./obj ./obj/linux64 ./obj/linux64/Debug ./obj/linux64/Debug/src
@@ -1600,9 +1673,6 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
 
   '
-- 'COMPILE.cc = g++    -c
-
-  '
 - 'HOST_ARCH = x86_64
 
   '
@@ -1617,13 +1687,16 @@
 
   '
 - "ALL_CFLAGS =  -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always -I/usr/include/OpenEXR -I/usr/include/hdf5/serial
+  \   \n"
 - "COFLAGS = \n"
 - "OF_CORE_LIBRARY_LDFLAGS = -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - "LINK.C = g++   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'OF_CORE_INCLUDES_CFLAGS =  -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0
   -I/usr/include/orc-0.4 -I/usr/include/gstreamer-1.0 -I/usr/include/AL -I/usr/include/x86_64-linux-gnu
   -I/usr/include/rtaudio -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0
@@ -1662,7 +1735,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/dfa2f7f2_8fd0_4605_b3a4_21650fea09ff
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/6d519db2_941b_4ed2_bee4_48b6115abb4a
 
   '
 - "^F = \n"
@@ -1671,14 +1744,16 @@
   '
 - "LINK.F = f77   -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'rvm_prefix = /home/ravenskrag
 
   '
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.3258
+- 'GNOME_TERMINAL_SERVICE = :1.215
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1693,7 +1768,7 @@
 
   '
 - 'COMPILE.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always -I/usr/include/OpenEXR -I/usr/include/hdf5/serial   -c
 
   '
 - 'ADDON_INCLUDE_CFLAGS = -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0
@@ -1742,6 +1817,8 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
+  -Isrc -I/home/ravenskrag/Code/Source/alembic/alembic/lib/ -I/home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/
   -I/. -I. -I/./bin -I./bin -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Debug
   -I./obj/linux64/Debug/src -I./src
 
@@ -1754,7 +1831,7 @@
   '
 - "ADDON_CFLAGS = \n"
 - "COMPILE.s = as  \n"
-- "PROJECT_ADDONS_CFLAGS =  \n"
+- "PROJECT_ADDONS_CFLAGS = -I/usr/include/OpenEXR -I/usr/include/hdf5/serial \n"
 - ".INCLUDE_DIRS = /usr/include /usr/local/include /usr/include\n"
 - 'PARSED_ADDONS_OFX_SOURCES = ./src/ofApp.cpp ./src/main.cpp
 
@@ -1769,7 +1846,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/3
+- 'MAKE_TERMERR = /dev/pts/4
 
   '
 - 'OBJC = cc
@@ -1781,7 +1858,9 @@
   '
 - "LINK.f = f77  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - "ADDON_LIBS = \n"
 - 'TEX = tex
 
@@ -1799,14 +1878,17 @@
 - "F77FLAGS = \n"
 - "LINK.o = cc -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
-  -lfmodex \n"
+  -lfmodex /home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/Alembic/libAlembic.a
+  -lhdf5_serial -lhdf5_cpp -lhdf5_hl_cpp -lHalf -lIex -lIexMath -lIlmThread -lImath
+  \n"
 - 'ADDON_SOURCES = ./src/ofApp.cpp ./src/main.cpp ./src/ofApp.cpp ./src/main.cpp
 
   '
 - 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxGLFWJoystick
   ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics
   ofxXmlSettings ofxAccelerometer ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten
-  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxMathUtils ofxiOS ofxImGui ofxDatGui
+  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxAlembic ofxMathUtils ofxiOS ofxImGui
+  ofxDatGui
 
   '
 - "OF_CORE_BASE_CXXFLAGS = \n"
@@ -1860,6 +1942,8 @@
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi
   -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi
+  -I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxAlembic/src
+  -Isrc -I/home/ravenskrag/Code/Source/alembic/alembic/lib/ -I/home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/
   -I/. -I. -I/./bin -I./bin -I./bin/data -I./obj -I./obj/linux64 -I./obj/linux64/Debug
   -I./obj/linux64/Debug/src -I./src
 

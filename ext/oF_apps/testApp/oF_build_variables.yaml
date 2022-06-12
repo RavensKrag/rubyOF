@@ -388,7 +388,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1650,unix/ravensnest:/tmp/.ICE-unix/1650
+- local/ravensnest:@/tmp/.ICE-unix/1653,unix/ravensnest:/tmp/.ICE-unix/1653
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -476,7 +476,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-hBVoKoinil0q/agent.1449"
+- "/tmp/ssh-Ac6tRjGLl5bQ/agent.1470"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/obj"
@@ -549,7 +549,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1562'
+- '1583'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src/ofApp.cpp"
@@ -794,8 +794,9 @@ LINK.cpp:
 - "-lfmodex"
 F77:
 - f77
-OLDPWD:
-- "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib"
+COMPILE.cc:
+- g++
+- "-c"
 REQUESTED_PROJECT_ADDONS: []
 OF_PROJECT_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/src"
@@ -994,7 +995,7 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - MAKE_COMMAND
 - LINK.cpp
 - F77
-- OLDPWD
+- COMPILE.cc
 - REQUESTED_PROJECT_ADDONS
 - OF_PROJECT_INCLUDES_CFLAGS
 - ".VARIABLES"
@@ -1038,7 +1039,6 @@ OF_PROJECT_INCLUDES_CFLAGS:
 - OF_PROJECT_DEPENDENCY_FILES
 - YACC
 - ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-- COMPILE.cc
 - HOST_ARCH
 - "<F"
 - TARGET_LIBS
@@ -1443,9 +1443,6 @@ ALL_OF_CORE_THIRDPARTY_HEADER_PATHS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/uriparser/include/uriparser"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8"
-COMPILE.cc:
-- g++
-- "-c"
 HOST_ARCH:
 - x86_64
 "<F": []
@@ -1540,7 +1537,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/0124af03_9a0a_4140_bd25_214b03c26096"
+- "/org/gnome/Terminal/screen/6d519db2_941b_4ed2_bee4_48b6115abb4a"
 "^F": []
 COMPILE.S:
 - cc
@@ -1559,7 +1556,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.93"
+- ":1.215"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -1703,7 +1700,7 @@ CORE_PKG_CONFIG_LIBRARIES:
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/3"
+- "/dev/pts/4"
 OBJC:
 - cc
 LINK.f:
@@ -1737,6 +1734,8 @@ ALL_INSTALLED_ADDONS:
 - ofxUnitTests
 - ofxThreadedImageLoader
 - ofxNetwork
+- ofxGLFWJoystick
+- ofxShadowSimple
 - ofxInfiniteCanvas
 - ofxGui
 - ofxGPS
@@ -1755,6 +1754,7 @@ ALL_INSTALLED_ADDONS:
 - ofxAssimpModelLoader
 - ofxAndroid
 - ofxSparklines
+- ofxAlembic
 - ofxMathUtils
 - ofxiOS
 - ofxImGui
