@@ -132,7 +132,14 @@ EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 	return true; // if you do all operations, there was no error
 }
 
+
+
 // return true if data was updated, else false
+// 
+// Data format based on work by Yi Fei Boon, but assuming the floating point data storage provided by OpenEXR. This removes the need to scale from the 256 values of a 8bps format (like .png), to the 32bps floating point representation.
+// 
+// “4,000 Adams at 90 Frames Per Second | Yi Fei Boon”, from the “GameDaily Connect” channel on Youtube. May 26, 2017.
+// https://www.youtube.com/watch?v=rXqKu9uC0f4
 bool
 EntityData::update(ofFloatPixels& pixels, int scanline_index){
 	if(mChanged){
