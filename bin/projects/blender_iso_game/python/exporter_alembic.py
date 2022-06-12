@@ -236,8 +236,10 @@ class ExporterAlembic():
         # export to alembic
         # 
         
+        # name = prop_group.collection_ptr.name
+        name = prop_group.name
         path = os.path.join(bpy.path.abspath(tex_manager.output_dir),
-                            'test.abc')
+                            name+'.abc')
         
         bpy.ops.wm.alembic_export(
             filepath=path,
@@ -245,13 +247,17 @@ class ExporterAlembic():
             end=1,
             selected=True,
             visible_objects_only=True,
-            flatten=True,
-            uvs=True,
+            flatten=False,
+            uvs=False, packuv=False,
             normals=True,
-            face_sets=True,
+            face_sets=False,
             apply_subdiv=True,
             use_instancing=True,
-            triangulate=True, quad_method='BEAUTY'
+            triangulate=True, quad_method='BEAUTY',
+            export_hair=False,
+            export_particles=False,
+            export_custom_properties=False,
+            # evaluation_mode='VIEWPORT'
             )
         
         context = yield( 2 / 3 )
@@ -281,10 +287,7 @@ class ExporterAlembic():
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
-            'json_file_path': tex_manager.get_json_path(),
-            'entity_tex_path': entity_filepath,
-            'position_tex_path' : position_filepath,
-            'normal_tex_path'   : normal_filepath,
+            'path': path,
         }
         
         self.to_ruby.write(json.dumps(data))
