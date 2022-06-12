@@ -1327,6 +1327,7 @@ void wrap_EntityCache(Module rb_mProject){
 
 
 
+#include "wrap_ofxAlembic.h"
 
 
 
@@ -1510,9 +1511,11 @@ void Init_rubyOF_project()
 	Module rb_mOFX = define_module_under(rb_mRubyOF, "OFX");
 	
 	wrap_ofxMidi(rb_mOFX);
+	wrap_ofxAlembic(rb_mOFX);
 	
 	wrap_ofxDynamicMaterial(rb_mOFX);
 	wrap_ofxDynamicLight(rb_mOFX);
+	
 	
 	
 	
