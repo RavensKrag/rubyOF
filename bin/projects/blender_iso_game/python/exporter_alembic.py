@@ -250,7 +250,7 @@ class ExporterAlembic():
             flatten=False,
             uvs=False, packuv=False,
             normals=True,
-            face_sets=False,
+            face_sets=True,
             apply_subdiv=True,
             use_instancing=True,
             triangulate=True, quad_method='BEAUTY',
