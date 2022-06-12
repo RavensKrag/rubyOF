@@ -98,11 +98,7 @@ load LIB_DIR/'entities'/'blender_mesh.rb'
 load LIB_DIR/'entities'/'viewport_camera.rb'
 load LIB_DIR/'entities'/'blender_light.rb'
 
-load LIB_DIR/'instancing_buffer.rb'
-
 load LIB_DIR/'blender_history.rb'
-load LIB_DIR/'render_batch.rb'
-load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
 
@@ -250,11 +246,6 @@ class Core
     
     
     @message_history = BlenderHistory.new
-    
-    # @depsgraph = DependencyGraph.new
-    # ^ this was an old class for different types of entities (objects, meshes, lights, cameras) before the creation of the new vertex animation system.
-    # Keeping a reference here in a comment for historical reasons (may need to reference this code later) but generally speaking, this class should no longer be used
-      # use OIT_RenderPipeline, World, and RubyOF::Project::EntityCache instead
     
     @sync = BlenderSync.new(@message_history, @frame_history,
                             @window, @world)
