@@ -748,31 +748,6 @@ void callgrind_END(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void clearDepthBuffer(){
 	// glClearDepth(-10000);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -1349,6 +1324,30 @@ void wrap_EntityCache(Module rb_mProject){
 		.define_method("destroy_entity",  &EntityCache::destroyEntity)
 	;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
