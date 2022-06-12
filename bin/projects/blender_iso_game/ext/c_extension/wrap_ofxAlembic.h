@@ -13,3 +13,8 @@
 #include "rice/Module.hpp"
 
 #include "rice/Array.hpp"
+
+
+void wrap_ofxAlembic(Rice::Module rb_mOFX);
+Rice::Array ofxAlembic__Reader__getNames(ofxAlembic::Reader& reader);
+Rice::Array ofxAlembic__Reader__getFullnames(ofxAlembic::Reader& reader);

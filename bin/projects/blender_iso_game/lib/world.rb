@@ -160,15 +160,22 @@ class World
     
     @storage[:static].tap do |data|
       prefix = "Tiles"
+      filepath = static_data_path/"#{prefix}.abc"
+      load_alembic filepath
+      
+      
       json_file_path    = static_data_path/"#{prefix}.cache.json"
       position_tex_path = static_data_path/"#{prefix}.position.exr"
       normal_tex_path   = static_data_path/"#{prefix}.normal.exr"
       entity_tex_path   = static_data_path/"#{prefix}.entity.exr"
+      
+      
       @static_prefix = prefix
       
       load_static_mesh_textures position_tex_path, normal_tex_path
       load_static_entity_texture entity_tex_path
       load_static_json_data json_file_path
+      
       
       
       # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
@@ -441,10 +448,80 @@ class World
   
   
   
+  def load_alembic(filepath)
+    # NOTE: ofxAlembic uses a customized version of the extension, and the configuration files for the build point to paths on my machine. this needs to be fixed before this build environment will work on someone else's setup
+    
+    
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    
+    [
+      [ @storage[:static][:entity_data][:pixels],
+        @storage[:static][:entity_data][:texture] ],
+      [ @storage[:static][:mesh_data][:pixels][:positions],
+        @storage[:static][:mesh_data][:textures][:positions] ],
+      [ @storage[:static][:mesh_data][:pixels][:normals],
+        @storage[:static][:mesh_data][:textures][:normals] ]
+    ].each do |pixels, texture|
+      # ofLoadImage(pixels, path_to_file.to_s)
+      
+      
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      # puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical   => :clamp_to_edge,
+                        :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+    
+    
+    
+    alembic = RubyOF::OFX::Alembic::Reader.new
+    alembic.open(filepath.to_s)
+    p alembic
+    puts "alembic size: #{alembic.size}"
+    puts "alembic paths: #{alembic.names.inspect}"
+    puts "alembic paths: #{alembic.fullnames.inspect}"
+    puts "\n"*3
+    
+    # hash_data = {
+    #   "mesh_data_cache" => [],
+    #   "entity_data_cache" => [
+    #     [entity_name, mesh_name, material_name]
+    #   ]
+    # }
+    
+    # @storage[:static][:names].load hash_data
+    
+    
+    
+    
+    # # reset the cache when textures reload
+    # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
+    
+    
+  end
+  
+  
+  
+  
+  
+  
+  
   
   
   def load_static_json_data(json_file_path)
-    @storage[:static][:names].load json_file_path
+    @storage[:static][:names].load_file json_file_path
     
     # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
   end
@@ -520,7 +597,7 @@ class World
   
   
   def load_dynamic_json_data(json_file_path)
-    @storage[:dynamic][:names].load json_file_path
+    @storage[:dynamic][:names].load_file json_file_path
   end
   
   # dynamic entities can change their position over time,
@@ -615,7 +692,7 @@ class World
       @json = nil
     end
     
-    def load(json_filepath)
+    def load_file(json_filepath)
       unless File.exist? json_filepath
         raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
       end
@@ -623,6 +700,10 @@ class World
       json_string   = File.readlines(json_filepath).join("\n")
       json_data     = JSON.parse(json_string)
       
+      self.load(json_data)
+    end
+    
+    def load(json_data)
       @json = json_data
     end
     
