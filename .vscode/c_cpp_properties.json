@@ -85,20 +85,16 @@
                 "${workspaceFolder}/ext/openFrameworks/addons/ofxImGui/libs/imgui/src",
                 "${workspaceFolder}/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice",
                 "${workspaceFolder}/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/ruby/lib/include",
-                
-                
-                // "/home/ravenskrag/.rvm/gems/ruby-2.4.0/gems/rice-2.1.1/ruby/lib/include",
-                // "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/",
-                // "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/ruby/",
-                // "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/ruby-2.4.0/x86_64-linux",
-                
                 "/home/ravenskrag/.rvm/rubies/ruby-2.7.2/include/ruby-2.7.0/",
                 "/home/ravenskrag/.rvm/rubies/ruby-2.7.2/include/ruby-2.7.0/ruby",
                 "/home/ravenskrag/.rvm/rubies/ruby-2.7.2/include/ruby-2.7.0/x86_64-linux",
-                
                 "${workspaceFolder}/ext/openFrameworks/addons/ofxMidi/src",
-                // "${workspaceFolder}/ext/openFrameworks/addons/ofxMidi/src/desktop/"
-                "${workspaceFolder}/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+                "${workspaceFolder}/ext/openFrameworks/addons/ofxMidi/libs/rtmidi",
+                "/home/ravenskrag/Code/Source/alembic/alembic/lib/",
+                "/home/ravenskrag/Code/Source/alembic/alembic/build_static/lib/",
+                "/usr/include/OpenEXR",
+                "/usr/include/hdf5/serial",
+                "${workspaceFolder}/ext/openFrameworks/addons/ofxAlembic/src"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -111,14 +107,10 @@
                     "/usr/local/include",
                     "/usr/include/x86_64-linux-gnu",
                     "/usr/include",
-                    // "${workspaceroot}/ext/openFrameworks/libs/",
                     "${workspaceRoot}/ext/openFrameworks/libs/openFrameworks",
                     "${workspaceRoot}/ext/openFrameworks/libs/openFrameworks/graphics",
-                    // "${workspaceroot}/bin/projects/",
                     "${workspaceRoot}/ext/openFrameworks/addons/",
                     "${workspaceFolder}/vendor/bundle/ruby/2.7.0/gems/rice-2.2.0/rice",
-                    // "/home/ravenskrag/.rvm/rubies/ruby-2.4.0/include/"
-                    
                     "/home/ravenskrag/.rvm/rubies/ruby-2.7.2/include/"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

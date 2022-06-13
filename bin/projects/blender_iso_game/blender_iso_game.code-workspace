@@ -14,7 +14,9 @@
 			"fstream": "cpp",
 			"memory": "cpp",
 			"new": "cpp",
-			"numeric": "cpp"
+			"numeric": "cpp",
+			"random": "cpp",
+			"regex": "cpp"
 		}
 	}
 }
