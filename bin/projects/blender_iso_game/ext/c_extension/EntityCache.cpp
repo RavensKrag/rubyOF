@@ -3,7 +3,7 @@
 
 
 EntityCache::EntityCache(){
-	
+	mSize = 0;
 }
 
 EntityCache::~EntityCache(){
