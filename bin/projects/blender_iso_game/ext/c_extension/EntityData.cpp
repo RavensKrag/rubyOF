@@ -310,7 +310,7 @@ EntityData::loadMaterial(const ofFloatPixels::ConstPixels &scanline){
 void
 EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_start){
 	int i=0;
-	for(int j=x_start; j<mMaterial.NUM_PIXELS; j++){
+	for(int i=0; i<mMaterial.NUM_PIXELS; i++){
 		ofFloatColor color;
 		
 		if(i == 0){
@@ -327,9 +327,7 @@ EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_star
 			color = mMaterial.emissive;
 		}
 		
-		
-		pixels.setColor(j,scanline_index, color);
-		i++;
+		pixels.setColor(x_start+i, scanline_index, color);
 	}
 	
 
