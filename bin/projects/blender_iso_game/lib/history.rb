@@ -18,13 +18,23 @@ class History
     
     
     # @texture : RubyOF::Texture
-    @length = 0
+    @max_length = 0
+    @i = nil
+  end
+  
+  def setup
+    @max_length = 100
+    @buffer.allocate(@pixels.width, @pixels.height, @max_length)
   end
   
   
   # TODO: properly implement length (needed by FrameHistory - may need to refactor that class instead)
   def length
-    @length
+    if @i.nil?
+      return 0
+    else
+      return @i-1
+    end
   end
   
   alias :size :length
@@ -53,32 +63,36 @@ class History
       # because the cache now does not match up with the buffer
       # and the buffer has now become the authoritative source of data.
     
-    @buffer.copy_frame(frame_index, @pixels)
-    @cache.load @pixels
+    # @buffer.copy_frame(frame_index, @pixels)
+    # @cache.load @pixels
     
   end
   
   def snapshot_gamestate_at(frame_index)
     
-    # if we're supposed to save frame data (not time traveling)
+    # # if we're supposed to save frame data (not time traveling)
     
-    # then try to write the data
-    if @cache.update @pixels
-      # if data was written...
+    # # then try to write the data
+    # if @cache.update @pixels
+    #   # if data was written...
       
-      # ...then send it to the GPU
-      @texture.load_data @pixels
+    #   # ...then send it to the GPU
+    #   @texture.load_data @pixels
       
-      # ^ for dynamic entites, need [ofFloatPixels] where each communicates with the same instance of ofTexture
-      # + one ofTexture for static entites
-      # + one for dynamic entites
-      # + then an extra one for rendering ghosts / trails / onion skinning of dynamic entities)
-    end
+    #   # ^ for dynamic entites, need [ofFloatPixels] where each communicates with the same instance of ofTexture
+    #   # + one ofTexture for static entites
+    #   # + one for dynamic entites
+    #   # + then an extra one for rendering ghosts / trails / onion skinning of dynamic entities)
+    # end
     
-    # always save a copy in the history buffer
-    # (otherwise the buffer could have garbage at that timepoint)
-    @buffer[frame_index] = @pixels
+    # # always save a copy in the history buffer
+    # # (otherwise the buffer could have garbage at that timepoint)
+    # @buffer[frame_index] = @pixels
     
+    
+    # if @i.nil? || frame_index > @i
+    #   @i = frame_index
+    # end
   end
   
   
@@ -113,6 +127,9 @@ class History
     end
     
     alias :length :size
+    
+    # FIXME: recieving index -1
+    # (should I interpret that as distance from the end of the buffer, or what? need to look into the other code on the critical path to figure this out)
     
     # set data in history buffer on a given frame
     def []=(frame_index, frame_data)

@@ -101,14 +101,6 @@ class World
     
     # TODO: re-connect history
     
-    # @history = History.new(
-    #   @storage[:dynamic].history,
-    #   @storage[:dynamic][:entity_data][:pixels],
-    #   @storage[:dynamic][:entity_data][:texture],
-    #   @storage[:dynamic].cache
-    # )
-    
-    
     @history = History.new(
       @storage['Characters'].entity_pixels,
       @storage['Characters'].entity_texture,
@@ -127,42 +119,16 @@ class World
     
     # TODO: consider implementing read-only mode for DataInterface for static entities
     
-    
     @storage.values.each do |texture_set|
       texture_set.setup()
     end
     
+    @history.setup
     
-    # # dynamic_entities
-    # # + load from disk to specify initial state
-    # # + if reloaded, that's a new initial state (t == 0)
-    # # + need other mechanism to load changes @ t != 0 (JSON message?)
-    
-    # @storage[:dynamic].tap do |data|
-    #   prefix = "Characters"
-    #   json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
-    #   position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
-    #   normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
-    #   entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
-    #   @dynamic_prefix = prefix
-      
-    #   load_dynamic_mesh_textures position_tex_path, normal_tex_path
-    #   load_dynamic_entity_texture entity_tex_path # initial state only
-    #   load_dynamic_json_data json_file_path
-      
-    #   # initialize rest of history buffer
-    #   # (allocate correct image size, but don't clear garbage)
-    #   data[:entity_data][:pixels].tap do |pixels|
-    #     data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
-    #   end
-      
-    #   # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-    #   vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
-    #   data[:geometry].generate vertex_count
-      
-    #   data[:cache].load data[:entity_data][:pixels]
-    # end
-    
+    # dynamic_entities
+    # + load from disk to specify initial state
+    # + if reloaded, that's a new initial state (t == 0)
+    # + need other mechanism to load changes @ t != 0 (JSON message?)
   end
   
   
@@ -171,6 +137,10 @@ class World
     @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
       # on reload
       
+    end
+    
+    @storage.values.each do |texture_set|
+      texture_set.update
     end
   end
   
@@ -570,6 +540,8 @@ class World
           [entity.mesh.name, entity.position]
         end
       
+      p @entity_list
+      
       # p @entity_list
       
       # @entity_list.each do |name, pos|
@@ -597,7 +569,7 @@ class World
       
       out = @entity_list.select{   |name, pos|  pos == pt  }
                         .collect{  |name, pos|  name  }
-                        .collect{  |name|  @data.find_mesh_by_name(name)  }
+                        .collect{  |name|  @data['Tiles'].find_mesh_by_name(name)  }
       
       puts "=> #{out.inspect}"
       

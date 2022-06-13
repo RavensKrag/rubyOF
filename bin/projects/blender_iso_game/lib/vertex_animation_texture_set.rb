@@ -84,6 +84,14 @@ class VertexAnimationTextureSet
     @storage[:cache].load @storage[:entity_data][:pixels]
   end
   
+  def update
+    # puts "cache -> pixels"
+    pixels  = @storage[:entity_data][:pixels]
+    texture = @storage[:entity_data][:texture]
+    
+    @storage[:cache].update pixels
+    texture.load_data(pixels)
+  end
   
   def load_json_data(json_file_path)
     @storage[:names].load json_file_path

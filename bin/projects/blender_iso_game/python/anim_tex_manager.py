@@ -717,7 +717,7 @@ class AnimTexManager ():
         print("mesh name:", mesh_name, flush=True)
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
-        pixel_data = [mesh_id, mesh_id, mesh_id, 1.0]
+        pixel_data = [mesh_id, mesh_id, -1.0, 1.0]
         
         
         self.__cache_entity_mesh_binding(scanline_index, mesh_name)

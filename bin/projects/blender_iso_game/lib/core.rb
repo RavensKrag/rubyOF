@@ -472,7 +472,6 @@ class Core
     
     @frame_history.update do |snapshot|
       # step every x frames
-      
       x = 8
       
       moves = [
@@ -502,7 +501,7 @@ class Core
         
         #  0 - log root position
         snapshot.frame do
-          
+          puts "hello world"
         end
         
         
@@ -513,7 +512,7 @@ class Core
         # so any code related to a branch condition
         # needs to be outside of the snapshot blocks.
         
-        entity = @world.data.find_entity_by_name('CharacterTest')
+        entity = @world.data['Characters'].find_entity_by_name('CharacterTest')
         p entity
         
         pos = entity.position
@@ -625,17 +624,19 @@ class Core
               #  2..16 - animate
               snapshot.frame do
                 # NO-OP
+                puts "falling"
               end
             end
           
           # 17 - animate
           snapshot.frame do
             entity.position = pos + v_down
+            puts "falling"
           end
           
           #  0 - new root position
           snapshot.frame do
-            
+            puts "falling"
           end
           
           

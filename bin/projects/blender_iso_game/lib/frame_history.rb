@@ -367,7 +367,11 @@ class FrameHistory
           
           puts "#{@executing_frame.to_s.rjust(4, '0')} new state"
           
-          block.call
+          # p block
+          puts "--------------------------------"
+          p block.source_location
+          block.call()
+          puts "--------------------------------"
           
           Fiber.yield
         # elsif @executing_frame > @history.length
