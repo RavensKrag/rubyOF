@@ -136,9 +136,13 @@ ofxAlembic__IGeom__getName(ofxAlembic::IGeom& node){
 }
 
 
+// ofMatrix4v4 can be convert to mat4, but they are not binary equivalents
 void
 ofxAlembic__IGeom__getMat4(ofxAlembic::IGeom& n, glm::mat4 &mat){
-	n.get(mat);
+	ofMatrix4x4 ofmat;
+	n.get(ofmat);
+	
+	mat = ofmat;
 }
 
 void

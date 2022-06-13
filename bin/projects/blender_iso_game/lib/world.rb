@@ -186,6 +186,8 @@ class World
       vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
       data[:geometry].generate vertex_count
       
+      puts "vertex_count: #{vertex_count}"
+      
       data[:cache].load data[:entity_data][:pixels]
     end
     
@@ -491,6 +493,12 @@ class World
       texture.load_data(pixels)
     end
     
+    # texture = @storage[:static][:mesh_data][:textures][:normals]
+    # pixels = @storage[:static][:mesh_data][:pixels][:normals]
+    # pixels.setColor_all RubyOF::FloatColor.rgba([1.0, 0.0, 0.0, 1.0])
+    # texture.load_data(pixels)
+    
+    
     
     
     alembic = RubyOF::OFX::Alembic::Reader.new
@@ -518,25 +526,149 @@ class World
     
     
     
+    # 
+    # load mesh data from alembic
+    # 
+    
     pixels = @storage[:static][:mesh_data][:pixels][:positions]
     mesh = RubyOF::Mesh.new
     
     alembic.time = 0
+    i = 0
+    mesh_names = Set.new
+    
     
     alembic
     .select{|node|  node.type_name == 'PolyMesh' }
-    .each_with_index do |node, i|
+    .each do |node|
       puts node.name
+      
       node.get(mesh)
       
-      puts mesh.vertices
+      # p mesh_names.methods
       
-      scanline = i + 1 # scanline 0 should be blank, so offset by 1
-      puts RubyOF::CPP_Callbacks.meshToScanline(pixels, scanline, mesh)
+      if mesh_names.include? node.name
+        
+      else
+        # scanline 0 should be blank, so initialize @ 0,
+        # and increment index before using it
+        i = i+1
+        
+        mesh_names.add node.name
+        
+        puts mesh.vertices
+        
+        scanline = i + 1 
+        
+        puts RubyOF::CPP_Callbacks.meshToScanline(pixels, scanline, mesh)
+      end
+      
+      
     end
     
     texture = @storage[:static][:mesh_data][:textures][:positions]
     texture.load_data(pixels)
+    
+    
+    
+    # 
+    # map mesh names
+    # 
+    
+    hash_data = {
+      "mesh_data_cache" => [],
+      "entity_data_cache" => []
+    }
+    
+    
+    hash_data["mesh_data_cache"] << nil # first mesh is blank
+    mesh_names.each do |name|
+      hash_data["mesh_data_cache"] << name
+    end
+    
+    p hash_data
+    
+    
+    # 
+    # load entity transform data from alembic
+    # 
+    
+    transforms = Array.new
+    
+    # correct the rotation matricies
+    # (apparently the alembic coordinate system is different from blender)
+    theta = (Math::PI/2)*1
+    rot = GLM::Mat4.new(
+      GLM::Vec4.new(1.0, 0.0, 0.0, 0.0),
+      GLM::Vec4.new(0.0, Math.cos(-theta), -Math.sin(-theta), 0.0),
+      GLM::Vec4.new(0.0, Math.sin(-theta), -Math.cos(-theta), 0.0),
+      GLM::Vec4.new(0.0, 0.0, 0.0, 1.0),
+    )
+    
+    alembic
+    .select{|node|  node.type_name == 'Xform' }
+    .each do |node|
+      puts node.name
+      
+      
+      mat4 = GLM::Mat4.new(1.0)
+      node.get(mat4)
+      
+      
+      mat4 = rot * mat4 # GLM multiplies on the left
+      
+      hash_data["entity_data_cache"] << [node.name, 'Cube', 'Solid']
+      transforms << mat4
+    end
+    
+    p hash_data
+    
+    p transforms
+    
+    
+    # 
+    # finish populating name data
+    # so we can use that to map entity -> mesh
+    # 
+    
+    @storage[:static][:names].load hash_data
+    
+    
+    # 
+    # encode entity data in texture via EntityCache
+    # 
+    
+    # (use the existing entity cache interface to manipulate this texture)
+    
+    # load from blank image to initialize the cache size, etc
+    @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
+    
+    
+    hash_data["entity_data_cache"].each_with_index do |data, i|
+      entity_name, mesh_name, material_name = data
+      
+      @storage[:static][:cache].get_entity(i).tap do |entity|
+        entity.transform_matrix = transforms[i]
+        
+        i = @storage[:static][:names].mesh_name_to_scanline 'Cube_004'
+        puts i
+        entity.mesh_index = i
+        
+        entity.ambient  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
+        entity.diffuse  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
+        entity.specular = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+        entity.emissive = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+        entity.alpha = 1.0
+        
+      end
+    end
+    
+    texture = @storage[:static][:entity_data][:texture]
+    pixels = @storage[:static][:entity_data][:pixels]
+    
+    @storage[:static][:cache].update pixels
+    texture.load_data(pixels)
+    
     
     
     # set =
@@ -554,6 +686,8 @@ class World
     #     [entity_name, mesh_name, material_name]
     #   ]
     # }
+    
+    
     
     # @storage[:static][:names].load hash_data
     

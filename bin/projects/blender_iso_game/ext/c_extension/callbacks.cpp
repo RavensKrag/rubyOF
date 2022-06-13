@@ -946,7 +946,10 @@ meshToScanline(ofFloatPixels &pixels, int scanline_index, ofMesh& mesh){
 	
 	for(int i=0; i<verts.size(); i++){
 		auto v = verts[i];
-		ofFloatColor c(v.x, v.y, v.z, 0.1);
+		
+		std::cout << "vert: (" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
+		
+		ofFloatColor c(v.x, v.y, v.z, 1.0);
 		pixels.setColor(i, scanline_index, c);
 		
 	}
