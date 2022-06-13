@@ -285,6 +285,7 @@
         vec3 specular = vec3(0.0,0.0,0.0);
 
 		vec3 transformedNormal = normalize(v_transformedNormal);
+        // vec3 transformedNormal = vec3(1.0, 0.0, 0.0);
 
         for( int i = 0; i < num_lights; i++ ){
             if(lights[i].enabled<0.5) continue;
@@ -327,7 +328,9 @@
         // without lighting
         
         // vec4 localColor = v_diffuse;
+        // vec4 localColor = vec4(1.0, 1.0, 1.0, v_diffuse.a);
         
+        // vec4 localColor = vec4(1.0, 0.0, 0.0, 1.0);
         
         
         // TODO: call clamp later
