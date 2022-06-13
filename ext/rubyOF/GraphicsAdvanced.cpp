@@ -326,6 +326,10 @@ void ofPixels__setColor_xy(ofPixels &pixels, size_t x, size_t y, const ofColor &
    pixels.setColor(x,y,color);
 }
 
+void ofPixels__setColor_all(ofPixels &pixels, const ofColor &color){
+   pixels.setColor(color);
+}
+
 void ofPixels__setColor_i(ofPixels &pixels, size_t i, const ofColor &color){
    pixels.setColor(i,color);
 }
@@ -351,6 +355,10 @@ void ofFloatPixels__setColor_xy(ofFloatPixels &pixels, size_t x, size_t y, const
 
 void ofFloatPixels__setColor_i(ofFloatPixels &pixels, size_t i, const ofFloatColor &color){
    pixels.setColor(i,color);
+}
+
+void ofFloatPixels__setColor_all(ofFloatPixels &pixels, const ofFloatColor &color){
+   pixels.setColor(color);
 }
 
 void ofFloatPixels_flip(ofFloatPixels &pixels, const bool horizontal, const bool vertical){
@@ -713,11 +721,11 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       .define_method("crop",          &ofPixels::crop)
       .define_method("cropTo",        &ofPixels::cropTo)
-      .define_method("getColor_xy",   &ofPixels__getColor_xy)
-      
       .define_method("setColor_i",    &ofPixels__setColor_i)
       // ^ I think set_i actually fills an entire channel?
       //   see ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp:837-840
+      .define_method("getColor_xy",   &ofPixels__getColor_xy)
+      .define_method("setColor_all",  &ofPixels__setColor_all)      
       
       .define_method("setColor_xy",   &ofPixels__setColor_xy)
       .define_method("getPixelIndex", &ofPixels::getPixelIndex)
@@ -750,13 +758,17 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       )
       .define_method("crop",          &ofFloatPixels::crop)
       .define_method("crop_to",       &ofFloatPixels::cropTo)
-      .define_method("getColor_xy",   &ofFloatPixels__getColor_xy)
+      
+      
       
       .define_method("setColor_i",    &ofFloatPixels__setColor_i)
       // ^ I think set_i actually fills an entire channel?
       //   see ext/openFrameworks/libs/openFrameworks/graphics/ofTrueTypeFont.cpp:837-840
       
       .define_method("setColor_xy",   &ofFloatPixels__setColor_xy)
+      .define_method("setColor_all",  &ofFloatPixels__setColor_all)
+      
+      .define_method("getColor_xy",   &ofFloatPixels__getColor_xy)
       .define_method("getPixelIndex", &ofFloatPixels::getPixelIndex)
       .define_method("getTotalBytes", &ofFloatPixels::getTotalBytes)
       
@@ -954,6 +966,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("addNormal",         &ofMesh::addNormal)
       .define_method("addTexCoord",       &ofMesh::addTexCoord)
       .define_method("addIndex",          &ofMesh::addIndex)
+      
+      .define_method("vertices",          &ofMesh::getNumVertices)
       
       
       // .define_method("addNormals",

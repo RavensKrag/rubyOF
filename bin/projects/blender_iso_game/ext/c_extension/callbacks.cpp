@@ -898,6 +898,63 @@ ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
 	return mesh;
 }
 
+// return true if data was successfully packed into texture,
+// otherwise return false.
+bool
+meshToScanline(ofFloatPixels &pixels, int scanline_index, ofMesh& mesh){
+	// NOTE: don't use faces, just use the verticies.
+	// due to how the mesh data is encoded in PolyMesh::set
+	// ( ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicType.cpp )
+	// every 3 verticies encodes a new triangle,
+	// and no indexing of verticies are used.
+	// This is an incredibly simple format to transfer into the vertex animation texture.
+	
+	
+	
+	// const std::vector<ofMeshFace> &faces = mesh.getUniqueFaces();
+	
+	// static const int VERT_PER_TRI = 3;
+	
+	// if(faces.size()*VERT_PER_TRI > pixels.getWidth()){
+	// 	return false;
+	// }
+	// if(scanline_index > pixels.getHeight()-1){
+	// 	return false;
+	// }
+	
+	// std::cout << "face count: " << faces.size() << std::endl;
+	// for(int i=0; i<faces.size(); i++){
+	// 	ofMeshFace face = mesh.getFace(i);
+		
+	// 	for(int j=0; j<VERT_PER_TRI; j++){
+	// 		auto v = face.getVertex(j);
+	// 		ofFloatColor c(v.x, v.y, v.z, 0.1);
+	// 		pixels.setColor(i*VERT_PER_TRI+j, scanline_index, c);
+	// 	}
+	// }
+	
+	
+	
+	std::vector<glm::vec3>& verts = mesh.getVertices();
+	
+	if(verts.size() > pixels.getWidth()){
+		return false;
+	}
+	if(scanline_index > pixels.getHeight()-1){
+		return false;
+	}
+	
+	for(int i=0; i<verts.size(); i++){
+		auto v = verts[i];
+		ofFloatColor c(v.x, v.y, v.z, 0.1);
+		pixels.setColor(i, scanline_index, c);
+		
+	}
+	
+	
+	return true;
+}
+
 
 
 #include "ofGLProgrammableRenderer.h"
@@ -1416,6 +1473,9 @@ void Init_rubyOF_project()
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
 		
+		
+		.define_module_function("meshToScanline",
+			                     &meshToScanline)
 		
 	;
 	

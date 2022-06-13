@@ -22,3 +22,9 @@ Rice::Array ofxAlembic__Reader__getFullnames(ofxAlembic::Reader& reader);
 Rice::Data_Object<ofxAlembic::IGeom> ofxAlembic__Reader__getNode(ofxAlembic::Reader& reader, const string& path);
 
 std::string ofxAlembic__IGeom__getName(ofxAlembic::IGeom& node);
+
+void ofxAlembic__IGeom__getMat4(ofxAlembic::IGeom& n, glm::mat4 &mat);
+
+void ofxAlembic__IGeom__getMesh(ofxAlembic::IGeom& n, ofMesh &mesh);
+
+void ofxAlembic__IGeom__getFaceSet(ofxAlembic::IGeom& n, ofxAlembic::FaceSet &faces);

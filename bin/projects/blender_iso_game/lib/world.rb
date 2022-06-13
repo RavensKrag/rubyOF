@@ -160,8 +160,6 @@ class World
     
     @storage[:static].tap do |data|
       prefix = "Tiles"
-      filepath = static_data_path/"#{prefix}.abc"
-      load_alembic filepath
       
       
       json_file_path    = static_data_path/"#{prefix}.cache.json"
@@ -175,6 +173,12 @@ class World
       load_static_mesh_textures position_tex_path, normal_tex_path
       load_static_entity_texture entity_tex_path
       load_static_json_data json_file_path
+      
+      
+      
+      
+      filepath = static_data_path/"#{prefix}.abc"
+      load_alembic filepath
       
       
       
@@ -455,17 +459,20 @@ class World
     # 
     # configure all sets of pixels (CPU data) and textures (GPU data)
     # 
-    
+    clear_color = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
     [
-      [ @storage[:static][:entity_data][:pixels],
+      [ [9, 200],
+        @storage[:static][:entity_data][:pixels],
         @storage[:static][:entity_data][:texture] ],
-      [ @storage[:static][:mesh_data][:pixels][:positions],
+      [ [450, 30],
+        @storage[:static][:mesh_data][:pixels][:positions],
         @storage[:static][:mesh_data][:textures][:positions] ],
-      [ @storage[:static][:mesh_data][:pixels][:normals],
+      [ [450, 30],
+        @storage[:static][:mesh_data][:pixels][:normals],
         @storage[:static][:mesh_data][:textures][:normals] ]
-    ].each do |pixels, texture|
+    ].each do |size, pixels, texture|
       # ofLoadImage(pixels, path_to_file.to_s)
-      
+      pixels.setColor_all(clear_color)
       
       # y axis is flipped relative to Blender???
       # openframeworks uses 0,0 top left, y+ down
@@ -500,11 +507,45 @@ class World
     puts "\n"*3
     
     
-    alembic.each do |node|
+    
+    
+    
+    alembic.each_with_index do |node, i|
       # p node
-      puts "#{node.index} : #{node.type_name} '#{node.full_name}'"
+      puts "#{i} : #{node.type_name} '#{node.full_name}'"
       # puts node.index
     end
+    
+    
+    
+    pixels = @storage[:static][:mesh_data][:pixels][:positions]
+    mesh = RubyOF::Mesh.new
+    
+    alembic.time = 0
+    
+    alembic
+    .select{|node|  node.type_name == 'PolyMesh' }
+    .each_with_index do |node, i|
+      puts node.name
+      node.get(mesh)
+      
+      puts mesh.vertices
+      
+      scanline = i + 1 # scanline 0 should be blank, so offset by 1
+      puts RubyOF::CPP_Callbacks.meshToScanline(pixels, scanline, mesh)
+    end
+    
+    texture = @storage[:static][:mesh_data][:textures][:positions]
+    texture.load_data(pixels)
+    
+    
+    # set =
+    #   alembic
+    #   .select{|node| node.type_name == "FaceSet" }
+    #   # .map{|node|  node.name }
+      
+    
+    # p set
     
     
     # hash_data = {

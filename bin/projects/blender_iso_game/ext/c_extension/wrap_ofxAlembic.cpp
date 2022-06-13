@@ -24,6 +24,11 @@ void wrap_ofxAlembic(Module rb_mOFX){
 		
 		// .define_method("get",  &ofxAlembic::IGeom::get)
 		// // ^ this is overloaded
+		
+		
+		.define_method("get_mat4",  &ofxAlembic__IGeom__getMat4)
+		.define_method("get_mesh",  &ofxAlembic__IGeom__getMesh)
+		.define_method("get_faceset",  &ofxAlembic__IGeom__getFaceSet)
 	;
 	
 	
@@ -128,4 +133,20 @@ ofxAlembic__IGeom__getName(ofxAlembic::IGeom& node){
 	str_out = node.getName(); // force copy
 	
 	return str_out; // return the copy
+}
+
+
+void
+ofxAlembic__IGeom__getMat4(ofxAlembic::IGeom& n, glm::mat4 &mat){
+	n.get(mat);
+}
+
+void
+ofxAlembic__IGeom__getMesh(ofxAlembic::IGeom& n, ofMesh &mesh){
+	n.get(mesh);
+}
+
+void
+ofxAlembic__IGeom__getFaceSet(ofxAlembic::IGeom& n, ofxAlembic::FaceSet &faces){
+	n.get(faces);
 }
