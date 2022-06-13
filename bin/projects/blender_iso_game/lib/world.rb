@@ -530,7 +530,12 @@ class World
     # load mesh data from alembic
     # 
     
-    pixels = @storage[:static][:mesh_data][:pixels][:positions]
+    pos_pixels = @storage[:static][:mesh_data][:pixels][:positions]
+    nor_pixels = @storage[:static][:mesh_data][:pixels][:normals]
+    
+    pos_texture = @storage[:static][:mesh_data][:textures][:positions]
+    nor_texture = @storage[:static][:mesh_data][:textures][:normals]
+    
     mesh = RubyOF::Mesh.new
     
     alembic.time = 0
@@ -560,14 +565,17 @@ class World
         
         scanline = i + 1 
         
-        puts RubyOF::CPP_Callbacks.meshToScanline(pixels, scanline, mesh)
+        puts RubyOF::CPP_Callbacks.meshToScanline(
+          mesh, scanline,
+          pos_pixels, nor_pixels
+        )
       end
       
       
     end
     
-    texture = @storage[:static][:mesh_data][:textures][:positions]
-    texture.load_data(pixels)
+    pos_texture.load_data(pos_pixels)
+    nor_texture.load_data(nor_pixels)
     
     
     
@@ -652,7 +660,7 @@ class World
         
         i = @storage[:static][:names].mesh_name_to_scanline 'Cube_004'
         puts i
-        entity.mesh_index = i
+        entity.mesh_index = 3
         
         entity.ambient  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
         entity.diffuse  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])

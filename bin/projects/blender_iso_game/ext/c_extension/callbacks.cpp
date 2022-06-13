@@ -901,7 +901,7 @@ ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
 // return true if data was successfully packed into texture,
 // otherwise return false.
 bool
-meshToScanline(ofFloatPixels &pixels, int scanline_index, ofMesh& mesh){
+meshToScanline(ofMesh& mesh, int scanline_index, ofFloatPixels &pos, ofFloatPixels &norm){
 	// NOTE: don't use faces, just use the verticies.
 	// due to how the mesh data is encoded in PolyMesh::set
 	// ( ext/openFrameworks/addons/ofxAlembic/src/ofxAlembicType.cpp )
@@ -935,22 +935,33 @@ meshToScanline(ofFloatPixels &pixels, int scanline_index, ofMesh& mesh){
 	
 	
 	
-	std::vector<glm::vec3>& verts = mesh.getVertices();
+	std::vector<glm::vec3>& positions = mesh.getVertices();
+	std::vector<glm::vec3>& normals = mesh.getNormals();
 	
-	if(verts.size() > pixels.getWidth()){
+	if(positions.size() > pos.getWidth()){
 		return false;
 	}
-	if(scanline_index > pixels.getHeight()-1){
+	if(scanline_index > pos.getHeight()-1){
+		return false;
+	}
+	if(pos.getWidth() != norm.getWidth()){
+		return false;
+	}
+	if(pos.getHeight() != norm.getHeight()){
 		return false;
 	}
 	
-	for(int i=0; i<verts.size(); i++){
-		auto v = verts[i];
+	for(int i=0; i<positions.size(); i++){
 		
-		std::cout << "vert: (" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
 		
-		ofFloatColor c(v.x, v.y, v.z, 1.0);
-		pixels.setColor(i, scanline_index, c);
+		// std::cout << "vert: (" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
+		auto v1 = positions[i];
+		ofFloatColor c1(v1.x, v1.y, v1.z, 1.0);
+		pos.setColor(i, scanline_index, c1);
+		
+		auto v2 = normals[i];
+		ofFloatColor c2(v2.x, v2.y, v2.z, 1.0);
+		norm.setColor(i, scanline_index, c2);
 		
 	}
 	
