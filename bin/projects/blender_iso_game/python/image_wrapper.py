@@ -155,8 +155,7 @@ class ImageWrapper():
         
         offset = px_per_scanline*row
         
-        for i in range(px_per_scanline):
-            self.image.pixels[offset+i] = pixel_data[i]
+        self.image.pixels[(offset):(offset+len(pixel_data))] = pixel_data
             
         # print([px for px in self.image.pixels])
     

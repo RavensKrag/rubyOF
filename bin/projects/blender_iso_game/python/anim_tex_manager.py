@@ -17,7 +17,7 @@ import json
 import sys
 import os
 
-
+import numpy
 
 
 
@@ -63,11 +63,11 @@ class AnimTexManager ():
         # the user to create frames completely free of any
         # visible geometry. (useful with GPU instancing)
         
-        pixel_data = [1.0, 0.0, 0.0, 1.0] * self.position_tex.width
-        self.position_tex.write_scanline(pixel_data, 0)
+        # pixel_data = [1.0, 0.0, 0.0, 1.0] * self.position_tex.width
+        # self.position_tex.write_scanline(pixel_data, 0)
         
-        pixel_data = [1.0, 0.0, 0.0, 1.0] * self.normal_tex.width
-        self.normal_tex.write_scanline(pixel_data, 0)
+        # pixel_data = [1.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+        # self.normal_tex.write_scanline(pixel_data, 0)
         
         # ASSUME: position_tex.height == normal_tex.height
         if self.position_tex.height != self.normal_tex.height:
@@ -414,7 +414,7 @@ class AnimTexManager ():
         
         print(self.position_tex.filepath, flush=True)
         print(self.normal_tex.filepath, flush=True)
-
+        
         
         if num_tris > self.max_tris:
             raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
@@ -423,22 +423,161 @@ class AnimTexManager ():
         # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
         scanline_index = self.__mesh_name_to_scanline(mesh_name)
         
-        verts = mesh.vertices
-        for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
-            normals = tri.split_normals
-            for j in range(3): # verts per triangle
-                vert_index = tri.vertices[j]
-                vert = verts[vert_index]
+        
+        
+        
+        # https://devtalk.blender.org/t/bpy-data-images-perf-issues/6459
+        
+        # https://blender.stackexchange.com/questions/240587/calculating-split-normals-using-python
+        
+        # print("loops length: ", mesh.name, len(mesh.loops), flush=True)
+        # norms = numpy.empty(3 * len(mesh.loops))
+        # mesh.loops.foreach_get("normal", norms)
+        # nx, ny, nz = norms.reshape((-1, 3)).T
+        # na = numpy.ones(len(nz))
+        
+        # norm_pixels = numpy.array([nx, ny, nz, na]).T.ravel()
+        
+        # # t1 = numpy.empty(3 * len(mesh.loops))
+        # # t2 = numpy.empty(3 * len(mesh.loops))
+        # # t1.data.foreach_set("uv", numpy.array([nx, ny]).T.ravel())
+        # # t2.data.foreach_set("uv", numpy.array([nz, nw]).T.ravel())
+        
+        
+        # self.normal_tex.write_scanline(norm_pixels, scanline_index)
+        
+        
+        
+        
+        
+        
+        
+        
+        # 
+        # reference position implementation
+        # 
+        
+        
+        # verts = mesh.vertices
+        # for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+        #     for j in range(3): # verts per triangle
+        #         vert_index = tri.vertices[j]
+        #         vert = verts[vert_index]
                 
-                self.position_tex.write_pixel(
-                             scanline_index, i*3+j,
-                             vec3_to_rgba(vert.co))
+        #         self.position_tex.write_pixel(
+        #                      scanline_index, i*3+j,
+        #                      vec3_to_rgba(vert.co))
+              
+        
+        
+        
+        
+        # 
+        # numpy position implementation
+        # 
+        
+        
+        # positions = numpy.empty(3 * len(mesh.loops))
+        # mesh.verticies.foreach_get("co", positions)
+        # px, py, pz = positions.reshape((-1, 3)).T
+        # pa = numpy.ones(len(pz))
+        
+        # position_pixels = numpy.array([px, py, pz, pa]).T.ravel()
+        
+        # self.position_tex.write_scanline(position_pixels, scanline_index)
+        
+        
+        
+        
+        
+        # vert_co = numpy.array(mesh.vertices)
+        # vert_co = numpy.empty(3 * len(mesh.vertices))
+        # mesh.vertices.foreach_get("co", vert_co)
+        
+        # print(mesh.name, "num verts: ", len(mesh.vertices),  flush=True)
+        # print(mesh.name, "vert pos: ", len(vert_co),  flush=True)
+        
+        
+        
+        vert_idxs = numpy.empty(3 * len(mesh.loop_triangles))
+        mesh.loop_triangles.foreach_get("vertices", vert_idxs)
+        vert_idxs = vert_idxs.astype(numpy.int)
+        
+        # print(mesh.name, "unique verts: ", len(mesh.loop_triangles),  flush=True)
+        # print(mesh.name, "uniq vert pos: ", len(vert_co),  flush=True)
+        
+        
+        
+        # vert_buff = mesh.vertices
+        
+        # verts = [ vert_buff[int(i)] for i in vert_idxs ]
+        # vert_co = numpy.empty(3 * len(vert_idxs))
+        
+        # create 3 numpy arrays: xs, ys, and zs
+        # each containing one component of position
+        positions = numpy.empty(3 * len(mesh.vertices))
+        mesh.vertices.foreach_get("co", positions)
+        xs, ys, zs = positions.reshape((-1, 3)).T
+        
+        # index into each array using the vertex index array
+        px = numpy.take(xs, vert_idxs)
+        py = numpy.take(ys, vert_idxs)
+        pz = numpy.take(zs, vert_idxs)
+        
+        # convert into proper linear form
+        pa = numpy.ones(len(pz))
+        
+        position_pixels = numpy.array([px, py, pz, pa]).T.ravel()
+        
+        self.position_tex.write_scanline(position_pixels, scanline_index)
+        
+        
+        
+        
+        
+        # 
+        # reference
+        # 
+        
+        # for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+        #     normals = tri.split_normals
+        #     for j in range(3): # verts per triangle
+        #         normal = normals[j]
                 
-                normal = normals[j]
-                
-                self.normal_tex.write_pixel(
-                             scanline_index, i*3+j,
-                             vec3_to_rgba(normal))
+        #         self.normal_tex.write_pixel(
+        #                      scanline_index, i*3+j,
+        #                      vec3_to_rgba(normal))
+        
+        
+        
+        # 
+        # numpy
+        # 
+        
+        # NOTE: Does not support split normals. If you want split normals, divide the mesh into separate parts
+        
+        # create 3 numpy arrays: xs, ys, and zs
+        # each containing one component of position
+        # normals = numpy.empty(3 * len(mesh.loop_triangles))
+        
+        normals = numpy.empty(3 * len(mesh.vertices))
+        mesh.vertices.foreach_get("normal", normals)
+        
+        xs, ys, zs = normals.reshape((-1, 3)).T
+        
+        # index into each array using the vertex index array
+        nx = numpy.take(xs, vert_idxs)
+        ny = numpy.take(ys, vert_idxs)
+        nz = numpy.take(zs, vert_idxs)
+        
+        # convert into proper linear form
+        na = numpy.ones(len(nz))
+        
+        norm_pixels = numpy.array([nx, ny, nz, na]).T.ravel()
+        
+        
+        self.normal_tex.write_scanline(norm_pixels, scanline_index)
+        
         
         
         self.position_tex.save()
