@@ -175,10 +175,10 @@ class World
       load_static_json_data json_file_path
       
       
+      alembic_path       = static_data_path/"#{prefix}.abc"
+      material_json_path = static_data_path/"#{prefix}.materials.json"
       
-      
-      filepath = static_data_path/"#{prefix}.abc"
-      load_alembic filepath, static_data_path/"#{prefix}.materials.json"
+      load_alembic alembic_path, material_json_path
       
       
       
