@@ -285,7 +285,10 @@ class ExporterAlembic():
         material_data = {}
         for mat in bpy.data.materials:
             if mat.users > 0:
-                material_data[mat.name] = {
+                material_name = mat.name.replace('.', '_')
+                # NOTE: '.' character is replaced with '_' in alembic,
+                #       so need to make that replacement here to match.
+                material_data[material_name] = {
                     'ambient'  : list(mat.rb_mat.ambient),
                     'diffuse'  : list(mat.rb_mat.diffuse),
                     'specular' : list(mat.rb_mat.specular),

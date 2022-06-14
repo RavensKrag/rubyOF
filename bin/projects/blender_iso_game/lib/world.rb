@@ -178,7 +178,7 @@ class World
       
       
       filepath = static_data_path/"#{prefix}.abc"
-      load_alembic filepath
+      load_alembic filepath, static_data_path/"#{prefix}.materials.json"
       
       
       
@@ -454,7 +454,7 @@ class World
   
   
   
-  def load_alembic(filepath)
+  def load_alembic(alembic_filepath, material_json_filepath)
     # NOTE: ofxAlembic uses a customized version of the extension, and the configuration files for the build point to paths on my machine. this needs to be fixed before this build environment will work on someone else's setup
     
     
@@ -502,7 +502,7 @@ class World
     
     
     alembic = RubyOF::OFX::Alembic::Reader.new
-    alembic.open(filepath.to_s)
+    alembic.open(alembic_filepath.to_s)
     p alembic
     puts "alembic size: #{alembic.size}"
     puts "alembic paths: #{alembic.names.inspect}"
@@ -645,6 +645,13 @@ class World
     @storage[:static][:names].load hash_data
     
     
+    # 
+    # load material data from disk
+    # 
+    
+    bytes = File.read(material_json_filepath)
+    material_data = JSON.parse(bytes)
+    p material_data
     
     # 
     # encode entity -> mesh mapping in texture via EntityCache
@@ -660,9 +667,10 @@ class World
         
         entity_name = name_map.entity_scanline_to_name(i)
         
-        
         # map entity name -> mesh name
+        # map entity name -> material name
         mesh_name = name_map.entity_scanline_to_mesh_name(i)
+        material_name = name_map.entity_scanline_to_material_name(i)
         
         # mesh name -> mesh index
         j = name_map.mesh_name_to_scanline(mesh_name)
@@ -678,12 +686,13 @@ class World
           
           
           # assign material based on cached material name
-          
-          entity.ambient  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
-          entity.diffuse  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
-          entity.specular = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          entity.emissive = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-          entity.alpha = 1.0
+          # NOTE: '.' character is replaced with '_' in alembic
+          mat = material_data.fetch(material_name)
+          entity.ambient  = RubyOF::FloatColor.rgba(mat['ambient'] + [1.0])
+          entity.diffuse  = RubyOF::FloatColor.rgba(mat['diffuse'] + [1.0])
+          entity.specular = RubyOF::FloatColor.rgba(mat['specular'] + [1.0])
+          entity.emissive = RubyOF::FloatColor.rgba(mat['emissive'] + [1.0])
+          entity.alpha = mat['alpha']
         end
         
         
@@ -921,6 +930,11 @@ class World
     def entity_scanline_to_mesh_name(i)
       entity_name, mesh_name, material_name = @json['entity_data_cache'][i]
       return mesh_name
+    end
+    
+    def entity_scanline_to_material_name(i)
+      entity_name, mesh_name, material_name = @json['entity_data_cache'][i]
+      return material_name
     end
     
     def mesh_scanline_to_name(i)
