@@ -516,94 +516,21 @@ class World
     
     
     
-    
-    
-    alembic.each_with_index do |node, i|
-      # p node
-      puts "#{i} : #{node.type_name} '#{node.full_name}'"
-      # puts node.index
-    end
-    
-    
-    
-    # 
-    # load mesh data from alembic
-    # 
-    
-    pos_pixels = @storage[:static][:mesh_data][:pixels][:positions]
-    nor_pixels = @storage[:static][:mesh_data][:pixels][:normals]
-    
-    pos_texture = @storage[:static][:mesh_data][:textures][:positions]
-    nor_texture = @storage[:static][:mesh_data][:textures][:normals]
-    
-    mesh = RubyOF::Mesh.new
-    
-    alembic.time = 0
-    i = 0
-    mesh_names = Set.new
-    
-    
-    alembic
-    .select{|node|  node.type_name == 'PolyMesh' }
-    .each do |node|
-      puts node.name
-      
-      node.get(mesh)
-      
-      # p mesh_names.methods
-      
-      if mesh_names.include? node.name
-        
-      else
-        # scanline 0 should be blank, so initialize @ 0,
-        # and increment index before using it
-        i = i+1
-        
-        mesh_names.add node.name
-        
-        puts mesh.vertices
-        
-        scanline = i + 1 
-        
-        puts RubyOF::CPP_Callbacks.meshToScanline(
-          mesh, scanline,
-          pos_pixels, nor_pixels
-        )
-      end
-      
-      
-    end
-    
-    pos_texture.load_data(pos_pixels)
-    nor_texture.load_data(nor_pixels)
+    # alembic.each_with_index do |node, i|
+    #   # p node
+    #   puts "#{i} : #{node.type_name} '#{node.full_name}'"
+    #   # puts node.index
+    # end
     
     
     
-    # 
-    # map mesh names
-    # 
-    
-    hash_data = {
-      "mesh_data_cache" => [],
-      "entity_data_cache" => []
-    }
     
     
-    hash_data["mesh_data_cache"] << nil # first mesh is blank
-    mesh_names.each do |name|
-      hash_data["mesh_data_cache"] << name
-    end
-    
-    p hash_data
+    # load from blank image to initialize the cache size, etc
+    @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
     
     
-    # 
-    # load entity transform data from alembic
-    # 
-    
-    transforms = Array.new
-    
-    # correct the rotation matricies
+    # used to help correct the rotation matricies
     # (apparently the alembic coordinate system is different from blender)
     theta = (Math::PI/2)*1
     rot = GLM::Mat4.new(
@@ -613,25 +540,95 @@ class World
       GLM::Vec4.new(0.0, 0.0, 0.0, 1.0),
     )
     
-    alembic
-    .select{|node|  node.type_name == 'Xform' }
-    .each do |node|
-      puts node.name
+    
+    # 
+    # load data from alembic
+    # 
+    
+    pos_pixels = @storage[:static][:mesh_data][:pixels][:positions]
+    nor_pixels = @storage[:static][:mesh_data][:pixels][:normals]
+    
+    pos_texture = @storage[:static][:mesh_data][:textures][:positions]
+    nor_texture = @storage[:static][:mesh_data][:textures][:normals]
+    
+    alembic.time = 0
+    mesh_idx = 0
+    
+    entity_data = Array.new
+    mesh_names = Set.new
+    mesh_obj = RubyOF::Mesh.new
+    
+    # ASSUME: each and every child of the root encodes a transforms
+    # ASSUME: each child contains a mesh and material under it,
+    #         like this:
+    #         /entity_name/mesh_name/material_name
+    root = alembic.get_node('/')
+    root.each_child.each_with_index do |entity, i|
+      # p entity
+      # puts entity.name
       
+      entity.each_child do |mesh|
+        # TODO: export mesh if it does not yet exist in the mesh texture
+        # puts mesh.name
+        
+        mesh.get(mesh_obj)
+        
+        # load new meshes into the mesh texture
+        unless mesh_names.include? mesh.name
+          # add to set of meshes, so each mesh is only exported once
+          mesh_names.add mesh.name
+          
+          # scanline 0 should be blank, so initialize @ 0,
+          # and increment index before using it
+          mesh_idx += 1
+          
+          # puts mesh_obj.vertex_count
+          
+          flag = RubyOF::CPP_Callbacks.meshToScanline(
+            mesh_obj, mesh_idx,
+            pos_pixels, nor_pixels
+          )
+          
+          puts flag
+        end
+        
+        # write transform and material data to texture
+        # once you have all of the pieces
+        mesh.each_child do |material|
+          mat4 = GLM::Mat4.new(1.0)
+          entity.get(mat4)
+          
+          mat4 = rot * mat4 # GLM multiplies on the left
+          
+          
+          # encode entity transform via EntityCache
+          @storage[:static][:cache].get_entity(i).tap do |entity_obj|
+            entity_obj.transform_matrix = mat4
+          end
+          
+          # textures don't store names, so save those elsewhere
+          entity_data[i] = [entity.name, mesh.name, material.name]
+            # TODO: handle entities with multiple meshes (like armatures)
+            # TODO: handle entities with multiple materials
+        end
+      end
       
-      mat4 = GLM::Mat4.new(1.0)
-      node.get(mat4)
-      
-      
-      mat4 = rot * mat4 # GLM multiplies on the left
-      
-      hash_data["entity_data_cache"] << [node.name, 'Cube', 'Solid']
-      transforms << mat4
     end
     
-    p hash_data
+    entity_data.each do |data|
+      p data
+    end
+    puts "\n"*5
     
-    p transforms
+    
+    
+    # 
+    # transfer mesh data to GPU
+    # 
+    
+    pos_texture.load_data(pos_pixels)
+    nor_texture.load_data(nor_pixels)
+    
     
     
     # 
@@ -639,38 +636,64 @@ class World
     # so we can use that to map entity -> mesh
     # 
     
+    hash_data = {
+      "mesh_data_cache" => ([nil] + mesh_names.to_a),
+      "entity_data_cache" => entity_data
+    }
+    p hash_data
+    
     @storage[:static][:names].load hash_data
     
     
+    
     # 
-    # encode entity data in texture via EntityCache
+    # encode entity -> mesh mapping in texture via EntityCache
     # 
     
     # (use the existing entity cache interface to manipulate this texture)
     
-    # load from blank image to initialize the cache size, etc
-    @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
-    
-    
-    hash_data["entity_data_cache"].each_with_index do |data, i|
-      entity_name, mesh_name, material_name = data
-      
-      @storage[:static][:cache].get_entity(i).tap do |entity|
-        entity.transform_matrix = transforms[i]
+    @storage[:static][:cache].tap do |cache|
+      cache.size.times do |i|
+        entity = cache.get_entity(i)
         
-        i = @storage[:static][:names].mesh_name_to_scanline 'Cube_004'
-        puts i
-        entity.mesh_index = 3
+        name_map = @storage[:static][:names]
         
-        entity.ambient  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
-        entity.diffuse  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
-        entity.specular = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-        entity.emissive = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
-        entity.alpha = 1.0
+        entity_name = name_map.entity_scanline_to_name(i)
+        
+        
+        # map entity name -> mesh name
+        mesh_name = name_map.entity_scanline_to_mesh_name(i)
+        
+        # mesh name -> mesh index
+        j = name_map.mesh_name_to_scanline(mesh_name)
+        
+        data = {[entity_name, i] => [mesh_name, j]}
+        p data
+        
+        unless entity_name.nil?
+          # assign mesh index
+          entity.mesh_index = j
+          
+          
+          
+          
+          # assign material based on cached material name
+          
+          entity.ambient  = RubyOF::FloatColor.rgba([0.2, 0.2, 0.2, 1.0])
+          entity.diffuse  = RubyOF::FloatColor.rgba([0.8, 0.8, 0.8, 1.0])
+          entity.specular = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+          entity.emissive = RubyOF::FloatColor.rgba([0.0, 0.0, 0.0, 1.0])
+          entity.alpha = 1.0
+        end
+        
         
       end
     end
+      
     
+    # 
+    # transfer entity data to GPU
+    # 
     texture = @storage[:static][:entity_data][:texture]
     pixels = @storage[:static][:entity_data][:pixels]
     
@@ -678,39 +701,6 @@ class World
     texture.load_data(pixels)
     
     
-    
-    
-    
-    # 
-    # test tree traversal
-    # 
-    
-    root = alembic.get_node('/')
-    root.each_child do |child|
-      p child
-    end
-    
-    
-    
-    # set =
-    #   alembic
-    #   .select{|node| node.type_name == "FaceSet" }
-    #   # .map{|node|  node.name }
-      
-    
-    # p set
-    
-    
-    # hash_data = {
-    #   "mesh_data_cache" => [],
-    #   "entity_data_cache" => [
-    #     [entity_name, mesh_name, material_name]
-    #   ]
-    # }
-    
-    
-    
-    # @storage[:static][:names].load hash_data
     
     
     
@@ -926,6 +916,11 @@ class World
     def entity_scanline_to_name(i)
       entity_name, mesh_name, material_name = @json['entity_data_cache'][i]
       return entity_name
+    end
+    
+    def entity_scanline_to_mesh_name(i)
+      entity_name, mesh_name, material_name = @json['entity_data_cache'][i]
+      return mesh_name
     end
     
     def mesh_scanline_to_name(i)
@@ -1172,7 +1167,7 @@ class World
   end
   
   
-  # access Entity / Mmesh data by name
+  # access Entity / Mesh data by name
   class DataInterface
     def initialize(cache, names)
       @cache = cache
@@ -1213,6 +1208,7 @@ class World
       return Mesh.new(target_mesh_name, mesh_idx)
     end
     
+    # NOTE: this only yields active entities
     def each # &block
       return enum_for(:each) unless block_given?
       

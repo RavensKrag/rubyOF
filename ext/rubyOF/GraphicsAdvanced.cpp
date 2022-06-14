@@ -967,7 +967,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("addTexCoord",       &ofMesh::addTexCoord)
       .define_method("addIndex",          &ofMesh::addIndex)
       
-      .define_method("vertices",          &ofMesh::getNumVertices)
+      .define_method("vertex_count",      &ofMesh::getNumVertices)
       
       
       // .define_method("addNormals",

@@ -33,7 +33,6 @@ module Alembic
         if self.type_name != 'PolyMesh'
           raise "ERROR: IGeom type must be PolyMesh to transfer data to ofMesh"
         else
-          puts "get mesh"
           get_mesh(obj)
         end
       when RubyOF::OFX::Alembic::FaceSet # IGeom FaceSet -> FaceSet
