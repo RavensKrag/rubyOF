@@ -679,6 +679,19 @@ class World
     
     
     
+    
+    
+    # 
+    # test tree traversal
+    # 
+    
+    root = alembic.get_node('/')
+    root.each_child do |child|
+      p child
+    end
+    
+    
+    
     # set =
     #   alembic
     #   .select{|node| node.type_name == "FaceSet" }

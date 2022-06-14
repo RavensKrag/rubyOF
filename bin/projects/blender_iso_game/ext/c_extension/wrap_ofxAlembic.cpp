@@ -25,6 +25,8 @@ void wrap_ofxAlembic(Module rb_mOFX){
 		// .define_method("get",  &ofxAlembic::IGeom::get)
 		// // ^ this is overloaded
 		
+		.define_method("each_child_cpp",  &ofxAlembic__IGeom__each_child_cpp)
+		
 		
 		.define_method("get_mat4",  &ofxAlembic__IGeom__getMat4)
 		.define_method("get_mesh",  &ofxAlembic__IGeom__getMesh)
@@ -110,19 +112,24 @@ Rice::Array ofxAlembic__Reader__getFullnames(ofxAlembic::Reader& reader){
 }
 
 
-Rice::Data_Object<ofxAlembic::IGeom>
+Rice::Object
 ofxAlembic__Reader__getNode(ofxAlembic::Reader& reader, const string& path){
 	
-	auto ptr = reader.get(path);
+	ofxAlembic::IGeom *ptr = reader.get(path);
 	
-	Rice::Data_Object<ofxAlembic::IGeom> rb_cPtr(
-		ptr,
-		Rice::Data_Type< ofxAlembic::IGeom >::klass(),
-		Rice::Default_Mark_Function< ofxAlembic::IGeom >::mark,
-		Null_Free_Function< ofxAlembic::IGeom >::free
-	);
+	if(ptr == nullptr){
+		return Rice::Nil;
+	}else{
+		Rice::Data_Object<ofxAlembic::IGeom> rb_cPtr(
+			ptr,
+			Rice::Data_Type< ofxAlembic::IGeom >::klass(),
+			Rice::Default_Mark_Function< ofxAlembic::IGeom >::mark,
+			Null_Free_Function< ofxAlembic::IGeom >::free
+		);
+		
+		return rb_cPtr;
+	}
 	
-	return rb_cPtr;
 }
 
 // Need to force string copy to prevent segfault. may be able to do this better in the new version of Rice, which handles memory ownership differently. But not right now.
@@ -138,19 +145,38 @@ ofxAlembic__IGeom__getName(ofxAlembic::IGeom& node){
 
 // ofMatrix4v4 can be convert to mat4, but they are not binary equivalents
 void
-ofxAlembic__IGeom__getMat4(ofxAlembic::IGeom& n, glm::mat4 &mat){
+ofxAlembic__IGeom__getMat4(ofxAlembic::IGeom& node, glm::mat4 &mat){
 	ofMatrix4x4 ofmat;
-	n.get(ofmat);
+	node.get(ofmat);
 	
 	mat = ofmat;
 }
 
 void
-ofxAlembic__IGeom__getMesh(ofxAlembic::IGeom& n, ofMesh &mesh){
-	n.get(mesh);
+ofxAlembic__IGeom__getMesh(ofxAlembic::IGeom& node, ofMesh &mesh){
+	node.get(mesh);
 }
 
 void
-ofxAlembic__IGeom__getFaceSet(ofxAlembic::IGeom& n, ofxAlembic::FaceSet &faces){
-	n.get(faces);
+ofxAlembic__IGeom__getFaceSet(ofxAlembic::IGeom& node, ofxAlembic::FaceSet &faces){
+	node.get(faces);
+}
+
+// Rice::Object functions like a smart pointer
+void
+ofxAlembic__IGeom__each_child_cpp(ofxAlembic::IGeom& node, Rice::Object proc){
+	auto children = node.getChildren();
+	
+	for(auto child_ptr : children){
+		ofxAlembic::IGeom* raw_ptr = child_ptr.get();
+		
+		Rice::Data_Object<ofxAlembic::IGeom> rb_cPtr(
+			raw_ptr,
+			Rice::Data_Type< ofxAlembic::IGeom >::klass(),
+			Rice::Default_Mark_Function< ofxAlembic::IGeom >::mark,
+			Null_Free_Function< ofxAlembic::IGeom >::free
+		);
+		
+		proc.call("call", rb_cPtr); // execute the proc
+	}
 }

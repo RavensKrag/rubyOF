@@ -49,7 +49,22 @@ module Alembic
       return self
     end
     
+    
+    private :each_child_cpp
+    
+    def each_child(&block) # &block
+      return enum_for(:each_child) unless block_given?
+      
+      inner_block = Proc.new do |child|
+        block.call child
+      end
+      
+      each_child_cpp inner_block
+    end
+    
   end
+  
+  
   
   class Reader
     include Enumerable
