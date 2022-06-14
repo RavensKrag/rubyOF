@@ -230,7 +230,7 @@ class ExporterAlembic():
             obj.select_set(True)
         
         
-        context = yield( 1 / 3 )
+        context = yield( 1 / 4 )
         
         # 
         # export to alembic
@@ -260,7 +260,7 @@ class ExporterAlembic():
             # evaluation_mode='VIEWPORT'
             )
         
-        context = yield( 2 / 3 )
+        context = yield( 2 / 5 )
         
         
         # 
@@ -275,7 +275,33 @@ class ExporterAlembic():
         # verify that selection is restored
         print("selection:", bpy.context.selected_objects, flush=True)
         
+        context = yield( 3 / 5 )
         
+        
+        # 
+        # export all material data to JSON
+        # 
+        
+        material_data = {}
+        for mat in bpy.data.materials:
+            if mat.users > 0:
+                material_data[mat.name] = {
+                    'ambient'  : list(mat.rb_mat.ambient),
+                    'diffuse'  : list(mat.rb_mat.diffuse),
+                    'specular' : list(mat.rb_mat.specular),
+                    'emissive' : list(mat.rb_mat.emissive),
+                    'alpha'    : mat.rb_mat.alpha,
+                }
+        
+        
+        materials_path = os.path.join(bpy.path.abspath(tex_manager.output_dir),
+                                      name + '.materials'+'.json')
+        
+        with open(materials_path, 'w') as f:
+            f.write(json.dumps(material_data, indent=2))
+        
+        
+        context = yield( 4 / 5 )
         
         
         # 
@@ -294,7 +320,7 @@ class ExporterAlembic():
         
         
         # context = yield( task_count / total_tasks )
-        context = yield( 3 / 3 )
+        context = yield( 5 / 5 )
         
         
         t1 = time.time()
