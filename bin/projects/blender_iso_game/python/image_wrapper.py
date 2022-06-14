@@ -1,6 +1,6 @@
 import os
 import bpy
-
+import numpy
 
 def is_valid_anim_tex(image, texture_name, width_px, height_px):
     if image == None:
@@ -154,6 +154,9 @@ class ImageWrapper():
         px_per_scanline = self.width*self.channels_per_pixel
         
         offset = px_per_scanline*row
+        
+        empty_line = numpy.zeros(px_per_scanline)
+        self.image.pixels[(offset):(offset+len(empty_line))] = empty_line
         
         self.image.pixels[(offset):(offset+len(pixel_data))] = pixel_data
             
