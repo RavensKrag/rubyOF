@@ -476,42 +476,9 @@ class AnimTexManager ():
         # numpy position implementation
         # 
         
-        
-        # positions = numpy.empty(3 * len(mesh.loops))
-        # mesh.verticies.foreach_get("co", positions)
-        # px, py, pz = positions.reshape((-1, 3)).T
-        # pa = numpy.ones(len(pz))
-        
-        # position_pixels = numpy.array([px, py, pz, pa]).T.ravel()
-        
-        # self.position_tex.write_scanline(position_pixels, scanline_index)
-        
-        
-        
-        
-        
-        # vert_co = numpy.array(mesh.vertices)
-        # vert_co = numpy.empty(3 * len(mesh.vertices))
-        # mesh.vertices.foreach_get("co", vert_co)
-        
-        # print(mesh.name, "num verts: ", len(mesh.vertices),  flush=True)
-        # print(mesh.name, "vert pos: ", len(vert_co),  flush=True)
-        
-        
-        
         vert_idxs = numpy.empty(3 * len(mesh.loop_triangles))
         mesh.loop_triangles.foreach_get("vertices", vert_idxs)
         vert_idxs = vert_idxs.astype(numpy.int)
-        
-        # print(mesh.name, "unique verts: ", len(mesh.loop_triangles),  flush=True)
-        # print(mesh.name, "uniq vert pos: ", len(vert_co),  flush=True)
-        
-        
-        
-        # vert_buff = mesh.vertices
-        
-        # verts = [ vert_buff[int(i)] for i in vert_idxs ]
-        # vert_co = numpy.empty(3 * len(vert_idxs))
         
         # create 3 numpy arrays: xs, ys, and zs
         # each containing one component of position
@@ -555,10 +522,11 @@ class AnimTexManager ():
         # 
         
         # NOTE: Does not support split normals. If you want split normals, divide the mesh into separate parts
+        # oh wait, if you don't have split normals, you can't do flat shading...
+        # hmm that sucks.
         
         # create 3 numpy arrays: xs, ys, and zs
-        # each containing one component of position
-        # normals = numpy.empty(3 * len(mesh.loop_triangles))
+        # each containing one component of normal vector
         
         normals = numpy.empty(3 * len(mesh.vertices))
         mesh.vertices.foreach_get("normal", normals)
