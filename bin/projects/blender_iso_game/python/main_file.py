@@ -1155,7 +1155,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         # 
         
         # print(mytool.texture_sets)
-        # depsgraph = context.evaluated_depsgraph_get()
+        depsgraph = context.evaluated_depsgraph_get()
         
         item_list = mytool.get('name_list', [])
         for j, name in enumerate(item_list):
@@ -1178,19 +1178,16 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 
                 a.items()
                 # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
-                for i, pair in enumerate(a.items()):
+                for pair in a.items():
                     if pair[1].type == 'MESH':
                         mesh_obj = pair[1]
                         
-                        # mesh = mesh_obj.evaluated_get(depsgraph).data
-                        mesh = mesh_obj.data
+                        mesh = mesh_obj.evaluated_get(depsgraph).to_mesh()
                         
-                        mesh.calc_loop_triangles()
-                        # ^ need to call this to populate the mesh.loop_triangles() cache
-                        num_tris  = len(mesh.loop_triangles)
+                        num_faces  = len(mesh.polygons)
                         
-                        if num_tris > max_tris:
-                            max_tris = num_tris
+                        if num_faces > max_tris:
+                            max_tris = num_faces
                 # TODO: optimize this somehow so we're not altering mesh cache every frame
             
             
