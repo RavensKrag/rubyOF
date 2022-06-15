@@ -258,7 +258,7 @@ class Exporter():
         mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
         mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
         
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
+        unqiue_meshes = [ obj.evaluated_get(depsgraph).to_mesh()
                           for obj in mesh_objects ]
         
         # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
@@ -579,7 +579,10 @@ class Exporter():
                 # but don't need to update bindings
                 # (it's like using a pointer - no need to update references)
                 
-                mesh_data = active_object.evaluated_get(depsgraph).data
+                # depsgraph = context.evaluated_depsgraph_get()
+                
+                mesh_data = active_object.evaluated_get(depsgraph).to_mesh()
+                # ^ use to_mesh() to apply the modifiers
                 
                 tex_manager.export_mesh(active_object.data.name, mesh_data)
                 

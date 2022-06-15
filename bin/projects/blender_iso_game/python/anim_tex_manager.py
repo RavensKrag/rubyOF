@@ -387,6 +387,12 @@ class AnimTexManager ():
         # ^ need to call this to populate the mesh.loop_triangles() cache
         
         mesh.calc_normals_split()
+        
+        # after splitting, vertex normal == split normal
+        mesh.split_faces()
+        mesh.calc_normals()
+        
+        
         # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
         # ^ normals stored on the tri / face
         
@@ -528,7 +534,10 @@ class AnimTexManager ():
         # create 3 numpy arrays: xs, ys, and zs
         # each containing one component of normal vector
         
-        normals = numpy.empty(3 * len(mesh.vertices))
+        # normals = numpy.empty( (len(mesh.loop_triangles), 3,3) )
+        # mesh.loop_triangles.foreach_get("split_normals", normals)
+        
+        normals = numpy.empty( 3*len(mesh.vertices) )
         mesh.vertices.foreach_get("normal", normals)
         
         xs, ys, zs = normals.reshape((-1, 3)).T
@@ -537,6 +546,9 @@ class AnimTexManager ():
         nx = numpy.take(xs, vert_idxs)
         ny = numpy.take(ys, vert_idxs)
         nz = numpy.take(zs, vert_idxs)
+        # nx = xs
+        # ny = ys
+        # nz = zs
         
         # convert into proper linear form
         na = numpy.ones(len(nz))
