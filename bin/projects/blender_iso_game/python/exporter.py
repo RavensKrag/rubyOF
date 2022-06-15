@@ -258,9 +258,6 @@ class Exporter():
         mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
         mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
         
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).to_mesh()
-                          for obj in mesh_objects ]
-        
         # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
             # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
         
@@ -274,7 +271,7 @@ class Exporter():
         # calculate how many tasks there are
         # 
         
-        total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
+        total_tasks = len(mesh_objects) + len(all_mesh_objects)
         task_count = 0
         
         context = yield( 0.0 )
@@ -284,7 +281,9 @@ class Exporter():
         # 
         
         mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unqiue_meshes):
+        for i, obj in enumerate(mesh_objects):
+            mesh = obj.evaluated_get(depsgraph).to_mesh()
+            
             tex_manager.export_mesh(mesh.name, mesh)
             
             task_count += 1
