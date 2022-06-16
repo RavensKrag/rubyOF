@@ -473,7 +473,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="Total number of tris per frame",
         default = 100,
         min = 1,
-        max = 1000000
+        max = 5000
     )
     
     max_frames : IntProperty(
@@ -481,7 +481,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="frame number where output vertex data should be stored",
         default = 20,
         min = 1,
-        max = 1000000
+        max = 5000
     )
     
     output_frame : IntProperty(
@@ -518,7 +518,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="maximum number of objects whose transforms can be saved",
         default = 200,
         min = 1,
-        max = 1000000
+        max = 16000
     )
     
     transform_scanline : IntProperty(
