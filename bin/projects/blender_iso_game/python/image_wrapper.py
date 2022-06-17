@@ -147,6 +147,15 @@ class ImageWrapper():
         # (but it seems to return a tuple here, but we need a list)
         return list(self.image.pixels[offset:(offset+px_per_scanline)])
     
+    def read_pixel(self, row, col):
+        px_per_scanline = self.width*self.channels_per_pixel
+        
+        offset = (row*px_per_scanline +
+                  col*self.channels_per_pixel)
+        
+        return list(self.image.pixels[offset:(offset+self.channels_per_pixel)])
+    
+    
     def write_scanline(self, pixel_data, row):
         # print("writing scanline")
         # print([px for px in self.image.pixels])

@@ -276,31 +276,55 @@ class Exporter():
         
         context = yield( 0.0 )
         
+        
         # 
         # export all unique meshes
+        # (must export entities first, so linked entities work correctly)
         # 
         
         mytool.status_message = "export unique meshes"
         for i, obj in enumerate(mesh_objects):
             mesh = obj.evaluated_get(depsgraph).to_mesh()
             
-            tex_manager.export_mesh(mesh.name, mesh)
+            parts = tex_manager.export_mesh(mesh.name, mesh)
+            
+            if parts > 1:
+                # add extra linked entities to render additional parts
+                m = tex_manager
+                
+                # assign extra render entities
+                # but skip index 0, because that's the original entity
+                # which was already exported
+                for i in range(1, parts):
+                    link_entity_name = obj.name + ".part" + str(i+1)
+                    mesh_name   = obj.data.name + ".part" + str(i+1)
+                    m.set_entity_mesh(link_entity_name, mesh_name)
+                    m.set_entity_linked_transform(link_entity_name, obj.name)
+                    m.set_entity_material(link_entity_name, first_material(obj))
+                    
+                    # linked entity also needs material
+                    # otherwise it will not render correctly
+                    
+                    # but 
             
             task_count += 1
             context = yield(task_count / total_tasks)
         
+        
         # 
-        # export all objects
+        # export all entities
         # 
         
         for i, obj in enumerate(all_mesh_objects):
             m = tex_manager
             m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_linked_transform(obj.name, obj.name)
             m.set_entity_transform(obj.name, get_object_transform(obj))
             m.set_entity_material( obj.name, first_material(obj))
             
             task_count += 1
             context = yield(task_count / total_tasks)
+        
         
         
         

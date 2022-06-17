@@ -87,17 +87,26 @@ void main (void){
     // id block - what mesh should we draw?
     vec2 texCoord0 = vec2(0, gl_InstanceID) + offset;
     
+      // 
+      // find entity in entity texture where transform is stored
+      // (some entities link to the transforms of others)
+      // 
+      float transform_ptr = TEXTURE(entity_tex, texCoord0).b;
+    
     // transform block - mat4x4 for transform
-    vec2 texCoord1 = vec2(1, gl_InstanceID) + offset;
-    vec2 texCoord2 = vec2(2, gl_InstanceID) + offset;
-    vec2 texCoord3 = vec2(3, gl_InstanceID) + offset;
-    vec2 texCoord4 = vec2(4, gl_InstanceID) + offset;
+    vec2 texCoord1 = vec2(1, transform_ptr) + offset;
+    vec2 texCoord2 = vec2(2, transform_ptr) + offset;
+    vec2 texCoord3 = vec2(3, transform_ptr) + offset;
+    vec2 texCoord4 = vec2(4, transform_ptr) + offset;
     
     // material property block (ambient, diffuse, specular, emmisive)
     vec2 texCoord5 = vec2(5, gl_InstanceID) + offset;
     vec2 texCoord6 = vec2(6, gl_InstanceID) + offset;
     vec2 texCoord7 = vec2(7, gl_InstanceID) + offset;
     vec2 texCoord8 = vec2(8, gl_InstanceID) + offset;
+    
+    
+    
     
     
     // 
