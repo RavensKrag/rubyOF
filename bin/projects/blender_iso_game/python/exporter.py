@@ -590,12 +590,12 @@ class Exporter():
             if isinstance(active_object, bpy.types.Object) and active_object.type == 'MESH':
                 # editing one object: only send edits to that single mesh
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
                 # bpy.ops.object.mode_set(mode= 'OBJECT')
                 
                 print("mesh edit detected", flush=True)
-                print(active_object, flush=True)
+                # print(active_object, flush=True)
                 
                 
                 # need to update the mesh,
@@ -633,8 +633,8 @@ class Exporter():
                         tex_manager.update_material(mat)
                 
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
                 # bpy.ops.object.mode_set(mode= 'EDIT')
             
         else:
