@@ -17,6 +17,8 @@ import json
 import sys
 import os
 
+import math
+
 import numpy
 
 
@@ -326,14 +328,21 @@ class AnimTexManager ():
     def clear(self, scene):
         mytool = scene.my_tool
         
-        mytool.position_tex  = None
-        mytool.normal_tex    = None
-        mytool.entity_tex = None
+        for tex_set in mytool.texture_sets:
+            tex_set.position_tex  = None
+            tex_set.normal_tex    = None
+            tex_set.entity_tex    = None
+        
         
         # print("checking json path", flush=True)
         if os.path.isfile(self.json_filepath):
             # print("clearing old json file", flush=True)
             os.remove(self.json_filepath)
+        
+        print("images: ", len(bpy.data.images), flush=True)
+        for block in bpy.data.images:
+            if block.users == 0:
+                bpy.data.images.remove(block)
             
     
     
@@ -499,26 +508,12 @@ class AnimTexManager ():
         # 
         # ASSUME: the texture is sized s.t. it can fit a clean number of triangles in a single line, so you put a line break anywhere
         # ASSUME: normal data is encoded as split normals, so meshes can be split into arbitrary sub-meshes without distortion
-        mesh_segments = 1
         
-        channels_per_pixel = 4
-        chunk_size = self.position_tex.width * channels_per_pixel
         
         # print("position texture chunk size: ", chunk_size, flush=True)
         # print("pixel data size: ", position_pixels.size, flush=True)
         # print(position_pixels, flush=True)
         
-        for i, chunk in enumerate(each_slice(position_pixels, chunk_size)):
-            # print("chunk:", chunk, flush=True)
-            self.position_tex.write_scanline(chunk, scanline_index+i)
-            
-            # print(i, mesh_name, flush=True)
-            if i != 0:
-                name = mesh_name + ".part" + str(i+1)
-                self.mesh_data_cache[scanline_index+i] = name
-                # ^ extend the cache to handle textures that span many lines
-                
-                mesh_segments += 1
         
         
         
@@ -571,15 +566,59 @@ class AnimTexManager ():
         
         
         
+        
+        # 
+        # write scanlines
+        # 
+        
+        
+        # TODO: just dump all the pixels in all at once
+        # you don't need to split the mesh into chunks like this,
+        # because then chunks will always be contiguous. (ASSUME)
+        # As the memory for textures is just linear pixel memory (not 2D array)
+        # you can just dump in all in there.
+        # Still need to set the names in the mesh data cache.
+        
+        # NOTE: you should probably check to make sure there's enough free space in the texture so you don't run off the end of the array, but you don't need to split things up.
+        
+        # TODO: make sure to update the section with the normal texture too.
+        
+        
+        # if self.position_tex.size != self.normal_tex.size:
+        #     raise RuntimeError(f"Dimensions of normal position texture and normal texture are not the same for {mesh_name}. {repr(self.position_tex.size)} != {repr(self.normal_tex.size)}")
+        
         channels_per_pixel = 4
-        chunk_size = self.normal_tex.width * channels_per_pixel
-        for i, chunk in enumerate(each_slice(norm_pixels, chunk_size)):
-            self.normal_tex.write_scanline(chunk, scanline_index+i)
-            
-            if i != 0:
-                name = mesh_name + ".part" + str(i+1)
-                self.mesh_data_cache[scanline_index+i] = name
-                # ^ extend the cache to handle textures that span many lines
+        chunk_size = self.position_tex.width * channels_per_pixel
+        empty_line = numpy.zeros(chunk_size)
+        
+        # the / operator in python always does float division
+        # use // for int division
+        num_chunks = math.ceil(position_pixels.size / chunk_size)
+        
+        # override the last incomplete line with blank data before writing
+        offset = num_chunks-1
+        self.position_tex.write_scanline(empty_line, scanline_index+offset)
+        self.normal_tex.write_scanline(empty_line, scanline_index+offset)
+        
+        # write all data
+        self.position_tex.write_scanline(position_pixels, scanline_index)
+        self.normal_tex.write_scanline(norm_pixels, scanline_index)
+        
+        
+        
+        for i in range(num_chunks):
+            if i == 0:
+                # leave name unchanged for the first part
+                # so that you can lookup the first part using the
+                # name of the blender mesh
+                name = mesh_name
+            else:
+                # change the name slightly for the additional mesh pieces
+                name = mesh_name + ".part" + str(i+1)    
+            self.mesh_data_cache[scanline_index+i] = name
+            # ^ extend the cache to handle textures that span many lines
+        
+        
                 
         
         
@@ -587,7 +626,7 @@ class AnimTexManager ():
         self.position_tex.save()
         self.normal_tex.save()
         
-        return mesh_segments
+        return num_chunks
     
     
     # Use the b channel in the first pixel like a pointer,
@@ -602,6 +641,12 @@ class AnimTexManager ():
         parent_id      = self.__entity_name_to_scanline(parent_entity_name)
         
         
+        # read out existing scanline data
+        # so you don't clobber other properties on this line
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
+        
+        
         # pixel_data = [mesh_id, mesh_id, parent_id, 1.0]
         
         # read out existing data, so you don't clobber mesh linkage
@@ -611,15 +656,26 @@ class AnimTexManager ():
         pixel_data[2] = parent_id
         print(pixel_data, flush=True)
         
+        # set pixel in scanline
+        scanline_set_px(scanline_transform, 0, pixel_data)
+        
         
         # 
-        # write to texture
+        # clear transforms in scanline
+        # 
+        blank_pixel = vec4_to_rgba([0.0, 0.0, 0.0, 1.0])
+        for i in range(1, 5): # range is exclusive of high end: [a, b)
+            scanline_set_px(scanline_transform, i, blank_pixel,
+                            channels=self.entity_tex.channels_per_pixel)
+        
+        # 
+        # write scanline to texture
         # 
         
-        self.entity_tex.write_pixel(scanline_index, 0,
-                                    pixel_data)
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
         
         self.entity_tex.save()
+    
     
     # Specify the mesh to use for a given entity @ t=0 (initial condition)
     # by setting the first pixel in the scanline to r=g=b="mesh scanline number"
@@ -634,14 +690,6 @@ class AnimTexManager ():
     def set_entity_mesh(self, entity_name, mesh_name):
         scanline_index = self.__entity_name_to_scanline(entity_name)
         
-        
-        # read out existing scanline data
-        # so you don't clobber other properties on this line
-        scanline_transform = self.entity_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
-        
-        # print(scanline_transform, flush=True)
-        
         # 
         # write mesh id to scanline
         # 
@@ -653,8 +701,8 @@ class AnimTexManager ():
         print("mesh name:", mesh_name, flush=True)
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
-        scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
-                        channels=self.entity_tex.channels_per_pixel)
+        pixel_data = [mesh_id, mesh_id, mesh_id, 1.0]
+        
         
         self.__cache_entity_mesh_binding(scanline_index, mesh_name)
         
@@ -663,7 +711,8 @@ class AnimTexManager ():
         # write scanline to texture
         # 
         
-        self.entity_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_pixel(scanline_index, 0,
+                                    pixel_data)
         
         self.entity_tex.save()
     
@@ -831,6 +880,8 @@ class AnimTexManager ():
         if count == 0:
             i = self.__mesh_name_to_scanline(mesh_name)
             self.mesh_data_cache[i] = None
+            
+            # NOTE: this may be slow for large textures
             
             scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
             scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width

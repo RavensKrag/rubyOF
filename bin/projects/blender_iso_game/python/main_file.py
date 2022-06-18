@@ -695,6 +695,7 @@ class ResourceManager():
     def clear_texture_managers(self, scene):
         name_list = scene.my_tool.get('name_list', None)
         
+        print("clearing texture managers", flush=True)
         for i, name in enumerate(name_list):
             j = scene.my_tool.texture_sets.find(name)
             

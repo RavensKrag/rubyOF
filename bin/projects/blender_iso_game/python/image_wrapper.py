@@ -115,6 +115,8 @@ class ImageWrapper():
         self.image.filepath_raw = path
         print(self.image.filepath)
     
+    def size(self):
+        return (self.width, self.height)
     
     # reload from disk
     def reload(self):
@@ -163,9 +165,6 @@ class ImageWrapper():
         px_per_scanline = self.width*self.channels_per_pixel
         
         offset = px_per_scanline*row
-        
-        empty_line = numpy.zeros(px_per_scanline)
-        self.image.pixels[(offset):(offset+len(empty_line))] = empty_line
         
         self.image.pixels[(offset):(offset+len(pixel_data))] = pixel_data
             
