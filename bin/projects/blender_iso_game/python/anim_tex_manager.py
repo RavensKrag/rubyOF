@@ -328,10 +328,11 @@ class AnimTexManager ():
     def clear(self, scene):
         mytool = scene.my_tool
         
-        for tex_set in mytool.texture_sets:
-            tex_set.position_tex  = None
-            tex_set.normal_tex    = None
-            tex_set.entity_tex    = None
+        tex_set = mytool.texture_sets[self.name]
+        
+        tex_set.position_tex  = None
+        tex_set.normal_tex    = None
+        tex_set.entity_tex    = None
         
         
         # print("checking json path", flush=True)
@@ -339,10 +340,10 @@ class AnimTexManager ():
             # print("clearing old json file", flush=True)
             os.remove(self.json_filepath)
         
-        print("images: ", len(bpy.data.images), flush=True)
-        for block in bpy.data.images:
-            if block.users == 0:
-                bpy.data.images.remove(block)
+        # print("images: ", len(bpy.data.images), flush=True)
+        # for block in bpy.data.images:
+        #     if block.users == 0:
+        #         bpy.data.images.remove(block)
             
     
     
