@@ -503,11 +503,16 @@ class AnimTexManager ():
         
         channels_per_pixel = 4
         chunk_size = self.position_tex.width * channels_per_pixel
-        print("pos tex width", self.position_tex.width, flush=True)
+        
+        # print("position texture chunk size: ", chunk_size, flush=True)
+        # print("pixel data size: ", position_pixels.size, flush=True)
+        # print(position_pixels, flush=True)
+        
         for i, chunk in enumerate(each_slice(position_pixels, chunk_size)):
+            # print("chunk:", chunk, flush=True)
             self.position_tex.write_scanline(chunk, scanline_index+i)
             
-            print(i, mesh_name, flush=True)
+            # print(i, mesh_name, flush=True)
             if i != 0:
                 name = mesh_name + ".part" + str(i+1)
                 self.mesh_data_cache[scanline_index+i] = name

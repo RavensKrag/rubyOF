@@ -1,4 +1,5 @@
 import bpy
+import numpy
 
 # ------------------------------------------------------------------------
 #   utility functions
@@ -33,24 +34,51 @@ def vec4_to_rgba(vec):
 # 
 # as in ruby, the last slice may be length < size
 def each_slice(arr, chunk_size):
-    # batch = 0
-    # while batch * size < arr.size:
-    #     yield arr[(batch*size):((batch+1)*size)]
-    #     batch += 1
+    # v1
     
-    # chunk_size = 150*3*4
-    offset = 0
-    i = 0
-    while offset + chunk_size < arr.size:
-        print(offset, offset+chunk_size, flush=True)
-        yield arr[offset:offset+chunk_size]
+    # offset = 0
+    # i = 0
+    # while offset + chunk_size < arr.size:
+    #     print(offset, offset+chunk_size, flush=True)
+    #     yield arr[offset:offset+chunk_size]
         
-        i += 1
-        offset += chunk_size
+    #     i += 1
+    #     offset += chunk_size
 
+    # # perhaps store one more chunk that doesn't fill a full line
+    # if offset < arr.size:
+    #     yield arr[offset:arr.size]
+    
+    
+    
+    # v2
+    
+    # final_chunk_size = arr.size % chunk_size
+    # end_offset = arr.size-final_chunk_size
+    
+    # full_chunks = arr[0:end_offset]
+    # print("size:", full_chunks.size, flush=True)
+    # chunks = numpy.reshape(full_chunks, (chunk_size, -1)).T
+    # for c in chunks:
+    #     yield c
+    
+    # # perhaps store one more chunk that doesn't fill a full line
+    # if end_offset != 0:
+    #     yield arr[end_offset:arr.size]
+    
+    
+    
+    
+    final_chunk_size = arr.size % chunk_size
+    end_offset = arr.size-final_chunk_size
+    
+    for i in range(0, arr.size, chunk_size):
+        yield arr[i:i+chunk_size]
+    
     # perhaps store one more chunk that doesn't fill a full line
-    if offset < arr.size:
-        yield arr[offset:arr.size]
+    if end_offset != 0:
+        yield arr[end_offset:arr.size]
+    
 
 
 
