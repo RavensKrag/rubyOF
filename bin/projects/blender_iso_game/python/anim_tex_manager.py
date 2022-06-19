@@ -221,7 +221,7 @@ class AnimTexManager ():
     # Set entity -> mesh binding in cache
     def __cache_entity_mesh_binding(self, scanline_index, mesh_name):
         data = self.entity_data_cache[scanline_index]
-        print(self.entity_data_cache, flush=True)
+        
         # data['entity name'] = obj_name
         data['mesh name'] = mesh_name
         # data['material name'] = material_name
@@ -670,7 +670,7 @@ class AnimTexManager ():
         
         # set link on pixel data
         pixel_data[2] = parent_id
-        print(pixel_data, flush=True)
+        # print(pixel_data, flush=True)
         
         # set pixel in scanline
         scanline_set_px(scanline_transform, 0, pixel_data)
@@ -910,6 +910,12 @@ class AnimTexManager ():
         # save new JSON file
         self.save()
         
+        
+        # recursively delete all entities that declare this one as an owner
+        for data in self.entity_data_cache:
+            if data['owner'] == entity_name:
+                self.delete_entity(data['entity name'])
+        
     
     
     # Return list of all entity names
@@ -925,7 +931,7 @@ class AnimTexManager ():
     
     # Return list of names of all entity owners.
     # These are the entites that control when entities are GCed
-    def get_entity_owners(self):
+    def get_entity_owner_names(self):
         out = list()
         
         for data in self.entity_data_cache:
