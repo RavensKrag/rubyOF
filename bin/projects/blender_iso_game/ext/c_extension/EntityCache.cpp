@@ -30,8 +30,6 @@ EntityCache::load(const ofFloatPixels& pixels){
 		mSize = max_size;
 	}
 	
-	ofLogNotice("EntityCache") << "size:" << max_size;
-	
 	// scanline index 0 is blank data for mesh data, but not for entity data.
 	// -- in the entity texture, every single non-blank row encodes real data
 	
