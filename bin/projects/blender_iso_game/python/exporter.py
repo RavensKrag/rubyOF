@@ -307,7 +307,7 @@ class Exporter():
             
             
             m.set_entity_mesh(     obj.name, obj.data.name)
-            m.set_entity_owner_link(obj.name, obj.name)
+            m.set_entity_parent(obj.name, obj.name)
             m.set_entity_transform(obj.name, get_object_transform(obj))
             m.set_entity_material( obj.name, first_material(obj))
             
@@ -373,10 +373,10 @@ class Exporter():
     def __create_submesh_entities(self, tex_manager, part_count, base_entity_name, base_mesh_name):
         m = tex_manager
         for j in range(1, part_count):
-            link_entity_name = base_entity_name + ".part" + str(j+1)
-            mesh_name        =   base_mesh_name + ".part" + str(j+1)
-            m.set_entity_mesh(link_entity_name, mesh_name)
-            m.set_entity_owner_link(link_entity_name, base_entity_name)
+            child_entity_name = base_entity_name + ".part" + str(j+1)
+            mesh_name         =   base_mesh_name + ".part" + str(j+1)
+            m.set_entity_mesh(child_entity_name, mesh_name)
+            m.set_entity_parent(child_entity_name, base_entity_name)
             # material and transform are both linked
         
     
@@ -479,7 +479,7 @@ class Exporter():
             
             
             m.set_entity_mesh(     obj.name, obj.data.name)
-            m.set_entity_owner_link(obj.name, obj.name) # must be after set mesh
+            m.set_entity_parent(obj.name, obj.name) # must be after set mesh
             m.set_entity_transform(obj.name, get_object_transform(obj))
             m.set_entity_material( obj.name, first_material(obj))
             
@@ -749,7 +749,7 @@ class Exporter():
         if collection_ptr is None:
             return
         
-        old_names = tex_manager.get_entity_owner_names()
+        old_names = tex_manager.get_entity_parent_names()
         new_names = [ x.name for x in collection_ptr.all_objects ]
         delta = list(set(old_names) - set(new_names))
         

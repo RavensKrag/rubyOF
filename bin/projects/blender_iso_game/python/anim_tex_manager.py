@@ -83,7 +83,7 @@ class AnimTexManager ():
         self.mesh_data_cache   = [None] * self.position_tex.height
         
         self.entity_data_schema = {
-            'owner' : None,
+            'parent' : None,
             'entity name' : None,
             'mesh name' : None,
             'material name' : None,
@@ -213,7 +213,7 @@ class AnimTexManager ():
         else:
             data = self.entity_data_schema.copy()
             data['entity name'] = entity_name
-            data['owner'] = entity_name
+            data['parent'] = entity_name
             self.entity_data_cache[first_open_scanline] = data
             
             return first_open_scanline
@@ -238,10 +238,10 @@ class AnimTexManager ():
         
         self.entity_data_cache[scanline_index] = data
     
-    def __cache_entity_owner(self, scanline_index, owner_name):
+    def __cache_entity_parent(self, scanline_index, parent_name):
         data = self.entity_data_cache[scanline_index]
         
-        data['owner'] = owner_name
+        data['parent'] = parent_name
         
         self.entity_data_cache[scanline_index] = data
         
@@ -650,11 +650,11 @@ class AnimTexManager ():
     # that move with the same transform.
     # 
     # ASSUME: must be called after set_entity_mesh()
-    def set_entity_owner_link(self, entity_name, parent_entity_name):
+    def set_entity_parent(self, entity_name, parent_entity_name):
         scanline_index = self.__entity_name_to_scanline(entity_name)
         parent_id      = self.__entity_name_to_scanline(parent_entity_name)
         
-        self.__cache_entity_owner(scanline_index, parent_entity_name)
+        self.__cache_entity_parent(scanline_index, parent_entity_name)
         
         
         # read out existing scanline data
@@ -911,9 +911,9 @@ class AnimTexManager ():
         self.save()
         
         
-        # recursively delete all entities that declare this one as an owner
+        # recursively delete all entities that declare this one as a parent
         for data in self.entity_data_cache:
-            if data['owner'] == entity_name:
+            if data['parent'] == entity_name:
                 self.delete_entity(data['entity name'])
         
     
@@ -929,14 +929,15 @@ class AnimTexManager ():
         
         return out
     
-    # Return list of names of all entity owners.
-    # These are the entites that control when entities are GCed
-    def get_entity_owner_names(self):
+    # Return list of names of all entity parents.
+    # These are the entites that control when entities are GCed.
+    # Entities with no true parent have their own name in the 'parent' field.
+    def get_entity_parent_names(self):
         out = list()
         
         for data in self.entity_data_cache:
-            if data['owner'] is not None:
-                out.append(data['owner'])
+            if data['parent'] is not None:
+                out.append(data['parent'])
         
         return out
     
