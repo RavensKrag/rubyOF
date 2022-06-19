@@ -896,14 +896,14 @@ class AnimTexManager ():
             
             # NOTE: don't necessariy need to override old data - can just leave garbage in there - garbage should be overridden by new data when new data is written
             
-            scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
-            scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+            # scanline_position = [0.2, 0.2, 0.2, 1.0] * 10
+            # scanline_normals  = [0.0, 0.0, 0.0, 1.0] * 10
             
-            self.position_tex.write_scanline(scanline_position, i)
-            self.normal_tex.write_scanline(scanline_normals, i)
+            # self.position_tex.write_scanline(scanline_position, i)
+            # self.normal_tex.write_scanline(scanline_normals, i)
             
-            self.position_tex.save()
-            self.normal_tex.save()
+            # self.position_tex.save()
+            # self.normal_tex.save()
         
         
         
