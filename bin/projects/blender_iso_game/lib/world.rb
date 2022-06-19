@@ -634,8 +634,8 @@ class World
     
     
     def entity_scanline_to_name(i)
-      entity_name, mesh_name, material_name = @json['entity_data_cache'][i]
-      return entity_name
+      data = @json['entity_data_cache'][i]
+      return data['entity name']
     end
     
     def mesh_scanline_to_name(i)
@@ -649,9 +649,7 @@ class World
       
       # TODO: try using #find_index instead
       @json['entity_data_cache'].each_with_index do |data, i|
-        entity_name, mesh_name, material_name = data
-        
-        if entity_name == target_entity_name
+        if data['entity name'] == target_entity_name
           # p data
           entity_idx = i
           break
