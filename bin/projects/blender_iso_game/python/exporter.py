@@ -725,54 +725,17 @@ class Exporter():
         if collection_ptr is None:
             return
         
-        old_names = tex_manager.get_entity_names()
+        old_names = tex_manager.get_entity_owner_names()
         new_names = [ x.name for x in collection_ptr.all_objects ]
         delta = list(set(old_names) - set(new_names))
         
         
-        
-        
-        # 
-        # there are some submeshes (things that end in .part2, .part3, etc)
-        # they should only be removed if the base mesh is removed.
-        # ex)   only remove foo.part2 if foo was removed in blender
-        # 
-        multipart_mesh_names = []
-        single_mesh_names = []
-        for name in delta:
-            if '.' in name:
-                last_segment = name.split('.')[-1]
-                if re.match("^part[0-9]+$", last_segment):
-                    # "Here ^ anchors to the start of the string, $ to the end, and + makes sure you match 1 or more characters."
-                    # src: https://stackoverflow.com/questions/15954650/python-how-do-i-use-re-to-match-a-whole-string
-                    multipart_mesh_names.append(name)
-                else:
-                    single_mesh_names.append(name)
-            else:
-                single_mesh_names.append(name)
-        
-        print(multipart_mesh_names)
-        print(single_mesh_names, flush=True)
-        
-        deletion_queue = []
-        for name in multipart_mesh_names:
-            delimiter = '.'
-            parts = name.split(delimiter)
-            basename = delimiter.join(parts[0:len(parts)-1])
-            if basename in single_mesh_names:
-                deletion_queue.append(name)
-        
-        deletion_queue = deletion_queue + single_mesh_names
-        
-        
-        
-        
         # print("old_names:", len(old_names), flush=True)
         
-        if len(deletion_queue) > 0:
+        if len(delta) > 0:
             print("delta:", delta, flush=True)
             
-        for name in deletion_queue:
+        for name in delta:
             # print(delete)
             
             # TODO: make sure they're all mesh objects
