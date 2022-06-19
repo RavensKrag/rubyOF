@@ -82,7 +82,13 @@ class AnimTexManager ():
             # ]
         self.mesh_data_cache   = [None] * self.position_tex.height
         
-        self.entity_data_cache = ( [[None, None, None]]
+        self.entity_data_schema = {
+            'owner' : None,
+            'entity name' : None,
+            'mesh name' : None,
+            'material name' : None,
+        }
+        self.entity_data_cache = ( [ self.entity_data_schema.copy() ]
                                    * self.entity_tex.height )
         
         
@@ -193,12 +199,10 @@ class AnimTexManager ():
         
         # search for the name
         for i, data in enumerate(self.entity_data_cache):
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_entity_name is None:
+            if data['entity name'] is None:
                 if first_open_scanline == -1:
                     first_open_scanline = i
-            elif cached_entity_name == entity_name:
+            elif data['entity name'] == entity_name:
                 # If you find the name, use that scanline
                 return i
         
@@ -207,17 +211,20 @@ class AnimTexManager ():
         if first_open_scanline == -1:
             raise RuntimeError("No open scanlines available in the entity texture. Try increasing the maximum number of entities (aka frames) allowed in exporter.")
         else:
-            self.entity_data_cache[first_open_scanline] = [entity_name, None, None]
+            data = self.entity_data_schema.copy()
+            data['entity name'] = entity_name
+            data['owner'] = entity_name
+            self.entity_data_cache[first_open_scanline] = data
             
             return first_open_scanline
     
     # Set entity -> mesh binding in cache
     def __cache_entity_mesh_binding(self, scanline_index, mesh_name):
         data = self.entity_data_cache[scanline_index]
-        
-        # data[0] = obj_name
-        data[1] = mesh_name
-        # data[2] = material_name
+        print(self.entity_data_cache, flush=True)
+        # data['entity name'] = obj_name
+        data['mesh name'] = mesh_name
+        # data['material name'] = material_name
         
         self.entity_data_cache[scanline_index] = data
     
@@ -225,11 +232,19 @@ class AnimTexManager ():
     def __cache_material_binding(self, scanline_index, material_name):
         data = self.entity_data_cache[scanline_index]
         
-        # data[0] = obj_name
-        # data[1] = mesh_name
-        data[2] = material_name
+        # data['entity name'] = obj_name
+        # data['mesh name'] = mesh_name
+        data['material name'] = material_name
         
         self.entity_data_cache[scanline_index] = data
+    
+    def __cache_entity_owner(self, scanline_index, owner_name):
+        data = self.entity_data_cache[scanline_index]
+        
+        data['owner'] = owner_name
+        
+        self.entity_data_cache[scanline_index] = data
+        
         
     
     
@@ -353,9 +368,7 @@ class AnimTexManager ():
     def has_entity(self, obj_name):
         # search for the name
         for i, data in enumerate(self.entity_data_cache):
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_entity_name == obj_name:
+            if data['entity name'] == obj_name:
                 print(cached_entity_name, " found in the cache", flush=True)
                 return True
         
@@ -641,6 +654,8 @@ class AnimTexManager ():
         scanline_index = self.__entity_name_to_scanline(entity_name)
         parent_id      = self.__entity_name_to_scanline(parent_entity_name)
         
+        self.__cache_entity_owner(scanline_index, parent_entity_name)
+        
         
         # read out existing scanline data
         # so you don't clobber other properties on this line
@@ -829,10 +844,8 @@ class AnimTexManager ():
         # 2) update all of those entities
         
         for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_material_name == material.name:
-                self.set_entity_material(cached_entity_name, material)
+            if data['material name'] == material.name:
+                self.set_entity_material(data['entity name'], material)
     
     
     # Remove entity from the transform texture.
@@ -864,25 +877,24 @@ class AnimTexManager ():
         # 
         
         # clear entity data
-        entity_data = self.entity_data_cache[scanline_index]
-        _, mesh_name, _ = entity_data
+        old_entity_data = self.entity_data_cache[scanline_index]
         
-        self.entity_data_cache[scanline_index] = [None, None, None]
+        self.entity_data_cache[scanline_index] = self.entity_data_schema.copy()
         
         # if the mesh attached to this entity is no longer being used,
         # then delete the mesh from the cache and from the texture
         count = 0
-        for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_mesh_name == mesh_name:
+        for new_entity_data in self.entity_data_cache:
+            if new_entity_data['mesh name'] == old_entity_data['mesh name']:
                 count += 1
         
         if count == 0:
-            i = self.__mesh_name_to_scanline(mesh_name)
+            i = self.__mesh_name_to_scanline(old_entity_data['mesh name'])
             self.mesh_data_cache[i] = None
             
             # NOTE: this may be slow for large textures
+            
+            # NOTE: don't necessariy need to override old data - can just leave garbage in there - garbage should be overridden by new data when new data is written
             
             scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
             scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
@@ -906,9 +918,19 @@ class AnimTexManager ():
         out = list()
         
         for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            if cached_entity_name is not None:
-                out.append(cached_entity_name)
+            if data['entity name'] is not None:
+                out.append(data['entity name'])
+        
+        return out
+    
+    # Return list of names of all entity owners.
+    # These are the entites that control when entities are GCed
+    def get_entity_owners(self):
+        out = list()
+        
+        for data in self.entity_data_cache:
+            if data['owner'] is not None:
+                out.append(data['owner'])
         
         return out
     
