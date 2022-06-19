@@ -645,12 +645,12 @@ class AnimTexManager ():
     
     # Use the b channel in the first pixel like a pointer,
     # which indicates which row in the entity texture
-    # should be used to determine the transform of this entity.
+    # should be used to determine the transform and material of this entity.
     # In this way, you create 2 linked entities
     # that move with the same transform.
     # 
     # ASSUME: must be called after set_entity_mesh()
-    def set_entity_linked_transform(self, entity_name, parent_entity_name):
+    def set_entity_owner_link(self, entity_name, parent_entity_name):
         scanline_index = self.__entity_name_to_scanline(entity_name)
         parent_id      = self.__entity_name_to_scanline(parent_entity_name)
         

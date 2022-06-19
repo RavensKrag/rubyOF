@@ -496,10 +496,14 @@ class BlenderSync
       @world.load_json_data(json_path)
       
     when 'run garbage collection'
-      # @world.load_mesh_textures(position_path,
-      #                           normal_path)
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      # NOTE: this can be called when cache is cleared from Blender, which means that there might not actually be a file at the JSON path
+      
+      if Pathname.new(json_path).exist?
+        @world.load_mesh_textures(position_path,
+                                  normal_path)
+        @world.load_entity_texture(entity_path)
+        @world.load_json_data(json_path)
+      end
       
     when 'export all textures'
       @world.load_mesh_textures(position_path,

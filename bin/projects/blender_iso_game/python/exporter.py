@@ -37,6 +37,8 @@ def get_object_transform(obj):
     return out_mat
 
 
+# Export first material on the mesh object,
+# or the material called "Material"
 def first_material(mesh_object):
     mat_slots = mesh_object.material_slots
     
@@ -303,27 +305,17 @@ class Exporter():
         for i, obj in enumerate(all_mesh_objects):
             m = tex_manager
             
-            parts = submesh_count[obj.data.name]
             
             m.set_entity_mesh(     obj.name, obj.data.name)
-            m.set_entity_linked_transform(obj.name, obj.name)
+            m.set_entity_owner_link(obj.name, obj.name)
             m.set_entity_transform(obj.name, get_object_transform(obj))
             m.set_entity_material( obj.name, first_material(obj))
             
             # add extra linked entities to render additional parts
+            self.__create_submesh_entities(tex_manager,
+                                           submesh_count[obj.data.name], 
+                                           obj.name, obj.data.name)
             
-            # assign extra render entities
-            # but skip index 0, because that's the original entity
-            # which was already exported
-            for j in range(1, parts):
-                link_entity_name = obj.name + ".part" + str(j+1)
-                mesh_name   = obj.data.name + ".part" + str(j+1)
-                m.set_entity_mesh(link_entity_name, mesh_name)
-                m.set_entity_linked_transform(link_entity_name, obj.name)
-                m.set_entity_material(link_entity_name, first_material(obj))
-                
-                # linked entity also needs material
-                # otherwise it will not render correctly
             # end for j
             task_count += 1
             context = yield(task_count / total_tasks)
@@ -371,6 +363,24 @@ class Exporter():
         print("time elapsed:", t1-t0, "sec")
         
     
+    
+    def __export_all_submeshes(self):
+        pass
+    
+    # assign extra render entities
+    # but skip index 0, because that's the original entity
+    # which was already exported
+    def __create_submesh_entities(self, tex_manager, part_count, base_entity_name, base_mesh_name):
+        m = tex_manager
+        for j in range(1, part_count):
+            link_entity_name = base_entity_name + ".part" + str(j+1)
+            mesh_name        =   base_mesh_name + ".part" + str(j+1)
+            m.set_entity_mesh(link_entity_name, mesh_name)
+            m.set_entity_owner_link(link_entity_name, base_entity_name)
+            # material and transform are both linked
+        
+    
+    
     # 
     # update animation textures
     # 
@@ -395,7 +405,8 @@ class Exporter():
     
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
-    def __update_entity_transform_without_armature(self, scene, update, tex_manager, mesh_obj):
+    def __update_entity_transform_without_armature(self, context, update, tex_manager, mesh_obj):
+        scene = context.scene
         
         if not update.is_updated_transform:
             return
@@ -444,20 +455,33 @@ class Exporter():
             # bind mesh to entity
             
             m = tex_manager
+            obj = mesh_obj
             
             mesh_updated = False
             if not m.has_mesh(mesh_obj.data.name):
                 mesh_updated = True
-                m.export_mesh(mesh_obj.data.name, mesh_obj.data)
+                
+                # 
+                # export main mesh part
+                # 
+                depsgraph = context.evaluated_depsgraph_get()
+                mesh = obj.evaluated_get(depsgraph).to_mesh()
+                parts = m.export_mesh(mesh.name, mesh)
+                
+                # 
+                # export all entities
+                # 
+                
+                # add extra linked entities to render additional parts
+                self.__create_submesh_entities(tex_manager,
+                                               parts, 
+                                               obj.name, mesh.name)
             
-            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
-            m.set_entity_mesh(mesh_obj.name, mesh_obj.data.name)
             
-            
-            # must export material as well (just for this one entity)
-            if(len(mesh_obj.material_slots) > 0):
-                mat = mesh_obj.material_slots[0].material
-                m.set_entity_material(mesh_obj.name, mat)
+            m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_owner_link(obj.name, obj.name) # must be after set mesh
+            m.set_entity_transform(obj.name, get_object_transform(obj))
+            m.set_entity_material( obj.name, first_material(obj))
             
             
             filepaths = m.get_texture_paths()
@@ -670,7 +694,7 @@ class Exporter():
                         
                         
                         if obj.parent is None:
-                            self.__update_entity_transform_without_armature(context.scene, update, tex_manager, obj)
+                            self.__update_entity_transform_without_armature(context, update, tex_manager, obj)
                         elif obj.parent.type == 'ARMATURE':
                             # meshes attached to armatures will be exported with NLA animations, in a separate pass
                             pass
