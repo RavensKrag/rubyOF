@@ -554,9 +554,8 @@ class World
       texture.load_data(pixels)
     end
     
-    # # reset the cache when textures reload
-    # pixels = @storage[:dynamic][:entity_data][:buffer][0]
-    # @storage[:dynamic][:cache].load pixels
+    # reset the cache when textures reload
+    @storage[:dynamic][:cache].load @storage[:dynamic][:entity_data][:pixels]
     
     # TODO: figure out how to refresh history when initial state changes due to incoming data from Blender
   end
