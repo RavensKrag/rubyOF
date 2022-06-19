@@ -369,7 +369,7 @@ class AnimTexManager ():
         # search for the name
         for i, data in enumerate(self.entity_data_cache):
             if data['entity name'] == obj_name:
-                print(cached_entity_name, " found in the cache", flush=True)
+                print(data['entity name'], " found in the cache", flush=True)
                 return True
         
         # entity not found
