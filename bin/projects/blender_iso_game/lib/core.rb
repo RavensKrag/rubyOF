@@ -755,16 +755,63 @@ class Core
                           lights:@world.lights,
                           camera:@world.camera) do |pipeline|
       
+      material = @world.material
+      
       pipeline.opaque_pass do
-        @world.draw_scene_opaque_pass
-        # @world.draw_scene_transparent_pass
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
+          
+          material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
+          
+          material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
+          
+          material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
+          
+          # draw using GPU instancing
+          using_material material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
         
         # glCullFace(GL_BACK)
         # glDisable(GL_CULL_FACE)
       end
       
       pipeline.transparent_pass do
-        @world.draw_scene_transparent_pass
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
+          
+          material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
+          
+          material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
+          
+          material.setCustomUniform1f(
+            "transparent_pass", 1
+          )
+          
+          # draw using GPU instancing
+          using_material material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
         
         # while time traveling, render the trails of moving objects
         if @frame_history.time_traveling?

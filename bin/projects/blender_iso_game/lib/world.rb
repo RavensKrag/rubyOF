@@ -171,62 +171,19 @@ class World
     end
   end
   
-  
-  # draw all the instances using GPU instancing
-  # (very few draw calls)
-  def draw_scene_opaque_pass
+  def each_texture_set #&block
     @storage.each do |texture_set|
-      # set uniforms
-      @mat.setCustomUniformTexture(
-        "vert_pos_tex",  texture_set.position_texture, 1
-      )
-      
-      @mat.setCustomUniformTexture(
-        "vert_norm_tex", texture_set.normal_texture, 2
-      )
-      
-      @mat.setCustomUniformTexture(
-        "entity_tex", texture_set.entity_texture, 3
-      )
-      
-      @mat.setCustomUniform1f(
-        "transparent_pass", 0
-      )
-      
-      # draw using GPU instancing
-      using_material @mat do
-        instance_count = texture_set.entity_texture.height.to_i
-        texture_set.geometry.mesh.draw_instanced instance_count
-      end
+      yield(texture_set.position_texture,
+            texture_set.normal_texture,
+            texture_set.entity_texture,
+            texture_set.mesh)
     end
   end
   
-  def draw_scene_transparent_pass
-    @storage.each do |texture_set|
-      # set uniforms
-      @mat.setCustomUniformTexture(
-        "vert_pos_tex",  texture_set.position_texture, 1
-      )
-      
-      @mat.setCustomUniformTexture(
-        "vert_norm_tex", texture_set.normal_texture, 2
-      )
-      
-      @mat.setCustomUniformTexture(
-        "entity_tex", texture_set.entity_texture, 3
-      )
-      
-      @mat.setCustomUniform1f(
-        "transparent_pass", 1
-      )
-      
-      # draw using GPU instancing
-      using_material @mat do
-        instance_count = texture_set.entity_texture.height.to_i
-        texture_set.geometry.mesh.draw_instanced instance_count
-      end
-    end
+  def material
+    return @mat
   end
+  
   
   def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
@@ -446,8 +403,8 @@ class World
       return @storage[:entity_data][:texture]
     end
     
-    def geometry
-      return @storage[:geometry]
+    def mesh
+      return @storage[:geometry].mesh
     end
     
     
