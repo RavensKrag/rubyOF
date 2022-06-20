@@ -157,144 +157,142 @@ class VertexAnimationTextureSet
     end
   end
   
-end
-
-
-
-# ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
-
-
-# ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
-# ASSUME: @pixels[:positions] and @pixels[:normals] have the same dimensions
-
-
-
-class TextureJsonCache
-  def initialize
-    @json = nil
-  end
   
-  def load(json_filepath)
-    unless File.exist? json_filepath
-      raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
+  
+  
+  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
+
+
+  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
+  # ASSUME: @pixels[:positions] and @pixels[:normals] have the same dimensions
+  
+  
+  
+  class TextureJsonCache
+    def initialize
+      @json = nil
     end
     
-    json_string   = File.readlines(json_filepath).join("\n")
-    json_data     = JSON.parse(json_string)
-    
-    @json = json_data
-  end
-  
-  
-  def num_meshes
-    return @json["mesh_data_cache"].size
-  end
-  
-  
-  
-  def entity_scanline_to_name(i)
-    data = @json['entity_data_cache'][i]
-    return data['entity name']
-  end
-  
-  def mesh_scanline_to_name(i)
-    return @json['mesh_data_cache'][i]
-  end
-  
-  
-  
-  def entity_name_to_scanline(target_entity_name)
-    entity_idx = nil
-    
-    # TODO: try using #find_index instead
-    @json['entity_data_cache'].each_with_index do |data, i|
-      if data['entity name'] == target_entity_name
-        # p data
-        entity_idx = i
-        break
+    def load(json_filepath)
+      unless File.exist? json_filepath
+        raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
       end
-    end
-    
-    return entity_idx
-  end
-  
-  # @json includes a blank entry for scanline index 0
-  # even though that scanline is not represented in the cache
-  def mesh_name_to_scanline(target_mesh_name)
-    mesh_idx = nil
-    
-    # TODO: try using #find_index instead
-    @json['mesh_data_cache'].each_with_index do |mesh_name, i|
-      if mesh_name == target_mesh_name
-        # p data
-        mesh_idx = i
-        break
-      end
-    end
-    
-    return mesh_idx
-  end
-  
-end
-
-
-
-
-
-
-class BatchGeometry
-  attr_reader :mesh
-  
-  def initialize
-    @mesh = nil
-  end
-  
-  def generate(vertex_count)
-    @mesh = create_mesh(vertex_count)
-  end
-  
-  private
-  
-  def create_mesh(num_verts)
-    # 
-    # Create a mesh consiting of a line of unconnected triangles
-    # the verticies in this mesh will be transformed by the textures
-    # so it doesn't matter what their exact positons are.
-    # 
-    RubyOF::VboMesh.new.tap do |mesh|
-      mesh.setMode(:triangles)
-      # ^ TODO: maybe change ruby interface to mode= or similar?
       
-      num_tris = num_verts / 3
+      json_string   = File.readlines(json_filepath).join("\n")
+      json_data     = JSON.parse(json_string)
       
-      size = 1 # useful when prototyping to increase this for visualization
-      num_tris.times do |i|
-        a = i*3+0
-        b = i*3+1
-        c = i*3+2
-        # DEBUG PRINT: show indicies assigned to tris an verts
-        # p [i, [a,b,c]]
-        
-        
-        # UV coordinates specified in pixel indicies
-        # will offset by half a pixel in the shader
-        # to sample at the center of each pixel
-        
-        mesh.addVertex(GLM::Vec3.new(size*i,0,0))
-        mesh.addTexCoord(GLM::Vec2.new(a, 0))
-        
-        mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
-        mesh.addTexCoord(GLM::Vec2.new(b, 0))
-        
-        mesh.addVertex(GLM::Vec3.new(size*i,size,0))
-        mesh.addTexCoord(GLM::Vec2.new(c, 0))
-        
+      @json = json_data
+    end
+    
+    
+    def num_meshes
+      return @json["mesh_data_cache"].size
+    end
+    
+    
+    
+    def entity_scanline_to_name(i)
+      data = @json['entity_data_cache'][i]
+      return data['entity name']
+    end
+    
+    def mesh_scanline_to_name(i)
+      return @json['mesh_data_cache'][i]
+    end
+    
+    
+    
+    def entity_name_to_scanline(target_entity_name)
+      entity_idx = nil
+      
+      # TODO: try using #find_index instead
+      @json['entity_data_cache'].each_with_index do |data, i|
+        if data['entity name'] == target_entity_name
+          # p data
+          entity_idx = i
+          break
+        end
       end
+      
+      return entity_idx
+    end
+    
+    # @json includes a blank entry for scanline index 0
+    # even though that scanline is not represented in the cache
+    def mesh_name_to_scanline(target_mesh_name)
+      mesh_idx = nil
+      
+      # TODO: try using #find_index instead
+      @json['mesh_data_cache'].each_with_index do |mesh_name, i|
+        if mesh_name == target_mesh_name
+          # p data
+          mesh_idx = i
+          break
+        end
+      end
+      
+      return mesh_idx
     end
     
   end
+  
+  
+  
+  
+  
+  class BatchGeometry
+    attr_reader :mesh
+    
+    def initialize
+      @mesh = nil
+    end
+    
+    def generate(vertex_count)
+      @mesh = create_mesh(vertex_count)
+    end
+    
+    private
+    
+    def create_mesh(num_verts)
+      # 
+      # Create a mesh consiting of a line of unconnected triangles
+      # the verticies in this mesh will be transformed by the textures
+      # so it doesn't matter what their exact positons are.
+      # 
+      RubyOF::VboMesh.new.tap do |mesh|
+        mesh.setMode(:triangles)
+        # ^ TODO: maybe change ruby interface to mode= or similar?
+        
+        num_tris = num_verts / 3
+        
+        size = 1 # useful when prototyping to increase this for visualization
+        num_tris.times do |i|
+          a = i*3+0
+          b = i*3+1
+          c = i*3+2
+          # DEBUG PRINT: show indicies assigned to tris an verts
+          # p [i, [a,b,c]]
+          
+          
+          # UV coordinates specified in pixel indicies
+          # will offset by half a pixel in the shader
+          # to sample at the center of each pixel
+          
+          mesh.addVertex(GLM::Vec3.new(size*i,0,0))
+          mesh.addTexCoord(GLM::Vec2.new(a, 0))
+          
+          mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
+          mesh.addTexCoord(GLM::Vec2.new(b, 0))
+          
+          mesh.addVertex(GLM::Vec3.new(size*i,size,0))
+          mesh.addTexCoord(GLM::Vec2.new(c, 0))
+          
+        end
+      end
+      
+    end
+  end
+
+
+
 end
-
-
-
-
