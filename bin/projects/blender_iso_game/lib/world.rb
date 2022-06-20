@@ -830,7 +830,18 @@ class World
       end
     end
     
+    # convert to a hash such that it can be serialized with yaml, json, etc
+    def data_dump
+      data_hash = {
+        'lights' => @lights
+      }
+      return data_hash
+    end
     
+    # read from a hash (deserialization)
+    def load(data)
+      @lights = data['lights']
+    end
   end
   
   

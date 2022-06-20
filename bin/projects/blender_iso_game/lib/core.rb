@@ -234,6 +234,12 @@ class Core
       @world.camera.load data
     end
     
+    @lighting_save_file = PROJECT_DIR/'bin'/'data'/'lights.yaml'
+    if @lighting_save_file.exist?
+      data = YAML.load_file @lighting_save_file
+      @world.lights.load data
+    end
+    
     @frame_history = FrameHistory.new(self, @world.history)
     
     
@@ -293,6 +299,7 @@ class Core
     
     # save_world_state()
     dump_yaml @world.camera.data_dump => @camera_save_file
+    dump_yaml @world.lights.data_dump => @lighting_save_file
     
     
     # FileUtils.rm @world_save_file if @world_save_file.exist?
