@@ -1,6 +1,6 @@
 import os
 import bpy
-
+import numpy
 
 def is_valid_anim_tex(image, texture_name, width_px, height_px):
     if image == None:
@@ -115,6 +115,8 @@ class ImageWrapper():
         self.image.filepath_raw = path
         print(self.image.filepath)
     
+    def size(self):
+        return (self.width, self.height)
     
     # reload from disk
     def reload(self):
@@ -147,6 +149,15 @@ class ImageWrapper():
         # (but it seems to return a tuple here, but we need a list)
         return list(self.image.pixels[offset:(offset+px_per_scanline)])
     
+    def read_pixel(self, row, col):
+        px_per_scanline = self.width*self.channels_per_pixel
+        
+        offset = (row*px_per_scanline +
+                  col*self.channels_per_pixel)
+        
+        return list(self.image.pixels[offset:(offset+self.channels_per_pixel)])
+    
+    
     def write_scanline(self, pixel_data, row):
         # print("writing scanline")
         # print([px for px in self.image.pixels])
@@ -155,8 +166,7 @@ class ImageWrapper():
         
         offset = px_per_scanline*row
         
-        for i in range(px_per_scanline):
-            self.image.pixels[offset+i] = pixel_data[i]
+        self.image.pixels[(offset):(offset+len(pixel_data))] = pixel_data
             
         # print([px for px in self.image.pixels])
     

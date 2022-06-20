@@ -17,7 +17,9 @@ import json
 import sys
 import os
 
+import math
 
+import numpy
 
 
 
@@ -27,16 +29,6 @@ def scanline_set_px(scanline, px_i, px_data, channels=4):
     for i in range(channels):
         scanline[px_i*channels+i] = px_data[i]
 
-def image_set_px(image, row,col, color):
-    px_per_scanline = image.width * image.channels_per_pixel
-    
-    scanline_offset = px_per_scanline * row
-    pixel_offset = image.channels_per_pixel * col
-    
-    for channel_idx in range(image.channels_per_pixel):
-        i = scanline_offset + pixel_offset + channel_idx
-        image.pixels[i] = color[channel_idx]
-        
 
 
 # TODO: need to force export of everything if the number of entities changes
@@ -71,7 +63,7 @@ class AnimTexManager ():
         
         # ASSUME: position_tex.height == normal_tex.height
         if self.position_tex.height != self.normal_tex.height:
-            raise "Mesh data textures are not all the same height."
+            raise RuntimeError("Mesh data textures are not all the same height.")
         
         
         # 
@@ -90,7 +82,13 @@ class AnimTexManager ():
             # ]
         self.mesh_data_cache   = [None] * self.position_tex.height
         
-        self.entity_data_cache = ( [[None, None, None]]
+        self.entity_data_schema = {
+            'parent' : None,
+            'entity name' : None,
+            'mesh name' : None,
+            'material name' : None,
+        }
+        self.entity_data_cache = ( [ self.entity_data_schema.copy() ]
                                    * self.entity_tex.height )
         
         
@@ -185,7 +183,7 @@ class AnimTexManager ():
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
-            raise "No open scanlines available in the mesh textures. (Scanline i=0 always intentially left blank.) Try increasing the maximum number of entities (aka frames) allowed in exporter."
+            raise RuntimeError("No open scanlines available in the mesh textures. (Scanline i=0 always intentially left blank.) Try increasing the maximum number of entities (aka frames) allowed in exporter.")
         else:
             self.mesh_data_cache[first_open_scanline] = mesh_name
             
@@ -201,21 +199,22 @@ class AnimTexManager ():
         
         # search for the name
         for i, data in enumerate(self.entity_data_cache):
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_entity_name is None:
+            if data['entity name'] is None:
                 if first_open_scanline == -1:
                     first_open_scanline = i
-            elif cached_entity_name == entity_name:
+            elif data['entity name'] == entity_name:
                 # If you find the name, use that scanline
                 return i
         
         
         # If you don't find the name, use the first open scanline
         if first_open_scanline == -1:
-            raise "No open scanlines available in the entity texture. Try increasing the maximum number of entities (aka frames) allowed in exporter."
+            raise RuntimeError("No open scanlines available in the entity texture. Try increasing the maximum number of entities (aka frames) allowed in exporter.")
         else:
-            self.entity_data_cache[first_open_scanline] = [entity_name, None, None]
+            data = self.entity_data_schema.copy()
+            data['entity name'] = entity_name
+            data['parent'] = entity_name
+            self.entity_data_cache[first_open_scanline] = data
             
             return first_open_scanline
     
@@ -223,9 +222,9 @@ class AnimTexManager ():
     def __cache_entity_mesh_binding(self, scanline_index, mesh_name):
         data = self.entity_data_cache[scanline_index]
         
-        # data[0] = obj_name
-        data[1] = mesh_name
-        # data[2] = material_name
+        # data['entity name'] = obj_name
+        data['mesh name'] = mesh_name
+        # data['material name'] = material_name
         
         self.entity_data_cache[scanline_index] = data
     
@@ -233,11 +232,19 @@ class AnimTexManager ():
     def __cache_material_binding(self, scanline_index, material_name):
         data = self.entity_data_cache[scanline_index]
         
-        # data[0] = obj_name
-        # data[1] = mesh_name
-        data[2] = material_name
+        # data['entity name'] = obj_name
+        # data['mesh name'] = mesh_name
+        data['material name'] = material_name
         
         self.entity_data_cache[scanline_index] = data
+    
+    def __cache_entity_parent(self, scanline_index, parent_name):
+        data = self.entity_data_cache[scanline_index]
+        
+        data['parent'] = parent_name
+        
+        self.entity_data_cache[scanline_index] = data
+        
         
     
     
@@ -336,14 +343,22 @@ class AnimTexManager ():
     def clear(self, scene):
         mytool = scene.my_tool
         
-        mytool.position_tex  = None
-        mytool.normal_tex    = None
-        mytool.entity_tex = None
+        tex_set = mytool.texture_sets[self.name]
+        
+        tex_set.position_tex  = None
+        tex_set.normal_tex    = None
+        tex_set.entity_tex    = None
+        
         
         # print("checking json path", flush=True)
         if os.path.isfile(self.json_filepath):
             # print("clearing old json file", flush=True)
             os.remove(self.json_filepath)
+        
+        # print("images: ", len(bpy.data.images), flush=True)
+        # for block in bpy.data.images:
+        #     if block.users == 0:
+        #         bpy.data.images.remove(block)
             
     
     
@@ -353,10 +368,8 @@ class AnimTexManager ():
     def has_entity(self, obj_name):
         # search for the name
         for i, data in enumerate(self.entity_data_cache):
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_entity_name == obj_name:
-                print(cached_entity_name, " found in the cache", flush=True)
+            if data['entity name'] == obj_name:
+                print(data['entity name'], " found in the cache", flush=True)
                 return True
         
         # entity not found
@@ -382,11 +395,19 @@ class AnimTexManager ():
     # 
     # mesh_name : string
     # mesh      : mesh datablock
+    # 
+    # returns: number of exported mesh segments
     def export_mesh(self, mesh_name, mesh):
         mesh.calc_loop_triangles()
         # ^ need to call this to populate the mesh.loop_triangles() cache
         
         mesh.calc_normals_split()
+        
+        # after splitting, vertex normal == split normal
+        mesh.split_faces()
+        mesh.calc_normals()
+        
+        
         # normal_data = [ [val for val in tri.normal] for tri in mesh.loop_triangles ]
         # ^ normals stored on the tri / face
         
@@ -414,35 +435,262 @@ class AnimTexManager ():
         
         print(self.position_tex.filepath, flush=True)
         print(self.normal_tex.filepath, flush=True)
-
         
-        if num_tris > self.max_tris:
-            raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
+        
+        # if num_tris > self.max_tris:
+        #     raise RuntimeError(f'The mesh {mesh} has {num_tris} tris, but the animation texture has a limit of {self.max_tris} tris. Please increase the size of the animation texture.')
         
         
         # NOTE: only way to be sure that mesh data is deleted is to do a "clean build" - clear the textures and re-export everything from scratch.
         scanline_index = self.__mesh_name_to_scanline(mesh_name)
         
-        verts = mesh.vertices
-        for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
-            normals = tri.split_normals
-            for j in range(3): # verts per triangle
-                vert_index = tri.vertices[j]
-                vert = verts[vert_index]
+        
+        
+        
+        # https://devtalk.blender.org/t/bpy-data-images-perf-issues/6459
+        
+        # https://blender.stackexchange.com/questions/240587/calculating-split-normals-using-python
+        
+        # print("loops length: ", mesh.name, len(mesh.loops), flush=True)
+        # norms = numpy.empty(3 * len(mesh.loops))
+        # mesh.loops.foreach_get("normal", norms)
+        # nx, ny, nz = norms.reshape((-1, 3)).T
+        # na = numpy.ones(len(nz))
+        
+        # norm_pixels = numpy.array([nx, ny, nz, na]).T.ravel()
+        
+        # # t1 = numpy.empty(3 * len(mesh.loops))
+        # # t2 = numpy.empty(3 * len(mesh.loops))
+        # # t1.data.foreach_set("uv", numpy.array([nx, ny]).T.ravel())
+        # # t2.data.foreach_set("uv", numpy.array([nz, nw]).T.ravel())
+        
+        
+        # self.normal_tex.write_scanline(norm_pixels, scanline_index)
+        
+        
+        
+        
+        
+        
+        
+        
+        # 
+        # reference position implementation
+        # 
+        
+        
+        # verts = mesh.vertices
+        # for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+        #     for j in range(3): # verts per triangle
+        #         vert_index = tri.vertices[j]
+        #         vert = verts[vert_index]
                 
-                self.position_tex.write_pixel(
-                             scanline_index, i*3+j,
-                             vec3_to_rgba(vert.co))
+        #         self.position_tex.write_pixel(
+        #                      scanline_index, i*3+j,
+        #                      vec3_to_rgba(vert.co))
+              
+        
+        
+        
+        
+        # 
+        # numpy position implementation
+        # 
+        
+        vert_idxs = numpy.empty(3 * len(mesh.loop_triangles))
+        mesh.loop_triangles.foreach_get("vertices", vert_idxs)
+        vert_idxs = vert_idxs.astype(numpy.int)
+        
+        # create 3 numpy arrays: xs, ys, and zs
+        # each containing one component of position
+        positions = numpy.empty(3 * len(mesh.vertices))
+        mesh.vertices.foreach_get("co", positions)
+        xs, ys, zs = positions.reshape((-1, 3)).T
+        
+        # index into each array using the vertex index array
+        px = numpy.take(xs, vert_idxs)
+        py = numpy.take(ys, vert_idxs)
+        pz = numpy.take(zs, vert_idxs)
+        
+        # convert into proper linear form
+        pa = numpy.ones(len(pz))
+        
+        position_pixels = numpy.array([px, py, pz, pa]).T.ravel()
+        
+        
+        # If the amount of pixels to encode is greater than the amount that can fit on one scanline, then split the pixels up into multiple "batches"
+        # 
+        # ASSUME: the texture is sized s.t. it can fit a clean number of triangles in a single line, so you put a line break anywhere
+        # ASSUME: normal data is encoded as split normals, so meshes can be split into arbitrary sub-meshes without distortion
+        
+        
+        # print("position texture chunk size: ", chunk_size, flush=True)
+        # print("pixel data size: ", position_pixels.size, flush=True)
+        # print(position_pixels, flush=True)
+        
+        
+        
+        
+        # 
+        # reference
+        # 
+        
+        # for i, tri in enumerate(mesh.loop_triangles): # triangles per mesh
+        #     normals = tri.split_normals
+        #     for j in range(3): # verts per triangle
+        #         normal = normals[j]
                 
-                normal = normals[j]
+        #         self.normal_tex.write_pixel(
+        #                      scanline_index, i*3+j,
+        #                      vec3_to_rgba(normal))
+        
+        
+        
+        # 
+        # numpy
+        # 
+        
+        # NOTE: Does not support split normals. If you want split normals, divide the mesh into separate parts
+        # oh wait, if you don't have split normals, you can't do flat shading...
+        # hmm that sucks.
+        
+        # create 3 numpy arrays: xs, ys, and zs
+        # each containing one component of normal vector
+        
+        # normals = numpy.empty( (len(mesh.loop_triangles), 3,3) )
+        # mesh.loop_triangles.foreach_get("split_normals", normals)
+        
+        normals = numpy.empty( 3*len(mesh.vertices) )
+        mesh.vertices.foreach_get("normal", normals)
+        
+        xs, ys, zs = normals.reshape((-1, 3)).T
+        
+        # index into each array using the vertex index array
+        nx = numpy.take(xs, vert_idxs)
+        ny = numpy.take(ys, vert_idxs)
+        nz = numpy.take(zs, vert_idxs)
+        # nx = xs
+        # ny = ys
+        # nz = zs
+        
+        # convert into proper linear form
+        na = numpy.ones(len(nz))
+        
+        norm_pixels = numpy.array([nx, ny, nz, na]).T.ravel()
+        
+        
+        
+        
+        # 
+        # write scanlines
+        # 
+        
+        
+        # TODO: just dump all the pixels in all at once
+        # you don't need to split the mesh into chunks like this,
+        # because then chunks will always be contiguous. (ASSUME)
+        # As the memory for textures is just linear pixel memory (not 2D array)
+        # you can just dump in all in there.
+        # Still need to set the names in the mesh data cache.
+        
+        # NOTE: you should probably check to make sure there's enough free space in the texture so you don't run off the end of the array, but you don't need to split things up.
+        
+        # TODO: make sure to update the section with the normal texture too.
+        
+        
+        # if self.position_tex.size != self.normal_tex.size:
+        #     raise RuntimeError(f"Dimensions of normal position texture and normal texture are not the same for {mesh_name}. {repr(self.position_tex.size)} != {repr(self.normal_tex.size)}")
+        
+        channels_per_pixel = 4
+        chunk_size = self.position_tex.width * channels_per_pixel
+        empty_line = numpy.zeros(chunk_size)
+        
+        # the / operator in python always does float division
+        # use // for int division
+        num_chunks = math.ceil(position_pixels.size / chunk_size)
+        
+        # override the last incomplete line with blank data before writing
+        offset = num_chunks-1
+        self.position_tex.write_scanline(empty_line, scanline_index+offset)
+        self.normal_tex.write_scanline(empty_line, scanline_index+offset)
+        
+        # write all data
+        self.position_tex.write_scanline(position_pixels, scanline_index)
+        self.normal_tex.write_scanline(norm_pixels, scanline_index)
+        
+        
+        
+        for i in range(num_chunks):
+            if i == 0:
+                # leave name unchanged for the first part
+                # so that you can lookup the first part using the
+                # name of the blender mesh
+                name = mesh_name
+            else:
+                # change the name slightly for the additional mesh pieces
+                name = mesh_name + ".part" + str(i+1)    
+            self.mesh_data_cache[scanline_index+i] = name
+            # ^ extend the cache to handle textures that span many lines
+        
+        
                 
-                self.normal_tex.write_pixel(
-                             scanline_index, i*3+j,
-                             vec3_to_rgba(normal))
+        
         
         
         self.position_tex.save()
         self.normal_tex.save()
+        
+        return num_chunks
+    
+    
+    # Use the b channel in the first pixel like a pointer,
+    # which indicates which row in the entity texture
+    # should be used to determine the transform and material of this entity.
+    # In this way, you create 2 linked entities
+    # that move with the same transform.
+    # 
+    # ASSUME: must be called after set_entity_mesh()
+    def set_entity_parent(self, entity_name, parent_entity_name):
+        scanline_index = self.__entity_name_to_scanline(entity_name)
+        parent_id      = self.__entity_name_to_scanline(parent_entity_name)
+        
+        self.__cache_entity_parent(scanline_index, parent_entity_name)
+        
+        
+        # read out existing scanline data
+        # so you don't clobber other properties on this line
+        scanline_transform = self.entity_tex.read_scanline(scanline_index)
+        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
+        
+        
+        # pixel_data = [mesh_id, mesh_id, parent_id, 1.0]
+        
+        # read out existing data, so you don't clobber mesh linkage
+        pixel_data = self.entity_tex.read_pixel(scanline_index, 0)
+        
+        # set link on pixel data
+        pixel_data[2] = parent_id
+        # print(pixel_data, flush=True)
+        
+        # set pixel in scanline
+        scanline_set_px(scanline_transform, 0, pixel_data)
+        
+        
+        # 
+        # clear transforms in scanline
+        # 
+        blank_pixel = vec4_to_rgba([0.0, 0.0, 0.0, 1.0])
+        for i in range(1, 5): # range is exclusive of high end: [a, b)
+            scanline_set_px(scanline_transform, i, blank_pixel,
+                            channels=self.entity_tex.channels_per_pixel)
+        
+        # 
+        # write scanline to texture
+        # 
+        
+        self.entity_tex.write_scanline(scanline_transform, scanline_index)
+        
+        self.entity_tex.save()
     
     
     # Specify the mesh to use for a given entity @ t=0 (initial condition)
@@ -453,18 +701,10 @@ class AnimTexManager ():
     # on disk will change if and only if the initial condition changes.
     # Raise exception if no mesh with the given name has been exported yet.
     # 
-    # obj_name  : string
+    # entity_name  : string
     # mesh_name : string ( must already be exported using export_mesh() )
-    def set_entity_mesh(self, obj_name, mesh_name):
-        scanline_index = self.__entity_name_to_scanline(obj_name)
-        
-        
-        # read out existing scanline data
-        # so you don't clobber other properties on this line
-        scanline_transform = self.entity_tex.read_scanline(scanline_index)
-        # scanline_transform = [0.0, 0.0, 0.0, 0.0] * self.entity_tex.width
-        
-        # print(scanline_transform, flush=True)
+    def set_entity_mesh(self, entity_name, mesh_name):
+        scanline_index = self.__entity_name_to_scanline(entity_name)
         
         # 
         # write mesh id to scanline
@@ -472,22 +712,23 @@ class AnimTexManager ():
         
         # error if mesh has not been exported yet
         if not self.has_mesh(mesh_name):
-            raise f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an entity."
+            raise RuntimeError(f"No mesh with the name {mesh_name} found. Make sure to export the mesh using export_mesh() before mapping the mesh to an entity.")
         
         print("mesh name:", mesh_name, flush=True)
         mesh_id = self.__mesh_name_to_scanline(mesh_name)
         
-        scanline_set_px(scanline_transform, 0, [mesh_id, mesh_id, mesh_id, 1.0],
-                        channels=self.entity_tex.channels_per_pixel)
+        pixel_data = [mesh_id, mesh_id, mesh_id, 1.0]
+        
         
         self.__cache_entity_mesh_binding(scanline_index, mesh_name)
         
         
         # 
-        # write to scanline to texture
+        # write scanline to texture
         # 
         
-        self.entity_tex.write_scanline(scanline_transform, scanline_index)
+        self.entity_tex.write_pixel(scanline_index, 0,
+                                    pixel_data)
         
         self.entity_tex.save()
     
@@ -516,7 +757,7 @@ class AnimTexManager ():
                             channels=self.entity_tex.channels_per_pixel)
         
         # 
-        # write to scanline to texture
+        # write scanline to texture
         # 
         
         self.entity_tex.write_scanline(scanline_transform, scanline_index)
@@ -583,7 +824,7 @@ class AnimTexManager ():
         
         
         # 
-        # write to scanline to texture
+        # write scanline to texture
         # 
         
         self.entity_tex.write_scanline(scanline_transform, scanline_index)
@@ -603,10 +844,8 @@ class AnimTexManager ():
         # 2) update all of those entities
         
         for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_material_name == material.name:
-                self.set_entity_material(cached_entity_name, material)
+            if data['material name'] == material.name:
+                self.set_entity_material(data['entity name'], material)
     
     
     # Remove entity from the transform texture.
@@ -638,37 +877,44 @@ class AnimTexManager ():
         # 
         
         # clear entity data
-        entity_data = self.entity_data_cache[scanline_index]
-        _, mesh_name, _ = entity_data
+        old_entity_data = self.entity_data_cache[scanline_index]
         
-        self.entity_data_cache[scanline_index] = [None, None, None]
+        self.entity_data_cache[scanline_index] = self.entity_data_schema.copy()
         
         # if the mesh attached to this entity is no longer being used,
         # then delete the mesh from the cache and from the texture
         count = 0
-        for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            
-            if cached_mesh_name == mesh_name:
+        for new_entity_data in self.entity_data_cache:
+            if new_entity_data['mesh name'] == old_entity_data['mesh name']:
                 count += 1
         
         if count == 0:
-            i = self.__mesh_name_to_scanline(mesh_name)
+            i = self.__mesh_name_to_scanline(old_entity_data['mesh name'])
             self.mesh_data_cache[i] = None
             
-            scanline_position = [0.2, 0.2, 0.2, 1.0] * self.position_tex.width
-            scanline_normals  = [0.0, 0.0, 0.0, 1.0] * self.normal_tex.width
+            # NOTE: this may be slow for large textures
             
-            self.position_tex.write_scanline(scanline_position, i)
-            self.normal_tex.write_scanline(scanline_normals, i)
+            # NOTE: don't necessariy need to override old data - can just leave garbage in there - garbage should be overridden by new data when new data is written
             
-            self.position_tex.save()
-            self.normal_tex.save()
+            # scanline_position = [0.2, 0.2, 0.2, 1.0] * 10
+            # scanline_normals  = [0.0, 0.0, 0.0, 1.0] * 10
+            
+            # self.position_tex.write_scanline(scanline_position, i)
+            # self.normal_tex.write_scanline(scanline_normals, i)
+            
+            # self.position_tex.save()
+            # self.normal_tex.save()
         
         
         
         # save new JSON file
         self.save()
+        
+        
+        # recursively delete all entities that declare this one as a parent
+        for data in self.entity_data_cache:
+            if data['parent'] == entity_name:
+                self.delete_entity(data['entity name'])
         
     
     
@@ -678,9 +924,20 @@ class AnimTexManager ():
         out = list()
         
         for data in self.entity_data_cache:
-            cached_entity_name, cached_mesh_name, cached_material_name = data
-            if cached_entity_name is not None:
-                out.append(cached_entity_name)
+            if data['entity name'] is not None:
+                out.append(data['entity name'])
+        
+        return out
+    
+    # Return list of names of all entity parents.
+    # These are the entites that control when entities are GCed.
+    # Entities with no true parent have their own name in the 'parent' field.
+    def get_entity_parent_names(self):
+        out = list()
+        
+        for data in self.entity_data_cache:
+            if data['parent'] is not None:
+                out.append(data['parent'])
         
         return out
     

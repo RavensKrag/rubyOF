@@ -473,7 +473,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="Total number of tris per frame",
         default = 100,
         min = 1,
-        max = 1000000
+        max = 5000
     )
     
     max_frames : IntProperty(
@@ -481,7 +481,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="frame number where output vertex data should be stored",
         default = 20,
         min = 1,
-        max = 1000000
+        max = 5000
     )
     
     output_frame : IntProperty(
@@ -518,7 +518,7 @@ class PG_MyProperties (bpy.types.PropertyGroup):
         description="maximum number of objects whose transforms can be saved",
         default = 200,
         min = 1,
-        max = 1000000
+        max = 16000
     )
     
     transform_scanline : IntProperty(
@@ -695,6 +695,7 @@ class ResourceManager():
     def clear_texture_managers(self, scene):
         name_list = scene.my_tool.get('name_list', None)
         
+        print("clearing texture managers", flush=True)
         for i, name in enumerate(name_list):
             j = scene.my_tool.texture_sets.find(name)
             
@@ -1155,7 +1156,7 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
         # 
         
         # print(mytool.texture_sets)
-        # depsgraph = context.evaluated_depsgraph_get()
+        depsgraph = context.evaluated_depsgraph_get()
         
         item_list = mytool.get('name_list', [])
         for j, name in enumerate(item_list):
@@ -1178,19 +1179,16 @@ class DATA_PT_texanim_panel3 (bpy.types.Panel):
                 
                 a.items()
                 # => [('Cube.001', bpy.data.objects['Cube.001']), ('Cube.002', bpy.data.objects['Cube.002']), ('Cube.003', bpy.data.objects['Cube.003'])]
-                for i, pair in enumerate(a.items()):
+                for pair in a.items():
                     if pair[1].type == 'MESH':
                         mesh_obj = pair[1]
                         
-                        # mesh = mesh_obj.evaluated_get(depsgraph).data
-                        mesh = mesh_obj.data
+                        mesh = mesh_obj.evaluated_get(depsgraph).to_mesh()
                         
-                        mesh.calc_loop_triangles()
-                        # ^ need to call this to populate the mesh.loop_triangles() cache
-                        num_tris  = len(mesh.loop_triangles)
+                        num_faces  = len(mesh.polygons)
                         
-                        if num_tris > max_tris:
-                            max_tris = num_tris
+                        if num_faces > max_tris:
+                            max_tris = num_faces
                 # TODO: optimize this somehow so we're not altering mesh cache every frame
             
             

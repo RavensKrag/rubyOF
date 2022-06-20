@@ -1,6 +1,7 @@
 import bpy
 import time
 import json
+import re # regular expressions
 
 from coroutine_decorator import *
 
@@ -36,6 +37,8 @@ def get_object_transform(obj):
     return out_mat
 
 
+# Export first material on the mesh object,
+# or the material called "Material"
 def first_material(mesh_object):
     mat_slots = mesh_object.material_slots
     
@@ -258,9 +261,6 @@ class Exporter():
         mesh_objects    = [ obj       for obj, datablock in unique_pairs ]
         mesh_datablocks = [ datablock for obj, datablock in unique_pairs ]
         
-        unqiue_meshes = [ obj.evaluated_get(depsgraph).data
-                          for obj in mesh_objects ]
-        
         # NOTE: If two objects use the same mesh datablock, but have different modifiers, their final meshes could be different. in this case, we ought to export two meshes to the texture. However, I think the current methodology would only export one mesh. In particular, the mesh that appears first in the collection list would have priority.
             # ^ may just ignore this for now. Although blender supports this workflow, I'm not sure that I personally want to use it.
         
@@ -274,34 +274,54 @@ class Exporter():
         # calculate how many tasks there are
         # 
         
-        total_tasks = len(unqiue_meshes) + len(all_mesh_objects)
+        total_tasks = len(mesh_objects) + len(all_mesh_objects)
         task_count = 0
         
         context = yield( 0.0 )
         
+        
         # 
         # export all unique meshes
+        # (must export entities first, so linked entities work correctly)
         # 
+        submesh_count = {}
         
         mytool.status_message = "export unique meshes"
-        for i, mesh in enumerate(unqiue_meshes):
-            tex_manager.export_mesh(mesh.name, mesh)
+        for i, obj in enumerate(mesh_objects):
+            mesh = obj.evaluated_get(depsgraph).to_mesh()
+            
+            parts = tex_manager.export_mesh(mesh.name, mesh)
+            
+            submesh_count[mesh.name] = parts
             
             task_count += 1
             context = yield(task_count / total_tasks)
         
+        
         # 
-        # export all objects
+        # export all entities
         # 
         
         for i, obj in enumerate(all_mesh_objects):
             m = tex_manager
+            
+            
             m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_parent(obj.name, obj.name)
             m.set_entity_transform(obj.name, get_object_transform(obj))
             m.set_entity_material( obj.name, first_material(obj))
             
+            # add extra linked entities to render additional parts
+            self.__create_submesh_entities(tex_manager,
+                                           submesh_count[obj.data.name], 
+                                           obj.name, obj.data.name)
+            
+            # end for j
             task_count += 1
             context = yield(task_count / total_tasks)
+        # end for i
+        
+        
         
         
         
@@ -343,6 +363,24 @@ class Exporter():
         print("time elapsed:", t1-t0, "sec")
         
     
+    
+    def __export_all_submeshes(self):
+        pass
+    
+    # assign extra render entities
+    # but skip index 0, because that's the original entity
+    # which was already exported
+    def __create_submesh_entities(self, tex_manager, part_count, base_entity_name, base_mesh_name):
+        m = tex_manager
+        for j in range(1, part_count):
+            child_entity_name = base_entity_name + ".part" + str(j+1)
+            mesh_name         =   base_mesh_name + ".part" + str(j+1)
+            m.set_entity_mesh(child_entity_name, mesh_name)
+            m.set_entity_parent(child_entity_name, base_entity_name)
+            # material and transform are both linked
+        
+    
+    
     # 
     # update animation textures
     # 
@@ -367,7 +405,8 @@ class Exporter():
     
     # use transform on mesh object as entity transform
     # (will only apply to 1 mesh)
-    def __update_entity_transform_without_armature(self, scene, update, tex_manager, mesh_obj):
+    def __update_entity_transform_without_armature(self, context, update, tex_manager, mesh_obj):
+        scene = context.scene
         
         if not update.is_updated_transform:
             return
@@ -416,20 +455,33 @@ class Exporter():
             # bind mesh to entity
             
             m = tex_manager
+            obj = mesh_obj
             
             mesh_updated = False
             if not m.has_mesh(mesh_obj.data.name):
                 mesh_updated = True
-                m.export_mesh(mesh_obj.data.name, mesh_obj.data)
+                
+                # 
+                # export main mesh part
+                # 
+                depsgraph = context.evaluated_depsgraph_get()
+                mesh = obj.evaluated_get(depsgraph).to_mesh()
+                parts = m.export_mesh(mesh.name, mesh)
+                
+                # 
+                # export all entities
+                # 
+                
+                # add extra linked entities to render additional parts
+                self.__create_submesh_entities(tex_manager,
+                                               parts, 
+                                               obj.name, mesh.name)
             
-            m.set_entity_transform(mesh_obj.name, get_object_transform(mesh_obj))
-            m.set_entity_mesh(mesh_obj.name, mesh_obj.data.name)
             
-            
-            # must export material as well (just for this one entity)
-            if(len(mesh_obj.material_slots) > 0):
-                mat = mesh_obj.material_slots[0].material
-                m.set_entity_material(mesh_obj.name, mat)
+            m.set_entity_mesh(     obj.name, obj.data.name)
+            m.set_entity_parent(obj.name, obj.name) # must be after set mesh
+            m.set_entity_transform(obj.name, get_object_transform(obj))
+            m.set_entity_material( obj.name, first_material(obj))
             
             
             filepaths = m.get_texture_paths()
@@ -567,19 +619,22 @@ class Exporter():
             if isinstance(active_object, bpy.types.Object) and active_object.type == 'MESH':
                 # editing one object: only send edits to that single mesh
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
                 # bpy.ops.object.mode_set(mode= 'OBJECT')
                 
                 print("mesh edit detected", flush=True)
-                print(active_object, flush=True)
+                # print(active_object, flush=True)
                 
                 
                 # need to update the mesh,
                 # but don't need to update bindings
                 # (it's like using a pointer - no need to update references)
                 
-                mesh_data = active_object.evaluated_get(depsgraph).data
+                # depsgraph = context.evaluated_depsgraph_get()
+                
+                mesh_data = active_object.evaluated_get(depsgraph).to_mesh()
+                # ^ use to_mesh() to apply the modifiers
                 
                 tex_manager.export_mesh(active_object.data.name, mesh_data)
                 
@@ -607,8 +662,8 @@ class Exporter():
                         tex_manager.update_material(mat)
                 
                 
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
+                # bpy.ops.object.editmode_toggle()
                 # bpy.ops.object.mode_set(mode= 'EDIT')
             
         else:
@@ -639,7 +694,7 @@ class Exporter():
                         
                         
                         if obj.parent is None:
-                            self.__update_entity_transform_without_armature(context.scene, update, tex_manager, obj)
+                            self.__update_entity_transform_without_armature(context, update, tex_manager, obj)
                         elif obj.parent.type == 'ARMATURE':
                             # meshes attached to armatures will be exported with NLA animations, in a separate pass
                             pass
@@ -694,40 +749,41 @@ class Exporter():
         if collection_ptr is None:
             return
         
-        old_names = tex_manager.get_entity_names()
+        old_names = tex_manager.get_entity_parent_names()
         new_names = [ x.name for x in collection_ptr.all_objects ]
         delta = list(set(old_names) - set(new_names))
+        
         
         # print("old_names:", len(old_names), flush=True)
         
         if len(delta) > 0:
             print("delta:", delta, flush=True)
             
-            for name in delta:
-                # print(delete)
-                
-                # TODO: make sure they're all mesh objects
-                # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
-                
-                tex_manager.delete_entity(name)
-                # will this still work for animated things?
-                # TODO: how do you delete meshes tha are bound to armatures?
-                # TODO: how do you delete animation frames?
+        for name in delta:
+            # print(delete)
             
+            # TODO: make sure they're all mesh objects
+            # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
             
-            filepaths = tex_manager.get_texture_paths()
-            position_filepath, normal_filepath, entity_filepath = filepaths
-            
-            data = {
-                'type': 'update_geometry_data',
-                'comment': 'run garbage collection',
-                'json_file_path': tex_manager.get_json_path(),
-                'entity_tex_path': entity_filepath,
-                'position_tex_path' : position_filepath,
-                'normal_tex_path'   : normal_filepath,
-            }
-            
-            self.to_ruby.write(json.dumps(data))
+            tex_manager.delete_entity(name)
+            # will this still work for animated things?
+            # TODO: how do you delete meshes tha are bound to armatures?
+            # TODO: how do you delete animation frames?
+        
+        
+        filepaths = tex_manager.get_texture_paths()
+        position_filepath, normal_filepath, entity_filepath = filepaths
+        
+        data = {
+            'type': 'update_geometry_data',
+            'comment': 'run garbage collection',
+            'json_file_path': tex_manager.get_json_path(),
+            'entity_tex_path': entity_filepath,
+            'position_tex_path' : position_filepath,
+            'normal_tex_path'   : normal_filepath,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
         # ---
     # ---
     
