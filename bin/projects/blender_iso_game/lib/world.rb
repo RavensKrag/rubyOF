@@ -42,7 +42,7 @@ class World
     # puts Dir.glob("#{PROJECT_DIR}/")
     # p (geom_texture_directory).children.map{|x| x.basename}
     
-    @storage = [] # objects that store internal state
+    @storage = {} # objects that store internal state
     @data = {}    # objects that form external API for accessing data
     
     # 
@@ -60,8 +60,9 @@ class World
       
       name, _, _ = file.basename.to_s.split('.')
       
-      @storage << VertexAnimationTextureSet.new(@geom_texture_directory, name)
-      @data[name] = DataInterface.new(@storage.last.cache, @storage.last.names)
+      data = VertexAnimationTextureSet.new(@geom_texture_directory, name)
+      @storage[name] = data
+      @data[name] = DataInterface.new(data.cache, data.names)
     end
     
     # TODO: should allow re-scanning of this directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
@@ -108,8 +109,16 @@ class World
     # )
     
     
+    @history_buffer = HistoryBuffer.new
+      # ^ list of frames over time, not just one state
+      # should combine with FrameHistory#frame_index to get data on a particular frame
+      # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
+    
     @history = History.new(
-      nil, nil, nil, nil
+      @history_buffer,
+      @storage['Characters'].entity_pixels,
+      @storage['Characters'].entity_texture,
+      @storage['Characters'].cache
     )
     
   end
@@ -125,7 +134,7 @@ class World
     # TODO: consider implementing read-only mode for DataInterface for static entities
     
     
-    @storage.each do |texture_set|
+    @storage.values.each do |texture_set|
       texture_set.setup()
     end
     
@@ -172,7 +181,7 @@ class World
   end
   
   def each_texture_set #&block
-    @storage.each do |texture_set|
+    @storage.values.each do |texture_set|
       yield(texture_set.position_texture,
             texture_set.normal_texture,
             texture_set.entity_texture,
@@ -193,7 +202,7 @@ class World
     
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
     memory_usage = []
-    @storage.each_with_index do |texture_set, i|
+    @storage.values.each_with_index do |texture_set, i|
       layer_name = texture_set.name
       cache = texture_set.cache
       names = texture_set.names
@@ -301,8 +310,10 @@ class World
     puts "load json"
     
     basename = File.basename(json_file_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_json_data(json_file_path)
     end
   end
@@ -311,8 +322,10 @@ class World
     puts "reload entities"
     
     basename = File.basename(entity_tex_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_entity_texture(entity_tex_path)
     end
   end
@@ -324,8 +337,10 @@ class World
     # confirm what batch should be reloaded.
     
     basename = File.basename(position_tex_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_mesh_textures(position_tex_path, normal_tex_path)
     end
   end
@@ -370,11 +385,6 @@ class World
         :geometry => BatchGeometry.new, # size == max tris per mesh in batch
         
         :cache => RubyOF::Project::EntityCache.new, # size == num dynamic entites
-        
-        :history => HistoryBuffer.new,
-          # ^ list of frames over time, not just one state
-          # should combine with FrameHistory#frame_index to get data on a particular frame
-          # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
       })
       
     end
@@ -387,10 +397,6 @@ class World
       return @storage[:names]
     end
     
-    def history
-      return @storage[:history]
-    end
-    
     def position_texture
       return @storage[:mesh_data][:textures][:positions]
     end
@@ -401,6 +407,10 @@ class World
     
     def entity_texture
       return @storage[:entity_data][:texture]
+    end
+    
+    def entity_pixels
+      return @storage[:entity_data][:pixels]
     end
     
     def mesh
