@@ -224,12 +224,9 @@ class Core
     data_dir = (PROJECT_DIR/'bin'/'data')
     geometry_texture_dir = data_dir/'geom_textures'
     
-    @world = World.new
+    @world = World.new(data_dir/'geom_textures')
     
-    @world.setup(
-      static_data_path:  data_dir/'geom_textures',
-      dynamic_data_path: data_dir/'geom_textures'
-    )
+    @world.setup()
     
     @camera_save_file = PROJECT_DIR/'bin'/'data'/'camera.yaml'
     if @camera_save_file.exist?
