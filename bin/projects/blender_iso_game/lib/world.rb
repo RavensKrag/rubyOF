@@ -235,36 +235,8 @@ class World
     
     
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
-    
+    memory_usage = []
     @storage.each_with_index do |texture_set, i|
-      
-      texture_set.position_texture.tap do |texture|
-        width = [texture.width, 400].min # cap maximum texture width
-        x = 970
-        y = (68+texture.height-20)+i*(189-70)+20
-        texture.draw_wh(x,y,0, width, -texture.height)
-      end
-      
-      
-      texture_set.entity_texture.tap do |texture|
-        new_height = 100 #
-        y_scale = new_height / texture.height
-        
-        x = 910
-        y = (68-20)+i*(189-70)+20
-        
-        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
-        @ui_node.position = GLM::Vec3.new(x,y, 1)
-
-        @ui_node.transformGL
-        
-          texture.draw_wh(0,texture.height,0,
-                          texture.width, -texture.height)
-
-        @ui_node.restoreTransformGL
-      end
-      
-      
       layer_name = texture_set.name
       cache = texture_set.cache
       names = texture_set.names
@@ -302,7 +274,64 @@ class World
       ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
                           450+50, 133+offset+20)
       
+      
+      
+      texture_set.entity_texture.tap do |texture|
+        new_height = 100 #
+        y_scale = new_height / texture.height
+        
+        x = 910-20
+        y = (68-20)+i*(189-70)+20
+        
+        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
+        @ui_node.position = GLM::Vec3.new(x,y, 1)
+
+        @ui_node.transformGL
+        
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
+
+        @ui_node.restoreTransformGL
+      end
+      
+      
+      texture_set.position_texture.tap do |texture|
+        width = [texture.width, 400].min # cap maximum texture width
+        x = 970-40
+        y = (68+texture.height-20)+i*(189-70)+20
+        texture.draw_wh(x,y,0, width, -texture.height)
+      end
+      
+      
+      
+      channels_per_px = 4
+      bits_per_channel = 32
+      bits_per_byte = 8
+      bytes_per_channel = bits_per_channel / bits_per_byte
+      
+      texture = texture_set.position_texture
+      px = texture.width*texture.height
+      x = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.normal_texture
+      px = texture.width*texture.height
+      y = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.entity_texture
+      px = texture.width*texture.height
+      z = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      size = x+y+z
+      
+      ui_font.draw_string("mem: #{size} kb",
+                          1400-50, 100+offset+20)
+      memory_usage << size
     end
+    
+    i = memory_usage.length
+    x = memory_usage.reduce &:+
+    ui_font.draw_string("  total VRAM: #{x} kb",
+                        1400-200+27-50, 100+i*(189-70)+20)
     
   end
   
