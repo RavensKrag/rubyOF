@@ -60,7 +60,7 @@ class World
       
       name, _, _ = file.basename.to_s.split('.')
       
-      @storage << RenderTextureSet.new(@geom_texture_directory, name)
+      @storage << VertexAnimationTextureSet.new(@geom_texture_directory, name)
       @data[name] = DataInterface.new(@storage.last.cache, @storage.last.names)
     end
     
@@ -379,7 +379,7 @@ class World
   
   
   # TODO: create a better name for this
-  class RenderTextureSet
+  class VertexAnimationTextureSet
     include RubyOF::Graphics
     
     attr_reader :name
