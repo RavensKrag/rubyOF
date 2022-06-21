@@ -129,6 +129,9 @@ class World
     # + load from disk to specify initial state
     # + if reloaded, that's a new initial state (t == 0)
     # + need other mechanism to load changes @ t != 0 (JSON message?)
+    
+    
+    @space.update
   end
   
   
@@ -142,6 +145,8 @@ class World
     @storage.values.each do |texture_set|
       texture_set.update
     end
+    
+    # @space.update
   end
   
   def each_texture_set #&block
@@ -539,8 +544,6 @@ class World
         .collect do |entity|
           [entity.mesh.name, entity.position]
         end
-      
-      p @entity_list
       
       # p @entity_list
       
