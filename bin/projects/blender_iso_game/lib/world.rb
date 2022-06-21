@@ -166,6 +166,13 @@ class World
   def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
     
+    
+    channels_per_px = 4
+    bits_per_channel = 32
+    bits_per_byte = 8
+    bytes_per_channel = bits_per_channel / bits_per_byte
+    
+    
     # TODO: draw UI in a better way that does not use immediate mode rendering
     
     
@@ -239,11 +246,6 @@ class World
       
       
       
-      channels_per_px = 4
-      bits_per_channel = 32
-      bits_per_byte = 8
-      bytes_per_channel = bits_per_channel / bits_per_byte
-      
       texture = texture_set.position_texture
       px = texture.width*texture.height
       x = px*channels_per_px*bytes_per_channel / 1000.0
@@ -267,6 +269,14 @@ class World
     x = memory_usage.reduce &:+
     ui_font.draw_string("  total VRAM: #{x} kb",
                         1400-200+27-50, 100+i*(189-70)+20)
+    
+    
+    size = @history.buffer_width * @history.buffer_height * @history.max_length
+    size = size * channels_per_px * bytes_per_channel
+    ui_font.draw_string("history memory: #{size/1000.0} kb",
+                        120, 310)
+    
+    @history
     
   end
   

@@ -23,8 +23,20 @@ class History
   end
   
   def setup
-    @max_length = 100
+    @max_length = 3600
     @buffer.allocate(@pixels.width, @pixels.height, @max_length)
+  end
+  
+  def buffer_width
+    @buffer.frame_width
+  end
+  
+  def buffer_height
+    @buffer.frame_height
+  end
+  
+  def max_length
+    return @max_length
   end
   
   
@@ -58,10 +70,10 @@ class History
   # If new state was generated, we need to send it to the GPU to see it.
   
   def load_state_at(frame_index)
-    # if we moved in time, but didn't generate new state
-      # need to load the proper state from the buffer into the cache
-      # because the cache now does not match up with the buffer
-      # and the buffer has now become the authoritative source of data.
+    # # if we moved in time, but didn't generate new state
+    #   # need to load the proper state from the buffer into the cache
+    #   # because the cache now does not match up with the buffer
+    #   # and the buffer has now become the authoritative source of data.
     
     # @buffer.copy_frame(frame_index, @pixels)
     # @cache.load @pixels
@@ -70,29 +82,21 @@ class History
   
   def snapshot_gamestate_at(frame_index)
     
-    # # if we're supposed to save frame data (not time traveling)
+    # always save a copy in the history buffer
+    # (otherwise the buffer could have garbage at that timepoint)
+    @buffer[frame_index] = @pixels
     
-    # # then try to write the data
-    # if @cache.update @pixels
-    #   # if data was written...
-      
-    #   # ...then send it to the GPU
-    #   @texture.load_data @pixels
-      
-    #   # ^ for dynamic entites, need [ofFloatPixels] where each communicates with the same instance of ofTexture
-    #   # + one ofTexture for static entites
-    #   # + one for dynamic entites
-    #   # + then an extra one for rendering ghosts / trails / onion skinning of dynamic entities)
-    # end
-    
-    # # always save a copy in the history buffer
-    # # (otherwise the buffer could have garbage at that timepoint)
-    # @buffer[frame_index] = @pixels
+    # TODO: implement a C++ function to copy the image data
+      # current code just saves a ruby reference to an existing image,
+      # which is not what we want.
+      # we want a separate copy of the memory,
+      # so that the original @pixels can continue to mutate
+      # without distorting what's in the history buffer
     
     
-    # if @i.nil? || frame_index > @i
-    #   @i = frame_index
-    # end
+    if @i.nil? || frame_index > @i
+      @i = frame_index
+    end
   end
   
   
@@ -103,8 +107,10 @@ class History
   
   # store the data needed for history
   class HistoryBuffer
+    attr_reader :frame_width, :frame_height
+    
     def initialize
-      @buffer = RubyOF::FloatPixels.new
+      @buffer = []
       
       @frame_width = nil
       @frame_height = nil
@@ -118,8 +124,16 @@ class History
       
       @size = max_num_frames
       
-      @buffer.allocate(@frame_width, @frame_height*@size)
-      @buffer.flip_vertical
+      
+      @buffer = []
+      @size.times do |i|
+        pixels = RubyOF::FloatPixels.new
+        
+        pixels.allocate(@frame_width, @frame_height)
+        pixels.flip_vertical
+        
+        @buffer << pixels
+      end
     end
     
     def size
@@ -139,9 +153,10 @@ class History
       
       # TODO: update @size if auto-growing the currently allocated segment
       
-      x = 0
-      y = frame_index*@frame_height
-      frame_data.paste_into(@buffer, x,y)
+      # x = 0
+      # y = frame_index*@frame_height
+      # frame_data.paste_into(@buffer, x,y)
+      @buffer[frame_index].copy_from frame_data
     end
     
     # copy data from buffer into another image
