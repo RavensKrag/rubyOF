@@ -2,8 +2,12 @@
 # control writing / loading data on dynamic entities over time
 class History
   # TODO: use named arguments, because the positions are extremely arbitrary
-  def initialize(pixels, texture, cache)
-    @buffer = HistoryBuffer.new
+  def initialize(pixels, texture, cache, buffer=nil)
+    if buffer
+      @buffer = buffer
+    else
+      @buffer = HistoryBuffer.new
+    end
       # @buffer : HistoryBuffer object
       # storage is one big image,
       # but API is like an array of images
@@ -54,8 +58,8 @@ class History
   
   # TODO: think about how you would implement multiple timelines
   def branch(frame_index)
-    new_buffer = @buffer.dup
-    return History.new(new_buffer, @cache)
+    new_buffer = @buffer.slice(0..frame_index)
+    return History.new(@pixels, @texture, @cache, new_buffer)
   end
   
   
@@ -70,13 +74,13 @@ class History
   # If new state was generated, we need to send it to the GPU to see it.
   
   def load_state_at(frame_index)
-    # # if we moved in time, but didn't generate new state
-    #   # need to load the proper state from the buffer into the cache
-    #   # because the cache now does not match up with the buffer
-    #   # and the buffer has now become the authoritative source of data.
+    # if we moved in time, but didn't generate new state
+      # need to load the proper state from the buffer into the cache
+      # because the cache now does not match up with the buffer
+      # and the buffer has now become the authoritative source of data.
     
-    # @buffer.copy_frame(frame_index, @pixels)
-    # @cache.load @pixels
+    @buffer.copy_to_frame(frame_index, @pixels)
+    @cache.load @pixels
     
   end
   
@@ -84,7 +88,7 @@ class History
     
     # always save a copy in the history buffer
     # (otherwise the buffer could have garbage at that timepoint)
-    @buffer[frame_index] = @pixels
+    @buffer.set_from_frame(frame_index, @pixels)
     
     # TODO: implement a C++ function to copy the image data
       # current code just saves a ruby reference to an existing image,
@@ -114,30 +118,31 @@ class History
       
       @frame_width = nil
       @frame_height = nil
-      
-      @size = nil
     end
     
     def allocate(frame_width, frame_height, max_num_frames)
+      # remember size of each frame stored
       @frame_width = frame_width
       @frame_height = frame_height
       
-      @size = max_num_frames
-      
-      
-      @buffer = []
-      @size.times do |i|
+      # store data
+      @buffer = Array.new(max_num_frames)
+      @buffer.size.times do |i|
         pixels = RubyOF::FloatPixels.new
         
         pixels.allocate(@frame_width, @frame_height)
         pixels.flip_vertical
         
-        @buffer << pixels
+        @buffer[i] = pixels
       end
+      
+      # track which entries have valid data
+      @valid = Array.new(max_num_frames)
+      
     end
     
     def size
-      return @size
+      return @buffer.size
     end
     
     alias :length :size
@@ -146,35 +151,47 @@ class History
     # (should I interpret that as distance from the end of the buffer, or what? need to look into the other code on the critical path to figure this out)
     
     # set data in history buffer on a given frame
-    def []=(frame_index, frame_data)
-      raise "Memory not allocated. Please call #allocate first" if @size.nil?
+    def set_from_frame(frame_index, frame_data)
+      raise "Memory not allocated. Please call #allocate first" if self.size == 0
       
-      raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{@size-1}" unless frame_index >= 0 && frame_index <= @size-1
+      raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.size-1}" unless frame_index >= 0 && frame_index <= self.size-1
       
-      # TODO: update @size if auto-growing the currently allocated segment
-      
-      # x = 0
-      # y = frame_index*@frame_height
-      # frame_data.paste_into(@buffer, x,y)
+      # save data
       @buffer[frame_index].copy_from frame_data
+      
+      # mark entry as valid
+      @valid[frame_index] = true
     end
     
     # copy data from buffer into another image
-    def copy_frame(frame_index, out_image)
-      raise "Memory not allocated. Please call #allocate first" if @size.nil?
+    def copy_to_frame(frame_index, out_image)
+      raise "Memory not allocated. Please call #allocate first" if self.size == 0
       
       expected_size = [@frame_width, @frame_height]
       output_size = [out_image.width, out_image.height]
       raise "Output image is the wrong size. Recieved #{output_size.inspect} but expected #{expected_size.inspect}" if expected_size != output_size
       
-      w = @frame_width
-      h = @frame_height
+      # make sure this image represents a valid state before loading
+      if @valid[frame_index]
+        out_image.copy_from @buffer[frame_index]
+      else
+        raise "ERROR: Tried to load render entity history for frame #{frame_index}, but no valid data found in buffer."
+      end
       
-      x = 0
-      y = frame_index*@frame_height
+    end
+    
+    # Works similarly to Array#slice, but makes a deep copy.
+    # Returns a new HistoryBuffer object with only data from the frames within the range.
+    def slice(range)
+      buf = @buffer[range]
+      other = self.class.new
+      other.allocate(@frame_width, @frame_height, self.size)
       
-      @buffer.crop_to(out_image, x,y, w,h)
-      # WARNING: ofPixels#cropTo() re-allocates memory, so I probably need to implement a better way, but this should at least work for prototyping
+      buf.each_with_index do |frame_data, i|
+        other.set_from_frame(i, frame_data)
+      end
+      
+      return other
     end
     
     # OpenFrameworks documentation
@@ -189,7 +206,6 @@ class History
       # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
     
   end
-  
   
   
 end

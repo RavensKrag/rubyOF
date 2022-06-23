@@ -512,10 +512,18 @@ class FrameHistory
     # new_timeline = self.dup # shallow copy
     # # https://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods
     
-    new_history = @history[0..@executing_frame]
-      
+    # new_history = @history[0..@executing_frame]
+    
     # set history
     @history = @history.branch @executing_frame
+    
+    # TODO: double-buffer history to reduce memory allocation
+      # always have two history buffers available
+      # when you branch, just copy the "main" one into the "backup" one
+      # then start using the "backup" as the primary, and clear the old main.
+      # Not sure how to extend this to n timelines,
+      # or if that is even necessary.
+    
     
     return self
   end
