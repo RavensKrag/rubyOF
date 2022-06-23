@@ -2,10 +2,18 @@
 # Can not remove elements from this collection - not like a queue.
 # As you add elements, the effective size grows until you hit the max size.
 # At that point, new elements will start to overwrite old elements.
+# 
+# Declares a pool of objects you can use on init.
+# Can't add or remove from the pool - can only use different parts of it.
 class RingBuffer
-  def initialize(size)
+  def initialize(size, klass)
     @buffer = Array.new(size)
     @max_size = size
+    
+    @max_size.times do |i|
+      @buffer[i] = klass.new
+    end
+    
     @i = nil
     
     @size = 0
@@ -19,7 +27,9 @@ class RingBuffer
     @size
   end
   
-  def <<(data)
+  # access
+  # (no writing, because we have a fixed pool of objects)
+  def [](i)
     if @i.nil?
       @i = 0
     else
@@ -33,13 +43,27 @@ class RingBuffer
       @size = @max_size
     end
     
-    @buffer[@i] = data
-  end
-  
-  def push(*args)
-    args.each do |x|
-      self << x
-    end
+    return @buffer[@i]
+    
+    # TODO: want to save to buffer
+    # TODO: want to pull out of buffer
+    
+      # buffer is of finite length
+      # will only store data from the last minute
+      # 
+      # how do you retrieve data from the buffer?
+      # how is it going to be used?
+      # will you say "I want the data from absolute time t"?
+      # or will you say "I want the data from t timesteps ago"?
+      
+      
+      # what happens if you scrub the timeline back to something that's not in the buffer?
+      # for "instant replay" video, that's not a problem
+      # because you can't scrub across all time - you don't have a timeline.
+      # but when the game engine is hooked up to blender,
+      # you have an interface for moving in absolute time.
+    
+    
   end
   
   def each # &block
@@ -66,6 +90,7 @@ class RingBuffer
         return @buffer[0..@i]
       end
     end
+    
   end
 end
 

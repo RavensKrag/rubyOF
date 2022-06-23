@@ -17,18 +17,23 @@ require 'io/wait'
 load LIB_DIR/'ring_buffer.rb'
 
 
-
+class TestContainer
+	attr_accessor :str
+	
+	def initialize
+		@str = "???"
+	end
+end
 
 def main()
-	buf = RingBuffer.new(10)
+	buf = RingBuffer.new(10, TestContainer)
 	
-	100.times do |i|
-		if i != 0
-			buf.push i
-		end
+	20.times do |i|
+		puts i
+		buf[i].str = i.to_s
 		
 		p buf
-		p buf.to_a
+		p buf.to_a.map{ |x| x.str }
 		puts ""
 	end
 	
