@@ -178,6 +178,7 @@ class World
     
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
     memory_usage = []
+    entity_usage = []
     @storage.values.each_with_index do |texture_set, i|
       layer_name = texture_set.name
       cache = texture_set.cache
@@ -263,6 +264,7 @@ class World
       ui_font.draw_string("mem: #{size} kb",
                           1400-50, 100+offset+20)
       memory_usage << size
+      entity_usage << z
     end
     
     i = memory_usage.length
@@ -271,12 +273,18 @@ class World
                         1400-200+27-50, 100+i*(189-70)+20)
     
     
+    
+    z = entity_usage.reduce &:+
+    ui_font.draw_string("  entity texture VRAM: #{z} kb",
+                        1400-200+27-50-172, 100+i*(189-70)+20+50)
+    
+    
     size = @history.buffer_width * @history.buffer_height * @history.max_length
     size = size * channels_per_px * bytes_per_channel
     ui_font.draw_string("history memory: #{size/1000.0} kb",
                         120, 310)
     
-    @history
+    # @history
     
   end
   
