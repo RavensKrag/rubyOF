@@ -28,7 +28,7 @@ end
 def main()
 	buf = RingBuffer.new(10, TestContainer)
 	
-	20.times do |i|
+	(1..20).each do |i|
 		puts i
 		buf[i].str = i.to_s
 		
@@ -36,6 +36,15 @@ def main()
 		p buf.to_a.map{ |x| x.str }
 		puts ""
 	end
+	
+	i = 15
+	puts i
+	buf[i].str = "hello world"
+	
+	p buf
+	p buf.to_a.map{ |x| x.str }
+	puts ""
+	
 	
 	# require 'irb'
 	# binding.irb

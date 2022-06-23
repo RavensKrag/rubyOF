@@ -17,6 +17,8 @@ class RingBuffer
     @i = nil
     
     @size = 0
+    
+    @indicies = []
   end
   
   def max_size
@@ -38,9 +40,13 @@ class RingBuffer
     
     @i = @i % @max_size
     
+    
+    @indicies.push (@i+1) % @max_size
+    
     @size += 1
     if @size > @max_size
       @size = @max_size
+      @indicies.shift
     end
     
     return @buffer[@i]
