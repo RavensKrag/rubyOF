@@ -771,19 +771,20 @@ class Exporter():
             # TODO: how do you delete animation frames?
         
         
-        filepaths = tex_manager.get_texture_paths()
-        position_filepath, normal_filepath, entity_filepath = filepaths
-        
-        data = {
-            'type': 'update_geometry_data',
-            'comment': 'run garbage collection',
-            'json_file_path': tex_manager.get_json_path(),
-            'entity_tex_path': entity_filepath,
-            'position_tex_path' : position_filepath,
-            'normal_tex_path'   : normal_filepath,
-        }
-        
-        self.to_ruby.write(json.dumps(data))
+        if len(delta) > 0: 
+            filepaths = tex_manager.get_texture_paths()
+            position_filepath, normal_filepath, entity_filepath = filepaths
+            
+            data = {
+                'type': 'update_geometry_data',
+                'comment': 'run garbage collection',
+                'json_file_path': tex_manager.get_json_path(),
+                'entity_tex_path': entity_filepath,
+                'position_tex_path' : position_filepath,
+                'normal_tex_path'   : normal_filepath,
+            }
+            
+            self.to_ruby.write(json.dumps(data))
         # ---
     # ---
     
