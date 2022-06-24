@@ -242,13 +242,17 @@ class Core
       @world.lights.load data
     end
     
-    @frame_history = FrameHistory.new(self, @world.history)
-    
-    
     @world.data.each.each_with_index do |entity, i|
       puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
     end
     
+    
+    
+    
+    
+    
+    @frame_history = History::Outer.new
+    @frame_history.bind_to_world @world
     
     
     
@@ -273,7 +277,7 @@ class Core
     
     @frame_history.pause
     @frame_history.update
-    @frame_history.step_back
+    @frame_history.on_crash
     @frame_history.update
     
     

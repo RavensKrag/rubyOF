@@ -10,7 +10,7 @@ class Outer
     @frame_index = 0
     
     @context = Context.new(@history) # holds the information
-    @state   = NullBehavior.new # holds the behavior
+    @state   = States::NullBehavior.new(@context) # holds the behavior
   end
   
   def bind_to_world(world)
@@ -19,7 +19,7 @@ class Outer
   end
   
   def time_traveling?
-    return @state.class == ReplayingOld
+    return @state.class == States::ReplayingOld
   end
   
   extend Forwardable
@@ -83,7 +83,7 @@ class Context
   
   def initialize(history)
     @history = history
-    @state = NullBehavior.new(self)
+    @state = States::NullBehavior.new(self)
     
     @f1 = nil
     @f2 = nil
@@ -147,6 +147,8 @@ class Snapshot
       # based on the history buffer
       
       # Can't just jump in the buffer, because we need to advance the Fiber.
+      # BUT we may be able to optimize to just loading the last old state
+      # before we need to generate new states.
       
       @context.frame_index += 1
       
@@ -296,9 +298,6 @@ module States
         
         # TODO: check to see that this branch works correctly. will need to keep state synced between RubyOF and Blender.
       end
-        
-        
-        
     end
     
     def on_crash
@@ -318,15 +317,9 @@ module States
       
       # NOTE: not in a Fiber
       if @context.frame_index == @context.final_frame
-        # 
-        # print info about transition
-        # 
         puts "#{@context.frame_index.to_s.rjust(4, '0')} replaying_old (update) -> finished"
         puts "#{@context.final_frame}"
         
-        # 
-        # transition
-        # 
         @context.transition_to Finished
         
       elsif @context.frame_index < @context.final_frame
@@ -337,7 +330,7 @@ module States
         puts "#{@context.frame_index.to_s.rjust(4, '0')} old"
         
         @context.history.load_state_at @context.frame_index
-      else
+      else # @context.frame_index > @context.final_frame
         @context.transition_to GeneratingNew
       end
         
@@ -396,15 +389,15 @@ module States
       # Thus, the initial state and the final state are special
       # (edge cases / boundary conditions).
       
-      if @final_frame == nil
-        @context.history.snapshot_gamestate_at @context.final_frame
+      @context.history.snapshot_gamestate_at @context.frame_index
+      
+      @context.final_frame = @context.frame_index
+      
+      puts "#{@context.frame_index.to_s.rjust(4, '0')} final frame saved to history"
+      
+      # ^ used by Finished#seek
+      puts "final frame: #{@context.final_frame}"
         
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} final frame saved to history"
-        
-        # ^ used by Finished#seek
-        puts "final frame: #{@context.final_frame}"
-        
-      end
       
       # p [@context.frame_index, @context.history.length-1]
       # puts "history length: #{@context.history.length}"
@@ -497,7 +490,7 @@ class HistoryModel
     # retain key data objects for entity state
     @state = {
       :pixels => pixels,
-      :texture => texture
+      :texture => texture,
       :cache => cache
     }
     
