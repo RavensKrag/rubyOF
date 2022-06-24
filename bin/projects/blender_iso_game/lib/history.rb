@@ -90,12 +90,25 @@ class History
     # (otherwise the buffer could have garbage at that timepoint)
     @buffer.set_from_frame(frame_index, @pixels)
     
+    
+    # # TODO: implement this new interface
+    # @buffer[frame_index] << @pixels # save data into history buffer
+    # @buffer[frame_index] >> @pixels # load data from buffer into another image
+    #   # + should I implement this on RubyOF::Pixels for all images?
+    #   # + can this be patterned as a general "memory transfer operator" ?
+      
+    # @buffer[frame_index] >> @pixels # load data from buffer into another image
+    
+    
+    
     # TODO: implement a C++ function to copy the image data
       # current code just saves a ruby reference to an existing image,
       # which is not what we want.
       # we want a separate copy of the memory,
       # so that the original @pixels can continue to mutate
       # without distorting what's in the history buffer
+    # (actually, current ruby array is fast enough)
+    # (just having Pixels#copy_from is fast enough for now)
     
     
     if @i.nil? || frame_index > @i
