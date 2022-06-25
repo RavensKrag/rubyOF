@@ -8,9 +8,6 @@ class Outer
     @history = History::HistoryModel.new
     
     @context = Context.new(@history)
-    
-    
-    # @state   = States::NullBehavior.new(@context) # holds the behavior
   end
   
   def bind_to_world(world)
@@ -50,32 +47,21 @@ class Outer
   
   
   
-  
-  
   def update(ipc, &block) 
-    # TODO: send message to blender when transitioning into the Finished state
-    
-    @patterns ||= {
-      [:other, States::Finished] => ->(){
-        # when transitioning into Finished, not just when you're in that state
+    @patterns ||= StatePatterns.new do |p|
+      p.on_transition :any_other => States::Finished do
         puts "finished --> (send message to blender)"
         
         ipc.send_to_blender({
           'type' => 'loopback_finished',
           'history.length' => self.length
         })
-      }
-    }
-    
-    b = [@context.previous_state.class, @context.current_state.class]
-    @patterns.each do |a, proc|
-      if( (a[0] == :any || (a[0] == :other && b[0] != b[1]) || a[0] == b[0]) && 
-          (a[1] == :any || (a[1] == :other && b[1] != b[0]) || a[1] == b[1]) 
-        )
-        proc.call()
       end
     end
     
+    @patterns.match(
+      @context.previous_state.class, @context.current_state.class
+    )
     
     @context.previous_state = @context.current_state
     
@@ -163,12 +149,6 @@ class Outer
   #   :pause, :play, :seek
   
   
-  
-  
-  
-  
-  
-  
   private
   
   
@@ -197,6 +177,59 @@ class Outer
   
   
   
+end
+
+
+class StatePatterns
+  def initialize() # &block
+    helper = Helper.new
+    yield helper
+    @patterns = helper.patterns
+  end
+  
+  def match(p,n)
+    @patterns.each do |pattern, proc|
+      prev_state_id, next_state_id = pattern
+      
+      # state IDs can be the class constant of a state,
+      # or the symbols :any or :any_other
+      # :any matches any state (allowing self loops)
+      # :any_other matches any state other than the other specified state (no self loop)
+      # if you specify :any_other in both slots, the callback will trigger on all transitions that are not self loops
+      
+      cond1 = (
+        (prev_state_id == :any) || 
+        (prev_state_id == :any_other && p != n) ||
+        (p == prev_state_id)
+      )
+      
+      cond2 = (
+        (next_state_id == :any) || 
+        (next_state_id == :any_other && n != p) ||
+        (n == next_state_id)
+      )
+      
+      if cond1 && cond2
+        proc.call()
+      end
+    end
+  end
+  
+  
+  class Helper
+    attr_reader :patterns
+    
+    def initialize
+      @patterns = Array.new
+    end
+    
+    def on_transition(pair={}, &block)
+      prev_state_id = pair.keys.first
+      next_state_id = pair.values.first
+      
+      @patterns << [ [prev_state_id, next_state_id], block ]
+    end
+  end
 end
 
 
