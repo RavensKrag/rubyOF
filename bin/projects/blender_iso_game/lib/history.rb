@@ -5,21 +5,16 @@ class Outer
   attr_accessor :paused
   
   def initialize
-    @history = History::HistoryModel.new
+    history = History::HistoryModel.new
     
-    @context = Context.new(@history)
+    @context = Context.new(history)
   end
   
   def bind_to_world(world)
-    world.bind_history @history
+    world.bind_history @context.history
     # |--> HistoryModel#setup()
   end
-  
-  extend Forwardable
-  
-  def_delegators :@history, 
-    :size, :length
-  
+    
   # recieved a message from Core that a crash was detected this frame
   # (called every frame while Core is in the crashed state)
   def crash_detected
@@ -32,8 +27,10 @@ class Outer
     return @crash_detected
   end
   
+  extend Forwardable
+  
   def_delegators :@context, 
-    :frame_index, :update, :on_crash
+    :frame_index, :length, :update, :on_crash
   
   def state
     @context.current_state.name
@@ -54,7 +51,7 @@ class Outer
         
         ipc.send_to_blender({
           'type' => 'loopback_finished',
-          'history.length' => self.length
+          'history.length' => @context.history.length
         })
       end
     end
@@ -71,13 +68,13 @@ class Outer
   
   def on_reload_code(ipc)
     @patterns = nil
-    branch_history()
+    @context.branch_history
     
     # ipc.send_to_blender message
   end
   
   def on_reload_data(ipc)
-    branch_history()
+    @context.branch_history
     
     # ipc.send_to_blender message
   end
@@ -92,13 +89,13 @@ class Outer
       
       puts "try to generate a new timeline"
       
-      branch_history()
+      @context.branch_history
       @context.transition_to States::GeneratingNew
       
       ipc.send_to_blender({
         'type' => 'loopback_reset',
-        'history.length'      => self.length,
-        'history.frame_index' => self.frame_index
+        'history.length'      => @context.history.length,
+        'history.frame_index' => @context.frame_index
       })
       
     else
@@ -112,15 +109,15 @@ class Outer
     if @context.current_state.class == States::GeneratingNew
       ipc.send_to_blender({
         'type' => 'loopback_paused_new',
-        'history.length'      => self.length,
-        'history.frame_index' => self.frame_index
+        'history.length'      => @context.history.length,
+        'history.frame_index' => @context.frame_index
       })
       
     else
       ipc.send_to_blender({
         'type' => 'loopback_paused_old',
-        'history.length'      => self.length,
-        'history.frame_index' => self.frame_index
+        'history.length'      => @context.history.length,
+        'history.frame_index' => @context.frame_index
       })
     end
     
@@ -132,7 +129,7 @@ class Outer
     if @context.current_state.class == States::Finished
       ipc.send_to_blender({
         'type' => 'loopback_play+finished',
-        'history.length' => self.length
+        'history.length' => @context.history.length
       })
     end
     
@@ -150,37 +147,19 @@ class Outer
   
   private
   
-  
-  # If FrameHistory contains states through time,
-  # and replaying those states is "time traveling",
-  # then this method creates a new parallel timeline.
-  # 
-  # Create a copy of the current timeline,
-  # but reset part of the state, such that
-  # all state from this point forward is invalidated.
-  # Thus, that part of the state will be generated anew.
-  # (Useful for loading new code)
-  def branch_history
-    puts "branch history"
-    @history = @history.branch @context.frame_index
-    # ^ this resets @history for Outer but not for Context, which causes bugs
-    
-    
-    # TODO: double-buffer history to reduce memory allocation
-      # always have two history buffers available
-      # when you branch, just copy the "main" one into the "backup" one
-      # then start using the "backup" as the primary, and clear the old main.
-      # Not sure how to extend this to n timelines,
-      # or if that is even necessary.
-    
-    return self
-  end
 end
 
 
+# Methods on Context are visible to other parts of this internal API,
+# but are not visible to external systems, 
+# because Outer does not provide external access to Context.
+# This is good - it allows Context to hold all private internal state
 class Context
   attr_accessor :f1, :f2
-  attr_accessor :history, :frame_index
+  
+  attr_reader :history
+  attr_accessor :frame_index
+  
   attr_accessor :previous_state, :current_state
   
   def initialize(history)
@@ -204,6 +183,36 @@ class Context
   
   def_delegators :@current_state,
     :update, :seek, :on_crash
+    
+  def_delegators :@history,
+    :length
+  
+  
+  # If FrameHistory contains states through time,
+  # and replaying those states is "time traveling",
+  # then this method creates a new parallel timeline.
+  # 
+  # Create a copy of the current timeline,
+  # but reset part of the state, such that
+  # all state from this point forward is invalidated.
+  # Thus, that part of the state will be generated anew.
+  # (Useful for loading new code)
+  def branch_history
+    puts "branch history"
+    @history = @history.branch @frame_index
+    # ^ this resets @history for Outer but not for Context, which causes bugs
+    
+    
+    # TODO: double-buffer history to reduce memory allocation
+      # always have two history buffers available
+      # when you branch, just copy the "main" one into the "backup" one
+      # then start using the "backup" as the primary, and clear the old main.
+      # Not sure how to extend this to n timelines,
+      # or if that is even necessary.
+    
+    return self
+  end
+  
   
   # transition after this callback completes and wait for further commands
   def transition_to(new_state_klass)
@@ -252,7 +261,8 @@ end
 
 
 
-
+# match patterns of states and fire appropriate callbacks
+# on transitions between states
 class StatePatterns
   def initialize() # &block
     helper = Helper.new
