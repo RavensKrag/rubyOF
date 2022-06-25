@@ -12,7 +12,7 @@ class Outer
   
   def bind_to_world(world)
     world.bind_history @history
-    # |--> HistoryModel#setup()    
+    # |--> HistoryModel#setup()
   end
   
   extend Forwardable
@@ -90,9 +90,10 @@ class Outer
       # In future commits, we can refine this system to use multiple
       # timelines, with UI to compress timelines or switch between them.
       
-      puts "loopback reset"
+      puts "try to generate a new timeline"
       
       branch_history()
+      @context.transition_to States::GeneratingNew
       
       ipc.send_to_blender({
         'type' => 'loopback_reset',
@@ -139,8 +140,6 @@ class Outer
   
   # both frame-by-frame traversal and scrubbing use :seek
   def seek(ipc, time)
-    puts "time: #{time}"
-    
     @context.seek(time)
     # ipc.send_to_blender message
   end
@@ -162,8 +161,10 @@ class Outer
   # Thus, that part of the state will be generated anew.
   # (Useful for loading new code)
   def branch_history
-    # set history
+    puts "branch history"
     @history = @history.branch @context.frame_index
+    # ^ this resets @history for Outer but not for Context, which causes bugs
+    
     
     # TODO: double-buffer history to reduce memory allocation
       # always have two history buffers available
@@ -263,23 +264,32 @@ class Context
   # transition after this callback completes and wait for further commands
   def transition_to(new_state_klass)
     new_state = new_state_klass.new(self)
+    
+    puts "transition: #{@current_state.class} -> #{new_state.class}"
+    
     new_state.on_enter()
     @previous_state = @current_state
     @current_state = new_state
+    
   end
   
   # transition now, and re-run the last callback in the new state
   def transition_and_rerun(new_state_klass, method_name, *args, **kwargs)
-    p args
     new_state = new_state_klass.new(self)
     new_state.on_enter()
+    
+    puts "transition: #{@current_state.class} -> #{new_state.class}"
+    puts "   rerun args: #{args.inspect}"
+    puts "   rerun kwargs: #{kwargs.inspect}"
+    
     new_state.send(method_name, *args, **kwargs)
     @previous_state = @current_state
     @current_state = new_state
+    
   end
   
   def play
-    puts "> play (#{@current_state.name})"
+    puts "> play (#{@current_state.name}) t_current=#{@frame_index} t_final=#{self.final_frame}"
     @play_or_pause = :play
   end
   
@@ -423,7 +433,7 @@ module States
   
   class GeneratingNew < State
     def on_enter
-      puts "#{@context.frame_index.to_s.rjust(4, '0')} reset @final_frame"
+      puts "#{@context.frame_index.to_s.rjust(4, '0')} start generating new"
       
       @context.f1 = nil
       @context.f2 = nil
@@ -467,9 +477,12 @@ module States
       if frame_number.between?(0, @context.final_frame) # [0, len-1]
         # if you try to seek to an old frame,
         # delegate to state :replaying_old
+        puts "#{@context.frame_index.to_s.rjust(4, '0')} new seek: #{@context.frame_index} -> #{frame_number}"
+        @context.transition_and_rerun ReplayingOld, :seek, frame_number
         
-        @context.transition_and_rerun ReplayingOld, :seek, frame_number   
       else # [len, inf]
+        puts "#{@context.frame_index.to_s.rjust(4, '0')} new seek (future)"
+        
         # if you try to seek to a future frame,
         # need to synchronize blender to
         # the last currently available frame instead
@@ -506,13 +519,13 @@ module States
         @context.transition_to Finished
         
       elsif @context.frame_index < @context.final_frame
-        
         @context.frame_index += 1
         
         # p [@context.frame_index, @context.history.length-1]
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} old"
+        puts "#{@context.frame_index.to_s.rjust(4, '0')} old update [#{@context.frame_index} / #{@context.history.length-1}]"
         
         @context.history.load_state_at @context.frame_index
+        
       else # @context.frame_index > @context.final_frame
         @context.transition_to GeneratingNew
       end
@@ -542,14 +555,18 @@ module States
         @context.frame_index = frame_number
         
         # p [@context.frame_index, @context.history.length-1]
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} old"
+        puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
         
         @context.history.load_state_at @context.frame_index
       else # [len, inf]
         # if outside range of history buffer
         # delegate to state :generating_new
+        @context.frame_index = @context.final_frame
+        @context.history.load_state_at @context.frame_index
         
-        @context.transition_and_rerun GeneratingNew, :seek, frame_number
+        @context.pause
+        
+        @context.transition_to GeneratingNew
       end
       # TODO: Blender frames can be negative. should handle that case too.
           
@@ -577,7 +594,7 @@ module States
       puts "#{@context.frame_index.to_s.rjust(4, '0')} final frame saved to history"
       
       # ^ used by Finished#seek
-      puts "final frame: #{@context.final_frame}"
+      # puts "final frame: #{@context.final_frame}"
         
       
       # p [@context.frame_index, @context.history.length-1]
