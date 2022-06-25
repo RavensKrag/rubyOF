@@ -338,13 +338,18 @@ class Snapshot
       
       @context.frame_index += 1
       
-      puts "#{@context.frame_index.to_s.rjust(4, '0')} new state"
+      frame_str = @context.frame_index.to_s.rjust(4, '0')
+      src_file, src_line = block.source_location
+      
+      file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
+      
+      puts "#{frame_str} new state  #{file_str}, line #{src_line} "
       
       # p block
-      puts "--------------------------------"
-      p block.source_location
+      # puts "--------------------------------"
+      # p block.source_location
       block.call()
-      puts "--------------------------------"
+      # puts "--------------------------------"
       
       Fiber.yield
     # elsif @executing_frame > @context.history.length
