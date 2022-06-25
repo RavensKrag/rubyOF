@@ -2,8 +2,6 @@ module History
 
 
 class Outer
-  attr_accessor :paused
-  
   def initialize
     history = History::HistoryModel.new
     
@@ -32,15 +30,14 @@ class Outer
   def_delegators :@context, 
     :frame_index, :length, :update, :on_crash
   
+  # NOTE: This is to be used for debug printing / UI only. All functionality that meaningfully depends on the state should be delegated to the state via @context. That's the entire point of using the State design pattern.
   def state
-    @context.current_state.name
+    @context.current_state.name.split("::").last
   end
   
   def time_traveling?
     return @context.current_state.class == States::ReplayingOld
   end
-  
-  
   
   
   
@@ -140,13 +137,6 @@ class Outer
     @context.seek(time)
     # ipc.send_to_blender message
   end
-  
-  # def_delegators :@context, 
-  #   :pause, :play, :seek
-  
-  
-  private
-  
 end
 
 
@@ -177,6 +167,8 @@ class Context
     @f2 = nil
     
     @play_or_pause = :paused
+    
+    @current_state.on_enter
   end
   
   extend Forwardable
@@ -200,8 +192,6 @@ class Context
   def branch_history
     puts "branch history"
     @history = @history.branch @frame_index
-    # ^ this resets @history for Outer but not for Context, which causes bugs
-    
     
     # TODO: double-buffer history to reduce memory allocation
       # always have two history buffers available
@@ -229,12 +219,12 @@ class Context
   # transition now, and re-run the last callback in the new state
   def transition_and_rerun(new_state_klass, method_name, *args, **kwargs)
     new_state = new_state_klass.new(self)
-    new_state.on_enter()
     
     puts "transition: #{@current_state.class} -> #{new_state.class}"
     puts "   rerun args: #{args.inspect}"
     puts "   rerun kwargs: #{kwargs.inspect}"
     
+    new_state.on_enter()
     new_state.send(method_name, *args, **kwargs)
     @previous_state = @current_state
     @current_state = new_state
@@ -382,6 +372,7 @@ class Snapshot
     
   end
 end
+
 
 module States
   class State
