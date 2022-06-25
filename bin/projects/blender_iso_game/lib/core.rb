@@ -531,7 +531,7 @@ class Core
         if blocked_space?(pos + v) && free_space?(pos + v_up)
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "step up: #{pos} -> #{pos + v_up}"
           end
           
           15.times do
@@ -567,7 +567,7 @@ class Core
           
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "move forward: #{pos} -> #{pos + v}"
           end
           
           15.times do
@@ -601,26 +601,25 @@ class Core
           
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "falling: #{pos} -> #{pos + v_down}"
           end
           
           15.times do
               #  2..16 - animate
               snapshot.frame do
                 # NO-OP
-                puts "falling"
               end
             end
           
           # 17 - animate
           snapshot.frame do
             entity.position = pos + v_down
-            puts "falling"
+            # puts "falling"
           end
           
           #  0 - new root position
           snapshot.frame do
-            puts "falling"
+            # puts "falling"
           end
           
           
