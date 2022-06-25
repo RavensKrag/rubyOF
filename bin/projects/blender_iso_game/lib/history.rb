@@ -3,23 +3,19 @@ module History
 
 class Outer
   attr_accessor :paused
-  attr_accessor :frame_index
   
   def initialize
     @history = History::HistoryModel.new
-    @frame_index = 0
     
-    @context = Context.new(@history) # holds the information
-    @state   = States::NullBehavior.new(@context) # holds the behavior
+    @context = Context.new(@history)
+    
+    
+    # @state   = States::NullBehavior.new(@context) # holds the behavior
   end
   
   def bind_to_world(world)
     world.bind_history @history
     # |--> HistoryModel#setup()    
-  end
-  
-  def time_traveling?
-    return @state.class == States::ReplayingOld
   end
   
   extend Forwardable
@@ -39,6 +35,142 @@ class Outer
     return @crash_detected
   end
   
+  def_delegators :@context, 
+    :frame_index, :update, :on_crash
+  
+  def state
+    @context.current_state.name
+  end
+  
+  def time_traveling?
+    return @context.current_state.class == States::ReplayingOld
+  end
+  
+  
+  
+  
+  
+  
+  
+  def update(ipc, &block) 
+    # TODO: send message to blender when transitioning into the Finished state
+    
+    @patterns ||= {
+      [:other, States::Finished] => ->(){
+        # when transitioning into Finished, not just when you're in that state
+        puts "finished --> (send message to blender)"
+        
+        ipc.send_to_blender({
+          'type' => 'loopback_finished',
+          'history.length' => self.length
+        })
+      }
+    }
+    
+    b = [@context.previous_state.class, @context.current_state.class]
+    @patterns.each do |a, proc|
+      if( (a[0] == :any || (a[0] == :other && b[0] != b[1]) || a[0] == b[0]) && 
+          (a[1] == :any || (a[1] == :other && b[1] != b[0]) || a[1] == b[1]) 
+        )
+        proc.call()
+      end
+    end
+    
+    
+    @context.previous_state = @context.current_state
+    
+    
+    @context.current_state.update(&block)
+  end
+  
+  def on_reload_code(ipc)
+    @patterns = nil
+    branch_history()
+    
+    # ipc.send_to_blender message
+  end
+  
+  def on_reload_data(ipc)
+    branch_history()
+    
+    # ipc.send_to_blender message
+  end
+  
+  def reset(ipc)
+    puts "loopback reset"
+    
+    if @context.current_state.class == States::ReplayingOld
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
+      
+      puts "loopback reset"
+      
+      branch_history()
+      
+      ipc.send_to_blender({
+        'type' => 'loopback_reset',
+        'history.length'      => self.length,
+        'history.frame_index' => self.frame_index
+      })
+      
+    else
+      puts "(reset else)"
+    end
+  end
+  
+  def pause(ipc)
+    @context.pause
+    
+    if @context.current_state.class == States::GeneratingNew
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_new',
+        'history.length'      => self.length,
+        'history.frame_index' => self.frame_index
+      })
+      
+    else
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_old',
+        'history.length'      => self.length,
+        'history.frame_index' => self.frame_index
+      })
+    end
+    
+  end
+  
+  def play(ipc)
+    @context.play
+    
+    if @context.current_state.class == States::Finished
+      ipc.send_to_blender({
+        'type' => 'loopback_play+finished',
+        'history.length' => self.length
+      })
+    end
+    
+  end
+  
+  # both frame-by-frame traversal and scrubbing use :seek
+  def seek(ipc, time)
+    puts "time: #{time}"
+    
+    @context.seek(time)
+    # ipc.send_to_blender message
+  end
+  
+  # def_delegators :@context, 
+  #   :pause, :play, :seek
+  
+  
+  
+  
+  
+  
+  
+  
+  private
+  
   
   # If FrameHistory contains states through time,
   # and replaying those states is "time traveling",
@@ -51,7 +183,7 @@ class Outer
   # (Useful for loading new code)
   def branch_history
     # set history
-    @history = @history.branch @frame_index
+    @history = @history.branch @context.frame_index
     
     # TODO: double-buffer history to reduce memory allocation
       # always have two history buffers available
@@ -63,27 +195,26 @@ class Outer
     return self
   end
   
-  def_delegators :@state, 
-    :update, :seek, :on_crash
-    # (frame-by-frame traversal uses :seek)
   
-  def_delegators :@context,
-    :play, :pause
-  
-  def state
-    @state.class.name
-  end
   
 end
 
 
 class Context
   attr_accessor :f1, :f2
-  attr_accessor :history
+  attr_accessor :history, :frame_index
+  attr_accessor :previous_state, :current_state
   
   def initialize(history)
+    # Context holds the data
+    # @state holds the behavior
+    
     @history = history
-    @state = States::NullBehavior.new(self)
+    
+    @current_state = States::Initial.new(self)
+    @previous_state = nil
+    
+    @frame_index = 0
     
     @f1 = nil
     @f2 = nil
@@ -91,22 +222,31 @@ class Context
     @play_or_pause = :paused
   end
   
+  extend Forwardable
+  
+  def_delegators :@current_state,
+    :update, :seek, :on_crash
+  
   # transition after this callback completes and wait for further commands
   def transition_to(new_state_klass)
     new_state = new_state_klass.new(self)
     new_state.on_enter()
-    @state = new_state
+    @previous_state = @current_state
+    @current_state = new_state
   end
   
   # transition now, and re-run the last callback in the new state
   def transition_and_rerun(new_state_klass, method_name, *args, **kwargs)
+    p args
     new_state = new_state_klass.new(self)
     new_state.on_enter()
-    new_state.call(method_name, *args, **kwargs)
-    @state = new_state
+    new_state.send(method_name, *args, **kwargs)
+    @previous_state = @current_state
+    @current_state = new_state
   end
   
   def play
+    puts "> play (#{@current_state.name})"
     @play_or_pause = :play
   end
   
@@ -156,12 +296,12 @@ class Snapshot
       
       @context.history.load_state_at @context.frame_index
       
-    else # [@history.length-1, inf]
+    else # [@context.history.length-1, inf]
       # actually generating new state
       @context.history.snapshot_gamestate_at @context.frame_index
       
-      # p [@context.frame_index, @history.length-1]
-      # puts "history length: #{@history.length}"
+      # p [@context.frame_index, @context.history.length-1]
+      # puts "history length: #{@context.history.length}"
       
       @context.frame_index += 1
       
@@ -174,7 +314,7 @@ class Snapshot
       puts "--------------------------------"
       
       Fiber.yield
-    # elsif @executing_frame > @history.length
+    # elsif @executing_frame > @context.history.length
     #   # scrubbing in future space
     #   # NO-OP
     #   # (pretty sure I need both this logic and the logic in Finished)
@@ -191,6 +331,10 @@ module States
     def initialize(context)
       @context = context
     end
+    
+    def name
+      self.class.to_s
+    end
   end
   
   class NullBehavior < State
@@ -198,11 +342,11 @@ module States
       
     end
     
-    def update
+    def update(&block)
       
     end
     
-    def seek
+    def seek(frame_number)
       
     end
     
@@ -247,11 +391,12 @@ module States
       @context.f2 = nil
       
       # p @f1
-      @context.frame_index = 0
+      
+      # @context.frame_index = 0
     end
     
     def update(&block)
-      return if @outer.paused?
+      return if @context.paused?
       
       
       @context.f2 ||= Fiber.new do
@@ -281,7 +426,7 @@ module States
     def seek(frame_number)
       # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
       
-      if frame_number >=0 && frame_number <= @context.final_frame # [0, len-1]
+      if frame_number.between?(0, @context.final_frame) # [0, len-1]
         # if you try to seek to an old frame,
         # delegate to state :replaying_old
         
@@ -294,7 +439,7 @@ module States
         # move to end of buffer and transition to Generating_New
         @context.frame_index = @context.final_frame
         
-        @history.load_state_at @executing_frame
+        @context.history.load_state_at @context.frame_index
         
         # TODO: check to see that this branch works correctly. will need to keep state synced between RubyOF and Blender.
       end
@@ -353,7 +498,7 @@ module States
         # 
         @context.transition_to Finished
         
-      elsif frame_number >= 0 && frame_number <= @context.final_frame # [0, len-1]
+      elsif frame_number.between?(0, @context.final_frame) # [0, len-1]
         # within range of history buffer
         
         @context.frame_index = frame_number
@@ -390,8 +535,6 @@ module States
       # (edge cases / boundary conditions).
       
       @context.history.snapshot_gamestate_at @context.frame_index
-      
-      @context.final_frame = @context.frame_index
       
       puts "#{@context.frame_index.to_s.rjust(4, '0')} final frame saved to history"
       
@@ -461,15 +604,18 @@ class HistoryModel
   attr_reader :max_num_frames, :state, :buffer
   attr_accessor :max_i
   
+  protected :state
+  protected :buffer
+  
   # TODO: use named arguments, because the positions are extremely arbitrary
-  def initialize(mom=nil)
+  def initialize(mom=nil, slice_range=nil)
     if mom
       @max_num_frames = mom.max_num_frames
       self.setup(mom.state[:pixels],
                  mom.state[:texture],
                  mom.state[:cache]
       )
-      @buffer.size.times do |i|
+      slice_range.each do |i|
         @buffer[i].copy_from mom.buffer[i]
       end
     else
@@ -489,6 +635,8 @@ class HistoryModel
   end
   
   def setup(pixels, texture, cache)
+    puts "[ #{self.class} ]  setup "
+    
     @max_num_frames = 3600
     
     # retain key data objects for entity state
@@ -531,8 +679,7 @@ class HistoryModel
   
   # TODO: think about how you would implement multiple timelines
   def branch(frame_index)
-    new_buffer = @buffer.slice(0..frame_index)
-    new_history = self.class.new(new_buffer)
+    new_history = self.class.new(self, 0..frame_index)
     
     new_history.max_i = frame_index
     
@@ -556,33 +703,37 @@ class HistoryModel
   # (as long as the buffer is allocated)
   # because of setup()
   def load_state_at(frame_index)
-    raise "Memory not allocated. Please call #allocate first" if self.length == 0
+    raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
     
-    raise IndexError, "Index #{frame_index} outside the bounds of recorded gamestates: 0..#{self.length-1}" unless frame_index >= 0 && frame_index <= self.length-1
+    raise "Memory not allocated. Please call #{self.class}#setup first" if self.max_length == 0
     
-    @pixels.copy_from @buffer[frame_index]
-    @cache.load @pixels
+    raise IndexError, "Index #{frame_index} outside the bounds of recorded gamestates: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
+    
+    @state[:pixels].copy_from @buffer[frame_index]
+    @state[:cache].load @state[:pixels]
   end
   
   def snapshot_gamestate_at(frame_index)
-    raise "Memory not allocated. Please call #allocate first" if self.length == 0
+    raise IndexError, "Index should be a non-negative integer." if frame_index.nil?
     
-    raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.max_length-1}" unless frame_index >= 0 && frame_index <= self.max_length-1
+    raise "Memory not allocated. Please call #{self.class}#setup first" if self.max_length == 0
+    
+    raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.max_length-1}" unless frame_index.between?(0, self.max_length-1)
     
     
-    @cache.update @pixels
-    @buffer[frame_index].copy_from @pixels
+    @state[:cache].update @state[:pixels]
+    @buffer[frame_index].copy_from @state[:pixels]
     
     if frame_index > @max_i
       @max_i = frame_index
     end
     # # TODO: implement this new interface
-    # @buffer[frame_index] << @pixels # save data into history buffer
-    # @buffer[frame_index] >> @pixels # load data from buffer into another image
+    # @buffer[frame_index] << @state[:pixels] # save data into history buffer
+    # @buffer[frame_index] >> @state[:pixels] # load data from buffer into another image
     #   # + should I implement this on RubyOF::Pixels for all images?
     #   # + can this be patterned as a general "memory transfer operator" ?
       
-    # @pixels << @buffer[frame_index] # load data from buffer into another image
+    # @state[:pixels] << @buffer[frame_index] # load data from buffer into another image
     
     
     
@@ -590,7 +741,7 @@ class HistoryModel
       # current code just saves a ruby reference to an existing image,
       # which is not what we want.
       # we want a separate copy of the memory,
-      # so that the original @pixels can continue to mutate
+      # so that the original @state[:pixels] can continue to mutate
       # without distorting what's in the history buffer
     # (actually, current ruby array is fast enough)
     # (just having Pixels#copy_from is fast enough for now)

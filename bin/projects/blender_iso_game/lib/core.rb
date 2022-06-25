@@ -112,7 +112,6 @@ load LIB_DIR/'fixed_schema_tree.rb'
 load LIB_DIR/'world.rb'
 load LIB_DIR/'vertex_animation_texture_set.rb'
 load LIB_DIR/'history.rb'
-load LIB_DIR/'frame_history.rb'
 
 
 
@@ -275,10 +274,9 @@ class Core
     puts "core: on_crash"
     @crash_detected = true
     
-    @frame_history.pause
-    @frame_history.update
+    @frame_history.pause(@sync)
     @frame_history.on_crash
-    @frame_history.update
+    @frame_history.update(@sync)
     
     
     
@@ -345,25 +343,7 @@ class Core
       @sync.reload
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
-      
-      if @frame_history.time_traveling?
-        # @frame_history = @frame_history.branch_history
-        
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-        @frame_history.branch_history
-        
-      else
-        # # was paused when the crash happened,
-        # # so should be able to 'play' and resume execution
-        # @frame_history.play
-        # puts "frame: #{@frame_history.frame_index}"
-      end
-      
+      @frame_history.on_reload_code(@sync)
     
     
     
@@ -474,7 +454,7 @@ class Core
     @sync.update
     
     
-    @frame_history.update do |snapshot|
+    @frame_history.update @sync do |snapshot|
       # step every x frames
       x = 8
       
@@ -681,7 +661,7 @@ class Core
     
     # update messages and history as necessary to try dealing with crash
     @sync.update
-    @frame_history.update
+    @frame_history.update(@sync)
       # FrameHistory will clear the @crash_detected state
       # if you start to go back in time after a crash.
       

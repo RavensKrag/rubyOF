@@ -13,7 +13,6 @@ class BlenderSync
     # two-way communication between RubyOF (ruby) and Blender (python)
     # implemented using two named pipes
     @blender_link = ActorChannel.new
-    @finished = false
     
     @blender_link.start
     
@@ -107,36 +106,6 @@ class BlenderSync
     # update_t1 = RubyOF::Utils.ofGetElapsedTimeMicros
     # dt = update_t1 - update_t0
     # puts "TOTAL UPDATE TIME: #{dt}" if dt > 10
-    
-    
-    # 
-    # send messages to Blender (python)
-    # 
-    if @frame_history.state == :finished
-      # needs to be a separate if block,
-      # so outer else only triggers when we detect some other state
-      if !@finished # transitioning from not finished -> finished
-        puts "finished --> (send message to blender)"
-        message = {
-          'type' => 'loopback_finished',
-          'history.length' => @frame_history.length
-        }
-        
-        @blender_link.send message
-        
-        @finished = true
-      end
-    else
-      @finished = false
-      # message = {
-      #   'type' => 'history.length',
-      #   'value' => @frame_history.length
-      # }
-      
-      # @blender_link.send message
-      
-    end
-    
     
   end
   
@@ -324,123 +293,30 @@ class BlenderSync
   def parse_timeline_commands(message)
     case message['name']
     when 'reset'
-      # # blender has reset, so reset all RubyOF data
+      # blender has reset, so reset all RubyOF data
       
       puts "== reset"
-      
-      reset
-      
-      if @frame_history.time_traveling?
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        puts "loopback reset"
-        
-        @frame_history.branch_history
-        
-        
-        message = {
-          'type' => 'loopback_reset',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        send_to_blender message
-        
-      else
-        puts "(reset else)"
-      end
+      reset()
+      @frame_history.reset(self)
       
       puts "====="
       
     when 'pause'
       puts "== pause"
-      p @frame_history.state
-      
-      if @frame_history.state == :generating_new
-        @frame_history.pause
-        
-        
-        message = {
-          'type' => 'loopback_paused_new',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        send_to_blender message
-        
-      else
-        @frame_history.pause
-        
-        message = {
-          'type' => 'loopback_paused_old',
-          'history.length'      => @frame_history.length,
-          'history.frame_index' => @frame_history.frame_index
-        }
-        
-        send_to_blender message
-        
-      end
+      @frame_history.pause(self)
       
       puts "====="
       
       
     when 'play'
       puts "== play"
-      p @frame_history.state
-      
-      
-      @frame_history.play # stubbed for some states
-      
-      if @frame_history.state == :finished
-        @frame_history.play 
-        
-        message = {
-          'type' => 'loopback_play+finished',
-          'history.length' => @frame_history.length
-        }
-        
-        send_to_blender message
-      end
-      
-      # if @frame_history.state != :generating_new
-      #   # ^ this will not immediately advance
-      #   #   to the new state. It's more like shifting
-      #   #   from Park to Drive.
-      #   #   Transition to next state will not happen until
-      #   #   FrameHistory#update -> State#update
-      #   # 
-      #   # note: even responding to pause
-      #   # takes at least 1 frame. need a better way
-      #   # of dealing with this.
-      #   # 
-      #   # For now, I will expand the play range when python
-      #   # detects playback has started, without waiting
-      #   # for a round-trip response from ruby.
-      #   # (using aribtrary large number, 1000 frames)
-      #   # 
-      #   # TODO: use the "preview range" feature to set
-      #   #       two time ranges for the timeline
-      #   #       1) the maximum number of frames that can 
-      #   #          be stored
-      #   #       2) the current number of frames in history
-        
-      #   if @frame_history.play == :generating_new
-      #     message = {
-      #       'type' => 'loopback_play',
-      #       'history.length' => @frame_history.length
-      #     }
-          
-      #     @blender_link.send message
-      #   end
-      # end
+      @frame_history.play(self)
       
       puts "====="
       
     
     when 'seek'
-      @frame_history.seek(message['time'])
+      @frame_history.seek(self, message['time'])
       
     end
   end
@@ -520,25 +396,8 @@ class BlenderSync
     
     # reload history
     # (code adapted from Core#on_reload)
-    if @frame_history.time_traveling?
-      # @frame_history = @frame_history.branch_history
-      
-      # For now, just replace the curret timeline with the alt one.
-      # In future commits, we can refine this system to use multiple
-      # timelines, with UI to compress timelines or switch between them.
-      
-      
-      
-      @frame_history.branch_history
-      
-    else
-      # Do NOT trigger play on reload after direct manipulation.
-      
-      # # was paused when the crash happened,
-      # # so should be able to 'play' and resume execution
-      # @frame_history.play
-      # puts "frame: #{@frame_history.frame_index}"
-    end
+    
+    @frame_history.on_reload_data(self)
     
   end
   
