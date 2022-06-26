@@ -81,6 +81,9 @@ class Outer
   
   def on_reload_code(ipc)
     @patterns = nil
+    
+    puts "#{@context.frame_index.to_s.rjust(4, '0')} code reloaded"
+    
     @context.branch_history
     
     ipc.send_to_blender({
@@ -104,10 +107,7 @@ class Outer
       # In future commits, we can refine this system to use multiple
       # timelines, with UI to compress timelines or switch between them.
       
-      puts "try to generate a new timeline"
-      
       @context.branch_history
-      # @context.transition_to States::GeneratingNew
       
       ipc.send_to_blender({
         'type' => 'loopback_reset',
@@ -210,7 +210,8 @@ class Context
   # Thus, that part of the state will be generated anew.
   # (Useful for loading new code)
   def branch_history
-    puts "branch history"
+    puts "#{@frame_index.to_s.rjust(4, '0')} branch history (length #{@history.length} -> #{@frame_index})"
+    
     @history = @history.branch @frame_index
     
     # TODO: double-buffer history to reduce memory allocation
