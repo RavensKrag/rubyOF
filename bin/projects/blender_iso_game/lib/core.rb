@@ -279,6 +279,9 @@ class Core
     @frame_history.update(@sync)
     
     
+    # TODO: handle unrecoverable exception differently than recoverable exception
+      # unrecoverable exceptions lead to program exit, rather than potential for reload. this can mean that @sync is not shut down correctly, and the FIFO remains open. need a way to detect these sorts of execptions reliably, so that the FIFO can be closed. However, during most exceptions, you want to leave the FIFO open so that Blender controls can be used for time travel, which is critical for debugging a crash.
+    
     
     # Don't stop sync thread on crash.
     # Need to be able to communicate with Blender
