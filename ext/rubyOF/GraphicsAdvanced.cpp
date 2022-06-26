@@ -357,6 +357,10 @@ void ofFloatPixels_flip(ofFloatPixels &pixels, const bool horizontal, const bool
    ofPixels__flip_pixels(pixels, horizontal, vertical);
 }
 
+void ofFloatPixels__copyFrom(ofFloatPixels &self, const ofFloatPixels &mom){
+   self = mom; // invoke copy constructor and assign object at the location of self
+}
+
 
 // 
 // Texture
@@ -767,6 +771,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("flip",          &ofFloatPixels_flip)
       
       .define_method("paste_into",    &ofFloatPixels::pasteInto)
+      
+      .define_method("copy_from",    &ofFloatPixels__copyFrom)
    ;
    
    

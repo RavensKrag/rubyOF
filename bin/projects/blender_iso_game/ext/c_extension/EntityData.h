@@ -68,6 +68,7 @@ private:
 	bool mChanged;
 	
 	int mMeshIndex;
+	int mParentEntityID;
 	
 	struct TransformComponent {
 		glm::vec3 position;

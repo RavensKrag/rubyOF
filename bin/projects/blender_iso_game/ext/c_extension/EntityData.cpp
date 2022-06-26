@@ -97,15 +97,19 @@ EntityData::load(const ofFloatPixels& pixels, int scanline_index){
 	// load in the data
 	// 
 	
-	float mesh_index = pixels.getColor(0, scanline_index).r;
+	const ofFloatColor c0 = pixels.getColor(0, scanline_index);
+	float mesh_index = c0.r;
 	mMeshIndex = (int)mesh_index;
-	// if no mesh is assigned, ignore the rest of the data in this line
+	// if no mesh is assigned, this entity is inactive
 	if(mMeshIndex == 0){
 		mActive = false;
-		return true;
 	}else{
 		mActive = true;
 	}
+	
+	float parent_id = c0.b;
+	mParentEntityID = (int)parent_id;
+	
 	
 	
 	const ofFloatColor c1 = pixels.getColor(1, scanline_index);
@@ -141,7 +145,8 @@ EntityData::update(ofFloatPixels& pixels, int scanline_index){
 		// 
 		ofFloatColor c;
 		c = pixels.getColor(0, scanline_index);
-			c.r = c.g = c.b = mMeshIndex;
+			c.r = c.g = mMeshIndex;
+			c.b = mParentEntityID;
 		pixels.setColor(0, scanline_index, c);
 		
 		
@@ -302,8 +307,7 @@ EntityData::loadMaterial(const ofFloatPixels::ConstPixels &scanline){
 // write data from this EntityData object into pixels
 void
 EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_start){
-	int i=0;
-	for(int j=x_start; j<mMaterial.NUM_PIXELS; j++){
+	for(int i=0; i<mMaterial.NUM_PIXELS; i++){
 		ofFloatColor color;
 		
 		if(i == 0){
@@ -320,9 +324,7 @@ EntityData::updateMaterial(ofFloatPixels& pixels, int scanline_index, int x_star
 			color = mMaterial.emissive;
 		}
 		
-		
-		pixels.setColor(j,scanline_index, color);
-		i++;
+		pixels.setColor(x_start+i, scanline_index, color);
 	}
 	
 

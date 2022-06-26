@@ -110,7 +110,8 @@ load LIB_DIR/'oit_render_pipeline.rb'
 
 load LIB_DIR/'fixed_schema_tree.rb'
 load LIB_DIR/'world.rb'
-load LIB_DIR/'frame_history.rb'
+load LIB_DIR/'vertex_animation_texture_set.rb'
+load LIB_DIR/'history.rb'
 
 
 
@@ -240,13 +241,17 @@ class Core
       @world.lights.load data
     end
     
-    @frame_history = FrameHistory.new(self, @world.history)
-    
-    
     @world.data.each.each_with_index do |entity, i|
       puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
     end
     
+    
+    
+    
+    
+    
+    @frame_history = History::Outer.new
+    @frame_history.bind_to_world @world
     
     
     
@@ -269,11 +274,13 @@ class Core
     puts "core: on_crash"
     @crash_detected = true
     
-    @frame_history.pause
-    @frame_history.update
-    @frame_history.step_back
-    @frame_history.update
+    @frame_history.pause(@sync)
+    @frame_history.on_crash
+    @frame_history.update(@sync)
     
+    
+    # TODO: handle unrecoverable exception differently than recoverable exception
+      # unrecoverable exceptions lead to program exit, rather than potential for reload. this can mean that @sync is not shut down correctly, and the FIFO remains open. need a way to detect these sorts of execptions reliably, so that the FIFO can be closed. However, during most exceptions, you want to leave the FIFO open so that Blender controls can be used for time travel, which is critical for debugging a crash.
     
     
     # Don't stop sync thread on crash.
@@ -339,25 +346,7 @@ class Core
       @sync.reload
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       
-      
-      if @frame_history.time_traveling?
-        # @frame_history = @frame_history.branch_history
-        
-        # For now, just replace the curret timeline with the alt one.
-        # In future commits, we can refine this system to use multiple
-        # timelines, with UI to compress timelines or switch between them.
-        
-        
-        
-        @frame_history.branch_history
-        
-      else
-        # # was paused when the crash happened,
-        # # so should be able to 'play' and resume execution
-        # @frame_history.play
-        # puts "frame: #{@frame_history.frame_index}"
-      end
-      
+      @frame_history.on_reload_code(@sync)
     
     
     
@@ -468,9 +457,8 @@ class Core
     @sync.update
     
     
-    @frame_history.update do |snapshot|
+    @frame_history.update @sync do |snapshot|
       # step every x frames
-      
       x = 8
       
       moves = [
@@ -500,7 +488,7 @@ class Core
         
         #  0 - log root position
         snapshot.frame do
-          
+          puts "hello world"
         end
         
         
@@ -511,7 +499,7 @@ class Core
         # so any code related to a branch condition
         # needs to be outside of the snapshot blocks.
         
-        entity = @world.data.find_entity_by_name('CharacterTest')
+        entity = @world.data['Characters'].find_entity_by_name('CharacterTest')
         p entity
         
         pos = entity.position
@@ -546,7 +534,7 @@ class Core
         if blocked_space?(pos + v) && free_space?(pos + v_up)
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "step up: #{pos} -> #{pos + v_up}"
           end
           
           15.times do
@@ -582,7 +570,7 @@ class Core
           
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "move forward: #{pos} -> #{pos + v}"
           end
           
           15.times do
@@ -616,7 +604,7 @@ class Core
           
           #  1 - animate
           snapshot.frame do
-            puts pos
+            puts "falling: #{pos} -> #{pos + v_down}"
           end
           
           15.times do
@@ -629,11 +617,12 @@ class Core
           # 17 - animate
           snapshot.frame do
             entity.position = pos + v_down
+            # puts "falling"
           end
           
           #  0 - new root position
           snapshot.frame do
-            
+            # puts "falling"
           end
           
           
@@ -674,7 +663,7 @@ class Core
     
     # update messages and history as necessary to try dealing with crash
     @sync.update
-    @frame_history.update
+    @frame_history.update(@sync)
       # FrameHistory will clear the @crash_detected state
       # if you start to go back in time after a crash.
       

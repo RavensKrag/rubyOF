@@ -5,7 +5,7 @@
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space, :lights, :camera, :history
+  attr_reader :data, :space, :lights, :camera
   
   MAX_NUM_FRAMES = 500
   
@@ -42,7 +42,7 @@ class World
     # puts Dir.glob("#{PROJECT_DIR}/")
     # p (geom_texture_directory).children.map{|x| x.basename}
     
-    @storage = [] # objects that store internal state
+    @storage = {} # objects that store internal state
     @data = {}    # objects that form external API for accessing data
     
     # 
@@ -60,8 +60,9 @@ class World
       
       name, _, _ = file.basename.to_s.split('.')
       
-      @storage << VertexAnimationTextureSet.new(@geom_texture_directory, name)
-      @data[name] = DataInterface.new(@storage.last.cache, @storage.last.names)
+      data = VertexAnimationTextureSet.new(@geom_texture_directory, name)
+      @storage[name] = data
+      @data[name] = DataInterface.new(data.cache, data.names)
     end
     
     # TODO: should allow re-scanning of this directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
@@ -98,20 +99,6 @@ class World
     
     
     
-    # TODO: re-connect history
-    
-    # @history = History.new(
-    #   @storage[:dynamic].history,
-    #   @storage[:dynamic][:entity_data][:pixels],
-    #   @storage[:dynamic][:entity_data][:texture],
-    #   @storage[:dynamic].cache
-    # )
-    
-    
-    @history = History.new(
-      nil, nil, nil, nil
-    )
-    
   end
   
   # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
@@ -124,42 +111,17 @@ class World
     
     # TODO: consider implementing read-only mode for DataInterface for static entities
     
-    
-    @storage.each do |texture_set|
+    @storage.values.each do |texture_set|
       texture_set.setup()
     end
     
+    # dynamic_entities
+    # + load from disk to specify initial state
+    # + if reloaded, that's a new initial state (t == 0)
+    # + need other mechanism to load changes @ t != 0 (JSON message?)
     
-    # # dynamic_entities
-    # # + load from disk to specify initial state
-    # # + if reloaded, that's a new initial state (t == 0)
-    # # + need other mechanism to load changes @ t != 0 (JSON message?)
     
-    # @storage[:dynamic].tap do |data|
-    #   prefix = "Characters"
-    #   json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
-    #   position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
-    #   normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
-    #   entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
-    #   @dynamic_prefix = prefix
-      
-    #   load_dynamic_mesh_textures position_tex_path, normal_tex_path
-    #   load_dynamic_entity_texture entity_tex_path # initial state only
-    #   load_dynamic_json_data json_file_path
-      
-    #   # initialize rest of history buffer
-    #   # (allocate correct image size, but don't clear garbage)
-    #   data[:entity_data][:pixels].tap do |pixels|
-    #     data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
-    #   end
-      
-    #   # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-    #   vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
-    #   data[:geometry].generate vertex_count
-      
-    #   data[:cache].load data[:entity_data][:pixels]
-    # end
-    
+    @space.update
   end
   
   
@@ -169,10 +131,16 @@ class World
       # on reload
       
     end
+    
+    @storage.values.each do |texture_set|
+      texture_set.update
+    end
+    
+    # @space.update
   end
   
   def each_texture_set #&block
-    @storage.each do |texture_set|
+    @storage.values.each do |texture_set|
       yield(texture_set.position_texture,
             texture_set.normal_texture,
             texture_set.entity_texture,
@@ -184,16 +152,31 @@ class World
     return @mat
   end
   
+  def bind_history(history_obj)
+    history_obj.setup(
+      @storage['Characters'].entity_pixels,
+      @storage['Characters'].entity_texture,
+      @storage['Characters'].cache
+    )
+  end
   
   def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
+    
+    
+    channels_per_px = 4
+    bits_per_channel = 32
+    bits_per_byte = 8
+    bytes_per_channel = bits_per_channel / bits_per_byte
+    
     
     # TODO: draw UI in a better way that does not use immediate mode rendering
     
     
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
     memory_usage = []
-    @storage.each_with_index do |texture_set, i|
+    entity_usage = []
+    @storage.values.each_with_index do |texture_set, i|
       layer_name = texture_set.name
       cache = texture_set.cache
       names = texture_set.names
@@ -261,11 +244,6 @@ class World
       
       
       
-      channels_per_px = 4
-      bits_per_channel = 32
-      bits_per_byte = 8
-      bytes_per_channel = bits_per_channel / bits_per_byte
-      
       texture = texture_set.position_texture
       px = texture.width*texture.height
       x = px*channels_per_px*bytes_per_channel / 1000.0
@@ -283,12 +261,27 @@ class World
       ui_font.draw_string("mem: #{size} kb",
                           1400-50, 100+offset+20)
       memory_usage << size
+      entity_usage << z
     end
     
     i = memory_usage.length
     x = memory_usage.reduce &:+
     ui_font.draw_string("  total VRAM: #{x} kb",
                         1400-200+27-50, 100+i*(189-70)+20)
+    
+    
+    
+    z = entity_usage.reduce &:+
+    ui_font.draw_string("  entity texture VRAM: #{z} kb",
+                        1400-200+27-50-172, 100+i*(189-70)+20+50)
+    
+    
+    # size = @history.buffer_width * @history.buffer_height * @history.max_length
+    # size = size * channels_per_px * bytes_per_channel
+    # ui_font.draw_string("history memory: #{size/1000.0} kb",
+    #                     120, 310)
+    
+    # @history
     
   end
   
@@ -301,8 +294,10 @@ class World
     puts "load json"
     
     basename = File.basename(json_file_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_json_data(json_file_path)
     end
   end
@@ -311,8 +306,10 @@ class World
     puts "reload entities"
     
     basename = File.basename(entity_tex_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_entity_texture(entity_tex_path)
     end
   end
@@ -324,324 +321,74 @@ class World
     # confirm what batch should be reloaded.
     
     basename = File.basename(position_tex_path)
-    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
-    unless texture_set.nil?
+    
+    @storage.values
+    .find{ |x| basename.split('.').first == x.name }
+    &.tap do |texture_set|
       texture_set.load_mesh_textures(position_tex_path, normal_tex_path)
     end
   end
   
   
-  
-  
-  
-  
-  # TODO: create a better name for this
-  class VertexAnimationTextureSet
-    include RubyOF::Graphics
-    
-    attr_reader :name
-    
-    def initialize(data_dir, name)
-      @data_dir = data_dir
-      @name = name
-      # @static_prefix = name
-      
-      @storage = FixedSchemaTree.new({
-        :mesh_data => {
-          :pixels => {
-            :positions  => RubyOF::FloatPixels.new,
-            :normals    => RubyOF::FloatPixels.new,
-          },
-          
-          :textures => {
-            :positions  => RubyOF::Texture.new,
-            :normals    => RubyOF::Texture.new,
-          }
-        },
-        
-        :entity_data => {
-          :pixels  => RubyOF::FloatPixels.new,
-          :texture => RubyOF::Texture.new,
-        },
-        
-        :names => TextureJsonCache.new, # <- "json file"
-          # ^ convert name to scanline AND scanline to name
-        
-        :geometry => BatchGeometry.new, # size == max tris per mesh in batch
-        
-        :cache => RubyOF::Project::EntityCache.new, # size == num dynamic entites
-        
-        :history => HistoryBuffer.new,
-          # ^ list of frames over time, not just one state
-          # should combine with FrameHistory#frame_index to get data on a particular frame
-          # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
-      })
-      
-    end
-    
-    def cache
-      return @storage[:cache]
-    end
-    
-    def names
-      return @storage[:names]
-    end
-    
-    def history
-      return @storage[:history]
-    end
-    
-    def position_texture
-      return @storage[:mesh_data][:textures][:positions]
-    end
-    
-    def normal_texture
-      return @storage[:mesh_data][:textures][:normals]
-    end
-    
-    def entity_texture
-      return @storage[:entity_data][:texture]
-    end
-    
-    def mesh
-      return @storage[:geometry].mesh
-    end
-    
-    
-    def setup
-      json_file_path    = @data_dir/"#{@name}.cache.json"
-      position_tex_path = @data_dir/"#{@name}.position.exr"
-      normal_tex_path   = @data_dir/"#{@name}.normal.exr"
-      entity_tex_path   = @data_dir/"#{@name}.entity.exr"
-      
-      load_mesh_textures position_tex_path, normal_tex_path
-      load_entity_texture entity_tex_path
-      load_json_data json_file_path
-      
-      
-      # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-      vertex_count = @storage[:mesh_data][:pixels][:positions].width.to_i
-      @storage[:geometry].generate vertex_count
-      
-      @storage[:cache].load @storage[:entity_data][:pixels]
-    end
-    
-    
-    def load_json_data(json_file_path)
-      @storage[:names].load json_file_path
-      
-      # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
-    end
-    
-    def load_entity_texture(entity_tex_path)
-      # 
-      # configure all sets of pixels (CPU data) and textures (GPU data)
-      # 
-      
-      [
-        [ entity_tex_path,
-          @storage[:entity_data][:pixels],
-          @storage[:entity_data][:texture] ],
-      ].each do |path_to_file, pixels, texture|
-        ofLoadImage(pixels, path_to_file.to_s)
-        
-        # y axis is flipped relative to Blender???
-        # openframeworks uses 0,0 top left, y+ down
-        # blender uses 0,0 bottom left, y+ up
-        pixels.flip_vertical
-        
-        # puts pixels.color_at(0,2)
-        
-        texture.disableMipmap() # resets min mag filter
-        
-        texture.wrap_mode(:vertical   => :clamp_to_edge,
-                          :horizontal => :clamp_to_edge)
-        
-        texture.filter_mode(:min => :nearest, :mag => :nearest)
-        
-        texture.load_data(pixels)
-      end
-      
-      # reset the cache when textures reload
-      @storage[:cache].load @storage[:entity_data][:pixels]
-    end
-    
-    def load_mesh_textures(position_tex_path, normal_tex_path)
-      # 
-      # configure all sets of pixels (CPU data) and textures (GPU data)
-      # 
-      
-      [
-        [ position_tex_path,
-          @storage[:mesh_data][:pixels][:positions],
-          @storage[:mesh_data][:textures][:positions] ],
-        [ normal_tex_path,
-          @storage[:mesh_data][:pixels][:normals],
-          @storage[:mesh_data][:textures][:normals] ]
-      ].each do |path_to_file, pixels, texture|
-        ofLoadImage(pixels, path_to_file.to_s)
-        
-        # y axis is flipped relative to Blender???
-        # openframeworks uses 0,0 top left, y+ down
-        # blender uses 0,0 bottom left, y+ up
-        pixels.flip_vertical
-        
-        # puts pixels.color_at(0,2)
-        
-        texture.disableMipmap() # resets min mag filter
-        
-        texture.wrap_mode(:vertical   => :clamp_to_edge,
-                          :horizontal => :clamp_to_edge)
-        
-        texture.filter_mode(:min => :nearest, :mag => :nearest)
-        
-        texture.load_data(pixels)
-      end
-    end
-    
-  end
-  
-  
-  
-  
-  
-  
-  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
-  
-  
-  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
-  # ASSUME: @pixels[:positions] and @pixels[:normals] have the same dimensions
-  
-  
-  
-  class TextureJsonCache
+  class LightsCollection
     def initialize
-      @json = nil
+      @lights = Array.new
     end
     
-    def load(json_filepath)
-      unless File.exist? json_filepath
-        raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
-      end
+    # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
+    def fetch(light_name)
+      existing_light = @lights.find{ |light|  light.name == light_name }
       
-      json_string   = File.readlines(json_filepath).join("\n")
-      json_data     = JSON.parse(json_string)
-      
-      @json = json_data
-    end
-    
-    
-    def num_meshes
-      return @json["mesh_data_cache"].size
-    end
-    
-    
-    
-    def entity_scanline_to_name(i)
-      data = @json['entity_data_cache'][i]
-      return data['entity name']
-    end
-    
-    def mesh_scanline_to_name(i)
-      return @json['mesh_data_cache'][i]
-    end
-    
-    
-    
-    def entity_name_to_scanline(target_entity_name)
-      entity_idx = nil
-      
-      # TODO: try using #find_index instead
-      @json['entity_data_cache'].each_with_index do |data, i|
-        if data['entity name'] == target_entity_name
-          # p data
-          entity_idx = i
-          break
+      if existing_light.nil?
+        if block_given?
+          new_light = yield light_name
+          @lights << new_light
+          
+          return new_light
+        else
+          raise "ERROR: Did not declare a block for generating new lights."
         end
+      else
+        return existing_light
       end
-      
-      return entity_idx
     end
     
-    # @json includes a blank entry for scanline index 0
-    # even though that scanline is not represented in the cache
-    def mesh_name_to_scanline(target_mesh_name)
-      mesh_idx = nil
-      
-      # TODO: try using #find_index instead
-      @json['mesh_data_cache'].each_with_index do |mesh_name, i|
-        if mesh_name == target_mesh_name
-          # p data
-          mesh_idx = i
-          break
-        end
+    # TODO: implement way to delete lights
+    def delete(light_name)
+      @lights.delete_if{|light| light.name == light_name}
+    end
+    
+    # delete all lights whose names are not on this list
+    def gc(list_of_names)
+      @lights
+      .reject{ |light|  list_of_names.include? light.name }
+      .each do |light|
+        delete light.name
       end
+    end
+    
+    
+    def each
+      return enum_for(:each) unless block_given?
       
-      return mesh_idx
-    end
-    
-  end
-  
-  
-  
-  
-  
-  
-  class BatchGeometry
-    attr_reader :mesh
-    
-    def initialize
-      @mesh = nil
-    end
-    
-    def generate(vertex_count)
-      @mesh = create_mesh(vertex_count)
-    end
-    
-    private
-    
-    def create_mesh(num_verts)
-      # 
-      # Create a mesh consiting of a line of unconnected triangles
-      # the verticies in this mesh will be transformed by the textures
-      # so it doesn't matter what their exact positons are.
-      # 
-      RubyOF::VboMesh.new.tap do |mesh|
-        mesh.setMode(:triangles)
-        # ^ TODO: maybe change ruby interface to mode= or similar?
-        
-        num_tris = num_verts / 3
-        
-        size = 1 # useful when prototyping to increase this for visualization
-        num_tris.times do |i|
-          a = i*3+0
-          b = i*3+1
-          c = i*3+2
-          # DEBUG PRINT: show indicies assigned to tris an verts
-          # p [i, [a,b,c]]
-          
-          
-          # UV coordinates specified in pixel indicies
-          # will offset by half a pixel in the shader
-          # to sample at the center of each pixel
-          
-          mesh.addVertex(GLM::Vec3.new(size*i,0,0))
-          mesh.addTexCoord(GLM::Vec2.new(a, 0))
-          
-          mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
-          mesh.addTexCoord(GLM::Vec2.new(b, 0))
-          
-          mesh.addVertex(GLM::Vec3.new(size*i,size,0))
-          mesh.addTexCoord(GLM::Vec2.new(c, 0))
-          
-        end
+      @lights.each do |light|
+        yield light
       end
-      
+    end
+    
+    # convert to a hash such that it can be serialized with yaml, json, etc
+    def data_dump
+      data_hash = {
+        'lights' => @lights
+      }
+      return data_hash
+    end
+    
+    # read from a hash (deserialization)
+    def load(data)
+      @lights = data['lights']
     end
   end
-  
-  
-  
   
   
   
@@ -726,73 +473,6 @@ class World
   # # ^ is this way of defining this backwards?
   # #   should I be tagging objects with their properties instead?
   
-  
-  
-  
-  
-  
-  
-  
-  
-  class LightsCollection
-    def initialize
-      @lights = Array.new
-    end
-    
-    # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
-    def fetch(light_name)
-      existing_light = @lights.find{ |light|  light.name == light_name }
-      
-      if existing_light.nil?
-        if block_given?
-          new_light = yield light_name
-          @lights << new_light
-          
-          return new_light
-        else
-          raise "ERROR: Did not declare a block for generating new lights."
-        end
-      else
-        return existing_light
-      end
-    end
-    
-    # TODO: implement way to delete lights
-    def delete(light_name)
-      @lights.delete_if{|light| light.name == light_name}
-    end
-    
-    # delete all lights whose names are not on this list
-    def gc(list_of_names)
-      @lights
-      .reject{ |light|  list_of_names.include? light.name }
-      .each do |light|
-        delete light.name
-      end
-    end
-    
-    
-    def each
-      return enum_for(:each) unless block_given?
-      
-      @lights.each do |light|
-        yield light
-      end
-    end
-    
-    # convert to a hash such that it can be serialized with yaml, json, etc
-    def data_dump
-      data_hash = {
-        'lights' => @lights
-      }
-      return data_hash
-    end
-    
-    # read from a hash (deserialization)
-    def load(data)
-      @lights = data['lights']
-    end
-  end
   
   
   # access Entity / Mmesh data by name
@@ -907,7 +587,7 @@ class World
       
       out = @entity_list.select{   |name, pos|  pos == pt  }
                         .collect{  |name, pos|  name  }
-                        .collect{  |name|  @data.find_mesh_by_name(name)  }
+                        .collect{  |name|  @data['Tiles'].find_mesh_by_name(name)  }
       
       puts "=> #{out.inspect}"
       
@@ -917,168 +597,6 @@ class World
       return out
     end
   end
-  
-  
-  
-  
-  
-  
-  
-  
-  # store the data needed for history
-  class HistoryBuffer
-    def initialize
-      @buffer = RubyOF::FloatPixels.new
-      
-      @frame_width = nil
-      @frame_height = nil
-      
-      @size = nil
-    end
-    
-    def allocate(frame_width, frame_height, max_num_frames)
-      @frame_width = frame_width
-      @frame_height = frame_height
-      
-      @size = max_num_frames
-      
-      @buffer.allocate(@frame_width, @frame_height*@size)
-      @buffer.flip_vertical
-    end
-    
-    def size
-      return @size
-    end
-    
-    alias :length :size
-    
-    # set data in history buffer on a given frame
-    def []=(frame_index, frame_data)
-      raise "Memory not allocated. Please call #allocate first" if @size.nil?
-      
-      raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{@size-1}" unless frame_index >= 0 && frame_index <= @size-1
-      
-      # TODO: update @size if auto-growing the currently allocated segment
-      
-      x = 0
-      y = frame_index*@frame_height
-      frame_data.paste_into(@buffer, x,y)
-    end
-    
-    # copy data from buffer into another image
-    def copy_frame(frame_index, out_image)
-      raise "Memory not allocated. Please call #allocate first" if @size.nil?
-      
-      expected_size = [@frame_width, @frame_height]
-      output_size = [out_image.width, out_image.height]
-      raise "Output image is the wrong size. Recieved #{output_size.inspect} but expected #{expected_size.inspect}" if expected_size != output_size
-      
-      w = @frame_width
-      h = @frame_height
-      
-      x = 0
-      y = frame_index*@frame_height
-      
-      @buffer.crop_to(out_image, x,y, w,h)
-      # WARNING: ofPixels#cropTo() re-allocates memory, so I probably need to implement a better way, but this should at least work for prototyping
-    end
-    
-    # OpenFrameworks documentation
-      # use ofPixels::pasteInto(ofPixels &dst, size_t x, size_t y)
-      # 
-      # "Paste the ofPixels object into another ofPixels object at the specified index, copying data from the ofPixels that the method is being called on to the ofPixels object at &dst. If the data being copied doesn't fit into the destination then the image is cropped."
-      
-    
-      # cropTo(...)
-      # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
-
-      # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
-    
-  end
-  
-  
-  # external API to access history data via @world.history
-  # control writing / loading data on dynamic entities over time
-  class History
-    # TODO: use named arguments, because the positions are extremely arbitrary
-    def initialize(history_buffer, pixels, texture, cache)
-      @buffer = history_buffer
-        # @buffer : HistoryBuffer object
-        # storage is one big image,
-        # but API is like an array of images
-      
-      @pixels = pixels
-      @texture = texture
-      @cache = cache
-      
-      
-      # @texture : RubyOF::Texture
-      @length = 0
-    end
-    
-    
-    # TODO: properly implement length (needed by FrameHistory - may need to refactor that class instead)
-    def length
-      @length
-    end
-    
-    alias :size :length
-    
-    
-    # TODO: think about how you would implement multiple timelines
-    def branch(frame_index)
-      new_buffer = @buffer.dup
-      return History.new(new_buffer, @cache)
-    end
-    
-    
-    
-    # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
-    # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
-    
-    
-    # sketch out new update flow
-    
-    # Each update with either generate new state, or just advance time.
-    # If new state was generated, we need to send it to the GPU to see it.
-    
-    def load_state_at(frame_index)
-      # if we moved in time, but didn't generate new state
-        # need to load the proper state from the buffer into the cache
-        # because the cache now does not match up with the buffer
-        # and the buffer has now become the authoritative source of data.
-      
-      @buffer.copy_frame(frame_index, @pixels)
-      @cache.load @pixels
-      
-    end
-    
-    def snapshot_gamestate_at(frame_index)
-      
-      # if we're supposed to save frame data (not time traveling)
-      
-      # then try to write the data
-      if @cache.update @pixels
-        # if data was written...
-        
-        # ...then send it to the GPU
-        @texture.load_data @pixels
-        
-        # ^ for dynamic entites, need [ofFloatPixels] where each communicates with the same instance of ofTexture
-        # + one ofTexture for static entites
-        # + one for dynamic entites
-        # + then an extra one for rendering ghosts / trails / onion skinning of dynamic entities)
-      end
-      
-      # always save a copy in the history buffer
-      # (otherwise the buffer could have garbage at that timepoint)
-      @buffer[frame_index] = @pixels
-      
-    end
-    
-  end
-  
-  
   
   # # Update material properties for all objects that use the given material.
   # # ( must have previously bound material using set_object_material() )
