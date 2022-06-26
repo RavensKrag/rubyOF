@@ -83,7 +83,7 @@ class Outer
     @patterns = nil
     @context.branch_history
     
-    ipc.send({
+    ipc.send_to_blender({
       'type' => 'loopback_reset',
       'history.length'      => @context.history.length,
       'history.frame_index' => @context.frame_index
