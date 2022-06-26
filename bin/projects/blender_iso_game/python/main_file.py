@@ -908,8 +908,8 @@ class ResourceManager():
     # ruby-style iteration interface using a generator
     # https://www.integralist.co.uk/posts/python-generators/#iterators
     def each(self, scene):
-        print(scene.my_tool.get('name_list'), flush=True)
-        print(scene.my_tool.texture_sets, flush=True)
+        # print(scene.my_tool.get('name_list'), flush=True)
+        # print(scene.my_tool.texture_sets, flush=True)
         
         for i, name in enumerate(scene.my_tool.get('name_list', [])):
             j = scene.my_tool.texture_sets.find(name)
@@ -1945,7 +1945,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         if context.screen.is_scrubbing:
             # if scrubbing, we are also playing,
             # so need to check for scrubbing first
-            self.print("scrubbing", context.scene.frame_current)
+            self.print(context, "scrubbing", context.scene.frame_current)
             # (does not trigger when stepping with arrow keys)
             
             data = {
@@ -1963,8 +1963,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 if not self.bPlaying:
                     # transition from paused to playing
                     
-                    self.print(f"starting animation @ {scene.frame_current}")
-                    # self.print("scene.frame_end", scene.frame_end)
+                    self.print(context, f"starting animation @ {scene.frame_current}")
+                    # self.print(context, "scene.frame_end", scene.frame_end)
                     
                     
                     data = {
@@ -2014,7 +2014,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 if self.bPlaying:
                     # transition from playing to paused
                     
-                    self.print("stopping animation")
+                    self.print(context, "stopping animation")
                     
                     data = {
                         'type': 'timeline_command',
@@ -2030,7 +2030,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         # because it needs to happen right away -
         # can't wait in an async style for Ruby to respond.
         if context.screen.is_animation_playing and not context.screen.is_scrubbing and scene.frame_current == scene.frame_end:
-            self.print("expand timeline")
+            self.print(context, "expand timeline")
             props.ruby_buffer_size = 1000
             scene.frame_end = props.ruby_buffer_size
             
@@ -2045,7 +2045,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # (is_scrubbing == false while stepping)
                 
-                self.print("step - frame", context.scene.frame_current)
+                self.print(context, "step - frame", context.scene.frame_current)
                 
                 data = {
                     'type': 'timeline_command',
@@ -2058,7 +2058,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
             elif delta > 1:
                 # triggers when using shift+right or shift+left to jump to end/beginning of timeline
-                self.print("jump - frame", context.scene.frame_current)
+                self.print(context, "jump - frame", context.scene.frame_current)
                 
                 data = {
                     'type': 'timeline_command',
@@ -2083,7 +2083,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             
             
             if message['type'] == 'loopback_play+finished':
-                self.print("finished - clamp to end of timeline")
+                self.print(context, "finished - clamp to end of timeline")
                 
                 bpy.ops.screen.animation_cancel(restore_frame=False)
                 
@@ -2093,7 +2093,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
             
             # if message['type'] == 'loopback_started':
-                # self.print("loopback - started generate new frames")
+                # self.print(context, "loopback - started generate new frames")
                 
                 
                 # props.ruby_buffer_size = 1000
@@ -2101,9 +2101,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             
             # don't clamp timeline when pausing in the past
             if message['type'] == 'loopback_paused_old':
-                self.print("loopback - paused old")
+                self.print(context, "loopback - paused old")
                 
-                self.print("history.length: ", message['history.length'])
+                self.print(context, "history.length: ", message['history.length'])
                 
                 # props.ruby_buffer_size = message['history.length']-1
                 # scene.frame_end = props.ruby_buffer_size
@@ -2112,9 +2112,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             
             # do clamp timeline when pausing while generating new state
             if message['type'] == 'loopback_paused_new':
-                self.print("loopback - paused new")
+                self.print(context, "loopback - paused new")
                 
-                self.print("history.length: ", message['history.length'])
+                self.print(context, "history.length: ", message['history.length'])
                 
                 props.ruby_buffer_size = message['history.length']-1
                 scene.frame_end = props.ruby_buffer_size
@@ -2122,7 +2122,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 scene.frame_current = message['history.frame_index']
             
             if message['type'] == 'loopback_finished':
-                self.print("loopback - finished")
+                self.print(context, "loopback - finished")
                 
                 props.ruby_buffer_size = message['history.length']-1
                 scene.frame_end = props.ruby_buffer_size
@@ -2138,7 +2138,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             # python will send a "reset" message to ruby,
             # to which ruby will respond back with 'loopback_reset'
             if message['type'] == 'loopback_reset':
-                self.print("loopback - reset")
+                self.print(context, "loopback - reset")
                 
                 props.ruby_buffer_size = message['history.length']-1
                 scene.frame_end = props.ruby_buffer_size
@@ -2151,7 +2151,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
             # ruby says sync needs to stop
             # maybe there was a crash, or maybe the program exited cleanly.
             if message['type'] == 'sync_stopping':
-                self.print("sync_stopping")
+                self.print(context, "sync_stopping")
                 # scene.my_custom_props.read_from_ruby = False
                 
                 props.ruby_buffer_size = message['history.length']-1
@@ -2163,9 +2163,9 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 from_ruby.wait_for_connection()
             
             if message['type'] == 'first_setup':
-                self.print("first_setup")
-                self.print("")
-                self.print("")
+                self.print(context, "first_setup")
+                self.print(context, "")
+                self.print(context, "")
                 
                 # reset timeline
                 props.ruby_buffer_size = 0
@@ -2181,7 +2181,7 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
     
     def on_exit(self, context):
-        self.print("on exit")
+        self.print(context, "on exit")
         context.scene.my_custom_props.b_modalUpdateActive = False
         
         from_ruby.close()
@@ -2189,8 +2189,8 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
     # print with a 4-digit timestamp (wrapping counter of frames)
     # so its clear how much time elapsed between different
     # sections of the code.
-    def print(self, *args):
-        print(f'{self.counter:04}', *args, flush=True)
+    def print(self, context, *args):
+        print(f'timestamp:{self.counter:04}', f'frame:{context.scene.frame_current:04}', *args, flush=True)
 
 def rubyof__before_frame_change(scene):
     # pass 

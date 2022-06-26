@@ -5,7 +5,7 @@
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space, :lights, :camera, :history
+  attr_reader :data, :space, :lights, :camera
   
   MAX_NUM_FRAMES = 500
   
@@ -99,14 +99,6 @@ class World
     
     
     
-    # TODO: re-connect history
-    
-    @history = History.new(
-      @storage['Characters'].entity_pixels,
-      @storage['Characters'].entity_texture,
-      @storage['Characters'].cache
-    )
-    
   end
   
   # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
@@ -122,8 +114,6 @@ class World
     @storage.values.each do |texture_set|
       texture_set.setup()
     end
-    
-    @history.setup
     
     # dynamic_entities
     # + load from disk to specify initial state
@@ -162,6 +152,13 @@ class World
     return @mat
   end
   
+  def bind_history(history_obj)
+    history_obj.setup(
+      @storage['Characters'].entity_pixels,
+      @storage['Characters'].entity_texture,
+      @storage['Characters'].cache
+    )
+  end
   
   def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
@@ -279,10 +276,10 @@ class World
                         1400-200+27-50-172, 100+i*(189-70)+20+50)
     
     
-    size = @history.buffer_width * @history.buffer_height * @history.max_length
-    size = size * channels_per_px * bytes_per_channel
-    ui_font.draw_string("history memory: #{size/1000.0} kb",
-                        120, 310)
+    # size = @history.buffer_width * @history.buffer_height * @history.max_length
+    # size = size * channels_per_px * bytes_per_channel
+    # ui_font.draw_string("history memory: #{size/1000.0} kb",
+    #                     120, 310)
     
     # @history
     
