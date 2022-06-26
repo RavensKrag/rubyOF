@@ -41,6 +41,13 @@ class Outer
   
   
   
+  # TODO: consider storing ipc handle on init instead of passing to all of these methods when they are called
+  
+  # TODO: add additional state
+    # Need to separate "I'm done with all code execution and the last possible frame has been generated" with "I have hit the last of the currently cached frames", as these two things don't necessarily have to be the same
+  
+  # NOTE: the following methods are like delegates to @context, but also can send messages to Blender via the BlenderSync IPC mechanism
+  
   def update(ipc, &block) 
     @patterns ||= StatePatterns.new do |p|
       p.on_transition :any_other => States::Finished do
