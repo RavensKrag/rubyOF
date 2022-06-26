@@ -908,8 +908,8 @@ class ResourceManager():
     # ruby-style iteration interface using a generator
     # https://www.integralist.co.uk/posts/python-generators/#iterators
     def each(self, scene):
-        print(scene.my_tool.get('name_list'), flush=True)
-        print(scene.my_tool.texture_sets, flush=True)
+        # print(scene.my_tool.get('name_list'), flush=True)
+        # print(scene.my_tool.texture_sets, flush=True)
         
         for i, name in enumerate(scene.my_tool.get('name_list', [])):
             j = scene.my_tool.texture_sets.find(name)
