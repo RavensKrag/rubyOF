@@ -73,6 +73,7 @@ class Outer
     )
     
     @context.previous_state = @context.current_state
+    # ^ DO NOT MOVE THIS. Apparently changing the value of previous_state need to happen before the delegation call to #update below, otherwise blender might not stop when hitting the end of the simultaion execution. The direct cause is because the 'finished' messages is not sent, but I don't know the root cause.
     
     
     @context.current_state.update(&block)
