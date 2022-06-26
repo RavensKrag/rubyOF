@@ -43,8 +43,7 @@ class Outer
   
   # TODO: consider storing ipc handle on init instead of passing to all of these methods when they are called
   
-  # TODO: add additional state
-    # Need to separate "I'm done with all code execution and the last possible frame has been generated" with "I have hit the last of the currently cached frames", as these two things don't necessarily have to be the same
+  
   
   # NOTE: the following methods are like delegates to @context, but also can send messages to Blender via the BlenderSync IPC mechanism
   
@@ -94,7 +93,7 @@ class Outer
       puts "try to generate a new timeline"
       
       @context.branch_history
-      @context.transition_to States::GeneratingNew
+      # @context.transition_to States::GeneratingNew
       
       ipc.send_to_blender({
         'type' => 'loopback_reset',
@@ -224,12 +223,13 @@ class Context
   end
   
   # transition now, and re-run the last callback in the new state
-  def transition_and_rerun(new_state_klass, method_name, *args, **kwargs)
-    new_state = new_state_klass.new(self)
+  def transition_and_rerun(state_class, method_name, *args, **kwargs, &block)
+    new_state = state_class.new(self)
     
     puts "transition: #{@current_state.class} -> #{new_state.class}"
     puts "   rerun args: #{args.inspect}"
     puts "   rerun kwargs: #{kwargs.inspect}"
+    puts "   rerun with block?: #{block.nil?}"
     
     new_state.on_enter()
     new_state.send(method_name, *args, **kwargs)
@@ -447,7 +447,18 @@ module States
       
       # p @f1
       
-      # @context.frame_index = 0
+      # Must reset frame index before updating GeneratingNew.
+      # Both when entering for the first time, and on re-entry from time travel,
+      # need to reset the frame index.
+      # 
+      # When entering for the first time from Initial, clearly t == 0.
+      # 
+      # Additoinally, when re-entering GeneratingNew state, it will attempt to
+      # fast-forward the Fiber, skipping over frames already rendered,
+      # until it reaches the end of the history buffer.
+      # There is currently no better way to "resume" code execution.
+      # In order to do this, the frame index must be reset to 0 before entry.
+      @context.frame_index = 0
     end
     
     def update(&block)
@@ -481,26 +492,27 @@ module States
     def seek(frame_number)
       # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
       
-      if frame_number.between?(0, @context.final_frame) # [0, len-1]
-        # if you try to seek to an old frame,
-        # delegate to state :replaying_old
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} new seek: #{@context.frame_index} -> #{frame_number}"
-        @context.transition_and_rerun ReplayingOld, :seek, frame_number
+      # any attempt to seek should be seen as a form of time travel
+      
+      puts "#{@context.frame_index.to_s.rjust(4, '0')} new seek: #{@context.frame_index} -> #{frame_number}"
+      
+      if frame_number == @context.final_frame + 1
+        # NO-OP
         
-      else # [len, inf]
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} new seek (future)"
+        # Sometimes you trigger this when you really should be updating.
+        # Seems to happen when transitioning from ReplayingOld to GeneratingNew
+        # at the boundary of the history buffer.
         
-        # if you try to seek to a future frame,
-        # need to synchronize blender to
-        # the last currently available frame instead
+        # Just stub this for now.
         
-        # move to end of buffer and transition to Generating_New
-        @context.frame_index = @context.final_frame
+      else
+        # @context.transition_and_rerun ReplayingOld, :seek, frame_number
+        @context.transition_to ReplayingOld
+        @context.seek(frame_number)
         
-        @context.history.load_state_at @context.frame_index
-        
-        # TODO: check to see that this branch works correctly. will need to keep state synced between RubyOF and Blender.
       end
+        
+      
     end
     
     def on_crash
@@ -519,22 +531,18 @@ module States
       return if @context.paused?
       
       # NOTE: not in a Fiber
-      if @context.frame_index == @context.final_frame
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} replaying_old (update) -> finished"
-        puts "#{@context.final_frame}"
+      puts "#{@context.frame_index.to_s.rjust(4, '0')} old update [#{@context.frame_index} / #{@context.history.length-1}]"
+      
+      if @context.frame_index >= @context.final_frame
+        # @context.transition_and_rerun(GeneratingNew, :update, &block)
+        @context.transition_to GeneratingNew
+        @context.update(&block)
         
-        @context.transition_to Finished
-        
-      elsif @context.frame_index < @context.final_frame
+      else # @context.frame_index < @context.final_frame
         @context.frame_index += 1
-        
-        # p [@context.frame_index, @context.history.length-1]
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} old update [#{@context.frame_index} / #{@context.history.length-1}]"
-        
         @context.history.load_state_at @context.frame_index
         
-      else # @context.frame_index > @context.final_frame
-        @context.transition_to GeneratingNew
+        # stay in state ReplayingOld
       end
         
     end
@@ -542,38 +550,31 @@ module States
     def seek(frame_number)
       # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
       
-      if frame_number == @context.final_frame
-        @context.frame_index = frame_number
-        
-        # 
-        # print info about transition
-        # 
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} replaying_old (seek) -> finished"
-        puts "#{@context.final_frame}"
-        
-        # 
-        # transition
-        # 
-        @context.transition_to Finished
-        
-      elsif frame_number.between?(0, @context.final_frame) # [0, len-1]
-        # within range of history buffer
+      if frame_number.between?(0, @context.final_frame) # [0, len-1]
+        # if range of history buffer, move to that frame
         
         @context.frame_index = frame_number
+        @context.history.load_state_at @context.frame_index
         
-        # p [@context.frame_index, @context.history.length-1]
         puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
         
-        @context.history.load_state_at @context.frame_index
-      else # [len, inf]
-        # if outside range of history buffer
+        # stay in state ReplayingOld
+        
+      elsif frame_number > @context.final_frame
+        # if outside range of history buffer, snap to final frame
+        
         # delegate to state :generating_new
         @context.frame_index = @context.final_frame
         @context.history.load_state_at @context.frame_index
         
+        puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
+        
         @context.pause
         
-        @context.transition_to GeneratingNew
+        # stay in state ReplayingOld
+        
+      else # frame_number < 0
+        raise "ERROR: Tried to seek to negative frame => (#{frame_number})"
       end
       # TODO: Blender frames can be negative. should handle that case too.
           
@@ -629,7 +630,10 @@ module States
       if frame_number >= @context.final_frame
         # NO-OP
       else
-        @context.transition_and_rerun ReplayingOld, :seek, frame_number
+        # @context.transition_and_rerun ReplayingOld, :seek, frame_number
+        @context.transition_to ReplayingOld
+        @context.seek(frame_number)
+        
       end
     end
     
