@@ -224,17 +224,20 @@ class Core
     data_dir = (PROJECT_DIR/'bin'/'data')
     geometry_texture_dir = data_dir/'geom_textures'
     
-    @world = World.new
+    @world = World.new(data_dir/'geom_textures')
     
-    @world.setup(
-      static_data_path:  data_dir/'geom_textures',
-      dynamic_data_path: data_dir/'geom_textures'
-    )
+    @world.setup()
     
     @camera_save_file = PROJECT_DIR/'bin'/'data'/'camera.yaml'
     if @camera_save_file.exist?
       data = YAML.load_file @camera_save_file
       @world.camera.load data
+    end
+    
+    @lighting_save_file = PROJECT_DIR/'bin'/'data'/'lights.yaml'
+    if @lighting_save_file.exist?
+      data = YAML.load_file @lighting_save_file
+      @world.lights.load data
     end
     
     @frame_history = FrameHistory.new(self, @world.history)
@@ -296,6 +299,7 @@ class Core
     
     # save_world_state()
     dump_yaml @world.camera.data_dump => @camera_save_file
+    dump_yaml @world.lights.data_dump => @lighting_save_file
     
     
     # FileUtils.rm @world_save_file if @world_save_file.exist?
@@ -751,16 +755,63 @@ class Core
                           lights:@world.lights,
                           camera:@world.camera) do |pipeline|
       
+      material = @world.material
+      
       pipeline.opaque_pass do
-        @world.draw_scene_opaque_pass
-        # @world.draw_scene_transparent_pass
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
+          
+          material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
+          
+          material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
+          
+          material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
+          
+          # draw using GPU instancing
+          using_material material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
         
         # glCullFace(GL_BACK)
         # glDisable(GL_CULL_FACE)
       end
       
       pipeline.transparent_pass do
-        @world.draw_scene_transparent_pass
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
+          
+          material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
+          
+          material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
+          
+          material.setCustomUniform1f(
+            "transparent_pass", 1
+          )
+          
+          # draw using GPU instancing
+          using_material material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
         
         # while time traveling, render the trails of moving objects
         if @frame_history.time_traveling?

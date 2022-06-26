@@ -1,0 +1,38 @@
+---
+lights:
+- !ruby/object:BlenderLight
+  type: LIGHT
+  name: Sun
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - -15.0
+    - -15.0
+    - 1.0000004768371582
+    scale:
+    - Vec3
+    - 1.0
+    - 0.9999998807907104
+    - 1.0000001192092896
+  data:
+    light_type: POINT
+    color:
+    - rgb
+    - 1.0
+    - 1.0
+    - 1.0
+    size:
+    - radians
+    - 
+    size_x:
+    - float
+    - 
+    size_y:
+    - float
+    - 

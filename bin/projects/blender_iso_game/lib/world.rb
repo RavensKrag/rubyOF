@@ -9,7 +9,7 @@ class World
   
   MAX_NUM_FRAMES = 500
   
-  def initialize
+  def initialize(geom_texture_directory)
     # material invokes shaders
     @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
     
@@ -38,40 +38,315 @@ class World
     
     # (can I use the array of :position images to roll back time?)
     
+    puts "-----"
+    # puts Dir.glob("#{PROJECT_DIR}/")
+    # p (geom_texture_directory).children.map{|x| x.basename}
+    
+    @storage = [] # objects that store internal state
+    @data = {}    # objects that form external API for accessing data
+    
+    # 
+    # @data : Hash of DataInterface
+    # query objects by name
+    # to retrieve Mesh or Entity objects
+    # (the wrapper objects, not the raw cache or pixel data)
+    # 
+    
+    @geom_texture_directory = geom_texture_directory
+    @geom_texture_directory.children
+    .select{ |file| file.basename.to_s.end_with? ".cache.json" }
+    .each do |file|
+      p file
+      
+      name, _, _ = file.basename.to_s.split('.')
+      
+      @storage << VertexAnimationTextureSet.new(@geom_texture_directory, name)
+      @data[name] = DataInterface.new(@storage.last.cache, @storage.last.names)
+    end
+    
+    # TODO: should allow re-scanning of this directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
+    
+    puts "\n"*5
+    
+    
+    @data.freeze
+    
+    # when you create new data, write cache -> history @ current_frame
+    # when you are time traveling, change the current_frame and load -> cache
+    
+    # NOTE: notice that number of dynamic entities can be different than the number of static entities
     
     
     
-    # @t = frame_index # currently tracked in FrameHistory
-    @storage = FixedSchemaTree.new({
+    
+    
+    
+    # 
+    # @space : Space
+    # spatial query
+    # 
+    @space = Space.new(@data)
+    # TODO: regenerate space when project reloads
+    # TODO: after refactor above, give space access to both data of static and dynamic entities
+    
+    
+    
+    # # @cache.updateMaterial(material_name, material_properties)
+    # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
+    
+    
+    
+    
+    
+    # TODO: re-connect history
+    
+    # @history = History.new(
+    #   @storage[:dynamic].history,
+    #   @storage[:dynamic][:entity_data][:pixels],
+    #   @storage[:dynamic][:entity_data][:texture],
+    #   @storage[:dynamic].cache
+    # )
+    
+    
+    @history = History.new(
+      nil, nil, nil, nil
+    )
+    
+  end
+  
+  # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
+    # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
+  def setup
+    # static_entities
+    # + load once from disk to specify initial state
+    # + if reloaded, you have new initial state
+    # ( still uses EntityCache to access properties, but writing values is ignored )
+    
+    # TODO: consider implementing read-only mode for DataInterface for static entities
+    
+    
+    @storage.each do |texture_set|
+      texture_set.setup()
+    end
+    
+    
+    # # dynamic_entities
+    # # + load from disk to specify initial state
+    # # + if reloaded, that's a new initial state (t == 0)
+    # # + need other mechanism to load changes @ t != 0 (JSON message?)
+    
+    # @storage[:dynamic].tap do |data|
+    #   prefix = "Characters"
+    #   json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
+    #   position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
+    #   normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
+    #   entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
+    #   @dynamic_prefix = prefix
       
-      :static => {
-        :mesh_data => {
-          :pixels => {
-            :positions  => RubyOF::FloatPixels.new,
-            :normals    => RubyOF::FloatPixels.new,
-          },
-          
-          :textures => {
-            :positions  => RubyOF::Texture.new,
-            :normals    => RubyOF::Texture.new,
-          }
-        },
-        
-        :entity_data => {
-          :pixels  => RubyOF::FloatPixels.new,
-          :texture => RubyOF::Texture.new,
-        },
-        
-        :names => TextureJsonCache.new, # <- "json file"
-          # ^ convert name to scanline AND scanline to name
-        
-        :geometry => BatchGeometry.new, # size == max tris per mesh in batch
-        
-        :cache => RubyOF::Project::EntityCache.new # size == num static entities
-      },
+    #   load_dynamic_mesh_textures position_tex_path, normal_tex_path
+    #   load_dynamic_entity_texture entity_tex_path # initial state only
+    #   load_dynamic_json_data json_file_path
+      
+    #   # initialize rest of history buffer
+    #   # (allocate correct image size, but don't clear garbage)
+    #   data[:entity_data][:pixels].tap do |pixels|
+    #     data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
+    #   end
+      
+    #   # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
+    #   vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
+    #   data[:geometry].generate vertex_count
+      
+    #   data[:cache].load data[:entity_data][:pixels]
+    # end
+    
+  end
+  
+  
+  
+  def update
+    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
+      # on reload
+      
+    end
+  end
+  
+  def each_texture_set #&block
+    @storage.each do |texture_set|
+      yield(texture_set.position_texture,
+            texture_set.normal_texture,
+            texture_set.entity_texture,
+            texture_set.mesh)
+    end
+  end
+  
+  def material
+    return @mat
+  end
+  
+  
+  def draw_ui(ui_font)
+    @ui_node ||= RubyOF::Node.new
+    
+    # TODO: draw UI in a better way that does not use immediate mode rendering
+    
+    
+    # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
+    memory_usage = []
+    @storage.each_with_index do |texture_set, i|
+      layer_name = texture_set.name
+      cache = texture_set.cache
+      names = texture_set.names
+      
+      offset = i*(189-70)
+      
+      ui_font.draw_string("layer: #{layer_name}",
+                          450, 68+offset+20)
       
       
-      :dynamic => {
+      current_size = 
+        cache.size.times.collect{ |i|
+          cache.get_entity i
+        }.select{ |x|
+          x.active?
+        }.size
+      
+      ui_font.draw_string("entities: #{current_size} / #{cache.size}",
+                          450+50, 100+offset+20)
+      
+      
+      
+      max_meshes = names.num_meshes
+      
+      num_meshes = 
+        max_meshes.times.collect{ |i|
+          names.mesh_scanline_to_name(i)
+        }.select{ |x|
+          x != nil
+        }.size + 1
+          # Index 0 will always be an empty mesh, so add 1.
+          # That way, the size measures how full the texture is.
+      
+      
+      ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
+                          450+50, 133+offset+20)
+      
+      
+      
+      texture_set.entity_texture.tap do |texture|
+        new_height = 100 #
+        y_scale = new_height / texture.height
+        
+        x = 910-20
+        y = (68-20)+i*(189-70)+20
+        
+        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
+        @ui_node.position = GLM::Vec3.new(x,y, 1)
+
+        @ui_node.transformGL
+        
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
+
+        @ui_node.restoreTransformGL
+      end
+      
+      
+      texture_set.position_texture.tap do |texture|
+        width = [texture.width, 400].min # cap maximum texture width
+        x = 970-40
+        y = (68+texture.height-20)+i*(189-70)+20
+        texture.draw_wh(x,y,0, width, -texture.height)
+      end
+      
+      
+      
+      channels_per_px = 4
+      bits_per_channel = 32
+      bits_per_byte = 8
+      bytes_per_channel = bits_per_channel / bits_per_byte
+      
+      texture = texture_set.position_texture
+      px = texture.width*texture.height
+      x = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.normal_texture
+      px = texture.width*texture.height
+      y = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.entity_texture
+      px = texture.width*texture.height
+      z = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      size = x+y+z
+      
+      ui_font.draw_string("mem: #{size} kb",
+                          1400-50, 100+offset+20)
+      memory_usage << size
+    end
+    
+    i = memory_usage.length
+    x = memory_usage.reduce &:+
+    ui_font.draw_string("  total VRAM: #{x} kb",
+                        1400-200+27-50, 100+i*(189-70)+20)
+    
+  end
+  
+  
+  
+  
+  # NOTE: BlenderSync triggers @world.space.update when either json file or entity texture is reloaded
+  
+  def load_json_data(json_file_path)
+    puts "load json"
+    
+    basename = File.basename(json_file_path)
+    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
+    unless texture_set.nil?
+      texture_set.load_json_data(json_file_path)
+    end
+  end
+  
+  def load_entity_texture(entity_tex_path)
+    puts "reload entities"
+    
+    basename = File.basename(entity_tex_path)
+    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
+    unless texture_set.nil?
+      texture_set.load_entity_texture(entity_tex_path)
+    end
+  end
+  
+  def load_mesh_textures(position_tex_path, normal_tex_path)
+    puts "load mesh data"
+    # position and normals will always be updated in tandem
+    # so really only need to check one path in order to
+    # confirm what batch should be reloaded.
+    
+    basename = File.basename(position_tex_path)
+    texture_set = @storage.find{ |x| basename.split('.').first == x.name }
+    unless texture_set.nil?
+      texture_set.load_mesh_textures(position_tex_path, normal_tex_path)
+    end
+  end
+  
+  
+  
+  
+  
+  
+  # TODO: create a better name for this
+  class VertexAnimationTextureSet
+    include RubyOF::Graphics
+    
+    attr_reader :name
+    
+    def initialize(data_dir, name)
+      @data_dir = data_dir
+      @name = name
+      # @static_prefix = name
+      
+      @storage = FixedSchemaTree.new({
         :mesh_data => {
           :pixels => {
             :positions  => RubyOF::FloatPixels.new,
@@ -99,502 +374,132 @@ class World
         :history => HistoryBuffer.new,
           # ^ list of frames over time, not just one state
           # should combine with FrameHistory#frame_index to get data on a particular frame
-      }
-    })
-    
-    # when you create new data, write cache -> history @ current_frame
-    # when you are time traveling, change the current_frame and load -> cache
-    
-    # NOTE: notice that number of dynamic entities can be different than the number of static entities
-    
-    
-    # 
-    # @data : Hash of DataInterface
-    # query objects by name
-    # to retrieve Mesh or Entity objects
-    # (the wrapper objects, not the raw cache or pixel data)
-    # 
-    @data = {
-      :static => DataInterface.new(
-        @storage[:static][:cache], @storage[:static][:names]
-      ),
+          # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
+      })
       
-      :dynamic => DataInterface.new(
-        @storage[:dynamic][:cache], @storage[:dynamic][:names]
-      )
-    }.freeze
+    end
+    
+    def cache
+      return @storage[:cache]
+    end
+    
+    def names
+      return @storage[:names]
+    end
+    
+    def history
+      return @storage[:history]
+    end
+    
+    def position_texture
+      return @storage[:mesh_data][:textures][:positions]
+    end
+    
+    def normal_texture
+      return @storage[:mesh_data][:textures][:normals]
+    end
+    
+    def entity_texture
+      return @storage[:entity_data][:texture]
+    end
+    
+    def mesh
+      return @storage[:geometry].mesh
+    end
     
     
-    # 
-    # @space : Space
-    # spatial query
-    # 
-    @space = Space.new(@data)
-    # TODO: regenerate space when project reloads
-    # TODO: after refactor above, give space access to both data of static and dynamic entities
-    
-    
-    
-    # # @cache.updateMaterial(material_name, material_properties)
-    # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
-    
-    
-    @history = History.new(
-      @storage[:dynamic][:history],
-      @storage[:dynamic][:entity_data][:pixels],
-      @storage[:dynamic][:entity_data][:texture],
-      @storage[:dynamic][:cache]
-    )
-    
-  end
-  
-  # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
-    # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
-  def setup(static_data_path:, dynamic_data_path:)
-    # static_entities
-    # + load once from disk to specify initial state
-    # + if reloaded, you have new initial state
-    # ( still uses EntityCache to access properties, but writing values is ignored )
-    
-    # TODO: consider implementing read-only mode for DataInterface for static entities
-    
-    @storage[:static].tap do |data|
-      prefix = "Tiles"
-      json_file_path    = static_data_path/"#{prefix}.cache.json"
-      position_tex_path = static_data_path/"#{prefix}.position.exr"
-      normal_tex_path   = static_data_path/"#{prefix}.normal.exr"
-      entity_tex_path   = static_data_path/"#{prefix}.entity.exr"
-      @static_prefix = prefix
+    def setup
+      json_file_path    = @data_dir/"#{@name}.cache.json"
+      position_tex_path = @data_dir/"#{@name}.position.exr"
+      normal_tex_path   = @data_dir/"#{@name}.normal.exr"
+      entity_tex_path   = @data_dir/"#{@name}.entity.exr"
       
-      load_static_mesh_textures position_tex_path, normal_tex_path
-      load_static_entity_texture entity_tex_path
-      load_static_json_data json_file_path
+      load_mesh_textures position_tex_path, normal_tex_path
+      load_entity_texture entity_tex_path
+      load_json_data json_file_path
       
       
       # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-      vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
-      data[:geometry].generate vertex_count
+      vertex_count = @storage[:mesh_data][:pixels][:positions].width.to_i
+      @storage[:geometry].generate vertex_count
       
-      data[:cache].load data[:entity_data][:pixels]
+      @storage[:cache].load @storage[:entity_data][:pixels]
     end
     
-    # dynamic_entities
-    # + load from disk to specify initial state
-    # + if reloaded, that's a new initial state (t == 0)
-    # + need other mechanism to load changes @ t != 0 (JSON message?)
     
-    @storage[:dynamic].tap do |data|
-      prefix = "Characters"
-      json_file_path    = dynamic_data_path/"#{prefix}.cache.json"
-      position_tex_path = dynamic_data_path/"#{prefix}.position.exr"
-      normal_tex_path   = dynamic_data_path/"#{prefix}.normal.exr"
-      entity_tex_path   = dynamic_data_path/"#{prefix}.entity.exr"
-      @dynamic_prefix = prefix
+    def load_json_data(json_file_path)
+      @storage[:names].load json_file_path
       
-      load_dynamic_mesh_textures position_tex_path, normal_tex_path
-      load_dynamic_entity_texture entity_tex_path # initial state only
-      load_dynamic_json_data json_file_path
-      
-      # initialize rest of history buffer
-      # (allocate correct image size, but don't clear garbage)
-      data[:entity_data][:pixels].tap do |pixels|
-        data[:history].allocate(pixels.width, pixels.height, MAX_NUM_FRAMES)
-      end
-      
-      # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-      vertex_count = data[:mesh_data][:pixels][:positions].width.to_i
-      data[:geometry].generate vertex_count
-      
-      data[:cache].load data[:entity_data][:pixels]
+      # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
     end
     
-  end
-  
-  
-  
-  def update
-    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
-      # on reload
+    def load_entity_texture(entity_tex_path)
+      # 
+      # configure all sets of pixels (CPU data) and textures (GPU data)
+      # 
       
-    end
-  end
-  
-  
-  # draw all the instances using GPU instancing
-  # (very few draw calls)
-  def draw_scene_opaque_pass
-    [
       [
-        @storage[:static][:mesh_data],
-        @storage[:static][:entity_data][:texture],
-        @storage[:static][:geometry]
-      ],
-      [
-        @storage[:dynamic][:mesh_data],
-        @storage[:dynamic][:entity_data][:texture],
-        @storage[:dynamic][:geometry]
-      ]
-    ].each do |mesh_data, entity_texture, geometry|
-      # set uniforms
-      @mat.setCustomUniformTexture(
-        "vert_pos_tex",  mesh_data[:textures][:positions], 1
-      )
-      
-      @mat.setCustomUniformTexture(
-        "vert_norm_tex", mesh_data[:textures][:normals], 2
-      )
-      
-      @mat.setCustomUniformTexture(
-        "entity_tex", entity_texture, 3
-      )
-      
-      @mat.setCustomUniform1f(
-        "transparent_pass", 0
-      )
-      
-      # draw using GPU instancing
-      using_material @mat do
-        instance_count = entity_texture.height.to_i
-        geometry.mesh.draw_instanced instance_count
-      end
-    end
-    
-  end
-  
-  def draw_scene_transparent_pass
-    [
-      [
-        @storage[:static][:mesh_data],
-        @storage[:static][:entity_data][:texture],
-        @storage[:static][:geometry]
-      ],
-      [
-        @storage[:dynamic][:mesh_data],
-        @storage[:dynamic][:entity_data][:texture],
-        @storage[:dynamic][:geometry]
-      ]
-    ].each do |mesh_data, entity_texture, geometry|
-      # set uniforms
-      @mat.setCustomUniformTexture(
-        "vert_pos_tex",  mesh_data[:textures][:positions], 1
-      )
-      
-      @mat.setCustomUniformTexture(
-        "vert_norm_tex", mesh_data[:textures][:normals], 2
-      )
-      
-      @mat.setCustomUniformTexture(
-        "entity_tex", entity_texture, 3
-      )
-      
-      @mat.setCustomUniform1f(
-        "transparent_pass", 1
-      )
-      
-      # draw using GPU instancing
-      using_material @mat do
-        instance_count = entity_texture.height.to_i
-        geometry.mesh.draw_instanced instance_count
-      end
-    end
-    
-  end
-  
-  def draw_ui(ui_font)
-    @ui_node ||= RubyOF::Node.new
-    
-    # TODO: draw UI in a better way that does not use immediate mode rendering
-    
-    
-    # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
-    
-    
-    @storage[:static][:mesh_data][:textures][:positions].tap do |texture| 
-      texture.draw_wh(12,300,0, texture.width, -texture.height)
-    end
-    
-    @storage[:static][:entity_data][:texture].tap do |texture| 
-      @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
-      @ui_node.position = GLM::Vec3.new(108, 320, 1)
-      
-      @ui_node.transformGL
-      
-          texture.draw_wh(0,texture.height,0,
-                          texture.width, -texture.height)
+        [ entity_tex_path,
+          @storage[:entity_data][:pixels],
+          @storage[:entity_data][:texture] ],
+      ].each do |path_to_file, pixels, texture|
+        ofLoadImage(pixels, path_to_file.to_s)
         
-      @ui_node.restoreTransformGL
-    end
-    
-    
-    
-    
-    [
-      [ "static",  @storage[:static][:cache],  @storage[:static][:names] ],
-      [ "dynamic", @storage[:dynamic][:cache], @storage[:dynamic][:names] ]
-    ].each_with_index do |data, i|
-      layer_name, cache, names = data
-      
-      offset = i*(189-70)
-      
-      ui_font.draw_string("layer: #{layer_name}",
-                          500, 68+offset)
-      
-      
-      current_size = 
-        cache.size.times.collect{ |i|
-          cache.get_entity i
-        }.select{ |x|
-          x.active?
-        }.size
-      
-      ui_font.draw_string("entities: #{current_size} / #{cache.size}",
-                          500+50, 100+offset)
-      
-      
-      
-      max_meshes = names.num_meshes
-      
-      num_meshes = 
-        max_meshes.times.collect{ |i|
-          names.mesh_scanline_to_name(i)
-        }.select{ |x|
-          x != nil
-        }.size + 1
-          # Index 0 will always be an empty mesh, so add 1.
-          # That way, the size measures how full the texture is.
-      
-      
-      ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
-                          500+50, 133+offset)
-      
-    end
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # @storage[:dynamic][:mesh_data][:textures][:positions].tap do |texture| 
-    #   texture.draw_wh(12,300,0, texture.width, -texture.height)
-    # end
-    
-    @storage[:dynamic][:entity_data][:texture].tap do |texture| 
-      @ui_node.scale    = GLM::Vec3.new(1.2, 1.2, 1)
-      @ui_node.position = GLM::Vec3.new(130, 320, 1)
-      
-      @ui_node.transformGL
-      
-          texture.draw_wh(0,texture.height,0,
-                          texture.width, -texture.height)
+        # y axis is flipped relative to Blender???
+        # openframeworks uses 0,0 top left, y+ down
+        # blender uses 0,0 bottom left, y+ up
+        pixels.flip_vertical
         
-      @ui_node.restoreTransformGL
+        # puts pixels.color_at(0,2)
+        
+        texture.disableMipmap() # resets min mag filter
+        
+        texture.wrap_mode(:vertical   => :clamp_to_edge,
+                          :horizontal => :clamp_to_edge)
+        
+        texture.filter_mode(:min => :nearest, :mag => :nearest)
+        
+        texture.load_data(pixels)
+      end
+      
+      # reset the cache when textures reload
+      @storage[:cache].load @storage[:entity_data][:pixels]
     end
     
-    
-  end
-  
-  
-  
-  
-  # NOTE: BlenderSync triggers @world.space.update when either json file or entity texture is reloaded
-  
-  def load_json_data(json_file_path)
-    puts "load json"
-    if File.basename(json_file_path).start_with? @static_prefix
-      load_static_json_data(json_file_path)
-    elsif File.basename(json_file_path).start_with? @dynamic_prefix
-      load_dynamic_json_data(json_file_path)
-    end
-  end
-  
-  def load_entity_texture(entity_tex_path)
-    puts "reload entities"
-    if File.basename(entity_tex_path).start_with? @static_prefix
-      load_static_entity_texture(entity_tex_path)
-    elsif File.basename(entity_tex_path).start_with? @dynamic_prefix
-      load_dynamic_entity_texture(entity_tex_path)
-    end
-    
-  end
-  
-  def load_mesh_textures(position_tex_path, normal_tex_path)
-    puts "load mesh data"
-    # positoin and normals will always be updated in tandem
-    # so really only need to check one path in order to
-    # confirm what batch should be reloaded.
-    
-    if File.basename(position_tex_path).start_with? @static_prefix
-      load_static_mesh_textures(position_tex_path, normal_tex_path)
-    elsif File.basename(position_tex_path).start_with? @dynamic_prefix
-      load_dynamic_mesh_textures(position_tex_path, normal_tex_path)
+    def load_mesh_textures(position_tex_path, normal_tex_path)
+      # 
+      # configure all sets of pixels (CPU data) and textures (GPU data)
+      # 
+      
+      [
+        [ position_tex_path,
+          @storage[:mesh_data][:pixels][:positions],
+          @storage[:mesh_data][:textures][:positions] ],
+        [ normal_tex_path,
+          @storage[:mesh_data][:pixels][:normals],
+          @storage[:mesh_data][:textures][:normals] ]
+      ].each do |path_to_file, pixels, texture|
+        ofLoadImage(pixels, path_to_file.to_s)
+        
+        # y axis is flipped relative to Blender???
+        # openframeworks uses 0,0 top left, y+ down
+        # blender uses 0,0 bottom left, y+ up
+        pixels.flip_vertical
+        
+        # puts pixels.color_at(0,2)
+        
+        texture.disableMipmap() # resets min mag filter
+        
+        texture.wrap_mode(:vertical   => :clamp_to_edge,
+                          :horizontal => :clamp_to_edge)
+        
+        texture.filter_mode(:min => :nearest, :mag => :nearest)
+        
+        texture.load_data(pixels)
+      end
     end
     
   end
-  
-  
-  
-  
-  
-  
-  
-  
-  def load_static_json_data(json_file_path)
-    @storage[:static][:names].load json_file_path
-    
-    # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
-  end
-  
-  def load_static_entity_texture(entity_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
-    [
-      [ entity_tex_path,
-        @storage[:static][:entity_data][:pixels],
-        @storage[:static][:entity_data][:texture] ],
-    ].each do |path_to_file, pixels, texture|
-      ofLoadImage(pixels, path_to_file.to_s)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-    
-    # reset the cache when textures reload
-    @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
-  end
-  
-  def load_static_mesh_textures(position_tex_path, normal_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
-    [
-      [ position_tex_path,
-        @storage[:static][:mesh_data][:pixels][:positions],
-        @storage[:static][:mesh_data][:textures][:positions] ],
-      [ normal_tex_path,
-        @storage[:static][:mesh_data][:pixels][:normals],
-        @storage[:static][:mesh_data][:textures][:normals] ]
-    ].each do |path_to_file, pixels, texture|
-      ofLoadImage(pixels, path_to_file.to_s)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-  end
-  
-  
-  
-  
-  
-  def load_dynamic_json_data(json_file_path)
-    @storage[:dynamic][:names].load json_file_path
-  end
-  
-  # dynamic entities can change their position over time,
-  # so the data stored on disk represents the initial state.
-  def load_dynamic_entity_texture(entity_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
-    [
-      [ entity_tex_path,
-        @storage[:dynamic][:entity_data][:pixels],
-        @storage[:dynamic][:entity_data][:texture] ],
-    ].each do |path_to_file, pixels, texture|
-      ofLoadImage(pixels, path_to_file.to_s)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-    
-    # reset the cache when textures reload
-    @storage[:dynamic][:cache].load @storage[:dynamic][:entity_data][:pixels]
-    
-    # TODO: figure out how to refresh history when initial state changes due to incoming data from Blender
-  end
-  
-  # mesh data doesn't change over time, so dynamic case is the same as static,
-  # just setting the data in different parts of @storage
-  def load_dynamic_mesh_textures(position_tex_path, normal_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
-    [
-      [ position_tex_path,
-        @storage[:dynamic][:mesh_data][:pixels][:positions],
-        @storage[:dynamic][:mesh_data][:textures][:positions] ],
-      [ normal_tex_path,
-        @storage[:dynamic][:mesh_data][:pixels][:normals],
-        @storage[:dynamic][:mesh_data][:textures][:normals] ]
-    ].each do |path_to_file, pixels, texture|
-      ofLoadImage(pixels, path_to_file.to_s)
-      
-      # y axis is flipped relative to Blender???
-      # openframeworks uses 0,0 top left, y+ down
-      # blender uses 0,0 bottom left, y+ up
-      pixels.flip_vertical
-      
-      # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
-    end
-  end
-  
   
   
   
@@ -875,7 +780,18 @@ class World
       end
     end
     
+    # convert to a hash such that it can be serialized with yaml, json, etc
+    def data_dump
+      data_hash = {
+        'lights' => @lights
+      }
+      return data_hash
+    end
     
+    # read from a hash (deserialization)
+    def load(data)
+      @lights = data['lights']
+    end
   end
   
   
@@ -959,7 +875,7 @@ class World
     # TODO: update this to use @static_entities and @dynamic_entities, rather than outdated @data
     def update
       @entity_list =
-        @data[:static].each
+        @data['Tiles'].each
         .collect do |entity|
           [entity.mesh.name, entity.position]
         end
