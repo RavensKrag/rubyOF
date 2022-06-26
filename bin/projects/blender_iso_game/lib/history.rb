@@ -82,7 +82,11 @@ class Outer
     @patterns = nil
     @context.branch_history
     
-    # ipc.send_to_blender message
+    ipc.send({
+      'type' => 'loopback_reset',
+      'history.length'      => @context.history.length,
+      'history.frame_index' => @context.frame_index
+    })
   end
   
   def on_reload_data(ipc)

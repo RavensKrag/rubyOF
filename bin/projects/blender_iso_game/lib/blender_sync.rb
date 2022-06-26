@@ -17,21 +17,18 @@ class BlenderSync
     @blender_link.start
     
     
-    message = {
+    @blender_link.send({
       'type' => 'first_setup'
-    }
-    @blender_link.send(message)
+    })
   end
   
   def stop
     puts "stopping sync"
     
-    
-    message = {
+    @blender_link.send({
       'type' => 'sync_stopping',
       'history.length' => @frame_history.length
-    }
-    @blender_link.send message
+    })
     
     @blender_link.stop
   end
@@ -42,13 +39,7 @@ class BlenderSync
       puts "BlenderSync: reloading"
       @blender_link.start
       
-      message = {
-        'type' => 'loopback_reset',
-        'history.length'      => @frame_history.length,
-        'history.frame_index' => @frame_history.frame_index
-      }
-      
-      @blender_link.send message
+      @frame_history.on_reload_code(self)
     end
   end
   
