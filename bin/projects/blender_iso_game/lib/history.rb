@@ -57,6 +57,15 @@ class Outer
           'history.length' => @context.history.length
         })
       end
+      
+      
+      
+      # User story:
+        # While the game is executing, I want to drag the bar on the timeline to jump back in time, without explictly entering into time travel mode. I don't want to have to hit the pause button first - I want to just drag, and for the system to simply do the right thing.
+      # Current behavior:
+        # Normally, when pausing, blender sets the end of the active timeframe to the end of the frame buffer. this happens due to a message that is sent from the engine to the editor. When you drag the timeline when in play mode, while in GeneratingNew state, this change of timeframe does not happen. Thus, the ReplayingOld state can not stop playing at the end of the timeframe as expected.
+        # Can't just call @context.pause when seeking in GeneratingNew, because that will not necessarily send the needed message to blender - the message is only sent if Outer#seek(ipc, ...) is called.
+      
     end
     
     @patterns.match(
