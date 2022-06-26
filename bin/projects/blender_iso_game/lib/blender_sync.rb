@@ -17,7 +17,7 @@ class BlenderSync
     @blender_link.start
     
     
-    @blender_link.send({
+    @blender_link.print({
       'type' => 'first_setup'
     })
   end
@@ -25,7 +25,7 @@ class BlenderSync
   def stop
     puts "stopping sync"
     
-    @blender_link.send({
+    @blender_link.print({
       'type' => 'sync_stopping',
       'history.length' => @frame_history.length
     })
@@ -47,7 +47,7 @@ class BlenderSync
     # update_t0 = RubyOF::Utils.ofGetElapsedTimeMicros
     
     
-    # @blender_link.send
+    # @blender_link.print
     # message = @blender_link.take
     
     
@@ -101,7 +101,7 @@ class BlenderSync
   end
   
   def send_to_blender(message)
-    @blender_link.send message
+    @blender_link.print message
   end
   
   def reset
@@ -758,7 +758,7 @@ class BlenderSync
     
     # Send a message from ruby to python
     # (supress message if port is closed)
-    def send(message)
+    def print(message)
       # if the port is open, queue the message (should go out soon)
       # if the port is closed, supress the message (don't even queue it up)
       
