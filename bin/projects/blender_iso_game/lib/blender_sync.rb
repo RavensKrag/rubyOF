@@ -393,66 +393,6 @@ class BlenderSync
   end
   
   
-  # def update_animation_json(message)
-    
-  # end
-  
-  
-  # # vertex position and normal data for one or more meshes has been updated
-  # # 
-  # # Changes to geometry can change the frames available, but will only occasionally change the initial state. Other times they will expose new animation states.
-  # def update_geometry(message)
-    
-    
-  # end
-  
-  # # transform data for a entity has been updated
-  # # (may or may not contain an armature)
-  # # 
-  # # Interpret changes to transforms as changes in the initial state.
-  # # This will always require reloading history.
-  # def update_transform(message)
-  #   puts "update transform"
-  #   @world.load_entity_texture(message['entity_tex_path'])
-    
-  #   # TODO: find a better way to reload time from the initial state
-    
-  #   # reload history
-  #   # (code adapted from Core#on_reload)
-  #   if @frame_history.time_traveling?
-  #     # @frame_history = @frame_history.branch_history
-      
-  #     # For now, just replace the curret timeline with the alt one.
-  #     # In future commits, we can refine this system to use multiple
-  #     # timelines, with UI to compress timelines or switch between them.
-      
-      
-      
-  #     @frame_history.branch_history
-      
-  #   else
-  #     # Do NOT trigger play on reload after direct manipulation.
-      
-  #     # # was paused when the crash happened,
-  #     # # so should be able to 'play' and resume execution
-  #     # @frame_history.play
-  #     # puts "frame: #{@frame_history.frame_index}"
-  #   end
-  # end
-  
-  
-  # # material data is stored in the transform texture
-  # # (like material property block)
-  # # updates to a single material may effect one object, or many,
-  # # so easiest just to load the entire transform texture again
-  # def update_material(message)
-  #   p message
-  #   @world.load_entity_texture(message['entity_tex_path'])
-  # end
-  
-  
-  
-  
   
   def sync_window_position(blender_pid: nil)
     # tested on Ubuntu 20.04.1 LTS
