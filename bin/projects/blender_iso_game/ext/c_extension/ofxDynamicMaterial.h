@@ -5,6 +5,8 @@
 #include "ofConstants.h"
 #include "glm/fwd.hpp"
 
+// based on ofMaterial
+
 // Material concept: "Anything graphical applied to the polygons"
 //
 // Diederick Huijbers <diederick[at]apollomedia[dot]nl>

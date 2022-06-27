@@ -1,5 +1,6 @@
 /*
  *  ofxDynamicLight.h
+ *  based on ofLight.cpp
  *  openFrameworksLib
  *
  *  Created by Memo Akten on 14/01/2011.

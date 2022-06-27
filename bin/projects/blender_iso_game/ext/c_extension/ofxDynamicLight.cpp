@@ -1,6 +1,6 @@
 /*
  *  ofxDypnamicLight.cpp
- *  based on ofxDynamicLight.cpp
+ *  based on ofLight.cpp
  *  openFrameworksLib
  *
  *  original created by Memo Akten on 14/01/2011.
