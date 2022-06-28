@@ -57,7 +57,8 @@ class BlenderLight < BlenderObject
                           :enable, :disable, :enabled?,
                           :diffuse_color=, :specular_color=, :ambient_color=,
                           :diffuse_color,
-                          :draw
+                          :draw,
+                          :setAttenuation
   
   # inherits BlenderObject#data_dump
   

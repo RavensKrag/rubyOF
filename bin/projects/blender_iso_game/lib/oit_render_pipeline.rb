@@ -165,6 +165,27 @@ class OIT_RenderPipeline
     
     lights.each{ |light|  light.enable() }
     
+    lights.each do |light|
+      
+      attenuation_constant = 1;
+      attenuation_linear = 0.000001;
+      attenuation_quadratic = 0.000;
+      
+      light.setAttenuation(attenuation_constant,
+                           attenuation_linear,
+                           attenuation_quadratic)
+      
+      
+      
+      light.setAttenuation(1.0,  0.007,   0.0002)
+      
+      
+      # constants from learnopengl,
+      # which originally got them from ogre3d's wiki
+      # src: https://learnopengl.com/Lighting/Light-casters
+      
+    end
+    
     
     
     using_framebuffer @main_fbo do |fbo|
@@ -221,6 +242,7 @@ class OIT_RenderPipeline
     
     
     lights.each{ |light|  light.disable() }
+    
     
     # teardown GL state
     ofDisableDepthTest()

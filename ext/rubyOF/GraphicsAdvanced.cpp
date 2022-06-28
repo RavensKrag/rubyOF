@@ -1163,6 +1163,9 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // .define_method("ofSetGlobalAmbientColor",   &ofSetGlobalAmbientColor)
       
       .define_method("diffuse_color",     &ofLight__getDiffuseColor)
-   ;
+      
+      
+      .define_method("setAttenuation",      &ofLight::setAttenuation)
+   ;   
 }
 
