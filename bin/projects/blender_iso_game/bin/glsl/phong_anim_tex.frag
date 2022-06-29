@@ -273,18 +273,9 @@
     }
     
     
-    //////////////////////////////////////////////////////
-    // here's the main method
-    //////////////////////////////////////////////////////
-
-
-    void main (void){
-        vec3 ambient = global_ambient.rgb;
-        vec3 diffuse = vec3(0.0,0.0,0.0);
-        vec3 specular = vec3(0.0,0.0,0.0);
-
-		vec3 transformedNormal = normalize(v_transformedNormal);
-
+    
+    void calculateLighting(in vec3 transformedNormal, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){
+        
         for( int i = 0; i < num_lights; i++ ){
             if(lights[i].enabled<0.5) continue;
             if(lights[i].type<0.5){
@@ -297,35 +288,60 @@
                 areaLight(lights[i], transformedNormal, v_eyePosition, ambient, diffuse, specular);
             }
         }
+    }
+    
+    
+    //////////////////////////////////////////////////////
+    // here's the main method
+    //////////////////////////////////////////////////////
+
+
+    void main (void){
+        vec3 ambient = global_ambient.rgb;
+        vec3 diffuse = vec3(0.0,0.0,0.0);
+        vec3 specular = vec3(0.0,0.0,0.0);
+
+		vec3 transformedNormal = normalize(v_transformedNormal);
         
         
-        // vec4 localColor = 
-        //         vec4(ambient, 1.0) * vec4(1,1,1,1)  + 
-        //         vec4(diffuse, 1.0) * vec4(v_diffuse.rgb, 1)  + 
-        //         vec4(specular,1.0) * vec4(1,1,1,1) + 
-        //                              vec4(0,0,0,1);
+        calculateLighting(transformedNormal, ambient, diffuse, specular);
         
-        
-        
-        // #else
-        //     vec4 localColor = 
-        //         vec4(ambient, 1.0) * mat_ambient  + 
-        //         vec4(diffuse, 1.0) * mat_diffuse  + 
-        //         vec4(specular,1.0) * mat_specular + 
-        //                              mat_emissive;
-        
-        
-        // with lighting
-        
-        vec4 localColor = 
-                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
-                vec4(diffuse, 1.0) * v_diffuse  + 
-                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
-                                     vec4(v_emissive.rgb, 0);
-        
-        // without lighting
+        // // 
+        // // without lighting
+        // // 
         
         // vec4 localColor = v_diffuse;
+        
+        // // 
+        // // with lighting
+        // // 
+        
+        // vec4 localColor = 
+        //         vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
+        //         vec4(diffuse, 1.0) * v_diffuse  + 
+        //         vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+        //                              vec4(v_emissive.rgb, 0);
+        
+        
+        // 
+        // with lighting and shadows
+        // 
+        float shadow = 0.0;
+        
+        vec4 localAmbient = 
+            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        vec4 localNonAmbient = 
+            vec4(diffuse, 1.0) * v_diffuse  + 
+            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        vec4 localEmmisive = 
+            vec4(v_emissive.rgb, 0);
+        
+        vec4 localColor = 
+            localAmbient + (1.0-shadow)*localNonAmbient + localEmmisive;
+        
+
         
         
         
@@ -345,6 +361,7 @@
         // }
         
         
+        
         if(v_transparent_pass == 0.0){
             // --- opaque pass ---
             if(v_diffuse.a < 1){
@@ -357,7 +374,7 @@
                 // gl_FragColor = localColor;
                 // gl_FragData[0] = vec4(1,0,0, 1);
                 
-                gl_FragData[0] = localColor;
+                gl_FragData[0] = vec4(localColor.rgb, 1.0);
             }
             
         }else{
@@ -371,14 +388,10 @@
                 float zi = v_eyePosition.z; // relative to the camera
                 
                 
-                // 
                 // accumulation => gl_FragData[0]
                 // revealage    => gl_FragData[1]
-                // 
                 
-                // gl_FragData[0] = vec4(localColor.rgb, ai);
                 gl_FragData[0] = vec4(localColor.rgb*ai, ai) * w(zi, ai);
-                // gl_FragData[0] = vec4(localColor.rgb, ai) * w(zi, ai);
                 gl_FragData[1] = vec4(ai);
             }else{
                 // ---opaque object, during transparent pass---
