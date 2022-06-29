@@ -192,6 +192,8 @@ class Exporter():
     def __init__(self, to_ruby_fifo):
         self.to_ruby = to_ruby_fifo
         self.msg_count = 0
+        
+        self.old_light_names = None
     
     # 
     # clean build of animation textures
@@ -747,48 +749,78 @@ class Exporter():
     def gc(self, scene, prop_group, tex_manager):
         # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
         
+        # 
+        # gc entities
+        # 
+        
         mytool = scene.my_tool
         collection_ptr = prop_group.collection_ptr
         
-        if collection_ptr is None:
-            return
+        if collection_ptr is not None:
+            old_names = tex_manager.get_entity_parent_names()
+            new_names = [ x.name for x in collection_ptr.all_objects ]
+            delta = list(set(old_names) - set(new_names))
+            
+            
+            # print("old_names:", len(old_names), flush=True)
+            
+            if len(delta) > 0:
+                print("delta:", delta, flush=True)
+                
+            for name in delta:
+                # print(delete)
+                
+                # TODO: make sure they're all mesh objects
+                # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
+                
+                tex_manager.delete_entity(name)
+                # will this still work for animated things?
+                # TODO: how do you delete meshes tha are bound to armatures?
+                # TODO: how do you delete animation frames?
+            
+            
+            if len(delta) > 0: 
+                filepaths = tex_manager.get_texture_paths()
+                position_filepath, normal_filepath, entity_filepath = filepaths
+                
+                data = {
+                    'type': 'update_geometry_data',
+                    'comment': 'run garbage collection',
+                    'json_file_path': tex_manager.get_json_path(),
+                    'entity_tex_path': entity_filepath,
+                    'position_tex_path' : position_filepath,
+                    'normal_tex_path'   : normal_filepath,
+                }
+                
+                self.to_ruby.write(json.dumps(data))
         
-        old_names = tex_manager.get_entity_parent_names()
-        new_names = [ x.name for x in collection_ptr.all_objects ]
-        delta = list(set(old_names) - set(new_names))
         
+        # 
+        # gc lights
+        # 
         
-        # print("old_names:", len(old_names), flush=True)
+        print("attempt to gc lights", flush=True)
+        if self.old_light_names == None:
+            self.old_light_names = []
         
+        new_light_names = [x.name for x in bpy.data.objects if x.type == 'LIGHT']
+        
+        delta = list(set(self.old_light_names) - set(new_light_names))
+        print(self.old_light_names, flush=True)
+        print(self.old_light_names, flush=True)
+        print(delta, flush=True)
         if len(delta) > 0:
-            print("delta:", delta, flush=True)
-            
-        for name in delta:
-            # print(delete)
-            
-            # TODO: make sure they're all mesh objects
-            # ^ wait, this constraint may not be necessary once you export animations, and it may not actually even hold right now.
-            
-            tex_manager.delete_entity(name)
-            # will this still work for animated things?
-            # TODO: how do you delete meshes tha are bound to armatures?
-            # TODO: how do you delete animation frames?
-        
-        
-        if len(delta) > 0: 
-            filepaths = tex_manager.get_texture_paths()
-            position_filepath, normal_filepath, entity_filepath = filepaths
-            
             data = {
-                'type': 'update_geometry_data',
-                'comment': 'run garbage collection',
-                'json_file_path': tex_manager.get_json_path(),
-                'entity_tex_path': entity_filepath,
-                'position_tex_path' : position_filepath,
-                'normal_tex_path'   : normal_filepath,
+                'type': 'delete_lights',
+                'list': delta
             }
             
             self.to_ruby.write(json.dumps(data))
+        
+        
+        self.old_light_names = new_light_names
+        
+        
         # ---
     # ---
     

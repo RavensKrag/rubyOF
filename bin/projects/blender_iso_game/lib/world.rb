@@ -358,10 +358,10 @@ class World
       @lights.delete_if{|light| light.name == light_name}
     end
     
-    # delete all lights whose names are not on this list
+    # delete all lights whose names are on this list
     def gc(list_of_names)
       @lights
-      .reject{ |light|  list_of_names.include? light.name }
+      .select{ |light|  list_of_names.include? light.name }
       .each do |light|
         delete light.name
       end
