@@ -2433,6 +2433,7 @@ class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
         col = layout.column()
         col.prop(light, "color")
         col.prop(light, "energy")
+        col.prop(light, "diffuse_factor", text="Diffuse")
         col.prop(light, "specular_factor", text="Specular")
         
         col.separator()
