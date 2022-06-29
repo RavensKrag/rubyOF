@@ -106,16 +106,20 @@ def pack_transform(obj):
     # set transform properties
     # 
     
-    pos   = obj.location
-    rot   = obj.rotation_quaternion
-    scale = obj.scale
+    loc,rot,scale = obj.matrix_world.decompose()
+    # ^ decompose the world matrix to get transforms after applying constraints
+    
+    # loc   = obj.location
+    # rot   = obj.rotation_quaternion
+    # scale = obj.scale
+    
     
     transform = {
         'position':[
             "Vec3",
-            pos.x,
-            pos.y,
-            pos.z
+            loc.x,
+            loc.y,
+            loc.z
         ],
         'rotation':[
             "Quat",
