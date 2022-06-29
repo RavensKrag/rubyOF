@@ -327,13 +327,8 @@ void ofxDynamicLight::onPositionChanged() {
 
 //----------------------------------------
 void ofxDynamicLight::onOrientationChanged() {
-   // std::cout << "light orientation updating" << std::endl;
-   
-	if(getIsDirectional()) {
-		// if we are a directional light and not positional, update light position (direction)
-		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
-		data->position = {lookAtDir.x,lookAtDir.y,lookAtDir.z,0.f};
-	}else if(getIsSpotlight() || getIsAreaLight()) {
+   // std::cout << "light orientation updating" << std::endl;	
+	if(getIsDirectional() || getIsSpotlight() || getIsAreaLight()) {
 		// determines the axis of the cone light
 		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
 		data->direction = lookAtDir;

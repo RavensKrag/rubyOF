@@ -111,7 +111,7 @@
         float nDotHV;         // normal . light half vector
         float pf;             // power factor
 
-        nDotVP = max(0.0, dot(normal, normalize(vec3(light.position) * -1)));
+        nDotVP = max(0.0, dot(normal, normalize(vec3(light.direction) * -1)));
         nDotHV = max(0.0, dot(normal, light.halfVector));
 
         pf = mix(0.0, pow(nDotHV, mat_shininess), step(0.0000001, nDotVP));
