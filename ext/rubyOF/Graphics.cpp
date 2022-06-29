@@ -239,6 +239,12 @@ Rice::Module Init_rubyOF_graphics(Rice::Module rb_mRubyOF)
 			>(&ofSetHexColor)
 		)
 		
+		// interfaces with material system, which is under GraphicsAdvanced
+		.define_method(
+			"ofSetGlobalAmbientColor",
+			&ofSetGlobalAmbientColor
+		)
+		
 		// matrix stack manipulation
 		.define_method(
 			"ofPushStyle",

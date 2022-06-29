@@ -42,7 +42,6 @@
 
     uniform SAMPLER tex0;
 
-    uniform vec4 mat_ambient;
     uniform vec4 mat_diffuse;
     uniform vec4 mat_specular;
     uniform vec4 mat_emissive;

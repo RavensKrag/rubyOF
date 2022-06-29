@@ -1555,11 +1555,9 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
       
       .define_method("diffuse_color=",    &ofxDynamicLight::setDiffuseColor)
       .define_method("specular_color=",   &ofxDynamicLight::setSpecularColor)
-      .define_method("ambient_color=",    &ofxDynamicLight::setAmbientColor)
       
       .define_method("diffuse_color",     &ofxDynamicLight::getDiffuseColor)
 		.define_method("specular_color",     &ofxDynamicLight::getSpecularColor)
-		.define_method("ambient_color",     &ofxDynamicLight::getAmbientColor)
 		
 		.define_method("setAttenuation",    &ofxDynamicLight::setAttenuation)
    ;

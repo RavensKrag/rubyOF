@@ -90,7 +90,6 @@ ofxDynamicLight::Data::~Data(){
 //----------------------------------------
 ofxDynamicLight::ofxDynamicLight()
 :data(new Data){
-   setAmbientColor(ofColor(0,0,0));
    setDiffuseColor(ofColor(255,255,255));
    setSpecularColor(ofColor(255,255,255));
    setPointLight();
@@ -261,11 +260,6 @@ int ofxDynamicLight::getType() const{
 }
 
 //----------------------------------------
-void ofxDynamicLight::setAmbientColor(const ofFloatColor& c) {
-	data->ambientColor = c;
-}
-
-//----------------------------------------
 void ofxDynamicLight::setDiffuseColor(const ofFloatColor& c) {
 	data->diffuseColor = c;
 }
@@ -273,11 +267,6 @@ void ofxDynamicLight::setDiffuseColor(const ofFloatColor& c) {
 //----------------------------------------
 void ofxDynamicLight::setSpecularColor(const ofFloatColor& c) {
 	data->specularColor = c;
-}
-
-//----------------------------------------
-ofFloatColor ofxDynamicLight::getAmbientColor() const {
-	return data->ambientColor;
 }
 
 //----------------------------------------
