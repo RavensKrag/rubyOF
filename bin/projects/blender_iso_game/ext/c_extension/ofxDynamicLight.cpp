@@ -166,6 +166,9 @@ bool ofxDynamicLight::getIsEnabled() const {
 //----------------------------------------
 void ofxDynamicLight::setDirectional() {
 	data->lightType	= OF_LIGHT_DIRECTIONAL;
+    
+    onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -178,6 +181,9 @@ void ofxDynamicLight::setSpotlight(float spotCutOff, float exponent) {
 	data->lightType		= OF_LIGHT_SPOT;
 	setSpotlightCutOff( spotCutOff );
 	setSpotConcentration( exponent );
+    
+    onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -214,6 +220,9 @@ float ofxDynamicLight::getSpotConcentration() const{
 //----------------------------------------
 void ofxDynamicLight::setPointLight() {
 	data->lightType	= OF_LIGHT_POINT;
+	
+	onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -248,6 +257,9 @@ void ofxDynamicLight::setAreaLight(float width, float height){
 	data->lightType = OF_LIGHT_AREA;
 	data->width = width;
 	data->height = height;
+	
+	onPositionChanged();
+    onOrientationChanged();
 }
 
 bool ofxDynamicLight::getIsAreaLight() const{

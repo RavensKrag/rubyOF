@@ -53,7 +53,7 @@
     uniform mat4 projectionMatrix;
     uniform mat4 textureMatrix;
     uniform mat4 modelViewProjectionMatrix;
-    
+
     uniform int num_lights;
     uniform lightData lights[10];
 
@@ -111,7 +111,7 @@
         float nDotHV;         // normal . light half vector
         float pf;             // power factor
 
-        nDotVP = max(0.0, dot(normal, normalize(vec3(light.position))));
+        nDotVP = max(0.0, dot(normal, normalize(vec3(light.position) * -1)));
         nDotHV = max(0.0, dot(normal, light.halfVector));
 
         pf = mix(0.0, pow(nDotHV, mat_shininess), step(0.0000001, nDotVP));
