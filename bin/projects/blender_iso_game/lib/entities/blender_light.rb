@@ -29,13 +29,12 @@ class BlenderLight < BlenderObject
     @light.setDirectional()
   end
   
-  def setSpotlight(cutoff_radians, exponent)
+  def setSpotlight(cutoff_degrees, exponent)
     @type = 'SPOT'
     
-    @size = cutoff_radians
+    @size = cutoff_degrees
     
-    size_deg = cutoff_radians / (2*Math::PI) * 360
-    @light.setSpotlight(size_deg, 0) # requires 2 args
+    @light.setSpotlight(cutoff_degrees, exponent) # requires 2 args
     # float spotCutOff=45.f, float exponent=0.f
     
     # TODO: take exponent into account
@@ -103,7 +102,7 @@ class BlenderLight < BlenderObject
       # spotlight
       size_rad = obj_data['size'][1]
       size_deg = size_rad / (2*Math::PI) * 360
-      self.setSpotlight(size_deg, 0) # requires 2 args
+      self.setSpotlight(size_deg, 2) # requires 2 args
       # float spotCutOff=45.f, float exponent=0.f
     when 'AREA'
       width  = obj_data['size_x'][1]
