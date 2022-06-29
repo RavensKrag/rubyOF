@@ -19,6 +19,7 @@
         vec4 ambient;
         float type; // 0 = pointlight 1 = directionlight
         vec4 position; // where are we
+        vec3 direction; // orientation of the light in view space
         vec4 diffuse; // how diffuse
         vec4 specular; // what kinda specular stuff we got going on?
         // attenuation
@@ -30,7 +31,6 @@
         float spotCosCutoff;
         float spotExponent;
         // spot and area
-        vec3 spotDirection;
         // only for directional
         vec3 halfVector;
         // only for area
@@ -133,7 +133,7 @@
         vec3  halfVector;   // direction of maximum highlights
         // Compute vector from surface to light position
         VP = light.position.xyz - ecPosition3;
-        spotEffect = dot(light.spotDirection, -normalize(VP));
+        spotEffect = dot(light.direction, -normalize(VP));
 
         if (spotEffect > light.spotCosCutoff) {
             // Compute distance between surface and light position
@@ -168,7 +168,7 @@
 
     void areaLight(in lightData light, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){
         vec3 right = light.right;
-        vec3 pnormal = light.spotDirection;
+        vec3 pnormal = light.direction;
         vec3 up = light.up;
 
         //width and height of the area light:

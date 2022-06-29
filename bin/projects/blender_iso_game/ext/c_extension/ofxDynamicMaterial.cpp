@@ -268,44 +268,46 @@ void ofxDynamicMaterial::updateLights(const ofShader & shader,ofGLProgrammableRe
 	for(size_t i=0;i<ofxDynamicLightsData().size();i++){
 		string idx = ofToString(i);
 		ofxDynamicLight::Data* light = ofxDynamicLightsData()[i];
+        
 		if(!light || !light->isEnabled){
 			shader.setUniform1f("lights["+idx+"].enabled",0);
 			continue;
 		}
+        
 		auto lightEyePosition = renderer.getCurrentViewMatrix() * light->position;
 		shader.setUniform1f("lights["+idx+"].enabled",1);
 		shader.setUniform1f("lights["+idx+"].type", light->lightType);
+        
 		shader.setUniform4f("lights["+idx+"].position", lightEyePosition);
-		shader.setUniform4f("lights["+idx+"].ambient", light->ambientColor);
+        
+        glm::vec3 direction = glm::vec3(light->position) + light->direction;
+        glm::vec4 direction4 = renderer.getCurrentViewMatrix() * glm::vec4(direction, 1.0);
+        direction = glm::vec3(direction4) / direction4.w;
+        direction = direction - glm::vec3(lightEyePosition);
+        shader.setUniform3f("lights["+idx+"].direction", glm::normalize(direction));
+        
 		shader.setUniform4f("lights["+idx+"].specular", light->specularColor);
 		shader.setUniform4f("lights["+idx+"].diffuse", light->diffuseColor);
 
-		if(light->lightType!=OF_LIGHT_DIRECTIONAL){
-			shader.setUniform1f("lights["+idx+"].constantAttenuation", light->attenuation_constant);
-			shader.setUniform1f("lights["+idx+"].linearAttenuation", light->attenuation_linear);
-			shader.setUniform1f("lights["+idx+"].quadraticAttenuation", light->attenuation_quadratic);
-		}
-
+        shader.setUniform1f("lights["+idx+"].constantAttenuation", light->attenuation_constant);
+        shader.setUniform1f("lights["+idx+"].linearAttenuation", light->attenuation_linear);
+        shader.setUniform1f("lights["+idx+"].quadraticAttenuation", light->attenuation_quadratic);
+        
+        
 		if(light->lightType==OF_LIGHT_SPOT){
-			glm::vec3 direction = glm::vec3(light->position) + light->direction;
-			glm::vec4 direction4 = renderer.getCurrentViewMatrix() * glm::vec4(direction,1.0);
-			direction = glm::vec3(direction4) / direction4.w;
-			direction = direction - glm::vec3(lightEyePosition);
-			shader.setUniform3f("lights["+idx+"].spotDirection", glm::normalize(direction));
 			shader.setUniform1f("lights["+idx+"].spotExponent", light->exponent);
 			shader.setUniform1f("lights["+idx+"].spotCutoff", light->spotCutOff);
 			shader.setUniform1f("lights["+idx+"].spotCosCutoff", cos(ofDegToRad(light->spotCutOff)));
+            
 		}else if(light->lightType==OF_LIGHT_DIRECTIONAL){
 			glm::vec3 halfVector(glm::normalize(glm::vec4(0.f, 0.f, 1.f, 0.f) + lightEyePosition));
 			shader.setUniform3f("lights["+idx+"].halfVector", halfVector);
+            
 		}else if(light->lightType==OF_LIGHT_AREA){
 			shader.setUniform1f("lights["+idx+"].width", light->width);
 			shader.setUniform1f("lights["+idx+"].height", light->height);
-			glm::vec3 direction = glm::vec3(light->position) + light->direction;
-			glm::vec4 direction4 = renderer.getCurrentViewMatrix() * glm::vec4(direction, 1.0);
-			direction = glm::vec3(direction4) / direction4.w;
-			direction = direction - glm::vec3(lightEyePosition);
-			shader.setUniform3f("lights["+idx+"].spotDirection", glm::normalize(direction));
+            
+            
 			glm::vec3 right = glm::vec3(light->position) + light->right;
 			glm::vec4 right4 = renderer.getCurrentViewMatrix() * glm::vec4(right, 1.0);
 			right = glm::vec3(right4) / right4.w;
