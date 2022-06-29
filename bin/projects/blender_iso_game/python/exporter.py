@@ -799,16 +799,18 @@ class Exporter():
         # gc lights
         # 
         
-        print("attempt to gc lights", flush=True)
+        # print("attempt to gc lights", flush=True)
         if self.old_light_names == None:
             self.old_light_names = []
         
         new_light_names = [x.name for x in bpy.data.objects if x.type == 'LIGHT']
         
         delta = list(set(self.old_light_names) - set(new_light_names))
-        print(self.old_light_names, flush=True)
-        print(self.old_light_names, flush=True)
-        print(delta, flush=True)
+        
+        # print(self.old_light_names, flush=True)
+        # print(self.old_light_names, flush=True)
+        # print(delta, flush=True)
+        
         if len(delta) > 0:
             data = {
                 'type': 'delete_lights',
