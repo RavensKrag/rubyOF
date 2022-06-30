@@ -746,6 +746,30 @@ class Core
       
       material = @world.material
       
+      
+      # NOTE: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
+      pipeline.shadow_pass do |lights|
+        # for now, render all objects as opaque
+        
+        
+        
+        # camera = shadow_camera
+        
+        
+        # lights.select{ |light| light.enabled? && light.casts_shadows? }
+        # .each do |light|
+        #   tex = light.shadow_texture
+          
+        #   # configure the shadow camera for this light type
+          
+          
+        #   # render all objects in the scene to the shadow texture from the light's perspective
+        #   light.render_shadow_map(camera, tex)
+          
+        # end
+        
+      end
+      
       pipeline.opaque_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms

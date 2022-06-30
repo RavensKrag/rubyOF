@@ -21,9 +21,14 @@ class OIT_RenderPipeline
     EMPTY_BLOCK = Proc.new{  }
     
     def initialize
+      @shadow_pass      = EMPTY_BLOCK
       @opaque_pass      = EMPTY_BLOCK
       @transparent_pass = EMPTY_BLOCK
       @ui_pass          = EMPTY_BLOCK
+    end
+    
+    def shadow_pass(&block)
+      @shadow_pass = block
     end
     
     def opaque_pass(&block)
@@ -39,7 +44,7 @@ class OIT_RenderPipeline
     end
     
     def get_render_passes
-      return @opaque_pass, @transparent_pass, @ui_pass
+      return @shadow_pass, @opaque_pass, @transparent_pass, @ui_pass
     end
     
   end
@@ -55,7 +60,8 @@ class OIT_RenderPipeline
     helper = Helper.new
     block.call(helper)
     
-    @opaque_pass,@transparent_pass,@ui_pass = helper.get_render_passes
+    passes = helper.get_render_passes
+    @shadow_pass,@opaque_pass,@transparent_pass,@ui_pass = passes
     
     
     
@@ -129,6 +135,44 @@ class OIT_RenderPipeline
     end
     
     
+    
+    
+    num_lights = 10 # same as in bin/glsl/phong_anim_tex.frag
+    shadow_map_size = 1024
+    
+    if @shadow_fbos.nil?
+      RubyOF::Fbo::Settings.new.tap do |s|
+        s.width  = shadow_map_size
+        s.height = shadow_map_size
+        
+        s.internalformat = GL_RGBA16F_ARB;
+        # s.numSamples     = 0; # no multisampling
+        s.useDepth       = true;
+        s.useStencil     = false;
+        s.depthStencilAsTexture = true;
+        s.depthStencilInternalFormat = GL_DEPTH_COMPONENT24;
+        
+        s.textureTarget  = GL_TEXTURE_2D;
+        s.wrapModeHorizontal = GL_CLAMP_TO_EDGE;
+        s.wrapModeVertical   = GL_CLAMP_TO_EDGE;
+        s.minFilter = GL_LINEAR;
+        s.maxFilter = GL_LINEAR;
+        
+        @shadow_fbos = Array.new(num_lights)
+        @shadow_fbos.each_index do |i|
+          @shadow_fbos[i] = 
+          RubyOF::Fbo.new.tap do |fbo|
+            s.clone.tap{ |s|
+              
+              s.numColorbuffers = 1;
+              
+            }.yield_self{ |s| fbo.allocate(s) }
+          end
+        end
+      end
+    end
+    
+    
     # 
     # update
     # 
@@ -148,6 +192,61 @@ class OIT_RenderPipeline
     # ---------------
     #   world space
     # ---------------
+    
+    
+    # 
+    # render shadow maps
+    # 
+    
+    
+    
+    # @shadow_pass.call(lights)
+    
+    puts "\n"*5
+    num_lights.times do |i|
+      # only render shadows if the corresponding light exists and is enabled
+      light = lights.each.to_a[i]
+      p light
+      next if light.nil?
+      # next if !light.enabled?
+        # ^ This doesn't work because I haven't enabled the lights for this pass
+        #   Need separate flag for shadows, but I'll do that later.
+      
+      # TODO: add flag to ofxDynamicLight for whether or not to draw shadows
+      
+      # puts "drawing shadow map #{i}"
+      
+      @shadow_fbos[i].tap do |x|
+        using_framebuffer x do |fbo|
+          # NOTE: must bind the FBO before you clear it in this way
+          fbo.clearDepthBuffer(1.0) # default is 1.0
+          fbo.clearColorBuffer(0, COLOR_ZERO)
+          
+          # get camera that represents the light's perspective
+          light_camera = camera # using viewport camera for now, as a temp value
+          
+          # render from the perspective of the light
+          using_camera light_camera do
+            @opaque_pass.call()
+          end
+        end
+      end
+      
+      
+    end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # 
+    # render main buffers
+    # 
     
     
     # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
