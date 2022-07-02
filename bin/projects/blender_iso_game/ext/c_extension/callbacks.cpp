@@ -1570,6 +1570,40 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
 }
 
 
+#include "ofxShadowSimple.h"
+
+void wrap_ofxShadowSimple(Module rb_mOFX){
+	
+   Data_Type<ofxShadowSimple> rb_c_ofxShadowSimple = 
+      define_class_under<ofxShadowSimple>(rb_mOFX, "ShadowSimple");
+   
+   rb_c_ofxShadowSimple
+      .define_constructor(Constructor<ofxShadowSimple>())
+		
+		.define_method("setRange",         &ofxShadowSimple::setRange)
+		.define_method("setLightPosition", &ofxShadowSimple::setLightPosition)
+		.define_method("setLightLookAt",   &ofxShadowSimple::setLightLookAt)
+		
+		.define_method("beginDepthPass",   &ofxShadowSimple::beginDepthPass)
+		.define_method("endDepthPass",     &ofxShadowSimple::endDepthPass)
+		
+		.define_method("beginRenderPass",  &ofxShadowSimple::beginRenderPass)
+		.define_method("endRenderPass",    &ofxShadowSimple::endRenderPass)
+		
+		.define_method("width=",         &ofxShadowSimple::setWidth)
+		.define_method("height=",        &ofxShadowSimple::setHeight)
+		
+		.define_method("width",         &ofxShadowSimple::getWidth)
+		.define_method("height",        &ofxShadowSimple::getHeight)
+		.define_method("bias=",         &ofxShadowSimple::setBias)
+		.define_method("intensity=",    &ofxShadowSimple::setIntensity)
+		
+		.define_method("getFbo",               &ofxShadowSimple::getFbo)
+		.define_method("getLightCamera",       &ofxShadowSimple::getLightCamera)
+		.define_method("getShadowTransMatrix", &ofxShadowSimple::getShadowTransMatrix)
+		// .define_method("getShader",            &ofxShadowSimple::getShader)
+   ;
+}
 
 
 
@@ -1842,6 +1876,8 @@ void Init_rubyOF_project()
 	
 	wrap_ofxDynamicMaterial(rb_mOFX);
 	wrap_ofxDynamicLight(rb_mOFX);
+	
+	wrap_ofxShadowSimple(rb_mOFX);
 	
 	
 	
