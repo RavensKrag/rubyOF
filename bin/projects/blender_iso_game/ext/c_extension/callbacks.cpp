@@ -1584,19 +1584,32 @@ void wrap_ofxShadowSimple(Module rb_mOFX){
 		.define_method("setLightPosition", &ofxShadowSimple::setLightPosition)
 		.define_method("setLightLookAt",   &ofxShadowSimple::setLightLookAt)
 		
-		.define_method("beginDepthPass",   &ofxShadowSimple::beginDepthPass)
-		.define_method("endDepthPass",     &ofxShadowSimple::endDepthPass)
+		.define_method("beginDepthPass",
+			&ofxShadowSimple::beginDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
+		.define_method("endDepthPass",
+			&ofxShadowSimple::endDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
 		
 		.define_method("beginRenderPass",  &ofxShadowSimple::beginRenderPass)
 		.define_method("endRenderPass",    &ofxShadowSimple::endRenderPass)
 		
 		.define_method("width=",         &ofxShadowSimple::setWidth)
 		.define_method("height=",        &ofxShadowSimple::setHeight)
-		
 		.define_method("width",         &ofxShadowSimple::getWidth)
 		.define_method("height",        &ofxShadowSimple::getHeight)
+		
 		.define_method("bias=",         &ofxShadowSimple::setBias)
+		.define_method("bias",          &ofxShadowSimple::getBias)
+		
 		.define_method("intensity=",    &ofxShadowSimple::setIntensity)
+		.define_method("intensity",     &ofxShadowSimple::getIntensity)
 		
 		.define_method("getFbo",               &ofxShadowSimple::getFbo)
 		.define_method("getLightCamera",       &ofxShadowSimple::getLightCamera)

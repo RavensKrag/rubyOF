@@ -61,10 +61,51 @@
     uniform mat4 textureMatrix;
     uniform mat4 modelViewProjectionMatrix;
 
+    uniform float u_shadowWidth;
+    uniform float u_shadowHeight;
+    uniform float u_shadowIntensity;
+    uniform float u_shadowBias;
+
     uniform int num_lights;
     uniform lightData lights[10];
 
 	%custom_uniforms%
+    
+    
+    
+    
+    float lerp(float a, float b, float t){
+        float value;
+        value = (1.0f - t) * a + b * t;
+        return value;
+    }
+    
+    float invlerp(float a, float b, float value){
+        float t;
+        t = (value - a) / (b - a);
+        return t;
+    }
+    
+    float remap(float iMin, float iMax, float oMin, float oMax, float v){
+        float t = invlerp(iMin, iMax, v);
+        return lerp(oMin, oMax, t);
+    }
+    
+    // similar to clamp,
+    // but values outside the range are set to 0
+    float truncate(float value, float a, float b){
+        if(value > b){
+            value = 0.0;
+        }
+        if(value < a){
+            value = 0.0;
+        }
+        return value;
+    }
+    
+    
+    
+    
 
 
     void pointLight( in lightData light, in vec3 normal, in vec3 ecPosition3, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular ){
@@ -297,27 +338,84 @@
         }
     }
     
-    float calculateShadow(sampler2DRect shadow_map, vec4 lightSpacePosition){
+    
+    // float a[5] = float[](3.4, 4.2, 5.0, 5.2, 1.1);
+    vec2 poissonDisk[16] = vec2[](
+        vec2(-0.94201624,  -0.39906216),
+        vec2( 0.94558609,   -0.76890725),
+        vec2(-0.094184101, -0.92938870),
+        vec2( 0.34495938,    0.29387760),
+        vec2(-0.91588581,   0.45771432),
+        vec2(-0.81544232,  -0.87912464),
+        vec2(-0.38277543,  0.27676845),
+        vec2( 0.97484398,   0.75648379),
+        vec2( 0.44323325,  -0.97511554),
+        vec2( 0.53742981,  -0.47373420),
+        vec2(-0.26496911, -0.41893023),
+        vec2( 0.79197514,   0.19090188),
+        vec2(-0.24188840,  0.99706507),
+        vec2(-0.81409955,  0.91437590),
+        vec2( 0.19984126,   0.78641367),
+        vec2( 0.14383161,  -0.14100790)
+    );
+    
+    
+    float calculateShadow(sampler2D shadow_map, vec4 lightSpacePosition){
         // return TEXTURE(shadow_tex, lightSpacePosition).r;
         // return TEXTURE(shadow_tex, vec2(0.5,0.5)).r;
         
         
-        // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+        // // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
         
-        // perform perspective divide
-        vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
-        // transform to [0,1] range
-        projCoords = projCoords * 0.5 + 0.5;
-        // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-        float closestDepth = texture(shadow_map, projCoords.xy).r; 
-        // get depth of current fragment from light's perspective
-        float currentDepth = projCoords.z;
-        // check whether current frag pos is in shadow
-        float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+        // // perform perspective divide
+        // vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
+        // // transform to [0,1] range
+        // projCoords = projCoords * 0.5 + 0.5;
+        // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+        // float closestDepth = texture(shadow_map, projCoords.xy).r; 
+        // // get depth of current fragment from light's perspective
+        // float currentDepth = projCoords.z;
+        // // check whether current frag pos is in shadow
+        // float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
         // return shadow;
         
         
-        return 0.0;
+        
+        
+        // get projected shadow value
+        vec3 tdepth = lightSpacePosition.xyz / lightSpacePosition.w;
+        vec4 depth  = vec4( tdepth.xyz, lightSpacePosition.w );
+        
+        // depth.y = 1.0 - depth.y;
+        // depth.y = u_shadowHeight - depth.y;
+        
+        // float shadow = 1.0;
+        
+        // int numSamples = 16;
+        // float shadowDec = 1.0/float(numSamples);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
+        //     float texel = texture( shadow_map, coords).r;
+            
+        //     if( texel < depth.z - u_shadowBias ) {
+        //         shadow -= shadowDec * u_shadowIntensity;
+        //     }
+        // }
+        // shadow = clamp( shadow, 0.0, 1.0 );
+        
+        // // are you behind the shadow view? //
+        // if( lightSpacePosition.z < 1.0) {
+        //     shadow = 1.0;
+        // }
+        
+        float closestDepth = texture( shadow_map, depth.xy).r;
+        float shadow = depth.z > closestDepth  ? 1.0 : 0.0;
+        
+        return shadow;
+        
+        
+        // return 1.0;
+        // return 0.0;
     }
     
     
@@ -353,25 +451,136 @@
         //                              vec4(v_emissive.rgb, 0);
         
         
+        // // 
+        // // with lighting and shadows
+        // // 
+        // float shadow = calculateShadow(src_tex_unit3, v_lightSpacePosition);
+        
+        // vec4 localAmbient = 
+        //     vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        // vec4 localNonAmbient = 
+        //     vec4(diffuse, 1.0) * v_diffuse  + 
+        //     vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        // vec4 localEmmisive = 
+        //     vec4(v_emissive.rgb, 0);
+        
+        // vec4 localColor = 
+        //     localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
+        
+        
+        
+        
+        
+        
         // 
-        // with lighting and shadows
+        // shadow value test
         // 
-        float shadow = calculateShadow(src_tex_unit3, v_lightSpacePosition);
         
-        vec4 localAmbient = 
-            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        vec4 localColor;
         
-        vec4 localNonAmbient = 
-            vec4(diffuse, 1.0) * v_diffuse  + 
-            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        vec3 tdepth = v_lightSpacePosition.xyz / v_lightSpacePosition.w;
+        vec4 depth  = vec4( tdepth.xyz, v_lightSpacePosition.w );
         
-        vec4 localEmmisive = 
-            vec4(v_emissive.rgb, 0);
+        localColor = vec4(v_lightSpacePosition.xyz, 1.0);
+        // ^ show position relative to light camera
         
-        vec4 localColor = 
-            localAmbient + (1.0-shadow)*localNonAmbient + localEmmisive;
         
-
+        
+        // position relative to light
+        localColor = vec4(v_lightSpacePosition.x, 
+                          v_lightSpacePosition.y,
+                          v_lightSpacePosition.z,
+                          1.0);
+        
+        // depth from light
+        localColor = vec4(0.0, 
+                          0.0,
+                          -v_lightSpacePosition.z,
+                          1.0);
+        
+        
+        // // depth in clip space
+        // localColor = vec4(remap(10.0, 150.0, 
+        //                         0.0, 1.0, 
+        //                         -v_lightSpacePosition.z), 
+        //                   0.0,
+        //                   0.0,
+        //                   1.0);
+        
+        
+        // xy coordinate in shadow caster eye space
+        vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
+                          v_lightSpacePosition.y+u_shadowHeight/100/2,
+                          v_lightSpacePosition.z);
+        
+        float vis_min = 0.1;
+        float vis_max = 0.9;
+        
+        float r = remap(0, u_shadowWidth/50, 
+                        vis_min, vis_max, 
+                        coord.x);
+        r = truncate(r, vis_min, vis_max);
+        
+        
+        float g = remap(0, u_shadowHeight/100, 
+                        vis_min, vis_max, 
+                        coord.y);
+        g = truncate(g, vis_min, vis_max);
+        
+        
+        float b = remap(10.0, 150.0, 
+                        vis_min, vis_max, 
+                        -coord.z);
+        b = truncate(b, vis_min, vis_max);
+        
+        
+        if(r == 0){
+            g = 0;
+        }
+        if(g == 0){
+            r = 0;
+        }
+        
+        localColor = vec4(r, 
+                          g,
+                          b,
+                          1.0);
+        
+        // localColor = vec4(r, 
+        //                   v_lightSpacePosition.y+u_shadowHeight/100,
+        //                   -v_lightSpacePosition.z,
+        //                   1.0);
+        
+        
+        
+        
+        
+        // localColor = vec4((-v_lightSpacePosition.z)/(150), 
+        //                   0.0,
+        //                   0.0,
+        //                   1.0);
+        // // ^ show depth buffer value???
+        
+        
+        // localColor = vec4(remap(0.0, u_shadowWidth, 
+        //                         0.0, 1.0, 
+        //                         v_lightSpacePosition.x+0), 
+        //                   remap(0.0, u_shadowHeight, 
+        //                         0.0, 1.0, 
+        //                         v_lightSpacePosition.y), 
+        //                   0.0,
+        //                   1.0);
+        // // ^ show position in shadow texture space
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         

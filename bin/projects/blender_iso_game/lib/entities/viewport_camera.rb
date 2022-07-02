@@ -19,6 +19,8 @@ class ViewportCamera
     @scale = 1
   end
   
+  def_delegators :@of_cam, :getModelViewMatrix
+  
   def position=(x)
     @of_cam.position = x
     @position = x

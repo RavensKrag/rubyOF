@@ -268,7 +268,9 @@ class OIT_RenderPipeline
           
           # render from the perspective of the light
           using_camera light_camera do
+            ofEnableDepthTest()
             @shadow_pass.call(lights, @shadow_material)
+            ofDisableDepthTest()
           end
         end
       end
@@ -283,6 +285,23 @@ class OIT_RenderPipeline
     
     
     
+    
+    
+    @shadow_simple ||= RubyOF::OFX::ShadowSimple.new()
+    @shadow_simple.setRange( 10, 150 )
+    @shadow_simple.bias = 0.01
+    @shadow_simple.intensity = 1.0
+    
+    @shadow_simple.setLightPosition(GLM::Vec3.new(30,4,5))
+    @shadow_simple.setLightLookAt(GLM::Vec3.new(0,0,0), GLM::Vec3.new(0,0,1))
+    
+    # puts "shadow simple depth pass"
+    @shadow_simple.beginDepthPass()
+      ofEnableDepthTest()
+      # @shadow_pass.call(lights, @shadow_material)
+      @opaque_pass.call()
+      ofDisableDepthTest()
+    @shadow_simple.endDepthPass()
     
     
     
@@ -336,13 +355,7 @@ class OIT_RenderPipeline
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      material.setCustomUniformMatrix4f(
-        "lightSpaceMatrix", @shadow_cam.getModelViewProjectionMatrix
-      )
-      
-      material.setCustomUniformTexture(
-        "shadow_tex", @shadow_tex, 4
-      )
+      setShadowUniforms(material, camera)
       
       using_camera camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
@@ -383,13 +396,7 @@ class OIT_RenderPipeline
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
-      material.setCustomUniformMatrix4f(
-        "lightSpaceMatrix", @shadow_cam.getModelViewProjectionMatrix
-      )
-      
-      material.setCustomUniformTexture(
-        "shadow_tex", @shadow_tex, 4
-      )
+      setShadowUniforms(material, camera)
       
       using_camera camera do
         @transparent_pass.call()
@@ -444,8 +451,15 @@ class OIT_RenderPipeline
       #   @fullscreen_quad.draw()
       #   ofPopMatrix()
       # end
-      @shadow_tex.draw_wh(1400,1100,0, 1024/4, 1024/4)
+      
+      
+      @shadow_tex.draw_wh(1400,950,0, 1024/4, 1024/4)
+      # @shadow_tex.draw_wh(0,0,0, @shadow_tex.width, @shadow_tex.height)
     end
+    tex = @shadow_simple.getFbo().getDepthTexture()
+    # tex.draw_wh(0,0,0, tex.width, tex.height)
+    tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
+    # ^ ofxShadowSimple's buffer is the size of the window
     
     
     
@@ -454,6 +468,44 @@ class OIT_RenderPipeline
   end
   
   private
+  
+  def setShadowUniforms(material, viewport_camera)
+    lightCam = @shadow_simple.getLightCamera()
+    
+    # inverseCameraMatrix = GLM.inverse( viewport_camera.getModelViewMatrix() );
+    # shadowTransMatrix = inverseCameraMatrix * lightCam.getModelViewMatrix();
+    
+    # shadowTransMatrix = lightCam.getModelViewMatrix() * lightCam.getProjectionMatrix();
+    
+    shadowTransMatrix = lightCam.getModelViewMatrix();
+    
+    
+    material.setCustomUniformMatrix4f(
+      "lightSpaceMatrix", shadowTransMatrix
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowWidth", @shadow_simple.width
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowHeight", @shadow_simple.height
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowBias", @shadow_simple.bias
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowIntensity", @shadow_simple.intensity
+    )
+    
+    
+    
+    material.setCustomUniformTexture(
+      "shadow_tex", @shadow_simple.getFbo().getDepthTexture(), 4
+    )
+  end
   
   def blit_framebuffer(buffer_name, hash={})
     src = hash.keys.first

@@ -1123,7 +1123,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       .define_method("getProjectionMatrix",
          static_cast< glm::mat4 (ofCamera::*)
-         (const ofRectangle & viewport)
+         (void)
          const>(&ofCamera::getProjectionMatrix)
       )
       
