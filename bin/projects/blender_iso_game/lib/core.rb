@@ -742,34 +742,44 @@ class Core
     
     @render_pipeline.draw(@window,
                           lights:@world.lights,
-                          camera:@world.camera) do |pipeline|
+                          camera:@world.camera,
+                          material:@world.material) do |pipeline|
       
       material = @world.material
       
       
-      # NOTE: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
-      pipeline.shadow_pass do |lights|
-        # for now, render all objects as opaque
+      # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
+      pipeline.shadow_pass do |lights, shadow_material|
+        # for now, render opaque objects only
         
-        
-        
-        # camera = shadow_camera
-        
-        
-        # lights.select{ |light| light.enabled? && light.casts_shadows? }
-        # .each do |light|
-        #   tex = light.shadow_texture
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          shadow_material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
           
-        #   # configure the shadow camera for this light type
+          shadow_material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
           
+          shadow_material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
           
-        #   # render all objects in the scene to the shadow texture from the light's perspective
-        #   light.render_shadow_map(camera, tex)
+          shadow_material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
           
-        # end
-        
+          # draw using GPU instancing
+          using_material shadow_material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
       end
       
+      
+      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.opaque_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms
@@ -800,6 +810,7 @@ class Core
         # glDisable(GL_CULL_FACE)
       end
       
+      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.transparent_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms

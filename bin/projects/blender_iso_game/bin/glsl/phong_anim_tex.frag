@@ -4,6 +4,7 @@
     // Eye-coordinate position of vertex
     IN vec3 v_eyePosition;
     IN vec3 v_worldPosition;
+    IN vec4 v_lightSpacePosition;
 // #if HAS_COLOR
     IN vec4 v_ambient;
     IN vec4 v_diffuse;
@@ -41,6 +42,12 @@
     };
 
     uniform SAMPLER tex0;
+    
+    // uniform sampler2DRect shadow_tex;
+    uniform sampler2DRect src_tex_unit0;
+    uniform sampler2DRect src_tex_unit1;
+    uniform sampler2DRect src_tex_unit2;
+    uniform sampler2DRect src_tex_unit3;
 
     uniform vec4 mat_diffuse;
     uniform vec4 mat_specular;
@@ -290,6 +297,29 @@
         }
     }
     
+    float calculateShadow(sampler2DRect shadow_map, vec4 lightSpacePosition){
+        // return TEXTURE(shadow_tex, lightSpacePosition).r;
+        // return TEXTURE(shadow_tex, vec2(0.5,0.5)).r;
+        
+        
+        // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+        
+        // perform perspective divide
+        vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
+        // transform to [0,1] range
+        projCoords = projCoords * 0.5 + 0.5;
+        // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+        float closestDepth = texture(shadow_map, projCoords.xy).r; 
+        // get depth of current fragment from light's perspective
+        float currentDepth = projCoords.z;
+        // check whether current frag pos is in shadow
+        float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+        // return shadow;
+        
+        
+        return 0.0;
+    }
+    
     
     //////////////////////////////////////////////////////
     // here's the main method
@@ -326,7 +356,7 @@
         // 
         // with lighting and shadows
         // 
-        float shadow = 0.0;
+        float shadow = calculateShadow(src_tex_unit3, v_lightSpacePosition);
         
         vec4 localAmbient = 
             vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);

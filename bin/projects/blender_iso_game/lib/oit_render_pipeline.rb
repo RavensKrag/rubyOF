@@ -56,7 +56,7 @@ class OIT_RenderPipeline
   
   include RubyOF::Graphics
   include Gl
-  def draw(window, camera:nil, lights:nil, &block)
+  def draw(window, camera:nil, lights:nil, material:nil, &block)
     helper = Helper.new
     block.call(helper)
     
@@ -123,6 +123,8 @@ class OIT_RenderPipeline
     
     @compositing_shader ||= RubyOF::Shader.new
     
+    @shadow_vis_shader ||= RubyOF::Shader.new
+    
     
     if @tex0.nil?
       @tex0 = @transparency_fbo.getTexture(accumTex_i)
@@ -146,6 +148,8 @@ class OIT_RenderPipeline
         s.height = shadow_map_size
         
         s.internalformat = GL_RGBA16F_ARB;
+        # TODO: switch internalFormat to GL_DEPTH_COMPONENT to save VRAM (currently getting error: FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+        
         # s.numSamples     = 0; # no multisampling
         s.useDepth       = true;
         s.useStencil     = false;
@@ -153,10 +157,10 @@ class OIT_RenderPipeline
         s.depthStencilInternalFormat = GL_DEPTH_COMPONENT24;
         
         s.textureTarget  = GL_TEXTURE_2D;
-        s.wrapModeHorizontal = GL_CLAMP_TO_EDGE;
-        s.wrapModeVertical   = GL_CLAMP_TO_EDGE;
-        s.minFilter = GL_LINEAR;
-        s.maxFilter = GL_LINEAR;
+        s.wrapModeHorizontal = GL_REPEAT;
+        s.wrapModeVertical   = GL_REPEAT;
+        s.minFilter = GL_NEAREST;
+        s.maxFilter = GL_NEAREST;
         
         @shadow_fbos = Array.new(num_lights)
         @shadow_fbos.each_index do |i|
@@ -185,6 +189,13 @@ class OIT_RenderPipeline
       ) do
         puts "alpha compositing shaders reloaded"
       end
+      
+      @shadow_vis_shader.live_load_glsl(
+        shader_src_dir/'alpha_composite.vert',
+        shader_src_dir/'visualize_shadow_map.frag'
+      ) do
+        puts "shadow visualization shaders reloaded"
+      end
     end
     
     
@@ -198,15 +209,45 @@ class OIT_RenderPipeline
     # render shadow maps
     # 
     
+    if @shadow_material.nil?
+      @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
+    end
+    shader_src_dir = PROJECT_DIR/"bin/glsl"
+    vert_shader_path = shader_src_dir/"animation_texture.vert"
+    frag_shader_path = shader_src_dir/"shadow.frag"
     
+    @shadow_material.load_shaders(vert_shader_path, frag_shader_path) do
+      # on reload
+      puts "reloaded shadow shaders"
+    end
     
     # @shadow_pass.call(lights)
     
-    puts "\n"*5
+    @shadow_cam ||= RubyOF::Camera.new
+    
+    
+    # currently low to the ground by the grid world segment, looking at the player cube and staircase, pointing into the grid. should not eclipse the entire scene, but doesn't correlate with any light's position either.
+    @shadow_cam.tap do |cam|
+      cam.position    = GLM::Vec3.new(21.91913604736328,
+                                      -2.126699447631836,
+                                      3.4626035690307617)
+      cam.orientation = GLM::Quat.new(-0.8488614559173584,
+                                      -0.4503442645072937,
+                                      -0.14388048648834229,
+                                      -0.23647984862327576)
+      cam.fov         = 66.96208008631973
+      cam.near_clip   = 0.01
+      cam.far_clip    = 1000.0
+    end
+    
+    # NOTE: current position, orientation, FOV, etc take from the viewport camera, moved into about the position of the area light. should be good enough for a first draft.
+    
+    
+    # puts "\n"*5
     num_lights.times do |i|
       # only render shadows if the corresponding light exists and is enabled
       light = lights.each.to_a[i]
-      p light
+      # p light
       next if light.nil?
       # next if !light.enabled?
         # ^ This doesn't work because I haven't enabled the lights for this pass
@@ -223,17 +264,20 @@ class OIT_RenderPipeline
           fbo.clearColorBuffer(0, COLOR_ZERO)
           
           # get camera that represents the light's perspective
-          light_camera = camera # using viewport camera for now, as a temp value
+          light_camera = @shadow_cam
           
           # render from the perspective of the light
           using_camera light_camera do
-            @opaque_pass.call()
+            @shadow_pass.call(lights, @shadow_material)
           end
         end
       end
       
       
     end
+    
+    # @shadow_tex = @shadow_fbos[0].getDepthTexture()
+    @shadow_tex = @shadow_fbos[0].getTexture(0)
     
     
     
@@ -292,6 +336,14 @@ class OIT_RenderPipeline
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
+      material.setCustomUniformMatrix4f(
+        "lightSpaceMatrix", @shadow_cam.getModelViewProjectionMatrix
+      )
+      
+      material.setCustomUniformTexture(
+        "shadow_tex", @shadow_tex, 4
+      )
+      
       using_camera camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
         
@@ -330,6 +382,14 @@ class OIT_RenderPipeline
       fbo.clearColorBuffer(revealageTex_i, COLOR_ONE)
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
+      
+      material.setCustomUniformMatrix4f(
+        "lightSpaceMatrix", @shadow_cam.getModelViewProjectionMatrix
+      )
+      
+      material.setCustomUniformTexture(
+        "shadow_tex", @shadow_tex, 4
+      )
       
       using_camera camera do
         @transparent_pass.call()
@@ -376,6 +436,16 @@ class OIT_RenderPipeline
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
+    
+    
+    using_shader @shadow_vis_shader do
+      # using_textures @shadow_tex do
+      #   ofPushMatrix()
+      #   @fullscreen_quad.draw()
+      #   ofPopMatrix()
+      # end
+      @shadow_tex.draw_wh(1400,1100,0, 1024/4, 1024/4)
+    end
     
     
     

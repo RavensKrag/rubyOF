@@ -1493,7 +1493,13 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
          (const std::string & name, float value)
          >(&ofxDynamicMaterial::setCustomUniform1f)
       )
-      
+		
+		.define_method("setCustomUniformMatrix4f",
+         static_cast< void (ofxDynamicMaterial::*)
+         (const std::string & name, glm::mat4 value)
+         >(&ofxDynamicMaterial::setCustomUniformMatrix4f)
+      )
+		
       .define_method("setCustomUniformTexture",
          static_cast< void (ofxDynamicMaterial::*)
          (const std::string & name, const ofTexture & value, int textureLocation)

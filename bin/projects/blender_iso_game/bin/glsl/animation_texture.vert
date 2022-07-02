@@ -3,6 +3,7 @@ OUT vec3 v_transformedNormal;
 OUT vec3 v_normal;
 OUT vec3 v_eyePosition;
 OUT vec3 v_worldPosition;
+OUT vec4 v_lightSpacePosition;
 // #if HAS_COLOR
 // OUT vec4 v_color;
 OUT vec4 v_ambient;
@@ -11,6 +12,7 @@ OUT vec4 v_specular;
 OUT vec4 v_emissive;
 OUT float v_transparent_pass;
 // #endif
+
 
 IN vec4 position;
 IN vec4 color;
@@ -26,6 +28,8 @@ uniform mat4 textureMatrix;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalMatrix;
 
+uniform mat4 lightSpaceMatrix;
+
 // uniform float instance_scale;
 // uniform int tex_width;
 
@@ -35,6 +39,7 @@ uniform mat4 normalMatrix;
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
 uniform sampler2DRect entity_tex;
+uniform sampler2DRect shadow_tex;
 
 uniform float transparent_pass;
 
@@ -215,6 +220,8 @@ void main (void){
     v_eyePosition = (eyePosition.xyz) / eyePosition.w;
     //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
     v_worldPosition = (finalPos).xyz;
+    
+    v_lightSpacePosition = lightSpaceMatrix * vec4(v_worldPosition, 1.0);
 
     v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
     // #if HAS_COLOR

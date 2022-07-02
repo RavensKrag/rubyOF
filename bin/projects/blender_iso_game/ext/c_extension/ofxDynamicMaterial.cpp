@@ -325,41 +325,41 @@ void ofxDynamicMaterial::setCustomUniform1f(const std::string & name, float valu
     uniforms1f[name] = value;
 }
 
-// void ofxDynamicMaterial::setCustomUniform2f(const std::string & name, glm::vec2 value){
-//     uniforms2f[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform2f(const std::string & name, glm::vec2 value){
+    uniforms2f[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform3f(const std::string & name, glm::vec3 value) {
-//     uniforms3f[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform3f(const std::string & name, glm::vec3 value) {
+    uniforms3f[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform4f(const std::string & name, glm::vec4 value) {
-//     uniforms4f[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform4f(const std::string & name, glm::vec4 value) {
+    uniforms4f[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform1i(const std::string & name, int value) {
-//     uniforms1i[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform1i(const std::string & name, int value) {
+    uniforms1i[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform2i(const std::string & name, glm::vec<2,int> value) {
-//     uniforms2i[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform2i(const std::string & name, glm::vec<2,int> value) {
+    uniforms2i[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform3i(const std::string & name, glm::vec<3, int> value) {
-//     uniforms3i[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform3i(const std::string & name, glm::vec<3, int> value) {
+    uniforms3i[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniform4i(const std::string & name, glm::vec<4, int> value) {
-//     uniforms4i[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniform4i(const std::string & name, glm::vec<4, int> value) {
+    uniforms4i[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniformMatrix4f(const std::string & name, glm::mat4 value){
-//     uniforms4m[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniformMatrix4f(const std::string & name, glm::mat4 value){
+    uniforms4m[name] = value;
+}
 
-// void ofxDynamicMaterial::setCustomUniformMatrix3f(const std::string & name, glm::mat3 value){
-//     uniforms3m[name] = value;
-// }
+void ofxDynamicMaterial::setCustomUniformMatrix3f(const std::string & name, glm::mat3 value){
+    uniforms3m[name] = value;
+}
 
 
 void ofxDynamicMaterial::setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation){
