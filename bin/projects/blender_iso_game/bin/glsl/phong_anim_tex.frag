@@ -418,66 +418,7 @@
         // return 0.0;
     }
     
-    
-    //////////////////////////////////////////////////////
-    // here's the main method
-    //////////////////////////////////////////////////////
-
-
-    void main (void){
-        vec3 ambient = global_ambient.rgb;
-        vec3 diffuse = vec3(0.0,0.0,0.0);
-        vec3 specular = vec3(0.0,0.0,0.0);
-
-		vec3 transformedNormal = normalize(v_transformedNormal);
-        
-        
-        calculateLighting(transformedNormal, ambient, diffuse, specular);
-        
-        // // 
-        // // without lighting
-        // // 
-        
-        // vec4 localColor = v_diffuse;
-        
-        // // 
-        // // with lighting
-        // // 
-        
-        // vec4 localColor = 
-        //         vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
-        //         vec4(diffuse, 1.0) * v_diffuse  + 
-        //         vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
-        //                              vec4(v_emissive.rgb, 0);
-        
-        
-        // // 
-        // // with lighting and shadows
-        // // 
-        // float shadow = calculateShadow(src_tex_unit3, v_lightSpacePosition);
-        
-        // vec4 localAmbient = 
-        //     vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
-        
-        // vec4 localNonAmbient = 
-        //     vec4(diffuse, 1.0) * v_diffuse  + 
-        //     vec4(specular,1.0) * vec4(v_specular.rgb, 0);
-        
-        // vec4 localEmmisive = 
-        //     vec4(v_emissive.rgb, 0);
-        
-        // vec4 localColor = 
-        //     localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
-        
-        
-        
-        
-        
-        
-        // 
-        // shadow value test
-        // 
-        
+    vec4 debugOutputShadow(){
         vec4 localColor;
         
         vec3 tdepth = v_lightSpacePosition.xyz / v_lightSpacePosition.w;
@@ -545,6 +486,70 @@
         
         localColor = vec4(r,g,b, 1.0);
         
+        return localColor;
+    }
+    
+    
+    //////////////////////////////////////////////////////
+    // here's the main method
+    //////////////////////////////////////////////////////
+
+
+    void main (void){
+        vec3 ambient = global_ambient.rgb;
+        vec3 diffuse = vec3(0.0,0.0,0.0);
+        vec3 specular = vec3(0.0,0.0,0.0);
+
+		vec3 transformedNormal = normalize(v_transformedNormal);
+        
+        
+        calculateLighting(transformedNormal, ambient, diffuse, specular);
+        
+        // // 
+        // // without lighting
+        // // 
+        
+        // vec4 localColor = v_diffuse;
+        
+        // // 
+        // // with lighting
+        // // 
+        
+        // vec4 localColor = 
+        //         vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
+        //         vec4(diffuse, 1.0) * v_diffuse  + 
+        //         vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+        //                              vec4(v_emissive.rgb, 0);
+        
+        
+        // // 
+        // // with lighting and shadows
+        // // 
+        // float shadow = calculateShadow(src_tex_unit3, v_lightSpacePosition);
+        
+        // vec4 localAmbient = 
+        //     vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        // vec4 localNonAmbient = 
+        //     vec4(diffuse, 1.0) * v_diffuse  + 
+        //     vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        // vec4 localEmmisive = 
+        //     vec4(v_emissive.rgb, 0);
+        
+        // vec4 localColor = 
+        //     localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
+        
+        
+        
+        
+        
+        
+        // 
+        // shadow value test
+        // 
+        
+        vec4 localColor = debugOutputShadow();
         
         
         
