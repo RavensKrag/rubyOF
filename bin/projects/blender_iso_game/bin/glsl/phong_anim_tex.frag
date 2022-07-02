@@ -483,22 +483,22 @@
         vec3 tdepth = v_lightSpacePosition.xyz / v_lightSpacePosition.w;
         vec4 depth  = vec4( tdepth.xyz, v_lightSpacePosition.w );
         
-        localColor = vec4(v_lightSpacePosition.xyz, 1.0);
-        // ^ show position relative to light camera
+        // // show position relative to light camera
+        // localColor = vec4(v_lightSpacePosition.xyz, 1.0);
         
         
         
-        // position relative to light
-        localColor = vec4(v_lightSpacePosition.x, 
-                          v_lightSpacePosition.y,
-                          v_lightSpacePosition.z,
-                          1.0);
+        // // position relative to light
+        // localColor = vec4(v_lightSpacePosition.x, 
+        //                   v_lightSpacePosition.y,
+        //                   v_lightSpacePosition.z,
+        //                   1.0);
         
-        // depth from light
-        localColor = vec4(0.0, 
-                          0.0,
-                          -v_lightSpacePosition.z,
-                          1.0);
+        // // depth from light
+        // localColor = vec4(0.0, 
+        //                   0.0,
+        //                   -v_lightSpacePosition.z,
+        //                   1.0);
         
         
         // // depth in clip space
@@ -543,37 +543,7 @@
             r = 0;
         }
         
-        localColor = vec4(r, 
-                          g,
-                          b,
-                          1.0);
-        
-        // localColor = vec4(r, 
-        //                   v_lightSpacePosition.y+u_shadowHeight/100,
-        //                   -v_lightSpacePosition.z,
-        //                   1.0);
-        
-        
-        
-        
-        
-        // localColor = vec4((-v_lightSpacePosition.z)/(150), 
-        //                   0.0,
-        //                   0.0,
-        //                   1.0);
-        // // ^ show depth buffer value???
-        
-        
-        // localColor = vec4(remap(0.0, u_shadowWidth, 
-        //                         0.0, 1.0, 
-        //                         v_lightSpacePosition.x+0), 
-        //                   remap(0.0, u_shadowHeight, 
-        //                         0.0, 1.0, 
-        //                         v_lightSpacePosition.y), 
-        //                   0.0,
-        //                   1.0);
-        // // ^ show position in shadow texture space
-        
+        localColor = vec4(r,g,b, 1.0);
         
         
         
