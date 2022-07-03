@@ -1584,18 +1584,8 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		.define_method("setLightOrientation",  &ofxShadowCamera::setLightOrientation)
 		.define_method("setLightLookAt",       &ofxShadowCamera::setLightLookAt)
 		
-		.define_method("beginDepthPass",
-			&ofxShadowCamera::beginDepthPass,
-			(
-            Arg("aBWithCam") = true
-         )
-		)
-		.define_method("endDepthPass",
-			&ofxShadowCamera::endDepthPass,
-			(
-            Arg("aBWithCam") = true
-         )
-		)
+		.define_method("beginDepthPass",   &ofxShadowCamera::beginDepthPass)
+		.define_method("endDepthPass",     &ofxShadowCamera::endDepthPass)
 		
 		.define_method("beginRenderPass",  &ofxShadowCamera::beginRenderPass)
 		.define_method("endRenderPass",    &ofxShadowCamera::endRenderPass)
@@ -1617,6 +1607,7 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		// .define_method("getShader",            &ofxShadowCamera::getShader)
 		
 		.define_method("getLightSpaceMatrix", &ofxShadowCamera::getLightSpaceMatrix)
+		.define_method("getShadowMap",        &ofxShadowCamera::getShadowMap)
    ;
 }
 

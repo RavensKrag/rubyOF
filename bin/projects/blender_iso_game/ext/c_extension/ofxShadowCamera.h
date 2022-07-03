@@ -22,11 +22,12 @@ public:
     void setLightOrientation(glm::quat rot );
     void setLightLookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );
     
-    void beginDepthPass( bool aBWithCam = true );
-    void endDepthPass( bool aBWithCam = true );
+    void beginDepthPass();
+    void endDepthPass();
     
     void beginRenderPass( ofCamera& aCam );
     void endRenderPass();
+    
     void setShaderData( ofShader* ashader, ofCamera& aCam, int atexLoc=2 );
     
     void setWidth( float aWidth );
@@ -44,12 +45,11 @@ public:
     
     ofFbo& getFbo() { return shadowFbo; }
     ofCamera& getLightCamera() { return lightCam; }
-    ofMatrix4x4 getShadowTransMatrix( ofCamera& acam );
-    ofShader& getShader() { return shader; }
     ofParameterGroup& getParams() { return mParams; }
     
     
     glm::mat4 getLightSpaceMatrix();
+    ofTexture& getShadowMap();
     
 protected:
     
@@ -67,5 +67,4 @@ protected:
     
     ofFbo shadowFbo;
     ofCamera lightCam;
-    ofShader shader;
 };

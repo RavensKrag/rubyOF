@@ -410,7 +410,7 @@ class OIT_RenderPipeline
     
     
     material.setCustomUniformTexture(
-      "shadow_tex", @shadow_cam.getFbo().getDepthTexture(), 4
+      "shadow_tex", @shadow_cam.getShadowMap(), 4
     )
   end
   
