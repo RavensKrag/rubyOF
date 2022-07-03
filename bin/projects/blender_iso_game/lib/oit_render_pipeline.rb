@@ -473,20 +473,8 @@ class OIT_RenderPipeline
   def setShadowUniforms(material, viewport_cam_view_matrix)
     lightCam = @shadow_simple.getLightCamera()
     
-    # inverseCameraMatrix = GLM.inverse( viewport_cam_view_matrix );
-    # shadowTransMatrix = inverseCameraMatrix * lightCam.getModelViewProjectionMatrix();
-    
-    # shadowTransMatrix = lightCam.getModelViewMatrix() * lightCam.getProjectionMatrix();
-    
-    # shadowTransMatrix = lightCam.getModelViewMatrix();
-    
-    
-    # inverseCameraMatrix = GLM.inverse( viewport_cam_view_matrix );
-    shadowTransMatrix = lightCam.getModelViewProjectionMatrix();
-    
-    
     material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", shadowTransMatrix
+      "lightSpaceMatrix", lightCam.getModelViewProjectionMatrix()
     )
     
     material.setCustomUniform1f(
