@@ -260,7 +260,10 @@ void ofxShadowCamera::allocateFbo() {
     settings.useDepth = true;
     settings.depthStencilAsTexture = true;
     settings.useStencil = true;
-//    settings.depthStencilInternalFormat = GL_DEPTH_COMPONENT32;
+    // settings.depthStencilInternalFormat = GL_DEPTH_COMPONENT32;
+    settings.maxFilter = GL_NEAREST;
+    settings.minFilter = GL_NEAREST;
+
     
     shadowFbo.allocate( settings );
 }

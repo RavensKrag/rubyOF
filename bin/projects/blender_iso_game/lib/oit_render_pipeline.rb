@@ -123,9 +123,6 @@ class OIT_RenderPipeline
     
     @compositing_shader ||= RubyOF::Shader.new
     
-    @shadow_vis_shader ||= RubyOF::Shader.new
-    
-    
     if @tex0.nil?
       @tex0 = @transparency_fbo.getTexture(accumTex_i)
       @tex1 = @transparency_fbo.getTexture(revealageTex_i)
@@ -188,13 +185,6 @@ class OIT_RenderPipeline
         shader_src_dir/'alpha_composite.frag'
       ) do
         puts "alpha compositing shaders reloaded"
-      end
-      
-      @shadow_vis_shader.live_load_glsl(
-        shader_src_dir/'alpha_composite.vert',
-        shader_src_dir/'visualize_shadow_map.frag'
-      ) do
-        puts "shadow visualization shaders reloaded"
       end
     end
     
@@ -383,15 +373,6 @@ class OIT_RenderPipeline
     
     
     
-    
-    using_shader @shadow_vis_shader do
-      # using_textures @shadow_tex do
-      #   ofPushMatrix()
-      #   @fullscreen_quad.draw()
-      #   ofPopMatrix()
-      # end
-      
-    end
     tex = @shadow_cam.getFbo().getDepthTexture()
     # tex.draw_wh(0,0,0, tex.width, tex.height)
     tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
