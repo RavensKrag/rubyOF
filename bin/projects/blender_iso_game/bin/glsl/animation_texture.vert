@@ -39,7 +39,7 @@ uniform mat4 lightSpaceMatrix;
 uniform sampler2DRect vert_pos_tex;
 uniform sampler2DRect vert_norm_tex;
 uniform sampler2DRect entity_tex;
-uniform sampler2DRect shadow_tex;
+uniform sampler2D shadow_tex;
 
 uniform float transparent_pass;
 
