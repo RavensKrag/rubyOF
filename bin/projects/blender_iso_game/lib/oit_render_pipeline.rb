@@ -223,85 +223,23 @@ class OIT_RenderPipeline
     
     # @shadow_pass.call(lights)
     
-    @shadow_cam ||= RubyOF::Camera.new
     
     
-    # currently low to the ground by the grid world segment, looking at the player cube and staircase, pointing into the grid. should not eclipse the entire scene, but doesn't correlate with any light's position either.
-    @shadow_cam.tap do |cam|
-      cam.position    = GLM::Vec3.new(17.03714942932129,
-                                      -11.158864974975586,
-                                      2.8595733642578125)
-      cam.orientation = GLM::Quat.new(-0.7520553469657898,
-                                      -0.6527585387229919,
-                                      0.017086731269955635,
-                                      0.08959237486124039)
-      cam.fov         = 66.96208008631973
-      cam.near_clip   = 0.01
-      cam.far_clip    = 1000.0
-    end
+    @shadow_cam ||= RubyOF::OFX::ShadowCamera.new()
+    @shadow_cam.setRange( 10, 150 )
+    @shadow_cam.bias = 0.0001
+    @shadow_cam.intensity = 0.6
     
-    # NOTE: current position, orientation, FOV, etc take from the viewport camera, moved into about the position of the area light. should be good enough for a first draft.
-    
-    
-    # puts "\n"*5
-    num_lights.times do |i|
-      # only render shadows if the corresponding light exists and is enabled
-      light = lights.each.to_a[i]
-      # p light
-      next if light.nil?
-      # next if !light.enabled?
-        # ^ This doesn't work because I haven't enabled the lights for this pass
-        #   Need separate flag for shadows, but I'll do that later.
-      
-      # TODO: add flag to ofxDynamicLight for whether or not to draw shadows
-      
-      # puts "drawing shadow map #{i}"
-      
-      @shadow_fbos[i].tap do |x|
-        using_framebuffer x do |fbo|
-          # NOTE: must bind the FBO before you clear it in this way
-          fbo.clearDepthBuffer(1.0) # default is 1.0
-          fbo.clearColorBuffer(0, COLOR_ZERO)
-          
-          # get camera that represents the light's perspective
-          light_camera = @shadow_cam
-          
-          # render from the perspective of the light
-          using_camera light_camera do
-            ofEnableDepthTest()
-            @shadow_pass.call(lights, @shadow_material)
-            ofDisableDepthTest()
-          end
-        end
-      end
-      
-      
-    end
-    
-    # @shadow_tex = @shadow_fbos[0].getDepthTexture()
-    @shadow_tex = @shadow_fbos[0].getTexture(0)
-    
-    
-    
-    
-    
-    
-    
-    @shadow_simple ||= RubyOF::OFX::ShadowSimple.new()
-    @shadow_simple.setRange( 10, 150 )
-    @shadow_simple.bias = 0.0001
-    @shadow_simple.intensity = 0.6
-    
-    @shadow_simple.setLightPosition(lights.each.to_a[0].position)
-    @shadow_simple.setLightOrientation(lights.each.to_a[0].orientation)
+    @shadow_cam.setLightPosition(lights.each.to_a[0].position)
+    @shadow_cam.setLightOrientation(lights.each.to_a[0].orientation)
     
     # puts "shadow simple depth pass"
-    @shadow_simple.beginDepthPass()
+    @shadow_cam.beginDepthPass()
       ofEnableDepthTest()
       # @shadow_pass.call(lights, @shadow_material)
       @opaque_pass.call()
       ofDisableDepthTest()
-    @shadow_simple.endDepthPass()
+    @shadow_cam.endDepthPass()
     
     
     
@@ -453,11 +391,8 @@ class OIT_RenderPipeline
       #   ofPopMatrix()
       # end
       
-      
-      @shadow_tex.draw_wh(1400,950,0, 1024/4, 1024/4)
-      # @shadow_tex.draw_wh(0,0,0, @shadow_tex.width, @shadow_tex.height)
     end
-    tex = @shadow_simple.getFbo().getDepthTexture()
+    tex = @shadow_cam.getFbo().getDepthTexture()
     # tex.draw_wh(0,0,0, tex.width, tex.height)
     tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
     # ^ ofxShadowSimple's buffer is the size of the window
@@ -471,32 +406,32 @@ class OIT_RenderPipeline
   private
   
   def setShadowUniforms(material, viewport_cam_view_matrix)
-    lightCam = @shadow_simple.getLightCamera()
+    lightCam = @shadow_cam.getLightCamera()
     
     material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", lightCam.getModelViewProjectionMatrix()
+      "lightSpaceMatrix", @shadow_cam.getLightCamera().getModelViewProjectionMatrix()
     )
     
     material.setCustomUniform1f(
-      "u_shadowWidth", @shadow_simple.width
+      "u_shadowWidth", @shadow_cam.width
     )
     
     material.setCustomUniform1f(
-      "u_shadowHeight", @shadow_simple.height
+      "u_shadowHeight", @shadow_cam.height
     )
     
     material.setCustomUniform1f(
-      "u_shadowBias", @shadow_simple.bias
+      "u_shadowBias", @shadow_cam.bias
     )
     
     material.setCustomUniform1f(
-      "u_shadowIntensity", @shadow_simple.intensity
+      "u_shadowIntensity", @shadow_cam.intensity
     )
     
     
     
     material.setCustomUniformTexture(
-      "shadow_tex", @shadow_simple.getFbo().getDepthTexture(), 4
+      "shadow_tex", @shadow_cam.getFbo().getDepthTexture(), 4
     )
   end
   

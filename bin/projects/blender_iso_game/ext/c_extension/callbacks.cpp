@@ -1569,6 +1569,56 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
    ;
 }
 
+#include "ofxShadowCamera.h"
+
+void wrap_ofxShadowCamera(Module rb_mOFX){
+	
+   Data_Type<ofxShadowCamera> rb_c_ofxShadowCamera = 
+      define_class_under<ofxShadowCamera>(rb_mOFX, "ShadowCamera");
+   
+   rb_c_ofxShadowCamera
+      .define_constructor(Constructor<ofxShadowCamera>())
+		
+		.define_method("setRange",             &ofxShadowCamera::setRange)
+		.define_method("setLightPosition",     &ofxShadowCamera::setLightPosition)
+		.define_method("setLightOrientation",  &ofxShadowCamera::setLightOrientation)
+		.define_method("setLightLookAt",       &ofxShadowCamera::setLightLookAt)
+		
+		.define_method("beginDepthPass",
+			&ofxShadowCamera::beginDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
+		.define_method("endDepthPass",
+			&ofxShadowCamera::endDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
+		
+		.define_method("beginRenderPass",  &ofxShadowCamera::beginRenderPass)
+		.define_method("endRenderPass",    &ofxShadowCamera::endRenderPass)
+		
+		.define_method("width=",         &ofxShadowCamera::setWidth)
+		.define_method("height=",        &ofxShadowCamera::setHeight)
+		.define_method("width",         &ofxShadowCamera::getWidth)
+		.define_method("height",        &ofxShadowCamera::getHeight)
+		
+		.define_method("bias=",         &ofxShadowCamera::setBias)
+		.define_method("bias",          &ofxShadowCamera::getBias)
+		
+		.define_method("intensity=",    &ofxShadowCamera::setIntensity)
+		.define_method("intensity",     &ofxShadowCamera::getIntensity)
+		
+		.define_method("getFbo",               &ofxShadowCamera::getFbo)
+		.define_method("getLightCamera",       &ofxShadowCamera::getLightCamera)
+		.define_method("getShadowTransMatrix", &ofxShadowCamera::getShadowTransMatrix)
+		// .define_method("getShader",            &ofxShadowCamera::getShader)
+   ;
+}
+
+
 
 #include "ofxShadowSimple.h"
 
@@ -1892,6 +1942,8 @@ void Init_rubyOF_project()
 	wrap_ofxDynamicLight(rb_mOFX);
 	
 	wrap_ofxShadowSimple(rb_mOFX);
+	
+	wrap_ofxShadowCamera(rb_mOFX);
 	
 	
 	
