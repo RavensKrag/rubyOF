@@ -1580,9 +1580,10 @@ void wrap_ofxShadowSimple(Module rb_mOFX){
    rb_c_ofxShadowSimple
       .define_constructor(Constructor<ofxShadowSimple>())
 		
-		.define_method("setRange",         &ofxShadowSimple::setRange)
-		.define_method("setLightPosition", &ofxShadowSimple::setLightPosition)
-		.define_method("setLightLookAt",   &ofxShadowSimple::setLightLookAt)
+		.define_method("setRange",             &ofxShadowSimple::setRange)
+		.define_method("setLightPosition",     &ofxShadowSimple::setLightPosition)
+		.define_method("setLightOrientation",  &ofxShadowSimple::setLightOrientation)
+		.define_method("setLightLookAt",       &ofxShadowSimple::setLightLookAt)
 		
 		.define_method("beginDepthPass",
 			&ofxShadowSimple::beginDepthPass,

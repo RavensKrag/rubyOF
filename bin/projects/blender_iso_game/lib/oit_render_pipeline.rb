@@ -228,13 +228,13 @@ class OIT_RenderPipeline
     
     # currently low to the ground by the grid world segment, looking at the player cube and staircase, pointing into the grid. should not eclipse the entire scene, but doesn't correlate with any light's position either.
     @shadow_cam.tap do |cam|
-      cam.position    = GLM::Vec3.new(21.91913604736328,
-                                      -2.126699447631836,
-                                      3.4626035690307617)
-      cam.orientation = GLM::Quat.new(-0.8488614559173584,
-                                      -0.4503442645072937,
-                                      -0.14388048648834229,
-                                      -0.23647984862327576)
+      cam.position    = GLM::Vec3.new(17.03714942932129,
+                                      -11.158864974975586,
+                                      2.8595733642578125)
+      cam.orientation = GLM::Quat.new(-0.7520553469657898,
+                                      -0.6527585387229919,
+                                      0.017086731269955635,
+                                      0.08959237486124039)
       cam.fov         = 66.96208008631973
       cam.near_clip   = 0.01
       cam.far_clip    = 1000.0
@@ -290,10 +290,10 @@ class OIT_RenderPipeline
     @shadow_simple ||= RubyOF::OFX::ShadowSimple.new()
     @shadow_simple.setRange( 10, 150 )
     @shadow_simple.bias = 0.01
-    @shadow_simple.intensity = 1.0
+    @shadow_simple.intensity = 0.8
     
-    @shadow_simple.setLightPosition(GLM::Vec3.new(30,4,5))
-    @shadow_simple.setLightLookAt(GLM::Vec3.new(0,0,0), GLM::Vec3.new(0,0,1))
+    @shadow_simple.setLightPosition(lights.each.to_a[0].position)
+    @shadow_simple.setLightOrientation(lights.each.to_a[0].orientation)
     
     # puts "shadow simple depth pass"
     @shadow_simple.beginDepthPass()

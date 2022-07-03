@@ -340,146 +340,6 @@
     }
     
     
-    // float a[5] = float[](3.4, 4.2, 5.0, 5.2, 1.1);
-    vec2 poissonDisk[16] = vec2[](
-        vec2(-0.94201624,  -0.39906216),
-        vec2( 0.94558609,   -0.76890725),
-        vec2(-0.094184101, -0.92938870),
-        vec2( 0.34495938,    0.29387760),
-        vec2(-0.91588581,   0.45771432),
-        vec2(-0.81544232,  -0.87912464),
-        vec2(-0.38277543,  0.27676845),
-        vec2( 0.97484398,   0.75648379),
-        vec2( 0.44323325,  -0.97511554),
-        vec2( 0.53742981,  -0.47373420),
-        vec2(-0.26496911, -0.41893023),
-        vec2( 0.79197514,   0.19090188),
-        vec2(-0.24188840,  0.99706507),
-        vec2(-0.81409955,  0.91437590),
-        vec2( 0.19984126,   0.78641367),
-        vec2( 0.14383161,  -0.14100790)
-    );
-    
-    
-    float calculateShadow(vec4 lightSpacePosition){
-        // return TEXTURE(shadow_tex, lightSpacePosition).r;
-        // return TEXTURE(shadow_tex, vec2(0.5,0.5)).r;
-        
-        
-        // // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
-        
-        // // perform perspective divide
-        // vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
-        // // transform to [0,1] range
-        // projCoords = projCoords * 0.5 + 0.5;
-        // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-        // float closestDepth = texture(shadow_map, projCoords.xy).r; 
-        // // get depth of current fragment from light's perspective
-        // float currentDepth = projCoords.z;
-        // // check whether current frag pos is in shadow
-        // float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
-        // return shadow;
-        
-        
-        
-        
-        // // get projected shadow value
-        // vec3 tdepth = lightSpacePosition.xyz / lightSpacePosition.w;
-        // vec4 depth  = vec4( tdepth.xyz, lightSpacePosition.w );
-        
-        // // depth.y = 1.0 - depth.y;
-        // // depth.y = u_shadowHeight - depth.y;
-        
-        // // float shadow = 1.0;
-        
-        // // int numSamples = 16;
-        // // float shadowDec = 1.0/float(numSamples);
-        // // for( int i = 0; i < numSamples; i++ ) {
-        // //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
-        // //     float texel = texture( shadow_map, coords).r;
-            
-        // //     if( texel < depth.z - u_shadowBias ) {
-        // //         shadow -= shadowDec * u_shadowIntensity;
-        // //     }
-        // // }
-        // // shadow = clamp( shadow, 0.0, 1.0 );
-        
-        // // // are you behind the shadow view? //
-        // // if( lightSpacePosition.z < 1.0) {
-        // //     shadow = 1.0;
-        // // }
-        
-        // float closestDepth = texture( shadow_map, depth.xy).r;
-        // float shadow = depth.z > closestDepth  ? 1.0 : 0.0;
-        
-        // return shadow;
-        
-        
-        
-        
-        
-        // normalized space of the shadow camera, display on the environmetn
-        
-        float vis_min = 0.0;
-        float vis_max = 1.0;
-        
-        vec4 post_vert_gl_pos = 
-            vec4(
-                v_lightSpacePosition.xyz / v_lightSpacePosition.w,
-                1/v_lightSpacePosition.w
-            );
-        
-        // --------
-        
-        float r = remap(-1, 1, 
-                        vis_min, vis_max, 
-                        post_vert_gl_pos.x);
-        
-        r = clip(r, vis_min, vis_max);
-        
-        // --------
-        
-        float g = remap(-1, 1, 
-                        vis_min, vis_max, 
-                        post_vert_gl_pos.y);
-        
-        g = clip(g, vis_min, vis_max);
-        
-        // --------
-        
-        float b = remap(-1, 1, 
-                        vis_min, vis_max, 
-                        post_vert_gl_pos.z);
-        
-        b = clip(b, vis_min, vis_max);
-        
-        // --------
-        
-        // (limit coloring to between the clip planes on the camera's z axis)
-        if(b == 0){
-            r = 0;
-        }
-        if(b == 0){
-            g = 0;
-        }
-        
-        
-        vec3 coord = vec3(r,g,b);
-        
-        
-        
-        // modify coordinates in eye space into texture values
-        float closestDepth = TEXTURE( shadow_tex, coord.xy).r;
-        
-        float shadow = coord.z > closestDepth ? 1.0 : 0.0;
-        
-        
-        return shadow;
-        
-        // return 1.0;
-        // return 0.0;
-    }
-    
     vec4 debugOutputShadow(){
         vec4 localColor;
         
@@ -564,37 +424,37 @@
         
         
         
-        // // xy in screen space
+        // xy in screen space
         
         
-        // // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
-        //     // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
+        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
+            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
         
-        // float vis_min = 0.1;
-        // float vis_max = 0.9;
+        float vis_min = 0.1;
+        float vis_max = 0.9;
         
-        // vec4 post_vert_gl_pos = 
-        //     vec4(
-        //         v_lightSpacePosition.xyz / v_lightSpacePosition.w,
-        //         1/v_lightSpacePosition.w
-        //     );
+        vec4 post_vert_gl_pos = 
+            vec4(
+                v_lightSpacePosition.xyz / v_lightSpacePosition.w,
+                1/v_lightSpacePosition.w
+            );
         
-        // float r = remap(-1, 1, 
-        //                 vis_min, vis_max, 
-        //                 post_vert_gl_pos.x);
+        float r = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.x);
         
-        // r = clip(r, vis_min, vis_max);
+        r = clip(r, vis_min, vis_max);
         
-        // localColor = vec4(r,
-        //                   0,
-        //                   0,
-        //                   1.0);
+        localColor = vec4(r,
+                          0,
+                          0,
+                          1.0);
         
-        
-        
-        
-        
-        
+        return localColor;
+    }
+    
+    
+    vec3 lightSpaceCoords(){
         // normalized space of the shadow camera, display on the environmetn
         
         float vis_min = 0.0;
@@ -639,23 +499,162 @@
         if(b == 0){
             g = 0;
         }
+        if(r == 0){
+            g = 0;
+        }
+        
+        return vec3(r,g,b);
+    }
+    
+    
+    
+    // float a[5] = float[](3.4, 4.2, 5.0, 5.2, 1.1);
+    vec2 poissonDisk[16] = vec2[](
+        vec2(-0.94201624,  -0.39906216),
+        vec2( 0.94558609,   -0.76890725),
+        vec2(-0.094184101, -0.92938870),
+        vec2( 0.34495938,    0.29387760),
+        vec2(-0.91588581,   0.45771432),
+        vec2(-0.81544232,  -0.87912464),
+        vec2(-0.38277543,  0.27676845),
+        vec2( 0.97484398,   0.75648379),
+        vec2( 0.44323325,  -0.97511554),
+        vec2( 0.53742981,  -0.47373420),
+        vec2(-0.26496911, -0.41893023),
+        vec2( 0.79197514,   0.19090188),
+        vec2(-0.24188840,  0.99706507),
+        vec2(-0.81409955,  0.91437590),
+        vec2( 0.19984126,   0.78641367),
+        vec2( 0.14383161,  -0.14100790)
+    );
+    
+    
+    float calculateShadow(vec4 lightSpacePosition){
+        // return TEXTURE(shadow_tex, lightSpacePosition).r;
+        // return TEXTURE(shadow_tex, vec2(0.5,0.5)).r;
         
         
-        localColor = vec4(r,g,b, 1.0);
+        // // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
         
+        // // perform perspective divide
+        // vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
+        // // transform to [0,1] range
+        // projCoords = projCoords * 0.5 + 0.5;
+        // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+        // float closestDepth = texture(shadow_map, projCoords.xy).r; 
+        // // get depth of current fragment from light's perspective
+        // float currentDepth = projCoords.z;
+        // // check whether current frag pos is in shadow
+        // float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+        // return shadow;
+        
+        
+        
+        
+        // // get projected shadow value
+        // vec3 tdepth = lightSpacePosition.xyz / lightSpacePosition.w;
+        // vec4 depth  = vec4( tdepth.xyz, lightSpacePosition.w );
+        
+        // // depth.y = 1.0 - depth.y;
+        // // depth.y = u_shadowHeight - depth.y;
+        
+        // // float shadow = 1.0;
+        
+        // // int numSamples = 16;
+        // // float shadowDec = 1.0/float(numSamples);
+        // // for( int i = 0; i < numSamples; i++ ) {
+        // //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
+        // //     float texel = texture( shadow_map, coords).r;
+            
+        // //     if( texel < depth.z - u_shadowBias ) {
+        // //         shadow -= shadowDec * u_shadowIntensity;
+        // //     }
+        // // }
+        // // shadow = clamp( shadow, 0.0, 1.0 );
+        
+        // // // are you behind the shadow view? //
+        // // if( lightSpacePosition.z < 1.0) {
+        // //     shadow = 1.0;
+        // // }
+        
+        // float closestDepth = texture( shadow_map, depth.xy).r;
+        // float shadow = depth.z > closestDepth  ? 1.0 : 0.0;
+        
+        // return shadow;
+        
+        
+        
+        
+        vec3 coord = lightSpaceCoords();
         
         
         // modify coordinates in eye space into texture values
-        localColor = TEXTURE( shadow_tex, vec2(r,g));
+        vec2 shadow_uvs = vec2(coord.x, 1-coord.y);
+        float closestDepth = TEXTURE( shadow_tex, shadow_uvs.xy).r;
         
+        float shadow = coord.z > closestDepth ? 1.0 : 0.0;
         
+        shadow = shadow * u_shadowIntensity;
         
+        if( coord.z > 1.0) {
+            shadow = 0.0;
+        }
         
+        if( coord.x == 0 || coord.y == 0 || coord.z == 0) {
+            shadow = 0.0;
+        }
         
+        return shadow;
+        
+        // return 1.0;
+        // return 0.0;
+    }
+    
+    
+    
+    
+    vec4 drawWithLighting(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        vec4 localColor = 
+                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
+                vec4(diffuse, 1.0) * v_diffuse  + 
+                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+                                     vec4(v_emissive.rgb, 0);
+        return localColor;
+    }
+    
+    vec4 drawShadowTest(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        vec3 pos = lightSpaceCoords();
+        
+        vec4 localColor = vec4(pos.xyz, 1.0);
+        
+        // modify coordinates in eye space into texture values
+        localColor = TEXTURE( shadow_tex, vec2(localColor.x,
+                                               1-localColor.y));
         
         
         return localColor;
     }
+    
+    vec4 drawWithLightingAndShadows(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        float shadow = calculateShadow(v_lightSpacePosition);
+        
+        vec4 localAmbient = 
+            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        vec4 localNonAmbient = 
+            vec4(diffuse, 1.0) * v_diffuse  + 
+            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        vec4 localEmmisive = 
+            vec4(v_emissive.rgb, 0);
+        
+        vec4 localColor = 
+            localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
+        
+        return localColor;
+    }
+    
+    
     
     
     //////////////////////////////////////////////////////
@@ -679,48 +678,10 @@
         
         // vec4 localColor = v_diffuse;
         
-        // // 
-        // // with lighting
-        // // 
         
-        // vec4 localColor = 
-        //         vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
-        //         vec4(diffuse, 1.0) * v_diffuse  + 
-        //         vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
-        //                              vec4(v_emissive.rgb, 0);
-        
-        
-        // 
-        // with lighting and shadows
-        // 
-        float shadow = calculateShadow(v_lightSpacePosition);
-        
-        vec4 localAmbient = 
-            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
-        
-        vec4 localNonAmbient = 
-            vec4(diffuse, 1.0) * v_diffuse  + 
-            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
-        
-        vec4 localEmmisive = 
-            vec4(v_emissive.rgb, 0);
-        
-        vec4 localColor = 
-            localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
-        
-        
-        
-        
-        
-        
-        // // 
-        // // shadow value test
-        // // 
-        
-        // vec4 localColor = debugOutputShadow();
-        
-        
-        
+        // vec4 localColor = drawWithLighting(ambient, diffuse, specular);
+        vec4 localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
+        // vec4 localColor = drawShadowTest(ambient, diffuse, specular);
         
         
         
