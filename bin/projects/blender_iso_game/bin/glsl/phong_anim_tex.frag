@@ -364,91 +364,55 @@
         //                   1.0);
         
         
-        // // depth in clip space
-        // localColor = vec4(remap(10.0, 150.0, 
-        //                         0.0, 1.0, 
-        //                         -v_lightSpacePosition.z), 
-        //                   0.0,
-        //                   0.0,
-        //                   1.0);
+        
+        // depth in clip space
+        localColor = vec4(remap(10.0, 150.0, 
+                                0.0, 1.0, 
+                                -v_lightSpacePosition.z), 
+                          0.0,
+                          0.0,
+                          1.0);
         
         
-        // // xy coordinate in shadow caster eye space
-        // vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
-        //                   v_lightSpacePosition.y+u_shadowHeight/100/2,
-        //                   -v_lightSpacePosition.z);
+        // xy coordinate in shadow caster eye space
+        vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
+                          v_lightSpacePosition.y+u_shadowHeight/100/2,
+                          -v_lightSpacePosition.z);
         
-        // float vis_min = 0.1;
-        // float vis_max = 0.9;
+        float vis_min = 0.1;
+        float vis_max = 0.9;
         
-        // float r = remap(0, u_shadowWidth/50, 
-        //                 vis_min, vis_max, 
-        //                 coord.x);
-        // r = clip(r, vis_min, vis_max);
-        
-        
-        // float g = remap(0, u_shadowHeight/100, 
-        //                 vis_min, vis_max, 
-        //                 coord.y);
-        // g = clip(g, vis_min, vis_max);
+        float r = remap(0, u_shadowWidth/50, 
+                        vis_min, vis_max, 
+                        coord.x);
+        r = clip(r, vis_min, vis_max);
         
         
-        // float b = remap(10.0, 150.0, 
-        //                 vis_min, vis_max, 
-        //                 coord.z);
-        // b = clip(b, vis_min, vis_max);
+        float g = remap(0, u_shadowHeight/100, 
+                        vis_min, vis_max, 
+                        coord.y);
+        g = clip(g, vis_min, vis_max);
         
         
-        // if(r == 0){
-        //     g = 0;
-        // }
-        // if(g == 0){
-        //     r = 0;
-        // }
-        
-        // localColor = vec4(r,g,b, 1.0);
+        float b = remap(0.0, 150.0, 
+                        vis_min, vis_max, 
+                        -coord.z);
+        b = clip(b, vis_min, vis_max);
         
         
+        if(r == 0){
+            g = 0;
+        }
+        if(g == 0){
+            r = 0;
+        }
+        
+        localColor = vec4(r,g,b, 1.0);
         
         
         // // modify coordinates in eye space into texture values
         // localColor = TEXTURE( shadow_tex, vec2(r,g));
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        // xy in screen space
-        
-        
-        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
-            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
-        
-        float vis_min = 0.1;
-        float vis_max = 0.9;
-        
-        vec4 post_vert_gl_pos = 
-            vec4(
-                v_lightSpacePosition.xyz / v_lightSpacePosition.w,
-                1/v_lightSpacePosition.w
-            );
-        
-        float r = remap(-1, 1, 
-                        vis_min, vis_max, 
-                        post_vert_gl_pos.x);
-        
-        r = clip(r, vis_min, vis_max);
-        
-        localColor = vec4(r,
-                          0,
-                          0,
-                          1.0);
         
         return localColor;
     }
@@ -456,6 +420,9 @@
     
     vec3 lightSpaceCoords(){
         // normalized space of the shadow camera, display on the environmetn
+        
+        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
+            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
         
         float vis_min = 0.0;
         float vis_max = 1.0;
@@ -530,61 +497,6 @@
     
     
     float calculateShadow(vec4 lightSpacePosition){
-        // return TEXTURE(shadow_tex, lightSpacePosition).r;
-        // return TEXTURE(shadow_tex, vec2(0.5,0.5)).r;
-        
-        
-        // // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
-        
-        // // perform perspective divide
-        // vec3 projCoords = lightSpacePosition.xyz / lightSpacePosition.w;
-        // // transform to [0,1] range
-        // projCoords = projCoords * 0.5 + 0.5;
-        // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-        // float closestDepth = texture(shadow_map, projCoords.xy).r; 
-        // // get depth of current fragment from light's perspective
-        // float currentDepth = projCoords.z;
-        // // check whether current frag pos is in shadow
-        // float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
-        // return shadow;
-        
-        
-        
-        
-        // // get projected shadow value
-        // vec3 tdepth = lightSpacePosition.xyz / lightSpacePosition.w;
-        // vec4 depth  = vec4( tdepth.xyz, lightSpacePosition.w );
-        
-        // depth.y = 1.0 - depth.y;
-        // depth.y = u_shadowHeight - depth.y;
-        
-        // float shadow = 1.0;
-        
-        // int numSamples = 16;
-        // float shadowDec = 1.0/float(numSamples);
-        // for( int i = 0; i < numSamples; i++ ) {
-        //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
-        //     float texel = texture( shadow_map, coords).r;
-            
-        //     if( texel < depth.z - u_shadowBias ) {
-        //         shadow -= shadowDec * u_shadowIntensity;
-        //     }
-        // }
-        // shadow = clamp( shadow, 0.0, 1.0 );
-        
-        // // are you behind the shadow view? //
-        // if( lightSpacePosition.z < 1.0) {
-        //     shadow = 1.0;
-        // }
-        
-        // float closestDepth = texture( shadow_map, depth.xy).r;
-        // float shadow = depth.z > closestDepth  ? 1.0 : 0.0;
-        
-        // return shadow;
-        
-        
-        
-        
         vec3 coord = lightSpaceCoords();
         
         
@@ -702,6 +614,8 @@
         localColor = TEXTURE( shadow_tex, vec2(localColor.x,
                                                1-localColor.y));
         
+        
+        // vec4 localColor = debugOutputShadow();
         
         return localColor;
     }
