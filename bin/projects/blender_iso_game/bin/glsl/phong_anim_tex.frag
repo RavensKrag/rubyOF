@@ -557,33 +557,89 @@
         
         
         
-        // xy in screen space
+        // // xy in screen space
         
         
-        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates.
-            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
+        // // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
+        //     // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
+        
+        // float vis_min = 0.1;
+        // float vis_max = 0.9;
+        
+        // vec4 post_vert_gl_pos = 
+        //     vec4(
+        //         v_lightSpacePosition.xyz / v_lightSpacePosition.w,
+        //         1/v_lightSpacePosition.w
+        //     );
+        
+        // float r = remap(-1, 1, 
+        //                 vis_min, vis_max, 
+        //                 post_vert_gl_pos.x);
+        
+        // r = clip(r, vis_min, vis_max);
+        
+        // localColor = vec4(r,
+        //                   0,
+        //                   0,
+        //                   1.0);
+        
+        
+        
+        
+        
+        
+        // normalized space of the shadow camera, display on the environmetn
         
         float vis_min = 0.1;
         float vis_max = 0.9;
         
-        vec4 original_gl_pos = 
+        vec4 post_vert_gl_pos = 
             vec4(
                 v_lightSpacePosition.xyz / v_lightSpacePosition.w,
                 1/v_lightSpacePosition.w
             );
         
+        // --------
+        
         float r = remap(-1, 1, 
                         vis_min, vis_max, 
-                        original_gl_pos.x);
+                        post_vert_gl_pos.x);
         
         r = clip(r, vis_min, vis_max);
         
-        localColor = vec4(r,
-                          0,
-                          0,
-                          1.0);
+        // --------
+        
+        float g = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.y);
+        
+        g = clip(g, vis_min, vis_max);
+        
+        // --------
+        
+        float b = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.z);
+        
+        b = clip(b, vis_min, vis_max);
+        
+        // --------
+        
+        // (limit coloring to between the clip planes on the camera's z axis)
+        if(b == 0){
+            r = 0;
+        }
+        if(b == 0){
+            g = 0;
+        }
         
         
+        localColor = vec4(r,g,b, 1.0);
+        
+        
+        
+        // modify coordinates in eye space into texture values
+        localColor = TEXTURE( shadow_tex, vec2(r,g));
         
         
         

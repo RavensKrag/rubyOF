@@ -221,8 +221,8 @@ void main (void){
     //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
     v_worldPosition = (finalPos).xyz;
     
-    v_lightSpacePosition = modelViewProjectionMatrix * finalPos;
-    // v_lightSpacePosition = lightSpaceMatrix * (eyePosition);
+    // v_lightSpacePosition = modelViewProjectionMatrix * finalPos;
+    v_lightSpacePosition = lightSpaceMatrix * finalPos;
 
     v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;
     // #if HAS_COLOR
