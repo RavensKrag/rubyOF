@@ -221,7 +221,7 @@ void main (void){
     //v_worldPosition = (inverse(viewMatrix) * modelViewMatrix * finalPos).xyz;
     v_worldPosition = (finalPos).xyz;
     
-    v_lightSpacePosition = lightSpaceMatrix * vec4(v_worldPosition, 1.0);
+    v_lightSpacePosition = modelViewProjectionMatrix * finalPos;
     // v_lightSpacePosition = lightSpaceMatrix * (eyePosition);
 
     v_texcoord = (textureMatrix*vec4(texcoord.x,texcoord.y,0,1)).xy;

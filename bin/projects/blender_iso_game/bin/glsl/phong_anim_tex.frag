@@ -506,46 +506,89 @@
         //                   1.0);
         
         
-        // xy coordinate in shadow caster eye space
-        vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
-                          v_lightSpacePosition.y+u_shadowHeight/100/2,
-                          -v_lightSpacePosition.z);
+        // // xy coordinate in shadow caster eye space
+        // vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
+        //                   v_lightSpacePosition.y+u_shadowHeight/100/2,
+        //                   -v_lightSpacePosition.z);
+        
+        // float vis_min = 0.1;
+        // float vis_max = 0.9;
+        
+        // float r = remap(0, u_shadowWidth/50, 
+        //                 vis_min, vis_max, 
+        //                 coord.x);
+        // r = clip(r, vis_min, vis_max);
+        
+        
+        // float g = remap(0, u_shadowHeight/100, 
+        //                 vis_min, vis_max, 
+        //                 coord.y);
+        // g = clip(g, vis_min, vis_max);
+        
+        
+        // float b = remap(10.0, 150.0, 
+        //                 vis_min, vis_max, 
+        //                 coord.z);
+        // b = clip(b, vis_min, vis_max);
+        
+        
+        // if(r == 0){
+        //     g = 0;
+        // }
+        // if(g == 0){
+        //     r = 0;
+        // }
+        
+        // localColor = vec4(r,g,b, 1.0);
+        
+        
+        
+        
+        // // modify coordinates in eye space into texture values
+        // localColor = TEXTURE( shadow_tex, vec2(r,g));
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // xy in screen space
+        
+        
+        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates.
+            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
         
         float vis_min = 0.1;
         float vis_max = 0.9;
         
-        float r = remap(0, u_shadowWidth/50, 
+        vec4 original_gl_pos = 
+            vec4(
+                v_lightSpacePosition.xyz / v_lightSpacePosition.w,
+                1/v_lightSpacePosition.w
+            );
+        
+        float r = remap(-1, 1, 
                         vis_min, vis_max, 
-                        coord.x);
+                        original_gl_pos.x);
+        
         r = clip(r, vis_min, vis_max);
         
-        
-        float g = remap(0, u_shadowHeight/100, 
-                        vis_min, vis_max, 
-                        coord.y);
-        g = clip(g, vis_min, vis_max);
-        
-        
-        float b = remap(10.0, 150.0, 
-                        vis_min, vis_max, 
-                        coord.z);
-        b = clip(b, vis_min, vis_max);
-        
-        
-        if(r == 0){
-            g = 0;
-        }
-        if(g == 0){
-            r = 0;
-        }
-        
-        localColor = vec4(r,g,b, 1.0);
+        localColor = vec4(r,
+                          0,
+                          0,
+                          1.0);
         
         
         
         
-        // modify coordinates in eye space into texture values
-        localColor = TEXTURE( shadow_tex, vec2(r,g));
+        
+        
+        
         
         
         return localColor;
@@ -584,34 +627,34 @@
         //                              vec4(v_emissive.rgb, 0);
         
         
-        // 
-        // with lighting and shadows
-        // 
-        float shadow = calculateShadow(v_lightSpacePosition);
-        
-        vec4 localAmbient = 
-            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
-        
-        vec4 localNonAmbient = 
-            vec4(diffuse, 1.0) * v_diffuse  + 
-            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
-        
-        vec4 localEmmisive = 
-            vec4(v_emissive.rgb, 0);
-        
-        vec4 localColor = 
-            localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
-        
-        
-        
-        
-        
-        
         // // 
-        // // shadow value test
+        // // with lighting and shadows
         // // 
+        // float shadow = calculateShadow(v_lightSpacePosition);
         
-        // vec4 localColor = debugOutputShadow();
+        // vec4 localAmbient = 
+        //     vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        // vec4 localNonAmbient = 
+        //     vec4(diffuse, 1.0) * v_diffuse  + 
+        //     vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        // vec4 localEmmisive = 
+        //     vec4(v_emissive.rgb, 0);
+        
+        // vec4 localColor = 
+        //     localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
+        
+        
+        
+        
+        
+        
+        // 
+        // shadow value test
+        // 
+        
+        vec4 localColor = debugOutputShadow();
         
         
         
