@@ -16,11 +16,10 @@ public:
     
     ofxShadowCamera();
     
-    void load( string aVertPath, string aFragPath );
     void setRange( float nearClip, float farClip );
-    void setLightPosition( glm::vec3 aPos );
-    void setLightOrientation(glm::quat rot );
-    void setLightLookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );
+    void setPosition( glm::vec3 aPos );
+    void setOrientation(glm::quat rot );
+    void lookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );
     
     void beginDepthPass();
     void endDepthPass();
@@ -58,8 +57,6 @@ protected:
     ofMatrix4x4 biasMatrix;
     
     void allocateFbo();
-    
-    bool bTriedLoad = false;
     
     ofParameterGroup mParams;
     ofParameter<float> _width, _height, _depthBias, _intensity;

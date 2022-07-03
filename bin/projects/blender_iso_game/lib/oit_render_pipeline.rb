@@ -220,8 +220,8 @@ class OIT_RenderPipeline
     @shadow_cam.bias = 0.0001
     @shadow_cam.intensity = 0.6
     
-    @shadow_cam.setLightPosition(lights.each.to_a[0].position)
-    @shadow_cam.setLightOrientation(lights.each.to_a[0].orientation)
+    @shadow_cam.position = lights.each.to_a[0].position
+    @shadow_cam.orientation = lights.each.to_a[0].orientation
     
     # puts "shadow simple depth pass"
     @shadow_cam.beginDepthPass()
@@ -373,10 +373,10 @@ class OIT_RenderPipeline
     
     
     
-    tex = @shadow_cam.getFbo().getDepthTexture()
+    tex = @shadow_cam.getShadowMap()
     # tex.draw_wh(0,0,0, tex.width, tex.height)
     tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
-    # ^ ofxShadowSimple's buffer is the size of the window
+    # ^ ofxShadowCamera's buffer is the size of the window
     
     
     

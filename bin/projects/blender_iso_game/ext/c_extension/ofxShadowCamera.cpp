@@ -37,14 +37,9 @@ ofxShadowCamera::ofxShadowCamera() {
     
     // setBias( 0.001 );
     // setIntensity( 0.7 );
-    
-    bTriedLoad = false;
 }
 
-//--------------------------------------------------------------
-void ofxShadowCamera::load( string aVertPath, string aFragPath ) {
-    bTriedLoad = true;
-}
+// TODO: implement way to change the shadow buffer size (don't forget to change the viewport rectangle when rendering)
 
 //--------------------------------------------------------------
 void ofxShadowCamera::setRange( float nearClip, float farClip ) {
@@ -55,17 +50,17 @@ void ofxShadowCamera::setRange( float nearClip, float farClip ) {
 }
 
 //--------------------------------------------------------------
-void ofxShadowCamera::setLightPosition( glm::vec3 aPos ) {
+void ofxShadowCamera::setPosition( glm::vec3 aPos ) {
     lightCam.setPosition( aPos );
 }
 
 //--------------------------------------------------------------
-void ofxShadowCamera::setLightOrientation(glm::quat rot ) {
+void ofxShadowCamera::setOrientation(glm::quat rot ) {
     lightCam.setOrientation(rot);
 }
 
 //--------------------------------------------------------------
-void ofxShadowCamera::setLightLookAt( glm::vec3 aPos, glm::vec3 upVector ) {
+void ofxShadowCamera::lookAt( glm::vec3 aPos, glm::vec3 upVector ) {
     lightCam.lookAt( aPos, upVector );
 }
 
