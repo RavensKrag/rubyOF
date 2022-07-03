@@ -555,27 +555,27 @@
         // vec3 tdepth = lightSpacePosition.xyz / lightSpacePosition.w;
         // vec4 depth  = vec4( tdepth.xyz, lightSpacePosition.w );
         
-        // // depth.y = 1.0 - depth.y;
-        // // depth.y = u_shadowHeight - depth.y;
+        // depth.y = 1.0 - depth.y;
+        // depth.y = u_shadowHeight - depth.y;
         
-        // // float shadow = 1.0;
+        // float shadow = 1.0;
         
-        // // int numSamples = 16;
-        // // float shadowDec = 1.0/float(numSamples);
-        // // for( int i = 0; i < numSamples; i++ ) {
-        // //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
-        // //     float texel = texture( shadow_map, coords).r;
+        // int numSamples = 16;
+        // float shadowDec = 1.0/float(numSamples);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 coords = depth.xy + (poissonDisk[i]/(u_shadowWidth*0.75));
+        //     float texel = texture( shadow_map, coords).r;
             
-        // //     if( texel < depth.z - u_shadowBias ) {
-        // //         shadow -= shadowDec * u_shadowIntensity;
-        // //     }
-        // // }
-        // // shadow = clamp( shadow, 0.0, 1.0 );
+        //     if( texel < depth.z - u_shadowBias ) {
+        //         shadow -= shadowDec * u_shadowIntensity;
+        //     }
+        // }
+        // shadow = clamp( shadow, 0.0, 1.0 );
         
-        // // // are you behind the shadow view? //
-        // // if( lightSpacePosition.z < 1.0) {
-        // //     shadow = 1.0;
-        // // }
+        // // are you behind the shadow view? //
+        // if( lightSpacePosition.z < 1.0) {
+        //     shadow = 1.0;
+        // }
         
         // float closestDepth = texture( shadow_map, depth.xy).r;
         // float shadow = depth.z > closestDepth  ? 1.0 : 0.0;
@@ -599,13 +599,77 @@
         
         float bias = u_shadowBias;
         
+        
         float shadow = (coord.z - bias) > closestDepth ? 1.0 : 0.0;
         
         shadow = shadow * u_shadowIntensity;
         
-        if( coord.z > 1.0) {
-            shadow = 0.0;
-        }
+        
+        
+        
+        // // from ofxSimpleShadow
+        
+        // float shadow = 0.0;
+        // int numSamples = 16;
+        // // float shadowDec = 1.0/float(numSamples);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 pos = shadow_uvs.xy + shadow_uvs.xy*poissonDisk[i]/85;
+            
+        //     float texel = TEXTURE( shadow_tex, pos.xy).r;
+            
+        //     // if( texel <= coord.z - u_shadowBias ) {
+        //     //     if( pos.x == 0 || pos.y == 0 ) {
+        //     //         // shadow = 0.0;
+        //     //     }else{
+        //     //         shadow += shadowDec * u_shadowIntensity;
+        //     //     }
+        //     // }
+            
+        //     shadow += (coord.z - bias) > texel ? 1.0 : 0.0;
+        // }
+        // shadow  = (shadow / numSamples) * u_shadowIntensity;
+        
+        
+        // // from learnopengl
+        
+        // float shadow = 0.0;
+        // vec2 texelSize = 10 / vec2(u_shadowWidth, u_shadowHeight);
+        // for(int x = -1; x <= 1; ++x)
+        //     {
+        //     for(int y = -1; y <= 1; ++y)
+        //     {
+        //         vec2 pos = shadow_uvs.xy + vec2(x,y)*0.001;
+        //         float pcfDepth = TEXTURE( shadow_tex, pos.xy).r;
+        //         shadow += (coord.z - 0.001) > pcfDepth ? u_shadowIntensity : 0.0;
+        //     }
+        // }
+        // shadow = (shadow / 9.0);
+        
+        
+        
+        
+        // // combination
+        // // 
+        
+        
+        // float shadow = 0.0;
+        // int numSamples = 16;
+        // vec2 texelSize = 10 / vec2(u_shadowWidth, u_shadowHeight);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 pos = shadow_uvs.xy + poissonDisk[i]*0.001;
+        //     float pcfDepth = TEXTURE( shadow_tex, pos.xy).r;
+        //     shadow += (coord.z - 0.005) > pcfDepth ? u_shadowIntensity : 0.0;
+        // }
+        // shadow = (shadow / numSamples);
+
+        
+        
+        
+        
+        
+        // if( coord.z > 1.0) {
+        //     shadow = 0.0;
+        // }
         
         if( coord.x == 0 || coord.y == 0 || coord.z == 0) {
             shadow = 0.0;
@@ -686,9 +750,10 @@
         // vec4 localColor = v_diffuse;
         
         
-        // vec4 localColor = drawWithLighting(ambient, diffuse, specular);
-        vec4 localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
-        // vec4 localColor = drawShadowTest(ambient, diffuse, specular);
+        vec4 localColor;
+        // localColor = drawWithLighting(ambient, diffuse, specular);
+        localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
+        // localColor = drawShadowTest(ambient, diffuse, specular);
         
         
         
