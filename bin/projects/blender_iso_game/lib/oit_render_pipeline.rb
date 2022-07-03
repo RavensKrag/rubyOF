@@ -284,7 +284,7 @@ class OIT_RenderPipeline
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      setShadowUniforms(material, cam_view_matrix)
+      setShadowUniforms(material)
       
       using_camera camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
@@ -325,7 +325,7 @@ class OIT_RenderPipeline
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
-      setShadowUniforms(material, cam_view_matrix)
+      setShadowUniforms(material)
       
       using_camera camera do
         @transparent_pass.call()
@@ -386,11 +386,9 @@ class OIT_RenderPipeline
   
   private
   
-  def setShadowUniforms(material, viewport_cam_view_matrix)
-    lightCam = @shadow_cam.getLightCamera()
-    
+  def setShadowUniforms(material)
     material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", @shadow_cam.getLightCamera().getModelViewProjectionMatrix()
+      "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
     )
     
     material.setCustomUniform1f(

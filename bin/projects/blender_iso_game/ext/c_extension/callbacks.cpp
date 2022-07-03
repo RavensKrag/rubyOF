@@ -1613,8 +1613,10 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		
 		.define_method("getFbo",               &ofxShadowCamera::getFbo)
 		.define_method("getLightCamera",       &ofxShadowCamera::getLightCamera)
-		.define_method("getShadowTransMatrix", &ofxShadowCamera::getShadowTransMatrix)
+		// .define_method("getShadowTransMatrix", &ofxShadowCamera::getShadowTransMatrix)
 		// .define_method("getShader",            &ofxShadowCamera::getShader)
+		
+		.define_method("getLightSpaceMatrix", &ofxShadowCamera::getLightSpaceMatrix)
    ;
 }
 

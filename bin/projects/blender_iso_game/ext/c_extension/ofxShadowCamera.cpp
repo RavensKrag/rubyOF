@@ -318,6 +318,12 @@ ofMatrix4x4 ofxShadowCamera::getShadowTransMatrix( ofCamera& acam ) {
 }
 
 
+//--------------------------------------------------------------
+glm::mat4 ofxShadowCamera::getLightSpaceMatrix() {
+    return lightCam.getModelViewProjectionMatrix();
+}
+
+
 
 
 

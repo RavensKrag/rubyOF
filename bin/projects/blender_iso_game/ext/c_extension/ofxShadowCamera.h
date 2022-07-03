@@ -48,6 +48,9 @@ public:
     ofShader& getShader() { return shader; }
     ofParameterGroup& getParams() { return mParams; }
     
+    
+    glm::mat4 getLightSpaceMatrix();
+    
 protected:
     
     string fragShaderStr, vertShaderStr;
