@@ -289,8 +289,8 @@ class OIT_RenderPipeline
     
     @shadow_simple ||= RubyOF::OFX::ShadowSimple.new()
     @shadow_simple.setRange( 10, 150 )
-    @shadow_simple.bias = 0.01
-    @shadow_simple.intensity = 0.8
+    @shadow_simple.bias = 0.0001
+    @shadow_simple.intensity = 0.7
     
     @shadow_simple.setLightPosition(lights.each.to_a[0].position)
     @shadow_simple.setLightOrientation(lights.each.to_a[0].orientation)

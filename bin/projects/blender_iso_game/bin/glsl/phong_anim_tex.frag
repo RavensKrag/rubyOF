@@ -592,7 +592,14 @@
         vec2 shadow_uvs = vec2(coord.x, 1-coord.y);
         float closestDepth = TEXTURE( shadow_tex, shadow_uvs.xy).r;
         
-        float shadow = coord.z > closestDepth ? 1.0 : 0.0;
+        
+        // float max_bias = 0.01;
+        // float min_bias = 0.001;
+        // float bias = max(max_bias * (1.0 - dot(v_normal, lightDir)), min_bias);
+        
+        float bias = u_shadowBias;
+        
+        float shadow = (coord.z - bias) > closestDepth ? 1.0 : 0.0;
         
         shadow = shadow * u_shadowIntensity;
         
