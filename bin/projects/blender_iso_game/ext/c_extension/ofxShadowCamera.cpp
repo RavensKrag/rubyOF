@@ -41,6 +41,35 @@ ofxShadowCamera::ofxShadowCamera() {
 
 // TODO: implement way to change the shadow buffer size (don't forget to change the viewport rectangle when rendering)
 
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setSize( float width, float height ) {
+    setWidth(width);
+    setHeight(height);
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setWidth( float aWidth ) {
+    int tw = aWidth;
+    _width = tw;
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setHeight( float aHeight ) {
+    int th = aHeight;
+    _height = th;
+}
+
+//--------------------------------------------------------------
+float ofxShadowCamera::getWidth() {
+    return _width;
+}
+
+//--------------------------------------------------------------
+float ofxShadowCamera::getHeight() {
+    return _height;
+}
+
 //--------------------------------------------------------------
 void ofxShadowCamera::setRange( float nearClip, float farClip ) {
     lightCam.setNearClip( nearClip );
@@ -65,6 +94,11 @@ void ofxShadowCamera::lookAt( glm::vec3 aPos, glm::vec3 upVector ) {
 }
 
 //--------------------------------------------------------------
+void ofxShadowCamera::setAngle(float angle_deg) {
+    lightCam.setFov(angle_deg);
+}
+
+//--------------------------------------------------------------
 void ofxShadowCamera::beginDepthPass() {
     
     if( lightCam.getNearClip() != _nearClip || lightCam.getFarClip() != _farClip ) {
@@ -79,7 +113,9 @@ void ofxShadowCamera::beginDepthPass() {
     
     shadowFbo.begin();
     ofClear(255);
-    lightCam.begin();
+    
+    ofRectangle viewport(0,0, _width, _height);
+    lightCam.begin(viewport);
     
     
     // glEnable( GL_CULL_FACE ); // cull front faces - this helps with artifacts and shadows with exponential shadow mapping
@@ -141,28 +177,6 @@ void ofxShadowCamera::allocateFbo() {
 
     
     shadowFbo.allocate( settings );
-}
-
-//--------------------------------------------------------------
-void ofxShadowCamera::setWidth( float aWidth ) {
-    int tw = aWidth;
-    _width = tw;
-}
-
-//--------------------------------------------------------------
-void ofxShadowCamera::setHeight( float aHeight ) {
-    int th = aHeight;
-    _height = th;
-}
-
-//--------------------------------------------------------------
-float ofxShadowCamera::getWidth() {
-    return _width;
-}
-
-//--------------------------------------------------------------
-float ofxShadowCamera::getHeight() {
-    return _height;
 }
 
 //--------------------------------------------------------------

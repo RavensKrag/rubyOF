@@ -16,10 +16,18 @@ public:
     
     ofxShadowCamera();
     
+    void setSize( float width, float height );
+    void setWidth( float aWidth );
+    void setHeight( float aHeight );
+    float getWidth();
+    float getHeight();
+    
     void setRange( float nearClip, float farClip );
     void setPosition( glm::vec3 aPos );
     void setOrientation(glm::quat rot );
     void lookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );
+    
+    void setAngle(float angle_deg);
     
     void beginDepthPass();
     void endDepthPass();
@@ -28,11 +36,6 @@ public:
     void endRenderPass();
     
     void setShaderData( ofShader* ashader, ofCamera& aCam, int atexLoc=2 );
-    
-    void setWidth( float aWidth );
-    void setHeight( float aHeight );
-    float getWidth();
-    float getHeight();
     
     // bias to reduce shadow acne //
     void setBias( float aBias );

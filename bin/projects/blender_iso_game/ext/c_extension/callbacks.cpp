@@ -1579,21 +1579,23 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
    rb_c_ofxShadowCamera
       .define_constructor(Constructor<ofxShadowCamera>())
 		
+		.define_method("setSize",       &ofxShadowCamera::setSize)
+		.define_method("width=",        &ofxShadowCamera::setWidth)
+		.define_method("height=",       &ofxShadowCamera::setHeight)
+		.define_method("width",         &ofxShadowCamera::getWidth)
+		.define_method("height",        &ofxShadowCamera::getHeight)
+		
 		.define_method("setRange",        &ofxShadowCamera::setRange)
 		.define_method("position=",       &ofxShadowCamera::setPosition)
 		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
 		.define_method("lookAt",          &ofxShadowCamera::lookAt)
+		.define_method("setAngle",        &ofxShadowCamera::setAngle)
 		
 		.define_method("beginDepthPass",   &ofxShadowCamera::beginDepthPass)
 		.define_method("endDepthPass",     &ofxShadowCamera::endDepthPass)
 		
 		.define_method("beginRenderPass",  &ofxShadowCamera::beginRenderPass)
 		.define_method("endRenderPass",    &ofxShadowCamera::endRenderPass)
-		
-		.define_method("width=",         &ofxShadowCamera::setWidth)
-		.define_method("height=",        &ofxShadowCamera::setHeight)
-		.define_method("width",         &ofxShadowCamera::getWidth)
-		.define_method("height",        &ofxShadowCamera::getHeight)
 		
 		.define_method("bias=",         &ofxShadowCamera::setBias)
 		.define_method("bias",          &ofxShadowCamera::getBias)

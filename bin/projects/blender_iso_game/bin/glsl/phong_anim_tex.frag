@@ -610,9 +610,9 @@
         
         vec4 localColor = vec4(pos.xyz, 1.0);
         
-        // modify coordinates in eye space into texture values
-        localColor = TEXTURE( shadow_tex, vec2(localColor.x,
-                                               1-localColor.y));
+        // // modify coordinates in eye space into texture values
+        // localColor = TEXTURE( shadow_tex, vec2(localColor.x,
+        //                                        1-localColor.y));
         
         
         // vec4 localColor = debugOutputShadow();

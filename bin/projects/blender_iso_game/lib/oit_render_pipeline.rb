@@ -49,6 +49,64 @@ class OIT_RenderPipeline
     
   end
   
+  class RenderContext
+    include RubyOF::Graphics
+    include Gl
+    
+    attr_reader :main_fbo, :transparency_fbo
+    attr_reader :tex0, :tex1
+    attr_reader :fullscreen_quad
+    
+    def initialize(window)
+      settings = RubyOF::Fbo::Settings.new.tap do |s|
+        s.width  = window.width
+        s.height = window.height
+        s.internalformat = GL_RGBA32F_ARB;
+        # s.numSamples     = 0; # no multisampling
+        s.useDepth       = true;
+        s.useStencil     = false;
+        s.depthStencilAsTexture = true;
+        
+        s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
+      end
+      
+      @main_fbo = 
+        RubyOF::Fbo.new.tap do |fbo|
+          settings.clone.tap{ |s|
+            
+            s.numColorbuffers = 1;
+            
+          }.yield_self{ |s| fbo.allocate(s) }
+        end
+      
+      @transparency_fbo = 
+        RubyOF::Fbo.new.tap do |fbo|
+          settings.clone.tap{ |s|
+            
+            s.numColorbuffers = 2;
+            
+          }.yield_self{ |s| fbo.allocate(s) }
+        end
+      
+      
+      @tex0 = @transparency_fbo.getTexture(0)
+      @tex1 = @transparency_fbo.getTexture(1)
+      
+      @fullscreen_quad = 
+        @tex0.yield_self{ |texure|
+          RubyOF::CPP_Callbacks.textureToMesh(texure, GLM::Vec3.new(0,0,0))
+        }
+      
+    end
+  end
+  
+  
+  def update(window)
+    @context = RenderContext.new(window)
+    @shadow_cam = RubyOF::OFX::ShadowCamera.new()
+    GC.start # force GC to clear old FBO data from RenderContext
+  end
+  
   
   
   COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
@@ -80,59 +138,16 @@ class OIT_RenderPipeline
     
     
     # 
-    # parameters
+    # setup
     # 
     
     accumTex_i     = 0
     revealageTex_i = 1
     
-    
-    # 
-    # setup
-    # 
-    
-    RubyOF::Fbo::Settings.new.tap do |s|
-      s.width  = window.width
-      s.height = window.height
-      s.internalformat = GL_RGBA32F_ARB;
-      # s.numSamples     = 0; # no multisampling
-      s.useDepth       = true;
-      s.useStencil     = false;
-      s.depthStencilAsTexture = true;
-      
-      s.textureTarget  = GL_TEXTURE_RECTANGLE_ARB;
-      
-      @main_fbo ||= 
-        RubyOF::Fbo.new.tap do |fbo|
-          s.clone.tap{ |s|
-            
-            s.numColorbuffers = 1;
-            
-          }.yield_self{ |s| fbo.allocate(s) }
-        end
-      
-      @transparency_fbo ||= 
-        RubyOF::Fbo.new.tap do |fbo|
-          s.clone.tap{ |s|
-            
-            s.numColorbuffers = 2;
-            
-          }.yield_self{ |s| fbo.allocate(s) }
-        end
-    end
+    # TODO: regenerate FBOs and @fullscreen_quad when the window changes size. if you don't, then part of the view will be clipped off.
+    @context ||= RenderContext.new(window)
     
     @compositing_shader ||= RubyOF::Shader.new
-    
-    if @tex0.nil?
-      @tex0 = @transparency_fbo.getTexture(accumTex_i)
-      @tex1 = @transparency_fbo.getTexture(revealageTex_i)
-      
-      @fullscreen_quad = 
-        @tex0.yield_self{ |texure|
-          RubyOF::CPP_Callbacks.textureToMesh(texure, GLM::Vec3.new(0,0,0))
-        }
-    end
-    
     
     
     
@@ -188,6 +203,15 @@ class OIT_RenderPipeline
       end
     end
     
+    @shadow_cam ||= RubyOF::OFX::ShadowCamera.new()
+    # @shadow_cam.setSize(2**10, 2**10)
+    @shadow_cam.setRange( 10, 150 )
+    @shadow_cam.bias = 0.0001
+    @shadow_cam.intensity = 0.6
+    @shadow_cam.setAngle(30)
+    
+    @shadow_cam.position = lights.each.to_a[0].position
+    @shadow_cam.orientation = lights.each.to_a[0].orientation
     
     
     # ---------------
@@ -215,13 +239,10 @@ class OIT_RenderPipeline
     
     
     
-    @shadow_cam ||= RubyOF::OFX::ShadowCamera.new()
-    @shadow_cam.setRange( 10, 150 )
-    @shadow_cam.bias = 0.0001
-    @shadow_cam.intensity = 0.6
     
-    @shadow_cam.position = lights.each.to_a[0].position
-    @shadow_cam.orientation = lights.each.to_a[0].orientation
+    # 
+    # render shadows
+    # 
     
     # puts "shadow simple depth pass"
     @shadow_cam.beginDepthPass()
@@ -233,10 +254,9 @@ class OIT_RenderPipeline
     
     
     
-    
-    
     # 
     # render main buffers
+    # (uses shadows)
     # 
     
     
@@ -279,7 +299,7 @@ class OIT_RenderPipeline
     
     cam_view_matrix = camera.getModelViewMatrix()
     
-    using_framebuffer @main_fbo do |fbo|
+    using_framebuffer @context.main_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
@@ -314,11 +334,11 @@ class OIT_RenderPipeline
     end
     
     
-    blit_framebuffer :depth_buffer, @main_fbo => @transparency_fbo
+    blit_framebuffer :depth_buffer, @context.main_fbo => @context.transparency_fbo
     # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
     
     
-    using_framebuffer @transparency_fbo do |fbo|
+    using_framebuffer @context.transparency_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
       fbo.clearColorBuffer(accumTex_i,     COLOR_ZERO)
       fbo.clearColorBuffer(revealageTex_i, COLOR_ONE)
@@ -356,14 +376,14 @@ class OIT_RenderPipeline
     
     
     
-    @main_fbo.draw(0,0)
+    @context.main_fbo.draw(0,0)
     
     
     RubyOF::CPP_Callbacks.enableScreenspaceBlending()
     
     using_shader @compositing_shader do
-      using_textures @tex0, @tex1 do
-        @fullscreen_quad.draw()
+      using_textures @context.tex0, @context.tex1 do
+        @context.fullscreen_quad.draw()
       end
     end
     # draw_fbo_to_screen(@transparency_fbo, accumTex_i, revealageTex_i)
