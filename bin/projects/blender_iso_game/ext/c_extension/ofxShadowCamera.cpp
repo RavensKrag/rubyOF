@@ -148,17 +148,17 @@ void ofxShadowCamera::endRenderPass() {
 
 //--------------------------------------------------------------
 void ofxShadowCamera::setShaderData( ofShader* ashader, ofCamera& aCam, int atexLoc ) {
-    ashader->setUniformTexture( "u_shadowMap", shadowFbo.getDepthTexture(), atexLoc );
+    // ashader->setUniformTexture( "u_shadowMap", shadowFbo.getDepthTexture(), atexLoc );
     
-    ofMatrix4x4 inverseCameraMatrix = ofMatrix4x4::getInverseOf( aCam.getModelViewMatrix() );
-    ofMatrix4x4 shadowTransMatrix = inverseCameraMatrix * lightCam.getModelViewMatrix() * lightCam.getProjectionMatrix() * biasMatrix;
-    ashader->setUniformMatrix4f("u_shadowTransMatrix", shadowTransMatrix );
+    // ofMatrix4x4 inverseCameraMatrix = ofMatrix4x4::getInverseOf( aCam.getModelViewMatrix() );
+    // ofMatrix4x4 shadowTransMatrix = inverseCameraMatrix * lightCam.getModelViewMatrix() * lightCam.getProjectionMatrix() * biasMatrix;
+    // ashader->setUniformMatrix4f("u_shadowTransMatrix", shadowTransMatrix );
     
-    ashader->setUniform1f(_width.getName(), getWidth() );
-    ashader->setUniform1f(_height.getName(), getHeight() );
-    ashader->setUniform1f(_depthBias.getName(), _depthBias );
-    ashader->setUniform1f(_intensity.getName(), _intensity );
-    ashader->setUniform3f("u_shadowLightPos", getLightCamera().getPosition() );
+    // ashader->setUniform1f(_width.getName(), getWidth() );
+    // ashader->setUniform1f(_height.getName(), getHeight() );
+    // ashader->setUniform1f(_depthBias.getName(), _depthBias );
+    // ashader->setUniform1f(_intensity.getName(), _intensity );
+    // ashader->setUniform3f("u_shadowLightPos", getLightCamera().getPosition() );
 }
 
 //--------------------------------------------------------------
@@ -201,7 +201,8 @@ float ofxShadowCamera::getIntensity() {
 
 //--------------------------------------------------------------
 glm::mat4 ofxShadowCamera::getLightSpaceMatrix() {
-    return lightCam.getModelViewProjectionMatrix();
+    ofRectangle viewport(0,0, _width, _height);
+    return lightCam.getModelViewProjectionMatrix(viewport);
 }
 
 //--------------------------------------------------------------

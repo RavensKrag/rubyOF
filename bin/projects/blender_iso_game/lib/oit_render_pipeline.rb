@@ -144,7 +144,6 @@ class OIT_RenderPipeline
     accumTex_i     = 0
     revealageTex_i = 1
     
-    # TODO: regenerate FBOs and @fullscreen_quad when the window changes size. if you don't, then part of the view will be clipped off.
     @context ||= RenderContext.new(window)
     
     @compositing_shader ||= RubyOF::Shader.new
@@ -204,7 +203,7 @@ class OIT_RenderPipeline
     end
     
     @shadow_cam ||= RubyOF::OFX::ShadowCamera.new()
-    # @shadow_cam.setSize(2**10, 2**10)
+    @shadow_cam.setSize(2**10, 2**10)
     @shadow_cam.setRange( 10, 150 )
     @shadow_cam.bias = 0.0001
     @shadow_cam.intensity = 0.6

@@ -21,7 +21,7 @@ lights:
     - 0.9999998211860657
     - 0.9999998211860657
   data:
-    light_type: POINT
+    light_type: SPOT
     color:
     - rgb
     - 0.984055757522583
@@ -29,7 +29,7 @@ lights:
     - 1.0
     size:
     - radians
-    - 
+    - 60.000001669652114
     size_x:
     - float
     - 
