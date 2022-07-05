@@ -59,6 +59,13 @@ class BlenderLight < BlenderObject
                           :draw,
                           :setAttenuation
   
+  
+  def size
+    # return size as reported in Blender's UI, not the internal value that OpenFrameworks expects
+    # (see #load_data below for details)
+    return @size*2
+  end
+  
   # inherits BlenderObject#data_dump
   
   # inherits BlenderObject#pack_transform()
@@ -73,7 +80,7 @@ class BlenderLight < BlenderObject
         'light_type' => @type,
         'color' => ['rgb'] + color,
         'size' => [
-          'radians', @size
+          'radians', self.size
         ],
         'size_x' => [
           'float', @size_x
@@ -102,7 +109,11 @@ class BlenderLight < BlenderObject
       # spotlight
       size_rad = obj_data['size'][1]
       size_deg = size_rad / (2*Math::PI) * 360
-      self.setSpotlight(size_deg, 2) # requires 2 args
+      self.setSpotlight(size_deg/2, 2) # requires 2 args
+      # ^ blender angle is [0, 180] (whole cone FOV)
+      #   while OF's angel is [0, 90] (angle from height line to edge of cone)
+      #   so need to divide blender's angle by 2 to convert.
+      # 
       # float spotCutOff=45.f, float exponent=0.f
     when 'AREA'
       width  = obj_data['size_x'][1]

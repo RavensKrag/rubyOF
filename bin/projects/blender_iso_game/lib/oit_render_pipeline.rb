@@ -209,10 +209,19 @@ class OIT_RenderPipeline
     @shadow_cam.intensity = 0.6
     
     lights.each.to_a[0].tap do |l|
-      @shadow_cam.angle = 30 # assuming light is a spotlight
+      # assuming light is a spotlight, this will get the angle of the spot cone
+      size = l.size
+      if size.nil?
+        size = 30 # default to 30 degrees
+      end
+      
+      @shadow_cam.angle = size
       @shadow_cam.position = l.position
       @shadow_cam.orientation = l.orientation
     end
+    
+    # TODO: fix extent of spotlight shadows.
+      # shadows can extend beyond the edge of the cone of the spotlight, because the shadow camera is really using a frustrum (pyramid) instead of the cone of the spotlight. thus, there are conditions where the shadow sticks out beyond the boundary of the spotlight, which is not physical behavior.
     
     
     # ---------------
