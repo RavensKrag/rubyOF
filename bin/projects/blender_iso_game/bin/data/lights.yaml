@@ -1,0 +1,76 @@
+---
+lights:
+- !ruby/object:BlenderLight
+  name: Sun.001
+  ".type": LIGHT
+  transform:
+    rotation:
+    - Quat
+    - 0.8675649762153625
+    - 0.4552152752876282
+    - -0.09305364638566971
+    - -0.1773448884487152
+    position:
+    - Vec3
+    - 11.730836868286133
+    - -14.037275314331055
+    - 12.791484832763672
+    scale:
+    - Vec3
+    - 1.0
+    - 0.9999998807907104
+    - 1.000000238418579
+  ".data.type": POINT
+  color:
+  - rgb
+  - 1.0
+  - 1.0
+  - 1.0
+  attenuation:
+  - rgb
+  size:
+  - degrees
+  - 
+  size_x:
+  - float
+  - 
+  size_y:
+  - float
+  - 
+- !ruby/object:BlenderLight
+  name: Sun.002
+  ".type": LIGHT
+  transform:
+    rotation:
+    - Quat
+    - 0.7946513891220093
+    - 0.420872300863266
+    - 0.2047615647315979
+    - 0.3866114020347595
+    position:
+    - Vec3
+    - 44.35717010498047
+    - -16.891551971435547
+    - 21.89061737060547
+    scale:
+    - Vec3
+    - 1.000000238418579
+    - 0.9999998211860657
+    - 0.9999999403953552
+  ".data.type": SPOT
+  color:
+  - rgb
+  - 0.984055757522583
+  - 0.06812429428100586
+  - 1.0
+  attenuation:
+  - rgb
+  size:
+  - degrees
+  - 68.89999770536718
+  size_x:
+  - float
+  - 
+  size_y:
+  - float
+  - 

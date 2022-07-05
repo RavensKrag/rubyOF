@@ -32,9 +32,15 @@ class BlenderLight < BlenderObject
   def setSpotlight(cutoff_degrees, exponent)
     @type = 'SPOT'
     
-    @size = cutoff_degrees
+    # blender angle is [0, 180] (whole cone FOV)
+    # while OF's angel is [0, 90] (angle from height line to edge of cone)
+    # so need to divide blender's angle by 2 to convert.
     
-    @light.setSpotlight(cutoff_degrees, exponent) # requires 2 args
+    # puts "set spotlight: #{cutoff_degrees}"
+    @size = cutoff_degrees
+    # p @size
+    
+    @light.setSpotlight(cutoff_degrees/2, exponent) # requires 2 args
     # float spotCutOff=45.f, float exponent=0.f
     
     # TODO: take exponent into account
@@ -60,11 +66,7 @@ class BlenderLight < BlenderObject
                           :setAttenuation
   
   
-  def size
-    # return size as reported in Blender's UI, not the internal value that OpenFrameworks expects
-    # (see #load_data below for details)
-    return @size*2
-  end
+  attr_reader :size
   
   # inherits BlenderObject#data_dump
   
@@ -72,23 +74,24 @@ class BlenderLight < BlenderObject
   # inherits BlenderObject#load_transform(transform)
   
   # part of BlenderObject serialization interface
-  def pack_data()
+  def data_dump()
     color = self.diffuse_color # => RubyOF::FloatColor
             .to_a.first(3) # discard alpha component
     
-    {
-        'light_type' => @type,
-        'color' => ['rgb'] + color,
-        'size' => [
-          'radians', self.size
-        ],
-        'size_x' => [
-          'float', @size_x
-        ],
-        'size_y' => [
-          'float', @size_y
-        ]
-    }
+    super().merge({
+      '.data.type' => @type,
+      
+      'color' => ['rgb'] + color,
+      
+      # attentuation is not currently sent from blender in a meaningful way
+      'attenuation' => [
+          'rgb'
+      ],
+      
+      'size' => ['degrees', @size],
+      'size_x' => ['float', @size_x],
+      'size_y' => ['float', @size_y]
+    })
     
     # NOTE: With current loading code, only properties relevant to active light type will be restored - all other properties will be lost.
   end
@@ -107,13 +110,19 @@ class BlenderLight < BlenderObject
       
     when 'SPOT'
       # spotlight
-      size_rad = obj_data['size'][1]
-      size_deg = size_rad / (2*Math::PI) * 360
-      self.setSpotlight(size_deg/2, 2) # requires 2 args
-      # ^ blender angle is [0, 180] (whole cone FOV)
-      #   while OF's angel is [0, 90] (angle from height line to edge of cone)
-      #   so need to divide blender's angle by 2 to convert.
-      # 
+      size = obj_data['size'][1]
+      p obj_data['size'][0]
+      case obj_data['size'][0]
+      when 'radians'
+        size_deg = size / (2*Math::PI) * 360 # rad -> degrees
+      when 'degrees'
+        # (already in degrees)
+        size_deg = size
+      else
+        raise "ERROR: Unexpected unit for spotlight size detected."
+      end
+      
+      self.setSpotlight(size_deg, 2) # requires 2 args
       # float spotCutOff=45.f, float exponent=0.f
     when 'AREA'
       width  = obj_data['size_x'][1]
@@ -158,6 +167,6 @@ class BlenderLight < BlenderObject
     initialize(coder.map['name'])
     
     self.load_transform(coder.map['transform'])
-    self.load_data(coder.map['data'])
+    self.load_data(coder.map)
   end
 end

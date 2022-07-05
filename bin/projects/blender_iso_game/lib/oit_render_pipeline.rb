@@ -208,7 +208,10 @@ class OIT_RenderPipeline
     @shadow_cam.bias = 0.0001
     @shadow_cam.intensity = 0.6
     
-    lights.each.to_a[0].tap do |l|
+    lights.each do |l|
+      next unless l.name == "Sun.002"
+      
+      # p l
       # assuming light is a spotlight, this will get the angle of the spot cone
       size = l.size
       if size.nil?
