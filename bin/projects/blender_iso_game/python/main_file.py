@@ -2453,6 +2453,37 @@ class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
                 sub.prop(light, "size", text="Size X")
                 sub.prop(light, "size_y", text="Y")
 
+class DATA_PT_RubyOF_shadow(DataButtonsPanel, bpy.types.Panel):
+    bl_label = "Shadow"
+    bl_options = {'DEFAULT_CLOSED'}
+    COMPAT_ENGINES = {'RUBYOF'}
+    
+    @classmethod
+    def poll(cls, context):
+        light = context.light
+        engine = context.engine
+        return (
+            (light and light.type in {'POINT', 'SUN', 'SPOT', 'AREA'}) and
+            (engine in cls.COMPAT_ENGINES)
+        )
+    
+    def draw_header(self, context):
+        light = context.light
+        self.layout.prop(light, "use_shadow", text="")
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        light = context.light
+        
+        layout.active = light.use_shadow
+        
+        col = layout.column()
+        col.prop(light, "shadow_buffer_clip_start", text="Clip Start")
+        col.prop(light, "cutoff_distance", text="Clip End")
+        
+        col.prop(light, "shadow_buffer_bias", text="Bias")
 
 class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
     bl_label = "Spot Shape"
@@ -2797,6 +2828,7 @@ classes = (
     RubyOF_MATERIAL_Properties,
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
+    DATA_PT_RubyOF_shadow,
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
     # 
