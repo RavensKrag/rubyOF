@@ -101,9 +101,9 @@ class OIT_RenderPipeline
   end
   
   
-  def update(window)
+  def update(window, lights)
     @context = RenderContext.new(window)
-    @shadow_cam = RubyOF::OFX::ShadowCamera.new()
+    lights.each{|l| l.update }
     GC.start # force GC to clear old FBO data from RenderContext
   end
   
@@ -202,27 +202,6 @@ class OIT_RenderPipeline
       end
     end
     
-    @shadow_cam ||= RubyOF::OFX::ShadowCamera.new()
-    @shadow_cam.setSize(2**10, 2**10)
-    @shadow_cam.setRange( 10, 150 )
-    @shadow_cam.bias = 0.0001
-    @shadow_cam.intensity = 0.6
-    
-    lights.each do |l|
-      next unless l.name == "Sun.002"
-      
-      # p l
-      # assuming light is a spotlight, this will get the angle of the spot cone
-      size = l.size
-      if size.nil?
-        size = 30 # default to 30 degrees
-      end
-      
-      @shadow_cam.angle = size
-      @shadow_cam.position = l.position
-      @shadow_cam.orientation = l.orientation
-    end
-    
     # TODO: fix extent of spotlight shadows.
       # shadows can extend beyond the edge of the cone of the spotlight, because the shadow camera is really using a frustrum (pyramid) instead of the cone of the spotlight. thus, there are conditions where the shadow sticks out beyond the boundary of the spotlight, which is not physical behavior.
     
@@ -258,12 +237,17 @@ class OIT_RenderPipeline
     # 
     
     # puts "shadow simple depth pass"
-    @shadow_cam.beginDepthPass()
-      ofEnableDepthTest()
-      # @shadow_pass.call(lights, @shadow_material)
-      @opaque_pass.call()
-      ofDisableDepthTest()
-    @shadow_cam.endDepthPass()
+    lights
+    .select{|light| light.casts_shadows? }
+    .each do |light|
+      light.shadow_cam.beginDepthPass()
+        ofEnableDepthTest()
+        # @shadow_pass.call(lights, @shadow_material)
+        @opaque_pass.call()
+        ofDisableDepthTest()
+      light.shadow_cam.endDepthPass()
+    end
+    
     
     
     
@@ -310,6 +294,7 @@ class OIT_RenderPipeline
     end
     
     
+    shadow_casting_light = lights.select{|l| l.casts_shadows? }.first
     cam_view_matrix = camera.getModelViewMatrix()
     
     using_framebuffer @context.main_fbo do |fbo|
@@ -317,7 +302,13 @@ class OIT_RenderPipeline
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      setShadowUniforms(material)
+      if shadow_casting_light.nil?
+        material.setCustomUniform1f(
+          "u_useShadows", 0
+        )
+      else
+        shadow_casting_light.setShadowUniforms(material)
+      end
       
       using_camera camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
@@ -358,7 +349,13 @@ class OIT_RenderPipeline
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
-      setShadowUniforms(material)
+      if shadow_casting_light.nil?
+        material.setCustomUniform1f(
+          "u_useShadows", 0
+        )
+      else
+        shadow_casting_light.setShadowUniforms(material)
+      end
       
       using_camera camera do
         @transparent_pass.call()
@@ -405,11 +402,13 @@ class OIT_RenderPipeline
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
-    
-    tex = @shadow_cam.getShadowMap()
-    # tex.draw_wh(0,0,0, tex.width, tex.height)
-    tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
-    # ^ ofxShadowCamera's buffer is the size of the window
+    shadow_casting_light&.tap do |light|
+      shadow_cam = light.shadow_cam
+      tex = shadow_cam.getShadowMap()
+      # tex.draw_wh(0,0,0, tex.width, tex.height)
+      tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
+      # ^ ofxShadowCamera's buffer is the size of the window
+    end
     
     
     
@@ -419,33 +418,6 @@ class OIT_RenderPipeline
   
   private
   
-  def setShadowUniforms(material)
-    material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
-    )
-    
-    material.setCustomUniform1f(
-      "u_shadowWidth", @shadow_cam.width
-    )
-    
-    material.setCustomUniform1f(
-      "u_shadowHeight", @shadow_cam.height
-    )
-    
-    material.setCustomUniform1f(
-      "u_shadowBias", @shadow_cam.bias
-    )
-    
-    material.setCustomUniform1f(
-      "u_shadowIntensity", @shadow_cam.intensity
-    )
-    
-    
-    
-    material.setCustomUniformTexture(
-      "shadow_tex", @shadow_cam.getShadowMap(), 4
-    )
-  end
   
   def blit_framebuffer(buffer_name, hash={})
     src = hash.keys.first

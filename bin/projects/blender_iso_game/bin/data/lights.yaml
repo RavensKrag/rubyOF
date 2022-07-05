@@ -37,7 +37,7 @@ lights:
   size_y:
   - float
   - 
-  use_shadow: true
+  use_shadow: false
   shadow_clip_start: 0.05000000074505806
   shadow_clip_end: 40.0
   shadow_buffer_bias: 1.0
@@ -47,20 +47,20 @@ lights:
   transform:
     rotation:
     - Quat
-    - 0.7978541254997253
-    - 0.4195297956466675
-    - 0.2014850676059723
-    - 0.3831806182861328
+    - 0.8168910145759583
+    - 0.45384472608566284
+    - 0.1728786826133728
+    - 0.31117039918899536
     position:
     - Vec3
-    - 43.83457565307617
-    - -16.891551971435547
-    - 21.89061737060547
+    - 39.28794479370117
+    - -19.766122817993164
+    - 18.972881317138672
     scale:
     - Vec3
     - 1.000000238418579
-    - 0.9999998211860657
-    - 0.9999998211860657
+    - 0.9999997615814209
+    - 0.9999998807907104
   ".data.type": SPOT
   color:
   - rgb
@@ -71,14 +71,14 @@ lights:
   - rgb
   size:
   - degrees
-  - 107.89999537554648
+  - 36.40000078524931
   size_x:
   - float
   - 
   size_y:
   - float
   - 
-  use_shadow: true
+  use_shadow: false
   shadow_clip_start: 0.05000000074505806
   shadow_clip_end: 40.0
   shadow_buffer_bias: 1.0

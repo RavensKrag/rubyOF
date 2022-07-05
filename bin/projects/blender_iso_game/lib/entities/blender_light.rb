@@ -14,6 +14,8 @@ class BlenderLight < BlenderObject
     @size = nil
     @size_x = nil
     @size_y = nil
+    
+    @shadow_cam = nil # only gets created if the light uses shadows
   end
   
   
@@ -68,6 +70,90 @@ class BlenderLight < BlenderObject
   
   attr_reader :size
   
+  
+  
+  
+  attr_reader :shadow_cam
+  
+  
+  def casts_shadows?
+    return @shadow_cam != nil
+  end
+  
+  alias :cast_shadows? :casts_shadows?
+  
+  def enable_shadows
+    @shadow_cam ||= RubyOF::OFX::ShadowCamera.new
+    self.update
+  end
+  
+  def disable_shadows
+    puts "disable"
+    @shadow_cam = nil
+    self.update
+  end
+  
+  
+  
+  # update shadow camera properties
+  def update
+    if @shadow_cam
+      @shadow_cam.setSize(2**10, 2**10)
+      @shadow_cam.setRange( 10, 150 )
+      @shadow_cam.bias = 0.0001
+      @shadow_cam.intensity = 0.6
+      
+      
+      # p l
+      # assuming light is a spotlight, this will get the angle of the spot cone
+      size = self.size
+      if size.nil?
+        size = 30 # default to 30 degrees
+      end
+      
+      @shadow_cam.angle = size
+      @shadow_cam.position = @light.position
+      @shadow_cam.orientation = @light.orientation
+    end
+  end
+  
+  def setShadowUniforms(material)
+    puts "set shadow uniforms"
+    
+    material.setCustomUniformMatrix4f(
+      "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowWidth", @shadow_cam.width
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowHeight", @shadow_cam.height
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowBias", @shadow_cam.bias
+    )
+    
+    material.setCustomUniform1f(
+      "u_shadowIntensity", @shadow_cam.intensity
+    )
+    
+    
+    
+    material.setCustomUniformTexture(
+      "shadow_tex", @shadow_cam.getShadowMap(), 4
+    )
+    
+    material.setCustomUniform1f(
+      "u_useShadows", 1
+    )
+  end
+  
+  
+  
+  
   # inherits BlenderObject#data_dump
   
   # inherits BlenderObject#pack_transform()
@@ -92,7 +178,7 @@ class BlenderLight < BlenderObject
       'size_x' => ['float', @size_x],
       'size_y' => ['float', @size_y],
       
-      'use_shadow'         => @use_shadow,
+      'use_shadow'         => self.casts_shadows?,
       'shadow_clip_start'  => @shadow_clip_start,
       'shadow_clip_end'    => @shadow_clip_end,
       'shadow_buffer_bias' => @shadow_bias
@@ -116,8 +202,9 @@ class BlenderLight < BlenderObject
     when 'SPOT'
       # spotlight
       size = obj_data['size'][1]
-      p obj_data['size'][0]
-      case obj_data['size'][0]
+      
+      # p obj_data['size'][0]
+      case obj_data['size'][0] # units
       when 'radians'
         size_deg = size / (2*Math::PI) * 360 # rad -> degrees
       when 'degrees'
@@ -156,10 +243,17 @@ class BlenderLight < BlenderObject
     
     
     # configure shadows
-    @use_shadow        = obj_data['use_shadow']
     @shadow_clip_start = obj_data['shadow_clip_start']
     @shadow_clip_end   = obj_data['shadow_clip_end']
     @shadow_bias       = obj_data['shadow_buffer_bias']
+    
+    
+    if obj_data['use_shadow']
+      enable_shadows()
+    else
+      disable_shadows()
+    end
+    
   end
   
   # 

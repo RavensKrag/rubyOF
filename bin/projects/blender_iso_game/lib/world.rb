@@ -368,7 +368,7 @@ class World
       end
     end
     
-    
+    include Enumerable
     def each
       return enum_for(:each) unless block_given?
       

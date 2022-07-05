@@ -384,7 +384,7 @@ class Core
   def window_resized(w,h)
     # puts "generate new camera"
     # @world.camera = ViewportCamera.new
-    @render_pipeline.update(@window)
+    @render_pipeline.update(@window, @world.lights)
   end
   
   

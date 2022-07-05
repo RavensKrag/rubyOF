@@ -61,7 +61,8 @@
     uniform mat4 projectionMatrix;
     uniform mat4 textureMatrix;
     uniform mat4 modelViewProjectionMatrix;
-
+    
+    uniform float u_useShadows;
     uniform float u_shadowWidth;
     uniform float u_shadowHeight;
     uniform float u_shadowIntensity;
@@ -665,8 +666,11 @@
         
         
         vec4 localColor;
-        // localColor = drawWithLighting(ambient, diffuse, specular);
-        localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
+        if(u_useShadows > 0.5){
+            localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
+        }else{
+            localColor = drawWithLighting(ambient, diffuse, specular);
+        }
         // localColor = drawShadowTest(ambient, diffuse, specular);
         
         
