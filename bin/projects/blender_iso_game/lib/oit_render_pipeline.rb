@@ -207,10 +207,12 @@ class OIT_RenderPipeline
     @shadow_cam.setRange( 10, 150 )
     @shadow_cam.bias = 0.0001
     @shadow_cam.intensity = 0.6
-    @shadow_cam.setAngle(30)
     
-    @shadow_cam.position = lights.each.to_a[0].position
-    @shadow_cam.orientation = lights.each.to_a[0].orientation
+    lights.each.to_a[0].tap do |l|
+      @shadow_cam.angle = 30 # assuming light is a spotlight
+      @shadow_cam.position = l.position
+      @shadow_cam.orientation = l.orientation
+    end
     
     
     # ---------------
