@@ -99,7 +99,7 @@ class BlenderLight < BlenderObject
   def update
     if @shadow_cam
       @shadow_cam.setSize(2**10, 2**10)
-      @shadow_cam.setRange( 10, 150 )
+      @shadow_cam.setRange( @shadow_clip_start, @shadow_clip_end )
       @shadow_cam.bias = 0.0001
       @shadow_cam.intensity = 0.6
       
