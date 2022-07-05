@@ -90,7 +90,12 @@ class BlenderLight < BlenderObject
       
       'size' => ['degrees', @size],
       'size_x' => ['float', @size_x],
-      'size_y' => ['float', @size_y]
+      'size_y' => ['float', @size_y],
+      
+      'use_shadow'         => @use_shadow,
+      'shadow_clip_start'  => @shadow_clip_start,
+      'shadow_clip_end'    => @shadow_clip_end,
+      'shadow_buffer_bias' => @shadow_bias
     })
     
     # NOTE: With current loading code, only properties relevant to active light type will be restored - all other properties will be lost.
@@ -149,6 +154,12 @@ class BlenderLight < BlenderObject
     self.specular_color = white
     
     
+    
+    # configure shadows
+    @use_shadow        = obj_data['use_shadow']
+    @shadow_clip_start = obj_data['shadow_clip_start']
+    @shadow_clip_end   = obj_data['shadow_clip_end']
+    @shadow_bias       = obj_data['shadow_buffer_bias']
   end
   
   # 

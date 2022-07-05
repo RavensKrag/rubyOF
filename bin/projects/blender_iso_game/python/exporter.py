@@ -85,7 +85,13 @@ def pack_light(obj):
         ],
         'attenuation':[
             'rgb'
-        ]
+        ],
+        
+        'use_shadow' : obj.data.use_shadow,
+        'shadow_clip_start': obj.data.shadow_buffer_clip_start,
+        'shadow_clip_end' : obj.data.cutoff_distance,
+        'shadow_buffer_bias' : obj.data.shadow_buffer_bias
+        
     }
     
     if data['.data.type'] == 'AREA':
