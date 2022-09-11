@@ -99,6 +99,16 @@ void ofxShadowCamera::setAngle(float angle_deg) {
 }
 
 //--------------------------------------------------------------
+void ofxShadowCamera::enableOrtho() {
+    lightCam.enableOrtho();
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::disableOrtho() {
+    lightCam.disableOrtho();
+}
+
+//--------------------------------------------------------------
 void ofxShadowCamera::beginDepthPass() {
     
     if( lightCam.getNearClip() != _nearClip || lightCam.getFarClip() != _farClip ) {

@@ -2484,6 +2484,7 @@ class DATA_PT_RubyOF_shadow(DataButtonsPanel, bpy.types.Panel):
         col.prop(light, "cutoff_distance", text="Clip End")
         
         col.prop(light, "shadow_buffer_bias", text="Bias")
+        # light.shadow_buffer_bias.precision = 5
 
 class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
     bl_label = "Spot Shape"

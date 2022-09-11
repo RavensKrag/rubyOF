@@ -1116,8 +1116,8 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       
       .define_method("ortho?",         &ofCamera::getOrtho)
-      .define_method("enableOrtho",    &ofCamera::getOrtho)
-      .define_method("disableOrtho",   &ofCamera::getOrtho)
+      .define_method("enableOrtho",    &ofCamera::enableOrtho)
+      .define_method("disableOrtho",   &ofCamera::disableOrtho)
       
       
       

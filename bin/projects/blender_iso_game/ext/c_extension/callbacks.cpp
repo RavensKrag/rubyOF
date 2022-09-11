@@ -1589,7 +1589,11 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		.define_method("position=",       &ofxShadowCamera::setPosition)
 		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
 		.define_method("lookAt",          &ofxShadowCamera::lookAt)
+		
 		.define_method("angle=",          &ofxShadowCamera::setAngle)
+		
+		.define_method("enableOrtho",      &ofxShadowCamera::enableOrtho)
+		.define_method("disableOrtho",     &ofxShadowCamera::disableOrtho)
 		
 		.define_method("beginDepthPass",   &ofxShadowCamera::beginDepthPass)
 		.define_method("endDepthPass",     &ofxShadowCamera::endDepthPass)

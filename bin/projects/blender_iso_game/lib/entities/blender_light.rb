@@ -98,27 +98,45 @@ class BlenderLight < BlenderObject
   # update shadow camera properties
   def update
     if @shadow_cam
+      # @shadow_cam.enableOrtho()
+      # @shadow_cam.getLightCamera().enableOrtho() # <-- this doesn't work. why?
+      p @shadow_cam.getLightCamera()
+      puts "ortho? #{@shadow_cam.getLightCamera().ortho?}" 
+      
       @shadow_cam.setSize(2**10, 2**10)
       @shadow_cam.setRange( @shadow_clip_start, @shadow_clip_end )
-      @shadow_cam.bias = 0.0001
+      # @shadow_cam.bias = 0.001
+      @shadow_cam.bias = @shadow_bias
       @shadow_cam.intensity = 0.6
       
       
       # p l
-      # assuming light is a spotlight, this will get the angle of the spot cone
-      size = self.size
-      if size.nil?
-        size = 30 # default to 30 degrees
-      end
       
-      @shadow_cam.angle = size
       @shadow_cam.position = @light.position
       @shadow_cam.orientation = @light.orientation
+      
+      case @type
+      when 'POINT'
+        
+      when 'SUN'
+        
+      when 'SPOT'
+        # @shadow_cam.getLightCamera().disableOrtho
+        @shadow_cam.disableOrtho()
+        
+        # angle of the spot cone
+        size = self.size
+        @shadow_cam.angle = size
+      when 'AREA'
+        # TODO: pass viewport rectangle to orthographic shadow camera that is based on the world-space
+        # @shadow_cam.getLightCamera().enableOrtho
+        @shadow_cam.enableOrtho()
+      end
     end
   end
   
   def setShadowUniforms(material)
-    puts "set shadow uniforms"
+    # puts "set shadow uniforms"
     
     material.setCustomUniformMatrix4f(
       "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
@@ -217,6 +235,7 @@ class BlenderLight < BlenderObject
       self.setSpotlight(size_deg, 2) # requires 2 args
       # float spotCutOff=45.f, float exponent=0.f
     when 'AREA'
+      p obj_data
       width  = obj_data['size_x'][1]
       height = obj_data['size_y'][1]
       self.setAreaLight(width, height)

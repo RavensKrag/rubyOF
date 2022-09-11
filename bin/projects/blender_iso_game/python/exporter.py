@@ -95,10 +95,21 @@ def pack_light(obj):
     }
     
     if data['.data.type'] == 'AREA':
-        data.update({
-            'size_x': ['float', obj.data.size],
-            'size_y': ['float', obj.data.size_y]
-        })
+        if obj.data.shape == 'SQUARE':
+            data.update({
+                'size_x': ['float', obj.data.size],
+                'size_y': ['float', obj.data.size]
+            })
+        elif obj.data.shape == 'RECTANGLE':
+            data.update({
+                'size_x': ['float', obj.data.size],
+                'size_y': ['float', obj.data.size_y]
+            })
+            
+        else:
+            pass
+            
+            
     elif data['.data.type'] == 'SPOT':
         data.update({
             'size': ['radians', obj.data.spot_size]

@@ -29,6 +29,9 @@ public:
     
     void setAngle(float angle_deg);
     
+    void enableOrtho();
+    void disableOrtho();
+    
     void beginDepthPass();
     void endDepthPass();
     
