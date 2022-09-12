@@ -20,6 +20,8 @@ ofxCamera::ofxCamera(){
 	mOrthoScale = 1;
 }
 
+//----------------------------------------
+
 bool
 ofxCamera::getOrtho(){
 	return isOrtho;
@@ -34,6 +36,8 @@ void
 ofxCamera::disableOrtho(){
 	isOrtho = false;
 }
+
+//----------------------------------------
 
 void
 ofxCamera::begin(){
@@ -193,25 +197,153 @@ ofxCamera::getModelViewProjectionMatrix(const ofRectangle & viewport) {
 
 
 
+// 
+// general properties
+// 
 
-
-
-//----------------------------------------
 void
-ofxCamera::calcClipPlanes(const ofRectangle & viewport) {
-	// autocalculate near/far clip planes if not set by user
-	if(mNearClip == 0 || mFarClip == 0) {
-		float dist = getImagePlaneDistance(viewport);
-		mNearClip = (mNearClip == 0) ? dist / 100.0f : mNearClip;
-		mFarClip = (mFarClip == 0) ? dist * 10.0f : mFarClip;
-	}
+ofxCamera::setVFlip(bool vflip){
+	mVFlip = vflip;
 }
 
-//----------------------------------------
-float
-ofxCamera::getImagePlaneDistance(const ofRectangle & viewport) const {
-	return viewport.height / (2.0f * tanf(PI * mFOV / 360.0f));
+void
+ofxCamera::setNearClip(float f){
+	mNearClip = f;
 }
+
+void
+ofxCamera::setFarClip(float f){
+	mFarClip = f;
+}
+
+// void setLensOffset(const glm::vec2 & lensOffset);
+
+
+
+// 
+// perspective only
+// 
+
+void
+ofxCamera::setupPerspective(bool vFlip, float fov, float nearDist, float farDist)
+{
+	setVFlip(vFlip);
+	setFov(fov);
+	setNearClip(nearDist);
+	setFarClip(farDist);
+}
+
+void
+ofxCamera::setFov(float f){
+	mFOV = f;
+}
+
+void
+ofxCamera::setAspectRatio(float aspectRatio){
+	mAspectRatio = aspectRatio;
+}
+
+void
+ofxCamera::setForceAspectRatio(bool forceAspectRatio){
+	mForceAspectRatio = forceAspectRatio;
+}
+
+
+
+// 
+// ortho only
+// 
+
+void
+ofxCamera::setupOrthographic(bool vFlip, float scale, float nearDist, float farDist){
+	setVFlip(vFlip);
+	setOrthoScale(scale);
+	setNearClip(nearDist);
+	setFarClip(farDist);
+}
+
+void
+ofxCamera::setOrthoScale(float scale){
+	mOrthoScale = scale;
+}
+
+
+
+// 
+// coordinate space conversion
+// 
+
+glm::vec3
+ofxCamera::worldToScreen(glm::vec3 WorldXYZ, const ofRectangle & viewport){
+	auto CameraXYZ = worldToCamera(WorldXYZ, viewport);
+	
+	glm::vec3 ScreenXYZ;
+	ScreenXYZ.x = (CameraXYZ.x + 1.0f) / 2.0f * viewport.width + viewport.x;
+	ScreenXYZ.y = (1.0f - CameraXYZ.y) / 2.0f * viewport.height + viewport.y;
+	ScreenXYZ.z = CameraXYZ.z;
+	
+	return ScreenXYZ;
+}
+
+glm::vec3
+ofxCamera::screenToWorld(glm::vec3 ScreenXYZ, const ofRectangle & viewport){
+	//convert from screen to camera
+	glm::vec3 CameraXYZ;
+	CameraXYZ.x = 2.0f * (ScreenXYZ.x - viewport.x) / viewport.width - 1.0f;
+	CameraXYZ.y = 1.0f - 2.0f *(ScreenXYZ.y - viewport.y) / viewport.height;
+	CameraXYZ.z = ScreenXYZ.z;
+	
+	return cameraToWorld(CameraXYZ, viewport);
+}
+
+glm::vec3
+ofxCamera::worldToCamera(glm::vec3 WorldXYZ, const ofRectangle & viewport){
+	auto MVPmatrix = getModelViewProjectionMatrix(viewport);
+	if(mVFlip){
+		MVPmatrix = glm::scale(glm::mat4(1.0), glm::vec3(1.f,-1.f,1.f)) * MVPmatrix;
+	}
+	auto camera = MVPmatrix * glm::vec4(WorldXYZ, 1.0);
+	return glm::vec3(camera) / camera.w;
+}
+
+glm::vec3
+ofxCamera::cameraToWorld(glm::vec3 CameraXYZ, const ofRectangle & viewport){
+	auto MVPmatrix = getModelViewProjectionMatrix(viewport);
+	if(mVFlip){
+		MVPmatrix = glm::scale(glm::mat4(1.0), glm::vec3(1.f,-1.f,1.f)) * MVPmatrix;
+	}
+	auto world = glm::inverse(MVPmatrix) * glm::vec4(CameraXYZ, 1.0);
+	return glm::vec3(world) / world.w;
+}
+
+
+
+glm::vec3
+ofxCamera::worldToScreen(glm::vec3 WorldXYZ){
+	return worldToScreen(WorldXYZ, getViewport());
+}
+
+glm::vec3
+ofxCamera::screenToWorld(glm::vec3 ScreenXYZ){
+	return screenToWorld(ScreenXYZ, getViewport());
+}
+
+glm::vec3
+ofxCamera::worldToCamera(glm::vec3 WorldXYZ){
+	return worldToCamera(WorldXYZ, getViewport());
+}
+
+glm::vec3
+ofxCamera::cameraToWorld(glm::vec3 CameraXYZ){
+	return cameraToWorld(CameraXYZ, getViewport());
+}
+
+
+
+
+// 
+// helper funcitons / utilities
+// 
 
 //----------------------------------------
 ofRectangle 
@@ -235,4 +367,19 @@ ofxCamera::setRenderer(std::shared_ptr<ofBaseRenderer> renderer){
 	mRenderer = renderer;
 }
 
+//----------------------------------------
+void
+ofxCamera::calcClipPlanes(const ofRectangle & viewport) {
+	// autocalculate near/far clip planes if not set by user
+	if(mNearClip == 0 || mFarClip == 0) {
+		float dist = getImagePlaneDistance(viewport);
+		mNearClip = (mNearClip == 0) ? dist / 100.0f : mNearClip;
+		mFarClip = (mFarClip == 0) ? dist * 10.0f : mFarClip;
+	}
+}
 
+//----------------------------------------
+float
+ofxCamera::getImagePlaneDistance(const ofRectangle & viewport) const {
+	return viewport.height / (2.0f * tanf(PI * mFOV / 360.0f));
+}

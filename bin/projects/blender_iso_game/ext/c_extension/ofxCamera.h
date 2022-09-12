@@ -54,7 +54,7 @@ public:
 	// perspective only
 	// 
 	
-	void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0, const glm::vec2 & lensOffset = glm::vec2(0.0f, 0.0f));
+	void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0);
 	
 	void setFov(float f);
 	void setAspectRatio(float aspectRatio);
@@ -71,33 +71,24 @@ public:
 	void setupOrthographic(bool vFlip = true, float scale = 1, float nearDist = 0, float farDist = 0);
 	
 	void setOrthoScale(float scale);
-	
-	float getOrthoScale();
+	float getOrthoScale() const { return mOrthoScale; };
 	
 	
 	// 
 	// coordinate space conversion
 	// 
 	
-	glm::vec3 worldToScreen(glm::vec3 WorldXYZ, const ofRectangle & viewport) const;
-	glm::vec3 worldToScreen(glm::vec3 WorldXYZ) const{
-		return worldToScreen(WorldXYZ, getViewport());
-	}
+	glm::vec3 worldToScreen(glm::vec3 WorldXYZ, const ofRectangle & viewport);
+	glm::vec3 worldToScreen(glm::vec3 WorldXYZ);
 	
-	glm::vec3 screenToWorld(glm::vec3 ScreenXYZ, const ofRectangle & viewport) const;
-	glm::vec3 screenToWorld(glm::vec3 ScreenXYZ) const{
-		return screenToWorld(ScreenXYZ, getViewport());
-	}
+	glm::vec3 screenToWorld(glm::vec3 ScreenXYZ, const ofRectangle & viewport);
+	glm::vec3 screenToWorld(glm::vec3 ScreenXYZ);
 	
-	glm::vec3 worldToCamera(glm::vec3 WorldXYZ, const ofRectangle & viewport) const;
-	glm::vec3 worldToCamera(glm::vec3 WorldXYZ) const{
-		return worldToCamera(WorldXYZ, getViewport());
-	}
+	glm::vec3 worldToCamera(glm::vec3 WorldXYZ, const ofRectangle & viewport);
+	glm::vec3 worldToCamera(glm::vec3 WorldXYZ);
 
-	glm::vec3 cameraToWorld(glm::vec3 CameraXYZ, const ofRectangle & viewport) const;
-	glm::vec3 cameraToWorld(glm::vec3 CameraXYZ) const{
-		return cameraToWorld(CameraXYZ, getViewport());
-	}
+	glm::vec3 cameraToWorld(glm::vec3 CameraXYZ, const ofRectangle & viewport);
+	glm::vec3 cameraToWorld(glm::vec3 CameraXYZ);
 	
 	
 	
