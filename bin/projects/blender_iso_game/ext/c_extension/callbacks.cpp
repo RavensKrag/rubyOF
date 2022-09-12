@@ -1569,6 +1569,31 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
    ;
 }
 
+
+#include "ofxCamera.h"
+
+void wrap_ofxCamera(Module rb_mOFX){
+	
+   Data_Type<ofxCamera> rb_c_ofxCamera = 
+      define_class_under<ofxCamera>(rb_mOFX, "Camera");
+   
+   rb_c_ofxCamera
+      .define_constructor(Constructor<ofxCamera>())
+		
+		.define_method("begin",
+			static_cast< void (ofxCamera::*)
+         (void)
+         >(&ofxCamera::begin)
+		)
+		.define_method("end",            &ofxCamera::end)
+		
+		.define_method("getOrtho",       &ofxCamera::getOrtho)
+		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
+		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
+	;
+}
+		
+
 #include "ofxShadowCamera.h"
 
 void wrap_ofxShadowCamera(Module rb_mOFX){
@@ -1943,6 +1968,8 @@ void Init_rubyOF_project()
 	wrap_ofxShadowSimple(rb_mOFX);
 	
 	wrap_ofxShadowCamera(rb_mOFX);
+	
+	wrap_ofxCamera(rb_mOFX);
 	
 	
 	

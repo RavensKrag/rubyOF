@@ -177,6 +177,7 @@ OF_PROJECT_CFLAGS:
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
 - "-DOF_USING_GTK"
+- "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
 - "-fdiagnostics-color=always"
@@ -489,7 +490,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1685,unix/ravensnest:/tmp/.ICE-unix/1685
+- local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -503,6 +504,7 @@ CFLAGS:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -630,7 +632,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-1jcsOLJJNhdo/agent.1495"
+- "/tmp/ssh-dQbDCfg2uFsZ/agent.1477"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj"
@@ -713,7 +715,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1608'
+- '1590'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
@@ -729,6 +731,7 @@ LINK.c:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -844,6 +847,7 @@ TMP_PROJECT_ADDONS_OBJ_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
 OF_CORE_DEFINES_CFLAGS:
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 "-*-command-variables-*-":
@@ -1534,6 +1538,7 @@ ADDON_INCLUDES_FILTERED:
 - "./src"
 PLATFORM_DEFINES:
 - OF_USING_GTK
+- OF_USING_GTK
 - OF_USING_MPG123
 PLATFORM_LIBRARY_SEARCH_PATHS: []
 COMPILE.def:
@@ -2046,7 +2051,7 @@ HOST_ARCH:
 TARGET_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a"
 HAS_SYSTEM_GTK2:
-- '1'
+- '0'
 CXX:
 - g++
 ALL_CFLAGS:
@@ -2054,6 +2059,7 @@ ALL_CFLAGS:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -2135,7 +2141,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/64bdcc37_39bb_4baa_9fe6_243672ccfeb8"
+- "/org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad"
 "^F": []
 COMPILE.S:
 - cc
@@ -2154,7 +2160,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.61"
+- ":1.175"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2208,6 +2214,7 @@ COMPILE.c:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"

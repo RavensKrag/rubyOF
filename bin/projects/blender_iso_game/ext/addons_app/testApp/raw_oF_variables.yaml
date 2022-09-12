@@ -173,7 +173,7 @@
 
   '
 - "OF_PROJECT_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
 - "@D = .\n"
 - 'XAUTHORITY = /tmp/xauth-1000-_0
 
@@ -453,7 +453,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1685,unix/ravensnest:/tmp/.ICE-unix/1685
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -466,8 +466,8 @@
 - 'FIND = find
 
   '
-- 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123
-  -fPIC -fdiagnostics-color=always
+- 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_GTK
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always
 
   '
 - 'ARFLAGS = rv
@@ -584,7 +584,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-1jcsOLJJNhdo/agent.1495
+- 'SSH_AUTH_SOCK = /tmp/ssh-dQbDCfg2uFsZ/agent.1477
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
@@ -673,7 +673,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1608
+- 'SSH_AGENT_PID = 1590
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -687,7 +687,7 @@
 
   '
 - "LINK.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
   -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - 'TMP_PROJECT_ADDONS_SOURCE_FILES = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxGui/src/ofxToggle.cpp
@@ -788,7 +788,7 @@
   /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o
 
   '
-- 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_MPG123
+- 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_GTK -DOF_USING_MPG123
 
   '
 - "-*-command-variables-*- = TARGET_NAME=Debug\n"
@@ -1146,7 +1146,7 @@
   ./obj/linux64/Debug/src ./src
 
   '
-- 'PLATFORM_DEFINES =  OF_USING_GTK OF_USING_MPG123
+- 'PLATFORM_DEFINES =  OF_USING_GTK OF_USING_GTK OF_USING_MPG123
 
   '
 - "PLATFORM_LIBRARY_SEARCH_PATHS = \n"
@@ -1593,14 +1593,14 @@
 - 'TARGET_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
 
   '
-- 'HAS_SYSTEM_GTK2 = 1
+- 'HAS_SYSTEM_GTK2 = 0
 
   '
 - 'CXX = g++
 
   '
 - "ALL_CFLAGS =  -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always     \n"
 - "COFLAGS = \n"
 - "OF_CORE_LIBRARY_LDFLAGS = -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
@@ -1645,7 +1645,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/64bdcc37_39bb_4baa_9fe6_243672ccfeb8
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad
 
   '
 - "^F = \n"
@@ -1661,7 +1661,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.61
+- 'GNOME_TERMINAL_SERVICE = :1.175
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1676,7 +1676,7 @@
 
   '
 - 'COMPILE.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
 
   '
 - 'ADDON_INCLUDE_CFLAGS = -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0

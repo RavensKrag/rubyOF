@@ -7,34 +7,31 @@ class ofxCamera : public ofNode {
 public:
 	ofxCamera();
 	
+	// core render callbacks
+	void begin();
+	void begin(const ofRectangle & viewport);
+	void end();
+		// void begin_perspective(const ofRectangle & viewport);
+		// void end_perspective();
+		// void begin_ortho(const ofRectangle & viewport);
+		// void end_ortho();
+	
 	// mode switching
 	bool getOrtho();
 	void enableOrtho();
 	void disableOrtho();
 	
-	void useOrthographic();
-	void usePerspective();
+	// void useOrthographic();
+	// void usePerspective();
 	
-	// core render callbacks
-	void begin();
-	void begin(const ofRectangle & viewport);
-	void end();
-		void begin_perspective(const ofRectangle & viewport);
-		void end_perspective();
-		void begin_ortho(const ofRectangle & viewport);
-		void end_ortho();
-	
-	
+	glm::mat4 getProjectionMatrix();
 	glm::mat4 getProjectionMatrix(const ofRectangle & viewport);
-	glm::mat4 getProjectionMatrix(){
-		return getProjectionMatrix(getViewport());
-	}
+	
 	glm::mat4 getModelViewMatrix() const;
 	
+	glm::mat4 getModelViewProjectionMatrix();
 	glm::mat4 getModelViewProjectionMatrix(const ofRectangle & viewport);
-	glm::mat4 getModelViewProjectionMatrix(){
-		return getModelViewProjectionMatrix(getViewport());
-	}
+	
 	
 	
 	
@@ -48,7 +45,7 @@ public:
 	void setFarClip(float f);
 	// void setLensOffset(const glm::vec2 & lensOffset);
 	
-	bool isVFlipped() const { return vFlip };
+	bool isVFlipped() const { return mVFlip; };
 	float getNearClip() const { return mNearClip; };
 	float getFarClip() const { return mFarClip; };
 	// glm::vec2 getLensOffset() const { return lensOffset; };
@@ -103,28 +100,15 @@ public:
 	}
 	
 	
+	
 	// 
 	// helper funcitons / utilities
 	// 
 	
-	ofRectangle ofxCamera::getViewport() const{
-		return getRenderer()->getCurrentViewport();
-	}
+	ofRectangle getViewport() const;
 	
-	
-	
-	
-	// 
-	// ???
-	// 
-	
-	
-	
-	void setupOffAxisViewPortal(const glm::vec3 & topLeft, const glm::vec3 & bottomLeft, const glm::vec3 & bottomRight);
-	
-	void enableOrtho();
-    void disableOrtho();
-    bool getOrtho() const;
+	shared_ptr<ofBaseRenderer> getRenderer() const;
+	void setRenderer(std::shared_ptr<ofBaseRenderer> renderer);
 	
 	void calcClipPlanes(const ofRectangle & viewport);
 	float getImagePlaneDistance(const ofRectangle & viewport) const;
@@ -137,7 +121,7 @@ private:
 	bool isOrtho;
 	
 	// all modes
-	bool vFlip;
+	bool mVFlip;
 	glm::vec2 mLensOffset;
 	float mNearClip;
 	float mFarClip;
@@ -149,4 +133,7 @@ private:
 	
 	// orthographic mode only
 	float mOrthoScale;
+	
+	// helpers
+	std::shared_ptr<ofBaseRenderer> mRenderer;
 };

@@ -1,11 +1,12 @@
 #include "ofxCamera.h"
+// based on code from ofCamera
 
 ofxCamera::ofxCamera(){
 	// mode switch
 	isOrtho = false;
 	
 	// all modes
-	vFlip = false;
+	mVFlip = false;
 	mLensOffset = glm::vec2(0.0f, 0.0f);
 	mNearClip = 0;
 	mFarClip = 0;
@@ -19,23 +20,28 @@ ofxCamera::ofxCamera(){
 	mOrthoScale = 1;
 }
 
-bool ofxCamera::getOrtho(){
+bool
+ofxCamera::getOrtho(){
 	return isOrtho;
 }
 
-void ofxCamera::enableOrtho(){
+void
+ofxCamera::enableOrtho(){
 	isOrtho = true;
 }
 
-void ofxCamera::disableOrtho(){
+void
+ofxCamera::disableOrtho(){
 	isOrtho = false;
 }
 
-void ofxCamera::begin(){
+void
+ofxCamera::begin(){
 	begin(getViewport());
 }
 
-void ofxCamera::begin(const ofRectangle & viewport){
+void
+ofxCamera::begin(const ofRectangle & viewport){
 	// if(isOrtho){
 	// 	begin_ortho(viewport);
 	// }else{
@@ -53,7 +59,7 @@ void ofxCamera::begin(const ofRectangle & viewport){
 	// ^ Can't access the matrix stack from outside of the GL renderer... not sure what to pass here
 	//   Let's just pass the default orientation for now.
 	//   This means we can't support orientation change with this camera, but that's ok.
-	renderer->setOrientation(OF_ORIENTATION_DEFAULT, camera.isVFlipped());
+	renderer->setOrientation(OF_ORIENTATION_DEFAULT, mVFlip);
 	
 	renderer->matrixMode(OF_MATRIX_PROJECTION);
 	renderer->loadMatrix(getProjectionMatrix(viewport));
@@ -62,7 +68,8 @@ void ofxCamera::begin(const ofRectangle & viewport){
 	renderer->loadViewMatrix(getModelViewMatrix());
 }
 
-void ofxCamera::end(){
+void
+ofxCamera::end(){
 	// if(isOrtho){
 	// 	end_ortho();
 	// }else{
@@ -76,33 +83,40 @@ void ofxCamera::end(){
 }
 
 
-// 
-// perspective camera rendering mode
-// 
-void ofxCamera::begin_perspective(const ofRectangle & viewport){
+// // 
+// // perspective camera rendering mode
+// // 
+// void ofxCamera::begin_perspective(const ofRectangle & viewport){
 	
-}
+// }
 
-void ofxCamera::end_perspective(){
+// void ofxCamera::end_perspective(){
 	
-}
+// }
 
 
-// 
-// orthographic camera rendering mode
-// 
-void ofxCamera::begin_ortho(const ofRectangle & viewport){
+// // 
+// // orthographic camera rendering mode
+// // 
+// void ofxCamera::begin_ortho(const ofRectangle & viewport){
    
-}
+// }
 
-void ofxCamera::end_ortho(){
+// void ofxCamera::end_ortho(){
    
+// }
+
+
+
+//----------------------------------------
+glm::mat4
+ofxCamera::getProjectionMatrix(){
+	return getProjectionMatrix(getViewport());
 }
 
-
-
-
-glm::mat4 ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
+//----------------------------------------
+glm::mat4
+ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
 	// autocalculate near/far clip planes if not set by user
 	calcClipPlanes(viewport);
 	
@@ -154,14 +168,24 @@ glm::mat4 ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
 	}
 }
 
+
 //----------------------------------------
-glm::mat4 ofxCamera::getModelViewMatrix() const {
+glm::mat4
+ofxCamera::getModelViewMatrix() const {
 	// TODO: only use position and orientation, but not scale
 	return glm::inverse(getGlobalTransformMatrix());
 }
 
 
-glm::mat4 ofxCamera::getModelViewProjectionMatrix(const ofRectangle & viewport) {
+//----------------------------------------
+glm::mat4
+ofxCamera::getModelViewProjectionMatrix(){
+	return getModelViewProjectionMatrix(getViewport());
+}
+
+//----------------------------------------
+glm::mat4
+ofxCamera::getModelViewProjectionMatrix(const ofRectangle & viewport) {
 	return getProjectionMatrix(viewport) * getModelViewMatrix();
 }
 
@@ -173,7 +197,8 @@ glm::mat4 ofxCamera::getModelViewProjectionMatrix(const ofRectangle & viewport) 
 
 
 //----------------------------------------
-void ofxCamera::calcClipPlanes(const ofRectangle & viewport) {
+void
+ofxCamera::calcClipPlanes(const ofRectangle & viewport) {
 	// autocalculate near/far clip planes if not set by user
 	if(mNearClip == 0 || mFarClip == 0) {
 		float dist = getImagePlaneDistance(viewport);
@@ -183,6 +208,31 @@ void ofxCamera::calcClipPlanes(const ofRectangle & viewport) {
 }
 
 //----------------------------------------
-float ofxCamera::getImagePlaneDistance(const ofRectangle & viewport) const {
-	return viewport.height / (2.0f * tanf(PI * fov / 360.0f));
+float
+ofxCamera::getImagePlaneDistance(const ofRectangle & viewport) const {
+	return viewport.height / (2.0f * tanf(PI * mFOV / 360.0f));
 }
+
+//----------------------------------------
+ofRectangle 
+ofxCamera::getViewport() const{
+	return getRenderer()->getCurrentViewport();
+}
+
+//----------------------------------------
+shared_ptr<ofBaseRenderer>
+ofxCamera::getRenderer() const{
+	if(!mRenderer){
+		return ofGetCurrentRenderer();
+	}else{
+		return mRenderer;
+	}
+}
+
+//----------------------------------------
+void
+ofxCamera::setRenderer(std::shared_ptr<ofBaseRenderer> renderer){
+	mRenderer = renderer;
+}
+
+
