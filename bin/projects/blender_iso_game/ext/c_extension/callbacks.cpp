@@ -1587,9 +1587,98 @@ void wrap_ofxCamera(Module rb_mOFX){
 		)
 		.define_method("end",            &ofxCamera::end)
 		
+		
 		.define_method("getOrtho",       &ofxCamera::getOrtho)
 		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
 		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
+		
+		
+		
+		.define_method("getProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getProjectionMatrix)
+		)
+		
+		.define_method("getModelViewMatrix",
+			static_cast< glm::mat4 (ofxCamera::*) 
+         (void) const
+         >(&ofxCamera::getModelViewMatrix) 
+		)
+		
+		.define_method("getModelViewProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getModelViewProjectionMatrix)
+		)
+		
+		
+		// 
+		// general properties
+		// 
+		.define_method("setVFlip",      &ofxCamera::setVFlip)
+		.define_method("setNearClip",   &ofxCamera::setNearClip)
+		.define_method("setFarClip",    &ofxCamera::setFarClip)
+		
+		.define_method("isVFlipped",    &ofxCamera::isVFlipped)
+		.define_method("getNearClip",   &ofxCamera::getNearClip)
+		.define_method("getFarClip",    &ofxCamera::getFarClip)
+		
+		// 
+		// perspective only
+		// 
+		
+		// .define_method("getFarClip",    &ofxCamera::getFarClip)
+			// void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0);
+		
+		.define_method("setFov",               &ofxCamera::setFov)
+		.define_method("setAspectRatio",       &ofxCamera::setAspectRatio)
+		.define_method("setForceAspectRatio",  &ofxCamera::setForceAspectRatio)
+		
+		.define_method("getFov",               &ofxCamera::getFov)
+		.define_method("getAspectRatio",       &ofxCamera::getAspectRatio)
+		.define_method("getForceAspectRatio",  &ofxCamera::getForceAspectRatio)
+		
+		// 
+		// ortho only
+		// 
+		
+		// .define_method("setupOrthographic",   &ofxCamera::setupOrthographic)
+			// void setupOrthographic(bool vFlip = true, float scale = 1, float nearDist = 0, float farDist = 0);
+		
+		.define_method("setOrthoScale",       &ofxCamera::setOrthoScale)
+		
+		.define_method("getOrthoScale",       &ofxCamera::getOrthoScale)
+		
+		
+		
+		// 
+		// coordinate space conversion
+		// 
+		
+		.define_method("worldToScreen",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToScreen)
+		)
+		
+		.define_method("screenToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::screenToWorld)
+		)
+		
+		.define_method("worldToCamera",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToCamera)
+		)
+		
+		.define_method("cameraToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::cameraToWorld)
+		)
 	;
 }
 		
