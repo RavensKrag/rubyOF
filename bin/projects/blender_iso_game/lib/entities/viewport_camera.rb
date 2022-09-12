@@ -109,15 +109,14 @@ class ViewportCamera
     end
     
     state 'ORTHO' do
-      def begin
-        invertY = false;
+      def begin(vp = ofGetCurrentViewport())
+        invertY = false; # do I need to force false? or do I take whatever the setting is?
+        
         
         # puts "ortho cam"
         # puts @scale
         
         # NOTE: @orientation is a quat, @position is a vec3
-        
-        vp = ofGetCurrentViewport();
         
         ofPushView();
         ofViewport(vp.x, vp.y, vp.width, vp.height, invertY);
@@ -144,9 +143,9 @@ class ViewportCamera
         
         
         viewfac = [vp.width, vp.height].max
-        # TODO: viewfac should automatically switch to which either dimension (width or height) is greater
+        # NOTE: viewfac should automatically switch to which either dimension (width or height) is greater
         
-        # NOTE: viewfac should be based on the sensor fit
+        # TODO: viewfac should be based on the sensor fit
             # src: blender-git/blender/source/blender/blenkernel/intern/camera.c
             # inside the function BKE_camera_params_compute_viewplane() :
             # 
@@ -173,8 +172,8 @@ class ViewportCamera
         
         ofSetMatrixMode(:modelview);
         
-        m0 = GLM.scale(GLM::Mat4.new(1.0),
-                       GLM::Vec3.new(@scale, @scale, @scale))
+        # m0 = GLM.scale(GLM::Mat4.new(1.0),
+        #                GLM::Vec3.new(@scale, @scale, @scale))
         
         m1 = GLM.translate(GLM::Mat4.new(1.0),
                                 @position)
@@ -184,14 +183,9 @@ class ViewportCamera
         cameraTransform = m1 * m2
         
         modelViewMat = GLM.inverse(cameraTransform)
-        # modelViewMat = m0 * GLM.inverse(cameraTransform)
-        # ^ maybe apply scale here?
         ofLoadViewMatrix(modelViewMat);
         
         # puts modelViewMat
-        
-        # @scale of about 25 works great for testing purposes with no translation
-        
       end
       
       
