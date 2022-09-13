@@ -38,6 +38,9 @@ ofxCamera::disableOrtho(){
 }
 
 //----------------------------------------
+// 
+// Basic API
+// 
 
 void
 ofxCamera::begin(){
@@ -46,45 +49,12 @@ ofxCamera::begin(){
 
 void
 ofxCamera::begin(const ofRectangle & viewport){
-	std::cout << "begin" << std::endl;
-	
-	if(isOrtho){
-		std::cout << "begin ortho" << std::endl;
-		begin_ortho(viewport);
-	}else{
-		std::cout << "begin perspective" << std::endl;
-		begin_perspective(viewport);
-	}
-	
-}
-
-void
-ofxCamera::end(){
-	if(isOrtho){
-		end_ortho();
-	}else{
-		end_perspective();
-	}
-}
-
-
-// 
-// perspective camera rendering mode
-// 
-void ofxCamera::begin_perspective(const ofRectangle & viewport){
 	// ofGetCurrentRenderer()->bind(*this,viewport);
 	
 	auto renderer = ofGetCurrentRenderer();
 	
 	renderer->pushView();
-	renderer->viewport(viewport);
-	
-	// renderer->setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
-	// ^ Can't access the matrix stack from outside of the GL renderer... not sure what to pass here
-	//   Let's just pass the default orientation for now.
-	//   This means we can't support orientation change with this camera, but that's ok.
-	renderer->setOrientation(OF_ORIENTATION_DEFAULT, mVFlip);
-	
+	formatViewport(renderer, viewport);
 	
 	renderer->matrixMode(OF_MATRIX_PROJECTION);
 	renderer->loadMatrix(getProjectionMatrix(viewport));
@@ -93,8 +63,8 @@ void ofxCamera::begin_perspective(const ofRectangle & viewport){
 	renderer->loadViewMatrix(getModelViewMatrix());
 }
 
-void ofxCamera::end_perspective(){
-	
+void
+ofxCamera::end(){
 	// ofGetCurrentRenderer()->unbind(*this);
 	
 	auto renderer = ofGetCurrentRenderer();
@@ -102,73 +72,15 @@ void ofxCamera::end_perspective(){
 }
 
 
-// 
-// orthographic camera rendering mode
-// 
-void ofxCamera::begin_ortho(const ofRectangle & viewport){
-	std::cout << "begin ortho inner" << std::endl;
-	bool invertY = false;
-	
-	ofPushView();
-	ofViewport(viewport.x, viewport.y, viewport.width, viewport.height, invertY);
-	// # setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
-	auto lensOffset = glm::vec2(0,0);
-	
-	
-	ofSetMatrixMode(OF_MATRIX_PROJECTION);
-		// NOTE: Current implementation does not support lens offset
-		
-		// use negative scaling to flip Blender's z axis
-		// (not sure why it ends up being the second component, but w/e)
-		glm::mat4 m5 = glm::scale(glm::mat4(1.0),
-										glm::vec3(1, -1, 1));
-		
-		// NOTE: viewfac can be either width or height, whichever is greater
-		float viewfac;
-		if(viewport.width > viewport.height){
-			viewfac = viewport.width;
-		}else{
-			viewfac = viewport.height;
-		}
-		
-		// # TODO: viewfac should be based on the sensor fit
-			// # src: blender-git/blender/source/blender/blenkernel/intern/camera.c
-			// # inside the function BKE_camera_params_compute_viewplane() :
-			// # 
-			// # 
-			// # if (sensor_fit == CAMERA_SENSOR_FIT_HOR) {
-			// #   viewfac = winx;
-			// # }
-			// # else {
-			// #   viewfac = params->ycor * winy;
-			// # } 
-		
-		glm::mat4 projectionMat = glm::ortho(
-			- viewport.width/2 * mOrthoScale / viewfac,
-			+ viewport.width/2 * mOrthoScale / viewfac,
-			- viewport.height/2 * mOrthoScale / viewfac,
-			+ viewport.height/2 * mOrthoScale / viewfac,
-			mNearClip,
-			mFarClip
-		);
-	
-	ofLoadMatrix(projectionMat * m5);
-	
-	
-	
-	ofSetMatrixMode(OF_MATRIX_MODELVIEW);
-		// TODO: only use position and orientation, but not scale
-		glm::mat4 m1 = glm::translate(glm::mat4(1.0), this->getPosition());
-		glm::mat4 m2 = glm::toMat4(this->getOrientationQuat());
-		auto cameraTransform = m1 * m2;
-	ofLoadViewMatrix(glm::inverse(cameraTransform));
+//----------------------------------------
+void
+ofxCamera::formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & viewport){
+	if(isOrtho){
+		ortho_formatViewport(renderer, viewport);
+	}else{
+		persp_formatViewport(renderer, viewport);
+	}
 }
-
-void ofxCamera::end_ortho(){
-   ofPopView();
-}
-
-
 
 //----------------------------------------
 glm::mat4
@@ -179,23 +91,23 @@ ofxCamera::getProjectionMatrix(){
 //----------------------------------------
 glm::mat4
 ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
-	// autocalculate near/far clip planes if not set by user
-	// calcClipPlanes(viewport);
+	if(isOrtho){
+		return ortho_getProjectionMatrix(viewport);
+	}else{
+		return persp_getProjectionMatrix(viewport);
+	}
 	
-	float aspect = mForceAspectRatio ? mAspectRatio : viewport.width/viewport.height;
-	auto projection = glm::perspective(glm::radians(mFOV), aspect, mNearClip, mFarClip);
-	projection = (glm::translate(glm::mat4(1.0), {-mLensOffset.x, -mLensOffset.y, 0.f})
-						* projection);
-	return projection;
 }
-
 
 //----------------------------------------
 glm::mat4
 ofxCamera::getModelViewMatrix() const {
-	return glm::inverse(getGlobalTransformMatrix());
+	if(isOrtho){
+		return ortho_getModelViewMatrix();
+	}else{
+		return persp_getModelViewMatrix();
+	}
 }
-
 
 //----------------------------------------
 glm::mat4
@@ -207,6 +119,97 @@ ofxCamera::getModelViewProjectionMatrix(){
 glm::mat4
 ofxCamera::getModelViewProjectionMatrix(const ofRectangle & viewport) {
 	return getProjectionMatrix(viewport) * getModelViewMatrix();
+}
+
+
+
+
+//----------------------------------------
+// 
+// Perspective camera rendering logic
+// 
+
+void
+ofxCamera::persp_formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & vp){
+	renderer->viewport(vp.x, vp.y, vp.width, vp.height, renderer->isVFlipped());
+	
+	// renderer->setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
+	// ^ Can't access the matrix stack from outside of the GL renderer... not sure what to pass here
+	//   Let's just pass the default orientation for now.
+	//   This means we can't support orientation change with this camera, but that's ok.
+	renderer->setOrientation(OF_ORIENTATION_DEFAULT, mVFlip);
+}
+
+glm::mat4
+ofxCamera::persp_getProjectionMatrix(const ofRectangle & viewport){
+	// autocalculate near/far clip planes if not set by user
+	// calcClipPlanes(viewport);
+	
+	float aspect = mForceAspectRatio ? mAspectRatio : viewport.width/viewport.height;
+	auto projection = glm::perspective(glm::radians(mFOV), aspect, mNearClip, mFarClip);
+	projection = (glm::translate(glm::mat4(1.0), {-mLensOffset.x, -mLensOffset.y, 0.f})
+						* projection);
+	return projection;
+}
+
+glm::mat4
+ofxCamera::persp_getModelViewMatrix() const{
+	return glm::inverse(getGlobalTransformMatrix());
+}
+
+
+//----------------------------------------
+// 
+// Orthographic camera rendering logic
+// 
+
+void
+ofxCamera::ortho_formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & vp){
+	renderer->viewport(vp.x, vp.y, vp.width, vp.height, false);
+	renderer->setOrientation(OF_ORIENTATION_DEFAULT, true);
+}
+
+glm::mat4
+ofxCamera::ortho_getProjectionMatrix(const ofRectangle & viewport){
+	// NOTE: Current implementation does not support lens offset
+	
+	// use negative scaling to flip Blender's z axis
+	// (not sure why it ends up being the second component, but w/e)
+	glm::mat4 m5 = glm::scale(glm::mat4(1.0),
+									glm::vec3(1, -1, 1));
+	
+	// NOTE: viewfac can be either width or height, whichever is greater
+	float viewfac = ((viewport.width > viewport.height) ? viewport.width : viewport.height);
+	
+	// # TODO: viewfac should be based on the sensor fit
+	// # src: blender-git/blender/source/blender/blenkernel/intern/camera.c
+	// # inside the function BKE_camera_params_compute_viewplane() :
+		// # if (sensor_fit == CAMERA_SENSOR_FIT_HOR) {
+		// #   viewfac = winx;
+		// # }
+		// # else {
+		// #   viewfac = params->ycor * winy;
+		// # } 
+	
+	glm::mat4 projectionMat = glm::ortho(
+		- viewport.width/2 * mOrthoScale / viewfac,
+		+ viewport.width/2 * mOrthoScale / viewfac,
+		- viewport.height/2 * mOrthoScale / viewfac,
+		+ viewport.height/2 * mOrthoScale / viewfac,
+		mNearClip,
+		mFarClip
+	);
+	
+	return projectionMat * m5;
+}
+
+glm::mat4
+ofxCamera::ortho_getModelViewMatrix() const{
+	// NOTE: for orthographic projection, only use position and orientation, but not scale
+	glm::mat4 m1 = glm::translate(glm::mat4(1.0), this->getPosition());
+	glm::mat4 m2 = glm::toMat4(this->getOrientationQuat());
+	auto cameraTransform = m1 * m2;
+	return glm::inverse(cameraTransform);
 }
 
 

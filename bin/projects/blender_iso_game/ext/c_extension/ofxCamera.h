@@ -24,6 +24,8 @@ public:
 	// void useOrthographic();
 	// void usePerspective();
 	
+	void formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & viewport);
+	
 	glm::mat4 getProjectionMatrix();
 	glm::mat4 getProjectionMatrix(const ofRectangle & viewport);
 	
@@ -31,8 +33,6 @@ public:
 	
 	glm::mat4 getModelViewProjectionMatrix();
 	glm::mat4 getModelViewProjectionMatrix(const ofRectangle & viewport);
-	
-	
 	
 	
 	
@@ -104,9 +104,17 @@ public:
 	void calcClipPlanes(const ofRectangle & viewport);
 	float getImagePlaneDistance(const ofRectangle & viewport) const;
 
-	
-	
-	
+
+protected:
+	void      persp_formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & vp);
+	glm::mat4 persp_getProjectionMatrix(const ofRectangle & viewport);
+	glm::mat4 persp_getModelViewMatrix() const;
+
+	void      ortho_formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & vp);
+	glm::mat4 ortho_getProjectionMatrix(const ofRectangle & viewport);
+	glm::mat4 ortho_getModelViewMatrix() const;
+
+
 private:
 	// mode switch
 	bool isOrtho;
