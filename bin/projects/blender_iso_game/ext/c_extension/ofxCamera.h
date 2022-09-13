@@ -96,11 +96,6 @@ public:
 	// helper funcitons / utilities
 	// 
 	
-	ofRectangle getViewport() const;
-	
-	shared_ptr<ofBaseRenderer> getRenderer() const;
-	void setRenderer(std::shared_ptr<ofBaseRenderer> renderer);
-	
 	void calcClipPlanes(const ofRectangle & viewport);
 	float getImagePlaneDistance(const ofRectangle & viewport) const;
 
@@ -132,7 +127,4 @@ private:
 	
 	// orthographic mode only
 	float mOrthoScale;
-	
-	// helpers
-	std::shared_ptr<ofBaseRenderer> mRenderer;
 };

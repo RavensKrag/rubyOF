@@ -44,7 +44,7 @@ ofxCamera::disableOrtho(){
 
 void
 ofxCamera::begin(){
-	begin(getViewport());
+	begin(ofGetCurrentViewport());
 }
 
 void
@@ -85,7 +85,7 @@ ofxCamera::formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRect
 //----------------------------------------
 glm::mat4
 ofxCamera::getProjectionMatrix(){
-	return getProjectionMatrix(getViewport());
+	return getProjectionMatrix(ofGetCurrentViewport());
 }
 
 //----------------------------------------
@@ -112,7 +112,7 @@ ofxCamera::getModelViewMatrix() const {
 //----------------------------------------
 glm::mat4
 ofxCamera::getModelViewProjectionMatrix(){
-	return getModelViewProjectionMatrix(getViewport());
+	return getModelViewProjectionMatrix(ofGetCurrentViewport());
 }
 
 //----------------------------------------
@@ -339,22 +339,22 @@ ofxCamera::cameraToWorld(glm::vec3 CameraXYZ, const ofRectangle & viewport){
 
 glm::vec3
 ofxCamera::worldToScreen(glm::vec3 WorldXYZ){
-	return worldToScreen(WorldXYZ, getViewport());
+	return worldToScreen(WorldXYZ, ofGetCurrentViewport());
 }
 
 glm::vec3
 ofxCamera::screenToWorld(glm::vec3 ScreenXYZ){
-	return screenToWorld(ScreenXYZ, getViewport());
+	return screenToWorld(ScreenXYZ, ofGetCurrentViewport());
 }
 
 glm::vec3
 ofxCamera::worldToCamera(glm::vec3 WorldXYZ){
-	return worldToCamera(WorldXYZ, getViewport());
+	return worldToCamera(WorldXYZ, ofGetCurrentViewport());
 }
 
 glm::vec3
 ofxCamera::cameraToWorld(glm::vec3 CameraXYZ){
-	return cameraToWorld(CameraXYZ, getViewport());
+	return cameraToWorld(CameraXYZ, ofGetCurrentViewport());
 }
 
 
@@ -363,28 +363,6 @@ ofxCamera::cameraToWorld(glm::vec3 CameraXYZ){
 // 
 // helper funcitons / utilities
 // 
-
-//----------------------------------------
-ofRectangle 
-ofxCamera::getViewport() const{
-	return getRenderer()->getCurrentViewport();
-}
-
-//----------------------------------------
-shared_ptr<ofBaseRenderer>
-ofxCamera::getRenderer() const{
-	if(!mRenderer){
-		return ofGetCurrentRenderer();
-	}else{
-		return mRenderer;
-	}
-}
-
-//----------------------------------------
-void
-ofxCamera::setRenderer(std::shared_ptr<ofBaseRenderer> renderer){
-	mRenderer = renderer;
-}
 
 //----------------------------------------
 void
