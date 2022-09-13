@@ -1575,14 +1575,14 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
 void wrap_ofxCamera(Module rb_mOFX){
 	
    Data_Type<ofxCamera> rb_c_ofxCamera = 
-      define_class_under<ofxCamera>(rb_mOFX, "Camera");
+      define_class_under<ofxCamera, ofNode>(rb_mOFX, "Camera");
    
    rb_c_ofxCamera
       .define_constructor(Constructor<ofxCamera>())
 		
 		.define_method("begin",
 			static_cast< void (ofxCamera::*)
-         (void)
+         (const ofRectangle & viewport)
          >(&ofxCamera::begin)
 		)
 		.define_method("end",            &ofxCamera::end)
@@ -1616,13 +1616,13 @@ void wrap_ofxCamera(Module rb_mOFX){
 		// 
 		// general properties
 		// 
-		.define_method("setVFlip",      &ofxCamera::setVFlip)
-		.define_method("setNearClip",   &ofxCamera::setNearClip)
-		.define_method("setFarClip",    &ofxCamera::setFarClip)
+		.define_method("vflip=",       &ofxCamera::setVFlip)
+		.define_method("near_clip=",   &ofxCamera::setNearClip)
+		.define_method("far_clip=",    &ofxCamera::setFarClip)
 		
-		.define_method("isVFlipped",    &ofxCamera::isVFlipped)
-		.define_method("getNearClip",   &ofxCamera::getNearClip)
-		.define_method("getFarClip",    &ofxCamera::getFarClip)
+		.define_method("vflip?",       &ofxCamera::isVFlipped)
+		.define_method("near_clip",    &ofxCamera::getNearClip)
+		.define_method("far_clip",     &ofxCamera::getFarClip)
 		
 		// 
 		// perspective only
@@ -1631,13 +1631,13 @@ void wrap_ofxCamera(Module rb_mOFX){
 		// .define_method("getFarClip",    &ofxCamera::getFarClip)
 			// void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0);
 		
-		.define_method("setFov",               &ofxCamera::setFov)
-		.define_method("setAspectRatio",       &ofxCamera::setAspectRatio)
-		.define_method("setForceAspectRatio",  &ofxCamera::setForceAspectRatio)
+		.define_method("fov=",                 &ofxCamera::setFov)
+		.define_method("aspect_ratio=",        &ofxCamera::setAspectRatio)
+		.define_method("force_aspect_ratio=",  &ofxCamera::setForceAspectRatio)
 		
-		.define_method("getFov",               &ofxCamera::getFov)
-		.define_method("getAspectRatio",       &ofxCamera::getAspectRatio)
-		.define_method("getForceAspectRatio",  &ofxCamera::getForceAspectRatio)
+		.define_method("fov",                  &ofxCamera::getFov)
+		.define_method("aspect_ratio",         &ofxCamera::getAspectRatio)
+		.define_method("force_aspect_ratio",   &ofxCamera::getForceAspectRatio)
 		
 		// 
 		// ortho only
@@ -1646,9 +1646,9 @@ void wrap_ofxCamera(Module rb_mOFX){
 		// .define_method("setupOrthographic",   &ofxCamera::setupOrthographic)
 			// void setupOrthographic(bool vFlip = true, float scale = 1, float nearDist = 0, float farDist = 0);
 		
-		.define_method("setOrthoScale",       &ofxCamera::setOrthoScale)
+		.define_method("ortho_scale=",       &ofxCamera::setOrthoScale)
 		
-		.define_method("getOrthoScale",       &ofxCamera::getOrthoScale)
+		.define_method("ortho_scale",        &ofxCamera::getOrthoScale)
 		
 		
 		

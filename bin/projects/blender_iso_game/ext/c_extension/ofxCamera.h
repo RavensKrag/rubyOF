@@ -11,10 +11,10 @@ public:
 	void begin();
 	void begin(const ofRectangle & viewport);
 	void end();
-		// void begin_perspective(const ofRectangle & viewport);
-		// void end_perspective();
-		// void begin_ortho(const ofRectangle & viewport);
-		// void end_ortho();
+		void begin_perspective(const ofRectangle & viewport);
+		void end_perspective();
+		void begin_ortho(const ofRectangle & viewport);
+		void end_ortho();
 	
 	// mode switching
 	bool getOrtho();

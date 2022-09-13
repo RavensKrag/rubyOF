@@ -46,12 +46,32 @@ ofxCamera::begin(){
 
 void
 ofxCamera::begin(const ofRectangle & viewport){
-	// if(isOrtho){
-	// 	begin_ortho(viewport);
-	// }else{
-	// 	begin_perspective(viewport);
-	// }
+	std::cout << "begin" << std::endl;
 	
+	if(isOrtho){
+		std::cout << "begin ortho" << std::endl;
+		begin_ortho(viewport);
+	}else{
+		std::cout << "begin perspective" << std::endl;
+		begin_perspective(viewport);
+	}
+	
+}
+
+void
+ofxCamera::end(){
+	if(isOrtho){
+		end_ortho();
+	}else{
+		end_perspective();
+	}
+}
+
+
+// 
+// perspective camera rendering mode
+// 
+void ofxCamera::begin_perspective(const ofRectangle & viewport){
 	// ofGetCurrentRenderer()->bind(*this,viewport);
 	
 	auto renderer = ofGetCurrentRenderer();
@@ -65,6 +85,7 @@ ofxCamera::begin(const ofRectangle & viewport){
 	//   This means we can't support orientation change with this camera, but that's ok.
 	renderer->setOrientation(OF_ORIENTATION_DEFAULT, mVFlip);
 	
+	
 	renderer->matrixMode(OF_MATRIX_PROJECTION);
 	renderer->loadMatrix(getProjectionMatrix(viewport));
 	
@@ -72,13 +93,7 @@ ofxCamera::begin(const ofRectangle & viewport){
 	renderer->loadViewMatrix(getModelViewMatrix());
 }
 
-void
-ofxCamera::end(){
-	// if(isOrtho){
-	// 	end_ortho();
-	// }else{
-	// 	end_perspective();
-	// }
+void ofxCamera::end_perspective(){
 	
 	// ofGetCurrentRenderer()->unbind(*this);
 	
@@ -87,50 +102,26 @@ ofxCamera::end(){
 }
 
 
-// // 
-// // perspective camera rendering mode
-// // 
-// void ofxCamera::begin_perspective(const ofRectangle & viewport){
+// 
+// orthographic camera rendering mode
+// 
+void ofxCamera::begin_ortho(const ofRectangle & viewport){
+	std::cout << "begin ortho inner" << std::endl;
+	bool invertY = false;
 	
-// }
-
-// void ofxCamera::end_perspective(){
+	ofPushView();
+	ofViewport(viewport.x, viewport.y, viewport.width, viewport.height, invertY);
+	// # setOrientation(matrixStack.getOrientation(),camera.isVFlipped());
+	auto lensOffset = glm::vec2(0,0);
 	
-// }
-
-
-// // 
-// // orthographic camera rendering mode
-// // 
-// void ofxCamera::begin_ortho(const ofRectangle & viewport){
-   
-// }
-
-// void ofxCamera::end_ortho(){
-   
-// }
-
-
-
-//----------------------------------------
-glm::mat4
-ofxCamera::getProjectionMatrix(){
-	return getProjectionMatrix(getViewport());
-}
-
-//----------------------------------------
-glm::mat4
-ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
-	// autocalculate near/far clip planes if not set by user
-	calcClipPlanes(viewport);
 	
-	if(isOrtho) {
+	ofSetMatrixMode(OF_MATRIX_PROJECTION);
 		// NOTE: Current implementation does not support lens offset
 		
 		// use negative scaling to flip Blender's z axis
 		// (not sure why it ends up being the second component, but w/e)
 		glm::mat4 m5 = glm::scale(glm::mat4(1.0),
-		                          glm::vec3(1, -1, 1));
+										glm::vec3(1, -1, 1));
 		
 		// NOTE: viewfac can be either width or height, whichever is greater
 		float viewfac;
@@ -160,23 +151,48 @@ ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
 			mNearClip,
 			mFarClip
 		);
-		
-		return projectionMat * m5;
-		
-	}else{
-		float aspect = mForceAspectRatio ? mAspectRatio : viewport.width/viewport.height;
-		auto projection = glm::perspective(glm::radians(mFOV), aspect, mNearClip, mFarClip);
-		projection = (glm::translate(glm::mat4(1.0), {-mLensOffset.x, -mLensOffset.y, 0.f})
-						  * projection);
-		return projection;
-	}
+	
+	ofLoadMatrix(projectionMat * m5);
+	
+	
+	
+	ofSetMatrixMode(OF_MATRIX_MODELVIEW);
+		// TODO: only use position and orientation, but not scale
+		glm::mat4 m1 = glm::translate(glm::mat4(1.0), this->getPosition());
+		glm::mat4 m2 = glm::toMat4(this->getOrientationQuat());
+		auto cameraTransform = m1 * m2;
+	ofLoadViewMatrix(glm::inverse(cameraTransform));
+}
+
+void ofxCamera::end_ortho(){
+   ofPopView();
+}
+
+
+
+//----------------------------------------
+glm::mat4
+ofxCamera::getProjectionMatrix(){
+	return getProjectionMatrix(getViewport());
+}
+
+//----------------------------------------
+glm::mat4
+ofxCamera::getProjectionMatrix(const ofRectangle & viewport) {
+	// autocalculate near/far clip planes if not set by user
+	// calcClipPlanes(viewport);
+	
+	float aspect = mForceAspectRatio ? mAspectRatio : viewport.width/viewport.height;
+	auto projection = glm::perspective(glm::radians(mFOV), aspect, mNearClip, mFarClip);
+	projection = (glm::translate(glm::mat4(1.0), {-mLensOffset.x, -mLensOffset.y, 0.f})
+						* projection);
+	return projection;
 }
 
 
 //----------------------------------------
 glm::mat4
 ofxCamera::getModelViewMatrix() const {
-	// TODO: only use position and orientation, but not scale
 	return glm::inverse(getGlobalTransformMatrix());
 }
 
