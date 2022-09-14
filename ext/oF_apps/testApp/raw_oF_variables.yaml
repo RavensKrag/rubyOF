@@ -170,7 +170,7 @@
 
   '
 - "OF_PROJECT_CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always    \n"
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always    \n"
 - "@D = .\n"
 - 'XAUTHORITY = /tmp/xauth-1000-_0
 
@@ -356,7 +356,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1650,unix/ravensnest:/tmp/.ICE-unix/1650
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -369,8 +369,8 @@
 - 'FIND = find
 
   '
-- 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123
-  -fPIC -fdiagnostics-color=always
+- 'CFLAGS = -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_GTK
+  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always
 
   '
 - 'ARFLAGS = rv
@@ -433,7 +433,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-hBVoKoinil0q/agent.1449
+- 'SSH_AUTH_SOCK = /tmp/ssh-dQbDCfg2uFsZ/agent.1477
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp/bin
@@ -505,7 +505,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1562
+- 'SSH_AGENT_PID = 1590
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -518,7 +518,7 @@
 
   '
 - "LINK.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always  -Wl,-rpath=./libs:./bin/libs
   -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - "LINK.s = cc  -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
@@ -537,7 +537,7 @@
 - 'LESSCLOSE = /usr/bin/lesspipe %s %s
 
   '
-- 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_MPG123
+- 'OF_CORE_DEFINES_CFLAGS = -DOF_USING_GTK -DOF_USING_GTK -DOF_USING_MPG123
 
   '
 - "-*-command-variables-*- = TARGET_NAME=Debug\n"
@@ -742,7 +742,7 @@
 - 'F77 = f77
 
   '
-- 'OLDPWD = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib
+- 'COMPILE.cc = g++    -c
 
   '
 - "REQUESTED_PROJECT_ADDONS =  \n"
@@ -779,7 +779,7 @@
   OF_PROJECT_LDFLAGS AS TARGET_NAME OF_PROJECT_OBJ_OUTPUT_PATH PREPROCESS.S MAKEOVERRIDES
   HOST_OS ALL_LDFLAGS COMPILE.p XDG_SESSION_ID USER FC .DEFAULT_GOAL XDG_CURRENT_DESKTOP
   PLATFORM_ARCH OF_PROJECT_DEPS OF_ROOT FAILED_PKG rvm_version %D OF_EXAMPLES_PATH
-  WEAVE MAKE_COMMAND LINK.cpp F77 OLDPWD REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
+  WEAVE MAKE_COMMAND LINK.cpp F77 COMPILE.cc REQUESTED_PROJECT_ADDONS OF_PROJECT_INCLUDES_CFLAGS
   .VARIABLES PC *F XDG_SEAT_PATH PLATFORM_DEFINES PLATFORM_LIBRARY_SEARCH_PATHS COMPILE.def
   LEX MAKEFLAGS OF_LIBS_OPENFRAMEWORKS_PATH PLATFORM_CORE_EXCLUSIONS MFLAGS *D PROJECT_ADDONS_OBJ_PATH
   OF_CORE_LIBS_THAT_NEED_ORDER LEX.l LEX.m ALL_OF_CORE_SOURCE_PATHS +D PLATFORM_LDFLAGS
@@ -787,7 +787,7 @@
   ALL_OF_CORE_LIBSORDER_MAKE_FILES APPNAME ALL_OF_CORE_THIRDPARTY_SHARED_LIBS CLEANTARGET
   QT_ACCESSIBILITY AVAILABLE_PLATFORM_VARIANTS DEFAULTS_PATH LDFLAGS PLATFORM_PKG_CONFIG_LIBRARIES
   .SHELLSTATUS GCC_MINOR_GTEQ_7 MAKEFILES OF_PROJECT_DEPENDENCY_FILES YACC ALL_OF_CORE_THIRDPARTY_HEADER_PATHS
-  COMPILE.cc HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2 CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS
+  HOST_ARCH <F TARGET_LIBS HAS_SYSTEM_GTK2 CXX ALL_CFLAGS COFLAGS OF_CORE_LIBRARY_LDFLAGS
   LINK.C OF_CORE_INCLUDES_CFLAGS OF_PROJECT_RESOURCES COMPILE.C GNOME_TERMINAL_SCREEN
   ^F COMPILE.S LINK.F rvm_prefix PROJECT_ROOT GNOME_TERMINAL_SERVICE SUFFIXES PLATFORM_OS
   COMPILE.c ADDON_INCLUDE_CFLAGS OBJS_WITHOUT_EXTERNAL COMPILE.s .INCLUDE_DIRS OF_PROJECT_DEFINES_CFLAGS
@@ -801,7 +801,7 @@
 - 'XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
 
   '
-- 'PLATFORM_DEFINES =  OF_USING_GTK OF_USING_MPG123
+- 'PLATFORM_DEFINES =  OF_USING_GTK OF_USING_GTK OF_USING_MPG123
 
   '
 - "PLATFORM_LIBRARY_SEARCH_PATHS = \n"
@@ -1132,9 +1132,6 @@
   /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/utf8/include/utf8
 
   '
-- 'COMPILE.cc = g++    -c
-
-  '
 - 'HOST_ARCH = x86_64
 
   '
@@ -1142,14 +1139,14 @@
 - 'TARGET_LIBS = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a
 
   '
-- 'HAS_SYSTEM_GTK2 = 1
+- 'HAS_SYSTEM_GTK2 = 0
 
   '
 - 'CXX = g++
 
   '
 - "ALL_CFLAGS =  -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always    \n"
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always    \n"
 - "COFLAGS = \n"
 - "OF_CORE_LIBRARY_LDFLAGS = -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
@@ -1193,7 +1190,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/0124af03_9a0a_4140_bd25_214b03c26096
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad
 
   '
 - "^F = \n"
@@ -1209,7 +1206,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.93
+- 'GNOME_TERMINAL_SERVICE = :1.175
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1220,7 +1217,7 @@
 
   '
 - 'COMPILE.c = cc -Wall -Werror=return-type -std=c++14 -DGCC_HAS_REGEX -DOF_USING_GTK
-  -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
+  -DOF_USING_GTK -DOF_USING_MPG123 -fPIC -fdiagnostics-color=always   -c
 
   '
 - 'ADDON_INCLUDE_CFLAGS = -pthread -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0
@@ -1270,7 +1267,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/3
+- 'MAKE_TERMERR = /dev/pts/2
 
   '
 - 'OBJC = cc
@@ -1295,10 +1292,11 @@
 - "LINK.o = cc -Wl,-rpath=./libs:./bin/libs -Wl,--as-needed -Wl,--gc-sections -fuse-ld=gold
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
-- 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxInfiniteCanvas
-  ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics ofxXmlSettings ofxAccelerometer
-  ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten ofxAssimpModelLoader ofxAndroid
-  ofxSparklines ofxMathUtils ofxiOS ofxImGui ofxDatGui
+- 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxGLFWJoystick
+  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics
+  ofxXmlSettings ofxAccelerometer ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten
+  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxRaycaster ofxAlembic ofxMathUtils
+  ofxiOS ofxImGui ofxDatGui
 
   '
 - "OF_CORE_BASE_CXXFLAGS = \n"

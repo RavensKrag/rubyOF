@@ -102,7 +102,7 @@
   "$typeof": 
   "$CFLAGS": "$(cflags)  -fPIC -fdiagnostics-color=always"
   "$CXXFLAGS": " -Wall -g -O3 -march=native -mtune=native -Werror=return-type -std=c++14
-    -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"
+    -DGCC_HAS_REGEX -DOF_USING_GTK -DOF_USING_GTK -DOF_USING_MPG123 -fdiagnostics-color=always"
   "$warnflags": "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long
     -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings
     -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn

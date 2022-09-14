@@ -1569,6 +1569,120 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
    ;
 }
 
+
+#include "ofxCamera.h"
+
+void wrap_ofxCamera(Module rb_mOFX){
+	
+   Data_Type<ofxCamera> rb_c_ofxCamera = 
+      define_class_under<ofxCamera, ofNode>(rb_mOFX, "Camera");
+   
+   rb_c_ofxCamera
+      .define_constructor(Constructor<ofxCamera>())
+		
+		.define_method("begin",
+			static_cast< void (ofxCamera::*)
+         (const ofRectangle & viewport)
+         >(&ofxCamera::begin)
+		)
+		.define_method("end",            &ofxCamera::end)
+		
+		
+		.define_method("getOrtho",       &ofxCamera::getOrtho)
+		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
+		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
+		
+		
+		
+		.define_method("getProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getProjectionMatrix)
+		)
+		
+		.define_method("getModelViewMatrix",
+			static_cast< glm::mat4 (ofxCamera::*) 
+         (void) const
+         >(&ofxCamera::getModelViewMatrix) 
+		)
+		
+		.define_method("getModelViewProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getModelViewProjectionMatrix)
+		)
+		
+		
+		// 
+		// general properties
+		// 
+		.define_method("vflip=",       &ofxCamera::setVFlip)
+		.define_method("near_clip=",   &ofxCamera::setNearClip)
+		.define_method("far_clip=",    &ofxCamera::setFarClip)
+		
+		.define_method("vflip?",       &ofxCamera::isVFlipped)
+		.define_method("near_clip",    &ofxCamera::getNearClip)
+		.define_method("far_clip",     &ofxCamera::getFarClip)
+		
+		// 
+		// perspective only
+		// 
+		
+		// .define_method("getFarClip",    &ofxCamera::getFarClip)
+			// void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0);
+		
+		.define_method("fov=",                 &ofxCamera::setFov)
+		.define_method("aspect_ratio=",        &ofxCamera::setAspectRatio)
+		.define_method("force_aspect_ratio=",  &ofxCamera::setForceAspectRatio)
+		
+		.define_method("fov",                  &ofxCamera::getFov)
+		.define_method("aspect_ratio",         &ofxCamera::getAspectRatio)
+		.define_method("force_aspect_ratio",   &ofxCamera::getForceAspectRatio)
+		
+		// 
+		// ortho only
+		// 
+		
+		// .define_method("setupOrthographic",   &ofxCamera::setupOrthographic)
+			// void setupOrthographic(bool vFlip = true, float scale = 1, float nearDist = 0, float farDist = 0);
+		
+		.define_method("ortho_scale=",       &ofxCamera::setOrthoScale)
+		
+		.define_method("ortho_scale",        &ofxCamera::getOrthoScale)
+		
+		
+		
+		// 
+		// coordinate space conversion
+		// 
+		
+		.define_method("worldToScreen",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToScreen)
+		)
+		
+		.define_method("screenToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::screenToWorld)
+		)
+		
+		.define_method("worldToCamera",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToCamera)
+		)
+		
+		.define_method("cameraToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::cameraToWorld)
+		)
+	;
+}
+		
+
 #include "ofxShadowCamera.h"
 
 void wrap_ofxShadowCamera(Module rb_mOFX){
@@ -1943,6 +2057,8 @@ void Init_rubyOF_project()
 	wrap_ofxShadowSimple(rb_mOFX);
 	
 	wrap_ofxShadowCamera(rb_mOFX);
+	
+	wrap_ofxCamera(rb_mOFX);
 	
 	
 	
