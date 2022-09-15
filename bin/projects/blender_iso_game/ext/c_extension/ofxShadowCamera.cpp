@@ -94,8 +94,28 @@ void ofxShadowCamera::lookAt( glm::vec3 aPos, glm::vec3 upVector ) {
 }
 
 //--------------------------------------------------------------
-void ofxShadowCamera::setAngle(float angle_deg) {
+float ofxShadowCamera::getFov() const {
+    return lightCam.getFov();
+}
+
+//--------------------------------------------------------------
+float ofxShadowCamera::getOrthoScale() const {
+    return lightCam.getOrthoScale();
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setFov(float angle_deg) {
     lightCam.setFov(angle_deg);
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setOrthoScale(float scale) {
+    lightCam.setOrthoScale(scale);
+}
+
+//--------------------------------------------------------------
+bool ofxShadowCamera::getOrtho() {
+    return lightCam.getOrtho();
 }
 
 //--------------------------------------------------------------

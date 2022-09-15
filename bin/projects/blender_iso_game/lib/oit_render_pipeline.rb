@@ -240,6 +240,7 @@ class OIT_RenderPipeline
     lights
     .select{|light| light.casts_shadows? }
     .each do |light|
+      light.update
       light.shadow_cam.beginDepthPass()
         ofEnableDepthTest()
         # @shadow_pass.call(lights, @shadow_material)

@@ -1588,7 +1588,7 @@ void wrap_ofxCamera(Module rb_mOFX){
 		.define_method("end",            &ofxCamera::end)
 		
 		
-		.define_method("getOrtho",       &ofxCamera::getOrtho)
+		.define_method("ortho?",         &ofxCamera::getOrtho)
 		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
 		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
 		
@@ -1704,8 +1704,13 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
 		.define_method("lookAt",          &ofxShadowCamera::lookAt)
 		
-		.define_method("angle=",          &ofxShadowCamera::setAngle)
+		.define_method("fov",              &ofxShadowCamera::getFov)
+		.define_method("ortho_scale",      &ofxShadowCamera::getOrthoScale)
 		
+		.define_method("fov=",             &ofxShadowCamera::setFov)
+		.define_method("ortho_scale=",     &ofxShadowCamera::setOrthoScale)
+		
+		.define_method("ortho?",           &ofxShadowCamera::getOrtho)
 		.define_method("enableOrtho",      &ofxShadowCamera::enableOrtho)
 		.define_method("disableOrtho",     &ofxShadowCamera::disableOrtho)
 		

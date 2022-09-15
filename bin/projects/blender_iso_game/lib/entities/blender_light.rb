@@ -100,10 +100,10 @@ class BlenderLight < BlenderObject
     if @shadow_cam
       # @shadow_cam.enableOrtho()
       # @shadow_cam.getLightCamera().enableOrtho() # <-- this doesn't work. why?
-      p @shadow_cam.getLightCamera()
-      puts "ortho? #{@shadow_cam.getLightCamera().ortho?}" 
+      # p @shadow_cam.getLightCamera()
+      # puts "ortho? #{@shadow_cam.getLightCamera().ortho?}" 
       
-      @shadow_cam.setSize(2**10, 2**10)
+      @shadow_cam.setSize(2**12, 2**12)
       @shadow_cam.setRange( @shadow_clip_start, @shadow_clip_end )
       # @shadow_cam.bias = 0.001
       @shadow_cam.bias = @shadow_bias
@@ -126,20 +126,39 @@ class BlenderLight < BlenderObject
         
         # angle of the spot cone
         size = self.size
-        @shadow_cam.angle = size
+        @shadow_cam.fov = size
       when 'AREA'
         # TODO: pass viewport rectangle to orthographic shadow camera that is based on the world-space
         # @shadow_cam.getLightCamera().enableOrtho
         @shadow_cam.enableOrtho()
+        @shadow_cam.ortho_scale = 40
+        @shadow_cam.setRange(0.01, 100)
+        
+        # rendering the shadow map works as expected, but using it is problematic for orthographic camera. I think it has something to do with the scale factor - it's being used to render the map, but I don't know if it's being properly taken into account when using the map.
+        
       end
     end
   end
   
   def setShadowUniforms(material)
     # puts "set shadow uniforms"
-    
+    matrix = 
+      if @shadow_cam.ortho?
+        # s = @shadow_cam.ortho_scale
+        s = 1
+        m0 = GLM.scale(GLM::Mat4.new(1.0), GLM::Vec3.new(1,-1,1))
+        m1 = GLM.scale(GLM::Mat4.new(1.0), GLM::Vec3.new(s,s,s))
+        m0 * @shadow_cam.getLightSpaceMatrix() * m1
+        # @shadow_cam.getLightSpaceMatrix()
+        
+        # played with the scale and signs in order to achive the setup above
+        # seems like the vflip for ortho cam is still not implemented correctly.
+        # Hard-coding like this does work, but should try to actually fix the root of the problem.
+      else
+        @shadow_cam.getLightSpaceMatrix()
+      end
     material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
+      "lightSpaceMatrix", matrix
     )
     
     material.setCustomUniform1f(

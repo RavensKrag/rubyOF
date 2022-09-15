@@ -8,6 +8,7 @@
 
 #pragma once
 #include "ofMain.h"
+#include "ofxCamera.h"
 
 #define STRINGIFY(x) #x
 
@@ -27,8 +28,13 @@ public:
     void setOrientation(glm::quat rot );
     void lookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );
     
-    void setAngle(float angle_deg);
+    float getFov() const;
+    float getOrthoScale() const;
     
+    void setFov(float angle_deg);
+    void setOrthoScale(float scale);
+    
+    bool getOrtho();
     void enableOrtho();
     void disableOrtho();
     
@@ -49,7 +55,7 @@ public:
     float getIntensity();
     
     ofFbo& getFbo() { return shadowFbo; }
-    ofCamera& getLightCamera() { return lightCam; }
+    ofxCamera& getLightCamera() { return lightCam; }
     ofParameterGroup& getParams() { return mParams; }
     
     
@@ -69,5 +75,5 @@ protected:
     ofParameter<float> _nearClip, _farClip;
     
     ofFbo shadowFbo;
-    ofCamera lightCam;
+    ofxCamera lightCam;
 };
