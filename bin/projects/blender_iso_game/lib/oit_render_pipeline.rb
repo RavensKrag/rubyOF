@@ -225,34 +225,17 @@ class OIT_RenderPipeline
       # Follow-up paper in 2016 demonstrates improvements,
       # including work with colored glass.
     
+    t20 = RubyOF::TimeCounter.now
+    
     # 
     # setup GL state
     # ofEnableDepthTest()
     ofEnableLighting() # // enable lighting //
     ofEnableDepthTest()
     
-    lights.each{ |light|  light.enable() }
+    t21 = RubyOF::TimeCounter.now
     
-    lights.each do |light|
-      
-      attenuation_constant = 1;
-      attenuation_linear = 0.000001;
-      attenuation_quadratic = 0.000;
-      
-      light.setAttenuation(attenuation_constant,
-                           attenuation_linear,
-                           attenuation_quadratic)
-      
-      
-      
-      light.setAttenuation(1.0,  0.007,   0.0002)
-      
-      
-      # constants from learnopengl,
-      # which originally got them from ogre3d's wiki
-      # src: https://learnopengl.com/Lighting/Light-casters
-      
-    end
+    lights.each{ |light|  light.enable() }
     
     
     shadow_casting_light = lights.select{|l| l.casts_shadows? }.first

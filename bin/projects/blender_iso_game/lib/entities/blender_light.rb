@@ -13,6 +13,12 @@ class BlenderLight < BlenderObject
     
     setPointLight()
     
+    @light.setAttenuation(1.0,  0.007,   0.0002)
+    # constants from learnopengl,
+    # which originally got them from ogre3d's wiki
+    # src: https://learnopengl.com/Lighting/Light-casters
+    
+    
     @size = nil
     @size_x = nil
     @size_y = nil
