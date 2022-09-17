@@ -403,53 +403,27 @@ class OIT_RenderPipeline
   end
   
   def using_camera(camera) # &block
-    exception = nil
-    
     begin
-      # camera begin
       camera.begin
-      
-      
-      # (world space rendering block)
-      yield
-      
-      
-    rescue Exception => e 
-      exception = e # supress exception so we can exit cleanly first
-    ensure
-      
-      
-      # camera end
+        yield # (world space rendering block)
       camera.end
-      
-      # after cleaning up, now throw the exception if needed
-      unless exception.nil?
-        raise exception
-      end
-      
+    rescue Exception => e 
+      camera.end
+      raise e
     end
   end
   
   
-  # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
   def using_framebuffer fbo # &block
-    fbo.begin
-      fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
-      # ofEnableDepthTest()
-      
-      
-      # glDepthMask(GL_FALSE)
-      # glEnable(GL_BLEND)
-      # glBlendFunci(0, GL_ONE, GL_ONE) # summation
-      # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
-      # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
-      
-        yield fbo
-      
-      # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
-      
-      # ofDisableDepthTest()
-    fbo.end
+    begin
+      fbo.begin
+        fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
+          yield fbo
+      fbo.end
+    rescue Exception => e 
+      fbo.end
+      raise e
+    end
   end
   
   # void ofFbo::updateTexture(int attachmentPoint)
