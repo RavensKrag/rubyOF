@@ -345,6 +345,7 @@ class OIT_RenderPipeline
     
     
     
+    # --- compositing ---
     
     @context.main_fbo.draw(0,0)
     
@@ -362,15 +363,16 @@ class OIT_RenderPipeline
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
+    
+    # --- user interface, etc ---
+    
+    # Draw visualization of shadow map in the bottom right corner of the screen
     shadow_casting_light&.tap do |light|
       shadow_cam = light.shadow_cam
       tex = shadow_cam.getShadowMap()
       # tex.draw_wh(0,0,0, tex.width, tex.height)
       tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
-      # ^ ofxShadowCamera's buffer is the size of the window
     end
-    
-    
     
     @ui_pass.call()
     
