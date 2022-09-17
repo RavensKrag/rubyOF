@@ -355,6 +355,8 @@ class OIT_RenderPipeline
       tex = shadow_cam.getShadowMap()
       # tex.draw_wh(0,0,0, tex.width, tex.height)
       tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
+      # ^ need to display mesh textures with flipped y,
+      #   but do NOT flip FBOs or render targets
     end
     
     @ui_pass.call()

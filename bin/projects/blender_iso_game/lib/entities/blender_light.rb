@@ -155,23 +155,8 @@ class BlenderLight < BlenderObject
       "u_useShadows", 1
     )
     
-    matrix = 
-      if @shadow_cam.ortho?
-        # s = @shadow_cam.ortho_scale
-        s = 1
-        m0 = GLM.scale(GLM::Mat4.new(1.0), GLM::Vec3.new(1,-1,1))
-        m1 = GLM.scale(GLM::Mat4.new(1.0), GLM::Vec3.new(s,s,s))
-        m0 * @shadow_cam.getLightSpaceMatrix() * m1
-        # @shadow_cam.getLightSpaceMatrix()
-        
-        # played with the scale and signs in order to achive the setup above
-        # seems like the vflip for ortho cam is still not implemented correctly.
-        # Hard-coding like this does work, but should try to actually fix the root of the problem.
-      else
-        @shadow_cam.getLightSpaceMatrix()
-      end
     material.setCustomUniformMatrix4f(
-      "lightSpaceMatrix", matrix
+      "lightSpaceMatrix", @shadow_cam.getLightSpaceMatrix()
     )
     
     material.setCustomUniform1f(

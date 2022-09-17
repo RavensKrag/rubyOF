@@ -165,18 +165,13 @@ ofxCamera::persp_getModelViewMatrix() const{
 
 void
 ofxCamera::ortho_formatViewport(std::shared_ptr<ofBaseRenderer> renderer, const ofRectangle & vp){
-	renderer->viewport(vp.x, vp.y, vp.width, vp.height, false);
-	renderer->setOrientation(OF_ORIENTATION_DEFAULT, true);
+	renderer->viewport(vp.x, vp.y, vp.width, vp.height, renderer->isVFlipped());
+	renderer->setOrientation(OF_ORIENTATION_DEFAULT, mVFlip);
 }
 
 glm::mat4
 ofxCamera::ortho_getProjectionMatrix(const ofRectangle & viewport){
 	// NOTE: Current implementation does not support lens offset
-	
-	// use negative scaling to flip Blender's z axis
-	// (not sure why it ends up being the second component, but w/e)
-	glm::mat4 m5 = glm::scale(glm::mat4(1.0),
-									glm::vec3(1, -1, 1));
 	
 	// NOTE: viewfac can be either width or height, whichever is greater
 	float viewfac = ((viewport.width > viewport.height) ? viewport.width : viewport.height);
@@ -200,7 +195,7 @@ ofxCamera::ortho_getProjectionMatrix(const ofRectangle & viewport){
 		mFarClip
 	);
 	
-	return projectionMat * m5;
+	return projectionMat;
 }
 
 glm::mat4
