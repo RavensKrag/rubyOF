@@ -180,7 +180,7 @@ bool ofxDynamicLight::getIsDirectional() const {
 void ofxDynamicLight::setSpotlight(float spotCutOff, float exponent) {
 	data->lightType		= OF_LIGHT_SPOT;
 	setSpotlightCutOff( spotCutOff );
-	setSpotConcentration( exponent );
+	setSpotExponent( exponent );
     
     onPositionChanged();
     onOrientationChanged();
@@ -205,14 +205,14 @@ float ofxDynamicLight::getSpotlightCutOff() const{
 }
 
 //----------------------------------------
-void ofxDynamicLight::setSpotConcentration( float exponent ) {
+void ofxDynamicLight::setSpotExponent( float exponent ) {
     data->exponent = CLAMP(exponent, 0, 128);
 }
 
 //----------------------------------------
-float ofxDynamicLight::getSpotConcentration() const{
+float ofxDynamicLight::getSpotExponent() const{
     if(!getIsSpotlight()) {
-        ofLogWarning("ofxDynamicLight") << "getSpotConcentration(): light " << data->glIndex << " is not a spot light";
+        ofLogWarning("ofxDynamicLight") << "getSpotExponent(): light " << data->glIndex << " is not a spot light";
     }
     return data->exponent;
 }

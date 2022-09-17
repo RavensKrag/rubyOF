@@ -876,6 +876,25 @@ class Core
                                          # 400, 160)
         
         
+        p3 = CP::Vec2.new(646, 846)
+        @fonts[:monospace].tap do |f|
+          f.draw_string("camera", p3.x, p3.y+40*0)
+          f.draw_string("Handglovery", p3.x, p3.y+40*1)
+        
+          f.draw_string("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
+          
+          dist = @world.camera.position.yield_self do |x|
+            x.to_a[0..1]
+             .map{|x| x*x}
+             .reduce(:+)
+             .yield_self{|x| Math.sqrt(x) }
+          end
+          f.draw_string("#{ dist }}", p3.x, p3.y+40*3)
+        end
+        
+        # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
+        
+        
         # t1 = RubyOF::TimeCounter.now
         # puts "=> UI    : #{(t1 - t0).to_ms} ms"
         

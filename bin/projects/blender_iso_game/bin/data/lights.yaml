@@ -1,56 +1,15 @@
 ---
 lights:
 - !ruby/object:BlenderLight
-  name: Sun.001
-  ".type": LIGHT
-  transform:
-    rotation:
-    - Quat
-    - 0.8698402643203735
-    - 0.4545348882675171
-    - -0.08881484717130661
-    - -0.16996437311172485
-    position:
-    - Vec3
-    - 12.077630996704102
-    - -14.037275314331055
-    - 12.791484832763672
-    scale:
-    - Vec3
-    - 0.9999999403953552
-    - 0.9999998807907104
-    - 1.000000238418579
-  ".data.type": POINT
-  color:
-  - rgb
-  - 1.0
-  - 1.0
-  - 1.0
-  attenuation:
-  - rgb
-  size:
-  - degrees
-  - 
-  size_x:
-  - float
-  - 
-  size_y:
-  - float
-  - 
-  use_shadow: false
-  shadow_clip_start: 0.05000000074505806
-  shadow_clip_end: 40.0
-  shadow_buffer_bias: 1.0
-- !ruby/object:BlenderLight
   name: Sun.002
   ".type": LIGHT
   transform:
     rotation:
     - Quat
-    - 0.5684556365013123
-    - 0.30250638723373413
-    - 0.35941800475120544
-    - 0.6754012107849121
+    - 0.5687353610992432
+    - 0.30259838700294495
+    - 0.35925066471099854
+    - 0.675213634967804
     position:
     - Vec3
     - 57.22483444213867
@@ -59,8 +18,8 @@ lights:
     scale:
     - Vec3
     - 1.000000238418579
-    - 0.9999998211860657
-    - 0.9999998211860657
+    - 0.9999998807907104
+    - 0.9999999403953552
   ".data.type": AREA
   color:
   - rgb
@@ -79,6 +38,51 @@ lights:
   - float
   - 0.0
   use_shadow: true
-  shadow_clip_start: 37.89999771118164
-  shadow_clip_end: 94.51000213623047
+  shadow_clip_start: 15.999998092651367
+  shadow_clip_end: 100.0
   shadow_buffer_bias: 9.999999747378752e-05
+  shadow_map_size: 4096
+  shadow_ortho_scale: 40.0
+- !ruby/object:BlenderLight
+  name: Sun.001
+  ".type": LIGHT
+  transform:
+    rotation:
+    - Quat
+    - 0.8697766065597534
+    - 0.4547829031944275
+    - -0.08871926367282867
+    - -0.16967648267745972
+    position:
+    - Vec3
+    - 12.077630996704102
+    - -14.037275314331055
+    - 12.791484832763672
+    scale:
+    - Vec3
+    - 1.0
+    - 0.9999998807907104
+    - 1.0
+  ".data.type": POINT
+  color:
+  - rgb
+  - 1.0
+  - 1.0
+  - 1.0
+  attenuation:
+  - rgb
+  size:
+  - degrees
+  - 
+  size_x:
+  - float
+  - 
+  size_y:
+  - float
+  - 
+  use_shadow: false
+  shadow_clip_start: 1.0
+  shadow_clip_end: 1000.0
+  shadow_buffer_bias: 0.0010000000474974513
+  shadow_map_size: 1024
+  shadow_ortho_scale: 1.0

@@ -149,45 +149,6 @@ class OIT_RenderPipeline
     @compositing_shader ||= RubyOF::Shader.new
     
     
-    
-    num_lights = 10 # same as in bin/glsl/phong_anim_tex.frag
-    shadow_map_size = 1024
-    
-    if @shadow_fbos.nil?
-      RubyOF::Fbo::Settings.new.tap do |s|
-        s.width  = shadow_map_size
-        s.height = shadow_map_size
-        
-        s.internalformat = GL_RGBA16F_ARB;
-        # TODO: switch internalFormat to GL_DEPTH_COMPONENT to save VRAM (currently getting error: FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-        
-        # s.numSamples     = 0; # no multisampling
-        s.useDepth       = true;
-        s.useStencil     = false;
-        s.depthStencilAsTexture = true;
-        s.depthStencilInternalFormat = GL_DEPTH_COMPONENT24;
-        
-        s.textureTarget  = GL_TEXTURE_2D;
-        s.wrapModeHorizontal = GL_REPEAT;
-        s.wrapModeVertical   = GL_REPEAT;
-        s.minFilter = GL_NEAREST;
-        s.maxFilter = GL_NEAREST;
-        
-        @shadow_fbos = Array.new(num_lights)
-        @shadow_fbos.each_index do |i|
-          @shadow_fbos[i] = 
-          RubyOF::Fbo.new.tap do |fbo|
-            s.clone.tap{ |s|
-              
-              s.numColorbuffers = 1;
-              
-            }.yield_self{ |s| fbo.allocate(s) }
-          end
-        end
-      end
-    end
-    
-    
     # 
     # update
     # 
@@ -215,31 +176,31 @@ class OIT_RenderPipeline
     # render shadow maps
     # 
     
-    if @shadow_material.nil?
-      @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
-    end
-    shader_src_dir = PROJECT_DIR/"bin/glsl"
-    vert_shader_path = shader_src_dir/"animation_texture.vert"
-    frag_shader_path = shader_src_dir/"shadow.frag"
+    # if @shadow_material.nil?
+    #   @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
+    # end
+    # shader_src_dir = PROJECT_DIR/"bin/glsl"
+    # vert_shader_path = shader_src_dir/"animation_texture.vert"
+    # frag_shader_path = shader_src_dir/"shadow.frag"
     
-    @shadow_material.load_shaders(vert_shader_path, frag_shader_path) do
-      # on reload
-      puts "reloaded shadow shaders"
-    end
+    # @shadow_material.load_shaders(vert_shader_path, frag_shader_path) do
+    #   # on reload
+    #   puts "reloaded shadow shaders"
+    # end
     
-    # @shadow_pass.call(lights)
-    
+    # Code above is from old style of shadow rendering. Currently, FBOs etc for shadows are contained in ofxShadowCamera. For shaders, we use the normal shaders from the opaque pass. Could potentially use different shaders to only draw depth to save time, but I can't quite figure out how to bind just the depth buffer.
     
     
     
     # 
-    # render shadows
+    # render shadows using ofxShadowCamera
     # 
     
     # puts "shadow simple depth pass"
     lights
     .select{|light| light.casts_shadows? }
     .each do |light|
+      light.update
       light.shadow_cam.beginDepthPass()
         ofEnableDepthTest()
         # @shadow_pass.call(lights, @shadow_material)
@@ -264,38 +225,20 @@ class OIT_RenderPipeline
       # Follow-up paper in 2016 demonstrates improvements,
       # including work with colored glass.
     
+    t20 = RubyOF::TimeCounter.now
+    
     # 
     # setup GL state
     # ofEnableDepthTest()
     ofEnableLighting() # // enable lighting //
     ofEnableDepthTest()
     
-    lights.each{ |light|  light.enable() }
+    t21 = RubyOF::TimeCounter.now
     
-    lights.each do |light|
-      
-      attenuation_constant = 1;
-      attenuation_linear = 0.000001;
-      attenuation_quadratic = 0.000;
-      
-      light.setAttenuation(attenuation_constant,
-                           attenuation_linear,
-                           attenuation_quadratic)
-      
-      
-      
-      light.setAttenuation(1.0,  0.007,   0.0002)
-      
-      
-      # constants from learnopengl,
-      # which originally got them from ogre3d's wiki
-      # src: https://learnopengl.com/Lighting/Light-casters
-      
-    end
+    lights.each{ |light|  light.enable() }
     
     
     shadow_casting_light = lights.select{|l| l.casts_shadows? }.first
-    cam_view_matrix = camera.getModelViewMatrix()
     
     using_framebuffer @context.main_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
@@ -385,6 +328,7 @@ class OIT_RenderPipeline
     
     
     
+    # --- compositing ---
     
     @context.main_fbo.draw(0,0)
     
@@ -402,15 +346,18 @@ class OIT_RenderPipeline
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
+    
+    # --- user interface, etc ---
+    
+    # Draw visualization of shadow map in the bottom right corner of the screen
     shadow_casting_light&.tap do |light|
       shadow_cam = light.shadow_cam
       tex = shadow_cam.getShadowMap()
       # tex.draw_wh(0,0,0, tex.width, tex.height)
       tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
-      # ^ ofxShadowCamera's buffer is the size of the window
+      # ^ need to display mesh textures with flipped y,
+      #   but do NOT flip FBOs or render targets
     end
-    
-    
     
     @ui_pass.call()
     
@@ -441,53 +388,27 @@ class OIT_RenderPipeline
   end
   
   def using_camera(camera) # &block
-    exception = nil
-    
     begin
-      # camera begin
       camera.begin
-      
-      
-      # (world space rendering block)
-      yield
-      
-      
-    rescue Exception => e 
-      exception = e # supress exception so we can exit cleanly first
-    ensure
-      
-      
-      # camera end
+        yield # (world space rendering block)
       camera.end
-      
-      # after cleaning up, now throw the exception if needed
-      unless exception.nil?
-        raise exception
-      end
-      
+    rescue Exception => e 
+      camera.end
+      raise e
     end
   end
   
   
-  # TODO: add exception handling here, so gl state set by using the FBO / setting special blending modes doesn't leak
   def using_framebuffer fbo # &block
-    fbo.begin
-      fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
-      # ofEnableDepthTest()
-      
-      
-      # glDepthMask(GL_FALSE)
-      # glEnable(GL_BLEND)
-      # glBlendFunci(0, GL_ONE, GL_ONE) # summation
-      # glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA) # product of (1 - a_i)
-      # RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
-      
-        yield fbo
-      
-      # RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()
-      
-      # ofDisableDepthTest()
-    fbo.end
+    begin
+      fbo.begin
+        fbo.activateAllDrawBuffers() # <-- essential for using mulitple buffers
+          yield fbo
+      fbo.end
+    rescue Exception => e 
+      fbo.end
+      raise e
+    end
   end
   
   # void ofFbo::updateTexture(int attachmentPoint)

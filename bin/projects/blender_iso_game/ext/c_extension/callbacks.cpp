@@ -1557,6 +1557,8 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
       .define_method("setSpotlight",      &ofxDynamicLight::setSpotlight)
       
       .define_method("getLightID",        &ofxDynamicLight::getLightID)
+		
+		.define_method("getSpotExponent",   &ofxDynamicLight::getSpotExponent)
       
       
       .define_method("diffuse_color=",    &ofxDynamicLight::setDiffuseColor)
@@ -1588,7 +1590,7 @@ void wrap_ofxCamera(Module rb_mOFX){
 		.define_method("end",            &ofxCamera::end)
 		
 		
-		.define_method("getOrtho",       &ofxCamera::getOrtho)
+		.define_method("ortho?",         &ofxCamera::getOrtho)
 		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
 		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
 		
@@ -1700,12 +1702,20 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		.define_method("height",        &ofxShadowCamera::getHeight)
 		
 		.define_method("setRange",        &ofxShadowCamera::setRange)
+		.define_method("near_clip",       &ofxShadowCamera::getNearClip)
+		.define_method("far_clip",        &ofxShadowCamera::getFarClip)
+		
 		.define_method("position=",       &ofxShadowCamera::setPosition)
 		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
 		.define_method("lookAt",          &ofxShadowCamera::lookAt)
 		
-		.define_method("angle=",          &ofxShadowCamera::setAngle)
+		.define_method("fov",              &ofxShadowCamera::getFov)
+		.define_method("ortho_scale",      &ofxShadowCamera::getOrthoScale)
 		
+		.define_method("fov=",             &ofxShadowCamera::setFov)
+		.define_method("ortho_scale=",     &ofxShadowCamera::setOrthoScale)
+		
+		.define_method("ortho?",           &ofxShadowCamera::getOrtho)
 		.define_method("enableOrtho",      &ofxShadowCamera::enableOrtho)
 		.define_method("disableOrtho",     &ofxShadowCamera::disableOrtho)
 		

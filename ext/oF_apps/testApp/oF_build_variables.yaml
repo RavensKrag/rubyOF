@@ -1748,10 +1748,11 @@ ALL_INSTALLED_ADDONS:
 - ofxGPS
 - ofxGuiExtended
 - ofxKinect
-- ofxVectorGraphics
+- ofxFontStash
 - ofxXmlSettings
 - ofxAccelerometer
 - ofxMidi
+- ofxVectorGraphics
 - ofxOpenCv
 - ofxOsc
 - ofxSvg

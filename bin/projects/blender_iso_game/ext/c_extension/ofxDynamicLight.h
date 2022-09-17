@@ -58,8 +58,8 @@ public:
 	bool getIsSpotlight() const;
 	void setSpotlightCutOff( float spotCutOff );
     float getSpotlightCutOff() const;
-	void setSpotConcentration( float exponent );
-    float getSpotConcentration() const;
+	void setSpotExponent( float exponent );
+    float getSpotExponent() const;
 	
 	void setPointLight();
 	bool getIsPointLight() const;

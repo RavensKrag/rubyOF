@@ -79,6 +79,16 @@ void ofxShadowCamera::setRange( float nearClip, float farClip ) {
 }
 
 //--------------------------------------------------------------
+float ofxShadowCamera::getNearClip() {
+    return _nearClip;
+}
+
+//--------------------------------------------------------------
+float ofxShadowCamera::getFarClip() {
+    return _farClip;
+}
+
+//--------------------------------------------------------------
 void ofxShadowCamera::setPosition( glm::vec3 aPos ) {
     lightCam.setPosition( aPos );
 }
@@ -94,8 +104,28 @@ void ofxShadowCamera::lookAt( glm::vec3 aPos, glm::vec3 upVector ) {
 }
 
 //--------------------------------------------------------------
-void ofxShadowCamera::setAngle(float angle_deg) {
+float ofxShadowCamera::getFov() const {
+    return lightCam.getFov();
+}
+
+//--------------------------------------------------------------
+float ofxShadowCamera::getOrthoScale() const {
+    return lightCam.getOrthoScale();
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setFov(float angle_deg) {
     lightCam.setFov(angle_deg);
+}
+
+//--------------------------------------------------------------
+void ofxShadowCamera::setOrthoScale(float scale) {
+    lightCam.setOrthoScale(scale);
+}
+
+//--------------------------------------------------------------
+bool ofxShadowCamera::getOrtho() {
+    return lightCam.getOrtho();
 }
 
 //--------------------------------------------------------------
@@ -178,6 +208,8 @@ void ofxShadowCamera::allocateFbo() {
     settings.height = getHeight();
     settings.textureTarget = GL_TEXTURE_2D;
     settings.internalformat = GL_RGBA32F_ARB;
+    // # TODO: switch internalFormat to GL_DEPTH_COMPONENT to save VRAM (currently getting error: FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+    
     settings.useDepth = true;
     settings.depthStencilAsTexture = true;
     settings.useStencil = true;
