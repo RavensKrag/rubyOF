@@ -149,45 +149,6 @@ class OIT_RenderPipeline
     @compositing_shader ||= RubyOF::Shader.new
     
     
-    
-    num_lights = 10 # same as in bin/glsl/phong_anim_tex.frag
-    shadow_map_size = 1024
-    
-    if @shadow_fbos.nil?
-      RubyOF::Fbo::Settings.new.tap do |s|
-        s.width  = shadow_map_size
-        s.height = shadow_map_size
-        
-        s.internalformat = GL_RGBA16F_ARB;
-        # TODO: switch internalFormat to GL_DEPTH_COMPONENT to save VRAM (currently getting error: FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-        
-        # s.numSamples     = 0; # no multisampling
-        s.useDepth       = true;
-        s.useStencil     = false;
-        s.depthStencilAsTexture = true;
-        s.depthStencilInternalFormat = GL_DEPTH_COMPONENT24;
-        
-        s.textureTarget  = GL_TEXTURE_2D;
-        s.wrapModeHorizontal = GL_REPEAT;
-        s.wrapModeVertical   = GL_REPEAT;
-        s.minFilter = GL_NEAREST;
-        s.maxFilter = GL_NEAREST;
-        
-        @shadow_fbos = Array.new(num_lights)
-        @shadow_fbos.each_index do |i|
-          @shadow_fbos[i] = 
-          RubyOF::Fbo.new.tap do |fbo|
-            s.clone.tap{ |s|
-              
-              s.numColorbuffers = 1;
-              
-            }.yield_self{ |s| fbo.allocate(s) }
-          end
-        end
-      end
-    end
-    
-    
     # 
     # update
     # 
@@ -215,25 +176,24 @@ class OIT_RenderPipeline
     # render shadow maps
     # 
     
-    if @shadow_material.nil?
-      @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
-    end
-    shader_src_dir = PROJECT_DIR/"bin/glsl"
-    vert_shader_path = shader_src_dir/"animation_texture.vert"
-    frag_shader_path = shader_src_dir/"shadow.frag"
+    # if @shadow_material.nil?
+    #   @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
+    # end
+    # shader_src_dir = PROJECT_DIR/"bin/glsl"
+    # vert_shader_path = shader_src_dir/"animation_texture.vert"
+    # frag_shader_path = shader_src_dir/"shadow.frag"
     
-    @shadow_material.load_shaders(vert_shader_path, frag_shader_path) do
-      # on reload
-      puts "reloaded shadow shaders"
-    end
+    # @shadow_material.load_shaders(vert_shader_path, frag_shader_path) do
+    #   # on reload
+    #   puts "reloaded shadow shaders"
+    # end
     
-    # @shadow_pass.call(lights)
-    
+    # Code above is from old style of shadow rendering. Currently, FBOs etc for shadows are contained in ofxShadowCamera. For shaders, we use the normal shaders from the opaque pass. Could potentially use different shaders to only draw depth to save time, but I can't quite figure out how to bind just the depth buffer.
     
     
     
     # 
-    # render shadows
+    # render shadows using ofxShadowCamera
     # 
     
     # puts "shadow simple depth pass"
@@ -296,7 +256,6 @@ class OIT_RenderPipeline
     
     
     shadow_casting_light = lights.select{|l| l.casts_shadows? }.first
-    cam_view_matrix = camera.getModelViewMatrix()
     
     using_framebuffer @context.main_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way

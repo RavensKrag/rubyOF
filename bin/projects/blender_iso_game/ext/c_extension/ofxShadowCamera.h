@@ -24,6 +24,9 @@ public:
     float getHeight();
     
     void setRange( float nearClip, float farClip );
+    float getNearClip();
+    float getFarClip();
+    
     void setPosition( glm::vec3 aPos );
     void setOrientation(glm::quat rot );
     void lookAt( glm::vec3 aPos, glm::vec3 upVector = glm::vec3(0, 1, 0) );

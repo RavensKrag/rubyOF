@@ -1557,6 +1557,8 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
       .define_method("setSpotlight",      &ofxDynamicLight::setSpotlight)
       
       .define_method("getLightID",        &ofxDynamicLight::getLightID)
+		
+		.define_method("getSpotExponent",   &ofxDynamicLight::getSpotExponent)
       
       
       .define_method("diffuse_color=",    &ofxDynamicLight::setDiffuseColor)
@@ -1700,6 +1702,9 @@ void wrap_ofxShadowCamera(Module rb_mOFX){
 		.define_method("height",        &ofxShadowCamera::getHeight)
 		
 		.define_method("setRange",        &ofxShadowCamera::setRange)
+		.define_method("near_clip",       &ofxShadowCamera::getNearClip)
+		.define_method("far_clip",        &ofxShadowCamera::getFarClip)
+		
 		.define_method("position=",       &ofxShadowCamera::setPosition)
 		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
 		.define_method("lookAt",          &ofxShadowCamera::lookAt)
