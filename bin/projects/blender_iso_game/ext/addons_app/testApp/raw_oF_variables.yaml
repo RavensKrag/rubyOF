@@ -1040,7 +1040,8 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
   '
-- "rwildcard = \t\t \t\t\t \t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
+- "rwildcard = \t\t \t\t\t \t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
+  \t \t\n"
 - 'WEAVE = weave
 
   '
@@ -1787,10 +1788,10 @@
 
   '
 - 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxGLFWJoystick
-  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics
-  ofxXmlSettings ofxAccelerometer ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten
-  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxRaycaster ofxAlembic ofxMathUtils
-  ofxiOS ofxImGui ofxDatGui
+  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxFontStash
+  ofxXmlSettings ofxAccelerometer ofxMidi ofxVectorGraphics ofxOpenCv ofxOsc ofxSvg
+  obj ofxPoco ofxEmscripten ofxAssimpModelLoader ofxAndroid ofxSparklines ofxRaycaster
+  ofxAlembic ofxMathUtils ofxiOS ofxImGui ofxDatGui
 
   '
 - "OF_CORE_BASE_CXXFLAGS = \n"

@@ -1293,10 +1293,10 @@
   -ldrm -L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/
   -lfmodex \n"
 - 'ALL_INSTALLED_ADDONS = ofxUnitTests ofxThreadedImageLoader ofxNetwork ofxGLFWJoystick
-  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxVectorGraphics
-  ofxXmlSettings ofxAccelerometer ofxMidi ofxOpenCv ofxOsc ofxSvg obj ofxPoco ofxEmscripten
-  ofxAssimpModelLoader ofxAndroid ofxSparklines ofxRaycaster ofxAlembic ofxMathUtils
-  ofxiOS ofxImGui ofxDatGui
+  ofxShadowSimple ofxInfiniteCanvas ofxGui ofxGPS ofxGuiExtended ofxKinect ofxFontStash
+  ofxXmlSettings ofxAccelerometer ofxMidi ofxVectorGraphics ofxOpenCv ofxOsc ofxSvg
+  obj ofxPoco ofxEmscripten ofxAssimpModelLoader ofxAndroid ofxSparklines ofxRaycaster
+  ofxAlembic ofxMathUtils ofxiOS ofxImGui ofxDatGui
 
   '
 - "OF_CORE_BASE_CXXFLAGS = \n"
