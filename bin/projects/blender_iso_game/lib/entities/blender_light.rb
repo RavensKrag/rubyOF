@@ -61,8 +61,8 @@ class BlenderLight < BlenderObject
     # so need to divide blender's angle by 2 to convert.
     
     # puts "set spotlight: #{cutoff_degrees}"
-    @size = cutoff_degrees
-    # p @size
+    @spotlight_size = cutoff_degrees
+    # p @spotlight_size
     
     # TODO: save degrees and exponent to instance variables so they can be dumped and then restored
     @light.setSpotlight(cutoff_degrees/2, exponent) # requires 2 args
@@ -91,7 +91,7 @@ class BlenderLight < BlenderObject
                           :setAttenuation
   
   
-  attr_reader :size
+  attr_reader :spotlight_size
   
   
   
@@ -110,24 +110,22 @@ class BlenderLight < BlenderObject
   # load_data() -> enable_shadows() -> update()
   # load_data() -> disable_shadows() -> update()
   
-  # TODO: don't throw away the ShadowCamera object every update
-  # TODO: in general, implement a evented / reactive style to update when data changes, rather than a polling style that updates every frame, even when data is unchanged
+  # NOTE: use an evented / reactive style to update when data changes, rather than a polling style that updates every frame, even when data is unchanged
+  
   # TODO: make sure that the reactive style still updates parameters when code reloads
+    # not currently working
+    # This implies that light data is not being saved for time travel,
+    # as time travel playback / rewind uses serialization.
+    # Should save these properties too, as all lights are dynamic.
   
-  # TODO: don't call upadate every frame from OIT_RenderPipeline#draw()
   
+  def enable_shadows
+    @shadows_enabled = true
+  end
   
-  # def enable_shadows
-  #   @shadow_cam ||= RubyOF::OFX::ShadowCamera.new
-  #   @shadow_cam.setSize(@shadow_map_size, @shadow_map_size)
-  #   # self.update
-  # end
-  
-  # def disable_shadows
-  #   puts "disable"
-  #   @shadow_cam = nil
-  #   # self.update
-  # end
+  def disable_shadows
+    @shadows_enabled = false
+  end
   
   # resizing shadow camera causes reallocation of FBO,
   # so only resize when the desired size changes
@@ -227,7 +225,7 @@ class BlenderLight < BlenderObject
       ],
       
       # spot light properties
-      'size' => ['degrees', @size],
+      'size' => ['degrees', @spotlight_size],
       
       # area light properties
       'size_x' => ['float', @size_x],
@@ -238,8 +236,9 @@ class BlenderLight < BlenderObject
       'shadow_clip_start'  => @shadow_cam.near_clip,
       'shadow_clip_end'    => @shadow_cam.far_clip,
       'shadow_buffer_bias' => @shadow_cam.bias,
-      'shadow_map_size'    => @shadow_map_size,
-      'shadow_ortho_scale' => @shadow_cam.ortho_scale
+      'shadow_map_size'    => @shadow_map_size, # not from blender
+      'shadow_ortho_scale' => @shadow_cam.ortho_scale, # not from blender
+      'shadow_intensity'   => @shadow_cam.intensity # not from blender
     })
   end
   
@@ -318,14 +317,11 @@ class BlenderLight < BlenderObject
         @shadow_cam.disableOrtho()
         
         # angle of the spot light cone is the FOV of the shadow camera
-        @shadow_cam.fov = self.size
+        @shadow_cam.fov = @spotlight_size
         
       when 'SUN', 'AREA' # use orthographic shadow camera
         @shadow_cam.enableOrtho()
         @shadow_cam.ortho_scale = 40
-        # @shadow_cam.setRange(0.01, 100)
-        
-        # rendering the shadow map works as expected, but using it is problematic for orthographic camera. I think it has something to do with the scale factor - it's being used to render the map, but I don't know if it's being properly taken into account when using the map.
       end
     else
       # 
