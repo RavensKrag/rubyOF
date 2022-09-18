@@ -208,10 +208,10 @@ Rice::Class Init_rubyOF_fbo(Rice::Module rb_mRubyOF)
 			>(&ofFbo::getTexture)
 		)
 		
-		.define_method("getTexture",
+		.define_method("getDepthTexture",
 			static_cast< ofTexture& (ofFbo::*)
-			(int attachmentPoint)
-			>(&ofFbo::getTexture)
+			(void)
+			>(&ofFbo::getDepthTexture)
 		)
 		
 		.define_method("height", &ofFbo::getHeight)

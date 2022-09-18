@@ -132,6 +132,10 @@ class Window < RubyOF::Window
   
   
   
+  def window_resized(w,h)
+    @live_code.window_resized(w,h)
+  end
+  
   
   
   

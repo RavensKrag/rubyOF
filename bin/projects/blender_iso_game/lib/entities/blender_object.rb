@@ -20,11 +20,10 @@ class BlenderObject
     raise "Data from instance of #{self.class} could not be dumped because variable @name was not set.\n=> #{self.inspect}" if @name.nil?
     
     {
-      'type' => self.class::DATA_TYPE,
       'name' =>  @name,
+      '.type' => self.class::DATA_TYPE,
 
       'transform' => self.pack_transform(),
-      'data' => self.pack_data()
     }
   end
   

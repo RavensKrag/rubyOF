@@ -5,7 +5,8 @@
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space, :lights, :camera
+  attr_reader :data, :space, :lights
+  attr_accessor :camera
   
   MAX_NUM_FRAMES = 500
   
@@ -367,7 +368,7 @@ class World
       end
     end
     
-    
+    include Enumerable
     def each
       return enum_for(:each) unless block_given?
       

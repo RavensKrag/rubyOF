@@ -85,14 +85,36 @@ def pack_light(obj):
         ],
         'attenuation':[
             'rgb'
-        ]
+        ],
+        
+        'use_shadow' : obj.data.use_shadow,
+        'shadow_clip_start': obj.data.shadow_buffer_clip_start,
+        'shadow_clip_end' : obj.data.cutoff_distance,
+        
+        'shadow_buffer_bias' : obj.data.rb_light.shadow_buffer_bias,
+            # need to convert the shadow map size from enum string to a number
+        'shadow_map_size'    : int(obj.data.rb_light.shadow_map_size),
+        'shadow_ortho_scale' : obj.data.rb_light.shadow_ortho_scale,
+        'shadow_intensity'   : obj.data.rb_light.shadow_intensity
+        
     }
     
     if data['.data.type'] == 'AREA':
-        data.update({
-            'size_x': ['float', obj.data.size],
-            'size_y': ['float', obj.data.size_y]
-        })
+        if obj.data.shape == 'SQUARE':
+            data.update({
+                'size_x': ['float', obj.data.size],
+                'size_y': ['float', obj.data.size]
+            })
+        elif obj.data.shape == 'RECTANGLE':
+            data.update({
+                'size_x': ['float', obj.data.size],
+                'size_y': ['float', obj.data.size_y]
+            })
+            
+        else:
+            pass
+            
+            
     elif data['.data.type'] == 'SPOT':
         data.update({
             'size': ['radians', obj.data.spot_size]

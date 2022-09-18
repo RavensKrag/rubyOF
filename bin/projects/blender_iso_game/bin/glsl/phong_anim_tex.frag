@@ -4,6 +4,7 @@
     // Eye-coordinate position of vertex
     IN vec3 v_eyePosition;
     IN vec3 v_worldPosition;
+    IN vec4 v_lightSpacePosition;
 // #if HAS_COLOR
     IN vec4 v_ambient;
     IN vec4 v_diffuse;
@@ -41,6 +42,13 @@
     };
 
     uniform SAMPLER tex0;
+    
+    uniform sampler2D shadow_tex;
+    // ofMaterial textures are bound by name, but ofShader textures are bound by slot number
+    uniform sampler2DRect src_tex_unit0;
+    uniform sampler2DRect src_tex_unit1;
+    uniform sampler2DRect src_tex_unit2;
+    uniform sampler2D src_tex_unit3;
 
     uniform vec4 mat_diffuse;
     uniform vec4 mat_specular;
@@ -53,11 +61,53 @@
     uniform mat4 projectionMatrix;
     uniform mat4 textureMatrix;
     uniform mat4 modelViewProjectionMatrix;
+    
+    uniform float u_useShadows;
+    uniform float u_shadowWidth;
+    uniform float u_shadowHeight;
+    uniform float u_shadowIntensity;
+    uniform float u_shadowBias;
 
     uniform int num_lights;
     uniform lightData lights[10];
 
 	%custom_uniforms%
+    
+    
+    
+    
+    float lerp(float a, float b, float t){
+        float value;
+        value = (1.0f - t) * a + b * t;
+        return value;
+    }
+    
+    float invlerp(float a, float b, float value){
+        float t;
+        t = (value - a) / (b - a);
+        return t;
+    }
+    
+    float remap(float iMin, float iMax, float oMin, float oMax, float v){
+        float t = invlerp(iMin, iMax, v);
+        return lerp(oMin, oMax, t);
+    }
+    
+    // similar to clamp,
+    // but values outside the range are set to 0
+    float clip(float value, float a, float b){
+        if(value > b){
+            value = 0.0;
+        }
+        if(value < a){
+            value = 0.0;
+        }
+        return value;
+    }
+    
+    
+    
+    
 
 
     void pointLight( in lightData light, in vec3 normal, in vec3 ecPosition3, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular ){
@@ -291,6 +341,308 @@
     }
     
     
+    vec4 debugOutputShadow(){
+        vec4 localColor;
+        
+        // vec3 tdepth = v_lightSpacePosition.xyz / v_lightSpacePosition.w;
+        // vec4 depth  = vec4( tdepth.xyz, v_lightSpacePosition.w );
+        
+        // // show position relative to light camera
+        // localColor = vec4(v_lightSpacePosition.xyz, 1.0);
+        
+        
+        
+        // // position relative to light
+        // localColor = vec4(v_lightSpacePosition.x, 
+        //                   v_lightSpacePosition.y,
+        //                   v_lightSpacePosition.z,
+        //                   1.0);
+        
+        // // depth from light
+        // localColor = vec4(0.0, 
+        //                   0.0,
+        //                   -v_lightSpacePosition.z,
+        //                   1.0);
+        
+        
+        
+        // depth in clip space
+        localColor = vec4(remap(10.0, 150.0, 
+                                0.0, 1.0, 
+                                -v_lightSpacePosition.z), 
+                          0.0,
+                          0.0,
+                          1.0);
+        
+        
+        // xy coordinate in shadow caster eye space
+        vec3 coord = vec3(v_lightSpacePosition.x+u_shadowWidth/50/2,
+                          v_lightSpacePosition.y+u_shadowHeight/100/2,
+                          -v_lightSpacePosition.z);
+        
+        float vis_min = 0.1;
+        float vis_max = 0.9;
+        
+        float r = remap(0, u_shadowWidth/50, 
+                        vis_min, vis_max, 
+                        coord.x);
+        r = clip(r, vis_min, vis_max);
+        
+        
+        float g = remap(0, u_shadowHeight/100, 
+                        vis_min, vis_max, 
+                        coord.y);
+        g = clip(g, vis_min, vis_max);
+        
+        
+        float b = remap(0.0, 150.0, 
+                        vis_min, vis_max, 
+                        -coord.z);
+        b = clip(b, vis_min, vis_max);
+        
+        
+        if(r == 0){
+            g = 0;
+        }
+        if(g == 0){
+            r = 0;
+        }
+        
+        localColor = vec4(r,g,b, 1.0);
+        
+        
+        // // modify coordinates in eye space into texture values
+        // localColor = TEXTURE( shadow_tex, vec2(r,g));
+        
+        
+        return localColor;
+    }
+    
+    
+    vec3 lightSpaceCoords(){
+        // normalized space of the shadow camera, display on the environmetn
+        
+        // NOTE: after the end of the vertex shader, OpenGL performs an additional transformation to gl_Position. This is why the coordinates in the fragment shader were not the expected normalized clip space coordinates. We need to apply that transformation here to convert MVP * pos -> expected result. 
+            // src: https://community.khronos.org/t/please-help-gl-fragcoord-to-world-coordinates/66010
+        
+        float vis_min = 0.0;
+        float vis_max = 1.0;
+        
+        vec4 post_vert_gl_pos = 
+            vec4(
+                v_lightSpacePosition.xyz / v_lightSpacePosition.w,
+                1/v_lightSpacePosition.w
+            );
+        
+        // --------
+        
+        float r = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.x);
+        
+        r = clip(r, vis_min, vis_max);
+        
+        // --------
+        
+        float g = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.y);
+        
+        g = clip(g, vis_min, vis_max);
+        
+        // --------
+        
+        float b = remap(-1, 1, 
+                        vis_min, vis_max, 
+                        post_vert_gl_pos.z);
+        
+        b = clip(b, vis_min, vis_max);
+        
+        // --------
+        
+        // (limit coloring to between the clip planes on the camera's z axis)
+        if(b == 0){
+            r = 0;
+        }
+        if(b == 0){
+            g = 0;
+        }
+        if(r == 0){
+            g = 0;
+        }
+        
+        return vec3(r,g,b);
+    }
+    
+    
+    
+    // float a[5] = float[](3.4, 4.2, 5.0, 5.2, 1.1);
+    vec2 poissonDisk[16] = vec2[](
+        vec2(-0.94201624,  -0.39906216),
+        vec2( 0.94558609,   -0.76890725),
+        vec2(-0.094184101, -0.92938870),
+        vec2( 0.34495938,    0.29387760),
+        vec2(-0.91588581,   0.45771432),
+        vec2(-0.81544232,  -0.87912464),
+        vec2(-0.38277543,  0.27676845),
+        vec2( 0.97484398,   0.75648379),
+        vec2( 0.44323325,  -0.97511554),
+        vec2( 0.53742981,  -0.47373420),
+        vec2(-0.26496911, -0.41893023),
+        vec2( 0.79197514,   0.19090188),
+        vec2(-0.24188840,  0.99706507),
+        vec2(-0.81409955,  0.91437590),
+        vec2( 0.19984126,   0.78641367),
+        vec2( 0.14383161,  -0.14100790)
+    );
+    
+    
+    float calculateShadow(vec4 lightSpacePosition){
+        vec3 coord = lightSpaceCoords();
+        
+        
+        // modify coordinates in eye space into texture values
+        vec2 shadow_uvs = vec2(coord.x, 1-coord.y);
+        float closestDepth = TEXTURE( shadow_tex, shadow_uvs.xy).r;
+        
+        
+        // float max_bias = 0.01;
+        // float min_bias = 0.001;
+        // float bias = max(max_bias * (1.0 - dot(v_normal, lightDir)), min_bias);
+        
+        float bias = u_shadowBias;
+        
+        
+        float shadow = (coord.z - bias) > closestDepth ? 1.0 : 0.0;
+        
+        shadow = shadow * u_shadowIntensity;
+        
+        
+        
+        
+        // // from ofxSimpleShadow
+        
+        // float shadow = 0.0;
+        // int numSamples = 16;
+        // // float shadowDec = 1.0/float(numSamples);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 pos = shadow_uvs.xy + shadow_uvs.xy*poissonDisk[i]/85;
+            
+        //     float texel = TEXTURE( shadow_tex, pos.xy).r;
+            
+        //     // if( texel <= coord.z - u_shadowBias ) {
+        //     //     if( pos.x == 0 || pos.y == 0 ) {
+        //     //         // shadow = 0.0;
+        //     //     }else{
+        //     //         shadow += shadowDec * u_shadowIntensity;
+        //     //     }
+        //     // }
+            
+        //     shadow += (coord.z - bias) > texel ? 1.0 : 0.0;
+        // }
+        // shadow  = (shadow / numSamples) * u_shadowIntensity;
+        
+        
+        // // from learnopengl
+        
+        // float shadow = 0.0;
+        // vec2 texelSize = 10 / vec2(u_shadowWidth, u_shadowHeight);
+        // for(int x = -1; x <= 1; ++x)
+        //     {
+        //     for(int y = -1; y <= 1; ++y)
+        //     {
+        //         vec2 pos = shadow_uvs.xy + vec2(x,y)*0.001;
+        //         float pcfDepth = TEXTURE( shadow_tex, pos.xy).r;
+        //         shadow += (coord.z - 0.001) > pcfDepth ? u_shadowIntensity : 0.0;
+        //     }
+        // }
+        // shadow = (shadow / 9.0);
+        
+        
+        
+        
+        // // combination
+        // // 
+        
+        
+        // float shadow = 0.0;
+        // int numSamples = 16;
+        // vec2 texelSize = 10 / vec2(u_shadowWidth, u_shadowHeight);
+        // for( int i = 0; i < numSamples; i++ ) {
+        //     vec2 pos = shadow_uvs.xy + poissonDisk[i]*0.001;
+        //     float pcfDepth = TEXTURE( shadow_tex, pos.xy).r;
+        //     shadow += (coord.z - 0.005) > pcfDepth ? u_shadowIntensity : 0.0;
+        // }
+        // shadow = (shadow / numSamples);
+
+        
+        
+        
+        
+        
+        // if( coord.z > 1.0) {
+        //     shadow = 0.0;
+        // }
+        
+        if( coord.x == 0 || coord.y == 0 || coord.z == 0) {
+            shadow = 0.0;
+        }
+        
+        return shadow;
+        
+        // return 1.0;
+        // return 0.0;
+    }
+    
+    
+    
+    
+    vec4 drawWithLighting(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        vec4 localColor = 
+                vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
+                vec4(diffuse, 1.0) * v_diffuse  + 
+                vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
+                                     vec4(v_emissive.rgb, 0);
+        return localColor;
+    }
+    
+    vec4 drawShadowTest(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        vec3 pos = lightSpaceCoords();
+        
+        vec4 localColor = vec4(pos.xyz, 1.0);
+        
+        // // modify coordinates in eye space into texture values
+        // localColor = TEXTURE( shadow_tex, vec2(localColor.x,
+        //                                        1-localColor.y));
+        
+        
+        // vec4 localColor = debugOutputShadow();
+        
+        return localColor;
+    }
+    
+    vec4 drawWithLightingAndShadows(in vec3 ambient, in vec3 diffuse, in vec3 specular){
+        float shadow = calculateShadow(v_lightSpacePosition);
+        
+        vec4 localAmbient = 
+            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
+        
+        vec4 localNonAmbient = 
+            vec4(diffuse, 1.0) * v_diffuse  + 
+            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
+        
+        vec4 localEmmisive = 
+            vec4(v_emissive.rgb, 0);
+        
+        vec4 localColor = 
+            localAmbient + (1.0 - shadow)*localNonAmbient + localEmmisive;
+        
+        return localColor;
+    }
+    
+    
+    
+    
     //////////////////////////////////////////////////////
     // here's the main method
     //////////////////////////////////////////////////////
@@ -312,36 +664,17 @@
         
         // vec4 localColor = v_diffuse;
         
-        // // 
-        // // with lighting
-        // // 
         
-        // vec4 localColor = 
-        //         vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0)  + 
-        //         vec4(diffuse, 1.0) * v_diffuse  + 
-        //         vec4(specular,1.0) * vec4(v_specular.rgb, 0) + 
-        //                              vec4(v_emissive.rgb, 0);
+        vec4 localColor;
+        if(u_useShadows > 0.5){
+            localColor = drawWithLightingAndShadows(ambient, diffuse, specular);
+        }else{
+            localColor = drawWithLighting(ambient, diffuse, specular);
+        }
+        // localColor = drawShadowTest(ambient, diffuse, specular);
         
         
-        // 
-        // with lighting and shadows
-        // 
-        float shadow = 0.0;
         
-        vec4 localAmbient = 
-            vec4(ambient, 1.0) * vec4(v_ambient.rgb, 0);
-        
-        vec4 localNonAmbient = 
-            vec4(diffuse, 1.0) * v_diffuse  + 
-            vec4(specular,1.0) * vec4(v_specular.rgb, 0);
-        
-        vec4 localEmmisive = 
-            vec4(v_emissive.rgb, 0);
-        
-        vec4 localColor = 
-            localAmbient + (1.0-shadow)*localNonAmbient + localEmmisive;
-        
-
         
         
         

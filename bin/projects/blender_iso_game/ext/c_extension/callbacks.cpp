@@ -1493,7 +1493,13 @@ void wrap_ofxDynamicMaterial(Module rb_mOFX){
          (const std::string & name, float value)
          >(&ofxDynamicMaterial::setCustomUniform1f)
       )
-      
+		
+		.define_method("setCustomUniformMatrix4f",
+         static_cast< void (ofxDynamicMaterial::*)
+         (const std::string & name, glm::mat4 value)
+         >(&ofxDynamicMaterial::setCustomUniformMatrix4f)
+      )
+		
       .define_method("setCustomUniformTexture",
          static_cast< void (ofxDynamicMaterial::*)
          (const std::string & name, const ofTexture & value, int textureLocation)
@@ -1551,6 +1557,8 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
       .define_method("setSpotlight",      &ofxDynamicLight::setSpotlight)
       
       .define_method("getLightID",        &ofxDynamicLight::getLightID)
+		
+		.define_method("getSpotExponent",   &ofxDynamicLight::getSpotExponent)
       
       
       .define_method("diffuse_color=",    &ofxDynamicLight::setDiffuseColor)
@@ -1564,6 +1572,225 @@ void wrap_ofxDynamicLight(Module rb_mOFX){
 }
 
 
+#include "ofxCamera.h"
+
+void wrap_ofxCamera(Module rb_mOFX){
+	
+   Data_Type<ofxCamera> rb_c_ofxCamera = 
+      define_class_under<ofxCamera, ofNode>(rb_mOFX, "Camera");
+   
+   rb_c_ofxCamera
+      .define_constructor(Constructor<ofxCamera>())
+		
+		.define_method("begin",
+			static_cast< void (ofxCamera::*)
+         (const ofRectangle & viewport)
+         >(&ofxCamera::begin)
+		)
+		.define_method("end",            &ofxCamera::end)
+		
+		
+		.define_method("ortho?",         &ofxCamera::getOrtho)
+		.define_method("enableOrtho",    &ofxCamera::enableOrtho)
+		.define_method("disableOrtho",   &ofxCamera::disableOrtho)
+		
+		
+		
+		.define_method("getProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getProjectionMatrix)
+		)
+		
+		.define_method("getModelViewMatrix",
+			static_cast< glm::mat4 (ofxCamera::*) 
+         (void) const
+         >(&ofxCamera::getModelViewMatrix) 
+		)
+		
+		.define_method("getModelViewProjectionMatrix",
+			static_cast< glm::mat4 (ofxCamera::*)
+         (void)
+         >(&ofxCamera::getModelViewProjectionMatrix)
+		)
+		
+		
+		// 
+		// general properties
+		// 
+		.define_method("vflip=",       &ofxCamera::setVFlip)
+		.define_method("near_clip=",   &ofxCamera::setNearClip)
+		.define_method("far_clip=",    &ofxCamera::setFarClip)
+		
+		.define_method("vflip?",       &ofxCamera::isVFlipped)
+		.define_method("near_clip",    &ofxCamera::getNearClip)
+		.define_method("far_clip",     &ofxCamera::getFarClip)
+		
+		// 
+		// perspective only
+		// 
+		
+		// .define_method("getFarClip",    &ofxCamera::getFarClip)
+			// void setupPerspective(bool vFlip = true, float fov = 60, float nearDist = 0, float farDist = 0);
+		
+		.define_method("fov=",                 &ofxCamera::setFov)
+		.define_method("aspect_ratio=",        &ofxCamera::setAspectRatio)
+		.define_method("force_aspect_ratio=",  &ofxCamera::setForceAspectRatio)
+		
+		.define_method("fov",                  &ofxCamera::getFov)
+		.define_method("aspect_ratio",         &ofxCamera::getAspectRatio)
+		.define_method("force_aspect_ratio",   &ofxCamera::getForceAspectRatio)
+		
+		// 
+		// ortho only
+		// 
+		
+		// .define_method("setupOrthographic",   &ofxCamera::setupOrthographic)
+			// void setupOrthographic(bool vFlip = true, float scale = 1, float nearDist = 0, float farDist = 0);
+		
+		.define_method("ortho_scale=",       &ofxCamera::setOrthoScale)
+		
+		.define_method("ortho_scale",        &ofxCamera::getOrthoScale)
+		
+		
+		
+		// 
+		// coordinate space conversion
+		// 
+		
+		.define_method("worldToScreen",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToScreen)
+		)
+		
+		.define_method("screenToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::screenToWorld)
+		)
+		
+		.define_method("worldToCamera",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::worldToCamera)
+		)
+		
+		.define_method("cameraToWorld",
+			static_cast< glm::vec3 (ofxCamera::*)
+         (glm::vec3 WorldXYZ, const ofRectangle & viewport)
+         >(&ofxCamera::cameraToWorld)
+		)
+	;
+}
+		
+
+#include "ofxShadowCamera.h"
+
+void wrap_ofxShadowCamera(Module rb_mOFX){
+	
+   Data_Type<ofxShadowCamera> rb_c_ofxShadowCamera = 
+      define_class_under<ofxShadowCamera>(rb_mOFX, "ShadowCamera");
+   
+   rb_c_ofxShadowCamera
+      .define_constructor(Constructor<ofxShadowCamera>())
+		
+		.define_method("setSize",       &ofxShadowCamera::setSize)
+		.define_method("width=",        &ofxShadowCamera::setWidth)
+		.define_method("height=",       &ofxShadowCamera::setHeight)
+		.define_method("width",         &ofxShadowCamera::getWidth)
+		.define_method("height",        &ofxShadowCamera::getHeight)
+		
+		.define_method("setRange",        &ofxShadowCamera::setRange)
+		.define_method("near_clip",       &ofxShadowCamera::getNearClip)
+		.define_method("far_clip",        &ofxShadowCamera::getFarClip)
+		
+		.define_method("position=",       &ofxShadowCamera::setPosition)
+		.define_method("orientation=",    &ofxShadowCamera::setOrientation)
+		.define_method("lookAt",          &ofxShadowCamera::lookAt)
+		
+		.define_method("fov",              &ofxShadowCamera::getFov)
+		.define_method("ortho_scale",      &ofxShadowCamera::getOrthoScale)
+		
+		.define_method("fov=",             &ofxShadowCamera::setFov)
+		.define_method("ortho_scale=",     &ofxShadowCamera::setOrthoScale)
+		
+		.define_method("ortho?",           &ofxShadowCamera::getOrtho)
+		.define_method("enableOrtho",      &ofxShadowCamera::enableOrtho)
+		.define_method("disableOrtho",     &ofxShadowCamera::disableOrtho)
+		
+		.define_method("beginDepthPass",   &ofxShadowCamera::beginDepthPass)
+		.define_method("endDepthPass",     &ofxShadowCamera::endDepthPass)
+		
+		.define_method("beginRenderPass",  &ofxShadowCamera::beginRenderPass)
+		.define_method("endRenderPass",    &ofxShadowCamera::endRenderPass)
+		
+		.define_method("bias=",         &ofxShadowCamera::setBias)
+		.define_method("bias",          &ofxShadowCamera::getBias)
+		
+		.define_method("intensity=",    &ofxShadowCamera::setIntensity)
+		.define_method("intensity",     &ofxShadowCamera::getIntensity)
+		
+		.define_method("getFbo",               &ofxShadowCamera::getFbo)
+		.define_method("getLightCamera",       &ofxShadowCamera::getLightCamera)
+		// .define_method("getShadowTransMatrix", &ofxShadowCamera::getShadowTransMatrix)
+		// .define_method("getShader",            &ofxShadowCamera::getShader)
+		
+		.define_method("getLightSpaceMatrix", &ofxShadowCamera::getLightSpaceMatrix)
+		.define_method("getShadowMap",        &ofxShadowCamera::getShadowMap)
+   ;
+}
+
+
+
+#include "ofxShadowSimple.h"
+
+void wrap_ofxShadowSimple(Module rb_mOFX){
+	
+   Data_Type<ofxShadowSimple> rb_c_ofxShadowSimple = 
+      define_class_under<ofxShadowSimple>(rb_mOFX, "ShadowSimple");
+   
+   rb_c_ofxShadowSimple
+      .define_constructor(Constructor<ofxShadowSimple>())
+		
+		.define_method("setRange",             &ofxShadowSimple::setRange)
+		.define_method("setLightPosition",     &ofxShadowSimple::setLightPosition)
+		.define_method("setLightOrientation",  &ofxShadowSimple::setLightOrientation)
+		.define_method("setLightLookAt",       &ofxShadowSimple::setLightLookAt)
+		
+		.define_method("beginDepthPass",
+			&ofxShadowSimple::beginDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
+		.define_method("endDepthPass",
+			&ofxShadowSimple::endDepthPass,
+			(
+            Arg("aBWithCam") = true
+         )
+		)
+		
+		.define_method("beginRenderPass",  &ofxShadowSimple::beginRenderPass)
+		.define_method("endRenderPass",    &ofxShadowSimple::endRenderPass)
+		
+		.define_method("width=",         &ofxShadowSimple::setWidth)
+		.define_method("height=",        &ofxShadowSimple::setHeight)
+		.define_method("width",         &ofxShadowSimple::getWidth)
+		.define_method("height",        &ofxShadowSimple::getHeight)
+		
+		.define_method("bias=",         &ofxShadowSimple::setBias)
+		.define_method("bias",          &ofxShadowSimple::getBias)
+		
+		.define_method("intensity=",    &ofxShadowSimple::setIntensity)
+		.define_method("intensity",     &ofxShadowSimple::getIntensity)
+		
+		.define_method("getFbo",               &ofxShadowSimple::getFbo)
+		.define_method("getLightCamera",       &ofxShadowSimple::getLightCamera)
+		.define_method("getShadowTransMatrix", &ofxShadowSimple::getShadowTransMatrix)
+		// .define_method("getShader",            &ofxShadowSimple::getShader)
+   ;
+}
 
 
 
@@ -1836,6 +2063,12 @@ void Init_rubyOF_project()
 	
 	wrap_ofxDynamicMaterial(rb_mOFX);
 	wrap_ofxDynamicLight(rb_mOFX);
+	
+	wrap_ofxShadowSimple(rb_mOFX);
+	
+	wrap_ofxShadowCamera(rb_mOFX);
+	
+	wrap_ofxCamera(rb_mOFX);
 	
 	
 	
