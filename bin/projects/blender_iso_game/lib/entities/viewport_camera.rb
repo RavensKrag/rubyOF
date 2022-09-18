@@ -59,11 +59,11 @@ class ViewportCamera
     current_mode = @mode
     case new_mode
     when 'PERSP'
-      puts "disable ortho"
+      # puts "disable ortho"
       @of_cam.disableOrtho()
       @mode = 'PERSP'
     when 'ORTHO'
-      puts "enable ortho"
+      # puts "enable ortho"
       @of_cam.enableOrtho()
       @mode = 'ORTHO'
     end
