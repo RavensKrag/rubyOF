@@ -236,9 +236,9 @@ class BlenderLight < BlenderObject
       'shadow_clip_start'  => @shadow_cam.near_clip,
       'shadow_clip_end'    => @shadow_cam.far_clip,
       'shadow_buffer_bias' => @shadow_cam.bias,
-      'shadow_map_size'    => @shadow_map_size, # not from blender
-      'shadow_ortho_scale' => @shadow_cam.ortho_scale, # not from blender
-      'shadow_intensity'   => @shadow_cam.intensity # not from blender
+      'shadow_map_size'    => @shadow_map_size,
+      'shadow_ortho_scale' => @shadow_cam.ortho_scale,
+      'shadow_intensity'   => @shadow_cam.intensity
     })
   end
   
@@ -292,7 +292,7 @@ class BlenderLight < BlenderObject
       # enable shadows
       # 
       @shadows_enabled = true
-      self.shadow_map_size = 2**12
+      self.shadow_map_size = obj_data['shadow_map_size']
       
       # 
       # configure shadow camera
@@ -302,8 +302,8 @@ class BlenderLight < BlenderObject
       @shadow_cam.setRange( obj_data['shadow_clip_start'],
                             obj_data['shadow_clip_end'] )
       # @shadow_cam.bias = 0.001
-      @shadow_cam.bias = obj_data['shadow_buffer_bias']
-      @shadow_cam.intensity = 0.6
+      @shadow_cam.bias      = obj_data['shadow_buffer_bias']
+      @shadow_cam.intensity = obj_data['shadow_intensity']
       
       # 
       # specify shadow properties based on light type
@@ -321,7 +321,7 @@ class BlenderLight < BlenderObject
         
       when 'SUN', 'AREA' # use orthographic shadow camera
         @shadow_cam.enableOrtho()
-        @shadow_cam.ortho_scale = 40
+        @shadow_cam.ortho_scale = obj_data['shadow_ortho_scale']
       end
     else
       # 
