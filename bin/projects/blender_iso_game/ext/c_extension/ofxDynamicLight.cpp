@@ -90,7 +90,6 @@ ofxDynamicLight::Data::~Data(){
 //----------------------------------------
 ofxDynamicLight::ofxDynamicLight()
 :data(new Data){
-   setAmbientColor(ofColor(0,0,0));
    setDiffuseColor(ofColor(255,255,255));
    setSpecularColor(ofColor(255,255,255));
    setPointLight();
@@ -167,6 +166,9 @@ bool ofxDynamicLight::getIsEnabled() const {
 //----------------------------------------
 void ofxDynamicLight::setDirectional() {
 	data->lightType	= OF_LIGHT_DIRECTIONAL;
+    
+    onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -178,7 +180,10 @@ bool ofxDynamicLight::getIsDirectional() const {
 void ofxDynamicLight::setSpotlight(float spotCutOff, float exponent) {
 	data->lightType		= OF_LIGHT_SPOT;
 	setSpotlightCutOff( spotCutOff );
-	setSpotConcentration( exponent );
+	setSpotExponent( exponent );
+    
+    onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -200,14 +205,14 @@ float ofxDynamicLight::getSpotlightCutOff() const{
 }
 
 //----------------------------------------
-void ofxDynamicLight::setSpotConcentration( float exponent ) {
+void ofxDynamicLight::setSpotExponent( float exponent ) {
     data->exponent = CLAMP(exponent, 0, 128);
 }
 
 //----------------------------------------
-float ofxDynamicLight::getSpotConcentration() const{
+float ofxDynamicLight::getSpotExponent() const{
     if(!getIsSpotlight()) {
-        ofLogWarning("ofxDynamicLight") << "getSpotConcentration(): light " << data->glIndex << " is not a spot light";
+        ofLogWarning("ofxDynamicLight") << "getSpotExponent(): light " << data->glIndex << " is not a spot light";
     }
     return data->exponent;
 }
@@ -215,6 +220,9 @@ float ofxDynamicLight::getSpotConcentration() const{
 //----------------------------------------
 void ofxDynamicLight::setPointLight() {
 	data->lightType	= OF_LIGHT_POINT;
+	
+	onPositionChanged();
+    onOrientationChanged();
 }
 
 //----------------------------------------
@@ -249,6 +257,9 @@ void ofxDynamicLight::setAreaLight(float width, float height){
 	data->lightType = OF_LIGHT_AREA;
 	data->width = width;
 	data->height = height;
+	
+	onPositionChanged();
+    onOrientationChanged();
 }
 
 bool ofxDynamicLight::getIsAreaLight() const{
@@ -261,11 +272,6 @@ int ofxDynamicLight::getType() const{
 }
 
 //----------------------------------------
-void ofxDynamicLight::setAmbientColor(const ofFloatColor& c) {
-	data->ambientColor = c;
-}
-
-//----------------------------------------
 void ofxDynamicLight::setDiffuseColor(const ofFloatColor& c) {
 	data->diffuseColor = c;
 }
@@ -273,11 +279,6 @@ void ofxDynamicLight::setDiffuseColor(const ofFloatColor& c) {
 //----------------------------------------
 void ofxDynamicLight::setSpecularColor(const ofFloatColor& c) {
 	data->specularColor = c;
-}
-
-//----------------------------------------
-ofFloatColor ofxDynamicLight::getAmbientColor() const {
-	return data->ambientColor;
 }
 
 //----------------------------------------
@@ -326,13 +327,8 @@ void ofxDynamicLight::onPositionChanged() {
 
 //----------------------------------------
 void ofxDynamicLight::onOrientationChanged() {
-   // std::cout << "light orientation updating" << std::endl;
-   
-	if(getIsDirectional()) {
-		// if we are a directional light and not positional, update light position (direction)
-		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
-		data->position = {lookAtDir.x,lookAtDir.y,lookAtDir.z,0.f};
-	}else if(getIsSpotlight() || getIsAreaLight()) {
+   // std::cout << "light orientation updating" << std::endl;	
+	if(getIsDirectional() || getIsSpotlight() || getIsAreaLight()) {
 		// determines the axis of the cone light
 		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
 		data->direction = lookAtDir;

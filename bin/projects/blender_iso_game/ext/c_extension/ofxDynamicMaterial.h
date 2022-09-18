@@ -168,7 +168,16 @@ public:
 	
 	
 	void setCustomUniform1f(const std::string & name, float value);
-	
+	void setCustomUniform2f(const std::string & name, glm::vec2 value);
+	void setCustomUniform3f(const std::string & name, glm::vec3 value);
+	void setCustomUniform4f(const std::string & name, glm::vec4 value);
+	void setCustomUniformMatrix4f(const std::string & name, glm::mat4 value);
+	void setCustomUniformMatrix3f(const std::string & name, glm::mat3 value);
+
+	void setCustomUniform1i(const std::string & name, int value);
+	void setCustomUniform2i(const std::string & name, glm::vec<2, int, glm::precision::defaultp> value);
+	void setCustomUniform3i(const std::string & name, glm::vec<3, int, glm::precision::defaultp> value);
+	void setCustomUniform4i(const std::string & name, glm::vec<4, int, glm::precision::defaultp> value);
 	void setCustomUniformTexture(const std::string & name, const ofTexture & value, int textureLocation);
 	void setCustomUniformTexture(const std::string & name, int textureTarget, GLint textureID, int textureLocation);
 	

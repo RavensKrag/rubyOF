@@ -381,7 +381,11 @@ class Core
   
   
   
-  
+  def window_resized(w,h)
+    # puts "generate new camera"
+    # @world.camera = ViewportCamera.new
+    @render_pipeline.update(@window, @world.lights)
+  end
   
   
   
@@ -742,10 +746,44 @@ class Core
     
     @render_pipeline.draw(@window,
                           lights:@world.lights,
-                          camera:@world.camera) do |pipeline|
+                          camera:@world.camera,
+                          material:@world.material) do |pipeline|
       
       material = @world.material
       
+      
+      # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
+      pipeline.shadow_pass do |lights, shadow_material|
+        # for now, render opaque objects only
+        
+        @world.each_texture_set do |pos, norm, entity, mesh|
+          # set uniforms
+          shadow_material.setCustomUniformTexture(
+            "vert_pos_tex",  pos, 1
+          )
+          
+          shadow_material.setCustomUniformTexture(
+            "vert_norm_tex", norm, 2
+          )
+          
+          shadow_material.setCustomUniformTexture(
+            "entity_tex", entity, 3
+          )
+          
+          shadow_material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
+          
+          # draw using GPU instancing
+          using_material shadow_material do
+            instance_count = entity.height.to_i
+            mesh.draw_instanced instance_count
+          end
+        end
+      end
+      
+      
+      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.opaque_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms
@@ -776,6 +814,7 @@ class Core
         # glDisable(GL_CULL_FACE)
       end
       
+      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.transparent_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms
@@ -835,6 +874,25 @@ class Core
         
         # @fonts[:monospace].draw_string("history size: #{}",
                                          # 400, 160)
+        
+        
+        p3 = CP::Vec2.new(646, 846)
+        @fonts[:monospace].tap do |f|
+          f.draw_string("camera", p3.x, p3.y+40*0)
+          f.draw_string("Handglovery", p3.x, p3.y+40*1)
+        
+          f.draw_string("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
+          
+          dist = @world.camera.position.yield_self do |x|
+            x.to_a[0..1]
+             .map{|x| x*x}
+             .reduce(:+)
+             .yield_self{|x| Math.sqrt(x) }
+          end
+          f.draw_string("#{ dist }}", p3.x, p3.y+40*3)
+        end
+        
+        # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
         
         
         # t1 = RubyOF::TimeCounter.now

@@ -2391,12 +2391,53 @@ class DATA_PT_RubyOF_Properties(bpy.types.Panel):
 
 
 
-
-
-
-
-
-
+class RubyOF_LIGHT_Properties(bpy.types.PropertyGroup):
+    # shadow_buffer_bias
+    # shadow_buffer_size
+    # shadow_map_size
+    # shadow_ortho_scale
+    # shadow_intensity
+    
+    shadow_buffer_bias: FloatProperty(
+        name = "Shadow Bias",
+        description = "bias to offset the shadow map z depth",
+        default = 0.001,
+        min = 0.0,
+        max = 1.0,
+        precision = 5
+        )
+    
+    shadow_map_size: EnumProperty(
+        name = "Shadow Map Size",
+        description = "Size of the shadow map",
+        items=[
+            (str(2**5),  str(2**5)  + ' px', ''),
+            (str(2**6),  str(2**6)  + ' px', ''),
+            (str(2**7),  str(2**7)  + ' px', ''),
+            (str(2**8),  str(2**8)  + ' px', ''),
+            (str(2**9),  str(2**9)  + ' px', ''),
+            (str(2**10), str(2**10) + ' px', ''),
+            (str(2**11), str(2**11) + ' px', ''),
+            (str(2**12), str(2**12) + ' px', ''),
+        ]
+        )
+    
+    shadow_ortho_scale: FloatProperty(
+        name = "Shadow Orthographic Scale",
+        description = "Scale for shadow camera in orthographic mode",
+        default = 1,
+        min = 0.0,
+        max = 100
+        )
+    
+    shadow_intensity: FloatProperty(
+        name = "Shadow Intensity",
+        description = "1 is pure black, 0 is like having no shadow at all",
+        default = 0.5,
+        min = 0.0,
+        max = 1.0,
+        precision = 2
+        )
 
 
 #
@@ -2433,6 +2474,7 @@ class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
         col = layout.column()
         col.prop(light, "color")
         col.prop(light, "energy")
+        col.prop(light, "diffuse_factor", text="Diffuse")
         col.prop(light, "specular_factor", text="Specular")
         
         col.separator()
@@ -2452,6 +2494,52 @@ class DATA_PT_RubyOF_light(DataButtonsPanel, bpy.types.Panel):
                 sub.prop(light, "size", text="Size X")
                 sub.prop(light, "size_y", text="Y")
 
+class DATA_PT_RubyOF_shadow(DataButtonsPanel, bpy.types.Panel):
+    bl_label = "Shadow"
+    bl_options = {'DEFAULT_CLOSED'}
+    COMPAT_ENGINES = {'RUBYOF'}
+    
+    @classmethod
+    def poll(cls, context):
+        light = context.light
+        engine = context.engine
+        return (
+            (light and light.type in {'POINT', 'SUN', 'SPOT', 'AREA'}) and
+            (engine in cls.COMPAT_ENGINES)
+        )
+    
+    def draw_header(self, context):
+        light = context.light
+        self.layout.prop(light, "use_shadow", text="")
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        light = context.light
+        
+        layout.active = light.use_shadow
+        
+        col = layout.column()
+        col.prop(light, "shadow_buffer_clip_start", text="Clip Start")
+        col.prop(light, "cutoff_distance", text="Clip End")
+        
+        # col.prop(light, "shadow_buffer_bias", text="Bias")
+        # light.shadow_buffer_bias.precision = 5
+        
+        # col.prop(light, "shadow_buffer_size", text="Buffer Size")
+        
+        # 
+        # using custom property block for shadow camera properties, instead
+        # of using the properties that exist on the default blender light
+        # 
+        
+        col.prop(light.rb_light, "shadow_buffer_bias", text='Bias')
+        col.prop(light.rb_light, "shadow_map_size", text='Size')
+        col.prop(light.rb_light, "shadow_intensity", text='Intensity')
+        if light.type in {'AREA', 'SUN'}:
+            col.prop(light.rb_light, "shadow_ortho_scale", text='Ortho Scale')
+        
 
 class DATA_PT_spot(DataButtonsPanel, bpy.types.Panel):
     bl_label = "Spot Shape"
@@ -2794,8 +2882,10 @@ classes = (
     # 
     RubyOF_Properties,
     RubyOF_MATERIAL_Properties,
+    RubyOF_LIGHT_Properties,
     DATA_PT_RubyOF_Properties,
     DATA_PT_RubyOF_light,
+    DATA_PT_RubyOF_shadow,
     DATA_PT_spot,
     RUBYOF_MATERIAL_PT_context_material,
     # 
@@ -2837,6 +2927,15 @@ def register():
     bpy.types.Material.rb_mat = PointerProperty(
             type=RubyOF_MATERIAL_Properties
         )
+    
+    bpy.types.Light.rb_light = PointerProperty(
+            type=RubyOF_LIGHT_Properties
+        )
+    
+    # bpy.types.AreaLight
+    # bpy.types.PointLight
+    # bpy.types.SunLight
+    # bpy.types.SpotLight
     
     bpy.types.Scene.my_tool = PointerProperty(type=PG_MyPanelProperties)
     

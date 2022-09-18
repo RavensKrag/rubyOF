@@ -5,7 +5,8 @@
 class World
   include RubyOF::Graphics
   
-  attr_reader :data, :space, :lights, :camera
+  attr_reader :data, :space, :lights
+  attr_accessor :camera
   
   MAX_NUM_FRAMES = 500
   
@@ -358,16 +359,16 @@ class World
       @lights.delete_if{|light| light.name == light_name}
     end
     
-    # delete all lights whose names are not on this list
+    # delete all lights whose names are on this list
     def gc(list_of_names)
       @lights
-      .reject{ |light|  list_of_names.include? light.name }
+      .select{ |light|  list_of_names.include? light.name }
       .each do |light|
         delete light.name
       end
     end
     
-    
+    include Enumerable
     def each
       return enum_for(:each) unless block_given?
       

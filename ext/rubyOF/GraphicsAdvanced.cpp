@@ -1116,8 +1116,28 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       
       
       .define_method("ortho?",         &ofCamera::getOrtho)
-      .define_method("enableOrtho",    &ofCamera::getOrtho)
-      .define_method("disableOrtho",   &ofCamera::getOrtho)
+      .define_method("enableOrtho",    &ofCamera::enableOrtho)
+      .define_method("disableOrtho",   &ofCamera::disableOrtho)
+      
+      
+      
+      .define_method("getProjectionMatrix",
+         static_cast< glm::mat4 (ofCamera::*)
+         (void)
+         const>(&ofCamera::getProjectionMatrix)
+      )
+      
+      .define_method("getModelViewMatrix",
+         static_cast< glm::mat4 (ofCamera::*)
+         (void)
+         const>(&ofCamera::getModelViewMatrix)
+      )
+      
+      .define_method("getModelViewProjectionMatrix",
+         static_cast< glm::mat4 (ofCamera::*)
+         (void)
+         const>(&ofCamera::getModelViewProjectionMatrix)
+      )
    ;
    
    
@@ -1163,6 +1183,9 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       // .define_method("ofSetGlobalAmbientColor",   &ofSetGlobalAmbientColor)
       
       .define_method("diffuse_color",     &ofLight__getDiffuseColor)
-   ;
+      
+      
+      .define_method("setAttenuation",      &ofLight::setAttenuation)
+   ;   
 }
 

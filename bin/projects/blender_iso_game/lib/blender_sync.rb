@@ -139,27 +139,9 @@ class BlenderSync
     
     
     case message['type']
-    when 'all_entity_names'
-      # This message is still being sent from Blender, but not sure if I need it now or not, because entities are being managed through the entity texture / transform texture.
-      
-      # historically, this was used to delete meshes and lights
-      
-      # not sure if names of lights are still in this list or not
-      # need to check exporter.py for details
-      
-      
-      
-      # # attempt to delete all lights by name
-      # # 
-      # # Names are unique in Blender, so there should never be
-      # # any collisions between a light object and some other object.
-      # # Therefore, while ugly, this should work just fine.
-      # # (it's ugly because we search for names that do not correspond to lights)
-      # message['list'].each do |entity_name|
-      #   @world.lights.delete entity_name
-      # end
-      
-      # oh wait no - we want to delete the lights that are NOT in this list
+    when 'delete_lights'
+      # delete any lights with names on this list
+      puts "gc lights"
       @world.lights.gc message['list']
       
     when 'viewport_camera'

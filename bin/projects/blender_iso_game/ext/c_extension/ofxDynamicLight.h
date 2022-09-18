@@ -58,8 +58,8 @@ public:
 	bool getIsSpotlight() const;
 	void setSpotlightCutOff( float spotCutOff );
     float getSpotlightCutOff() const;
-	void setSpotConcentration( float exponent );
-    float getSpotConcentration() const;
+	void setSpotExponent( float exponent );
+    float getSpotExponent() const;
 	
 	void setPointLight();
 	bool getIsPointLight() const;
@@ -73,11 +73,9 @@ public:
 	
 	int getType() const;
 	
-	void setAmbientColor(const ofFloatColor& c);
 	void setDiffuseColor(const ofFloatColor& c);
 	void setSpecularColor(const ofFloatColor& c);
 	
-	ofFloatColor getAmbientColor() const;
 	ofFloatColor getDiffuseColor() const;
 	ofFloatColor getSpecularColor() const;
 	
@@ -88,7 +86,6 @@ public:
 		Data();
 		~Data();
 
-		ofFloatColor ambientColor;
 		ofFloatColor diffuseColor;
 		ofFloatColor specularColor;
 

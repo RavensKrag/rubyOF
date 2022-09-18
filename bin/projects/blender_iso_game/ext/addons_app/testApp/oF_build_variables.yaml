@@ -153,15 +153,7 @@ PROJECT_CFLAGS:
 GTK_RC_FILES:
 - "/etc/gtk/gtkrc:/home/ravenskrag/.gtkrc:/home/ravenskrag/.config/gtkrc"
 PARSED_ADDONS_FILTERED_SOURCE_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiTimecode.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiOut.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiIn.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop/ofxRtMidiIn.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop/ofxRtMidiOut.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidi.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxBaseMidi.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src/ofxShadowSimple.cpp"
 GCC_MAJOR_GT_4:
 - '1'
 OF_CORE_THIRDPARTY_HEADER_PATHS:
@@ -184,6 +176,7 @@ OF_PROJECT_CFLAGS:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -245,6 +238,7 @@ OF_PROJECT_ADDONS_OBJS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxShadowSimple/src/ofxShadowSimple.o"
 TMP_PROJECT_ADDONS_CFLAGS: []
 _:
 - "/home/ravenskrag/.rvm/rubies/ruby-2.7.2/bin/rake"
@@ -298,9 +292,7 @@ PLATFORM_OPTIMIZATION_CFLAGS_DEBUG:
 OF_PROJECT_CXXFLAGS: []
 OF_ADDONS_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons"
-ADDON_PKG_CONFIG_LIBRARIES:
-- alsa
-- jack
+ADDON_PKG_CONFIG_LIBRARIES: []
 PROJECT_ADDONS_PKG_CONFIG_LIBRARIES:
 - alsa
 - jack
@@ -326,6 +318,7 @@ PROJECT_ADDONS:
 - ofxDatGui
 - ofxImGui
 - ofxMidi
+- ofxShadowSimple
 OPTIMIZATION_CFLAGS:
 - "-g3"
 - "-DDEBUG"
@@ -373,14 +366,12 @@ PROJECT_ADDONS_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp"
-PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src/ofxShadowSimple.cpp"
+PARSED_ADDONS_FILTERED_LIBS_SOURCE_INCLUDE_PATHS: []
 XCURSOR_SIZE:
 - '36'
 addon:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple"
 GCC_MINOR_GTEQ_9:
 - '1'
 PROJECT_ADDONS_LDFLAGS: []
@@ -422,10 +413,7 @@ LINK.cc:
 - "-lfmodex"
 PAM_KWALLET5_LOGIN:
 - "/run/user/1000/kwallet5.socket"
-PARSED_ADDONS_LIBS_SOURCE_INCLUDES:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+PARSED_ADDONS_LIBS_SOURCE_INCLUDES: []
 XDG_SESSION_PATH:
 - "/org/freedesktop/DisplayManager/Session1"
 PARSED_ALL_PLATFORM_LIBS: []
@@ -502,7 +490,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1653,unix/ravensnest:/tmp/.ICE-unix/1653
+- local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -516,6 +504,7 @@ CFLAGS:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -531,12 +520,9 @@ LINK.r:
 - "-ldrm"
 - "-L/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/fmodex/lib/linux64/"
 - "-lfmodex"
-PARSED_ADDONS_LIBS_SOURCES:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp"
+PARSED_ADDONS_LIBS_SOURCES: []
 PARSED_ADDONS_FILTERED_INCLUDE_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 LINT:
 - lint
 COMPILE.f:
@@ -560,9 +546,11 @@ LINT.c:
 - lint
 YACC.m:
 - yacc
-ADDONS_INCLUDES_FILTER: []
+ADDONS_INCLUDES_FILTER:
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/libs/pgmidi/%"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src/ios/%"
 addon_path:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src/ofxShadowSimple.cpp"
 uniq: []
 TMP_PROJECT_ADDONS_PKG_CONFIG_LIBRARIES:
 - alsa
@@ -605,6 +593,7 @@ PROJECT_ADDONS_OBJ_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxShadowSimple/src/ofxShadowSimple.o"
 VPATH: []
 AR:
 - ar
@@ -643,7 +632,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-Ac6tRjGLl5bQ/agent.1470"
+- "/tmp/ssh-dQbDCfg2uFsZ/agent.1477"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj"
@@ -672,7 +661,7 @@ PLATFORM_CFLAGS:
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
 PARSED_ADDONS_LIBS_PLATFORM_LIB_PATHS:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/*/lib/linux64"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/libs/*/lib/linux64"
 ".LIBPATTERNS":
 - lib%.so
 - lib%.a
@@ -688,9 +677,7 @@ OBJS_WITHOUT_EXTERNAL:
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.o
 - obj/linux64/Debug//home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/main.o
 PARSED_ADDONS_SOURCE_INCLUDES:
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/desktop"
-- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ios"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 KDE_SESSION_VERSION:
 - '5'
 OF_CORE_HEADER_PATHS:
@@ -728,7 +715,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1583'
+- '1590'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
@@ -744,6 +731,7 @@ LINK.c:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -791,6 +779,7 @@ TMP_PROJECT_ADDONS_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiClock.cpp"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/src/ofxMidiMessage.cpp"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi/RtMidi.cpp"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src/ofxShadowSimple.cpp"
 - "./src/ofApp.cpp"
 - "./src/main.cpp"
 - "./src/ofApp.cpp"
@@ -852,11 +841,13 @@ TMP_PROJECT_ADDONS_OBJ_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.o"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.o"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxShadowSimple/src/ofxShadowSimple.o"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.o"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.o"
 OF_CORE_DEFINES_CFLAGS:
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 "-*-command-variables-*-":
@@ -883,6 +874,7 @@ OF_ADDON_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 - "-I/."
 - "-I."
 - "-I/./bin"
@@ -994,6 +986,7 @@ space: []
 MAKECMDGOALS:
 - printvars
 VALID_PROJECT_ADDONS:
+- ofxShadowSimple
 - ofxGui
 - ofxMidi
 - ofxImGui
@@ -1101,6 +1094,7 @@ PROJECT_ADDONS_INCLUDES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 - "/."
 - "."
 - "/./bin"
@@ -1148,6 +1142,7 @@ REQUESTED_PROJECT_ADDONS:
 - ofxDatGui
 - ofxImGui
 - ofxMidi
+- ofxShadowSimple
 OF_PROJECT_INCLUDES_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src"
 ".VARIABLES":
@@ -1543,6 +1538,7 @@ ADDON_INCLUDES_FILTERED:
 - "./src"
 PLATFORM_DEFINES:
 - OF_USING_GTK
+- OF_USING_GTK
 - OF_USING_MPG123
 PLATFORM_LIBRARY_SEARCH_PATHS: []
 COMPILE.def:
@@ -1622,6 +1618,7 @@ OF_PROJECT_ADDONS_DEPS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxShadowSimple/src/ofxShadowSimple.d"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
 ALL_OF_CORE_SOURCE_PATHS:
@@ -1769,6 +1766,7 @@ OF_PROJECT_DEPENDENCY_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiClock.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/src/ofxMidiMessage.d"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxMidi/libs/rtmidi/RtMidi.d"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/obj/linux64/Debug/ofxShadowSimple/src/ofxShadowSimple.d"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/ofApp.d"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj/linux64/Debug/addons//./src/main.d"
 ADDON_LDFLAGS: []
@@ -1790,6 +1788,7 @@ TMP_PROJECT_ADDONS_INCLUDES:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 - "/."
 - "."
 - "/./bin"
@@ -2052,7 +2051,7 @@ HOST_ARCH:
 TARGET_LIBS:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a"
 HAS_SYSTEM_GTK2:
-- '1'
+- '0'
 CXX:
 - g++
 ALL_CFLAGS:
@@ -2060,6 +2059,7 @@ ALL_CFLAGS:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -2141,7 +2141,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/1f5597bb_9a78_4963_9574_ae0c65b59c0c"
+- "/org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad"
 "^F": []
 COMPILE.S:
 - cc
@@ -2160,7 +2160,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.215"
+- ":1.175"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2214,6 +2214,7 @@ COMPILE.c:
 - "-Werror=return-type"
 - "-std=c++14"
 - "-DGCC_HAS_REGEX"
+- "-DOF_USING_GTK"
 - "-DOF_USING_GTK"
 - "-DOF_USING_MPG123"
 - "-fPIC"
@@ -2294,6 +2295,7 @@ ADDON_INCLUDE_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 - "-I/."
 - "-I."
 - "-I/./bin"
@@ -2369,7 +2371,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/4"
+- "/dev/pts/2"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:
@@ -2426,10 +2428,11 @@ ALL_INSTALLED_ADDONS:
 - ofxGPS
 - ofxGuiExtended
 - ofxKinect
-- ofxVectorGraphics
+- ofxFontStash
 - ofxXmlSettings
 - ofxAccelerometer
 - ofxMidi
+- ofxVectorGraphics
 - ofxOpenCv
 - ofxOsc
 - ofxSvg
@@ -2524,6 +2527,7 @@ PROJECT_INCLUDE_CFLAGS:
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/pgmidi"
 - "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxMidi/libs/rtmidi"
+- "-I/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/addons/ofxShadowSimple/src"
 - "-I/."
 - "-I."
 - "-I/./bin"
