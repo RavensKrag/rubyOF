@@ -38,11 +38,12 @@ lights:
   - float
   - 0.0
   use_shadow: true
-  shadow_clip_start: 15.999998092651367
+  shadow_clip_start: 16.0
   shadow_clip_end: 100.0
-  shadow_buffer_bias: 9.999999747378752e-05
-  shadow_map_size: 4096
-  shadow_ortho_scale: 40.0
+  shadow_buffer_bias: 0.0010000000474974513
+  shadow_map_size: 2048
+  shadow_ortho_scale: 34.53999710083008
+  shadow_intensity: 0.6000000238418579
 - !ruby/object:BlenderLight
   name: Sun.001
   ".type": LIGHT
@@ -86,3 +87,48 @@ lights:
   shadow_buffer_bias: 0.0010000000474974513
   shadow_map_size: 1024
   shadow_ortho_scale: 1.0
+  shadow_intensity: 0.699999988079071
+- !ruby/object:BlenderLight
+  name: Point
+  ".type": LIGHT
+  transform:
+    rotation:
+    - Quat
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    position:
+    - Vec3
+    - -0.6667410135269165
+    - 3.920974016189575
+    - 1.0025166273117065
+    scale:
+    - Vec3
+    - 1.0
+    - 1.0
+    - 1.0
+  ".data.type": AREA
+  color:
+  - rgb
+  - 1.0
+  - 1.0
+  - 1.0
+  attenuation:
+  - rgb
+  size:
+  - degrees
+  - 
+  size_x:
+  - float
+  - 0.25
+  size_y:
+  - float
+  - 0.25
+  use_shadow: true
+  shadow_clip_start: 0.05000000074505806
+  shadow_clip_end: 40.0
+  shadow_buffer_bias: 0.0010000000474974513
+  shadow_map_size: 4096
+  shadow_ortho_scale: 40.0
+  shadow_intensity: 0.6000000238418579
