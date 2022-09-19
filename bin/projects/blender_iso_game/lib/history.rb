@@ -156,6 +156,140 @@ class Outer
 end
 
 
+
+
+
+
+
+# Helper object that allows for the definition of different "frames" in Core.
+# Passed to each #update
+class Snapshot
+  def initialize(context)
+    @context = context
+  end
+  
+  def frame(&block)
+    if @context.frame_index < @context.final_frame
+      # resuming
+      
+      # if manually stepping forward, we'll be able to see the transition
+      # but otherwise, this transition will be silent,
+      # because there is no Fiber.yield in this branch.
+      # 
+      # (keeps logs clean unless you really need the info)
+      
+      # (skip this frame)
+      # don't run the code for this frame,
+      # so instead update the transforms
+      # based on the history buffer
+      
+      # Can't just jump in the buffer, because we need to advance the Fiber.
+      # BUT we may be able to optimize to just loading the last old state
+      # before we need to generate new states.
+      
+      @context.frame_index += 1
+      
+      puts "#{@context.frame_index.to_s.rjust(4, '0')} resuming"
+      
+      @context.history.load_state_at @context.frame_index
+      
+    else # [@context.history.length-1, inf]
+      # actually generating new state
+      @context.history.snapshot_gamestate_at @context.frame_index
+      
+      # p [@context.frame_index, @context.history.length-1]
+      # puts "history length: #{@context.history.length}"
+      
+      @context.frame_index += 1
+      
+      frame_str = @context.frame_index.to_s.rjust(4, '0')
+      src_file, src_line = block.source_location
+      
+      file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
+      
+      puts "#{frame_str} new state  #{file_str}, line #{src_line} "
+      
+      # p block
+      # puts "--------------------------------"
+      # p block.source_location
+      block.call()
+      # puts "--------------------------------"
+      
+      Fiber.yield
+    # elsif @executing_frame > @context.history.length
+    #   # scrubbing in future space
+    #   # NO-OP
+    #   # (pretty sure I need both this logic and the logic in Finished)
+    # else
+    #   # initial state??
+    #   # not sure what's left
+    end
+    
+  end
+end
+
+
+
+
+# (system to find correct states to use)
+
+# match patterns of states and fire appropriate callbacks
+# on transitions between states
+class StatePatterns
+  def initialize() # &block
+    helper = Helper.new
+    yield helper
+    @patterns = helper.patterns
+  end
+  
+  def match(p,n)
+    @patterns.each do |pattern, proc|
+      prev_state_id, next_state_id = pattern
+      
+      # state IDs can be the class constant of a state,
+      # or the symbols :any or :any_other
+      # :any matches any state (allowing self loops)
+      # :any_other matches any state other than the other specified state (no self loop)
+      # if you specify :any_other in both slots, the callback will trigger on all transitions that are not self loops
+      
+      cond1 = (
+        (prev_state_id == :any) || 
+        (prev_state_id == :any_other && p != n) ||
+        (p == prev_state_id)
+      )
+      
+      cond2 = (
+        (next_state_id == :any) || 
+        (next_state_id == :any_other && n != p) ||
+        (n == next_state_id)
+      )
+      
+      if cond1 && cond2
+        proc.call()
+      end
+    end
+  end
+  
+  
+  class Helper
+    attr_reader :patterns
+    
+    def initialize
+      @patterns = Array.new
+    end
+    
+    def on_transition(pair={}, &block)
+      prev_state_id = pair.keys.first
+      next_state_id = pair.values.first
+      
+      @patterns << [ [prev_state_id, next_state_id], block ]
+    end
+  end
+end
+
+
+# (data used by states)
+
 # Methods on Context are visible to other parts of this internal API,
 # but are not visible to external systems, 
 # because Outer does not provide external access to Context.
@@ -268,130 +402,9 @@ class Context
 end
 
 
+# (behavior used by states)
 
-# match patterns of states and fire appropriate callbacks
-# on transitions between states
-class StatePatterns
-  def initialize() # &block
-    helper = Helper.new
-    yield helper
-    @patterns = helper.patterns
-  end
-  
-  def match(p,n)
-    @patterns.each do |pattern, proc|
-      prev_state_id, next_state_id = pattern
-      
-      # state IDs can be the class constant of a state,
-      # or the symbols :any or :any_other
-      # :any matches any state (allowing self loops)
-      # :any_other matches any state other than the other specified state (no self loop)
-      # if you specify :any_other in both slots, the callback will trigger on all transitions that are not self loops
-      
-      cond1 = (
-        (prev_state_id == :any) || 
-        (prev_state_id == :any_other && p != n) ||
-        (p == prev_state_id)
-      )
-      
-      cond2 = (
-        (next_state_id == :any) || 
-        (next_state_id == :any_other && n != p) ||
-        (n == next_state_id)
-      )
-      
-      if cond1 && cond2
-        proc.call()
-      end
-    end
-  end
-  
-  
-  class Helper
-    attr_reader :patterns
-    
-    def initialize
-      @patterns = Array.new
-    end
-    
-    def on_transition(pair={}, &block)
-      prev_state_id = pair.keys.first
-      next_state_id = pair.values.first
-      
-      @patterns << [ [prev_state_id, next_state_id], block ]
-    end
-  end
-end
-
-
-# Helper object that allows for the definition of different "frames" in Core.
-# Passed to each #update
-class Snapshot
-  def initialize(context)
-    @context = context
-  end
-  
-  def frame(&block)
-    if @context.frame_index < @context.final_frame
-      # resuming
-      
-      # if manually stepping forward, we'll be able to see the transition
-      # but otherwise, this transition will be silent,
-      # because there is no Fiber.yield in this branch.
-      # 
-      # (keeps logs clean unless you really need the info)
-      
-      # (skip this frame)
-      # don't run the code for this frame,
-      # so instead update the transforms
-      # based on the history buffer
-      
-      # Can't just jump in the buffer, because we need to advance the Fiber.
-      # BUT we may be able to optimize to just loading the last old state
-      # before we need to generate new states.
-      
-      @context.frame_index += 1
-      
-      puts "#{@context.frame_index.to_s.rjust(4, '0')} resuming"
-      
-      @context.history.load_state_at @context.frame_index
-      
-    else # [@context.history.length-1, inf]
-      # actually generating new state
-      @context.history.snapshot_gamestate_at @context.frame_index
-      
-      # p [@context.frame_index, @context.history.length-1]
-      # puts "history length: #{@context.history.length}"
-      
-      @context.frame_index += 1
-      
-      frame_str = @context.frame_index.to_s.rjust(4, '0')
-      src_file, src_line = block.source_location
-      
-      file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
-      
-      puts "#{frame_str} new state  #{file_str}, line #{src_line} "
-      
-      # p block
-      # puts "--------------------------------"
-      # p block.source_location
-      block.call()
-      # puts "--------------------------------"
-      
-      Fiber.yield
-    # elsif @executing_frame > @context.history.length
-    #   # scrubbing in future space
-    #   # NO-OP
-    #   # (pretty sure I need both this logic and the logic in Finished)
-    # else
-    #   # initial state??
-    #   # not sure what's left
-    end
-    
-  end
-end
-
-
+# All states share the same data, which is stored in Context
 module States
   class State
     def initialize(context)
