@@ -565,17 +565,145 @@ end
 
 # stores the data for time traveling
 class HistoryBuffer
+  # attr_reader :state, :buffer
+  # protected :state
+  # protected :buffer
+  
+  # TODO: use named arguments, because the positions are extremely arbitrary
+  def initialize(mom=nil, slice_range=nil)
+    if mom
+      @max_num_frames = mom.max_num_frames
+      self.setup(mom.state[:pixels],
+                 mom.state[:texture],
+                 mom.state[:cache]
+      )
+      slice_range.each do |i|
+        @buffer[i].copy_from mom.buffer[i]
+      end
+    else
+      @max_num_frames = 0
+      @buffer = []
+      @valid = []
+    end
+      
+      # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
+  end
+  
+  def setup(pixels, texture, cache)
+    puts "[ #{self.class} ]  setup "
+    
+    @max_num_frames = 3600
+    
+    # retain key data objects for entity state
+    @state = {
+      :pixels => pixels,
+      :texture => texture,
+      :cache => cache
+    }
+    
+    # store data
+    @buffer = Array.new(@max_num_frames)
+    @buffer.size.times do |i|
+      pixels = RubyOF::FloatPixels.new
+      
+      pixels.allocate(@state[:pixels].width, @state[:pixels].height)
+      pixels.flip_vertical
+      
+      @buffer[i] = pixels
+    end
+    
+    # create array of booleans to know which images store valid states
+    @valid = Array.new(@buffer.size, false)
+  end
+  
+  def length
+    return @max_num_frames
+  end
+  
+  alias :size :length
+  
+  
   def bind_world(world)
     
   end
   
-  def save_state(data)
+  
+  
+  
+  
+  # TODO: think about how you would implement multiple timelines
+  def branch(frame_index)
+    # new_history = self.class.new(self, 0..frame_index)
     
+    # new_history.max_i = frame_index
+    
+    # return new_history
   end
   
+  
+  # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
+  # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
+  
+  
+  # image buffers are guaranteed to be the right size,
+  # (as long as the buffer is allocated)
+  # because of setup()
   def load_state_at(frame_index)
+    raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
     
+    raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
+    
+    raise IndexError, "Index #{frame_index} outside the bounds of recorded gamestates: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
+    
+    raise "Attempted to read garbage state. State at frame #{frame_index} was either never saved, or has since been deleted." unless @valid[frame_index]
+    
+    @state[:pixels].copy_from @buffer[frame_index]
+    @state[:cache].load @state[:pixels]
   end
+  
+  def snapshot_gamestate_at(frame_index)
+    raise IndexError, "Index should be a non-negative integer." if frame_index.nil?
+    
+    raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
+    
+    raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
+    
+    
+    @state[:cache].update @state[:pixels]
+    @buffer[frame_index].copy_from @state[:pixels]
+    
+    @valid[frame_index] = true
+    
+    # # TODO: implement this new interface
+    # @buffer[frame_index] << @state[:pixels] # save data into history buffer
+    # @buffer[frame_index] >> @state[:pixels] # load data from buffer into another image
+    #   # + should I implement this on RubyOF::Pixels for all images?
+    #   # + can this be patterned as a general "memory transfer operator" ?
+      
+    # @state[:pixels] << @buffer[frame_index] # load data from buffer into another image
+  end
+  
+  def delete_state_at(frame_index)
+    @valid[frame_index] = false
+  end
+end
+  # FIXME: recieving index -1
+  # (should I interpret that as distance from the end of the buffer, or what? need to look into the other code on the critical path to figure this out)
+  
+  
+  
+  # OpenFrameworks documentation
+    # use ofPixels::pasteInto(ofPixels &dst, size_t x, size_t y)
+    # 
+    # "Paste the ofPixels object into another ofPixels object at the specified index, copying data from the ofPixels that the method is being called on to the ofPixels object at &dst. If the data being copied doesn't fit into the destination then the image is cropped."
+    
+  
+    # cropTo(...)
+    # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
+
+    # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
+
+
 
 
 end
