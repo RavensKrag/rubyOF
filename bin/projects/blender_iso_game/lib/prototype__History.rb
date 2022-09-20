@@ -5,12 +5,17 @@ class History
     @transport = TimelineTransport.new(@shared_data, @state_machine)
     # ^ methods = [:play, :pause, :seek, :reset]
     
-    @state_machine = StateMachine.new(@transport, @shared_data)
+    h1 = SaveHelper.new(@buffer, @shared_data)
+    h2 = LoadHelper.new(@buffer, @shared_data)
+    
+    @state_machine = StateMachine.new
     @state_machine.setup do |s|
-      s.define_states States::Initial,
-                      States::GeneratingNew,
-                      States::ReplayingOld,
-                      States::Finished
+      s.define_states(
+        States::Initial.new(      @state_machine),
+        States::GeneratingNew.new(@state_machine, @shared_data, h1),
+        States::ReplayingOld.new( @state_machine, @shared_data, @transport, h2),
+        States::Finished.new(     @state_machine, @shared_data, @transport, h2)
+      )
       
       s.initial_state States::Initial
       
@@ -60,6 +65,12 @@ class History
   def on_reload_data(ipc)
     
   end
+  
+  # where does this belong?
+  def on_crash(ipc)
+    @shared_data.frame_index -= 1
+    @transport.seek(@shared_data.frame_index)
+  end
 end
 
 
@@ -106,13 +117,6 @@ class TimelineTransport
   def reset
     
   end
-  
-  
-  # where does this belong?
-  def on_crash
-    @data.frame_index -= 1
-    self.seek(@data.frame_index)
-  end
 end
 
 # state shared between TimelineTransport and the StateMachine states,
@@ -133,25 +137,17 @@ class Context
     @block = block
   end
   
-  def load_state_at_current_frame
-    @buffer.load_state_at @frame_index
+  def final_frame
+    
   end
-  
-  def snapshot_gamestate_at_current_frame
-    # @buffer.load_state_at @frame_index
-  end
-  
 end
 
 # helps to save stuff from code into the buffer, so we can time travel later
-class Helper
-  def initialize(context, history)
-    @context = context
+class SaveHelper
+  # TODO: re-name this class. it actually does some amount of loading too, so that it can resume fibers...
+  def initialize(history, context)
     @history = history
-    
-    # TODO: how can I allow GeneratingNew to have access to the history buffer, without exposing the ability to take snapshots to all states?
-      # currently, Helper is being initialized by GeneratingNew.
-      # This means Helper can't recieve any data that GeneratingNew doesn't already have, but GeneratingNew shares the same data will all other StateMachine states.
+    @context = context
   end
   
   def frame(&block)
@@ -214,6 +210,18 @@ class Helper
   end
 end
 
+# helps to load data from the buffer
+class LoadHelper
+  def initialize(history, context)
+    @history = history
+    @context = context
+  end
+  
+  def load_state_at_current_frame
+    
+  end
+end
+
 
 
 
@@ -224,9 +232,8 @@ end
 class StateMachine
   extend Forwardable
   
-  def initialize(transport, shared_data)
-    @transport = transport
-    @shared_data = shared_data
+  def initialize()
+    
   end
   
   def setup(&block)
@@ -237,7 +244,7 @@ class StateMachine
     block.call helper
     
     @previous_state = nil
-    @current_state = helper.initial_state.new(self, @transport, @shared_data)
+    @current_state = helper.initial_state
   end
   
   # update internal state and fire state transition callbacks
@@ -246,7 +253,7 @@ class StateMachine
   end
   
   def_delegators :@current_state, :next
-  
+  # TODO: Implement custom delegation using method_missing, so that the methods to be delegated can be specified on setup. Should extend the DSL with this extra functionality. That way, the state machine can become a fully reusable component.
   
   
   # trigger transition to the specified state
@@ -273,25 +280,20 @@ class StateMachine
     end
     
     def define_states(*args)
-      args.each do |state_class|
-        if not state_class.is_a? DefaultState
-          raise "ERROR: tried to specify state #{state.to_s}, but all states must be descendants of the DefaultState class."
-        end
-      end
-      
+      # ASSUME: all arguments should be objects that implement the desired semantics of a state machine state. not exactly sure what that means rigorously, so can't perform error checking.
       @states = args
     end
     
     def initial_state(state_class)
       if @states.empty?
-        raise "ERROR: Must first declare all possible states using #define_states. Then, you can specify one of those states to be the initial state"
+        raise "ERROR: Must first declare all possible states using #define_states. Then, you can specify one of those states to be the initial state, by providing the class of that state object."
       end
       
-      unless @states.include? state_class
-        raise "ERROR: '#{state_class.to_s}' is not one of the available states declared using #define_states. Valid states are: #{@states.inspect}"
+      unless state_defined? state_class
+        raise "ERROR: '#{state_class.to_s}' is not one of the available states declared using #define_states. Valid states are: #{ @states.map{|x| x.class.to_s} }"
       end
       
-      @initial_state = state_class
+      @initial_state = find_state(state_class)
     end
     
     def define_transitions(&block)
@@ -314,9 +316,9 @@ class StateMachine
         [prev_state_id, next_state_id].each do |state_class|
           unless(state_class == :any || 
                  state_class == :any_other ||
-                 @states.include? state_class
+                 state_defined? state_class
           )
-            raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{@states.inspect}"
+            raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @states.map{|x| x.class.to_s} }"
           end
         end
         
@@ -354,17 +356,27 @@ class StateMachine
       end
     end
   end
-end
-
-class DefaultState
-  def initialize(state_machine, transport, context)
-    @state_machine = state_machine
-    @transport = transport
-    @context = context
+  
+  # return the first state object which is a subclass of the given class
+  def find_state(state_class)
+    return @states.find{|x| x.is_a? state_class }
+  end
+  
+  # returns true if @states contains an object of the specified class
+  def state_defined?(state_class)
+    return find_state(state_class) != nil
   end
 end
 
+# class DefaultState
+#   def initialize(state_machine, transport, context)
+#     @state_machine = state_machine
+#     @transport = transport
+#     @context = context
+#   end
+# end
 
+     
 # states used by state machine defined below
 # ---
 # should we generate new state from code or replay old state from the buffer?
@@ -373,6 +385,12 @@ end
 # + seek       jump to an arbitrary frame
 module States
   class Initial < DefaultState
+    # initialized once when state machine is setup
+    def initialize(state_machine)
+      @state_machine = state_machine
+    end
+    
+    # called every time we enter this state
     def on_enter
       
     end
@@ -390,8 +408,20 @@ module States
   end
   
   class GeneratingNew < DefaultState
-    def on_enter
+    # initialized once when state machine is setup
+    def initialize(state_machine, shared_data, save_helper)
+      @state_machine = state_machine
+      @context = shared_data
+      @save_helper = save_helper
       
+      @f1 = nil
+      @f2 = nil
+    end
+    
+    # called every time we enter this state
+    def on_enter
+      @f1 = nil
+      @f2 = nil
     end
     
     # step forward one frame
@@ -399,7 +429,7 @@ module States
       @f2 ||= Fiber.new do
         # This Fiber wraps the block so we can resume where we left off
         # after Helper pauses execution
-        @context.block.call(Helper.new(@context))
+        @context.block.call(@save_helper)
       end
       
       @f1 ||= Fiber.new do
@@ -415,7 +445,7 @@ module States
         @f1.resume()
       else
         # else, code has completed
-        @context.transition_to Finished
+        @state_machine.transition_to Finished
       end
     end
     
@@ -426,6 +456,15 @@ module States
   end
   
   class ReplayingOld < DefaultState
+    # initialized once when state machine is setup
+    def initialize(state_machine, shared_data, transport, load_helper)
+      @state_machine = state_machine
+      @context = shared_data
+      @transport = transport
+      @load_helper = load_helper
+    end
+    
+    # called every time we enter this state
     def on_enter
       
     end
@@ -444,7 +483,7 @@ module States
         # otherwise, just load the pre-generated state from the buffer
         
         @context.frame_index += 1
-        @context.load_state_at_current_frame
+        @load_helper.load_state_at_current_frame
         
         # stay in state ReplayingOld
       end
@@ -458,7 +497,7 @@ module States
         # if range of history buffer, move to that frame
         
         @context.frame_index = frame_number
-        @context.load_state_at_current_frame
+        @load_helper.load_state_at_current_frame
         
         puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
         
@@ -469,7 +508,7 @@ module States
         
         # delegate to state :generating_new
         @context.frame_index = @context.final_frame
-        @context.load_state_at_current_frame
+        @load_helper.load_state_at_current_frame
         
         puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
         
@@ -486,6 +525,15 @@ module States
   end
   
   class Finished < DefaultState
+    # initialized once when state machine is setup
+    def initialize(state_machine, shared_data, transport, load_helper)
+      @state_machine = state_machine
+      @context = shared_data
+      @transport = transport
+      @load_helper = load_helper
+    end
+    
+    # called every time we enter this state
     def on_enter
       puts "#{@context.frame_index.to_s.rjust(4, '0')} initial"
     end
@@ -504,7 +552,7 @@ module States
       else
         # @context.transition_and_rerun ReplayingOld, :seek, frame_number
         @state_machine.transition_to ReplayingOld
-        @state_machine.seek(frame_number)
+        @transport.seek(frame_number)
         
       end
     end
@@ -528,4 +576,6 @@ class HistoryBuffer
   def load_state_at(frame_index)
     
   end
+
+
 end
