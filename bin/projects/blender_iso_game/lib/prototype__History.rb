@@ -138,15 +138,15 @@ class Context
   end
   
   def final_frame
-    
+    @buffer.length
   end
 end
 
 # helps to save stuff from code into the buffer, so we can time travel later
 class SaveHelper
   # TODO: re-name this class. it actually does some amount of loading too, so that it can resume fibers...
-  def initialize(history, context)
-    @history = history
+  def initialize(history_buffer, context)
+    @history = history_buffer
     @context = context
   end
   
@@ -177,7 +177,7 @@ class SaveHelper
       
     else # [@history.length-1, inf]
       # actually generating new state
-      @history.snapshot_gamestate_at @context.frame_index
+      snapshot_gamestate_at_current_frame()
       
       # p [@context.frame_index, @history.length-1]
       # puts "history length: #{@history.length}"
@@ -208,19 +208,98 @@ class SaveHelper
     end
     
   end
+  
+  private
+  
+  def snapshot_gamestate_at_current_frame
+    @state[:cache].update @state[:pixels]
+    @history[frame_index] = @state[:pixels]
+    
+    # NOTE: cache#update is sort of a weird interface, because the data is flowing from left-to-right (cache -> pixels), even though standard data assigment direction is right-to-left
+  end
 end
 
 # helps to load data from the buffer
 class LoadHelper
-  def initialize(history, context)
-    @history = history
+  def initialize(history_buffer, context)
+    @history = history_buffer
     @context = context
   end
   
   def load_state_at_current_frame
+    cached_data = @history[@context.frame_index]
+    @state[:pixels].copy_from cached_data
+    @state[:cache].load @state[:pixels]
+    
+    # TODO: find a better interface for loading
+      # when I save the frame, it looks just like array saving,
+      # but when I load the frame I have to call #copy_from.
+      # Is there a way to make this more symmetric?
     
   end
 end
+
+# TODO: consider consolidating all high-level buffer operations in one place
+class Foo
+  def initialize(buffer)
+    @buffer = buffer
+    
+    
+    # retain key data objects for entity state
+    @state = {
+      :pixels => pixels,
+      :texture => texture,
+      :cache => cache
+    }
+    
+    # where does the data move from :pixels to :cache ?
+    # It's not in this file.
+    # Should it be here? It might make the information flow clearer.
+    
+    # currently in VertexAnimationTextureSet#update
+      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
+      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
+      # but maybe we call the update from here instead of the current location?
+    
+    # World#update -> VertexAnimationTextureSet#update
+  end
+  
+  # create buffer of a certain size
+  def setup
+    @buffer.setup(buffer_length: 3600,
+                  frame_width:   @state[:pixels].width,
+                  frame_height:  @state[:pixels].height)
+    
+  end
+  
+  # save current frame to buffer
+  def snapshot
+    @state[:cache].update @state[:pixels]
+    @buffer[frame_index] = @state[:pixels]
+  end
+  
+  # load current frame from buffer
+  def load
+    cached_data = @buffer[@context.frame_index]
+    @state[:pixels].copy_from cached_data
+    @state[:cache].load @state[:pixels]
+  end
+  
+  # delete arbitrary frame from buffer
+  def delete
+    # @buffer.delete(@context.frame_index)
+  end
+  
+  # create a new buffer using a slice of the current buffer
+  def branch
+     
+  end
+end
+
+
+
+
+
 
 
 
@@ -589,24 +668,25 @@ class HistoryBuffer
       # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
   end
   
-  def setup(pixels, texture, cache)
+  # TODO: remove @state and related variables from HistoryBuffer. should only be a storage data structure for a sequence of images over time. should not know anything about the specifics of the vertext animation texture system.
+  def setup(buffer_length:3600, frame_width:9, frame_height:100)
     puts "[ #{self.class} ]  setup "
     
-    @max_num_frames = 3600
+    @max_num_frames = buffer_length
     
-    # retain key data objects for entity state
-    @state = {
-      :pixels => pixels,
-      :texture => texture,
-      :cache => cache
-    }
+    # # retain key data objects for entity state
+    # @state = {
+    #   :pixels => pixels,
+    #   :texture => texture,
+    #   :cache => cache
+    # }
     
     # store data
     @buffer = Array.new(@max_num_frames)
     @buffer.size.times do |i|
       pixels = RubyOF::FloatPixels.new
       
-      pixels.allocate(@state[:pixels].width, @state[:pixels].height)
+      pixels.allocate(frame_width, frame_height)
       pixels.flip_vertical
       
       @buffer[i] = pixels
@@ -622,70 +702,66 @@ class HistoryBuffer
   
   alias :size :length
   
-  
-  def bind_world(world)
-    
+  def frame_width
+    @buffer[0].width
   end
   
-  
-  
-  
-  
-  # TODO: think about how you would implement multiple timelines
-  def branch(frame_index)
-    # new_history = self.class.new(self, 0..frame_index)
-    
-    # new_history.max_i = frame_index
-    
-    # return new_history
+  def frame_height
+    @buffer[0].height
   end
   
-  
-  # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
-  # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
-  
-  
-  # image buffers are guaranteed to be the right size,
-  # (as long as the buffer is allocated)
-  # because of setup()
-  def load_state_at(frame_index)
+  # read from buffer
+  def [](frame_index)
     raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
     
     raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
     
-    raise IndexError, "Index #{frame_index} outside the bounds of recorded gamestates: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
+    raise IndexError, "Index #{frame_index} outside the bounds of recorded frames: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
     
     raise "Attempted to read garbage state. State at frame #{frame_index} was either never saved, or has since been deleted." unless @valid[frame_index]
     
-    @state[:pixels].copy_from @buffer[frame_index]
-    @state[:cache].load @state[:pixels]
+    return @buffer[frame_index]
   end
   
-  def snapshot_gamestate_at(frame_index)
+  # save to buffer
+  def []=(frame_index, data)
     raise IndexError, "Index should be a non-negative integer." if frame_index.nil?
     
     raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
     
     raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
     
+    data_size   = [data.width, data.height]
+    buffer_size = [self.frame_width, self.frame_height]
+    raise "Dimensions of provided frame data do not match the size of frames in the buffer. Provided: #{data_size.inspect}; Buffer size: #{buffer_size.inspect}" unless data_size == buffer_size
     
-    @state[:cache].update @state[:pixels]
-    @buffer[frame_index].copy_from @state[:pixels]
-    
+    @buffer[frame_index].copy_from data
     @valid[frame_index] = true
-    
-    # # TODO: implement this new interface
-    # @buffer[frame_index] << @state[:pixels] # save data into history buffer
-    # @buffer[frame_index] >> @state[:pixels] # load data from buffer into another image
-    #   # + should I implement this on RubyOF::Pixels for all images?
-    #   # + can this be patterned as a general "memory transfer operator" ?
-      
-    # @state[:pixels] << @buffer[frame_index] # load data from buffer into another image
   end
   
-  def delete_state_at(frame_index)
+  # delete data at index
+  def delete(frame_index)
     @valid[frame_index] = false
   end
+  
+  # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
+  # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
+  
+  
+  # # TODO: implement this new interface
+  # @buffer[frame_index] << @state[:pixels] # save data into history buffer
+  # @buffer[frame_index] >> @state[:pixels] # load data from buffer into another image
+  #   # + should I implement this on RubyOF::Pixels for all images?
+  #   # + can this be patterned as a general "memory transfer operator" ?
+    
+  # @state[:pixels] << @buffer[frame_index] # load data from buffer into another image
+  
+  
+  # image buffers are guaranteed to be the right size,
+  # (as long as the buffer is allocated)
+  # because of setup()
+  
+  
 end
   # FIXME: recieving index -1
   # (should I interpret that as distance from the end of the buffer, or what? need to look into the other code on the critical path to figure this out)
