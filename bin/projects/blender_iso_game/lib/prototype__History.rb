@@ -46,7 +46,7 @@ end
 
 
 class World
-  attr_reader :batches, :transport, :history, :entities
+  attr_reader :batches, :transport, :history, :entities, :sprites
   
   def initialize(geom_texture_directory)
     # one StateMachine instance, transport, etc
@@ -78,17 +78,18 @@ class World
     # 
     # frontend systems
     # (provide object-oriented API for manipulating render entities)
+    # (query entities and meshes by name)
     # 
     
-    # each batch needs to be associated with a pair of objects to provide a nice, object-oriented API for manipulating the entities / meshes with
-    @entities = RenderEntityManager.new(batch)
-    @spritesheet = MeshSpritesheet.new(batch)
+    @entities = RenderEntityManager.new(@batches)
+    @sprites  = MeshSpriteManager.new(@batches)
     
     
-    @entity_list      = @batches.collect{|b| RenderEntityManager.new(b) }
-    @spritesheet_list = @batches.collect{|b| MeshSpritesheet.new(b) }
     
-    # TODO: how do I expose an interface that abstracts over all entities and spritesheets?
+    # 
+    # spatial query interface
+    # (query entities by position in 3D space)
+    # 
     
     # TODO: create spatial query interface
     
@@ -163,8 +164,6 @@ class World
   
   
   
-  attr_reader :transport
-  
   def update(ipc, &block)
     @state_machine.update(ipc)
     
@@ -196,12 +195,21 @@ end
 # interface for managing entity data
 class RenderEntityManager
   def initialize(batch)
-    @batch = batch
+    @batches = batch
   end
   
   # Retrieve entity by name
   def [](target_entity_name)
-    entity_idx = @batch[:names].entity_name_to_scanline(target_entity_name)
+    # check all batches for possible name matches (some entries can be nil)
+    entity_idx_list = 
+      @batches.collect do |batch|
+        @batch[:names].entity_name_to_scanline(target_entity_name)
+      end
+    
+    # find the first [batch, idx] pair where idx != nil
+    batch, entity_idx = 
+      @batches.zip(entity_idx_list)
+      .find{ |batch, idx| !idx.nil? }
     
     if entity_idx.nil?
       raise "ERROR: Could not find any entity called '#{target_entity_name}'"
@@ -209,15 +217,14 @@ class RenderEntityManager
     
     # puts "#{target_entity_name} => index #{entity_idx}"
     
-    
-    entity_ptr = @batch[:entity_cache].get_entity(entity_idx)
+    entity_ptr = batch[:entity_cache].get_entity(entity_idx)
       # puts target_entity_name
       # puts "entity -> mesh_index:"
       # puts entity_ptr.mesh_index
-    mesh_name = @batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
-    mesh = MeshSprite.new(@batch, mesh_name, entity_ptr.mesh_index)
+    mesh_name = batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
+    mesh = MeshSprite.new(batch, mesh_name, entity_ptr.mesh_index)
     
-    return RenderEntity.new(@batch, entity_idx, target_entity_name, entity_ptr, mesh)
+    return RenderEntity.new(entity_idx, target_entity_name, entity_ptr, mesh)
   end
 end
 
@@ -227,7 +234,10 @@ end
 # needed to manage the vertex animation texture set of meshes.
 # Notice that similar to sprites in a spritesheet, many meshes are packed
 # into a single texture set.
-class MeshSpritesheet
+# 
+# As mesh sprites are defined relative to some (entity, mesh) texture pair, 
+# it's really the render batch that is the 3D analog of the 2D spritesheet.
+class MeshSpriteManager
   def initialize(batch)
     @batch = batch
   end
@@ -235,14 +245,24 @@ class MeshSpritesheet
   # access 'sprite'  by name
   # (NOTE: a 'sprite' can be one or more rows in the spritesheet)
   def [](target_mesh_name)
-    mesh_idx = @batch[:names].mesh_name_to_scanline(target_mesh_name)
+    # check all batches for possible name matches (some entries can be nil)
+    mesh_idx_list = 
+      @batches.collect do |batch|
+        @batch[:names].mesh_name_to_scanline(target_mesh_name)
+      end
+    
+    # find the first [batch, idx] pair where idx != nil
+    batch, mesh_idx = 
+      @batches.zip(mesh_idx_list)
+      .find{ |batch, idx| !idx.nil? }
+    
     
     if mesh_idx.nil?
       raise "ERROR: Could not find any mesh called '#{target_mesh_name}'"
     end
     # p mesh_idx
     
-    return MeshSprite.new(@batch, target_mesh_name, mesh_idx)
+    return MeshSprite.new(batch, target_mesh_name, mesh_idx)
   end
 end
 
@@ -255,14 +275,12 @@ class RenderEntity
   
   attr_reader :index, :name
   
-  def initialize(parent_batch, index, name, entity_data, mesh)
-    @spritesheet = parent_batch
-    
+  def initialize(index, name, entity_data, mesh)
     @index = index # don't typically need this, but useful to have in #inspect for debugging
     @name = name
     @entity_data = entity_data
     
-    @mesh = mesh # instance of the Mesh struct below
+    @mesh = mesh # instance of the MeshSprite class
   end
   
   def_delegators :@entity_data, 
