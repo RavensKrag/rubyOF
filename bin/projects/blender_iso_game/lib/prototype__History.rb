@@ -192,6 +192,88 @@ end
 
 
 
+
+
+# 
+# 
+# Spatial query API
+# 
+# 
+
+# enable spatial queries
+class Space
+  def initialize(data)
+    @data = data
+    
+    
+    @hash = Hash.new
+    
+    
+    self.update()
+    
+  end
+  
+  # TODO: update this to use @static_entities and @dynamic_entities, rather than outdated @data
+  def update
+    @entity_list =
+      @data['Tiles'].each
+      .collect do |entity|
+        [entity.mesh.name, entity.position]
+      end
+    
+    # p @entity_list
+    
+    # @entity_list.each do |name, pos|
+    #   puts "#{name}, #{pos}"
+    # end
+    
+  end
+  
+  
+  # TODO: consider separate api for querying static entities (tiles) vs dynamic entities (gameobjects)
+    # ^ "tile" and "gameobject" nomenclature is not used throughout codebase.
+    #   may want to just say "dynamic" and "static" instead
+  
+  # what type of tile is located at the point 'pt'?
+  # Returns a list of title types (mesh datablock names)
+  def point_query(pt)
+    puts "point query @ #{pt}"
+    
+    # unless @first
+    #   require 'irb'
+    #   binding.irb
+    # end
+    
+    # @first ||= true
+    
+    out = @entity_list.select{   |name, pos|  pos == pt  }
+                      .collect{  |name, pos|  name  }
+                      .collect{  |name|  @data['Tiles'].find_mesh_by_name(name)  }
+    
+    puts "=> #{out.inspect}"
+    
+    # TODO: return [World::Mesh] instead of [String]
+    # (should work now, but needs testing)
+    
+    return out
+  end
+end
+
+
+
+
+
+
+
+
+
+
+# 
+# 
+# Frontend object-oriented API for entities / meshes
+# 
+# 
+
 # interface for managing entity data
 class RenderEntityManager
   def initialize(batch)
@@ -358,9 +440,11 @@ end
 
 
 
-
-
-
+# 
+# 
+# Backend - transport entity data to GPU, across all timepoints in history
+# 
+# 
 
 
 # based on VertexAnimationTextureSet
