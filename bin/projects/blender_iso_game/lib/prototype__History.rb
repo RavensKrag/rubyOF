@@ -1,12 +1,115 @@
-class History
-  def initialize
-    @buffer = HistoryBuffer.new
-    @shared_data = Context.new(@buffer)
+def test
+  $world = World.new
+  
+  
+  # retrieve entity from world
+  entity = $world.entities['CharacterTest']
+  
+  
+  # move entity
+  entity.position += GLM::Vec3.new(1,0,0)
+  
+  
+  # re-assign mesh
+  # (arbitrary re-assigment of single mesh entity)
+  entity.mesh = entity.mesh.spritesheet['Cube.010']
+  
+  
+  
+  
+  
+  # re-assign mesh
+  # (animation prototype)
+  
+  # declare animation frame name pattern, that detects basename and frame number
+  # if you match against the pattern
+    # increment the frame number
+    # make sure frame number doesn't exceed maximum frame number
+    # use the pattern to create a new sprite name
+    # find the sprite with the desired name
+    # assign the new MeshSprite to the entity
+  # (this assumes frames play back with uniform time between frames, which is not true universally, but this would be a good way to start thinking about how to implement animations)
+  if entity.mesh.frame_of_animation?
+    # if the current mesh is a frame of an animation
+    # then advance to the next frame
+    i = entity.mesh.frame_number + 1
+    entity.mesh.spritesheet[entity.mesh.basename + ".frame#{i}"]
+    
+    
+    entity.mesh = mesh
+  end
+  
+end
+
+
+
+
+
+class World
+  attr_reader :batches, :transport, :history, :entities
+  
+  def initialize(geom_texture_directory)
+    # one StateMachine instance, transport, etc
+    # but many collections with EntityCache + pixels + textures + etc
+    
+    
+    # 
+    # backend data
+    # 
+    
+    buffer_length = 3600
+    
+    
+    @batches = 
+      geom_texture_directory.children
+      .select{ |file| file.basename.to_s.end_with? ".cache.json" }
+      .collect do |file|
+        # p file
+        name, _, _ = file.basename.to_s.split('.')
+        RenderBatch.new(geom_texture_directory, name)
+      end
+    
+    @batches.each do |b|
+      b.setup(buffer_length)
+    end
+    
+    
+    
+    # 
+    # frontend systems
+    # (provide object-oriented API for manipulating render entities)
+    # 
+    
+    # each batch needs to be associated with a pair of objects to provide a nice, object-oriented API for manipulating the entities / meshes with
+    @entities = RenderEntityManager.new(batch)
+    @spritesheet = MeshSpritesheet.new(batch)
+    
+    
+    @entity_list      = @batches.collect{|b| RenderEntityManager.new(b) }
+    @spritesheet_list = @batches.collect{|b| MeshSpritesheet.new(b) }
+    
+    # TODO: how do I expose an interface that abstracts over all entities and spritesheets?
+    
+    # TODO: create spatial query interface
+    
+    
+    
+    
+    # 
+    # core inteface to backend systems
+    # (move data from EntityCache into Textures needed for rendering)
+    # 
+    
+    @shared_data = Context.new(buffer_length)
+    
     @transport = TimelineTransport.new(@shared_data, @state_machine)
     # ^ methods = [:play, :pause, :seek, :reset]
     
-    h1 = SaveHelper.new(@buffer, @shared_data)
-    h2 = LoadHelper.new(@buffer, @shared_data)
+    @history = History.new(@batches, @shared_data)
+      h1 = SaveHelper.new(@history, @shared_data)
+      h2 = LoadHelper.new(@history)
+    
+    
     
     @state_machine = StateMachine.new
     @state_machine.setup do |s|
@@ -41,19 +144,33 @@ class History
       end
     end
     
+    
+    
+    
+    
+    
+    # where does the data move from :pixels to :cache ?
+    # It's not in this file.
+    # Should it be here? It might make the information flow clearer.
+    
+    # currently in VertexAnimationTextureSet#update
+      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
+      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
+      # but maybe we call the update from here instead of the current location?
+    
+    # World#update -> VertexAnimationTextureSet#update
   end
+  
+  
   
   attr_reader :transport
-  
-  def bind_to_world(world)
-    world.bind_history @history
-  end
   
   def update(ipc, &block)
     @state_machine.update(ipc)
     
     if @transport.playing?
       @shared_data.bind_code(block)
+      # TODO: only bind new code when necessary. if you rebind too much, then you can't resume execution in the expected way (will overwrite fiber).
       @state_machine.next
     end
   end
@@ -71,7 +188,465 @@ class History
     @shared_data.frame_index -= 1
     @transport.seek(@shared_data.frame_index)
   end
+  
 end
+
+
+
+# interface for managing entity data
+class RenderEntityManager
+  def initialize(batch)
+    @batch = batch
+  end
+  
+  # Retrieve entity by name
+  def [](target_entity_name)
+    entity_idx = @batch[:names].entity_name_to_scanline(target_entity_name)
+    
+    if entity_idx.nil?
+      raise "ERROR: Could not find any entity called '#{target_entity_name}'"
+    end
+    
+    # puts "#{target_entity_name} => index #{entity_idx}"
+    
+    
+    entity_ptr = @batch[:entity_cache].get_entity(entity_idx)
+      # puts target_entity_name
+      # puts "entity -> mesh_index:"
+      # puts entity_ptr.mesh_index
+    mesh_name = @batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
+    mesh = MeshSprite.new(@batch, mesh_name, entity_ptr.mesh_index)
+    
+    return RenderEntity.new(@batch, entity_idx, target_entity_name, entity_ptr, mesh)
+  end
+end
+
+# Access a group of different meshes, as if they were sprites in a spritesheet.
+# 
+# Creates an abstraction over the set of ofFloatPixels and ofTexture objects
+# needed to manage the vertex animation texture set of meshes.
+# Notice that similar to sprites in a spritesheet, many meshes are packed
+# into a single texture set.
+class MeshSpritesheet
+  def initialize(batch)
+    @batch = batch
+  end
+  
+  # access 'sprite'  by name
+  # (NOTE: a 'sprite' can be one or more rows in the spritesheet)
+  def [](target_mesh_name)
+    mesh_idx = @batch[:names].mesh_name_to_scanline(target_mesh_name)
+    
+    if mesh_idx.nil?
+      raise "ERROR: Could not find any mesh called '#{target_mesh_name}'"
+    end
+    # p mesh_idx
+    
+    return MeshSprite.new(@batch, target_mesh_name, mesh_idx)
+  end
+end
+
+
+
+
+
+class RenderEntity
+  extend Forwardable
+  
+  attr_reader :index, :name
+  
+  def initialize(parent_batch, index, name, entity_data, mesh)
+    @spritesheet = parent_batch
+    
+    @index = index # don't typically need this, but useful to have in #inspect for debugging
+    @name = name
+    @entity_data = entity_data
+    
+    @mesh = mesh # instance of the Mesh struct below
+  end
+  
+  def_delegators :@entity_data, 
+    :copy_material,
+    :ambient,
+    :diffuse,
+    :specular,
+    :emissive,
+    :alpha,
+    :ambient=,
+    :diffuse=,
+    :specular=,
+    :emissive=,
+    :alpha=
+  
+  def_delegators :@entity_data,
+    :copy_transform,
+    :position,
+    :orientation,
+    :scale,
+    :transform_matrix,
+    :position=,
+    :orientation=,
+    :scale=,
+    :transform_matrix=
+  
+  def mesh=(mesh)
+    raise "Input mesh must be a MeshSprite object" unless mesh.is_a? MeshSprite
+    
+    # NOTE: entity textures can only reference mesh indicies from within one set of mesh data textures
+    unless mesh.spritesheet.equal? @mesh.spritesheet # test pointers, not value
+      msg [
+        "ERROR: Entities can only use meshes from within one spritesheet, but attempted to assign a new mesh from a different spritesheet.",
+        "Current: '#{@mesh.name}' from '#{@mesh.spritesheet.name}'",
+        "New:     '#{mesh.name}' from '#{mesh.spritesheet.name}'",
+      ]
+      
+      raise msg.join("\n")
+    end
+    
+    @entity_data.mesh_index = mesh.index
+    @mesh = mesh
+  end
+  
+  def mesh
+    return @mesh
+  end
+end
+
+
+
+# NOTE: For now, MeshSprite does not actually contain any pointers to mesh data, because mesh data is not editable. When the ability to edit meshes is implemented, that extension should live in this class. We would need a system similar to EntityCache to allow for high-level editing of the image-encoded mesh data.
+class MeshSprite
+  attr_reader :spritesheet, :name, :index
+  
+  def initialize(parent_batch, name, index)
+    @spritesheet = parent_batch
+    
+    @name = name
+    @index = index
+  end
+  
+  # all meshes are solid for now
+  # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
+  def solid?
+    return true
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# based on VertexAnimationTextureSet
+# stores render data, but does not perform the actual rendering
+class RenderBatch
+  include RubyOF::Graphics
+  
+  def initialize(data_dir, name)
+    @data_dir = data_dir
+    @name = name
+    
+    @storage = FixedSchemaTree.new({
+      :mesh_data => {
+        :pixels => {
+          :positions  => RubyOF::FloatPixels.new,
+          :normals    => RubyOF::FloatPixels.new,
+        },
+        
+        :textures => {
+          :positions  => RubyOF::Texture.new,
+          :normals    => RubyOF::Texture.new,
+        }
+      },
+      
+      :entity_data => {
+        :pixels  => RubyOF::FloatPixels.new,
+        :texture => RubyOF::Texture.new,
+      },
+      
+      :entity_cache => RubyOF::Project::EntityCache.new, # size == num dynamic entites
+      
+      :entity_history => HistoryBuffer.new,
+      
+      :names => TextureJsonCache.new, # <- "json file"
+        # ^ convert name to scanline AND scanline to name
+      
+      :geometry => BatchGeometry.new # size == max tris per mesh in batch
+      
+    })
+    
+  end
+  
+  def setup(buffer_length)
+    json_file_path    = @data_dir/"#{@name}.cache.json"
+    position_tex_path = @data_dir/"#{@name}.position.exr"
+    normal_tex_path   = @data_dir/"#{@name}.normal.exr"
+    entity_tex_path   = @data_dir/"#{@name}.entity.exr"
+    
+    load_mesh_textures(position_tex_path, normal_tex_path)
+    load_entity_texture(entity_tex_path)
+    load_json_data(json_file_path)
+    
+    
+    # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
+    vertex_count = @storage[:mesh_data][:pixels][:positions].width.to_i
+    @storage[:geometry].generate vertex_count
+    
+    @storage[:cache].load @storage[:entity_data][:pixels]
+    
+    
+    @storage[:entity_history].setup(
+      buffer_length: buffer_length,
+      frame_width:   @storage[:entity_data][:pixels].width,
+      frame_height:  @storage[:entity_data][:pixels].height
+    )
+  end
+  
+  
+  # allow hash-style access to the FixedSchemaTree
+  # (FixedSchemaTree not not allow adding elements, so this is fine)
+  def [](key)
+    return @storage[key]
+  end
+  
+  
+  
+  def load_json_data(json_file_path)
+    @storage[:names].load json_file_path
+    
+    # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
+  end
+  
+  def load_entity_texture(entity_tex_path)
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    
+    [
+      [ entity_tex_path,
+        @storage[:entity_data][:pixels],
+        @storage[:entity_data][:texture] ],
+    ].each do |path_to_file, pixels, texture|
+      ofLoadImage(pixels, path_to_file.to_s)
+      
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      # puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical   => :clamp_to_edge,
+                        :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+    
+    # reset the cache when textures reload
+    @storage[:cache].load @storage[:entity_data][:pixels]
+  end
+  
+  def load_mesh_textures(position_tex_path, normal_tex_path)
+    # 
+    # configure all sets of pixels (CPU data) and textures (GPU data)
+    # 
+    
+    [
+      [ position_tex_path,
+        @storage[:mesh_data][:pixels][:positions],
+        @storage[:mesh_data][:textures][:positions] ],
+      [ normal_tex_path,
+        @storage[:mesh_data][:pixels][:normals],
+        @storage[:mesh_data][:textures][:normals] ]
+    ].each do |path_to_file, pixels, texture|
+      ofLoadImage(pixels, path_to_file.to_s)
+      
+      # y axis is flipped relative to Blender???
+      # openframeworks uses 0,0 top left, y+ down
+      # blender uses 0,0 bottom left, y+ up
+      pixels.flip_vertical
+      
+      # puts pixels.color_at(0,2)
+      
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical   => :clamp_to_edge,
+                        :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+      
+      texture.load_data(pixels)
+    end
+  end
+  
+  
+  
+  
+  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
+
+
+  # ASSUME: @pixels and @texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
+  # ASSUME: @pixels[:positions] and @pixels[:normals] have the same dimensions
+  
+  
+  
+  class TextureJsonCache
+    def initialize
+      @json = nil
+    end
+    
+    def load(json_filepath)
+      unless File.exist? json_filepath
+        raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
+      end
+      
+      json_string   = File.readlines(json_filepath).join("\n")
+      json_data     = JSON.parse(json_string)
+      
+      @json = json_data
+    end
+    
+    
+    def num_meshes
+      return @json["mesh_data_cache"].size
+    end
+    
+    
+    
+    def entity_scanline_to_name(i)
+      data = @json['entity_data_cache'][i]
+      return data['entity name']
+    end
+    
+    def mesh_scanline_to_name(i)
+      return @json['mesh_data_cache'][i]
+    end
+    
+    
+    
+    def entity_name_to_scanline(target_entity_name)
+      entity_idx = nil
+      
+      # TODO: try using #find_index instead
+      @json['entity_data_cache'].each_with_index do |data, i|
+        if data['entity name'] == target_entity_name
+          # p data
+          entity_idx = i
+          break
+        end
+      end
+      
+      return entity_idx
+    end
+    
+    # @json includes a blank entry for scanline index 0
+    # even though that scanline is not represented in the cache
+    def mesh_name_to_scanline(target_mesh_name)
+      mesh_idx = nil
+      
+      # TODO: try using #find_index instead
+      @json['mesh_data_cache'].each_with_index do |mesh_name, i|
+        if mesh_name == target_mesh_name
+          # p data
+          mesh_idx = i
+          break
+        end
+      end
+      
+      return mesh_idx
+    end
+    
+  end
+  
+  
+  
+  
+  
+  class BatchGeometry
+    attr_reader :mesh
+    
+    def initialize
+      @mesh = nil
+    end
+    
+    def generate(vertex_count)
+      @mesh = create_mesh(vertex_count)
+    end
+    
+    private
+    
+    def create_mesh(num_verts)
+      # 
+      # Create a mesh consiting of a line of unconnected triangles
+      # the verticies in this mesh will be transformed by the textures
+      # so it doesn't matter what their exact positons are.
+      # 
+      RubyOF::VboMesh.new.tap do |mesh|
+        mesh.setMode(:triangles)
+        # ^ TODO: maybe change ruby interface to mode= or similar?
+        
+        num_tris = num_verts / 3
+        
+        size = 1 # useful when prototyping to increase this for visualization
+        num_tris.times do |i|
+          a = i*3+0
+          b = i*3+1
+          c = i*3+2
+          # DEBUG PRINT: show indicies assigned to tris an verts
+          # p [i, [a,b,c]]
+          
+          
+          # UV coordinates specified in pixel indicies
+          # will offset by half a pixel in the shader
+          # to sample at the center of each pixel
+          
+          mesh.addVertex(GLM::Vec3.new(size*i,0,0))
+          mesh.addTexCoord(GLM::Vec2.new(a, 0))
+          
+          mesh.addVertex(GLM::Vec3.new(size*i+size,0,0))
+          mesh.addTexCoord(GLM::Vec2.new(b, 0))
+          
+          mesh.addVertex(GLM::Vec3.new(size*i,size,0))
+          mesh.addTexCoord(GLM::Vec2.new(c, 0))
+          
+        end
+      end
+      
+    end
+  end
+
+
+end
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,8 +700,8 @@ class Context
   attr_accessor :frame_index
   attr_accessor :block
   
-  def initialize(buffer)
-    @buffer = buffer
+  def initialize(buffer_length)
+    @buffer_length = buffer_length
     @frame_index = 0
     
     # @final_frame = ???
@@ -138,15 +713,17 @@ class Context
   end
   
   def final_frame
-    @buffer.length
+    @buffer_length - 1
   end
+  
+  # TODO: implement #history.length
 end
 
 # helps to save stuff from code into the buffer, so we can time travel later
 class SaveHelper
   # TODO: re-name this class. it actually does some amount of loading too, so that it can resume fibers...
-  def initialize(history_buffer, context)
-    @history = history_buffer
+  def initialize(history_controller, context)
+    @history = history_controller
     @context = context
   end
   
@@ -173,11 +750,11 @@ class SaveHelper
       
       puts "#{@context.frame_index.to_s.rjust(4, '0')} resuming"
       
-      @history.load_state_at @context.frame_index
+      @history.load_state_at_current_frame
       
     else # [@history.length-1, inf]
       # actually generating new state
-      snapshot_gamestate_at_current_frame()
+      @history.snapshot_gamestate_at_current_frame
       
       # p [@context.frame_index, @history.length-1]
       # puts "history length: #{@history.length}"
@@ -208,81 +785,67 @@ class SaveHelper
     end
     
   end
-  
-  private
-  
-  def snapshot_gamestate_at_current_frame
-    @state[:cache].update @state[:pixels]
-    @history[frame_index] = @state[:pixels]
-    
-    # NOTE: cache#update is sort of a weird interface, because the data is flowing from left-to-right (cache -> pixels), even though standard data assigment direction is right-to-left
-  end
 end
 
 # helps to load data from the buffer
 class LoadHelper
-  def initialize(history_buffer, context)
+  def initialize(history_buffer)
     @history = history_buffer
-    @context = context
   end
   
   def load_state_at_current_frame
-    cached_data = @history[@context.frame_index]
-    @state[:pixels].copy_from cached_data
-    @state[:cache].load @state[:pixels]
+    @history.load_state_at_current_frame
+  end
+end
+
+# TODO: consider consolidating all high-level buffer operations in one place
+class History
+  def initialize(batches, context)
+    @batches = batches
+    @context = context
+  end
+  
+  # # create buffer of a certain size
+  # def setup
+  #   # NO-OP - done in RenderBatch
+  # end
+  
+  # save current frame to buffer
+  def snapshot
+    @batches.each do |b|
+      b[:entity_cache].update b[:entity_pixels]
+      b[:entity_history][@context.frame_index] = b[:entity_pixels]
+    end
+    
+    # @state[:cache].update @state[:pixels]
+    # @buffer[frame_index] = @state[:pixels]
+  end
+  
+  # load current frame from buffer
+  def load
+    @batches.each do |b|
+      b[:entity_pixels].copy_from b[:entity_history][@context.frame_index]
+      b[:entity_cache].load b[:entity_pixels]
+    end
+    # ^ Above code is much harder to read than the previous prototype below
+    #   because there are no colors to direct attention,
+    #   due to the lack of sigils and syntax highlighting.
+    #   How can this be refactored to be more easily skimmed? 
+    #   (same for #snapshot)
+    
+    # cached_data = @buffer[@context.frame_index]
+    # @state[:pixels].copy_from cached_data
+    # @state[:cache].load @state[:pixels]
+    
+    
+    
+    
+    
     
     # TODO: find a better interface for loading
       # when I save the frame, it looks just like array saving,
       # but when I load the frame I have to call #copy_from.
       # Is there a way to make this more symmetric?
-    
-  end
-end
-
-# TODO: consider consolidating all high-level buffer operations in one place
-class Foo
-  def initialize(buffer)
-    @buffer = buffer
-    
-    
-    # retain key data objects for entity state
-    @state = {
-      :pixels => pixels,
-      :texture => texture,
-      :cache => cache
-    }
-    
-    # where does the data move from :pixels to :cache ?
-    # It's not in this file.
-    # Should it be here? It might make the information flow clearer.
-    
-    # currently in VertexAnimationTextureSet#update
-      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
-      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
-      # but maybe we call the update from here instead of the current location?
-    
-    # World#update -> VertexAnimationTextureSet#update
-  end
-  
-  # create buffer of a certain size
-  def setup
-    @buffer.setup(buffer_length: 3600,
-                  frame_width:   @state[:pixels].width,
-                  frame_height:  @state[:pixels].height)
-    
-  end
-  
-  # save current frame to buffer
-  def snapshot
-    @state[:cache].update @state[:pixels]
-    @buffer[frame_index] = @state[:pixels]
-  end
-  
-  # load current frame from buffer
-  def load
-    cached_data = @buffer[@context.frame_index]
-    @state[:pixels].copy_from cached_data
-    @state[:cache].load @state[:pixels]
   end
   
   # delete arbitrary frame from buffer
@@ -711,6 +1274,7 @@ class HistoryBuffer
   end
   
   # read from buffer
+  # returns a reference to RubyOF::FloatPixels
   def [](frame_index)
     raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
     
@@ -724,7 +1288,10 @@ class HistoryBuffer
   end
   
   # save to buffer
+  # stores a copy of the input data, rather than a reference as in Array#[]=
   def []=(frame_index, data)
+    # TODO: raise exception of data is not RubyOF::FloatPixels instance
+    
     raise IndexError, "Index should be a non-negative integer." if frame_index.nil?
     
     raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
