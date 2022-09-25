@@ -12,7 +12,7 @@ def test
   
   # re-assign mesh
   # (arbitrary re-assigment of single mesh entity)
-  entity.mesh = entity.mesh.spritesheet['Cube.010']
+  entity.mesh = entity.mesh.batch['Cube.010']
   
   
   
@@ -33,20 +33,28 @@ def test
     # if the current mesh is a frame of an animation
     # then advance to the next frame
     i = entity.mesh.frame_number + 1
-    entity.mesh.spritesheet[entity.mesh.basename + ".frame#{i}"]
+    entity.mesh.batch[entity.mesh.basename + ".frame#{i}"]
     
     
     entity.mesh = mesh
   end
   
 end
+# TODO: sketch how these systems connect to lighting
+# TODO: sketch how these systems connect to viewport camera
+# TODO: sketch how these systems connect to render pipeline
+# TODO: sketch how these systems connect to materials / shaders
+# TODO: make sure there's nothing else I missed from World.rb that needs to come over
 
+
+# TODO: read over history system and make sure it still works
+# TODO: test history / time travel systems
 
 
 
 
 class World
-  attr_reader :batches, :transport, :history, :entities, :sprites
+  attr_reader :batches, :transport, :history, :entities, :sprites, :space
   
   def initialize(geom_texture_directory)
     # one StateMachine instance, transport, etc
@@ -56,6 +64,8 @@ class World
     # 
     # backend data
     # 
+    
+    # TODO: consider creating new 'batches' collection class, to prevent other code from adding elements to the @batches array - should be read-only from most parts of the codebase
     
     buffer_length = 3600
     
@@ -91,8 +101,7 @@ class World
     # (query entities by position in 3D space)
     # 
     
-    # TODO: create spatial query interface
-    
+    @space = Space.new(@entities)
     
     
     
@@ -202,60 +211,129 @@ end
 
 # enable spatial queries
 class Space
-  def initialize(data)
-    @data = data
+  def initialize(entities)
+    @entities = entities
+    # @data = data
     
+    @groups = nil
+    @static_entities  = []
+    @dynamic_entities = []
     
-    @hash = Hash.new
-    
-    
-    self.update()
-    
+    @static_collection_names  = ['Tiles']
+    @dynamic_collection_names = ['Characters']
   end
   
-  # TODO: update this to use @static_entities and @dynamic_entities, rather than outdated @data
-  def update
-    @entity_list =
-      @data['Tiles'].each
-      .collect do |entity|
-        [entity.mesh.name, entity.position]
+  def setup
+    @groups = 
+      @entities.group_by do |render_entity|
+        render_entity.batch.name
+      end
+    # => Hash (batch_name => [e1, e2, e3, ..., eN])
+    
+    
+    @static_entities = 
+      @static_collection_names.collect{ |name|
+        # For static entities, you only care about what type of thing is there
+        # you don't need the actual RenderEntity object
+        # because you will never change the properties of the entity at runtime.
+        # 
+        # We will use the name of the mesh data as a 'type'
+        @groups[name].collect do |render_entity|
+          [render_entity.mesh.name, render_entity.position]
+        end
+      }.flatten.each do |name, position|
+        StaticPhysicsEntity.new(name, position)
       end
     
-    # p @entity_list
-    
-    # @entity_list.each do |name, pos|
-    #   puts "#{name}, #{pos}"
-    # end
-    
+    self.update()
   end
   
+  def update
+    # for dynamic entities, you need the actual entity object,
+    # so you can make changes as necessary.
+    # In the future, you want access to the gameplay entity,
+    # but we haven't implemented those.
+    # Just store name for now, for symmetry with static entities.
+    @dynamic_entities = 
+      @dynamic_collection_names.collect{ |name|
+        @groups[name].collect do |render_entity|
+          [render_entity.name, render_entity.position]
+        end
+      }.flatten.each do |name, position|
+        DynamicPhysicsEntity.new(name, position)
+      end
+  end
   
-  # TODO: consider separate api for querying static entities (tiles) vs dynamic entities (gameobjects)
-    # ^ "tile" and "gameobject" nomenclature is not used throughout codebase.
-    #   may want to just say "dynamic" and "static" instead
+    # in the future, do we want to get the RenderEntity,
+    # or do we want the entity with the gameplay logic?
+    # 
+    # probably the one with gameplay logic
+    
+    # seems like all static entities of a given type
+    # should share one gameplay entity
+    # (separate transforms can still be stored per-RenderEntity)
+    # (but core gameplay rules would be the same)
+    
+  
   
   # what type of tile is located at the point 'pt'?
   # Returns a list of title types (mesh datablock names)
-  def point_query(pt)
+  def point_query(pt, physics_type: :all)
     puts "point query @ #{pt}"
     
-    # unless @first
-    #   require 'irb'
-    #   binding.irb
-    # end
+    entity_list = 
+      case physics_type
+      when :static
+        @static_entities
+      when :dynamic
+        @dynamic_entities
+      when :all
+        @static_entities + @dynamic_entities
+      end
     
-    # @first ||= true
+    entity_list.select{|e| e.position == pt }
+  end
+end
+
+
+
+class PhysicsEntity
+  attr_reader :name, :position
+  
+  def initialize(static_or_dynamic, name, position)
+    @static_or_dynamic = static_or_dynamic
+    @name = name
+    @position = position
     
-    out = @entity_list.select{   |name, pos|  pos == pt  }
-                      .collect{  |name, pos|  name  }
-                      .collect{  |name|  @data['Tiles'].find_mesh_by_name(name)  }
-    
-    puts "=> #{out.inspect}"
-    
-    # TODO: return [World::Mesh] instead of [String]
-    # (should work now, but needs testing)
-    
-    return out
+    # TODO: add orientation (N, S, E, W) or similar, for gameplay logic. probably do not want to use the quaternion orientation from ofNode.
+  end
+  
+  def static?
+    return @static_or_dynamic == :static
+  end
+  
+  def dynamic?
+    return @static_or_dynamic == :dynamic
+  end
+  
+  def gameplay_entity
+    if static?
+      return nil
+    else
+      return nil
+    end
+  end
+end
+
+class StaticPhysicsEntity < PhysicsEntity
+  def initialize(name, position)
+    super(:static, name, position)
+  end
+end
+
+class DynamicPhysicsEntity < PhysicsEntity
+  def initialize(name, position)
+    super(:dynamic, name, position)
   end
 end
 
@@ -306,7 +384,7 @@ class RenderEntityManager
     mesh_name = batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
     mesh = MeshSprite.new(batch, mesh_name, entity_ptr.mesh_index)
     
-    return RenderEntity.new(entity_idx, target_entity_name, entity_ptr, mesh)
+    return RenderEntity.new(batch, target_entity_name, entity_idx, entity_ptr, mesh)
   end
 end
 
@@ -355,11 +433,12 @@ end
 class RenderEntity
   extend Forwardable
   
-  attr_reader :index, :name
+  attr_reader :batch, :name, :index
   
-  def initialize(index, name, entity_data, mesh)
-    @index = index # don't typically need this, but useful to have in #inspect for debugging
+  def initialize(batch, name, index, entity_data, mesh)
+    @batch = batch
     @name = name
+    @index = index # don't typically need this, but useful to have in #inspect for debugging
     @entity_data = entity_data
     
     @mesh = mesh # instance of the MeshSprite class
@@ -393,11 +472,11 @@ class RenderEntity
     raise "Input mesh must be a MeshSprite object" unless mesh.is_a? MeshSprite
     
     # NOTE: entity textures can only reference mesh indicies from within one set of mesh data textures
-    unless mesh.spritesheet.equal? @mesh.spritesheet # test pointers, not value
+    unless mesh.batch.equal? @mesh.batch # test pointers, not value
       msg [
-        "ERROR: Entities can only use meshes from within one spritesheet, but attempted to assign a new mesh from a different spritesheet.",
-        "Current: '#{@mesh.name}' from '#{@mesh.spritesheet.name}'",
-        "New:     '#{mesh.name}' from '#{mesh.spritesheet.name}'",
+        "ERROR: Entities can only use meshes from within one batch, but attempted to assign a new mesh from a different batch.",
+        "Current: '#{@mesh.name}' from '#{@mesh.batch.name}'",
+        "New:     '#{mesh.name}' from '#{mesh.batch.name}'",
       ]
       
       raise msg.join("\n")
@@ -416,10 +495,10 @@ end
 
 # NOTE: For now, MeshSprite does not actually contain any pointers to mesh data, because mesh data is not editable. When the ability to edit meshes is implemented, that extension should live in this class. We would need a system similar to EntityCache to allow for high-level editing of the image-encoded mesh data.
 class MeshSprite
-  attr_reader :spritesheet, :name, :index
+  attr_reader :batch, :name, :index
   
   def initialize(parent_batch, name, index)
-    @spritesheet = parent_batch
+    @batch = parent_batch
     
     @name = name
     @index = index
