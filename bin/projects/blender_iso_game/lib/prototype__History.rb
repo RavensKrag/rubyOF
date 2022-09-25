@@ -931,11 +931,11 @@ class SaveHelper
       
       puts "#{@context.frame_index.to_s.rjust(4, '0')} resuming"
       
-      @history.load_state_at_current_frame
+      @history.load
       
     else # [@history.length-1, inf]
       # actually generating new state
-      @history.snapshot_gamestate_at_current_frame
+      @history.snapshot
       
       # p [@context.frame_index, @history.length-1]
       # puts "history length: #{@history.length}"
@@ -975,7 +975,7 @@ class LoadHelper
   end
   
   def load_state_at_current_frame
-    @history.load_state_at_current_frame
+    @history.load
   end
 end
 
@@ -995,43 +995,21 @@ class History
   def snapshot
     @batches.each do |b|
       b[:entity_cache].update b[:entity_pixels]
-      b[:entity_history][@context.frame_index] = b[:entity_pixels]
+      b[:entity_history][@context.frame_index] << b[:entity_pixels]
     end
-    
-    # @state[:cache].update @state[:pixels]
-    # @buffer[frame_index] = @state[:pixels]
   end
   
   # load current frame from buffer
   def load
     @batches.each do |b|
-      b[:entity_pixels].copy_from b[:entity_history][@context.frame_index]
+      b[:entity_history][@context.frame_index] >> b[:entity_pixels]
       b[:entity_cache].load b[:entity_pixels]
     end
-    # ^ Above code is much harder to read than the previous prototype below
-    #   because there are no colors to direct attention,
-    #   due to the lack of sigils and syntax highlighting.
-    #   How can this be refactored to be more easily skimmed? 
-    #   (same for #snapshot)
-    
-    # cached_data = @buffer[@context.frame_index]
-    # @state[:pixels].copy_from cached_data
-    # @state[:cache].load @state[:pixels]
-    
-    
-    
-    
-    
-    
-    # TODO: find a better interface for loading
-      # when I save the frame, it looks just like array saving,
-      # but when I load the frame I have to call #copy_from.
-      # Is there a way to make this more symmetric?
   end
   
   # delete arbitrary frame from buffer
   def delete
-    # @buffer.delete(@context.frame_index)
+    # @buffer[@context.frame_index].delete
   end
   
   # create a new buffer using a slice of the current buffer
@@ -1386,22 +1364,32 @@ end
 
 
 
-# stores the data for time traveling
+# Stores the data for time traveling
+# 
+# Data structure for a sequence of images over time.
+# It does not know anything about the specifics
+# of the vertext animation texture system.
+# 
+# writing API:
+#   state = RubyOF::FloatPixels.new
+#   buffer = HistoryBuffer.new
+#   buffer[i] << state
+# reading API
+#   state = RubyOF::FloatPixels.new
+#   buffer = HistoryBuffer.new
+#   buffer[i] >> state
 class HistoryBuffer
-  # attr_reader :state, :buffer
-  # protected :state
-  # protected :buffer
+  # ASSUME: data is stored in RubyOF::FloatPixels
   
   # TODO: use named arguments, because the positions are extremely arbitrary
   def initialize(mom=nil, slice_range=nil)
     if mom
       @max_num_frames = mom.max_num_frames
-      self.setup(mom.state[:pixels],
-                 mom.state[:texture],
-                 mom.state[:cache]
-      )
+      self.setup(buffer_length: mom.length,
+                 frame_width:   mom.frame_width,
+                 frame_height:  mom.frame_height)
       slice_range.each do |i|
-        @buffer[i].copy_from mom.buffer[i]
+        @buffer[i] << mom.buffer[i]
       end
     else
       @max_num_frames = 0
@@ -1412,18 +1400,10 @@ class HistoryBuffer
       # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
   end
   
-  # TODO: remove @state and related variables from HistoryBuffer. should only be a storage data structure for a sequence of images over time. should not know anything about the specifics of the vertext animation texture system.
   def setup(buffer_length:3600, frame_width:9, frame_height:100)
     puts "[ #{self.class} ]  setup "
     
     @max_num_frames = buffer_length
-    
-    # # retain key data objects for entity state
-    # @state = {
-    #   :pixels => pixels,
-    #   :texture => texture,
-    #   :cache => cache
-    # }
     
     # store data
     @buffer = Array.new(@max_num_frames)
@@ -1454,60 +1434,63 @@ class HistoryBuffer
     @buffer[0].height
   end
   
-  # read from buffer
+  # get helper from buffer at a particular index
   # returns a reference to RubyOF::FloatPixels
   def [](frame_index)
     raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
     
     raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
     
-    raise IndexError, "Index #{frame_index} outside the bounds of recorded frames: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
+    raise IndexError, "Index out of bounds. Expected index in the range of 0..#{self.length-1}, but recieved #{frame_index}." unless frame_index.between?(0, self.length-1)
     
-    raise "Attempted to read garbage state. State at frame #{frame_index} was either never saved, or has since been deleted." unless @valid[frame_index]
     
-    return @buffer[frame_index]
+    return HistoryBufferHelper.new(@buffer, @valid, frame_width, frame_height, frame_index)
   end
-  
-  # save to buffer
-  # stores a copy of the input data, rather than a reference as in Array#[]=
-  def []=(frame_index, data)
-    # TODO: raise exception of data is not RubyOF::FloatPixels instance
-    
-    raise IndexError, "Index should be a non-negative integer." if frame_index.nil?
-    
-    raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
-    
-    raise IndexError, "Index #{frame_index} outside of array bounds: 0..#{self.length-1}" unless frame_index.between?(0, self.length-1)
-    
-    data_size   = [data.width, data.height]
-    buffer_size = [self.frame_width, self.frame_height]
-    raise "Dimensions of provided frame data do not match the size of frames in the buffer. Provided: #{data_size.inspect}; Buffer size: #{buffer_size.inspect}" unless data_size == buffer_size
-    
-    @buffer[frame_index].copy_from data
-    @valid[frame_index] = true
-  end
-  
-  # delete data at index
-  def delete(frame_index)
-    @valid[frame_index] = false
-  end
-  
-  # TODO: consider storing the current frame_count here, to have a more natural interface built around #<< / #push
-  # (would clean up logic around setting frame data to not be able to set arbitrary frames, but that "cleaner" version might not actually work because of time traveling)
-  
-  
-  # # TODO: implement this new interface
-  # @buffer[frame_index] << @state[:pixels] # save data into history buffer
-  # @buffer[frame_index] >> @state[:pixels] # load data from buffer into another image
-  #   # + should I implement this on RubyOF::Pixels for all images?
-  #   # + can this be patterned as a general "memory transfer operator" ?
-    
-  # @state[:pixels] << @buffer[frame_index] # load data from buffer into another image
-  
   
   # image buffers are guaranteed to be the right size,
   # (as long as the buffer is allocated)
   # because of setup()
+  
+  class HistoryBufferHelper
+    def initialize(buffer, valid, frame_width, frame_height, i)
+      @buffer = buffer
+      @valid = valid
+      @i = i
+      
+      @width  = frame_width
+      @height = frame_height
+    end
+    
+    # move data from other to buffer
+    # (write to the buffer)
+    def <<(other)
+      raise "Can only store RubyOF::FloatPixels data in HistoryBuffer" unless other.is_a? RubyOF::FloatPixels
+      
+      other_size  = [other.width, other.height]
+      buffer_size = [@width, @height]
+      raise "Dimensions of provided frame data do not match the size of frames in the buffer. Provided: #{other_size.inspect}; Buffer size: #{buffer_size.inspect}" unless other_size == buffer_size
+      
+      @buffer[@i].copy_from other
+      @valid[@i] = true
+    end
+    
+    # move data from buffer into other
+    # (read from the buffer)
+    def >>(other)
+      # can only read data out of buffer
+      # if the data at that index is valid
+      # (otherwise, it could just be garbage)
+      
+      raise "Attempted to read garbage state. State at frame #{@i} was either never saved, or has since been deleted." unless @valid[@i]
+      
+      other.copy_from @buffer[@i]
+    end
+    
+    # delete the data the index tracked by this helper object
+    def delete
+      @valid[@i] = false
+    end
+  end
   
   
 end
@@ -1526,8 +1509,3 @@ end
     # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
 
     # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
-
-
-
-
-end
