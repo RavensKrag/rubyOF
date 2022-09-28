@@ -48,13 +48,20 @@ end
 
 
 # TODO: read over history system and make sure it still works
+  # TODO: implement IPC callbacks for pause / play / seek / etc
 # TODO: test history / time travel systems
+
+
+
+# TODO: implement high-level interface for when one blender object is exported as mulitple entity / mesh pairs. in other words, you have one logical render entity, but the low-level system has many entities and many meshes that need to be managed.
+
 
 
 
 
 class World
   attr_reader :batches, :transport, :history, :entities, :sprites, :space
+  attr_reader :lights, :camera
   
   def initialize(geom_texture_directory)
     # one StateMachine instance, transport, etc
@@ -110,53 +117,15 @@ class World
     # (move data from EntityCache into Textures needed for rendering)
     # 
     
-    @shared_data = Context.new(buffer_length)
-    
-    @transport = TimelineTransport.new(@shared_data, @state_machine)
-    # ^ methods = [:play, :pause, :seek, :reset]
-    
-    @history = History.new(@batches, @shared_data)
-      h1 = SaveHelper.new(@history, @shared_data)
-      h2 = LoadHelper.new(@history)
-    
-    
-    
     @state_machine = StateMachine.new
-    @state_machine.setup do |s|
-      s.define_states(
-        States::Initial.new(      @state_machine),
-        States::GeneratingNew.new(@state_machine, @shared_data, h1),
-        States::ReplayingOld.new( @state_machine, @shared_data, @transport, h2),
-        States::Finished.new(     @state_machine, @shared_data, @transport, h2)
-      )
-      
-      s.initial_state States::Initial
-      
-      s.define_transitions do |p|
-        p.on_transition :any_other => States::Finished do |ipc|
-          puts "finished --> (send message to blender)"
-          
-          ipc.send_to_blender({
-            'type' => 'loopback_finished',
-            'history.length' => @shared_data.history.length
-          })
-        end
-        
-        p.on_transition States::GeneratingNew => States::ReplayingOld do |ipc|
-          # should cover both pausing and pulling the read head back
-          
-          ipc.send_to_blender({
-            'type' => 'loopback_paused_new',
-            'history.length'      => @shared_data.history.length,
-            'history.frame_index' => @shared_data.frame_index
-          })
-        end
-      end
-    end
     
+    @context = Context.new(buffer_length)
+    @counter = FrameCounter.new
     
+    @history = History.new(@batches, @counter)
     
-    
+    @transport = TimelineTransport.new(@counter, @state_machine, @history)
+    # ^ methods = [:play, :pause, :seek, :reset]
     
     
     # where does the data move from :pixels to :cache ?
@@ -171,30 +140,83 @@ class World
     # World#update -> VertexAnimationTextureSet#update
   end
   
-  
+  def setup
+    @state_machine.setup do |s|
+      s.define_states(
+        States::Initial.new(      @state_machine),
+        States::GeneratingNew.new(@state_machine, @counter, @context, @history),
+        States::ReplayingOld.new( @state_machine, @counter, @transport, @history),
+        States::Finished.new(     @state_machine, @counter, @transport, @history)
+      )
+      
+      s.initial_state States::Initial
+      
+      s.define_transitions do |p|
+        p.on_transition :any_other => States::Finished do |ipc|
+          puts "finished --> (send message to blender)"
+          
+          ipc.send_to_blender({
+            'type' => 'loopback_finished',
+            'history.length' => @counter.max+1
+          })
+        end
+        
+        p.on_transition States::GeneratingNew => States::ReplayingOld do |ipc|
+          # should cover both pausing and pulling the read head back
+          
+          ipc.send_to_blender({
+            'type' => 'loopback_paused_new',
+            'history.length'      => @counter.max+1,
+            'history.frame_index' => @counter.to_i
+          })
+        end
+      end
+    end
+  end
   
   def update(ipc, &block)
     @state_machine.update(ipc)
     
     if @transport.playing?
-      @shared_data.bind_code(block)
-      # TODO: only bind new code when necessary. if you rebind too much, then you can't resume execution in the expected way (will overwrite fiber).
-      @state_machine.next
+      # only bind new code when necessary. if you rebind too much, then you can't resume execution in the expected way (will overwrite fiber).
+      unless @context.code_bound?
+        @context.bind_code(block)
+      end
+        # TODO: make it so code can only be bound here
+      
+      @state_machine.next # may execute the block, depending on state
     end
   end
   
+  
+  # 
+  # callbacks that link up to the live coding system
+  # 
+  
   def on_reload_code(ipc)
+    @context.unbind_code
+    @history.branch
     
+    puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
+    
+    
+    ipc.send_to_blender({
+      'type' => 'loopback_reset',
+      'history.length'      => @counter.max+1,
+      'history.frame_index' => @counter.to_i
+    })
   end
   
   def on_reload_data(ipc)
-    
+    @context.unbind_code
+    @history.branch
   end
   
-  # where does this belong?
   def on_crash(ipc)
-    @shared_data.frame_index -= 1
-    @transport.seek(@shared_data.frame_index)
+    if @counter > 0
+      @counter.jmp(@counter.to_i - 1)
+      @transport.seek(@counter.to_i)
+    end
   end
   
 end
@@ -818,40 +840,17 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# control timeline transport (move back and forward in time)
+# Control timeline transport (move back and forward in time)
+# In standard operation, these methods are controlled via the blender timeline.
 class TimelineTransport
-  def initialize(shared_data, state_machine)
+  def initialize(frame_counter, state_machine, history)
     @state_machine = state_machine
-    @data = shared_data
+    @counter = frame_counter
+    @history = history
+    
+    
     @frame = 0
     @play_or_pause = :paused
-  end
-  
-  # if playing, pause forward playback
-  # else, do nothing
-  def pause
-    @play_or_pause = :paused
-  end
-  
-  # if paused, run forward
-  # 'running' has different behavior depending on the currently active state
-  # may generate new data from code,
-  # or may replay saved data from history buffer
-  def play
-    @play_or_pause = :playing
   end
   
   def paused?
@@ -862,128 +861,81 @@ class TimelineTransport
     return @play_or_pause == :playing
   end
   
+  # if playing, pause forward playback
+  # else, do nothing
+  def pause(ipc)
+    @play_or_pause = :paused
+    
+    
+    if @state_machine.current_state == States::ReplayingOld
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_old',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+    end
+  end
+  
+  # if paused, run forward
+  # 'running' has different behavior depending on the currently active state
+  # may generate new data from code,
+  # or may replay saved data from history buffer
+  def play(ipc)
+    @play_or_pause = :playing
+    
+    
+    if @state_machine.current_state == States::Finished
+      ipc.send_to_blender({
+        'type' => 'loopback_play+finished',
+        'history.length' => @counter.max+1
+      })
+    end
+  end
+  
   # instantly move to desired frame number
   # (moving frame-by-frame in blender is implemented in terms of #seek)
-  def seek(frame_number)
-    @data.frame_index = frame_number
-    @state_machine.seek(@data.frame_index)
-  end
-  
-  # reset the timeline back to t=0 and clear history
-  def reset
+  def seek(ipc, frame_number)
+    @counter.jmp frame_number
+    @state_machine.seek(@counter.to_i)
     
+    # ipc.send_to_blender message
   end
-end
-
-# state shared between TimelineTransport and the StateMachine states,
-# but that is not revealed to the outside world
-class Context
-  attr_accessor :frame_index
-  attr_accessor :block
   
-  def initialize(buffer_length)
-    @buffer_length = buffer_length
-    @frame_index = 0
+  # The blender python extension can send a reset command to the game engine.
+  # When that happens, we process it here.
+  def reset(ipc)
+    puts "loopback reset"
     
-    # @final_frame = ???
-    # TODO: implement @final_frame and outside access
-  end
-  
-  def bind_code(&block)
-    @block = block
-  end
-  
-  def final_frame
-    @buffer_length - 1
-  end
-  
-  # TODO: implement #history.length
-end
-
-# helps to save stuff from code into the buffer, so we can time travel later
-class SaveHelper
-  # TODO: re-name this class. it actually does some amount of loading too, so that it can resume fibers...
-  def initialize(history_controller, context)
-    @history = history_controller
-    @context = context
-  end
-  
-  def frame(&block)
-    if @context.frame_index < @context.final_frame
-      # resuming
+    if @state_machine.current_state == States::ReplayingOld
+      # For now, just replace the curret timeline with the alt one.
+      # In future commits, we can refine this system to use multiple
+      # timelines, with UI to compress timelines or switch between them.
       
-      # if manually stepping forward, we'll be able to see the transition
-      # but otherwise, this transition will be silent,
-      # because there is no Fiber.yield in this branch.
-      # 
-      # (keeps logs clean unless you really need the info)
+      @history.branch
       
-      # (skip this frame)
-      # don't run the code for this frame,
-      # so instead update the transforms
-      # based on the history buffer
+      ipc.send_to_blender({
+        'type' => 'loopback_reset',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
       
-      # Can't just jump in the buffer, because we need to advance the Fiber.
-      # BUT we may be able to optimize to just loading the last old state
-      # before we need to generate new states.
-      
-      @context.frame_index += 1
-      
-      puts "#{@context.frame_index.to_s.rjust(4, '0')} resuming"
-      
-      @history.load
-      
-    else # [@history.length-1, inf]
-      # actually generating new state
-      @history.snapshot
-      
-      # p [@context.frame_index, @history.length-1]
-      # puts "history length: #{@history.length}"
-      
-      @context.frame_index += 1
-      
-      frame_str = @context.frame_index.to_s.rjust(4, '0')
-      src_file, src_line = block.source_location
-      
-      file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
-      
-      puts "#{frame_str} new state  #{file_str}, line #{src_line} "
-      
-      # p block
-      # puts "--------------------------------"
-      # p block.source_location
-      block.call()
-      # puts "--------------------------------"
-      
-      Fiber.yield
-    # elsif @executing_frame > @history.length
-    #   # scrubbing in future space
-    #   # NO-OP
-    #   # (pretty sure I need both this logic and the logic in Finished)
-    # else
-    #   # initial state??
-    #   # not sure what's left
+    else
+      puts "(reset else)"
     end
-    
-  end
-end
-
-# helps to load data from the buffer
-class LoadHelper
-  def initialize(history_buffer)
-    @history = history_buffer
   end
   
-  def load_state_at_current_frame
-    @history.load
-  end
 end
 
-# TODO: consider consolidating all high-level buffer operations in one place
+
+
+# High-level interface for saving / loading state to HistoryBuffer.
+# Allows for saving across all batches simultaneously.
+# 
+# NOTE: Do not split read / write API, as generating new state requires both.
 class History
-  def initialize(batches, context)
+  def initialize(batches, frame_counter)
     @batches = batches
-    @context = context
+    @counter = frame_counter
   end
   
   # # create buffer of a certain size
@@ -995,28 +947,164 @@ class History
   def snapshot
     @batches.each do |b|
       b[:entity_cache].update b[:entity_pixels]
-      b[:entity_history][@context.frame_index] << b[:entity_pixels]
+      b[:entity_history][@counter.to_i] << b[:entity_pixels]
     end
   end
   
   # load current frame from buffer
   def load
     @batches.each do |b|
-      b[:entity_history][@context.frame_index] >> b[:entity_pixels]
+      b[:entity_history][@counter.to_i] >> b[:entity_pixels]
       b[:entity_cache].load b[:entity_pixels]
     end
   end
   
-  # delete arbitrary frame from buffer
-  def delete
-    # @buffer[@context.frame_index].delete
-  end
+  # # delete arbitrary frame from buffer
+  # def delete(frame_index)
+  #   @batches.each do |b|
+  #     b[:entity_history][frame_index].delete
+  #   end
+  # end
   
-  # create a new buffer using a slice of the current buffer
+  # create a new timeline by erasing part of the history buffer
+  # (more performant than initializing a whole new buffer)
   def branch
-     
+    # invalidate all states after the current frame
+    @batches.each do |b|
+      ((@counter.to_i+1)..(b[:entity_history])).each do |i|
+        b[:entity_history][i].delete
+      end
+    end
+    # reset the max frame value
+    @counter.clip
   end
 end
+
+
+# TODO: stop forward execution if trying to generate new state past the end of the history buffer
+
+
+
+
+
+# state shared between TimelineTransport and the StateMachine states,
+# but that is not revealed to the outside world
+class Context
+  attr_accessor :frame_index
+  attr_accessor :block
+  
+  def initialize(buffer_length)
+    @buffer_length = buffer_length
+    @frame_index = 0
+    
+    @block = nil
+  end
+  
+  def code_bound?
+    return @block != nil
+  end
+  
+  def bind_code(&block)
+    @block = block
+  end
+  
+  def unbind_code
+    @block = nil
+  end
+end
+
+
+# manage the block of code in #update
+class Bar
+  def initialize
+    
+  end
+end
+
+
+# something like a program counter (pc) in assembly
+# but that keeps track of the current frame (like in an animation or movie)
+# 
+# Using 3-letter names to evoke assembly language.
+# Ruby also has precedent for using terse names for technical things
+# (e.g. to_s)
+class FrameCounter
+  def initialize
+    @value = 0
+  end
+  
+  # increment the counter
+  def inc
+    @value += 1
+    
+    if @value > @max
+      @max = @value
+    end
+    
+    return self
+  end
+  
+  # set the frame counter
+  # (in assembly, rather than set pc directly, is it set via branch instruction)
+  def jmp(i)
+    @value = i
+    
+    return self
+  end
+  
+  # Return the maximum value the counter has reached this run.
+  # This is needed to find the index of the last valid frame.
+  def max
+    return @max
+  end
+  
+  # limit maximum frame to the current value
+  def clip
+    @max = @value
+    
+    return self
+  end
+  
+  # when is the maximum value reset?
+    # in the main code branch
+    # when the code is dynamically reloaded
+    # then 
+    
+    # History::Outer#reload_code -> 
+    #   Context#branch_history -> 
+    #     HistoryModel#branch
+    #       new_history.max_i = frame_index
+  
+  # what happens if frame index > end of buffer?
+  # does it depend on the state?
+  # how would that happen?
+  # If the buffer's max_i shrinks, doesn't the frame index need to change too?
+  # 
+  # I think in the main code, history only branches while time traveling.
+  # As such, index < end of buffer is also implicitly enforced.
+  # Might be possible to get weird behavior if you reload while time is progressing.
+  
+  
+  # TODO: how do you get this value out though? how do you use it?
+  # the easiest way to adopt ruby's typecast API, and convert to integer
+  
+  def to_i
+    return @value
+  end
+  
+  def to_s
+    return @value.to_s
+  end
+  
+  # also need to define integer-style comparison operators
+  # because comparison with numerical values is the main reason to cast to int
+  
+  include Comparable
+  def <=>(other)
+    return @value <=> other
+  end
+end
+
 
 
 
@@ -1071,6 +1159,14 @@ class StateMachine
     @previous_state = @current_state
     @current_state = new_state
   end
+  
+  # returns class of current state (so we know the type of state we're in)
+  # rather than the state object (external editing of internal state is bad)
+  def current_state
+    return @current_state.class
+  end
+  
+  
   
   class DSL_Helper
     attr_reader :initial_state
@@ -1210,10 +1306,11 @@ module States
   
   class GeneratingNew < DefaultState
     # initialized once when state machine is setup
-    def initialize(state_machine, shared_data, save_helper)
+    def initialize(state_machine, frame_counter, shared_data, history)
       @state_machine = state_machine
+      @counter = frame_counter
       @context = shared_data
-      @save_helper = save_helper
+      @history = history
       
       @f1 = nil
       @f2 = nil
@@ -1230,7 +1327,11 @@ module States
       @f2 ||= Fiber.new do
         # This Fiber wraps the block so we can resume where we left off
         # after Helper pauses execution
-        @context.block.call(@save_helper)
+        
+        # the block used here specifies the entire update logic
+        # (broken into individual frames by SnapshotHelper)
+        helper = SnapshotHelper.new(@counter, @history)
+        @context.block.call(helper)
       end
       
       @f1 ||= Fiber.new do
@@ -1254,15 +1355,71 @@ module States
     def seek(frame_number)
       
     end
+    
+    
+    
+    class SnapshotHelper
+      def initialize(frame_counter, history)
+        @counter = frame_counter
+        @history = history
+      end
+      
+      # wrap generation of one new frame
+      # may execute the given block to generate new state, or not
+      def frame(&block)
+        if @counter < @counter.max
+          # resuming
+          # (skip this frame)
+          
+          # All frames up to the desired resume point will execute in one update
+          # because there is no Fiber.yield in this branch.
+          
+          # Can't just jump in the buffer, because we need to advance the Fiber.
+          # BUT we may be able to optimize to just loading the last old state
+          # before we need to generate new states.
+          
+          @counter.inc
+          
+          puts "#{@counter.to_s.rjust(4, '0')} resuming"
+          
+          @history.load
+          
+        else # [@counter.max, inf]
+          # actually generating new state
+          @history.snapshot
+          
+          # p [@counter.to_i, @counter.max]
+          # puts "history length: #{@counter.max+1}"
+          
+          @counter.inc
+          
+          frame_str = @counter.to_s.rjust(4, '0')
+          src_file, src_line = block.source_location
+          
+          file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
+          
+          puts "#{frame_str} new state  #{file_str}, line #{src_line} "
+          
+          # p block
+          # puts "--------------------------------"
+          # p block.source_location
+          block.call()
+          # puts "--------------------------------"
+          
+          Fiber.yield
+        end
+      end
+    end
+    
   end
   
   class ReplayingOld < DefaultState
     # initialized once when state machine is setup
-    def initialize(state_machine, shared_data, transport, load_helper)
+    def initialize(state_machine, frame_counter, transport, history)
       @state_machine = state_machine
-      @context = shared_data
+      @counter = frame_counter
       @transport = transport
-      @load_helper = load_helper
+      @history = history
     end
     
     # called every time we enter this state
@@ -1272,19 +1429,18 @@ module States
     
     # step forward one frame
     def next
-      if @context.frame_index >= @context.final_frame
+      if @counter >= @counter.max
         # ran past the end of saved history
         # must retun to generating new data from the code
         
-        # @context.transition_and_rerun(GeneratingNew, :update, &block)
         @state_machine.transition_to GeneratingNew
         @state_machine.next
         
-      else # @context.frame_index < @context.final_frame
+      else # @counter < @counter.max
         # otherwise, just load the pre-generated state from the buffer
         
-        @context.frame_index += 1
-        @load_helper.load_state_at_current_frame
+        @counter.inc
+        @history.load
         
         # stay in state ReplayingOld
       end
@@ -1294,24 +1450,24 @@ module States
     def seek(frame_number)
       # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
       
-      if frame_number.between?(0, @context.final_frame) # [0, len-1]
+      if frame_number.between?(0, @counter.max) # [0, len-1]
         # if range of history buffer, move to that frame
         
-        @context.frame_index = frame_number
-        @load_helper.load_state_at_current_frame
+        @counter.jmp frame_number
+        @history.load_state_at_current_frame
         
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
+        puts "#{@counter.to_s.rjust(4, '0')} old seek"
         
         # stay in state ReplayingOld
         
-      elsif frame_number > @context.final_frame
+      elsif frame_number > @counter.max
         # if outside range of history buffer, snap to final frame
         
         # delegate to state :generating_new
-        @context.frame_index = @context.final_frame
-        @load_helper.load_state_at_current_frame
+        @counter.jmp @counter.max
+        @history.load_state_at_current_frame
         
-        puts "#{@context.frame_index.to_s.rjust(4, '0')} old seek"
+        puts "#{@counter.to_s.rjust(4, '0')} old seek"
         
         @transport.pause
         
@@ -1327,16 +1483,16 @@ module States
   
   class Finished < DefaultState
     # initialized once when state machine is setup
-    def initialize(state_machine, shared_data, transport, load_helper)
+    def initialize(state_machine, frame_counter, transport, history)
       @state_machine = state_machine
-      @context = shared_data
+      @counter = frame_counter
       @transport = transport
-      @load_helper = load_helper
+      @history = history
     end
     
     # called every time we enter this state
     def on_enter
-      puts "#{@context.frame_index.to_s.rjust(4, '0')} initial"
+      puts "#{@counter.to_s.rjust(4, '0')} initial"
     end
     
     # step forward one frame
@@ -1348,12 +1504,11 @@ module States
     
     # jump to arbitrary frame
     def seek(frame_number)
-      if frame_number >= @context.final_frame
+      if frame_number >= @counter.max
         # NO-OP
       else
-        # @context.transition_and_rerun ReplayingOld, :seek, frame_number
         @state_machine.transition_to ReplayingOld
-        @transport.seek(frame_number)
+        @state_machine.seek(frame_number)
         
       end
     end
@@ -1446,6 +1601,11 @@ class HistoryBuffer
     
     return HistoryBufferHelper.new(@buffer, @valid, frame_width, frame_height, frame_index)
   end
+  
+  # HistoryBuffer can't store the index of the last valid frame any more
+  # the new API has only one interface for reading and writing.
+  # In this way, it is unclear when to increment the 'max' value.
+  
   
   # image buffers are guaranteed to be the right size,
   # (as long as the buffer is allocated)
