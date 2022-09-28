@@ -201,7 +201,9 @@ class World
   # See notes in GeneratingNew#on_enter for details.
   
   # How is this triggered during #on_reload_code ?
-  # this is supposed to be trigged by History#branch, but 
+  # this is supposed to be trigged by History#branch, but not sure...
+  
+  # TODO: make sure that code can be dynamically reloaded while time is progressing. I tried testing this with the mainline code, and it actually seems kinda buggy. it is possible this was never implemented correctly.
   
   
   # 
