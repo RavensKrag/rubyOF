@@ -60,7 +60,7 @@ end
 
 
 class World
-  attr_reader :batches, :transport, :history, :entities, :sprites, :space
+  attr_reader :batches, :transport, :entities, :sprites, :space
   attr_reader :lights, :camera
   
   def initialize(geom_texture_directory)
@@ -178,15 +178,20 @@ class World
     @state_machine.update(ipc)
     
     if @transport.playing?
-      # only bind new code when necessary. if you rebind too much, then you can't resume execution in the expected way (will overwrite fiber).
-      unless @context.code_bound?
-        @context.bind_code(block)
-      end
-        # TODO: make it so code can only be bound here
-      
-      @state_machine.next # may execute the block, depending on state
+      @state_machine.next(&block)
+       # ^ may execute the block, depending on state
     end
   end
+  
+  # How does the block executed in GeneratingNew get reset?
+  # The block is saved by wrapping in a Fiber.
+  # That Fiber is stored in GeneratingNew.
+  # When entering GeneratingNew, the Fibers are always set to nil.
+  # This allows for new Fibers to be created, and a new block to be bound.
+  # See notes in GeneratingNew#on_enter for details.
+  
+  # How is this triggered during #on_reload_code ?
+  # this is supposed to be trigged by History#branch, but 
   
   
   # 
@@ -194,21 +199,19 @@ class World
   # 
   
   def on_reload_code(ipc)
-    @context.unbind_code
-    @history.branch
-    
     puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
-    
     
     ipc.send_to_blender({
       'type' => 'loopback_reset',
       'history.length'      => @counter.max+1,
       'history.frame_index' => @counter.to_i
     })
+    
+    @history.branch
+    
   end
   
   def on_reload_data(ipc)
-    @context.unbind_code
     @history.branch
   end
   
@@ -987,41 +990,6 @@ end
 
 
 
-# state shared between TimelineTransport and the StateMachine states,
-# but that is not revealed to the outside world
-class Context
-  attr_accessor :frame_index
-  attr_accessor :block
-  
-  def initialize(buffer_length)
-    @buffer_length = buffer_length
-    @frame_index = 0
-    
-    @block = nil
-  end
-  
-  def code_bound?
-    return @block != nil
-  end
-  
-  def bind_code(&block)
-    @block = block
-  end
-  
-  def unbind_code
-    @block = nil
-  end
-end
-
-
-# manage the block of code in #update
-class Bar
-  def initialize
-    
-  end
-end
-
-
 # something like a program counter (pc) in assembly
 # but that keeps track of the current frame (like in an animation or movie)
 # 
@@ -1265,14 +1233,6 @@ class StateMachine
   end
 end
 
-# class DefaultState
-#   def initialize(state_machine, transport, context)
-#     @state_machine = state_machine
-#     @transport = transport
-#     @context = context
-#   end
-# end
-
      
 # states used by state machine defined below
 # ---
@@ -1294,7 +1254,7 @@ module States
     
     # step forward one frame
     # (name taken from Enumerator#next, which functions similarly)
-    def next
+    def next(&block)
       @state_machine.transition_to GeneratingNew
     end
     
@@ -1318,12 +1278,29 @@ module States
     
     # called every time we enter this state
     def on_enter
+      puts "#{@counter.to_s.rjust(4, '0')} start generating new"
+      
       @f1 = nil
       @f2 = nil
+      
+      # p @f1
+      
+      # Must reset frame index before updating GeneratingNew.
+      # Both when entering for the first time, and on re-entry from time travel,
+      # need to reset the frame index.
+      # 
+      # When entering for the first time from Initial, clearly t == 0.
+      # 
+      # Additoinally, when re-entering GeneratingNew state, it will attempt to
+      # fast-forward the Fiber, skipping over frames already rendered,
+      # until it reaches the end of the history buffer.
+      # There is currently no better way to "resume" code execution.
+      # In order to do this, the frame index must be reset to 0 before entry.
+      @counter.jmp 0
     end
     
     # step forward one frame
-    def next
+    def next(&block)
       @f2 ||= Fiber.new do
         # This Fiber wraps the block so we can resume where we left off
         # after Helper pauses execution
@@ -1331,7 +1308,7 @@ module States
         # the block used here specifies the entire update logic
         # (broken into individual frames by SnapshotHelper)
         helper = SnapshotHelper.new(@counter, @history)
-        @context.block.call(helper)
+        block.call(helper)
       end
       
       @f1 ||= Fiber.new do
@@ -1428,7 +1405,7 @@ module States
     end
     
     # step forward one frame
-    def next
+    def next(&block)
       if @counter >= @counter.max
         # ran past the end of saved history
         # must retun to generating new data from the code
@@ -1496,7 +1473,7 @@ module States
     end
     
     # step forward one frame
-    def next
+    def next(&block)
       # instead of advancing the frame, or altering state,
       # just pause execution again
       @transport.pause
