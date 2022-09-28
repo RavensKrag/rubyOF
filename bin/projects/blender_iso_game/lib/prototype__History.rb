@@ -47,8 +47,6 @@ end
 # TODO: make sure there's nothing else I missed from World.rb that needs to come over
 
 
-# TODO: read over history system and make sure it still works
-  # TODO: implement IPC callbacks for pause / play / seek / etc
 # TODO: test history / time travel systems
 
 
