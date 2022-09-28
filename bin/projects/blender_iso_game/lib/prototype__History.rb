@@ -1139,7 +1139,8 @@ class StateMachine
   class DSL_Helper
     attr_reader :initial_state
     
-    def initialize(states, transitions)
+    def initialize(state_machine, states, transitions)
+      @state_machine = state_machine
       @states = states
       @transitions = transitions
     end
@@ -1154,7 +1155,7 @@ class StateMachine
         raise "ERROR: Must first declare all possible states using #define_states. Then, you can specify one of those states to be the initial state, by providing the class of that state object."
       end
       
-      unless state_defined? state_class
+      unless @state_machine.state_defined? state_class
         raise "ERROR: '#{state_class.to_s}' is not one of the available states declared using #define_states. Valid states are: #{ @states.map{|x| x.class.to_s} }"
       end
       
@@ -1162,13 +1163,14 @@ class StateMachine
     end
     
     def define_transitions(&block)
-      helper = PatternHelper.new(@states, @transitions)
+      helper = PatternHelper.new(@state_machine, @states, @transitions)
       block.call helper
     end
     
     
     class PatternHelper
-      def initialize(states, transitions)
+      def initialize(state_machine, states, transitions)
+        @state_machine = state_machine
         @states = states
         @transitions = transitions
       end
@@ -1181,7 +1183,7 @@ class StateMachine
         [prev_state_id, next_state_id].each do |state_class|
           unless(state_class == :any || 
                  state_class == :any_other ||
-                 state_defined? state_class
+                 @state_machine.state_defined?(state_class)
           )
             raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @states.map{|x| x.class.to_s} }"
           end
