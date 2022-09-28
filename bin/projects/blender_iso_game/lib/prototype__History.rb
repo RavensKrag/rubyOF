@@ -119,7 +119,6 @@ class World
     
     @state_machine = StateMachine.new
     
-    @context = Context.new(buffer_length)
     @counter = FrameCounter.new
     
     @history = History.new(@batches, @counter)
@@ -144,7 +143,7 @@ class World
     @state_machine.setup do |s|
       s.define_states(
         States::Initial.new(      @state_machine),
-        States::GeneratingNew.new(@state_machine, @counter, @context, @history),
+        States::GeneratingNew.new(@state_machine, @counter, @history),
         States::ReplayingOld.new( @state_machine, @counter, @transport, @history),
         States::Finished.new(     @state_machine, @counter, @transport, @history)
       )
@@ -1268,10 +1267,9 @@ module States
   
   class GeneratingNew < DefaultState
     # initialized once when state machine is setup
-    def initialize(state_machine, frame_counter, shared_data, history)
+    def initialize(state_machine, frame_counter, history)
       @state_machine = state_machine
       @counter = frame_counter
-      @context = shared_data
       @history = history
       
       @f1 = nil
