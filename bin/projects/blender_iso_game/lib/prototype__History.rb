@@ -137,6 +137,17 @@ class World
       # but maybe we call the update from here instead of the current location?
     
     # World#update -> VertexAnimationTextureSet#update
+    
+    # 
+    # lights and cameras
+    # 
+    
+    
+    @camera = ViewportCamera.new
+    @lights = LightsCollection.new
+    
+    # NOTE: serialization of lights / camera is handled in Core#setup
+    
   end
   
   def setup
@@ -223,6 +234,71 @@ class World
   
 end
 
+
+
+# 
+# lights / camera
+# 
+
+class LightsCollection
+  def initialize
+    @lights = Array.new
+  end
+  
+  # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
+  def fetch(light_name)
+    existing_light = @lights.find{ |light|  light.name == light_name }
+    
+    if existing_light.nil?
+      if block_given?
+        new_light = yield light_name
+        @lights << new_light
+        
+        return new_light
+      else
+        raise "ERROR: Did not declare a block for generating new lights."
+      end
+    else
+      return existing_light
+    end
+  end
+  
+  # TODO: implement way to delete lights
+  def delete(light_name)
+    @lights.delete_if{|light| light.name == light_name}
+  end
+  
+  # delete all lights whose names are on this list
+  def gc(list_of_names)
+    @lights
+    .select{ |light|  list_of_names.include? light.name }
+    .each do |light|
+      delete light.name
+    end
+  end
+  
+  include Enumerable
+  def each
+    return enum_for(:each) unless block_given?
+    
+    @lights.each do |light|
+      yield light
+    end
+  end
+  
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    data_hash = {
+      'lights' => @lights
+    }
+    return data_hash
+  end
+  
+  # read from a hash (deserialization)
+  def load(data)
+    @lights = data['lights']
+  end
+end
 
 
 
