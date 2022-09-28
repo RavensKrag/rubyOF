@@ -1,5 +1,24 @@
-def test
+def setup
   $world = World.new
+  
+  
+  # material invokes shaders
+  @material = BlenderMaterial.new "OpenEXR vertex animation mat"
+  
+  shader_src_dir = PROJECT_DIR/"bin/glsl"
+  @vert_shader_path = shader_src_dir/"animation_texture.vert"
+  # @frag_shader_path = shader_src_dir/"phong_test.frag"
+  @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
+  
+  
+end
+
+def update
+  @material.load_shaders(@vert_shader_path, @frag_shader_path) do
+    # on reload
+    
+  end
+  
   
   
   # retrieve entity from world
@@ -40,10 +59,84 @@ def test
   end
   
 end
-# TODO: sketch how these systems connect to lighting
-# TODO: sketch how these systems connect to viewport camera
-# TODO: sketch how these systems connect to render pipeline
-# TODO: sketch how these systems connect to materials / shaders
+
+def draw
+  @render_pipeline.draw(@window,
+                        lights:@world.lights,
+                        camera:@world.camera,
+                        material:@world.material) do |pipeline|
+        
+    # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
+    pipeline.shadow_pass do |lights, shadow_material|
+      # for now, render opaque objects only
+      
+      @world.each_texture_set do |pos, norm, entity, mesh|
+        # set uniforms
+        shadow_material.setCustomUniformTexture(
+          "vert_pos_tex",  pos, 1
+        )
+        
+        shadow_material.setCustomUniformTexture(
+          "vert_norm_tex", norm, 2
+        )
+        
+        shadow_material.setCustomUniformTexture(
+          "entity_tex", entity, 3
+        )
+        
+        shadow_material.setCustomUniform1f(
+          "transparent_pass", 0
+        )
+        
+        # draw using GPU instancing
+        using_material shadow_material do
+          instance_count = entity.height.to_i
+          mesh.draw_instanced instance_count
+        end
+      end
+    end
+    
+    
+    # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+    pipeline.opaque_pass do
+      @world.each_texture_set do |pos, norm, entity, mesh|
+        # set uniforms
+        @material.setCustomUniformTexture(
+          "vert_pos_tex",  pos, 1
+        )
+        
+        @material.setCustomUniformTexture(
+          "vert_norm_tex", norm, 2
+        )
+        
+        @material.setCustomUniformTexture(
+          "entity_tex", entity, 3
+        )
+        
+        @material.setCustomUniform1f(
+          "transparent_pass", 0
+        )
+        
+        # draw using GPU instancing
+        using_material @material do
+          instance_count = entity.height.to_i
+          mesh.draw_instanced instance_count
+        end
+      end
+      
+      # glCullFace(GL_BACK)
+      # glDisable(GL_CULL_FACE)
+    end
+    
+    
+    
+    # ...
+    # other passes
+    # ...
+  end
+end
+
+
 # TODO: make sure there's nothing else I missed from World.rb that needs to come over
 
 
