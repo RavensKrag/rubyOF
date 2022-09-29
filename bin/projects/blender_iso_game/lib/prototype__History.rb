@@ -172,6 +172,7 @@ class World
     buffer_length = 3600
     
     
+    # load render batches
     @batches = 
       geom_texture_directory.children
       .select{ |file| file.basename.to_s.end_with? ".cache.json" }
@@ -222,21 +223,11 @@ class World
     # ^ methods = [:play, :pause, :seek, :reset]
     
     
-    # where does the data move from :pixels to :cache ?
-    # It's not in this file.
-    # Should it be here? It might make the information flow clearer.
     
-    # currently in VertexAnimationTextureSet#update
-      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
-      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
-      # but maybe we call the update from here instead of the current location?
-    
-    # World#update -> VertexAnimationTextureSet#update
     
     # 
     # lights and cameras
     # 
-    
     
     @camera = ViewportCamera.new
     @lights = LightsCollection.new
@@ -283,9 +274,38 @@ class World
     @state_machine.update(ipc)
     
     if @transport.playing?
+      # Update the entities in the world to the next frame,
+      # either by executing the code in the block,
+      # or loading frames from the history buffer
+      # (depending on the current state of the state machine).
       @state_machine.next_frame(&block)
-       # To generate the next frame, either execute the code in the block,
-       # or load frames from the history buffer, depending on the current state.
+      # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
+      #   ( whether to move from pixels -> cache
+      #     or cache -> pixels depends on state  )
+      #   
+      #   See History#snapshot and History#load for data flow,
+      #   and States::GeneratingNew and States::ReplayingOld for control flow.
+    end
+    
+    
+    
+    # where does the data move from :pixels to :cache ?
+    # It's not in this file.
+    # Should it be here? It might make the information flow clearer.
+    
+    # currently in VertexAnimationTextureSet#update
+      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
+      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
+      # but maybe we call the update from here instead of the current location?
+    
+    # World#update -> VertexAnimationTextureSet#update
+    
+    
+    
+    # move entity data to GPU for rendering:
+    # batch[:entity_data][:pixels] -> batch[:entity_data][:texture]
+    @batches.each do |batch|
+      batch.update
     end
   end
   
@@ -1122,16 +1142,16 @@ class History
   # save current frame to buffer
   def snapshot
     @batches.each do |b|
-      b[:entity_cache].update b[:entity_pixels]
-      b[:entity_history][@counter.to_i] << b[:entity_pixels]
+      b[:entity_cache].update b[:entity_data][:pixels]
+      b[:entity_history][@counter.to_i] << b[:entity_data][:pixels]
     end
   end
   
   # load current frame from buffer
   def load
     @batches.each do |b|
-      b[:entity_history][@counter.to_i] >> b[:entity_pixels]
-      b[:entity_cache].load b[:entity_pixels]
+      b[:entity_history][@counter.to_i] >> b[:entity_data][:pixels]
+      b[:entity_cache].load b[:entity_data][:pixels]
     end
   end
   
