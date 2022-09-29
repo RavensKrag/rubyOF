@@ -279,8 +279,9 @@ class World
     @state_machine.update(ipc)
     
     if @transport.playing?
-      @state_machine.next(&block)
-       # ^ may execute the block, depending on state
+      @state_machine.next_frame(&block)
+       # To generate the next frame, either execute the code in the block,
+       # or load frames from the history buffer, depending on the current state.
     end
   end
   
@@ -1424,7 +1425,7 @@ module States
     
     # step forward one frame
     # (name taken from Enumerator#next, which functions similarly)
-    def next(&block)
+    def next_frame(&block)
       @state_machine.transition_to GeneratingNew
     end
     
@@ -1469,7 +1470,7 @@ module States
     end
     
     # step forward one frame
-    def next(&block)
+    def next_frame(&block)
       @f2 ||= Fiber.new do
         # This Fiber wraps the block so we can resume where we left off
         # after Helper pauses execution
@@ -1574,7 +1575,7 @@ module States
     end
     
     # step forward one frame
-    def next(&block)
+    def next_frame(&block)
       if @counter >= @counter.max
         # ran past the end of saved history
         # must retun to generating new data from the code
@@ -1642,7 +1643,7 @@ module States
     end
     
     # step forward one frame
-    def next(&block)
+    def next_frame(&block)
       # instead of advancing the frame, or altering state,
       # just pause execution again
       @transport.pause
