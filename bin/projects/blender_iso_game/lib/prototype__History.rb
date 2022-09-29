@@ -1,3 +1,7 @@
+# TODO: use this implementation instead of the current implementation
+  # NOTE: this file was being loaded by the dynamic reload system before I wanted it to effect the main codebase. why was this being loaded?
+# TODO: break this up into many files
+
 def setup
   $world = World.new
   
