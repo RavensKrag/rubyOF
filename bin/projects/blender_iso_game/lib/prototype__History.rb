@@ -186,6 +186,35 @@ class World
       b.setup(buffer_length)
     end
     
+    RenderBatchList.new(geom_texture_directory)
+    
+    # Question:
+    # How are the batches reloaded?
+    # If I export different batches from blender, or update an existing batch
+    # the files need to be reloaded in the engine.
+    # Where in the codebase does that actually happen?
+    # 
+    # in the mainline file,
+    # BlenderSync#update_geometry_data
+    # -> World#load_json_data
+    # -> World#load_entity_texture
+    # -> World#load_mesh_textures
+    # which then calls methods on VertexAnimationTextureSet
+    # 
+    # That load logic only handles reloading textures that are already defined.
+    # It recieves a name of a file that was updated,
+    # so it needs to match that against a batch to figure out what to reload.
+    # But because of that, the side-effect is that it can't load a completely
+    # new batch. At least, I don't think it should be able to.
+    # 
+    # What about deleting a batch?
+    # How would that work?
+    # When we delete entities, we match against a list of known entities.
+    # Can I easily get a list of known batches with the current structure,
+    # or do I need to export more data?
+    
+    
+    
     
     
     # 
@@ -271,41 +300,31 @@ class World
   end
   
   def update(ipc, &block)
+    # Trigger state transitions as necessary
     @state_machine.update(ipc)
     
+    # Update the entities in the world to the next frame,
+    # either by executing the code in the block,
+    # or loading frames from the history buffer
+    # (depending on the current state of the state machine).
     if @transport.playing?
-      # Update the entities in the world to the next frame,
-      # either by executing the code in the block,
-      # or loading frames from the history buffer
-      # (depending on the current state of the state machine).
       @state_machine.next_frame(&block)
       # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
-      #   ( whether to move from pixels -> cache
-      #     or cache -> pixels depends on state  )
+      #   ( state machine will decide whether to move 
+      #     from pixels -> cache OR cache -> pixels   )
       #   
       #   See History#snapshot and History#load for data flow,
       #   and States::GeneratingNew and States::ReplayingOld for control flow.
     end
     
-    
-    
-    # where does the data move from :pixels to :cache ?
-    # It's not in this file.
-    # Should it be here? It might make the information flow clearer.
-    
-    # currently in VertexAnimationTextureSet#update
-      # /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/lib/vertex_animation_texture_set.rb
-      # probably want to keep the logic there because it also handles serialization (disk -> pixels -> texture and cache)
-      # but maybe we call the update from here instead of the current location?
-    
-    # World#update -> VertexAnimationTextureSet#update
-    
-    
-    
-    # move entity data to GPU for rendering:
-    # batch[:entity_data][:pixels] -> batch[:entity_data][:texture]
+    # Move entity data to GPU for rendering:
+    # move from batch[:entity_data][:pixels] to batch[:entity_data][:texture]
+    # ( pixels -> texture )
     @batches.each do |batch|
-      batch.update
+      pixels  = batch[:entity_data][:pixels]
+      texture = batch[:entity_data][:texture]
+      
+      texture.load_data(pixels)
     end
   end
   
@@ -745,7 +764,11 @@ end
 
 
 # based on VertexAnimationTextureSet
-# stores render data, but does not perform the actual rendering
+# Only manages render data (storage and serialization).
+# 
+# Does not perform rendering (see OIT_RenderPipeline instead)
+# Does not update entity data (see RenderEntityManager instead)
+# Does not move data from cache -> pixels -> texture (see World#update instead)
 class RenderBatch
   include RubyOF::Graphics
   
@@ -1029,7 +1052,16 @@ class RenderBatch
 
 end
 
+
+class RenderBatchList
+  def initialize
     
+  end
+  
+  def setup
+    
+  end
+end
 
 
 
