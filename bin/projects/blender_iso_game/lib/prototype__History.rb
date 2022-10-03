@@ -163,107 +163,33 @@ class World
     # one StateMachine instance, transport, etc
     # but many collections with EntityCache + pixels + textures + etc
     
-    
     # 
     # backend data
     # 
-    
-    # TODO: consider creating new 'batches' collection class, to prevent other code from adding elements to the @batches array - should be read-only from most parts of the codebase
-    
-    
-    @buffer_length = 3600
-    
-    # load all batches that are currently defined on disk
-    geom_texture_directory.tap do |geom_data_dir|
-      # allocate structure for each render batch defined on disk
-      @batches = 
-        geom_data_dir.children
-        .select{ |file| file.basename.to_s.end_with? ".cache.json" }
-        .collect do |file|
-          # p file
-          name, _, _ = file.basename.to_s.split('.')
-          RenderBatch.new(geom_data_dir, name)
-        end
-      
-      # load the data from the disk, allocating memory as needed
-      @batches.each do |b|
-        geom_paths(geom_data_dir, b.name) do |json, position, normal, entity|
-          b.load_mesh_textures(position, normal)
-          b.load_entity_texture(entity)
-          b.load_json_data(json)
-        end
-        
-        # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-        vertex_count = b[:mesh_data][:pixels][:positions].width.to_i
-        b[:geometry].generate vertex_count
-        
-        # pixels -> cache
-        b[:entity_cache].load b[:entity_data][:pixels]
-        
-        # setup history buffer
-        b[:entity_history].setup(
-          buffer_length: @buffer_length,
-          frame_width:   b[:entity_data][:pixels].width,
-          frame_height:  b[:entity_data][:pixels].height
-        )
-      end
-    end
-    
-    # Question:
-    # How are the batches reloaded?
-    # If I export different batches from blender, or update an existing batch
-    # the files need to be reloaded in the engine.
-    # Where in the codebase does that actually happen?
-    # 
-    # in the mainline file,
-    # BlenderSync#update_geometry_data
-    # -> World#load_json_data
-    # -> World#load_entity_texture
-    # -> World#load_mesh_textures
-    # which then calls methods on VertexAnimationTextureSet
-    # 
-    # That load logic only handles reloading textures that are already defined.
-    # It recieves a name of a file that was updated,
-    # so it needs to match that against a batch to figure out what to reload.
-    # But because of that, the side-effect is that it can't load a completely
-    # new batch. At least, I don't think it should be able to.
-    # 
-    # What about deleting a batch?
-    # How would that work?
-    # When we delete entities, we match against a list of known entities.
-    # Can I easily get a list of known batches with the current structure,
-    # or do I need to export more data?
-  
-  
-    
-    
-    
+    @batches = RenderBatchContainer.new(
+      self, # link to the Window to allow accessing all other collections
+      geometry_texture_directory: geom_texture_directory,
+      buffer_length: 3600
+    )
     
     # 
     # frontend systems
     # (provide object-oriented API for manipulating render entities)
     # (query entities and meshes by name)
     # 
-    
     @entities = RenderEntityManager.new(@batches)
     @sprites  = MeshSpriteManager.new(@batches)
-    
-    
     
     # 
     # spatial query interface
     # (query entities by position in 3D space)
     # 
-    
     @space = Space.new(@entities)
-    
-    
     
     # 
     # core inteface to backend systems
     # (move data from EntityCache into Textures needed for rendering)
     # 
-    
     @state_machine = StateMachine.new
     
     @counter = FrameCounter.new
@@ -274,12 +200,9 @@ class World
     # ^ methods = [:play, :pause, :seek, :reset]
     
     
-    
-    
     # 
     # lights and cameras
     # 
-    
     @camera = ViewportCamera.new
     @lights = LightsCollection.new
     
@@ -288,6 +211,8 @@ class World
   end
   
   def setup
+    @batches.setup()
+    
     @state_machine.setup do |s|
       s.define_states(
         States::Initial.new(      @state_machine),
@@ -342,11 +267,8 @@ class World
     # Move entity data to GPU for rendering:
     # move from batch[:entity_data][:pixels] to batch[:entity_data][:texture]
     # ( pixels -> texture )
-    @batches.each do |batch|
-      pixels  = batch[:entity_data][:pixels]
-      texture = batch[:entity_data][:texture]
-      
-      texture.load_data(pixels)
+    @batches.each do |b|
+      b[:entity_data][:texture].load_data b[:entity_data][:pixels]
     end
   end
   
@@ -391,115 +313,466 @@ class World
   # callbacks that link up to BlenderSync
   # 
   
+  def_delegators :@batches,
+    :on_full_export,
+    :on_entity_moved,
+    :on_entity_created,
+    :on_entity_created_with_new_mesh,
+    :on_mesh_edited,
+    :on_material_edited,
+    :on_gc
+  
+end
+
+
+
+# TODO: consider creating new 'batches' collection class, to prevent other code from adding elements to the @batches array - should be read-only from most parts of the codebase
+class RenderBatchContainer
+  def initialize(world, geometry_texture_directory:nil, buffer_length:3600)
+    @world = world
+    
+    @geom_data_dir = geometry_texture_directory
+    @buffer_length = buffer_length
+    @batches = Array.new
+  end
+  
+  # 
+  # mimic parts of the Array interface
+  # 
+  def each() # &block
+    return enum_for(:each) unless block_given?
+    
+    @batches.each do |b|
+      yield b
+    end
+  end
+  
+  include Enumerable
+  
+  def zip(list)
+    return @batches.zip(list)
+  end
+  
+  
+  # 
+  # custom interface for this collection
+  # 
+  
+  def setup
+    # allocate 1 RenderBatch object for each texture set
+    # that has already been exported from Blender
+    # and now currently lives on the disk
+    @batches = 
+      batch_names_on_disk(@geom_data_dir)
+      .collect do |name|
+        RenderBatch.new(@geom_data_dir, name)
+      end
+    
+    # load the data from the disk, allocating memory as needed
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.mesh.disk_to_pixels
+        x.mesh.pixels_to_texture
+        
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
+        
+        x.mesh.pixels_to_geometry
+      end
+      
+      # pixels (entity) -> history buffer
+      # (not saving the entity data in the buffer, but allocating a buffer)
+      b[:entity_history].setup(
+        buffer_length: @buffer_length,
+        frame_width:   b[:entity_data][:pixels].width,
+        frame_height:  b[:entity_data][:pixels].height
+      )
+    end
+  end
+  
+  # Question:
+  # How are the batches reloaded?
+  # If I export different batches from blender, or update an existing batch
+  # the files need to be reloaded in the engine.
+  # Where in the codebase does that actually happen?
+  # 
+  # in the mainline file,
+  # BlenderSync#update_geometry_data
+  # -> World#load_json_data
+  # -> World#load_entity_texture
+  # -> World#load_mesh_textures
+  # which then calls methods on VertexAnimationTextureSet
+  # 
+  # That load logic only handles reloading textures that are already defined.
+  # It recieves a name of a file that was updated,
+  # so it needs to match that against a batch to figure out what to reload.
+  # But because of that, the side-effect is that it can't load a completely
+  # new batch. At least, I don't think it should be able to.
+  # 
+  # What about deleting a batch?
+  # How would that work?
+  # When we delete entities, we match against a list of known entities.
+  # Can I easily get a list of known batches with the current structure,
+  # or do I need to export more data?
+  
+  
+  # update existing batches
+  # and create new batches as necessary
+  def on_full_export(ipc, texture_dir, collection_name)
+    batch_names = batch_names_on_disk(@geom_data_dir)
+    new_names = Set.new(batch_names) - Set.new(@batches.collect{|x| x.name})
+    
+    # update 
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.mesh.disk_to_pixels
+        x.mesh.pixels_to_texture
+        
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
+        
+        x.mesh.pixels_to_geometry
+      end
+      
+      # pixels (entity) -> history buffer
+      # (not saving the entity data in the buffer, but allocating a buffer)
+      b[:entity_history].setup(
+        buffer_length: @buffer_length,
+        frame_width:   b[:entity_data][:pixels].width,
+        frame_height:  b[:entity_data][:pixels].height
+      )
+    end
+    
+    
+    # create new
+    
+    
+    @window.history.branch
+  end
+  
+  
+  
+  
+  
+  # all texture sets have been exported from scratch
+  def on_clean_build(ipc, texture_dir, collection_name)
+    @geom_data_dir = texture_dir
+    self.setup()
+  end
+  
+  # create one new texture set
+  def on_texture_set_created(ipc, texture_dir, collection_name)
+    RenderBatch.new(@geom_data_dir, name).tap do |b|
+      batch_dsl(b) do |x|
+        x.json.disk_to_hash
+        
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.mesh.disk_to_pixels
+        x.mesh.pixels_to_texture
+        
+        x.mesh.pixels_to_geometry
+      end
+      
+      # pixels (entity) -> history buffer
+      # (not saving the entity data in the buffer, but allocating a buffer)
+      b[:entity_history].setup(
+        buffer_length: @buffer_length,
+        frame_width:   b[:entity_data][:pixels].width,
+        frame_height:  b[:entity_data][:pixels].height
+      )
+      
+      @batches << b
+    end
+    
+    
+    @window.history.branch
+  end
+  
+  # delete one existing texture set
+  def on_texture_set_deleted(ipc, texture_dir, collection_name)
+    @batches.delete_if{|b| b.name == collection_name }
+    
+    # NOTE: this may cause errors if the current code in the update block depends on the entities that are being deleted
+    # NOTE: this also deletes a chunk of history that was associated with that texture set
+    
+    # (maybe we should push the system back to t=0, as so much of the initial state has changed?)
+    
+    @window.history.branch
+  end
+  
+  
   # Question: initial state, or state over time?
   def on_entity_moved(ipc, texture_dir, collection_name)
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_entity_texture(entity)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.entity.disk_to_pixels
+        # x.entity.pixels_to_texture
+        # x.entity.pixels_to_cache
       end
     end
     
-    @history.branch
+    
+    
+    @window.history.branch
   end
   
-  def on_entity_created(ipc, geom_data_dir, collection_name)
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_entity_texture(entity)
-        b.load_json_data(json)
+  # (not hooked up yet)
+  def on_entity_deleted(ipc, texture_dir, collection_name)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
+        
+        # x.mesh.pixels_to_geometry
       end
+      
+      # b[:entity_history].setup(
+      #   buffer_length: @buffer_length,
+      #   frame_width:   b[:entity_data][:pixels].width,
+      #   frame_height:  b[:entity_data][:pixels].height
+      # )
     end
     
-    @history.branch
+    
+    
+    @window.history.branch
   end
   
-  def on_entity_created_with_new_mesh(ipc, geom_data_dir, collection_name)
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_mesh_textures(position, normal)
-        b.load_entity_texture(entity)
-        b.load_json_data(json)
+  def on_entity_created(ipc, texture_dir, collection_name)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
+        
+        # x.mesh.pixels_to_geometry
       end
+      
+      # b[:entity_history].setup(
+      #   buffer_length: @buffer_length,
+      #   frame_width:   b[:entity_data][:pixels].width,
+      #   frame_height:  b[:entity_data][:pixels].height
+      # )
     end
     
-    @history.branch
+    
+    
+    @window.history.branch
+  end
+  
+  def on_entity_created_with_new_mesh(ipc, texture_dir, collection_name)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.mesh.disk_to_pixels
+        x.mesh.pixels_to_texture
+        
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
+        
+        # x.mesh.pixels_to_geometry
+      end
+      
+      # b[:entity_history].setup(
+      #   buffer_length: @buffer_length,
+      #   frame_width:   b[:entity_data][:pixels].width,
+      #   frame_height:  b[:entity_data][:pixels].height
+      # )
+    end
+    
+    
+    
+    @window.history.branch
   end
   
   # note - can't just create new mesh, would have to create a new entity too
   
   # (for now) mesh only effects apperance; should not change history
   # (later when we have animations: may want to branch state based on animation frame, like checking for active frames during an attack animation)
-  def on_mesh_edited(ipc, geom_data_dir, collection_name)
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_mesh_textures(position, normal)
+  def on_mesh_edited(ipc, texture_dir, collection_name)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.mesh.disk_to_pixels
+        x.mesh.pixels_to_texture        
       end
     end
     
-    @history.branch
+    @window.history.branch
   end
   
-  # (for now) material only effects apperance; should not change history
-  def on_material_edited(ipc, geom_data_dir, collection_name)
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_entity_texture(entity)
-        b.load_json_data(json)
+  # update material data (in entity texture) as well as material names (in json)
+  # (for now, material only effects apperance; editingshould not change history)
+  def on_material_edited(ipc, texture_dir, collection_name)
+    @batches.each do |b|
+      batch_dsl(b) do |x|
+        x.entity.disk_to_pixels
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
+        
+        x.json.disk_to_hash
       end
     end
     
-    # @history.branch
-  end
-  
-  # update existing batches
-  # and create new batches as necessary
-  def on_full_export(ipc, geom_data_dir, collection_name)
-    # update 
-    geom_paths(texture_dir, collection_name) do |json, position, normal, entity|
-      @batches.each do |b|
-        b.load_mesh_textures(position, normal)
-        b.load_entity_texture(entity)
-        b.load_json_data(json)
-      end
-    end
-    
-    # create new
-    
-    
-    @history.branch
+    # @window.history.branch
   end
   
   # this seems to function on all batches,
   # rather than on a single target batch
-  def on_gc(ipc, geom_data_dir, collection_name)
+  def on_gc(ipc, texture_dir, collection_name)
     
     
-    @history.branch
+    @window.history.branch
   end
+  
   
   # if message['json_file_path'] || message['entity_tex_path']
   #   @world.space.update
   # end
   # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
   
-  
-  
-  
   private
   
-  def geom_paths(geom_data_dir, collection_name)
-    json_file_path    = geom_data_dir/"#{collection_name}.cache.json"
-    position_tex_path = geom_data_dir/"#{collection_name}.position.exr"
-    normal_tex_path   = geom_data_dir/"#{collection_name}.normal.exr"
-    entity_tex_path   = geom_data_dir/"#{collection_name}.entity.exr"
-    
-    yield json_file_path, position_tex_path, normal_tex_path, entity_tex_path
+  def batch_names_on_disk(directory)
+    directory.children
+    .select{ |file| file.basename.to_s.end_with? ".cache.json" }
+    .collect do |file|
+      # p file
+      file.basename.to_s.split('.').first # => name
+    end
   end
   
   
+  def batch_dsl(batch)
+    yield DSL_Helper.new(@geom_data_dir, batch)
+  end
   
+  class DSL_Helper
+    attr_reader :json, :entity, :mesh
+    
+    def initialize(geom_data_dir, batch)
+      args = [
+        batch,
+        geom_data_dir/"#{@batch.name}.cache.json"
+        geom_data_dir/"#{@batch.name}.position.exr"
+        geom_data_dir/"#{@batch.name}.normal.exr"
+        geom_data_dir/"#{@batch.name}.entity.exr"
+      ]
+      
+      @json   = JsonDSL.new(*args)
+      @entity = EntityDSL.new(*args)
+      @mesh   = MeshDSL.new(*args)
+    end
+    
+    class InnerDSL
+      def initialize(b,j,p,n,e)
+        @batch = b
+        @json_file_path    = j
+        @position_tex_path = p
+        @normal_tex_path   = n
+        @entity_tex_path   = e
+      end
+    end
+    
+    # json names API
+    class JsonDSL < InnerDSL
+      def disk_to_hash
+        @batch.load_json_data(@json_file_path)
+        return self
+      end
+    end
+    
+    # entity texture API
+    class EntityDSL < InnerDSL
+      # disk -> pixels (entity)
+      def disk_to_pixels
+        @batch.load_entity_pixels(@entity_tex_path)
+        return self
+      end
+      
+      # pixels -> texture (entity)
+      def pixels_to_texture
+        @batch[:entity_data][:texture].load_data @batch[:entity_data][:pixels]
+        return self
+      end
+      
+      # pixels -> cache
+      def pixels_to_cache
+        @batch[:entity_cache].load @batch[:entity_data][:pixels]
+        return self
+      end
+      
+      # cache -> pixels
+      def cache_to_pixels
+        @batch[:entity_cache].update @batch[:entity_data][:pixels]
+        return self
+      end
+    end
+    
+    class MeshDSL < InnerDSL
+      # disk -> pixels (mesh)
+      def disk_to_pixels(batch)
+        batch.load_mesh_pixels(@position_tex_path, @normal_tex_path)
+        return self
+      end
+      
+      # pixels -> texture (mesh)
+      def pixels_to_texture
+        @batch[:mesh_data][:texture].load_data @batch[:mesh_data][:pixels]
+        return self
+      end
+      
+      # pixels (mesh) -> geometry
+      def pixels_to_geometry
+        # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
+        vertex_count = @batch[:mesh_data][:pixels][:positions].width.to_i
+        @batch[:geometry].generate vertex_count
+        
+        return self
+      end
+    end
+    
+  end
   
 end
+
+  # NOTE: BlenderSync triggers @world.space.update when either json file or entity texture is reloaded
+  # ^ currently commented out, so this isn't actually happening
+
+# if the textures are reloaded, then you need to update the entity cache too
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -902,6 +1175,8 @@ end
 class RenderBatch
   include RubyOF::Graphics
   
+  attr_reader :name
+  
   def initialize(data_dir, name)
     @data_dir = data_dir
     @name = name
@@ -935,33 +1210,20 @@ class RenderBatch
       
     })
     
+    [
+      @storage[:mesh_data][:textures][:positions],
+      @storage[:mesh_data][:textures][:normals],
+      @storage[:entity_data][:texture]
+    ].each do |texture|
+      texture.disableMipmap() # resets min mag filter
+      
+      texture.wrap_mode(:vertical   => :clamp_to_edge,
+                        :horizontal => :clamp_to_edge)
+      
+      texture.filter_mode(:min => :nearest, :mag => :nearest)
+    end
+    
   end
-  
-  # def setup(buffer_length)
-  #   json_file_path    = @data_dir/"#{@name}.cache.json"
-  #   position_tex_path = @data_dir/"#{@name}.position.exr"
-  #   normal_tex_path   = @data_dir/"#{@name}.normal.exr"
-  #   entity_tex_path   = @data_dir/"#{@name}.entity.exr"
-    
-  #   load_mesh_textures(position_tex_path, normal_tex_path)
-  #   load_entity_texture(entity_tex_path)
-  #   load_json_data(json_file_path)
-    
-    
-  #   # NOTE: mesh data dimensions could change on load, but BatchGeometry assumes that the number of verts / triangles in the mesh is constant
-  #   vertex_count = @storage[:mesh_data][:pixels][:positions].width.to_i
-  #   @storage[:geometry].generate vertex_count
-    
-  #   @storage[:entity_cache].load @storage[:entity_data][:pixels]
-    
-    
-  #   @storage[:entity_history].setup(
-  #     buffer_length: buffer_length,
-  #     frame_width:   @storage[:entity_data][:pixels].width,
-  #     frame_height:  @storage[:entity_data][:pixels].height
-  #   )
-  # end
-  
   
   # allow hash-style access to the FixedSchemaTree
   # (FixedSchemaTree not not allow adding elements, so this is fine)
@@ -970,23 +1232,18 @@ class RenderBatch
   end
   
   
-  
   def load_json_data(json_file_path)
     @storage[:names].load json_file_path
     
     # @storage[:static][:cache].load @storage[:static][:entity_data][:pixels]
   end
   
-  def load_entity_texture(entity_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
+  # load data from disk -> pixels
+  def load_entity_pixels(entity_tex_path)
     [
       [ entity_tex_path,
-        @storage[:entity_data][:pixels],
-        @storage[:entity_data][:texture] ],
-    ].each do |path_to_file, pixels, texture|
+        @storage[:entity_data][:pixels] ],
+    ].each do |path_to_file, pixels|
       ofLoadImage(pixels, path_to_file.to_s)
       
       # y axis is flipped relative to Blender???
@@ -995,32 +1252,18 @@ class RenderBatch
       pixels.flip_vertical
       
       # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
     end
   end
   
   # position and normals will always be updated in tandem
-  def load_mesh_textures(position_tex_path, normal_tex_path)
-    # 
-    # configure all sets of pixels (CPU data) and textures (GPU data)
-    # 
-    
+  # load data from disk -> pixels
+  def load_mesh_pixels(position_tex_path, normal_tex_path)
     [
       [ position_tex_path,
-        @storage[:mesh_data][:pixels][:positions],
-        @storage[:mesh_data][:textures][:positions] ],
+        @storage[:mesh_data][:pixels][:positions] ],
       [ normal_tex_path,
-        @storage[:mesh_data][:pixels][:normals],
-        @storage[:mesh_data][:textures][:normals] ]
-    ].each do |path_to_file, pixels, texture|
+        @storage[:mesh_data][:pixels][:normals] ]
+    ].each do |path_to_file, pixels|
       ofLoadImage(pixels, path_to_file.to_s)
       
       # y axis is flipped relative to Blender???
@@ -1029,15 +1272,6 @@ class RenderBatch
       pixels.flip_vertical
       
       # puts pixels.color_at(0,2)
-      
-      texture.disableMipmap() # resets min mag filter
-      
-      texture.wrap_mode(:vertical   => :clamp_to_edge,
-                        :horizontal => :clamp_to_edge)
-      
-      texture.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      texture.load_data(pixels)
     end
   end
   
@@ -1169,62 +1403,6 @@ class RenderBatch
 
 
 end
-
-
-
-# if the textures are reloaded, then you need to update the entity cache too
-class RenderBatchList
-  def initialize(geom_texture_directory, buffer_length:10)
-    @data_dir = geom_texture_directory
-    @batches = Array.new
-    
-    @buffer_length = buffer_length
-  end
-  
-  def setup
-    @batches = 
-      @data_dir.children
-      .select{ |file| file.basename.to_s.end_with? ".cache.json" }
-      .collect do |file|
-        # p file
-        name, _, _ = file.basename.to_s.split('.')
-        RenderBatch.new(@data_dir, name)
-      end
-    
-    # load render batches
-    @batches.each do |b|
-      b.setup(@buffer_length)
-    end
-  end
-  
-  # if a batch with the specified name exists, return the batch.
-  # else, create a new batch
-  def fetch(target_name)
-    batch = @batches.find{ |x| target_name == x.name }
-    if batch == nil
-      batch = RenderBatch.new(@data_dir, target_name)
-      batch.setup(@buffer_length)
-    end
-    
-    return batch
-  end
-  
-  # delete batches that should no longer exist
-  def gc
-    
-  end
-  
-  # delete batch by name
-  def delete(target_name)
-    
-  end
-  
-  # NOTE: BlenderSync triggers @world.space.update when either json file or entity texture is reloaded
-  # ^ currently commented out, so this isn't actually happening
-end
-
-
-
 
 
 
