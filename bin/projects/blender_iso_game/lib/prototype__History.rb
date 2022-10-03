@@ -208,10 +208,24 @@ class World
     
     # NOTE: serialization of lights / camera is handled in Core#setup
     
+    
+    
+    
+    # TODO: serialize lights and load on startup
+    
+    
+    
+    # TODO: one more RubyOF::FloatPixels for the ghosts
+    # TODO: one more RubyOF::Texture to render the ghosts
+    
+    # TODO: should allow re-scanning of the geom texture directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
+    # ^ not sure if this is still needed. this note brought over from old world.rb
   end
   
   def setup
     @batches.setup()
+    
+    @space.setup()
     
     @state_machine.setup do |s|
       s.define_states(
@@ -321,6 +335,20 @@ class World
     :on_mesh_edited,
     :on_material_edited,
     :on_gc
+  
+  
+  # 
+  # serialization
+  # 
+  # (may not actually need these)
+  
+  def save
+    
+  end
+  
+  def load
+    
+  end
   
 end
 
@@ -936,6 +964,10 @@ class Space
 end
 
 
+
+# TODO: consider separate api for querying static entities (tiles) vs dynamic entities (gameobjects)
+  # ^ "tile" and "gameobject" nomenclature is not used throughout codebase.
+  #   may want to just say "dynamic" and "static" instead
 
 class PhysicsEntity
   attr_reader :name, :position
