@@ -129,6 +129,6 @@ lights:
   shadow_clip_start: 0.05000000074505806
   shadow_clip_end: 40.0
   shadow_buffer_bias: 0.0010000000474974513
-  shadow_map_size: 4096
-  shadow_ortho_scale: 40.0
-  shadow_intensity: 0.6000000238418579
+  shadow_map_size: 32
+  shadow_ortho_scale: 1.0
+  shadow_intensity: 0.5
