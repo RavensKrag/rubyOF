@@ -314,7 +314,7 @@ class BlenderSync
     entity_path = message['entity_tex_path']
     
     
-    # base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
+    base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
     # prefix = "Tiles"
     # json_path    = base_dir/"#{prefix}.cache.json"
     # position_path = base_dir/"#{prefix}.position.exr"
@@ -324,53 +324,31 @@ class BlenderSync
     
     case message['comment']
     when 'moved entity'
-      @world.load_entity_texture(entity_path)
+      @world.on_entity_moved(self, tex_dir, message['name'])
       
     when 'created new entity with new mesh'
-      @world.load_entity_texture(entity_path)
-      @world.load_mesh_textures(position_path,
-                                normal_path)
-      @world.load_json_data(json_path)
+      @world.on_entity_created_with_new_mesh(self, tex_dir, message['name'])
       
     when 'created new entity with existing mesh'
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      @world.on_entity_created(self, tex_dir, message['name'])
       
     when 'edit active mesh'
-      @world.load_mesh_textures(position_path,
-                                normal_path)
+      @world.on_mesh_edited(self, tex_dir, message['name'])
       
     when 'edit material for all instances'
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      @world.on_material_edited(self, tex_dir, message['name'])
       
     when 'run garbage collection'
       # NOTE: this can be called when cache is cleared from Blender, which means that there might not actually be a file at the JSON path
-      
-      if Pathname.new(json_path).exist?
-        @world.load_mesh_textures(position_path,
-                                  normal_path)
-        @world.load_entity_texture(entity_path)
-        @world.load_json_data(json_path)
-      end
-      
+      @world.on_gc(self, tex_dir, message['name'])
     when 'export all textures'
-      @world.load_mesh_textures(position_path,
-                                normal_path)
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      @world.on_full_export(self, tex_dir, message['name'])
     end
     
     
-    # if message['json_file_path'] || message['entity_tex_path']
-    #   @world.space.update
-    # end
-    # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
-    
-    # reload history
-    # (code adapted from Core#on_reload)
-    
-    @frame_history.on_reload_data(self)
+    # # reload history, etc
+    # # (code adapted from Core#on_reload)
+    # @world.on_reload_data(self)
     
   end
   

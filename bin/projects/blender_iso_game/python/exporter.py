@@ -373,6 +373,7 @@ class Exporter():
         data = {
             'type': 'update_geometry_data',
             'comment': 'export all textures',
+            'name': tex_manager.name,
             'json_file_path': tex_manager.get_json_path(),
             'entity_tex_path': entity_filepath,
             'position_tex_path' : position_filepath,
@@ -460,6 +461,7 @@ class Exporter():
             data = {
                 'type': 'update_geometry_data',
                 'comment': 'moved entity',
+                'name': tex_manager.name,
                 'json_file_path': tex_manager.get_json_path(),
                 'position_tex_path' : position_filepath,
                 'normal_tex_path'   : normal_filepath,
@@ -522,6 +524,7 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with new mesh',
+                    'name': tex_manager.name,
                     'json_file_path': tex_manager.get_json_path(),
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
@@ -532,6 +535,7 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'created new entity with existing mesh',
+                    'name': tex_manager.name,
                     'json_file_path': tex_manager.get_json_path(),
                     'position_tex_path' : position_filepath,
                     'normal_tex_path'   : normal_filepath,
@@ -673,6 +677,7 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'edit active mesh',
+                    'name': tex_manager.name,
                     'json_file_path': tex_manager.get_json_path(),
                     'entity_tex_path': entity_filepath,
                     'position_tex_path' : position_filepath,
@@ -748,6 +753,7 @@ class Exporter():
                     data = {
                         'type': 'update_geometry_data',
                         'comment': 'edit material for all instances',
+                        'name': tex_manager.name,
                         'json_file_path': tex_manager.get_json_path(),
                         'entity_tex_path': entity_filepath,
                         'position_tex_path' : position_filepath,
@@ -808,6 +814,7 @@ class Exporter():
                 data = {
                     'type': 'update_geometry_data',
                     'comment': 'run garbage collection',
+                    'name': tex_manager.name,
                     'json_file_path': tex_manager.get_json_path(),
                     'entity_tex_path': entity_filepath,
                     'position_tex_path' : position_filepath,
