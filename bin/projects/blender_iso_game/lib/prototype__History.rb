@@ -155,6 +155,8 @@ end
 
 
 class World
+  extend Forwardable
+  
   # attr_reader :batches
   attr_reader :transport, :entities, :sprites, :space
   attr_reader :lights, :camera
@@ -220,6 +222,7 @@ class World
     
     # TODO: should allow re-scanning of the geom texture directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
     # ^ not sure if this is still needed. this note brought over from old world.rb
+    @crash_detected = false
   end
   
   def setup
@@ -256,6 +259,12 @@ class World
             'history.frame_index' => @counter.to_i
           })
         end
+        
+        p.on_transition :any => States::ReplayingOld do |ipc|
+          if @crash_detected
+            @crash_detected = false
+          end
+        end
       end
     end
   end
@@ -269,7 +278,7 @@ class World
     # or loading frames from the history buffer
     # (depending on the current state of the state machine).
     if @transport.playing?
-      @state_machine.next_frame(&block)
+      @state_machine.next_frame(ipc, &block)
       # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
       #   ( state machine will decide whether to move 
       #     from pixels -> cache OR cache -> pixels   )
@@ -303,6 +312,7 @@ class World
   # callbacks that link up to the live coding system
   # 
   
+  # callback from live_code.rb
   def on_reload_code(ipc)
     puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
     
@@ -316,12 +326,31 @@ class World
     
   end
   
+  # callback from live_code.rb
   def on_crash(ipc)
     if @counter > 0
       @counter.jmp(@counter.to_i - 1)
-      @transport.seek(@counter.to_i)
+      @transport.seek(ipc, @counter.to_i)
     end
+    
+    @transport.pause(ipc) # can't move forward any more - can only seek
+    
+    # puts "set crash flag"
+    @crash_detected = true
   end
+  
+  # Send signal back to Core#update_while_crashed
+  # notifying that the crash has been resolved via time travel.
+  # 
+  # ( the actual resetting of this variable happens
+  #   in a state machine callback, defined in World#setup )
+  def crash_resolved?
+    return !@crash_detected
+  end
+  
+  
+  
+  
   
   # 
   # callbacks that link up to BlenderSync
@@ -349,6 +378,136 @@ class World
   def load
     
   end
+  
+  # 
+  # ui code
+  # 
+  
+  def draw_ui(ui_font)
+    @ui_node ||= RubyOF::Node.new
+    
+    
+    channels_per_px = 4
+    bits_per_channel = 32
+    bits_per_byte = 8
+    bytes_per_channel = bits_per_channel / bits_per_byte
+    
+    
+    # TODO: draw UI in a better way that does not use immediate mode rendering
+    
+    
+    # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
+    memory_usage = []
+    entity_usage = []
+    @storage.values.each_with_index do |texture_set, i|
+      layer_name = texture_set.name
+      cache = texture_set.cache
+      names = texture_set.names
+      
+      offset = i*(189-70)
+      
+      ui_font.draw_string("layer: #{layer_name}",
+                          450, 68+offset+20)
+      
+      
+      current_size = 
+        cache.size.times.collect{ |i|
+          cache.get_entity i
+        }.select{ |x|
+          x.active?
+        }.size
+      
+      ui_font.draw_string("entities: #{current_size} / #{cache.size}",
+                          450+50, 100+offset+20)
+      
+      
+      
+      max_meshes = names.num_meshes
+      
+      num_meshes = 
+        max_meshes.times.collect{ |i|
+          names.mesh_scanline_to_name(i)
+        }.select{ |x|
+          x != nil
+        }.size + 1
+          # Index 0 will always be an empty mesh, so add 1.
+          # That way, the size measures how full the texture is.
+      
+      
+      ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
+                          450+50, 133+offset+20)
+      
+      
+      
+      texture_set.entity_texture.tap do |texture|
+        new_height = 100 #
+        y_scale = new_height / texture.height
+        
+        x = 910-20
+        y = (68-20)+i*(189-70)+20
+        
+        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
+        @ui_node.position = GLM::Vec3.new(x,y, 1)
+
+        @ui_node.transformGL
+        
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
+
+        @ui_node.restoreTransformGL
+      end
+      
+      
+      texture_set.position_texture.tap do |texture|
+        width = [texture.width, 400].min # cap maximum texture width
+        x = 970-40
+        y = (68+texture.height-20)+i*(189-70)+20
+        texture.draw_wh(x,y,0, width, -texture.height)
+      end
+      
+      
+      
+      texture = texture_set.position_texture
+      px = texture.width*texture.height
+      x = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.normal_texture
+      px = texture.width*texture.height
+      y = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      texture = texture_set.entity_texture
+      px = texture.width*texture.height
+      z = px*channels_per_px*bytes_per_channel / 1000.0
+      
+      size = x+y+z
+      
+      ui_font.draw_string("mem: #{size} kb",
+                          1400-50, 100+offset+20)
+      memory_usage << size
+      entity_usage << z
+    end
+    
+    i = memory_usage.length
+    x = memory_usage.reduce &:+
+    ui_font.draw_string("  total VRAM: #{x} kb",
+                        1400-200+27-50, 100+i*(189-70)+20)
+    
+    
+    
+    z = entity_usage.reduce &:+
+    ui_font.draw_string("  entity texture VRAM: #{z} kb",
+                        1400-200+27-50-172, 100+i*(189-70)+20+50)
+    
+    
+    # size = @history.buffer_width * @history.buffer_height * @history.max_length
+    # size = size * channels_per_px * bytes_per_channel
+    # ui_font.draw_string("history memory: #{size/1000.0} kb",
+    #                     120, 310)
+    
+    # @history
+    
+  end
+  
   
 end
 
@@ -1498,8 +1657,7 @@ class TimelineTransport
   # instantly move to desired frame number
   # (moving frame-by-frame in blender is implemented in terms of #seek)
   def seek(ipc, frame_number)
-    @counter.jmp frame_number
-    @state_machine.seek(@counter.to_i)
+    @state_machine.seek(ipc, @counter.to_i)
     
     # ipc.send_to_blender message
   end
@@ -1525,6 +1683,22 @@ class TimelineTransport
     else
       puts "(reset else)"
     end
+  end
+  
+  def current_frame
+    return @counter.to_i
+  end
+  
+  def history_length
+    return @counter.max+1
+  end
+  
+  def time_traveling?
+    return @state_machine.current_state == ReplayingOld
+  end
+  
+  def current_state
+    return @state_machine.current_state
   end
   
 end
@@ -1856,13 +2030,13 @@ module States
     
     # step forward one frame
     # (name taken from Enumerator#next, which functions similarly)
-    def next_frame(&block)
+    def next_frame(ipc, &block)
       @state_machine.transition_to GeneratingNew
     end
     
     # jump to arbitrary frame
-    def seek(frame_number)
-      
+    def seek(ipc, frame_number)
+      # NO-OP
     end
   end
   
@@ -1901,7 +2075,7 @@ module States
     end
     
     # step forward one frame
-    def next_frame(&block)
+    def next_frame(ipc, &block)
       @f2 ||= Fiber.new do
         # This Fiber wraps the block so we can resume where we left off
         # after Helper pauses execution
@@ -1930,8 +2104,9 @@ module States
     end
     
     # jump to arbitrary frame
-    def seek(frame_number)
-      
+    def seek(ipc, frame_number)
+      @state_machine.transition_to ReplayingOld
+      @state_machine.seek(ipc, frame_number)
     end
     
     
@@ -2006,7 +2181,7 @@ module States
     end
     
     # step forward one frame
-    def next_frame(&block)
+    def next_frame(ipc, &block)
       if @counter >= @counter.max
         # ran past the end of saved history
         # must retun to generating new data from the code
@@ -2025,7 +2200,7 @@ module States
     end
     
     # jump to arbitrary frame
-    def seek(frame_number)
+    def seek(ipc, frame_number)
       # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
       
       if frame_number.between?(0, @counter.max) # [0, len-1]
@@ -2047,7 +2222,7 @@ module States
         
         puts "#{@counter.to_s.rjust(4, '0')} old seek"
         
-        @transport.pause
+        @transport.pause(ipc)
         
         # stay in state ReplayingOld
         
@@ -2074,19 +2249,19 @@ module States
     end
     
     # step forward one frame
-    def next_frame(&block)
+    def next_frame(ipc, &block)
       # instead of advancing the frame, or altering state,
       # just pause execution again
-      @transport.pause
+      @transport.pause(ipc)
     end
     
     # jump to arbitrary frame
-    def seek(frame_number)
+    def seek(ipc, frame_number)
       if frame_number >= @counter.max
         # NO-OP
       else
         @state_machine.transition_to ReplayingOld
-        @state_machine.seek(frame_number)
+        @state_machine.seek(ipc, frame_number)
         
       end
     end
