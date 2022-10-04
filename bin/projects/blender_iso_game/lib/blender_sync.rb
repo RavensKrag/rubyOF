@@ -2,8 +2,8 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(message_history, window, world)
-    @message_history = message_history
+  def initialize(window, world)
+    @message_history = BlenderHistory.new
     
     @window = window
     @world = world

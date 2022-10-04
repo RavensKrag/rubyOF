@@ -246,8 +246,7 @@ class Core
     end
     
     
-    @message_history = BlenderHistory.new
-    @sync = BlenderSync.new(@message_history, @window, @world)
+    @sync = BlenderSync.new(@window, @world)
     
   end
   
@@ -295,11 +294,6 @@ class Core
     @world.space.update
     
     # setup()
-      # @message_history = History.new
-      
-      # puts "reloading history"
-      # @message_history.on_reload
-      
       puts "restart sync"
       @sync.reload
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
