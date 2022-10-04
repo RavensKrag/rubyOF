@@ -51,7 +51,7 @@ class World
     # core inteface to backend systems
     # (move data from EntityCache into Textures needed for rendering)
     # 
-    @state_machine = StateMachine.new
+    @state_machine = MyStateMachine.new
     
     @counter = FrameCounter.new
     
@@ -714,10 +714,10 @@ class RenderBatchContainer
     def initialize(geom_data_dir, batch)
       args = [
         batch,
-        geom_data_dir/"#{@batch.name}.cache.json"
-        geom_data_dir/"#{@batch.name}.position.exr"
-        geom_data_dir/"#{@batch.name}.normal.exr"
-        geom_data_dir/"#{@batch.name}.entity.exr"
+        geom_data_dir/"#{batch.name}.cache.json",
+        geom_data_dir/"#{batch.name}.position.exr",
+        geom_data_dir/"#{batch.name}.normal.exr",
+        geom_data_dir/"#{batch.name}.entity.exr"
       ]
       
       @json   = JsonDSL.new(*args)
@@ -772,14 +772,26 @@ class RenderBatchContainer
     
     class MeshDSL < InnerDSL
       # disk -> pixels (mesh)
-      def disk_to_pixels(batch)
-        batch.load_mesh_pixels(@position_tex_path, @normal_tex_path)
+      def disk_to_pixels
+        @batch.load_mesh_pixels(@position_tex_path, @normal_tex_path)
         return self
       end
       
       # pixels -> texture (mesh)
       def pixels_to_texture
-        @batch[:mesh_data][:texture].load_data @batch[:mesh_data][:pixels]
+        [
+          [
+            @batch[:mesh_data][:textures][:positions],
+            @batch[:mesh_data][:pixels][:positions]
+          ],
+          [
+            @batch[:mesh_data][:textures][:normals],
+            @batch[:mesh_data][:pixels][:normals]
+          ]
+        ].each do |texture, pixels|
+          texture.load_data pixels
+        end
+        
         return self
       end
       
@@ -1049,11 +1061,11 @@ class RenderEntityManager
   end
   
   # Retrieve entity by name
-  def [](target_entity_name)
+  def [](entity_name)
     # check all batches for possible name matches (some entries can be nil)
     entity_idx_list = 
       @batches.collect do |batch|
-        @batch[:names].entity_name_to_scanline(target_entity_name)
+        batch[:names].entity_name_to_scanline(entity_name)
       end
     
     # find the first [batch, idx] pair where idx != nil
@@ -1062,20 +1074,54 @@ class RenderEntityManager
       .find{ |batch, idx| !idx.nil? }
     
     if entity_idx.nil?
-      raise "ERROR: Could not find any entity called '#{target_entity_name}'"
+      raise "ERROR: Could not find any entity called '#{entity_name}'"
     end
     
-    # puts "#{target_entity_name} => index #{entity_idx}"
+    # puts "#{entity_name} => index #{entity_idx}"
     
     entity_ptr = batch[:entity_cache].get_entity(entity_idx)
-      # puts target_entity_name
-      # puts "entity -> mesh_index:"
-      # puts entity_ptr.mesh_index
     mesh_name = batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
     mesh = MeshSprite.new(batch, mesh_name, entity_ptr.mesh_index)
     
-    return RenderEntity.new(batch, target_entity_name, entity_idx, entity_ptr, mesh)
+    return RenderEntity.new(batch, entity_name, entity_idx, entity_ptr, mesh)
   end
+  
+  
+  include Enumerable
+  # ^ provides each_with_index, group_by, etc
+  #   all built on top of #each
+  
+  # return each and every entity defined across all batches
+  def each() # &block
+    return enum_for(:each) unless block_given?
+    
+    @batches.each do |batch|
+      num_scanlines = batch[:entity_data][:pixels].height
+      
+      scanline_idxs = num_scanlines.times.map{|i| i }
+      
+      entity_names = 
+        scanline_idxs.collect do |i|
+          batch[:names].entity_scanline_to_name(i)
+        end
+      
+      entity_names.zip(scanline_idxs)
+      .select{ |name, i| name != nil }
+      .each do |entity_name, entity_idx|
+        # puts "#{entity_name} => index #{entity_idx}"
+        
+        entity_ptr = batch[:entity_cache].get_entity(entity_idx)
+        mesh_name = batch[:names].mesh_scanline_to_name(entity_ptr.mesh_index)
+        mesh = MeshSprite.new(batch, mesh_name, entity_ptr.mesh_index)
+        
+        yield RenderEntity.new(batch, entity_name, entity_idx, entity_ptr, mesh)
+        
+        # ^ using self[] is very inefficient, as it must traverse all batches again, to find one that contains the target name.
+        # TODO: can we create a private method that would allow us to go directly to the entity at this stage?
+      end
+    end
+  end
+  
 end
 
 # Access a group of different meshes, as if they were sprites in a spritesheet.
@@ -1719,7 +1765,9 @@ end
 # abstract definition of state machine structure
 # + update     triggers state transitions
 # + next       delegate to current state (see 'States' module below)
-class StateMachine
+class MyStateMachine
+  # TODO: remove use of state_machine library in live_code.rb, and then rename this class to StateMachine
+  
   extend Forwardable
   
   def initialize()
@@ -1727,14 +1775,18 @@ class StateMachine
   end
   
   def setup(&block)
-    @states = []
-    @transitions = [] # [prev_state, next_state, Proc]
+    helper = StateDefinitionHelper.new(TempStorage.new)
     
-    helper = DSL_Helper.new(@states, @transitions)
     block.call helper
     
-    @previous_state = nil
-    @current_state = helper.initial_state
+    helper.data.tap do |d|
+      @states         = d.states
+      @transitions    = d.transitions # [prev_state, next_state, Proc]
+      
+      @previous_state = nil
+      @current_state  = d.initial_state
+    end
+    
   end
   
   # update internal state and fire state transition callbacks
@@ -1769,67 +1821,86 @@ class StateMachine
   
   
   
-  class DSL_Helper
-    attr_reader :initial_state
+  class StateDefinitionHelper
+    attr_accessor :data
     
-    def initialize(state_machine, states, transitions)
-      @state_machine = state_machine
-      @states = states
-      @transitions = transitions
+    def initialize(data)
+      @data = data
     end
     
     def define_states(*args)
       # ASSUME: all arguments should be objects that implement the desired semantics of a state machine state. not exactly sure what that means rigorously, so can't perform error checking.
-      @states = args
+      
+      @data.states = args
     end
     
     def initial_state(state_class)
-      if @states.empty?
+      if @data.states.empty?
         raise "ERROR: Must first declare all possible states using #define_states. Then, you can specify one of those states to be the initial state, by providing the class of that state object."
       end
       
-      unless @state_machine.state_defined? state_class
-        raise "ERROR: '#{state_class.to_s}' is not one of the available states declared using #define_states. Valid states are: #{ @states.map{|x| x.class.to_s} }"
+      unless @data.state_defined? state_class
+        raise "ERROR: #{state_class.inspect} is not one of the available states declared using #define_states. Valid states are: #{ @data.states.map{|x| x.class} }"
       end
       
-      @initial_state = find_state(state_class)
+      @data.initial_state = @data.find_state(state_class)
     end
     
     def define_transitions(&block)
-      helper = PatternHelper.new(@state_machine, @states, @transitions)
+      helper = PatternHelper.new(@data)
       block.call helper
+      # ^ sets @data.transitions directly
+    end
+  end
+  
+  class PatternHelper
+    def initialize(data)
+      @data = data
     end
     
-    
-    class PatternHelper
-      def initialize(state_machine, states, transitions)
-        @state_machine = state_machine
-        @states = states
-        @transitions = transitions
+    # States::StateOne => States::StateTwo do ...
+    def on_transition(pair={}, &block)
+      prev_state_id = pair.keys.first
+      next_state_id = pair.values.first
+      
+      [prev_state_id, next_state_id].each do |state_class|
+        unless(state_class == :any || 
+               state_class == :any_other ||
+               @data.state_defined?(state_class)
+        )
+          raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @data.states.map{|x| x.class.to_s} }"
+        end
       end
       
-      # States::StateOne => States::StateTwo do ...
-      def on_transition(pair={}, &block)
-        prev_state_id = pair.keys.first
-        next_state_id = pair.values.first
-        
-        [prev_state_id, next_state_id].each do |state_class|
-          unless(state_class == :any || 
-                 state_class == :any_other ||
-                 @state_machine.state_defined?(state_class)
-          )
-            raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @states.map{|x| x.class.to_s} }"
-          end
-        end
-        
-        @transitions << [ prev_state_id, next_state_id, block ]
-      end
+      @data.transitions << [ prev_state_id, next_state_id, block ]
+    end
+  end
+  
+  # temporarily store data in this class while state machine is being declared
+  class TempStorage
+    attr_accessor :states, :transitions, :initial_state
+    
+    def initialize
+      @states = []
+      @transitions = []
+      @initial_state = nil
+    end
+    
+    # returns true if @states contains an object of the specified class
+    def state_defined?(state_class)
+      return find_state(state_class) != nil
+    end
+    
+    # return the first state object which is a subclass of the given class
+    def find_state(state_class)
+      p @states.collect{|x| x.is_a? state_class }
+      return @states.find{|x| x.is_a? state_class }
     end
   end
   
   
-  private
   
+  private
   
   def match(p,n, transition_args:[])
     @patterns.each do |prev_state_id, next_state_id, proc|
@@ -1857,15 +1928,6 @@ class StateMachine
     end
   end
   
-  # return the first state object which is a subclass of the given class
-  def find_state(state_class)
-    return @states.find{|x| x.is_a? state_class }
-  end
-  
-  # returns true if @states contains an object of the specified class
-  def state_defined?(state_class)
-    return find_state(state_class) != nil
-  end
 end
 
      
@@ -1876,7 +1938,7 @@ end
 # + next       advance the system forward by 1 frame
 # + seek       jump to an arbitrary frame
 module States
-  class Initial < DefaultState
+  class Initial
     # initialized once when state machine is setup
     def initialize(state_machine)
       @state_machine = state_machine
@@ -1899,7 +1961,7 @@ module States
     end
   end
   
-  class GeneratingNew < DefaultState
+  class GeneratingNew
     # initialized once when state machine is setup
     def initialize(state_machine, frame_counter, history)
       @state_machine = state_machine
@@ -2025,7 +2087,7 @@ module States
     
   end
   
-  class ReplayingOld < DefaultState
+  class ReplayingOld
     # initialized once when state machine is setup
     def initialize(state_machine, frame_counter, transport, history)
       @state_machine = state_machine
@@ -2093,7 +2155,7 @@ module States
     end
   end
   
-  class Finished < DefaultState
+  class Finished
     # initialized once when state machine is setup
     def initialize(state_machine, frame_counter, transport, history)
       @state_machine = state_machine

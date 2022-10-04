@@ -236,8 +236,8 @@ class Core
       @world.lights.load data
     end
     
-    @world.data.each.each_with_index do |entity, i|
-      puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
+    @world.entities.each_with_index do |entity, i|
+      puts "#{i.to_s.rjust(4)} : #{entity.name}"
     end
     
     
@@ -351,7 +351,7 @@ class Core
     @crash_detected = true
     
     @world.transport.pause(@sync)
-    @world.on_crash
+    @world.on_crash(@sync)
     
     # TODO: handle unrecoverable exception differently than recoverable exception
       # unrecoverable exceptions lead to program exit, rather than potential for reload. this can mean that @sync is not shut down correctly, and the FIFO remains open. need a way to detect these sorts of execptions reliably, so that the FIFO can be closed. However, during most exceptions, you want to leave the FIFO open so that Blender controls can be used for time travel, which is critical for debugging a crash.
@@ -489,7 +489,7 @@ class Core
         # so any code related to a branch condition
         # needs to be outside of the snapshot blocks.
         
-        entity = @world.data['Characters'].find_entity_by_name('CharacterTest')
+        entity = @world.entities['CharacterTest']
         p entity
         
         pos = entity.position
