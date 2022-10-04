@@ -675,24 +675,24 @@ class Core
     @render_pipeline.draw(@window,
                           lights:@world.lights,
                           camera:@world.camera,
-                          material:@world.material) do |pipeline|
+                          material:@material) do |pipeline|
       
       # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
       pipeline.shadow_pass do |lights, shadow_material|
         # for now, render opaque objects only
         
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
           shadow_material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
           shadow_material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
           shadow_material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
           shadow_material.setCustomUniform1f(
@@ -701,8 +701,8 @@ class Core
           
           # draw using GPU instancing
           using_material shadow_material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
       end
@@ -710,18 +710,18 @@ class Core
       
       # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.opaque_pass do
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
           @material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
           @material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
           @material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
           @material.setCustomUniform1f(
@@ -729,9 +729,9 @@ class Core
           )
           
           # draw using GPU instancing
-          using_material material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
         
@@ -741,18 +741,18 @@ class Core
       
       # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.transparent_pass do
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
           @material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
           @material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
           @material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
           @material.setCustomUniform1f(
@@ -761,8 +761,8 @@ class Core
           
           # draw using GPU instancing
           using_material @material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
         
@@ -827,7 +827,9 @@ class Core
         
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-        @world.draw_ui( @fonts[:monospace] )
+        
+        # @world.draw_ui( @fonts[:monospace] )
+        # ^ TODO: re-enable UI
         
         
         # stuff we need to render with this

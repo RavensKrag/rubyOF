@@ -16,7 +16,7 @@
 class World
   extend Forwardable
   
-  # attr_reader :batches
+  attr_reader :batches
   attr_reader :transport, :entities, :sprites, :space
   attr_reader :lights, :camera
   
@@ -1445,14 +1445,16 @@ class RenderBatch
   
   
   class BatchGeometry
-    attr_reader :mesh
-    
     def initialize
       @mesh = nil
     end
     
     def generate(vertex_count)
       @mesh = create_mesh(vertex_count)
+    end
+    
+    def draw_instanced(instance_count)
+      @mesh.draw_instanced(instance_count)
     end
     
     private
@@ -1599,7 +1601,7 @@ class TimelineTransport
   end
   
   def time_traveling?
-    return @state_machine.current_state == ReplayingOld
+    return @state_machine.current_state == States::ReplayingOld
   end
   
   def current_state
@@ -1678,6 +1680,7 @@ end
 class FrameCounter
   def initialize
     @value = 0
+    @max = 0
   end
   
   # increment the counter
@@ -1903,7 +1906,7 @@ class MyStateMachine
   private
   
   def match(p,n, transition_args:[])
-    @patterns.each do |prev_state_id, next_state_id, proc|
+    @transitions.each do |prev_state_id, next_state_id, proc|
       # state IDs can be the class constant of a state,
       # or the symbols :any or :any_other
       # :any matches any state (allowing self loops)
