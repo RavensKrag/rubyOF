@@ -2,9 +2,8 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(message_history, history, window, world)
+  def initialize(message_history, window, world)
     @message_history = message_history
-    @frame_history = history
     
     @window = window
     @world = world
@@ -27,8 +26,12 @@ class BlenderSync
     
     @blender_link.print({
       'type' => 'sync_stopping',
-      'history.length' => @frame_history.length
+      'history.length' => @world.transport.history_length
     })
+    # TODO: check blender code. what is the behavior on that end?
+      # when is this method triggered?
+      # what should be the response from Blender?
+      # need to document / explain that here
     
     @blender_link.stop
   end
@@ -39,7 +42,7 @@ class BlenderSync
       puts "BlenderSync: reloading"
       @blender_link.start
       
-      @frame_history.on_reload_code(self)
+      @world.on_reload_code(self)
     end
   end
   
@@ -270,26 +273,26 @@ class BlenderSync
       
       puts "== reset"
       reset()
-      @frame_history.reset(self)
+      @world.transport.reset(self)
       
       puts "====="
       
     when 'pause'
       puts "== pause"
-      @frame_history.pause(self)
+      @world.transport.pause(self)
       
       puts "====="
       
       
     when 'play'
       puts "== play"
-      @frame_history.play(self)
+      @world.transport.play(self)
       
       puts "====="
       
     
     when 'seek'
-      @frame_history.seek(self, message['time'])
+      @world.transport.seek(self, message['time'])
       
     end
   end
@@ -324,25 +327,25 @@ class BlenderSync
     
     case message['comment']
     when 'moved entity'
-      @world.on_entity_moved(self, tex_dir, message['name'])
+      @world.on_entity_moved(self, base_dir, message['name'])
       
     when 'created new entity with new mesh'
-      @world.on_entity_created_with_new_mesh(self, tex_dir, message['name'])
+      @world.on_entity_created_with_new_mesh(self, base_dir, message['name'])
       
     when 'created new entity with existing mesh'
-      @world.on_entity_created(self, tex_dir, message['name'])
+      @world.on_entity_created(self, base_dir, message['name'])
       
     when 'edit active mesh'
-      @world.on_mesh_edited(self, tex_dir, message['name'])
+      @world.on_mesh_edited(self, base_dir, message['name'])
       
     when 'edit material for all instances'
-      @world.on_material_edited(self, tex_dir, message['name'])
+      @world.on_material_edited(self, base_dir, message['name'])
       
     when 'run garbage collection'
       # NOTE: this can be called when cache is cleared from Blender, which means that there might not actually be a file at the JSON path
-      @world.on_gc(self, tex_dir, message['name'])
+      @world.on_gc(self, base_dir, message['name'])
     when 'export all textures'
-      @world.on_full_export(self, tex_dir, message['name'])
+      @world.on_full_export(self, base_dir, message['name'])
     end
     
     
@@ -669,11 +672,11 @@ class BlenderSync
         # can't reset the timeline on reset, because I can't send a loopback message to Blender
         # could possibly send a message when I figure out how to auto reconnect?
       
-      # if @outgoing_thread.alive?
+      if @outgoing_port == nil || !@outgoing_port.alive?
+        # NO-OP
+      else
         @outgoing_port.push message.to_json
-      # else
-      #   # NO-OP
-      # end
+      end
       
     end
     
