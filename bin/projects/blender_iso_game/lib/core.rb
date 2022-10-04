@@ -247,17 +247,17 @@ class Core
     
     
     # material invokes shaders
-    @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
+    @material = BlenderMaterial.new "OpenEXR vertex animation mat"
     
     shader_src_dir = PROJECT_DIR/"bin/glsl"
     @vert_shader_path = shader_src_dir/"animation_texture.vert"
     # @frag_shader_path = shader_src_dir/"phong_test.frag"
     @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
     
-    # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
-    # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+    # @material.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+    # @material.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
     
     
     @render_pipeline = OIT_RenderPipeline.new
@@ -444,7 +444,7 @@ class Core
       @first_update = false
     end
     
-    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
+    @material.load_shaders(@vert_shader_path, @frag_shader_path) do
       # on reload
       
     end
@@ -681,9 +681,6 @@ class Core
                           camera:@world.camera,
                           material:@world.material) do |pipeline|
       
-      material = @world.material
-      
-      
       # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
       pipeline.shadow_pass do |lights, shadow_material|
         # for now, render opaque objects only
@@ -719,19 +716,19 @@ class Core
       pipeline.opaque_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "vert_pos_tex",  pos, 1
           )
           
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "vert_norm_tex", norm, 2
           )
           
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "entity_tex", entity, 3
           )
           
-          material.setCustomUniform1f(
+          @material.setCustomUniform1f(
             "transparent_pass", 0
           )
           
@@ -750,24 +747,24 @@ class Core
       pipeline.transparent_pass do
         @world.each_texture_set do |pos, norm, entity, mesh|
           # set uniforms
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "vert_pos_tex",  pos, 1
           )
           
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "vert_norm_tex", norm, 2
           )
           
-          material.setCustomUniformTexture(
+          @material.setCustomUniformTexture(
             "entity_tex", entity, 3
           )
           
-          material.setCustomUniform1f(
+          @material.setCustomUniform1f(
             "transparent_pass", 1
           )
           
           # draw using GPU instancing
-          using_material material do
+          using_material @material do
             instance_count = entity.height.to_i
             mesh.draw_instanced instance_count
           end
