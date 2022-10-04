@@ -211,7 +211,6 @@ class Core
     
     
     
-    @render_pipeline = OIT_RenderPipeline.new
     
     # want these created once, and not reloaded when code is reloaded.
     # @world is reloaded with reloading of new code,
@@ -244,6 +243,24 @@ class Core
     @world.data.each.each_with_index do |entity, i|
       puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
     end
+    
+    
+    
+    # material invokes shaders
+    @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
+    
+    shader_src_dir = PROJECT_DIR/"bin/glsl"
+    @vert_shader_path = shader_src_dir/"animation_texture.vert"
+    # @frag_shader_path = shader_src_dir/"phong_test.frag"
+    @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
+    
+    # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+    # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+    
+    
+    @render_pipeline = OIT_RenderPipeline.new
     
     
     @sync = BlenderSync.new(@window, @world)
@@ -425,6 +442,11 @@ class Core
       # load_world_state()
       
       @first_update = false
+    end
+    
+    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
+      # on reload
+      
     end
     
     @sync.update
@@ -635,6 +657,8 @@ class Core
   
   include RubyOF::Graphics
   def draw
+    
+    
     
     # 
     # setup materials, etc
