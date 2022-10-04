@@ -98,20 +98,16 @@ load LIB_DIR/'entities'/'blender_mesh.rb'
 load LIB_DIR/'entities'/'viewport_camera.rb'
 load LIB_DIR/'entities'/'blender_light.rb'
 
-load LIB_DIR/'instancing_buffer.rb'
 
 load LIB_DIR/'blender_history.rb'
-load LIB_DIR/'render_batch.rb'
-load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
-
-load LIB_DIR/'oit_render_pipeline.rb'
-
+# load LIB_DIR/'instancing_buffer.rb'
+# load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'fixed_schema_tree.rb'
 load LIB_DIR/'world.rb'
-# load LIB_DIR/'vertex_animation_texture_set.rb'
-load LIB_DIR/'history.rb'
+load LIB_DIR/'oit_render_pipeline.rb'
+
 
 
 
