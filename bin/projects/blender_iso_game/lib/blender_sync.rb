@@ -672,7 +672,7 @@ class BlenderSync
         # can't reset the timeline on reset, because I can't send a loopback message to Blender
         # could possibly send a message when I figure out how to auto reconnect?
       
-      if @outgoing_port == nil || !@outgoing_port.alive?
+      if @outgoing_thread == nil || !@outgoing_thread.alive?
         # NO-OP
       else
         @outgoing_port.push message.to_json
