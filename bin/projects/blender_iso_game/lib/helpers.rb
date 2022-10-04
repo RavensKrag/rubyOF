@@ -86,7 +86,9 @@ module HelperFunctions
 	    raise "dump_yaml() currently only accepts one {URL => location} pair"
 	  end
 	  
-	  if output_path.nil? || !output_path.is_a?(String) || !output_path.is_a?(Pathname)
+	  if( output_path.nil? || 
+	  	   !(output_path.is_a?(String) || output_path.is_a?(Pathname))
+	  )
 	  	raise "ERROR: expected data => output_path, where output_path is a String or Pathname, but recieved #{output_path.inspect}"
 	  end
 	  
