@@ -258,10 +258,10 @@ class World
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
     memory_usage = []
     entity_usage = []
-    @storage.values.each_with_index do |texture_set, i|
-      layer_name = texture_set.name
-      cache = texture_set.cache
-      names = texture_set.names
+    @batches.each_with_index do |b, i|
+      layer_name = b.name
+      cache = b[:entity_cache]
+      names = b[:names]
       
       offset = i*(189-70)
       
@@ -298,7 +298,7 @@ class World
       
       
       
-      texture_set.entity_texture.tap do |texture|
+      b[:entity_data][:texture].tap do |texture|
         new_height = 100 #
         y_scale = new_height / texture.height
         
@@ -317,7 +317,7 @@ class World
       end
       
       
-      texture_set.position_texture.tap do |texture|
+      b[:mesh_data][:textures][:positions].tap do |texture|
         width = [texture.width, 400].min # cap maximum texture width
         x = 970-40
         y = (68+texture.height-20)+i*(189-70)+20
@@ -326,15 +326,15 @@ class World
       
       
       
-      texture = texture_set.position_texture
+      texture = b[:mesh_data][:textures][:positions]
       px = texture.width*texture.height
       x = px*channels_per_px*bytes_per_channel / 1000.0
       
-      texture = texture_set.normal_texture
+      texture = b[:mesh_data][:textures][:normals]
       px = texture.width*texture.height
       y = px*channels_per_px*bytes_per_channel / 1000.0
       
-      texture = texture_set.entity_texture
+      texture = b[:entity_data][:texture]
       px = texture.width*texture.height
       z = px*channels_per_px*bytes_per_channel / 1000.0
       

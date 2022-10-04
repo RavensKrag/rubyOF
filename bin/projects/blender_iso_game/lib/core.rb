@@ -828,8 +828,7 @@ class Core
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
         
-        # @world.draw_ui( @fonts[:monospace] )
-        # ^ TODO: re-enable UI
+        @world.draw_ui( @fonts[:monospace] )
         
         
         # stuff we need to render with this
