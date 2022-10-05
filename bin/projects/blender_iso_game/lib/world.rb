@@ -1595,7 +1595,8 @@ class TimelineTransport
   # instantly move to desired frame number
   # (moving frame-by-frame in blender is implemented in terms of #seek)
   def seek(ipc, frame_number)
-    @state_machine.seek(ipc, @counter.to_i)
+    puts "Transport - seek: #{frame_number} [#{@state_machine.current_state}]"
+    @state_machine.seek(ipc, frame_number)
     
     # ipc.send_to_blender message
   end
@@ -2223,9 +2224,11 @@ module States
     
     # jump to arbitrary frame
     def seek(ipc, frame_number)
+      puts "States::Finished - seek #{frame_number} / #{@counter.max}"
       if frame_number >= @counter.max
         # NO-OP
       else
+        puts "seek"
         @state_machine.transition_to ReplayingOld
         @state_machine.seek(ipc, frame_number)
         
