@@ -26,7 +26,7 @@ class BlenderSync
     
     @blender_link.print({
       'type' => 'sync_stopping',
-      'history.length' => @world.transport.history_length
+      'history.length' => @world.transport.final_frame+1
     })
     # TODO: check blender code. what is the behavior on that end?
       # when is this method triggered?
@@ -278,18 +278,10 @@ class BlenderSync
       puts "====="
       
     when 'pause'
-      puts "== pause"
       @world.transport.pause(self)
       
-      puts "====="
-      
-      
     when 'play'
-      puts "== play"
       @world.transport.play(self)
-      
-      puts "====="
-      
     
     when 'seek'
       @world.transport.seek(self, message['time'])

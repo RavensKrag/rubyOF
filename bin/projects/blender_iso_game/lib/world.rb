@@ -101,6 +101,8 @@ class World
       
       s.define_transitions do |p|
         p.on_transition :any_other => States::Finished do |ipc|
+          @history.snapshot
+          
           puts "finished --> (send message to blender)"
           
           ipc.send_to_blender({
@@ -111,12 +113,7 @@ class World
         
         p.on_transition States::GeneratingNew => States::ReplayingOld do |ipc|
           # should cover both pausing and pulling the read head back
-          
-          ipc.send_to_blender({
-            'type' => 'loopback_paused_new',
-            'history.length'      => @counter.max+1,
-            'history.frame_index' => @counter.to_i
-          })
+          @history.snapshot
         end
         
         p.on_transition :any => States::ReplayingOld do |ipc|
@@ -129,8 +126,8 @@ class World
   end
   
   def update(ipc, &block)
-    # Trigger state transitions as necessary
-    @state_machine.update(ipc)
+    # ( state transitions are fired automatically by
+    #   MyStateMachine#transition_to - no need for an #update method  )
     
     # Update the entities in the world to the next frame,
     # either by executing the code in the block,
@@ -1564,16 +1561,39 @@ class TimelineTransport
   # if playing, pause forward playback
   # else, do nothing
   def pause(ipc)
+    puts "== pause"
+    
     @play_or_pause = :paused
     
-    
-    if @state_machine.current_state == States::ReplayingOld
+    # NOTE: Can't use case statement because that uses #=== which performs an 'is_a?'-like test for classes
+    # TODO: consider changing that structure, so I can use case statement here and make this code cleaner
+    if @state_machine.current_state == States::Initial
+      # NO-OP
+      
+    elsif @state_machine.current_state == States::ReplayingOld
       ipc.send_to_blender({
         'type' => 'loopback_paused_old',
         'history.length'      => @counter.max+1,
         'history.frame_index' => @counter.to_i
       })
+      
+    elsif @state_machine.current_state == States::GeneratingNew
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_new',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      @state_machine.transition_to States::ReplayingOld, ipc
+      
+    elsif @state_machine.current_state == States::Finished
+      puts "(blender triggered pause after code finished)"
+      
+    else
+        raise "ERROR: State machine in unexpected state when pausing."
     end
+    
+    puts "====="
   end
   
   # if paused, run forward
@@ -1581,6 +1601,8 @@ class TimelineTransport
   # may generate new data from code,
   # or may replay saved data from history buffer
   def play(ipc)
+    puts "== play"
+    
     @play_or_pause = :playing
     
     
@@ -1590,6 +1612,8 @@ class TimelineTransport
         'history.length' => @counter.max+1
       })
     end
+    
+    puts "====="
   end
   
   # instantly move to desired frame number
@@ -1628,8 +1652,8 @@ class TimelineTransport
     return @counter.to_i
   end
   
-  def history_length
-    return @counter.max+1
+  def final_frame
+    return @counter.max
   end
   
   def time_traveling?
@@ -1824,11 +1848,6 @@ class MyStateMachine
     
   end
   
-  # update internal state and fire state transition callbacks
-  def update(ipc)
-    match(@previous_state, @current_state, transition_args:[ipc])
-  end
-  
   def_delegators :@current_state,
     :next_frame,
     :seek
@@ -1836,7 +1855,7 @@ class MyStateMachine
   
   
   # trigger transition to the specified state
-  def transition_to(new_state_klass)
+  def transition_to(new_state_klass, ipc)
     if not state_defined? new_state_klass
       raise "ERROR: #{new_state_klass} is not one of the available states declared using #define_states. Valid states are: #{@states.map{|x| x.class}.inspect}"
     end
@@ -1848,6 +1867,8 @@ class MyStateMachine
     new_state.on_enter()
     @previous_state = @current_state
     @current_state = new_state
+    
+    match(@previous_state, @current_state, transition_args:[ipc])
   end
   
   # returns class of current state (so we know the type of state we're in)
@@ -1949,17 +1970,17 @@ class MyStateMachine
       cond1 = (
         (prev_state_id == :any) || 
         (prev_state_id == :any_other && p != n) ||
-        (p == prev_state_id)
+        (p.is_a? prev_state_id)
       )
       
       cond2 = (
         (next_state_id == :any) || 
         (next_state_id == :any_other && n != p) ||
-        (n == next_state_id)
+        (n.is_a? next_state_id)
       )
       
       if cond1 && cond2
-        proc.call(*args)
+        proc.call(*transition_args)
       end
     end
   end
@@ -1998,7 +2019,7 @@ module States
     # step forward one frame
     # (name taken from Enumerator#next, which functions similarly)
     def next_frame(ipc, &block)
-      @state_machine.transition_to GeneratingNew
+      @state_machine.transition_to GeneratingNew, ipc
     end
     
     # jump to arbitrary frame
@@ -2066,13 +2087,22 @@ module States
         @f1.resume()
       else
         # else, code has completed
-        @state_machine.transition_to Finished
+        @state_machine.transition_to Finished, ipc
       end
     end
     
     # jump to arbitrary frame
     def seek(ipc, frame_number)
-      @state_machine.transition_to ReplayingOld
+      # TODO: consider saving state here before seeking backwards
+      puts "States::Finished - seek #{frame_number} / #{@counter.max}"
+      
+      ipc.send_to_blender({
+        'type' => 'loopback_record_scratch',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      @state_machine.transition_to ReplayingOld, ipc
       @state_machine.seek(ipc, frame_number)
     end
     
@@ -2153,7 +2183,7 @@ module States
         # ran past the end of saved history
         # must retun to generating new data from the code
         
-        @state_machine.transition_to GeneratingNew
+        @state_machine.transition_to GeneratingNew, ipc
         @state_machine.next_frame(ipc, &block)
         
       else # @counter < @counter.max
@@ -2229,7 +2259,7 @@ module States
         # NO-OP
       else
         puts "seek"
-        @state_machine.transition_to ReplayingOld
+        @state_machine.transition_to ReplayingOld, ipc
         @state_machine.seek(ipc, frame_number)
         
       end
@@ -2363,7 +2393,13 @@ class HistoryBuffer
       # if the data at that index is valid
       # (otherwise, it could just be garbage)
       
-      raise "Attempted to read garbage state. State at frame #{@i} was either never saved, or has since been deleted." unless @valid[@i]
+      unless @valid[@i]
+        msg = [
+          "Attempted to read garbage state. State at frame #{@i} was either never saved, or has since been deleted.",
+          "#{@valid.collect{|x| x ? "1" : "0" }.join('') }"
+        ]
+        raise msg.join("\n")
+      end
       
       other.copy_from @buffer[@i]
     end

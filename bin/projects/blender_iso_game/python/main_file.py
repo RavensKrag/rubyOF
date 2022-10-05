@@ -2099,6 +2099,17 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 # props.ruby_buffer_size = 1000
                 # scene.frame_end = props.ruby_buffer_size
             
+            if message['type'] == 'loopback_on_crash':
+                self.print(context, "loopback - on crash")
+                
+                self.print(context, "history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            
             # don't clamp timeline when pausing in the past
             if message['type'] == 'loopback_paused_old':
                 self.print(context, "loopback - paused old")
@@ -2110,8 +2121,11 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # scene.frame_current = message['history.frame_index']
             
-            if message['type'] == 'loopback_on_crash':
-                self.print(context, "loopback - on crash")
+            
+            # pull the read head back, but don't pause
+            # need to clamp timeline, like in loopback_paused_new
+            if message['type'] == 'loopback_record_scratch':
+                self.print(context, "loopback - record scratch")
                 
                 self.print(context, "history.length: ", message['history.length'])
                 

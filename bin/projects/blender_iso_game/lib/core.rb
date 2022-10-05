@@ -792,7 +792,7 @@ class Core
         
         @fonts[:monospace].tap do |f|
           
-          f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.history_length-1}",
+          f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
                                            1178, 846+40)
           
           f.draw_string("state #{@world.transport.current_state}",
