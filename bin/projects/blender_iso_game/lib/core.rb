@@ -848,6 +848,8 @@ class Core
             ofDrawRectangle(0,0,0, @window.width, @window.height)
           ofPopStyle()
         end
+        
+        
       end
     end
     

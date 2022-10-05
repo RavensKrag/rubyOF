@@ -2110,6 +2110,17 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # scene.frame_current = message['history.frame_index']
             
+            if message['type'] == 'loopback_on_crash':
+                self.print(context, "loopback - on crash")
+                
+                self.print(context, "history.length: ", message['history.length'])
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            
             # do clamp timeline when pausing while generating new state
             if message['type'] == 'loopback_paused_new':
                 self.print(context, "loopback - paused new")

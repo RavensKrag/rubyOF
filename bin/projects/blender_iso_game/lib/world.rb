@@ -187,10 +187,18 @@ class World
   
   # callback from live_code.rb
   def on_crash(ipc)
-    if @counter > 0
+    puts "world: on crash"
+    
+    # if @counter >= 0
+      ipc.send_to_blender({
+        'type' => 'loopback_reset',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
       @counter.jmp(@counter.to_i - 1)
       @transport.seek(ipc, @counter.to_i)
-    end
+    # end
     
     @transport.pause(ipc) # can't move forward any more - can only seek
     
@@ -499,7 +507,7 @@ class RenderBatchContainer
     # create new
     
     
-    @window.history.branch
+    @history.branch
   end
   
   
@@ -540,7 +548,7 @@ class RenderBatchContainer
     end
     
     
-    @window.history.branch
+    @history.branch
   end
   
   # delete one existing texture set
@@ -552,7 +560,7 @@ class RenderBatchContainer
     
     # (maybe we should push the system back to t=0, as so much of the initial state has changed?)
     
-    @window.history.branch
+    @history.branch
   end
   
   
@@ -568,7 +576,7 @@ class RenderBatchContainer
     
     
     
-    @window.history.branch
+    @history.branch
   end
   
   # (not hooked up yet)
@@ -593,7 +601,7 @@ class RenderBatchContainer
     
     
     
-    @window.history.branch
+    @history.branch
   end
   
   def on_entity_created(ipc, texture_dir, collection_name)
@@ -617,7 +625,7 @@ class RenderBatchContainer
     
     
     
-    @window.history.branch
+    @history.branch
   end
   
   def on_entity_created_with_new_mesh(ipc, texture_dir, collection_name)
@@ -644,7 +652,7 @@ class RenderBatchContainer
     
     
     
-    @window.history.branch
+    @history.branch
   end
   
   # note - can't just create new mesh, would have to create a new entity too
@@ -659,7 +667,7 @@ class RenderBatchContainer
       end
     end
     
-    @window.history.branch
+    @history.branch
   end
   
   # update material data (in entity texture) as well as material names (in json)
@@ -675,7 +683,7 @@ class RenderBatchContainer
       end
     end
     
-    # @window.history.branch
+    # @history.branch
   end
   
   # this seems to function on all batches,
@@ -683,7 +691,7 @@ class RenderBatchContainer
   def on_gc(ipc, texture_dir, collection_name)
     
     
-    @window.history.branch
+    @history.branch
   end
   
   
@@ -939,7 +947,7 @@ class Space
         @groups[name].collect do |render_entity|
           [render_entity.mesh.name, render_entity.position]
         end
-      }.flatten.each do |name, position|
+      }.flatten(1).collect do |name, position|
         StaticPhysicsEntity.new(name, position)
       end
     
@@ -957,7 +965,7 @@ class Space
         @groups[name].collect do |render_entity|
           [render_entity.name, render_entity.position]
         end
-      }.flatten.each do |name, position|
+      }.flatten(1).collect do |name, position|
         DynamicPhysicsEntity.new(name, position)
       end
   end
@@ -988,6 +996,7 @@ class Space
       when :all
         @static_entities + @dynamic_entities
       end
+    p entity_list
     
     entity_list.select{|e| e.position == pt }
   end
@@ -1031,11 +1040,23 @@ class StaticPhysicsEntity < PhysicsEntity
   def initialize(name, position)
     super(:static, name, position)
   end
+  
+  # all meshes are solid for now
+  # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
+  def solid?
+    return true
+  end
 end
 
 class DynamicPhysicsEntity < PhysicsEntity
   def initialize(name, position)
     super(:dynamic, name, position)
+  end
+  
+  # all meshes are solid for now
+  # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
+  def solid?
+    return true
   end
 end
 
@@ -1180,6 +1201,18 @@ class RenderEntity
     @mesh = mesh # instance of the MeshSprite class
   end
   
+  def to_s
+    # TODO: implement me
+    super()
+  end
+  
+  def inspect
+    # TODO: implement me
+      # can't reveal the full chain of everything, because it contains a reference to the RenderBatch, which is linked to a whole mess of data. if you try to print all of that to stdout when logging etc, it is way too much data to read and understand
+      # (maybe the solution is to actually change RenderBatch#inspect instead?)
+    super()
+  end
+  
   def_delegators :@entity_data, 
     :copy_material,
     :ambient,
@@ -1238,12 +1271,6 @@ class MeshSprite
     
     @name = name
     @index = index
-  end
-  
-  # all meshes are solid for now
-  # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
-  def solid?
-    return true
   end
 end
 
@@ -1373,7 +1400,10 @@ class RenderBatch
   
   # ASSUME: pixels and texture are the same dimensions, as they correspond to CPU and GPU representations of the same data
   
-  
+  # show an abbreviated version of the data inside the batch, as the entire thing would be many pages long
+  def inspect
+    "#<#{self.class}:object_id=#{self.object_id} @name=#{@name}>"
+  end
   
   class TextureJsonCache
     def initialize
@@ -1382,6 +1412,7 @@ class RenderBatch
     
     def load(json_filepath)
       unless File.exist? json_filepath
+        # TODO: raises execption after export, but if you restart the game engine everything is fine. need to debug that.
         raise "No file found at '#{json_filepath}'. Expected JSON file with names of meshes and entities. Try re-exporting from Blender."
       end
       
@@ -1655,7 +1686,7 @@ class History
   def branch
     # invalidate all states after the current frame
     @batches.each do |b|
-      ((@counter.to_i+1)..(b[:entity_history])).each do |i|
+      ((@counter.to_i+1)..(b[:entity_history].length-1)).each do |i|
         b[:entity_history][i].delete
       end
     end
@@ -1797,17 +1828,19 @@ class MyStateMachine
     match(@previous_state, @current_state, transition_args:[ipc])
   end
   
-  def_delegators :@current_state, :next
+  def_delegators :@current_state,
+    :next_frame,
+    :seek
   # TODO: Implement custom delegation using method_missing, so that the methods to be delegated can be specified on setup. Should extend the DSL with this extra functionality. That way, the state machine can become a fully reusable component.
   
   
   # trigger transition to the specified state
   def transition_to(new_state_klass)
-    if not @states.include? new_state_klass
-      raise "ERROR: '#{new_state_klass.to_s}' is not one of the available states declared using #define_states. Valid states are: #{@states.inspect}"
+    if not state_defined? new_state_klass
+      raise "ERROR: #{new_state_klass} is not one of the available states declared using #define_states. Valid states are: #{@states.map{|x| x.class}.inspect}"
     end
     
-    new_state = new_state_klass.new(self)
+    new_state = find_state(new_state_klass)
     
     puts "transition: #{@current_state.class} -> #{new_state.class}"
     
@@ -1871,7 +1904,7 @@ class MyStateMachine
                state_class == :any_other ||
                @data.state_defined?(state_class)
         )
-          raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @data.states.map{|x| x.class.to_s} }"
+          raise "ERROR: State transition was not defined correctly. Given '#{state_class.to_s}', but expected either one of the states declared using #define_states, or the symbols :any or :any_other, which specify sets of states. Defined states are: #{ @data.states.map{|x| x.class}.inspect }"
         end
       end
       
@@ -1896,7 +1929,6 @@ class MyStateMachine
     
     # return the first state object which is a subclass of the given class
     def find_state(state_class)
-      p @states.collect{|x| x.is_a? state_class }
       return @states.find{|x| x.is_a? state_class }
     end
   end
@@ -1929,6 +1961,16 @@ class MyStateMachine
         proc.call(*args)
       end
     end
+  end
+  
+  # returns true if @states contains an object of the specified class
+  def state_defined?(state_class)
+    return find_state(state_class) != nil
+  end
+  
+  # return the first state object which is a subclass of the given class
+  def find_state(state_class)
+    return @states.find{|x| x.is_a? state_class }
   end
   
 end
@@ -2111,7 +2153,7 @@ module States
         # must retun to generating new data from the code
         
         @state_machine.transition_to GeneratingNew
-        @state_machine.next
+        @state_machine.next_frame(ipc, &block)
         
       else # @counter < @counter.max
         # otherwise, just load the pre-generated state from the buffer
@@ -2131,7 +2173,7 @@ module States
         # if range of history buffer, move to that frame
         
         @counter.jmp frame_number
-        @history.load_state_at_current_frame
+        @history.load
         
         puts "#{@counter.to_s.rjust(4, '0')} old seek"
         
@@ -2142,7 +2184,7 @@ module States
         
         # delegate to state :generating_new
         @counter.jmp @counter.max
-        @history.load_state_at_current_frame
+        @history.load
         
         puts "#{@counter.to_s.rjust(4, '0')} old seek"
         
