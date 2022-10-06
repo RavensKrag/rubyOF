@@ -103,7 +103,6 @@ load LIB_DIR/'blender_history.rb'
 load LIB_DIR/'blender_sync.rb'
 
 # load LIB_DIR/'instancing_buffer.rb'
-# load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'fixed_schema_tree.rb'
 load LIB_DIR/'my_state_machine.rb'
 load LIB_DIR/'world.rb'
