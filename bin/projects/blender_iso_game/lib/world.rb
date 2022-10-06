@@ -1533,7 +1533,6 @@ class TimelineTransport
     @history = history
     
     
-    @frame = 0
     @play_or_pause = :paused
   end
   
@@ -1552,9 +1551,6 @@ class TimelineTransport
     
     @play_or_pause = :paused
     @state_machine.current_state.on_pause(ipc)
-    
-    # NOTE: Can't use case statement because that uses #=== which performs an 'is_a?'-like test for classes
-    # TODO: consider changing that structure, so I can use case statement here and make this code cleaner
     
     puts "====="
   end
@@ -1584,24 +1580,18 @@ class TimelineTransport
   # The blender python extension can send a reset command to the game engine.
   # When that happens, we process it here.
   def reset(ipc)
-    puts "loopback reset"
+    # For now, just replace the curret timeline with the alt one.
+    # In future commits, we can refine this system to use multiple
+    # timelines, with UI to compress timelines or switch between them.
     
-    if @state_machine.current_state.is_a? States::ReplayingOld
-      # For now, just replace the curret timeline with the alt one.
-      # In future commits, we can refine this system to use multiple
-      # timelines, with UI to compress timelines or switch between them.
-      
-      @history.branch
-      
-      ipc.send_to_blender({
-        'type' => 'loopback_reset',
-        'history.length'      => @counter.max+1,
-        'history.frame_index' => @counter.to_i
-      })
-      
-    else
-      puts "(reset else)"
-    end
+    self.pause(ipc)
+    @history.branch
+    
+    ipc.send_to_blender({
+      'type' => 'loopback_reset',
+      'history.length'      => @counter.max+1,
+      'history.frame_index' => @counter.to_i
+    })
   end
   
   def current_frame
@@ -1778,7 +1768,6 @@ end
 
 
 # abstract definition of state machine structure
-# + update     triggers state transitions
 # + next       delegate to current state (see 'States' module below)
 class MyStateMachine
   # TODO: remove use of state_machine library in live_code.rb, and then rename this class to StateMachine
@@ -1954,8 +1943,8 @@ end
 # ---
 # should we generate new state from code or replay old state from the buffer?
 # that depends on the current system state, so let's use a state machine.
-# + next       advance the system forward by 1 frame
-# + seek       jump to an arbitrary frame
+# + next_frame   advance the system forward by 1 frame
+# + seek         jump to an arbitrary frame
 module States
   class Initial
     # initialized once when state machine is setup
@@ -1975,6 +1964,7 @@ module States
     # (name taken from Enumerator#next, which functions similarly)
     def next_frame(ipc, &block)
       @state_machine.transition_to GeneratingNew, ipc
+      @state_machine.current_state.next_frame(ipc, &block)
     end
     
     def on_play(ipc)
