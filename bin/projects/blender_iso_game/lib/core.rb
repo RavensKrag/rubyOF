@@ -795,7 +795,7 @@ class Core
           f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
                                            1178, 846+40)
           
-          f.draw_string("state #{@world.transport.current_state}",
+          f.draw_string("state #{@world.transport.current_state.class.to_s}",
                                            1178, 846)
         end
         
