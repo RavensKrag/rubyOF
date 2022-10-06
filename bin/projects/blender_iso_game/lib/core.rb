@@ -105,7 +105,12 @@ load LIB_DIR/'blender_sync.rb'
 # load LIB_DIR/'instancing_buffer.rb'
 # load LIB_DIR/'render_batch.rb'
 load LIB_DIR/'fixed_schema_tree.rb'
+load LIB_DIR/'my_state_machine.rb'
+load LIB_DIR/'render_batches.rb' # RenderBatch, RenderBatchCollection
+load LIB_DIR/'render_entities.rb' # RenderEntity, MeshSprite, etc
+load LIB_DIR/'space.rb' # Space, PhysicsEntity, etc 
 load LIB_DIR/'world.rb'
+
 load LIB_DIR/'oit_render_pipeline.rb'
 
 
