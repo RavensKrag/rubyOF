@@ -91,7 +91,7 @@ class World
     
     @state_machine.setup do |s|
       s.define_states(
-        States::Initial.new(      @state_machine),
+        States::Initial.new(      @state_machine, @history),
         States::GeneratingNew.new(@state_machine, @counter, @history),
         States::ReplayingOld.new( @state_machine, @counter, @transport, @history),
         States::Finished.new(     @state_machine, @counter, @transport, @history)
@@ -99,30 +99,17 @@ class World
       
       s.initial_state States::Initial
       
+      
       s.define_transitions do |p|
-        p.on_transition :any_other => States::Finished do |ipc|
-          @history.snapshot
-          
-          puts "finished --> (send message to blender)"
-          
-          ipc.send_to_blender({
-            'type' => 'loopback_finished',
-            'history.length' => @counter.max+1
-          })
-        end
-        
-        p.on_transition States::GeneratingNew => States::ReplayingOld do |ipc|
-          # should cover both pausing and pulling the read head back
-          @history.snapshot
-        end
-        
         p.on_transition :any => States::ReplayingOld do |ipc|
           if @crash_detected
             @crash_detected = false
           end
         end
       end
+      
     end
+    
   end
   
   def update(ipc, &block)
@@ -134,7 +121,7 @@ class World
     # or loading frames from the history buffer
     # (depending on the current state of the state machine).
     if @transport.playing?
-      @state_machine.next_frame(ipc, &block)
+      @state_machine.current_state.next_frame(ipc, &block)
       # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
       #   ( state machine will decide whether to move 
       #     from pixels -> cache OR cache -> pixels   )
@@ -993,7 +980,7 @@ class Space
       when :all
         @static_entities + @dynamic_entities
       end
-    p entity_list
+    # p entity_list
     
     entity_list.select{|e| e.position == pt }
   end
@@ -1564,34 +1551,10 @@ class TimelineTransport
     puts "== pause"
     
     @play_or_pause = :paused
+    @state_machine.current_state.on_pause(ipc)
     
     # NOTE: Can't use case statement because that uses #=== which performs an 'is_a?'-like test for classes
     # TODO: consider changing that structure, so I can use case statement here and make this code cleaner
-    if @state_machine.current_state == States::Initial
-      # NO-OP
-      
-    elsif @state_machine.current_state == States::ReplayingOld
-      ipc.send_to_blender({
-        'type' => 'loopback_paused_old',
-        'history.length'      => @counter.max+1,
-        'history.frame_index' => @counter.to_i
-      })
-      
-    elsif @state_machine.current_state == States::GeneratingNew
-      ipc.send_to_blender({
-        'type' => 'loopback_paused_new',
-        'history.length'      => @counter.max+1,
-        'history.frame_index' => @counter.to_i
-      })
-      
-      @state_machine.transition_to States::ReplayingOld, ipc
-      
-    elsif @state_machine.current_state == States::Finished
-      puts "(blender triggered pause after code finished)"
-      
-    else
-        raise "ERROR: State machine in unexpected state when pausing."
-    end
     
     puts "====="
   end
@@ -1604,14 +1567,7 @@ class TimelineTransport
     puts "== play"
     
     @play_or_pause = :playing
-    
-    
-    if @state_machine.current_state == States::Finished
-      ipc.send_to_blender({
-        'type' => 'loopback_play+finished',
-        'history.length' => @counter.max+1
-      })
-    end
+    @state_machine.current_state.on_play(ipc)
     
     puts "====="
   end
@@ -1620,7 +1576,7 @@ class TimelineTransport
   # (moving frame-by-frame in blender is implemented in terms of #seek)
   def seek(ipc, frame_number)
     puts "Transport - seek: #{frame_number} [#{@state_machine.current_state}]"
-    @state_machine.seek(ipc, frame_number)
+    @state_machine.current_state.seek(ipc, frame_number)
     
     # ipc.send_to_blender message
   end
@@ -1630,7 +1586,7 @@ class TimelineTransport
   def reset(ipc)
     puts "loopback reset"
     
-    if @state_machine.current_state == States::ReplayingOld
+    if @state_machine.current_state.is_a? States::ReplayingOld
       # For now, just replace the curret timeline with the alt one.
       # In future commits, we can refine this system to use multiple
       # timelines, with UI to compress timelines or switch between them.
@@ -1657,7 +1613,7 @@ class TimelineTransport
   end
   
   def time_traveling?
-    return @state_machine.current_state == States::ReplayingOld
+    return @state_machine.current_state.is_a? States::ReplayingOld
   end
   
   def current_state
@@ -1844,15 +1800,11 @@ class MyStateMachine
       
       @previous_state = nil
       @current_state  = d.initial_state
+      
+      @current_state.on_enter()
     end
     
   end
-  
-  def_delegators :@current_state,
-    :next_frame,
-    :seek
-  # TODO: Implement custom delegation using method_missing, so that the methods to be delegated can be specified on setup. Should extend the DSL with this extra functionality. That way, the state machine can become a fully reusable component.
-  
   
   # trigger transition to the specified state
   def transition_to(new_state_klass, ipc)
@@ -1864,17 +1816,17 @@ class MyStateMachine
     
     puts "transition: #{@current_state.class} -> #{new_state.class}"
     
-    new_state.on_enter()
+    new_state.on_enter(ipc)
     @previous_state = @current_state
     @current_state = new_state
     
     match(@previous_state, @current_state, transition_args:[ipc])
   end
   
-  # returns class of current state (so we know the type of state we're in)
-  # rather than the state object (external editing of internal state is bad)
+  # returns current state object
+  # WARNING: this may allow external systems to alter the state object.
   def current_state
-    return @current_state.class
+    return @current_state
   end
   
   
@@ -1997,7 +1949,7 @@ class MyStateMachine
   
 end
 
-     
+
 # states used by state machine defined below
 # ---
 # should we generate new state from code or replay old state from the buffer?
@@ -2007,19 +1959,30 @@ end
 module States
   class Initial
     # initialized once when state machine is setup
-    def initialize(state_machine)
+    def initialize(state_machine, history)
       @state_machine = state_machine
+      @history = history
     end
     
     # called every time we enter this state
     def on_enter
+      puts "#{@counter.to_s.rjust(4, '0')} initial state"
       
+      @history.snapshot
     end
     
     # step forward one frame
     # (name taken from Enumerator#next, which functions similarly)
     def next_frame(ipc, &block)
       @state_machine.transition_to GeneratingNew, ipc
+    end
+    
+    def on_play(ipc)
+      # NO-OP
+    end
+    
+    def on_pause(ipc)
+      # NO-OP
     end
     
     # jump to arbitrary frame
@@ -2040,7 +2003,7 @@ module States
     end
     
     # called every time we enter this state
-    def on_enter
+    def on_enter(ipc)
       puts "#{@counter.to_s.rjust(4, '0')} start generating new"
       
       @f1 = nil
@@ -2091,6 +2054,21 @@ module States
       end
     end
     
+    def on_play(ipc)
+      
+    end
+    
+    def on_pause(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_new',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      # @history.snapshot
+      @state_machine.transition_to States::ReplayingOld, ipc
+    end
+    
     # jump to arbitrary frame
     def seek(ipc, frame_number)
       # TODO: consider saving state here before seeking backwards
@@ -2102,8 +2080,9 @@ module States
         'history.frame_index' => @counter.to_i
       })
       
+      # @history.snapshot
       @state_machine.transition_to ReplayingOld, ipc
-      @state_machine.seek(ipc, frame_number)
+      @state_machine.current_state.seek(ipc, frame_number)
     end
     
     
@@ -2136,7 +2115,6 @@ module States
           
         else # [@counter.max, inf]
           # actually generating new state
-          @history.snapshot
           
           # p [@counter.to_i, @counter.max]
           # puts "history length: #{@counter.max+1}"
@@ -2156,6 +2134,8 @@ module States
           block.call()
           # puts "--------------------------------"
           
+          @history.snapshot
+          
           Fiber.yield
         end
       end
@@ -2173,8 +2153,8 @@ module States
     end
     
     # called every time we enter this state
-    def on_enter
-      
+    def on_enter(ipc)
+      puts "#{@counter.to_s.rjust(4, '0')} replaying old"
     end
     
     # step forward one frame
@@ -2184,7 +2164,7 @@ module States
         # must retun to generating new data from the code
         
         @state_machine.transition_to GeneratingNew, ipc
-        @state_machine.next_frame(ipc, &block)
+        @state_machine.current_state.next_frame(ipc, &block)
         
       else # @counter < @counter.max
         # otherwise, just load the pre-generated state from the buffer
@@ -2194,6 +2174,20 @@ module States
         
         # stay in state ReplayingOld
       end
+    end
+    
+    def on_play(ipc)
+      
+    end
+    
+    def on_pause(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_paused_old',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      # remain in ReplayingOld - no transition
     end
     
     # jump to arbitrary frame
@@ -2206,7 +2200,7 @@ module States
         @counter.jmp frame_number
         @history.load
         
-        puts "#{@counter.to_s.rjust(4, '0')} old seek"
+        puts "#{@counter.to_s.rjust(4, '0')} replaying old: seek"
         
         # stay in state ReplayingOld
         
@@ -2217,7 +2211,7 @@ module States
         @counter.jmp @counter.max
         @history.load
         
-        puts "#{@counter.to_s.rjust(4, '0')} old seek"
+        puts "#{@counter.to_s.rjust(4, '0')} replaying old: seek - end of timeline"
         
         @transport.pause(ipc)
         
@@ -2241,8 +2235,15 @@ module States
     end
     
     # called every time we enter this state
-    def on_enter
-      puts "#{@counter.to_s.rjust(4, '0')} initial"
+    def on_enter(ipc)
+      puts "#{@counter.to_s.rjust(4, '0')} finished"
+      
+      # @history.snapshot
+      
+      ipc.send_to_blender({
+        'type' => 'loopback_finished',
+        'history.length' => @counter.max+1
+      })
     end
     
     # step forward one frame
@@ -2250,6 +2251,17 @@ module States
       # instead of advancing the frame, or altering state,
       # just pause execution again
       @transport.pause(ipc)
+    end
+    
+    def on_play(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_play+finished',
+        'history.length' => @counter.max+1
+      })
+    end
+    
+    def on_pause(ipc)
+      puts "(blender triggered pause after code finished)"
     end
     
     # jump to arbitrary frame
@@ -2260,7 +2272,7 @@ module States
       else
         puts "seek"
         @state_machine.transition_to ReplayingOld, ipc
-        @state_machine.seek(ipc, frame_number)
+        @state_machine.current_state.seek(ipc, frame_number)
         
       end
     end
