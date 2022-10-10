@@ -308,11 +308,10 @@ class Core
     @world.space.update
     
     # setup()
+      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
       puts "restart sync"
       @sync.reload
-      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
-      
-      @world.on_reload_code(@sync)
+      # |--> World#on_reload_code(@sync)
     
     
     
