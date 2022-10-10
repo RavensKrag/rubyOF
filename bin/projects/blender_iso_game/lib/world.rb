@@ -5,9 +5,12 @@
 
 # TODO: implement high-level interface for when one blender object is exported as mulitple entity / mesh pairs. in other words, you have one logical render entity, but the low-level system has many entities and many meshes that need to be managed.
 
-load LIB_DIR/'render_batches.rb' # RenderBatch, RenderBatchCollection
-load LIB_DIR/'render_entities.rb' # RenderEntity, MeshSprite, etc
-load LIB_DIR/'space.rb' # Space, PhysicsEntity, etc 
+load LIB_DIR/'render_batches.rb'
+  # ^ RenderBatch, RenderBatchCollection
+load LIB_DIR/'render_entities.rb' 
+  # ^ RenderEntityManager, RenderEntity, MeshSpriteManager, MeshSprite
+load LIB_DIR/'space.rb'
+  # ^ Space, PhysicsEntity, StaticPhysicsEntity, DynamicPhysicsEntity 
 
 class World
   extend Forwardable
