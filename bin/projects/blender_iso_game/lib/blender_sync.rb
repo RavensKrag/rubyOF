@@ -75,6 +75,10 @@ class BlenderSync
       
       # puts "=> raw message: #{message.inspect}"
       
+      if message["type"] == 'timeline_command'
+        puts "[BlenderSync] recieved: #{message.to_s}"
+      end
+      
       # send all of this data to history
       @message_history.write message
       
@@ -554,7 +558,7 @@ class BlenderSync
               end
               
               message = @outgoing_port.pop # will block thread when Queue empty
-              p message
+              puts "[BlenderSync] sent: #{message.to_s}" 
               @f_w.puts message              
               @f_w.flush
               

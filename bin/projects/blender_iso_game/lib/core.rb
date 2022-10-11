@@ -278,7 +278,6 @@ class Core
     end
     
     
-    # save_world_state()
     dump_yaml @world.camera.data_dump => @camera_save_file
     dump_yaml @world.lights.data_dump => @lighting_save_file
     
@@ -287,6 +286,7 @@ class Core
   end
   
   
+  # NOTE: behavior is undefined if system crashes during #setup
   def on_reload
     puts "core: on_reload() BEGIN"
     
@@ -294,24 +294,29 @@ class Core
       # on a successful reload after a normal run with no errors,
       # need to free resources from the previous normal run,
       # because those resources will be initialized again in #setup
-      self.ensure()
       
-      # Save world on successful reload without crash,
-      # to prevent discontinuities. Otherwise, you would
-      # need to manually refresh the Blender viewport
-      # just to see the same state that you had before reload.
-      # save_world_state()
+      # self.ensure()
+        # ^ ensure closes @sync                               Core#ensure
+        #   which sends "sync_stopping" message to blender    BlenderSync#stop
+        #   which is processed in python                      main_file.py
+        #   which clamps the blender timeline, similar to pausing,
+        #   which causes a pause signal to be sent from blender to ruby
+        #   which then pauses execution.
+        #   
+      
     # end
     
     @crash_detected = false
     
-    @world.space.update
+    # @world.space.update
     
     # setup()
       # (need to re-start sync, because the IO thread is stopped in the ensure callback)
-      puts "restart sync"
-      @sync.reload
+      # puts "restart sync"
+      # @sync.reload
       # |--> World#on_reload_code(@sync)
+      
+      @world.on_reload_code(@sync)
     
     
     

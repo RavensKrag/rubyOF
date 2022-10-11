@@ -144,8 +144,9 @@ class World
   # This allows for new Fibers to be created, and a new block to be bound.
   # See notes in GeneratingNew#on_enter for details.
   
-  # How is this triggered during #on_reload_code ?
+  # How is fiber regeneration triggered during #on_reload_code ?
   # this is supposed to be trigged by History#branch, but not sure...
+  # TODO: figure out how this works
   
   # TODO: make sure that code can be dynamically reloaded while time is progressing. I tried testing this with the mainline code, and it actually seems kinda buggy. it is possible this was never implemented correctly.
   
@@ -159,13 +160,33 @@ class World
   def on_reload_code(ipc)
     puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
     
+    # @space.update
+    
+    @transport.pause(ipc)
+      # GeneratingNew -> ReplayingOld
+      # OR
+      # ReplayingOld -> ReplayingOld
+    
+    @history.branch
+    
+    # @transport.play(ipc)
+    #   # ReplayingOld -> GeneratingNew
+    #   # (regenerates fiber on GeneratingNew#on_enter)
+    
+    # NOTE: re-entry into GeneratingNew is critical for regenerating fiber. otherwise, system will continue to use the code in the old update block, even after reloading.
+    # (can trigger @transport.play here to act like the reload never happened, or can rely on the user to start the system again. either way works)
+    
+    # what about the time it takes to fast-forward the new fiber?
+    # what if that makes the first frame of the restart take longer?
+    # will that cause the game engine and blender to go out of sync?
+    
+    
+    
     ipc.send_to_blender({
-      'type' => 'loopback_reset',
+      'type' => 'loopback_clamp+pause',
       'history.length'      => @counter.max+1,
       'history.frame_index' => @counter.to_i
     })
-    
-    @history.branch
     
   end
   
@@ -173,18 +194,23 @@ class World
   def on_crash(ipc)
     puts "world: on crash"
     
-    # if @counter >= 0
-      ipc.send_to_blender({
-        'type' => 'loopback_reset',
-        'history.length'      => @counter.max+1,
-        'history.frame_index' => @counter.to_i
-      })
-      
+    # TODO: test this - not sure if this will correctly display the crash overlay (red tint) or not. or may have an off-by-one error on resuming code. not quite sure.
+    
       @counter.jmp(@counter.to_i - 1)
       @transport.seek(ipc, @counter.to_i)
-    # end
+      @transport.pause(ipc) # can't move forward any more - can only seek
+      # ^ pausing will clear the @crash_detected flag
+      #   need to test this #on_crash method to make sure it works as expected
+      
+      
+      # NOTE: loopback_reset should only be called when resetting the python <-> ruby IPC mechanism. need to implement a new signal here, and then have new recieving code in python as well. 
+       
+      # ipc.send_to_blender({
+      #   'type' => 'loopback_reset',
+      #   'history.length'      => @counter.max+1,
+      #   'history.frame_index' => @counter.to_i
+      # })
     
-    @transport.pause(ipc) # can't move forward any more - can only seek
     
     # puts "set crash flag"
     @crash_detected = true
@@ -431,7 +457,7 @@ class TimelineTransport
     @history.branch
     
     ipc.send_to_blender({
-      'type' => 'loopback_reset',
+      'type' => 'loopback_clamp+pause',
       'history.length'      => @counter.max+1,
       'history.frame_index' => @counter.to_i
     })
@@ -568,7 +594,7 @@ module States
     
     def on_pause(ipc)
       ipc.send_to_blender({
-        'type' => 'loopback_paused_new',
+        'type' => 'loopback_clamp+pause',
         'history.length'      => @counter.max+1,
         'history.frame_index' => @counter.to_i
       })
@@ -583,7 +609,7 @@ module States
       puts "States::Finished - seek #{frame_number} / #{@counter.max}"
       
       ipc.send_to_blender({
-        'type' => 'loopback_record_scratch',
+        'type' => 'loopback_clamp',
         'history.length'      => @counter.max+1,
         'history.frame_index' => @counter.to_i
       })
@@ -682,7 +708,7 @@ module States
     
     def on_pause(ipc)
       ipc.send_to_blender({
-        'type' => 'loopback_paused_old',
+        'type' => 'loopback_seek+pause',
         'history.length'      => @counter.max+1,
         'history.frame_index' => @counter.to_i
       })
@@ -741,8 +767,9 @@ module States
       # @history.snapshot
       
       ipc.send_to_blender({
-        'type' => 'loopback_finished',
-        'history.length' => @counter.max+1
+        'type' => 'loopback_clamp+pause',
+        'history.length' => @counter.max+1,
+        'history.frame_index' => @counter.to_i
       })
     end
     
@@ -755,8 +782,9 @@ module States
     
     def on_play(ipc)
       ipc.send_to_blender({
-        'type' => 'loopback_play+finished',
-        'history.length' => @counter.max+1
+        'type' => 'loopback_clamp+pause',
+        'history.length' => @counter.max+1,
+        'history.frame_index' => @counter.to_i
       })
     end
     
