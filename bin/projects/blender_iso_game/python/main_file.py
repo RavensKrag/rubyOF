@@ -2068,6 +2068,20 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # send all scene data
                 # (not yet implemented)
+            
+            # ruby says sync needs to stop
+            # maybe there was a crash, or maybe the program exited cleanly.
+            elif message['type'] == 'sync_stopping':
+                self.print(context, "[UpdateLoop] recieved: sync_stopping")
+                # scene.my_custom_props.read_from_ruby = False
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                # props.b_modalUpdateActive = False
+                
+                from_ruby.wait_for_connection()
+            
             elif message['type'] == 'loopback_seek':
                 self.print(context, "[UpdateLoop] recieved: seek")
                 
