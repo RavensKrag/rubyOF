@@ -243,6 +243,13 @@ class RenderBatch
 end
 
 
+
+
+
+
+
+
+
 class RenderBatchContainer
   def initialize(world, geometry_texture_directory:nil, buffer_length:3600)
     @world = world
