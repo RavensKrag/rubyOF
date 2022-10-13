@@ -264,7 +264,7 @@ class Core
     
   end
   
-  # run on normal exit, before exiting program
+  # always run on exit, right before window is closed
   def on_exit
     puts "core: on exit"
     
