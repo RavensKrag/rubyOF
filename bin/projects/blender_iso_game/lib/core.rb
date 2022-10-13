@@ -312,7 +312,6 @@ class Core
     puts "core: on_crash"
     @crash_detected = true
     
-    @world.transport.pause(@sync)
     @world.on_crash(@sync)
     
     # TODO: handle unrecoverable exception differently than recoverable exception
