@@ -286,49 +286,6 @@ class Core
   end
   
   
-  # NOTE: behavior is undefined if system crashes during #setup
-  def on_reload
-    puts "core: on_reload() BEGIN"
-    
-    # if !@crash_detected
-      # on a successful reload after a normal run with no errors,
-      # need to free resources from the previous normal run,
-      # because those resources will be initialized again in #setup
-      
-      # self.ensure()
-        # ^ ensure closes @sync                               Core#ensure
-        #   which sends "sync_stopping" message to blender    BlenderSync#stop
-        #   which is processed in python                      main_file.py
-        #   which clamps the blender timeline, similar to pausing,
-        #   which causes a pause signal to be sent from blender to ruby
-        #   which then pauses execution.
-        #   
-      
-    # end
-    
-    @crash_detected = false
-    
-    # @world.space.update
-    
-    # setup()
-      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
-      # puts "restart sync"
-      # @sync.reload
-      # |--> World#on_reload_code(@sync)
-      
-      @world.on_reload_code(@sync)
-    
-    
-    
-    
-    @first_update = true
-    puts "core: on_reload() END"
-    
-    
-    # load_world_state()
-  end
-  
-  
   # always run on exit, with or without exception
   # and also trigger when code is reloaded
   # BUT make sure to only run this once per pathway
@@ -373,6 +330,48 @@ class Core
     self.update()
   end
   
+  # NOTE: behavior is undefined if system crashes during #setup
+  def on_reload
+    puts "core: on_reload() BEGIN"
+    
+    # if !@crash_detected
+      # on a successful reload after a normal run with no errors,
+      # need to free resources from the previous normal run,
+      # because those resources will be initialized again in #setup
+      
+      # self.ensure()
+        # ^ ensure closes @sync                               Core#ensure
+        #   which sends "sync_stopping" message to blender    BlenderSync#stop
+        #   which is processed in python                      main_file.py
+        #   which clamps the blender timeline, similar to pausing,
+        #   which causes a pause signal to be sent from blender to ruby
+        #   which then pauses execution.
+        #   
+      
+    # end
+    
+    @crash_detected = false
+    
+    # @world.space.update
+    
+    # setup()
+      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
+      # puts "restart sync"
+      # @sync.reload
+      # |--> World#on_reload_code(@sync)
+      
+      @world.on_reload_code(@sync)
+    
+    
+    
+    
+    @first_update = true
+    puts "core: on_reload() END"
+    
+    
+    # load_world_state()
+  end
+  
   
   # Propagates signal from FrameHistory back up to LiveCode
   # that the problem which caused the crash has been managed,
@@ -380,6 +379,11 @@ class Core
   def in_error_state?
     @crash_detected
   end
+  
+  
+  
+  
+  
   
   
   

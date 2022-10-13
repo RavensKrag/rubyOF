@@ -86,8 +86,6 @@ class World
   def setup
     @batches.setup()
     
-    @space.setup()
-    
     @state_machine.setup do |s|
       s.define_states(
         States::Initial.new(      @state_machine, @history),
@@ -109,6 +107,8 @@ class World
       
     end
     
+    
+    @space.setup()
   end
   
   def update(ipc, &block)
@@ -157,40 +157,6 @@ class World
   # 
   
   # callback from live_code.rb
-  def on_reload_code(ipc)
-    puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
-    
-    # @space.update
-    
-    @transport.pause(ipc)
-      # GeneratingNew -> ReplayingOld
-      # OR
-      # ReplayingOld -> ReplayingOld
-    
-    @history.branch
-    
-    # @transport.play(ipc)
-    #   # ReplayingOld -> GeneratingNew
-    #   # (regenerates fiber on GeneratingNew#on_enter)
-    
-    # NOTE: re-entry into GeneratingNew is critical for regenerating fiber. otherwise, system will continue to use the code in the old update block, even after reloading.
-    # (can trigger @transport.play here to act like the reload never happened, or can rely on the user to start the system again. either way works)
-    
-    # what about the time it takes to fast-forward the new fiber?
-    # what if that makes the first frame of the restart take longer?
-    # will that cause the game engine and blender to go out of sync?
-    
-    
-    
-    ipc.send_to_blender({
-      'type' => 'loopback_clamp+pause',
-      'history.length'      => @counter.max+1,
-      'history.frame_index' => @counter.to_i
-    })
-    
-  end
-  
-  # callback from live_code.rb
   def on_crash(ipc)
     puts "world: on crash"
     
@@ -216,6 +182,78 @@ class World
     @crash_detected = true
   end
   
+  # callback from live_code.rb
+  def on_reload_code(ipc)
+    puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
+    
+    # 
+    # regenerate update Fiber
+    # 
+    @transport.pause(ipc)
+      # GeneratingNew -> ReplayingOld
+      # OR
+      # ReplayingOld -> ReplayingOld
+    
+    @history.branch
+    
+    # @transport.play(ipc)
+    #   # ReplayingOld -> GeneratingNew
+    #   # (regenerates fiber on GeneratingNew#on_enter)
+    
+    # NOTE: re-entry into GeneratingNew is critical for regenerating fiber. otherwise, system will continue to use the code in the old update block, even after reloading.
+    # (can trigger @transport.play here to act like the reload never happened, or can rely on the user to start the system again. either way works)
+    
+    # what about the time it takes to fast-forward the new fiber?
+    # what if that makes the first frame of the restart take longer?
+    # will that cause the game engine and blender to go out of sync?
+    
+    
+    # 
+    # update frontend systems
+    # 
+    
+    # @entities = RenderEntityManager.new(@batches)
+    # @sprites  = MeshSpriteManager.new(@batches)
+    # # ^ 2022.10.12 - RenderEntityManager and MeshSpriteManager create no new
+    # #                state is that is not contained in @batches.
+    # #                As such, you don't need to reinitialize these objects.
+    
+    @space = Space.new(@entities)
+    @space.setup
+    # (Really do want to dynamically reload Space definition in some capacity. That way, you can dynamically redefine queries etc.)
+    
+    
+    # don't want to delete backend data,
+    # which means we can't completely reload the backend state
+    # - Some invalid backend state may persist. HistoryBuffer stores
+    #   results of past updates, but the new update Fiber block may not be able
+    #   to produce those same states. In order to avoid this, we need to
+    #   force intelegent rollback by detecting what frames are affected.
+    #   Not sure how to do this in the current archetecture.
+    #   I imagine some system like a scientific computational notebook
+    #   (e.g. jupyter notebook) would be able to handle this,
+    #   but not sure how to adapt that structure here.
+    # - Some old methods may persist, but can't avoid that in Ruby because
+    #   dynamic reloading of classes redefines methods, rather than overwriting.
+    #   (e.g. method World#foo was defined before, but there is no World#foo
+    #   in the new class definition. You might expect calling World#foo to raise
+    #   a method missing exception, but instead it will call the old code.
+    #   This means the code executed now will not be the same as the code 
+    #   executed when we do a full restart.)
+          # NOTE: maybe we need a warning if backend system code is updated, notifying the user of the editing system to restart the game engine?
+    
+    
+    # 
+    # send message to blender
+    # 
+    ipc.send_to_blender({
+      'type' => 'loopback_clamp+pause',
+      'history.length'      => @counter.max+1,
+      'history.frame_index' => @counter.to_i
+    })
+    
+  end
+  
   # Send signal back to Core#update_while_crashed
   # notifying that the crash has been resolved via time travel.
   # 
@@ -229,6 +267,7 @@ class World
   
   # 
   # callbacks that link up to BlenderSync
+  # (these deal with reloading data)
   # 
   
   def_delegators :@batches,
@@ -239,6 +278,8 @@ class World
     :on_mesh_edited,
     :on_material_edited,
     :on_gc
+  # TODO: when data is reloaded, trigger some appropriate changes to history or something
+  
   
   
   # 
