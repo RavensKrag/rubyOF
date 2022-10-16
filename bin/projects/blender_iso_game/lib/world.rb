@@ -16,7 +16,7 @@ class World
   extend Forwardable
   
   attr_reader :batches
-  attr_reader :transport, :entities, :sprites, :space
+  attr_reader :transport, :entities, :sprites, :space, :history
   attr_reader :lights, :camera
   
   def initialize(geom_texture_directory)
@@ -50,13 +50,16 @@ class World
     # core inteface to backend systems
     # (move data from EntityCache into Textures needed for rendering)
     # 
+    
     @state_machine = MyStateMachine.new
     
     @counter = FrameCounter.new
     
+    @update_block = UpdateBlock.new
+    
     @history = History.new(@batches, @counter)
     
-    @transport = TimelineTransport.new(@counter, @state_machine, @history)
+    @transport = TimelineTransport.new(@counter, @state_machine, @history, @update_block)
     # ^ methods = [:play, :pause, :seek, :reset]
     
     
@@ -111,7 +114,14 @@ class World
     @space.setup()
   end
   
-  def update(ipc, &block)
+  # separate binding from execution
+  # so that world state can be advanced at any time
+  def bind_update_block(&block)
+    @update_block.bind &block
+    # TODO: make sure this works as expected when code reloads
+  end
+  
+  def update(ipc)
     # ( state transitions are fired automatically by
     #   MyStateMachine#transition_to - no need for an #update method  )
     
@@ -120,7 +130,9 @@ class World
     # or loading frames from the history buffer
     # (depending on the current state of the state machine).
     if @transport.playing?
-      @state_machine.current_state.next_frame(ipc, &block)
+      @state_machine.current_state.next_frame ipc do |snapshot|
+        @update_block.call snapshot
+      end
       # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
       #   ( state machine will decide whether to move 
       #     from pixels -> cache OR cache -> pixels   )
@@ -218,7 +230,7 @@ class World
     # #                state is that is not contained in @batches.
     # #                As such, you don't need to reinitialize these objects.
     
-    @space = Space.new(@entities)
+    # @space = Space.new(@entities)
     @space.setup
     # (Really do want to dynamically reload Space definition in some capacity. That way, you can dynamically redefine queries etc.)
     
@@ -427,6 +439,28 @@ class World
   
 end
 
+# a way to pass a "pointer" to a block
+# such that the block can be re-defined
+class UpdateBlock
+  def initialize
+    # proc with no arguments can take any number of args
+    @block = Proc.new do
+      # NO-OP
+    end
+  end
+  
+  def bind(&block)
+    @block = block
+  end
+  
+  def call(*args)
+    @block.call *args
+  end
+end
+
+
+
+
 
 # 
 # 
@@ -437,10 +471,11 @@ end
 # Control timeline transport (move back and forward in time)
 # In standard operation, these methods are controlled via the blender timeline.
 class TimelineTransport
-  def initialize(frame_counter, state_machine, history)
+  def initialize(frame_counter, state_machine, history, update_block)
     @state_machine = state_machine
     @counter = frame_counter
     @history = history
+    @update_block = update_block
     
     
     @play_or_pause = :paused
@@ -502,6 +537,14 @@ class TimelineTransport
       'history.length'      => @counter.max+1,
       'history.frame_index' => @counter.to_i
     })
+  end
+  
+  # force system to advance to the next frame
+  # (specific action depends on the state of the system)
+  def next_frame(ipc)
+    @state_machine.current_state.next_frame ipc do |snapshot|
+      @update_block.call snapshot
+    end
   end
   
   def current_frame

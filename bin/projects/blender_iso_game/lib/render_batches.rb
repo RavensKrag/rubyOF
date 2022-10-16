@@ -344,51 +344,54 @@ class RenderBatchContainer
   
   # update existing batches
   # and create new batches as necessary
+  # 
+  # entity and mesh textures have been updated for a single collection
   def on_full_export(ipc, texture_dir, collection_name)
-    batch_names = batch_names_on_disk(@geom_data_dir)
-    new_names = Set.new(batch_names) - Set.new(@batches.collect{|x| x.name})
+    # batch_names = batch_names_on_disk(@geom_data_dir)
+    # new_names = Set.new(batch_names) - Set.new(@batches.collect{|x| x.name})
     
-    # update 
-    @batches.each do |b|
-      batch_dsl(b) do |x|
-        x.mesh.disk_to_pixels
-        x.mesh.pixels_to_texture
+    # # update 
+    # @batches.each do |b|
+    #   batch_dsl(b) do |x|
+    #     x.mesh.disk_to_pixels
+    #     x.mesh.pixels_to_texture
         
-        x.entity.disk_to_pixels
-        x.entity.pixels_to_texture
-        x.entity.pixels_to_cache
+    #     x.entity.disk_to_pixels
+    #     x.entity.pixels_to_texture
+    #     x.entity.pixels_to_cache
         
-        x.json.disk_to_hash
+    #     x.json.disk_to_hash
         
-        x.mesh.pixels_to_geometry
-      end
+    #     x.mesh.pixels_to_geometry
+    #   end
       
-      # pixels (entity) -> history buffer
-      # (not saving the entity data in the buffer, but allocating a buffer)
-      b[:entity_history].setup(
-        buffer_length: @buffer_length,
-        frame_width:   b[:entity_data][:pixels].width,
-        frame_height:  b[:entity_data][:pixels].height
-      )
-    end
+    #   # pixels (entity) -> history buffer
+    #   # (not saving the entity data in the buffer, but allocating a buffer)
+    #   b[:entity_history].setup(
+    #     buffer_length: @buffer_length,
+    #     frame_width:   b[:entity_data][:pixels].width,
+    #     frame_height:  b[:entity_data][:pixels].height
+    #   )
+    # end
     
     
-    # create new
+    # # create new
     
     
-    @world.history.branch
+    # @world.history.branch
   end
   
   
   
   
-  
+  # TODO: implement this in python and blender sync
   # all texture sets have been exported from scratch
   def on_clean_build(ipc, texture_dir, collection_name)
     @geom_data_dir = texture_dir
     self.setup()
   end
   
+  # TODO: implement this in python and blender sync
   # create one new texture set
   def on_texture_set_created(ipc, texture_dir, collection_name)
     RenderBatch.new(@geom_data_dir, name).tap do |b|
@@ -420,6 +423,7 @@ class RenderBatchContainer
     @world.history.branch
   end
   
+  # TODO: implement this in python and blender sync
   # delete one existing texture set
   def on_texture_set_deleted(ipc, texture_dir, collection_name)
     @batches.delete_if{|b| b.name == collection_name }
@@ -434,21 +438,50 @@ class RenderBatchContainer
   
   
   # Question: initial state, or state over time?
+  # assuming entity texture data encodes initial state
   def on_entity_moved(ipc, texture_dir, collection_name)
-    @batches.each do |b|
+    # jump to frame 0
+    @world.transport.pause(ipc) # any -> ReplayingOld
+    @world.transport.seek(ipc, 0)
+    
+    final_frame = @world.transport.final_frame
+    
+    # branch history
+    @world.history.branch # counter.max reset to 0
+    
+    # load new data
+    @batches.find{|b| b.name == collection_name }
+    .tap do |b|
       batch_dsl(b) do |x|
         x.entity.disk_to_pixels
-        # x.entity.pixels_to_texture
-        # x.entity.pixels_to_cache
+        x.entity.pixels_to_texture
+        x.entity.pixels_to_cache
       end
     end
     
+    # regenerate space so queries function as expected
+    @world.space.setup()
     
     
-    @world.history.branch
+    # advance code to the original point
+    while(@world.transport.current_frame < final_frame)
+      # ReplayingOld -> GeneratingNew -> GeneratingNew
+      @world.transport.next_frame(ipc)
+    end
+    
+    # when are entity updates pushed to the GPU?
+    # when is the cache pushed to the texture?
+    # TODO: try to optimize forcasting update speed by only pushing the cache to the final buffer at the end of forcasting, not between every frame, as no one will ever see the stages in-between frames anyway.
+    
+    
+    # resume code execution
+      # actually, don't play from here.
+      # want to be able to "scrub" the position of objects
+      # and see the effects on the output
+    
   end
   
-  # (not hooked up yet)
+  # TODO: implement this in python and blender sync
   def on_entity_deleted(ipc, texture_dir, collection_name)
     @batches.each do |b|
       batch_dsl(b) do |x|

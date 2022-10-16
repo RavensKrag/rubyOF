@@ -455,7 +455,9 @@ class Core
     
     @sync.update
     
-    @world.update @sync do |snapshot|
+    # binding needs to happen during Core#update, otherwise weird things
+    # can happen with Fiber context
+    @world.bind_update_block do |snapshot|
       # step every x frames
       x = 8
       
@@ -638,7 +640,9 @@ class Core
       
     end
     
+    @world.update @sync
     # normal update block executes while code is crashed.
+    
     # 
     # The World#update block may be skipped, but the state machine etc
     # will continue to update. If the crash is resolved,
