@@ -33,10 +33,16 @@ class Space
         # because you will never change the properties of the entity at runtime.
         # 
         # We will use the name of the mesh data as a 'type'
-        @groups[name].collect do |render_entity|
-          [render_entity.mesh.name, render_entity.position]
+        list = @groups[name]
+        if list.nil?
+          # raise "ERROR: no group found with name #{name.inspect}. Here are the known group names: #{@groups.keys.inspect}"
+          nil
+        else
+          list.collect do |render_entity|
+            [render_entity.mesh.name, render_entity.position]
+          end
         end
-      }.flatten(1).collect do |name, position|
+      }.compact.flatten(1).collect do |name, position|
         StaticPhysicsEntity.new(name, position)
       end
     
@@ -51,8 +57,14 @@ class Space
     # Just store name for now, for symmetry with static entities.
     @dynamic_entities = 
       @dynamic_collection_names.collect{ |name|
-        @groups[name].collect do |render_entity|
-          [render_entity.name, render_entity.position]
+        list = @groups[name]
+        if list.nil?
+          # raise "ERROR: no group found with name #{name.inspect}. Here are the known group names: #{@groups.keys.inspect}"
+          nil
+        else
+          list.collect do |render_entity|
+            [render_entity.name, render_entity.position]
+          end
         end
       }.flatten(1).collect do |name, position|
         DynamicPhysicsEntity.new(name, position)

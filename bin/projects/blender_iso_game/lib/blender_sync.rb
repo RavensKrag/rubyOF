@@ -322,6 +322,15 @@ class BlenderSync
     
     
     case message['comment']
+    when 'export batch'
+      @world.on_batch_exported(self, base_dir, message['name'])
+      
+    when 'delete batch'
+      @world.on_batch_deleted(self, base_dir, message['name'])
+      
+    when 'delete all batches'
+      @world.on_all_batches_deleted(self)
+      
     when 'moved entity'
       @world.on_entity_moved(self, base_dir, message['name'])
       
@@ -337,11 +346,9 @@ class BlenderSync
     when 'edit material for all instances'
       @world.on_material_edited(self, base_dir, message['name'])
       
-    when 'run garbage collection'
-      # NOTE: this can be called when cache is cleared from Blender, which means that there might not actually be a file at the JSON path
-      @world.on_gc(self, base_dir, message['name'])
-    when 'export all textures'
-      @world.on_full_export(self, base_dir, message['name'])
+    when 'delete entity'
+      @world.on_entity_deleted(self, base_dir, message['name'])
+    
     end
     
     

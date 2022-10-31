@@ -372,7 +372,7 @@ class Exporter():
         
         data = {
             'type': 'update_geometry_data',
-            'comment': 'export all textures',
+            'comment': 'export batch',
             'name': tex_manager.name,
             'json_file_path': tex_manager.get_json_path(),
             'entity_tex_path': entity_filepath,
@@ -777,6 +777,8 @@ class Exporter():
     def gc(self, scene, prop_group, tex_manager):
         # TODO: Consider storing resource counts in the first pixel instead of alawys looping over all entities
         
+        # TODO: how do you delete an entire texture set?
+        
         # 
         # gc entities
         # 
@@ -807,13 +809,14 @@ class Exporter():
                 # TODO: how do you delete animation frames?
             
             
+            # send signal to game engine that one or more entities in the texture have been deleted
             if len(delta) > 0: 
                 filepaths = tex_manager.get_texture_paths()
                 position_filepath, normal_filepath, entity_filepath = filepaths
                 
                 data = {
                     'type': 'update_geometry_data',
-                    'comment': 'run garbage collection',
+                    'comment': 'delete entity',
                     'name': tex_manager.name,
                     'json_file_path': tex_manager.get_json_path(),
                     'entity_tex_path': entity_filepath,
