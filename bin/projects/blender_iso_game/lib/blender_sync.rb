@@ -2,9 +2,8 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(message_history, history, window, world)
-    @message_history = message_history
-    @frame_history = history
+  def initialize(window, world)
+    @message_history = BlenderHistory.new
     
     @window = window
     @world = world
@@ -27,8 +26,12 @@ class BlenderSync
     
     @blender_link.print({
       'type' => 'sync_stopping',
-      'history.length' => @frame_history.length
+      'history.length' => @world.transport.final_frame+1
     })
+    # TODO: check blender code. what is the behavior on that end?
+      # when is this method triggered?
+      # what should be the response from Blender?
+      # need to document / explain that here
     
     @blender_link.stop
   end
@@ -39,7 +42,7 @@ class BlenderSync
       puts "BlenderSync: reloading"
       @blender_link.start
       
-      @frame_history.on_reload_code(self)
+      @world.on_reload_code(self)
     end
   end
   
@@ -71,6 +74,10 @@ class BlenderSync
       # puts "time - parse json: #{dt}"
       
       # puts "=> raw message: #{message.inspect}"
+      
+      if message["type"] == 'timeline_command'
+        puts "[BlenderSync] recieved: #{message.to_s}"
+      end
       
       # send all of this data to history
       @message_history.write message
@@ -270,26 +277,18 @@ class BlenderSync
       
       puts "== reset"
       reset()
-      @frame_history.reset(self)
+      @world.transport.reset(self)
       
       puts "====="
       
     when 'pause'
-      puts "== pause"
-      @frame_history.pause(self)
-      
-      puts "====="
-      
+      @world.transport.pause(self)
       
     when 'play'
-      puts "== play"
-      @frame_history.play(self)
-      
-      puts "====="
-      
+      @world.transport.play(self)
     
     when 'seek'
-      @frame_history.seek(self, message['time'])
+      @world.transport.seek(self, message['time'])
       
     end
   end
@@ -314,7 +313,7 @@ class BlenderSync
     entity_path = message['entity_tex_path']
     
     
-    # base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
+    base_dir = PROJECT_DIR/'bin'/'data'/'geom_textures'
     # prefix = "Tiles"
     # json_path    = base_dir/"#{prefix}.cache.json"
     # position_path = base_dir/"#{prefix}.position.exr"
@@ -323,54 +322,39 @@ class BlenderSync
     
     
     case message['comment']
+    when 'export batch'
+      @world.on_batch_exported(self, base_dir, message['name'])
+      
+    when 'delete batch'
+      @world.on_batch_deleted(self, base_dir, message['name'])
+      
+    when 'delete all batches'
+      @world.on_all_batches_deleted(self)
+      
     when 'moved entity'
-      @world.load_entity_texture(entity_path)
+      @world.on_entity_moved(self, base_dir, message['name'])
       
     when 'created new entity with new mesh'
-      @world.load_entity_texture(entity_path)
-      @world.load_mesh_textures(position_path,
-                                normal_path)
-      @world.load_json_data(json_path)
+      @world.on_entity_created_with_new_mesh(self, base_dir, message['name'])
       
     when 'created new entity with existing mesh'
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      @world.on_entity_created_with_existing_mesh(self, base_dir, message['name'])
       
     when 'edit active mesh'
-      @world.load_mesh_textures(position_path,
-                                normal_path)
+      @world.on_mesh_edited(self, base_dir, message['name'])
       
     when 'edit material for all instances'
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+      @world.on_material_edited(self, base_dir, message['name'])
       
-    when 'run garbage collection'
-      # NOTE: this can be called when cache is cleared from Blender, which means that there might not actually be a file at the JSON path
-      
-      if Pathname.new(json_path).exist?
-        @world.load_mesh_textures(position_path,
-                                  normal_path)
-        @world.load_entity_texture(entity_path)
-        @world.load_json_data(json_path)
-      end
-      
-    when 'export all textures'
-      @world.load_mesh_textures(position_path,
-                                normal_path)
-      @world.load_entity_texture(entity_path)
-      @world.load_json_data(json_path)
+    when 'delete entity'
+      @world.on_entity_deleted(self, base_dir, message['name'])
+    
     end
     
     
-    # if message['json_file_path'] || message['entity_tex_path']
-    #   @world.space.update
-    # end
-    # TODO: query some hash of queries over time, to figure out if the changes to geometry would have effected spatial queries (see "current issues" notes for details)
-    
-    # reload history
-    # (code adapted from Core#on_reload)
-    
-    @frame_history.on_reload_data(self)
+    # # reload history, etc
+    # # (code adapted from Core#on_reload)
+    # @world.on_reload_data(self)
     
   end
   
@@ -581,7 +565,7 @@ class BlenderSync
               end
               
               message = @outgoing_port.pop # will block thread when Queue empty
-              p message
+              puts "[BlenderSync] sent: #{message.to_s}" 
               @f_w.puts message              
               @f_w.flush
               
@@ -691,10 +675,10 @@ class BlenderSync
         # can't reset the timeline on reset, because I can't send a loopback message to Blender
         # could possibly send a message when I figure out how to auto reconnect?
       
-      # if @outgoing_thread.alive?
-        @outgoing_port.push message.to_json
+      # if @outgoing_thread == nil || !@outgoing_thread.alive?
+        # NO-OP
       # else
-      #   # NO-OP
+        @outgoing_port.push message.to_json
       # end
       
     end

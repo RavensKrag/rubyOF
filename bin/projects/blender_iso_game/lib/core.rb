@@ -98,20 +98,17 @@ load LIB_DIR/'entities'/'blender_mesh.rb'
 load LIB_DIR/'entities'/'viewport_camera.rb'
 load LIB_DIR/'entities'/'blender_light.rb'
 
-load LIB_DIR/'instancing_buffer.rb'
 
 load LIB_DIR/'blender_history.rb'
-load LIB_DIR/'render_batch.rb'
-load LIB_DIR/'dependency_graph.rb'
 load LIB_DIR/'blender_sync.rb'
 
+# load LIB_DIR/'instancing_buffer.rb'
+load LIB_DIR/'fixed_schema_tree.rb'
+load LIB_DIR/'my_state_machine.rb'
+load LIB_DIR/'world.rb'
 
 load LIB_DIR/'oit_render_pipeline.rb'
 
-load LIB_DIR/'fixed_schema_tree.rb'
-load LIB_DIR/'world.rb'
-load LIB_DIR/'vertex_animation_texture_set.rb'
-load LIB_DIR/'history.rb'
 
 
 
@@ -211,7 +208,6 @@ class Core
     
     
     
-    @render_pipeline = OIT_RenderPipeline.new
     
     # want these created once, and not reloaded when code is reloaded.
     # @world is reloaded with reloading of new code,
@@ -241,56 +237,34 @@ class Core
       @world.lights.load data
     end
     
-    @world.data.each.each_with_index do |entity, i|
-      puts "#{i.to_s.rjust(4)} : #{entity.inspect}"
+    @world.entities.each_with_index do |entity, i|
+      puts "#{i.to_s.rjust(4)} : #{entity.name}"
     end
     
     
     
+    # material invokes shaders
+    @material = BlenderMaterial.new "OpenEXR vertex animation mat"
+    
+    shader_src_dir = PROJECT_DIR/"bin/glsl"
+    @vert_shader_path = shader_src_dir/"animation_texture.vert"
+    # @frag_shader_path = shader_src_dir/"phong_test.frag"
+    @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
+    
+    # @material.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+    # @material.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
     
     
-    
-    @frame_history = History::Outer.new
-    @frame_history.bind_to_world @world
+    @render_pipeline = OIT_RenderPipeline.new
     
     
-    
-    
-    
-    @message_history = BlenderHistory.new
-    
-    # @depsgraph = DependencyGraph.new
-    # ^ this was an old class for different types of entities (objects, meshes, lights, cameras) before the creation of the new vertex animation system.
-    # Keeping a reference here in a comment for historical reasons (may need to reference this code later) but generally speaking, this class should no longer be used
-      # use OIT_RenderPipeline, World, and RubyOF::Project::EntityCache instead
-    
-    @sync = BlenderSync.new(@message_history, @frame_history,
-                            @window, @world)
+    @sync = BlenderSync.new(@window, @world)
     
   end
   
-  # run when exception is detected
-  def on_crash
-    puts "core: on_crash"
-    @crash_detected = true
-    
-    @frame_history.pause(@sync)
-    @frame_history.on_crash
-    @frame_history.update(@sync)
-    
-    
-    # TODO: handle unrecoverable exception differently than recoverable exception
-      # unrecoverable exceptions lead to program exit, rather than potential for reload. this can mean that @sync is not shut down correctly, and the FIFO remains open. need a way to detect these sorts of execptions reliably, so that the FIFO can be closed. However, during most exceptions, you want to leave the FIFO open so that Blender controls can be used for time travel, which is critical for debugging a crash.
-    
-    
-    # Don't stop sync thread on crash.
-    # Need to be able to communicate with Blender
-    # in order to control time travel
-    
-    # self.ensure()
-  end
-  
-  # run on normal exit, before exiting program
+  # always run on exit, right before window is closed
   def on_exit
     puts "core: on exit"
     
@@ -304,58 +278,11 @@ class Core
     end
     
     
-    # save_world_state()
     dump_yaml @world.camera.data_dump => @camera_save_file
     dump_yaml @world.lights.data_dump => @lighting_save_file
     
     
     # FileUtils.rm @world_save_file if @world_save_file.exist?
-  end
-  
-  
-  def on_reload
-    puts "core: on_reload() BEGIN"
-    
-    # if !@crash_detected
-      # on a successful reload after a normal run with no errors,
-      # need to free resources from the previous normal run,
-      # because those resources will be initialized again in #setup
-      self.ensure()
-      
-      # Save world on successful reload without crash,
-      # to prevent discontinuities. Otherwise, you would
-      # need to manually refresh the Blender viewport
-      # just to see the same state that you had before reload.
-      # save_world_state()
-    # end
-    
-    @crash_detected = false
-    
-    @update_scheduler = nil
-    
-    
-    @world.space.update
-    
-    # setup()
-      # @message_history = History.new
-      
-      # puts "reloading history"
-      # @message_history.on_reload
-      
-      puts "restart sync"
-      @sync.reload
-      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
-      
-      @frame_history.on_reload_code(@sync)
-    
-    
-    
-    
-    @first_update = true
-    puts "core: on_reload() END"
-    
-    
-    # load_world_state()
   end
   
   
@@ -380,12 +307,100 @@ class Core
   
   
   
+  # run when exception is detected
+  def on_crash
+    puts "core: on_crash"
+    @crash_detected = true
+    
+    @world.on_crash(@sync)
+    
+    # TODO: handle unrecoverable exception differently than recoverable exception
+      # unrecoverable exceptions lead to program exit, rather than potential for reload. this can mean that @sync is not shut down correctly, and the FIFO remains open. need a way to detect these sorts of execptions reliably, so that the FIFO can be closed. However, during most exceptions, you want to leave the FIFO open so that Blender controls can be used for time travel, which is critical for debugging a crash.
+    
+    
+    # Don't stop sync thread on crash.
+    # Need to be able to communicate with Blender
+    # in order to control time travel
+    
+    # self.ensure()
+  end
+  
+  def update_while_crashed
+    self.update()
+  end
+  
+  # NOTE: behavior is undefined if system crashes during #setup
+  def on_reload
+    puts "core: on_reload() BEGIN"
+    
+    # if !@crash_detected
+      # on a successful reload after a normal run with no errors,
+      # need to free resources from the previous normal run,
+      # because those resources will be initialized again in #setup
+      
+      # self.ensure()
+        # ^ ensure closes @sync                               Core#ensure
+        #   which sends "sync_stopping" message to blender    BlenderSync#stop
+        #   which is processed in python                      main_file.py
+        #   which clamps the blender timeline, similar to pausing,
+        #   which causes a pause signal to be sent from blender to ruby
+        #   which then pauses execution.
+        #   
+      
+    # end
+    
+    @crash_detected = false
+    
+    # @world.space.update
+    
+    # setup()
+      # (need to re-start sync, because the IO thread is stopped in the ensure callback)
+      # puts "restart sync"
+      # @sync.reload
+      # |--> World#on_reload_code(@sync)
+      
+      @world.on_reload_code(@sync)
+    
+    
+    
+    
+    @first_update = true
+    puts "core: on_reload() END"
+    
+    
+    # load_world_state()
+  end
+  
+  
+  # Propagates signal from FrameHistory back up to LiveCode
+  # that the problem which caused the crash has been managed,
+  # even without loading new code.
+  def in_error_state?
+    @crash_detected
+  end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   def window_resized(w,h)
     # puts "generate new camera"
     # @world.camera = ViewportCamera.new
     @render_pipeline.update(@window, @world.lights)
   end
+  
+  
+  
+  
   
   
   
@@ -404,8 +419,6 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
-    @crash_detected = false # reset when normal updates are called again
-    
     # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
     
     # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
@@ -428,40 +441,23 @@ class Core
     # # end
     
     
-    
-    
     if @first_update
       puts "first update"
       # load_world_state()
       
       @first_update = false
-      
-      
-      # # 
-      # # jpg test
-      # # 
-      
-      # @pixels = RubyOF::Pixels.new
-      # ofLoadImage(@pixels, "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/bin/data/hsb-cone.jpg")
-      
-      # @texture_out = RubyOF::Texture.new
-      
-      # @texture_out.wrap_mode(:vertical => :clamp_to_edge,
-      #                      :horizontal => :clamp_to_edge)
-      
-      # @texture_out.filter_mode(:min => :nearest, :mag => :nearest)
-      
-      # @texture_out.load_data(@pixels)
-      
+    end
+    
+    @material.load_shaders(@vert_shader_path, @frag_shader_path) do
+      # on reload
       
     end
     
-    
-    
     @sync.update
     
-    
-    @frame_history.update @sync do |snapshot|
+    # binding needs to happen during Core#update, otherwise weird things
+    # can happen with Fiber context
+    @world.bind_update_block do |snapshot|
       # step every x frames
       x = 8
       
@@ -503,7 +499,7 @@ class Core
         # so any code related to a branch condition
         # needs to be outside of the snapshot blocks.
         
-        entity = @world.data['Characters'].find_entity_by_name('CharacterTest')
+        entity = @world.entities['CharacterTest']
         p entity
         
         pos = entity.position
@@ -644,7 +640,17 @@ class Core
       
     end
     
-    @world.update
+    @world.update @sync
+    # normal update block executes while code is crashed.
+    
+    # 
+    # The World#update block may be skipped, but the state machine etc
+    # will continue to update. If the crash is resolved,
+    # we will see that signal here, and help propagate it up to LiveCode
+    # ( signal is actually sent to LiveCode in Core#in_error_state? )
+    if @world.crash_resolved?
+      @crash_detected = false # reset when normal updates can run again
+    end
   end
   
   # methods #update and #draw are called by the C++ render loop
@@ -657,76 +663,10 @@ class Core
   
   
   
-  def update_while_crashed
-    @crash_detected = true # set in Core#on_crash
-    
-    # puts "=== update while crashed ==="
-    
-    # pass @crash_detected flag to FrameHistory
-    @frame_history.crash_detected
-    
-    # update messages and history as necessary to try dealing with crash
-    @sync.update
-    @frame_history.update(@sync)
-      # FrameHistory will clear the @crash_detected state
-      # if you start to go back in time after a crash.
-      
-      
-      # oh wait,
-      # but need take one step back when crash is detected
-    
-    # If FrameHistory was able to use time travel to resolve the crash
-    # then clear the flag
-    if !@frame_history.crash_detected?
-      @crash_detected = false
-    end
-    
-    # puts "=== update while crashed END"
-  end
-  
-  
-  # Propagates signal from FrameHistory back up to LiveCode
-  # that the problem which caused the crash has been managed,
-  # even without loading new code.
-  def in_error_state?
-    @crash_detected
-  end
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   include RubyOF::Graphics
   def draw
+    
+    
     
     # 
     # setup materials, etc
@@ -747,27 +687,24 @@ class Core
     @render_pipeline.draw(@window,
                           lights:@world.lights,
                           camera:@world.camera,
-                          material:@world.material) do |pipeline|
-      
-      material = @world.material
-      
+                          material:@material) do |pipeline|
       
       # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
       pipeline.shadow_pass do |lights, shadow_material|
         # for now, render opaque objects only
         
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
           shadow_material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
           shadow_material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
           shadow_material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
           shadow_material.setCustomUniform1f(
@@ -776,8 +713,8 @@ class Core
           
           # draw using GPU instancing
           using_material shadow_material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
       end
@@ -785,28 +722,28 @@ class Core
       
       # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.opaque_pass do
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
-          material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+          @material.setCustomUniformTexture(
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
-          material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+          @material.setCustomUniformTexture(
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
-          material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+          @material.setCustomUniformTexture(
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
-          material.setCustomUniform1f(
+          @material.setCustomUniform1f(
             "transparent_pass", 0
           )
           
           # draw using GPU instancing
-          using_material material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
         
@@ -816,33 +753,33 @@ class Core
       
       # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
       pipeline.transparent_pass do
-        @world.each_texture_set do |pos, norm, entity, mesh|
+        @world.batches.each do |b|
           # set uniforms
-          material.setCustomUniformTexture(
-            "vert_pos_tex",  pos, 1
+          @material.setCustomUniformTexture(
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
           )
           
-          material.setCustomUniformTexture(
-            "vert_norm_tex", norm, 2
+          @material.setCustomUniformTexture(
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
           )
           
-          material.setCustomUniformTexture(
-            "entity_tex", entity, 3
+          @material.setCustomUniformTexture(
+            "entity_tex", b[:entity_data][:texture], 3
           )
           
-          material.setCustomUniform1f(
+          @material.setCustomUniform1f(
             "transparent_pass", 1
           )
           
           # draw using GPU instancing
-          using_material material do
-            instance_count = entity.height.to_i
-            mesh.draw_instanced instance_count
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
         
         # while time traveling, render the trails of moving objects
-        if @frame_history.time_traveling?
+        if @world.transport.time_traveling?
           
         end
       end
@@ -865,12 +802,14 @@ class Core
         end
         
         
-        
-        @fonts[:monospace].draw_string("frame #{@frame_history.frame_index}/#{@frame_history.length-1}",
-                                         1178, 846+40)
-        
-        @fonts[:monospace].draw_string("state #{@frame_history.state}",
-                                         1178, 846)
+        @fonts[:monospace].tap do |f|
+          
+          f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
+                                           1178, 846+40)
+          
+          f.draw_string("state #{@world.transport.current_state.class.to_s}",
+                                           1178, 846)
+        end
         
         # @fonts[:monospace].draw_string("history size: #{}",
                                          # 400, 160)
@@ -900,6 +839,7 @@ class Core
         
         
         # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+        
         @world.draw_ui( @fonts[:monospace] )
         
         
@@ -920,6 +860,8 @@ class Core
             ofDrawRectangle(0,0,0, @window.width, @window.height)
           ofPopStyle()
         end
+        
+        
       end
     end
     

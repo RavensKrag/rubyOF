@@ -56,6 +56,10 @@ def main(project_root)
 	# display any uncaught ruby-level exceptions after safely exiting C++ code
 	unless x.exception.nil?
 		puts "[GEM_ROOT]/bin/main.rb: Uncaught exeception"
-		raise x.exception
+		# raise x.exception
+		msg = x.exception.full_message
+				.gsub!(GEM_ROOT.to_s, "[GEM_ROOT]")
+	
+		puts msg
 	end
 end

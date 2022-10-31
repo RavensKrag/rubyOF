@@ -633,11 +633,13 @@ AnimTexManager = reload_class(AnimTexManager)
 
 
 class ResourceManager():
-    def __init__(self):
+    def __init__(self, to_ruby):
         # print("init resource manager", flush=True)
         self.anim_tex_manager = None
         
         self.tex_managers = []
+        
+        self.to_ruby = to_ruby
     
     # scene.my_tool['name_list'] is a List of strings that controls the ordering of the texture sets in the UI. Order is maintained across the 3 collections (described below) by only performing binary swaps to move elements up / down
     
@@ -707,11 +709,13 @@ class ResourceManager():
             self.tex_managers[j] = None
             self.tex_managers[j] = AnimTexManager(scene, name)
         
-        # # print("try to clear texture manager", flush=True)
-        # if self.anim_tex_manager is not None:
-        #     # print("clearing texture manager", flush=True)
-        #     self.anim_tex_manager.clear(scene)
-        #     self.anim_tex_manager = None
+        data = {
+            'type': 'update_geometry_data',
+            'comment': 'delete all batches',
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
     
     
     def load(self, scene):
@@ -807,6 +811,9 @@ class ResourceManager():
         self.__debug_print(scene)
         
         
+        # TODO: send signal to Ruby when texture set is deleted
+        
+        
         # texture set collection
         # index to be removed is dependent on the ordering of the names
         # not the order of this collection
@@ -815,7 +822,31 @@ class ResourceManager():
         
         self.__debug_print(scene)
         
-        # manager collection
+        
+        # 
+        # send message to game engine that the texture set has been deleted
+        # 
+        tex_manager = self.tex_managers[j]
+        
+        filepaths = tex_manager.get_texture_paths()
+        position_filepath, normal_filepath, entity_filepath = filepaths
+        
+        data = {
+            'type': 'update_geometry_data',
+            'comment': 'delete batch',
+            'name': tex_manager.name,
+            'json_file_path': tex_manager.get_json_path(),
+            'position_tex_path' : position_filepath,
+            'normal_tex_path'   : normal_filepath,
+            'entity_tex_path': entity_filepath,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
+        
+        # 
+        # delete texture set
+        # 
         del self.tex_managers[j]
         
         self.__debug_print(scene)
@@ -930,7 +961,7 @@ class ResourceManager():
         sys.stdout.flush()
     
 
-resource_manager = ResourceManager()
+resource_manager = ResourceManager(to_ruby)
 
 # def anim_texture_manager_singleton(context):
 #     global anim_tex_manager
@@ -1942,6 +1973,10 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         # is_scrubbing
         
+        # 
+        # send messages from blender (python) to game engine (ruby)
+        # 
+        
         if context.screen.is_scrubbing:
             # if scrubbing, we are also playing,
             # so need to check for scrubbing first
@@ -1973,42 +2008,6 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                     }
                     
                     to_ruby.write(json.dumps(data))
-                    
-                    
-                    
-                    # 
-                    # Only expand timeline range when generating
-                    # new state, not when replaying old state
-                    # 
-                    
-                    
-                    
-                    # do not expand when hitting play in the past
-                    # if scene.frame_current < scene.frame_end:
-                    #     pass
-                    #     # NO-OP
-                    # else:
-                    #     # expand when going past end of history, but not if we hit the Finished state
-                    #     if self.bFinished:
-                            # if scene.frame_current == scene.frame_end:
-                                # props.ruby_buffer_size = 1000
-                                # scene.frame_end = props.ruby_buffer_size
-                        #     else:
-                        #         pass
-                        # else:
-                        #     pass
-                    
-                    
-                    
-                        
-                    # ^ this doesn't work.
-                    #   forces pause when playing and transition from old state to new state, and allows for running off the end of the history buffer when hitting play during the Finished state.
-                    
-                    
-                    
-                    
-                    # context.scene.my_custom_props.read_from_ruby = True
-                    
                     
             else:
                 if self.bPlaying:
@@ -2076,94 +2075,16 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
         
         
         
-        
+        # 
+        # respond to messages from game engine (ruby) to blender (python)
+        # 
         message = from_ruby.read()
         if message is not None:
             # print("from ruby:", message, flush=True)
             
             
-            if message['type'] == 'loopback_play+finished':
-                self.print(context, "finished - clamp to end of timeline")
-                
-                bpy.ops.screen.animation_cancel(restore_frame=False)
-                
-                props.ruby_buffer_size = message['history.length']-1
-                scene.frame_end = props.ruby_buffer_size
-                scene.frame_current = scene.frame_end
-                
-            
-            # if message['type'] == 'loopback_started':
-                # self.print(context, "loopback - started generate new frames")
-                
-                
-                # props.ruby_buffer_size = 1000
-                # scene.frame_end = props.ruby_buffer_size
-            
-            # don't clamp timeline when pausing in the past
-            if message['type'] == 'loopback_paused_old':
-                self.print(context, "loopback - paused old")
-                
-                self.print(context, "history.length: ", message['history.length'])
-                
-                # props.ruby_buffer_size = message['history.length']-1
-                # scene.frame_end = props.ruby_buffer_size
-                
-                # scene.frame_current = message['history.frame_index']
-            
-            # do clamp timeline when pausing while generating new state
-            if message['type'] == 'loopback_paused_new':
-                self.print(context, "loopback - paused new")
-                
-                self.print(context, "history.length: ", message['history.length'])
-                
-                props.ruby_buffer_size = message['history.length']-1
-                scene.frame_end = props.ruby_buffer_size
-                
-                scene.frame_current = message['history.frame_index']
-            
-            if message['type'] == 'loopback_finished':
-                self.print(context, "loopback - finished")
-                
-                props.ruby_buffer_size = message['history.length']-1
-                scene.frame_end = props.ruby_buffer_size
-                
-                bpy.ops.screen.animation_cancel(restore_frame=False)
-                
-                # scene.frame_current = scene.frame_end
-                # ^ can't set to final frame every time,
-                #   because that makes it very hard to
-                #   leave the final timepoint by scrubbing etc.
-                
-            # After Blender's sync button is toggled off,
-            # python will send a "reset" message to ruby,
-            # to which ruby will respond back with 'loopback_reset'
-            if message['type'] == 'loopback_reset':
-                self.print(context, "loopback - reset")
-                
-                props.ruby_buffer_size = message['history.length']-1
-                scene.frame_end = props.ruby_buffer_size
-                
-                scene.frame_current = message['history.frame_index']
-                
-                bpy.ops.screen.animation_cancel(restore_frame=False)
-            
-            
-            # ruby says sync needs to stop
-            # maybe there was a crash, or maybe the program exited cleanly.
-            if message['type'] == 'sync_stopping':
-                self.print(context, "sync_stopping")
-                # scene.my_custom_props.read_from_ruby = False
-                
-                props.ruby_buffer_size = message['history.length']-1
-                scene.frame_end = props.ruby_buffer_size
-                
-                props = context.scene.my_custom_props
-                # props.b_modalUpdateActive = False
-                
-                from_ruby.wait_for_connection()
-            
             if message['type'] == 'first_setup':
-                self.print(context, "first_setup")
+                self.print(context, "[UpdateLoop] recieved: first_setup")
                 self.print(context, "")
                 self.print(context, "")
                 
@@ -2175,8 +2096,56 @@ class RENDER_OT_RubyOF_ModalUpdate (ModalLoop):
                 
                 # send all scene data
                 # (not yet implemented)
+            
+            # ruby says sync needs to stop
+            # maybe there was a crash, or maybe the program exited cleanly.
+            elif message['type'] == 'sync_stopping':
+                self.print(context, "[UpdateLoop] recieved: sync_stopping")
+                # scene.my_custom_props.read_from_ruby = False
                 
-        
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                # props.b_modalUpdateActive = False
+                
+                from_ruby.wait_for_connection()
+            
+            elif message['type'] == 'loopback_seek':
+                self.print(context, "[UpdateLoop] recieved: seek")
+                
+                # props.ruby_buffer_size = message['history.length']-1
+                # scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+            
+            elif message['type'] == 'loopback_seek+pause':
+                self.print(context, "[UpdateLoop] recieved: seek + pause")
+                
+                # props.ruby_buffer_size = message['history.length']-1
+                # scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+            
+            elif message['type'] == 'loopback_clamp':
+                self.print(context, "[UpdateLoop] recieved: clamp")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+                
+            elif message['type'] == 'loopback_clamp+pause':
+                self.print(context, "[UpdateLoop] recieved: clamp + pause")
+                
+                props.ruby_buffer_size = message['history.length']-1
+                scene.frame_end = props.ruby_buffer_size
+                
+                scene.frame_current = message['history.frame_index']
+                
+                bpy.ops.screen.animation_cancel(restore_frame=False)
+            
         
         
     

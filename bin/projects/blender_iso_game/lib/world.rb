@@ -1,34 +1,78 @@
-# tree-like data structure
-# 
-# assumes the structure / schema is immutable,
-# although the data inside (leaf data) may change.
+# NOTE: prototype file was being loaded by the dynamic reload system before I wanted it to effect the main codebase. why was this being loaded?
+
+# TODO: test history / time travel systems
+
+
+# TODO: implement high-level interface for when one blender object is exported as mulitple entity / mesh pairs. in other words, you have one logical render entity, but the low-level system has many entities and many meshes that need to be managed.
+
+load LIB_DIR/'render_batches.rb'
+  # ^ RenderBatch, RenderBatchCollection
+load LIB_DIR/'render_entities.rb' 
+  # ^ RenderEntityManager, RenderEntity, MeshSpriteManager, MeshSprite
+load LIB_DIR/'space.rb'
+  # ^ Space, PhysicsEntity, StaticPhysicsEntity, DynamicPhysicsEntity 
+
 class World
-  include RubyOF::Graphics
+  extend Forwardable
   
-  attr_reader :data, :space, :lights
-  attr_accessor :camera
-  
-  MAX_NUM_FRAMES = 500
+  attr_reader :batches
+  attr_reader :transport, :entities, :sprites, :space, :history
+  attr_reader :lights, :camera
   
   def initialize(geom_texture_directory)
-    # material invokes shaders
-    @mat = BlenderMaterial.new "OpenEXR vertex animation mat"
+    # one StateMachine instance, transport, etc
+    # but many collections with EntityCache + pixels + textures + etc
     
-    shader_src_dir = PROJECT_DIR/"bin/glsl"
-    @vert_shader_path = shader_src_dir/"animation_texture.vert"
-    # @frag_shader_path = shader_src_dir/"phong_test.frag"
-    @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
+    # 
+    # backend data
+    # 
+    @batches = RenderBatchContainer.new(
+      self, # link to the Window to allow accessing all other collections
+      geometry_texture_directory: geom_texture_directory,
+      buffer_length: 3600
+    )
     
-    # @mat.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
-    # @mat.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @mat.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @mat.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
+    # 
+    # frontend systems
+    # (provide object-oriented API for manipulating render entities)
+    # (query entities and meshes by name)
+    # 
+    @entities = RenderEntityManager.new(@batches)
+    @sprites  = MeshSpriteManager.new(@batches)
+    
+    # 
+    # spatial query interface
+    # (query entities by position in 3D space)
+    # 
+    @space = Space.new(@entities)
+    
+    # 
+    # core inteface to backend systems
+    # (move data from EntityCache into Textures needed for rendering)
+    # 
+    
+    @state_machine = MyStateMachine.new
+    
+    @counter = FrameCounter.new
+    
+    @update_block = UpdateBlock.new
+    
+    @history = History.new(@batches, @counter)
+    
+    @transport = TimelineTransport.new(@counter, @state_machine, @history, @update_block)
+    # ^ methods = [:play, :pause, :seek, :reset]
     
     
-    
+    # 
+    # lights and cameras
+    # 
     @camera = ViewportCamera.new
-    
     @lights = LightsCollection.new
+    
+    # NOTE: serialization of lights / camera is handled in Core#setup
+    
+    
+    
     
     # TODO: serialize lights and load on startup
     
@@ -37,129 +81,237 @@ class World
     # TODO: one more RubyOF::FloatPixels for the ghosts
     # TODO: one more RubyOF::Texture to render the ghosts
     
-    # (can I use the array of :position images to roll back time?)
-    
-    puts "-----"
-    # puts Dir.glob("#{PROJECT_DIR}/")
-    # p (geom_texture_directory).children.map{|x| x.basename}
-    
-    @storage = {} # objects that store internal state
-    @data = {}    # objects that form external API for accessing data
-    
-    # 
-    # @data : Hash of DataInterface
-    # query objects by name
-    # to retrieve Mesh or Entity objects
-    # (the wrapper objects, not the raw cache or pixel data)
-    # 
-    
-    @geom_texture_directory = geom_texture_directory
-    @geom_texture_directory.children
-    .select{ |file| file.basename.to_s.end_with? ".cache.json" }
-    .each do |file|
-      p file
-      
-      name, _, _ = file.basename.to_s.split('.')
-      
-      data = VertexAnimationTextureSet.new(@geom_texture_directory, name)
-      @storage[name] = data
-      @data[name] = DataInterface.new(data.cache, data.names)
-    end
-    
-    # TODO: should allow re-scanning of this directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
-    
-    puts "\n"*5
-    
-    
-    @data.freeze
-    
-    # when you create new data, write cache -> history @ current_frame
-    # when you are time traveling, change the current_frame and load -> cache
-    
-    # NOTE: notice that number of dynamic entities can be different than the number of static entities
-    
-    
-    
-    
-    
-    
-    # 
-    # @space : Space
-    # spatial query
-    # 
-    @space = Space.new(@data)
-    # TODO: regenerate space when project reloads
-    # TODO: after refactor above, give space access to both data of static and dynamic entities
-    
-    
-    
-    # # @cache.updateMaterial(material_name, material_properties)
-    # # ^ this requires data from json file, so I will handle this at a higher level of abstraction
-    
-    
-    
-    
-    
+    # TODO: should allow re-scanning of the geom texture directory when the World dynamically reloads during runtime. That way, you can start up the engine with a blank canvas, but dynamicallly add things to blender and have them appear in the game, without having to restart the game.
+    # ^ not sure if this is still needed. this note brought over from old world.rb
+    @crash_detected = false
   end
   
-  # NOTE: mesh data (positions, normals) is separate for dynamics vs statics
-    # dynamics are likely to be complex meshes (like characters) while the statics are likely to be more simplistic meshes (like tiles in a tilemap from a 2D game). With this strategy, you avoid wasting memory by packing small tiles and big characters into the same "spritesheet"
   def setup
-    # static_entities
-    # + load once from disk to specify initial state
-    # + if reloaded, you have new initial state
-    # ( still uses EntityCache to access properties, but writing values is ignored )
+    @batches.setup()
     
-    # TODO: consider implementing read-only mode for DataInterface for static entities
-    
-    @storage.values.each do |texture_set|
-      texture_set.setup()
-    end
-    
-    # dynamic_entities
-    # + load from disk to specify initial state
-    # + if reloaded, that's a new initial state (t == 0)
-    # + need other mechanism to load changes @ t != 0 (JSON message?)
-    
-    
-    @space.update
-  end
-  
-  
-  
-  def update
-    @mat.load_shaders(@vert_shader_path, @frag_shader_path) do
-      # on reload
+    @state_machine.setup do |s|
+      s.define_states(
+        States::Initial.new(      @state_machine, @history),
+        States::GeneratingNew.new(@state_machine, @counter, @history),
+        States::ReplayingOld.new( @state_machine, @counter, @transport, @history),
+        States::Finished.new(     @state_machine, @counter, @transport, @history)
+      )
+      
+      s.initial_state States::Initial
+      
+      
+      s.define_transitions do |p|
+        p.on_transition :any => States::ReplayingOld do |ipc|
+          if @crash_detected
+            @crash_detected = false
+          end
+        end
+      end
       
     end
     
-    @storage.values.each do |texture_set|
-      texture_set.update
+    
+    @space.setup()
+  end
+  
+  # separate binding from execution
+  # so that world state can be advanced at any time
+  def bind_update_block(&block)
+    @update_block.bind &block
+    # TODO: make sure this works as expected when code reloads
+  end
+  
+  def update(ipc)
+    # ( state transitions are fired automatically by
+    #   MyStateMachine#transition_to - no need for an #update method  )
+    
+    # Update the entities in the world to the next frame,
+    # either by executing the code in the block,
+    # or loading frames from the history buffer
+    # (depending on the current state of the state machine).
+    if @transport.playing?
+      @state_machine.current_state.next_frame ipc do |snapshot|
+        @update_block.call snapshot
+      end
+      # ^ updates batch[:entity_data][:pixels] and batch[:entity_cache]
+      #   ( state machine will decide whether to move 
+      #     from pixels -> cache OR cache -> pixels   )
+      #   
+      #   See History#snapshot and History#load for data flow,
+      #   and States::GeneratingNew and States::ReplayingOld for control flow.
     end
     
-    # @space.update
-  end
-  
-  def each_texture_set #&block
-    @storage.values.each do |texture_set|
-      yield(texture_set.position_texture,
-            texture_set.normal_texture,
-            texture_set.entity_texture,
-            texture_set.mesh)
+    # Move entity data to GPU for rendering:
+    # move from batch[:entity_data][:pixels] to batch[:entity_data][:texture]
+    # ( pixels -> texture )
+    @batches.each do |b|
+      b[:entity_data][:texture].load_data b[:entity_data][:pixels]
     end
   end
   
-  def material
-    return @mat
+  # How does the block executed in GeneratingNew get reset?
+  # The block is saved by wrapping in a Fiber.
+  # That Fiber is stored in GeneratingNew.
+  # When entering GeneratingNew, the Fibers are always set to nil.
+  # This allows for new Fibers to be created, and a new block to be bound.
+  # See notes in GeneratingNew#on_enter for details.
+  
+  # How is fiber regeneration triggered during #on_reload_code ?
+  # this is supposed to be trigged by History#branch, but not sure...
+  # TODO: figure out how this works
+  
+  # TODO: make sure that code can be dynamically reloaded while time is progressing. I tried testing this with the mainline code, and it actually seems kinda buggy. it is possible this was never implemented correctly.
+  
+  
+  
+  # 
+  # callbacks that link up to the live coding system
+  # 
+  
+  # callback from live_code.rb
+  def on_crash(ipc)
+    puts "world: on crash"
+    
+    # TODO: test this - not sure if this will correctly display the crash overlay (red tint) or not. or may have an off-by-one error on resuming code. not quite sure.
+    
+      @counter.jmp(@counter.to_i - 1)
+      @transport.seek(ipc, @counter.to_i)
+      @transport.pause(ipc) # can't move forward any more - can only seek
+      # ^ pausing will clear the @crash_detected flag
+      #   need to test this #on_crash method to make sure it works as expected
+      
+      
+      # NOTE: loopback_reset should only be called when resetting the python <-> ruby IPC mechanism. need to implement a new signal here, and then have new recieving code in python as well. 
+       
+      # ipc.send_to_blender({
+      #   'type' => 'loopback_reset',
+      #   'history.length'      => @counter.max+1,
+      #   'history.frame_index' => @counter.to_i
+      # })
+    
+    
+    # puts "set crash flag"
+    @crash_detected = true
   end
   
-  def bind_history(history_obj)
-    history_obj.setup(
-      @storage['Characters'].entity_pixels,
-      @storage['Characters'].entity_texture,
-      @storage['Characters'].cache
-    )
+  # callback from live_code.rb
+  def on_reload_code(ipc)
+    puts "#{@counter.to_s.rjust(4, '0')} code reloaded"
+    
+    # 
+    # regenerate update Fiber
+    # 
+    @transport.pause(ipc)
+      # GeneratingNew -> ReplayingOld
+      # OR
+      # ReplayingOld -> ReplayingOld
+    
+    @history.branch
+    
+    # @transport.play(ipc)
+    #   # ReplayingOld -> GeneratingNew
+    #   # (regenerates fiber on GeneratingNew#on_enter)
+    
+    # NOTE: re-entry into GeneratingNew is critical for regenerating fiber. otherwise, system will continue to use the code in the old update block, even after reloading.
+    # (can trigger @transport.play here to act like the reload never happened, or can rely on the user to start the system again. either way works)
+    
+    # what about the time it takes to fast-forward the new fiber?
+    # what if that makes the first frame of the restart take longer?
+    # will that cause the game engine and blender to go out of sync?
+    
+    
+    # 
+    # update frontend systems
+    # 
+    
+    # @entities = RenderEntityManager.new(@batches)
+    # @sprites  = MeshSpriteManager.new(@batches)
+    # # ^ 2022.10.12 - RenderEntityManager and MeshSpriteManager create no new
+    # #                state is that is not contained in @batches.
+    # #                As such, you don't need to reinitialize these objects.
+    
+    # @space = Space.new(@entities)
+    @space.setup
+    # (Really do want to dynamically reload Space definition in some capacity. That way, you can dynamically redefine queries etc.)
+    
+    
+    # don't want to delete backend data,
+    # which means we can't completely reload the backend state
+    # - Some invalid backend state may persist. HistoryBuffer stores
+    #   results of past updates, but the new update Fiber block may not be able
+    #   to produce those same states. In order to avoid this, we need to
+    #   force intelegent rollback by detecting what frames are affected.
+    #   Not sure how to do this in the current archetecture.
+    #   I imagine some system like a scientific computational notebook
+    #   (e.g. jupyter notebook) would be able to handle this,
+    #   but not sure how to adapt that structure here.
+    # - Some old methods may persist, but can't avoid that in Ruby because
+    #   dynamic reloading of classes redefines methods, rather than overwriting.
+    #   (e.g. method World#foo was defined before, but there is no World#foo
+    #   in the new class definition. You might expect calling World#foo to raise
+    #   a method missing exception, but instead it will call the old code.
+    #   This means the code executed now will not be the same as the code 
+    #   executed when we do a full restart.)
+          # NOTE: maybe we need a warning if backend system code is updated, notifying the user of the editing system to restart the game engine?
+    
+    
+    # 
+    # send message to blender
+    # 
+    ipc.send_to_blender({
+      'type' => 'loopback_clamp+pause',
+      'history.length'      => @counter.max+1,
+      'history.frame_index' => @counter.to_i
+    })
+    
   end
+  
+  # Send signal back to Core#update_while_crashed
+  # notifying that the crash has been resolved via time travel.
+  # 
+  # ( the actual resetting of this variable happens
+  #   in a state machine callback, defined in World#setup )
+  def crash_resolved?
+    return !@crash_detected
+  end
+  
+  
+  
+  # 
+  # callbacks that link up to BlenderSync
+  # (these deal with reloading data)
+  # 
+  
+  def_delegators :@batches,
+    :on_batch_exported,
+    :on_batch_deleted,
+    :on_all_batches_deleted,
+    :on_entity_moved,
+    :on_entity_deleted,
+    :on_entity_created_with_existing_mesh,
+    :on_entity_created_with_new_mesh,
+    :on_mesh_edited,
+    :on_material_edited
+  # TODO: when data is reloaded, trigger some appropriate changes to history or something
+  
+  
+  
+  # 
+  # serialization
+  # 
+  # (may not actually need these)
+  
+  def save
+    
+  end
+  
+  def load
+    
+  end
+  
+  # 
+  # ui code
+  # 
   
   def draw_ui(ui_font)
     @ui_node ||= RubyOF::Node.new
@@ -177,10 +329,10 @@ class World
     # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
     memory_usage = []
     entity_usage = []
-    @storage.values.each_with_index do |texture_set, i|
-      layer_name = texture_set.name
-      cache = texture_set.cache
-      names = texture_set.names
+    @batches.each_with_index do |b, i|
+      layer_name = b.name
+      cache = b[:entity_cache]
+      names = b[:names]
       
       offset = i*(189-70)
       
@@ -217,7 +369,7 @@ class World
       
       
       
-      texture_set.entity_texture.tap do |texture|
+      b[:entity_data][:texture].tap do |texture|
         new_height = 100 #
         y_scale = new_height / texture.height
         
@@ -236,7 +388,7 @@ class World
       end
       
       
-      texture_set.position_texture.tap do |texture|
+      b[:mesh_data][:textures][:positions].tap do |texture|
         width = [texture.width, 400].min # cap maximum texture width
         x = 970-40
         y = (68+texture.height-20)+i*(189-70)+20
@@ -245,15 +397,15 @@ class World
       
       
       
-      texture = texture_set.position_texture
+      texture = b[:mesh_data][:textures][:positions]
       px = texture.width*texture.height
       x = px*channels_per_px*bytes_per_channel / 1000.0
       
-      texture = texture_set.normal_texture
+      texture = b[:mesh_data][:textures][:normals]
       px = texture.width*texture.height
       y = px*channels_per_px*bytes_per_channel / 1000.0
       
-      texture = texture_set.entity_texture
+      texture = b[:entity_data][:texture]
       px = texture.width*texture.height
       z = px*channels_per_px*bytes_per_channel / 1000.0
       
@@ -287,350 +439,843 @@ class World
   end
   
   
-  
-  
-  # NOTE: BlenderSync triggers @world.space.update when either json file or entity texture is reloaded
-  
-  def load_json_data(json_file_path)
-    puts "load json"
-    
-    basename = File.basename(json_file_path)
-    
-    @storage.values
-    .find{ |x| basename.split('.').first == x.name }
-    &.tap do |texture_set|
-      texture_set.load_json_data(json_file_path)
+end
+
+# a way to pass a "pointer" to a block
+# such that the block can be re-defined
+class UpdateBlock
+  def initialize
+    # proc with no arguments can take any number of args
+    @block = Proc.new do
+      # NO-OP
     end
   end
   
-  def load_entity_texture(entity_tex_path)
-    puts "reload entities"
+  def bind(&block)
+    @block = block
+  end
+  
+  def call(*args)
+    @block.call *args
+  end
+end
+
+
+
+
+
+# 
+# 
+# Backend - transport entity data to GPU, across all timepoints in history
+# 
+# 
+
+# Control timeline transport (move back and forward in time)
+# In standard operation, these methods are controlled via the blender timeline.
+class TimelineTransport
+  def initialize(frame_counter, state_machine, history, update_block)
+    @state_machine = state_machine
+    @counter = frame_counter
+    @history = history
+    @update_block = update_block
     
-    basename = File.basename(entity_tex_path)
     
-    @storage.values
-    .find{ |x| basename.split('.').first == x.name }
-    &.tap do |texture_set|
-      texture_set.load_entity_texture(entity_tex_path)
+    @play_or_pause = :paused
+  end
+  
+  def paused?
+    return @play_or_pause == :paused
+  end
+  
+  def playing?
+    return @play_or_pause == :playing
+  end
+  
+  # if playing, pause forward playback
+  # else, do nothing
+  def pause(ipc)
+    puts "== pause"
+    
+    @play_or_pause = :paused
+    @state_machine.current_state.on_pause(ipc)
+    
+    puts "====="
+  end
+  
+  # if paused, run forward
+  # 'running' has different behavior depending on the currently active state
+  # may generate new data from code,
+  # or may replay saved data from history buffer
+  def play(ipc)
+    puts "== play"
+    
+    @play_or_pause = :playing
+    @state_machine.current_state.on_play(ipc)
+    
+    puts "====="
+  end
+  
+  # instantly move to desired frame number
+  # (moving frame-by-frame in blender is implemented in terms of #seek)
+  def seek(ipc, frame_number)
+    puts "Transport - seek: #{frame_number} [#{@state_machine.current_state}]"
+    @state_machine.current_state.seek(ipc, frame_number)
+    
+    # ipc.send_to_blender message
+  end
+  
+  # The blender python extension can send a reset command to the game engine.
+  # When that happens, we process it here.
+  def reset(ipc)
+    # For now, just replace the curret timeline with the alt one.
+    # In future commits, we can refine this system to use multiple
+    # timelines, with UI to compress timelines or switch between them.
+    
+    self.pause(ipc)
+    @history.branch
+    
+    ipc.send_to_blender({
+      'type' => 'loopback_clamp+pause',
+      'history.length'      => @counter.max+1,
+      'history.frame_index' => @counter.to_i
+    })
+  end
+  
+  # force system to advance to the next frame
+  # (specific action depends on the state of the system)
+  def next_frame(ipc)
+    @state_machine.current_state.next_frame ipc do |snapshot|
+      @update_block.call snapshot
     end
   end
   
-  def load_mesh_textures(position_tex_path, normal_tex_path)
-    puts "load mesh data"
-    # position and normals will always be updated in tandem
-    # so really only need to check one path in order to
-    # confirm what batch should be reloaded.
-    
-    basename = File.basename(position_tex_path)
-    
-    @storage.values
-    .find{ |x| basename.split('.').first == x.name }
-    &.tap do |texture_set|
-      texture_set.load_mesh_textures(position_tex_path, normal_tex_path)
-    end
+  def current_frame
+    return @counter.to_i
   end
   
-  
-  class LightsCollection
-    def initialize
-      @lights = Array.new
-    end
-    
-    # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
-    def fetch(light_name)
-      existing_light = @lights.find{ |light|  light.name == light_name }
-      
-      if existing_light.nil?
-        if block_given?
-          new_light = yield light_name
-          @lights << new_light
-          
-          return new_light
-        else
-          raise "ERROR: Did not declare a block for generating new lights."
-        end
-      else
-        return existing_light
-      end
-    end
-    
-    # TODO: implement way to delete lights
-    def delete(light_name)
-      @lights.delete_if{|light| light.name == light_name}
-    end
-    
-    # delete all lights whose names are on this list
-    def gc(list_of_names)
-      @lights
-      .select{ |light|  list_of_names.include? light.name }
-      .each do |light|
-        delete light.name
-      end
-    end
-    
-    include Enumerable
-    def each
-      return enum_for(:each) unless block_given?
-      
-      @lights.each do |light|
-        yield light
-      end
-    end
-    
-    # convert to a hash such that it can be serialized with yaml, json, etc
-    def data_dump
-      data_hash = {
-        'lights' => @lights
-      }
-      return data_hash
-    end
-    
-    # read from a hash (deserialization)
-    def load(data)
-      @lights = data['lights']
-    end
+  def final_frame
+    return @counter.max
   end
   
-  
-  
-  class Entity
-    extend Forwardable
-    
-    attr_reader :index, :name
-    
-    def initialize(index, name, entity_data, mesh)
-      @index = index # don't typically need this, but useful to have in #inspect for debugging
-      @name = name
-      @entity_data = entity_data
-      
-      @mesh = mesh # instance of the Mesh struct below
-    end
-    
-    def_delegators :@entity_data, 
-      :copy_material,
-      :ambient,
-      :diffuse,
-      :specular,
-      :emissive,
-      :alpha,
-      :ambient=,
-      :diffuse=,
-      :specular=,
-      :emissive=,
-      :alpha=
-    
-    def_delegators :@entity_data,
-      :copy_transform,
-      :position,
-      :orientation,
-      :scale,
-      :transform_matrix,
-      :position=,
-      :orientation=,
-      :scale=,
-      :transform_matrix=
-    
-    def mesh=(mesh)
-      # if mesh.sheet != @data.sheet
-      #   raise "ERROR: Can not assign mesh from a different spritesheet"
-      # end
-      
-      @entity_data.mesh_index = mesh.index
-      @mesh = mesh
-    end
-    
-    def mesh
-      return @mesh
-    end
+  def time_traveling?
+    return @state_machine.current_state.is_a? States::ReplayingOld
   end
   
-  
-  # TODO: index only can be interpreted within some spritesheet, so need some way to make sure we're on the right sheet
-  class Mesh
-    attr_reader :name, :index
-    
-    def initialize(name, index)
-      @name = name
-      @index = index
-    end
-    
-    # all meshes are solid for now
-    # (may need to change this later when adding water tiles, as the character can occupy the same position as a water tile)
-    def solid?
-      return true
-    end
-  end
-  
-  
-  # class Mesh
-  #   SOLID_MESHES = [
-  #     'Cube.002'
-  #   ]
-  #   def solid?(mesh_name)
-  #     return SOLID_MESHES.include? mesh_name
-  #   end
-  # end
-  
-  # # ^ is this way of defining this backwards?
-  # #   should I be tagging objects with their properties instead?
-  
-  
-  
-  # access Entity / Mmesh data by name
-  class DataInterface
-    def initialize(cache, names)
-      @cache = cache
-      @names = names
-    end
-    
-    
-    def find_entity_by_name(target_entity_name)
-      entity_idx = @names.entity_name_to_scanline(target_entity_name)
-      
-      if entity_idx.nil?
-        raise "ERROR: Could not find any entity called '#{target_entity_name}'"
-      end
-      
-      # puts "#{target_entity_name} => index #{entity_idx}"
-      
-      
-      entity_ptr = @cache.get_entity(entity_idx)
-        # puts target_entity_name
-        # puts "entity -> mesh_index:"
-        # puts entity_ptr.mesh_index
-      mesh_name = @names.mesh_scanline_to_name(entity_ptr.mesh_index)
-      mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
-      
-      entity_obj = Entity.new(entity_idx, target_entity_name, entity_ptr, mesh_obj)
-      
-      return entity_obj
-    end
-    
-    def find_mesh_by_name(target_mesh_name)
-      mesh_idx = @names.mesh_name_to_scanline(target_mesh_name)
-      
-      if mesh_idx.nil?
-        raise "ERROR: Could not find any mesh called '#{target_mesh_name}'"
-      end
-      # p mesh_idx
-      
-      return Mesh.new(target_mesh_name, mesh_idx)
-    end
-    
-    def each # &block
-      return enum_for(:each) unless block_given?
-      
-      @cache.size.times do |i|
-        entity_ptr = @cache.get_entity(i)
-        
-        if entity_ptr.active?
-          entity_name = @names.entity_scanline_to_name(i)
-          
-          mesh_name = @names.mesh_scanline_to_name(entity_ptr.mesh_index)
-          mesh_obj = Mesh.new(mesh_name, entity_ptr.mesh_index)
-          
-          entity_obj = Entity.new(i, entity_name, entity_ptr, mesh_obj)
-          
-          yield entity_obj
-        end
-      end
-    end
-    
-    
-  end
-  
-  
-  # enable spatial queries
-  class Space
-    def initialize(data)
-      @data = data
-      
-      
-      @hash = Hash.new
-      
-      
-      self.update()
-      
-    end
-    
-    # TODO: update this to use @static_entities and @dynamic_entities, rather than outdated @data
-    def update
-      @entity_list =
-        @data['Tiles'].each
-        .collect do |entity|
-          [entity.mesh.name, entity.position]
-        end
-      
-      # p @entity_list
-      
-      # @entity_list.each do |name, pos|
-      #   puts "#{name}, #{pos}"
-      # end
-      
-    end
-    
-    
-    # TODO: consider separate api for querying static entities (tiles) vs dynamic entities (gameobjects)
-      # ^ "tile" and "gameobject" nomenclature is not used throughout codebase.
-      #   may want to just say "dynamic" and "static" instead
-    
-    # what type of tile is located at the point 'pt'?
-    # Returns a list of title types (mesh datablock names)
-    def point_query(pt)
-      puts "point query @ #{pt}"
-      
-      # unless @first
-      #   require 'irb'
-      #   binding.irb
-      # end
-      
-      # @first ||= true
-      
-      out = @entity_list.select{   |name, pos|  pos == pt  }
-                        .collect{  |name, pos|  name  }
-                        .collect{  |name|  @data['Tiles'].find_mesh_by_name(name)  }
-      
-      puts "=> #{out.inspect}"
-      
-      # TODO: return [World::Mesh] instead of [String]
-      # (should work now, but needs testing)
-      
-      return out
-    end
-  end
-  
-  # # Update material properties for all objects that use the given material.
-  # # ( must have previously bound material using set_object_material() )
-  # # 
-  # # material : blender material datablock, containing RubyOF material
-  # def update_material(material)
-    
-  # end
-  
-  
-  # # Remove object from the entity texture.
-  # # No good way right now to "garbage collect" unused mesh data.
-  # # For now, that data will continue to exist in the mesh data textures,
-  # # and will only be cleared out on a "clean build" of all data.
-  # # 
-  # # obj_name : string
-  # def delete_object(obj_name)
-    
-  # end
-  
-  
-  
-  # 
-  # serialization
-  # 
-  
-  def save
-    
-  end
-      
-      
-  def load
-    
+  def current_state
+    return @state_machine.current_state
   end
   
 end
+
+
+
+# states used by state machine defined below
+# ---
+# should we generate new state from code or replay old state from the buffer?
+# that depends on the current system state, so let's use a state machine.
+# + next_frame   advance the system forward by 1 frame
+# + seek         jump to an arbitrary frame
+module States
+  class Initial
+    # initialized once when state machine is setup
+    def initialize(state_machine, history)
+      @state_machine = state_machine
+      @history = history
+    end
+    
+    # called every time we enter this state
+    def on_enter
+      puts "#{@counter.to_s.rjust(4, '0')} initial state"
+      
+      @history.snapshot
+    end
+    
+    # step forward one frame
+    # (name taken from Enumerator#next, which functions similarly)
+    def next_frame(ipc, &block)
+      @state_machine.transition_to GeneratingNew, ipc
+      @state_machine.current_state.next_frame(ipc, &block)
+    end
+    
+    def on_play(ipc)
+      # NO-OP
+    end
+    
+    def on_pause(ipc)
+      # NO-OP
+    end
+    
+    # jump to arbitrary frame
+    def seek(ipc, frame_number)
+      # NO-OP
+    end
+  end
+  
+  class GeneratingNew
+    # initialized once when state machine is setup
+    def initialize(state_machine, frame_counter, history)
+      @state_machine = state_machine
+      @counter = frame_counter
+      @history = history
+      
+      @f1 = nil
+      @f2 = nil
+    end
+    
+    # called every time we enter this state
+    def on_enter(ipc)
+      puts "#{@counter.to_s.rjust(4, '0')} start generating new"
+      
+      @f1 = nil
+      @f2 = nil
+      
+      # p @f1
+      
+      # Must reset frame index before updating GeneratingNew.
+      # Both when entering for the first time, and on re-entry from time travel,
+      # need to reset the frame index.
+      # 
+      # When entering for the first time from Initial, clearly t == 0.
+      # 
+      # Additoinally, when re-entering GeneratingNew state, it will attempt to
+      # fast-forward the Fiber, skipping over frames already rendered,
+      # until it reaches the end of the history buffer.
+      # There is currently no better way to "resume" code execution.
+      # In order to do this, the frame index must be reset to 0 before entry.
+      @counter.jmp 0
+    end
+    
+    # step forward one frame
+    def next_frame(ipc, &block)
+      @f2 ||= Fiber.new do
+        # This Fiber wraps the block so we can resume where we left off
+        # after Helper pauses execution
+        
+        # the block used here specifies the entire update logic
+        # (broken into individual frames by SnapshotHelper)
+        helper = SnapshotHelper.new(@counter, @history)
+        block.call(helper)
+      end
+      
+      @f1 ||= Fiber.new do
+        # Execute @f2 across many different frames, instead of all at once
+        while @f2.alive?
+          @f2.resume()
+          Fiber.yield
+        end
+      end
+      
+      if @f1.alive?
+        # if there is more code to run, run the code to generate new state
+        @f1.resume()
+      else
+        # else, code has completed
+        @state_machine.transition_to Finished, ipc
+      end
+    end
+    
+    def on_play(ipc)
+      
+    end
+    
+    def on_pause(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_clamp+pause',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      # @history.snapshot
+      @state_machine.transition_to States::ReplayingOld, ipc
+    end
+    
+    # jump to arbitrary frame
+    def seek(ipc, frame_number)
+      # TODO: consider saving state here before seeking backwards
+      puts "States::Finished - seek #{frame_number} / #{@counter.max}"
+      
+      ipc.send_to_blender({
+        'type' => 'loopback_clamp',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      # @history.snapshot
+      @state_machine.transition_to ReplayingOld, ipc
+      @state_machine.current_state.seek(ipc, frame_number)
+    end
+    
+    
+    
+    class SnapshotHelper
+      def initialize(frame_counter, history)
+        @counter = frame_counter
+        @history = history
+      end
+      
+      # wrap generation of one new frame
+      # may execute the given block to generate new state, or not
+      def frame(&block)
+        if @counter < @counter.max
+          # resuming
+          # (skip this frame)
+          
+          # All frames up to the desired resume point will execute in one update
+          # because there is no Fiber.yield in this branch.
+          
+          # Can't just jump in the buffer, because we need to advance the Fiber.
+          # BUT we may be able to optimize to just loading the last old state
+          # before we need to generate new states.
+          
+          @counter.inc
+          
+          puts "#{@counter.to_s.rjust(4, '0')} resuming [#{@counter.to_i} / #{@counter.max}]"
+          
+          @history.load
+          
+        else # [@counter.max, inf]
+          # actually generating new state
+          
+          @counter.inc
+          
+          frame_str = @counter.to_s.rjust(4, '0')
+          src_file, src_line = block.source_location
+          file_str = src_file.gsub(/#{GEM_ROOT}/, "[GEM_ROOT]")
+          
+          puts "#{frame_str} new state  #{file_str}, line #{src_line} "
+          
+            block.call()
+          
+          @history.snapshot
+          
+          Fiber.yield
+        end
+      end
+    end
+    
+  end
+  
+  class ReplayingOld
+    # initialized once when state machine is setup
+    def initialize(state_machine, frame_counter, transport, history)
+      @state_machine = state_machine
+      @counter = frame_counter
+      @transport = transport
+      @history = history
+    end
+    
+    # called every time we enter this state
+    def on_enter(ipc)
+      puts "#{@counter.to_s.rjust(4, '0')} replaying old"
+    end
+    
+    # step forward one frame
+    def next_frame(ipc, &block)
+      if @counter >= @counter.max
+        # ran past the end of saved history
+        # must retun to generating new data from the code
+        
+        @state_machine.transition_to GeneratingNew, ipc
+        @state_machine.current_state.next_frame(ipc, &block)
+        
+      else # @counter < @counter.max
+        # otherwise, just load the pre-generated state from the buffer
+        
+        @counter.inc
+        @history.load
+        
+        # stay in state ReplayingOld
+      end
+    end
+    
+    def on_play(ipc)
+      
+    end
+    
+    def on_pause(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_seek+pause',
+        'history.length'      => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+      
+      # remain in ReplayingOld - no transition
+    end
+    
+    # jump to arbitrary frame
+    def seek(ipc, frame_number)
+      # TODO: make sure Blender timeline when scrubbing etc does not move past the end of the available time, otherwise the state here will become desynced with Blender's timeline
+      
+      if frame_number.between?(0, @counter.max) # [0, len-1]
+        # if range of history buffer, move to that frame
+        
+        @counter.jmp frame_number
+        @history.load
+        
+        puts "#{@counter.to_s.rjust(4, '0')} replaying old: seek"
+        
+        # stay in state ReplayingOld
+        
+      elsif frame_number > @counter.max
+        # if outside range of history buffer, snap to final frame
+        
+        # delegate to state :generating_new
+        @counter.jmp @counter.max
+        @history.load
+        
+        puts "#{@counter.to_s.rjust(4, '0')} replaying old: seek - end of timeline"
+        
+        @transport.pause(ipc)
+        
+        # stay in state ReplayingOld
+        
+      else # frame_number < 0
+        raise "ERROR: Tried to seek to negative frame => (#{frame_number})"
+      end
+      # TODO: Blender frames can be negative. should handle that case too.
+          
+    end
+  end
+  
+  class Finished
+    # initialized once when state machine is setup
+    def initialize(state_machine, frame_counter, transport, history)
+      @state_machine = state_machine
+      @counter = frame_counter
+      @transport = transport
+      @history = history
+    end
+    
+    # called every time we enter this state
+    def on_enter(ipc)
+      puts "#{@counter.to_s.rjust(4, '0')} finished"
+      
+      # @history.snapshot
+      
+      ipc.send_to_blender({
+        'type' => 'loopback_clamp+pause',
+        'history.length' => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+    end
+    
+    # step forward one frame
+    def next_frame(ipc, &block)
+      # instead of advancing the frame, or altering state,
+      # just pause execution again
+      @transport.pause(ipc)
+    end
+    
+    def on_play(ipc)
+      ipc.send_to_blender({
+        'type' => 'loopback_clamp+pause',
+        'history.length' => @counter.max+1,
+        'history.frame_index' => @counter.to_i
+      })
+    end
+    
+    def on_pause(ipc)
+      puts "(blender triggered pause after code finished)"
+    end
+    
+    # jump to arbitrary frame
+    def seek(ipc, frame_number)
+      puts "States::Finished - seek #{frame_number} / #{@counter.max}"
+      if frame_number >= @counter.max
+        # NO-OP
+      else
+        puts "seek"
+        @state_machine.transition_to ReplayingOld, ipc
+        @state_machine.current_state.seek(ipc, frame_number)
+        
+      end
+    end
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# something like a program counter (pc) in assembly
+# but that keeps track of the current frame (like in an animation or movie)
+# 
+# Using 3-letter names to evoke assembly language.
+# Ruby also has precedent for using terse names for technical things
+# (e.g. to_s)
+class FrameCounter
+  def initialize
+    @value = 0
+    @max = 0
+  end
+  
+  # increment the counter
+  def inc
+    @value += 1
+    
+    if @value > @max
+      @max = @value
+    end
+    
+    return self
+  end
+  
+  # set the frame counter
+  # (in assembly, rather than set pc directly, is it set via branch instruction)
+  def jmp(i)
+    @value = i
+    
+    return self
+  end
+  
+  # Return the maximum value the counter has reached this run.
+  # This is needed to find the index of the last valid frame.
+  def max
+    return @max
+  end
+  
+  # limit maximum frame to the current value
+  def clip
+    @max = @value
+    
+    return self
+  end
+  
+  
+  # when is the maximum value reset?
+    # should reset when code is dynamically reloaded,
+    # and the history branches
+  
+  # what happens if frame index > end of buffer?
+  # does it depend on the state?
+  # how would that happen?
+  # If the buffer's max_i shrinks, doesn't the frame index need to change too?
+  # 
+  # I think in the main code, history only branches while time traveling.
+  # As such, index < end of buffer is also implicitly enforced.
+  # Might be possible to get weird behavior if you reload while time is progressing.
+  
+  
+  # how do you get this value out though? how do you use it?
+  # the easiest way to adopt ruby's typecast API, and convert to integer
+  
+  def to_i
+    return @value
+  end
+  
+  def to_s
+    return @value.to_s
+  end
+  
+  # Comparison with numerical values is the main reason to cast to int.
+  # Thus, also define integer-style comparison operators
+  # so that you don't have to manually cast as often.
+  
+  include Comparable
+  def <=>(other)
+    return @value <=> other
+  end
+end
+
+
+
+# High-level interface for saving / loading state to HistoryBuffer.
+# Allows for saving across all batches simultaneously.
+# 
+# NOTE: Do not split read / write API, as generating new state requires both.
+class History
+  def initialize(batches, frame_counter)
+    @batches = batches
+    @counter = frame_counter
+  end
+  
+  # # create buffer of a certain size
+  # def setup
+  #   # NO-OP - done in RenderBatch
+  # end
+  
+  # save current frame to buffer
+  def snapshot
+    @batches.each do |b|
+      b[:entity_cache].update b[:entity_data][:pixels]
+      b[:entity_history][@counter.to_i] << b[:entity_data][:pixels]
+    end
+  end
+  
+  # load current frame from buffer
+  def load
+    @batches.each do |b|
+      b[:entity_history][@counter.to_i] >> b[:entity_data][:pixels]
+      b[:entity_cache].load b[:entity_data][:pixels]
+    end
+  end
+  
+  # # delete arbitrary frame from buffer
+  # def delete(frame_index)
+  #   @batches.each do |b|
+  #     b[:entity_history][frame_index].delete
+  #   end
+  # end
+  
+  # create a new timeline by erasing part of the history buffer
+  # (more performant than initializing a whole new buffer)
+  def branch
+    # invalidate all states after the current frame
+    @batches.each do |b|
+      ((@counter.to_i+1)..(b[:entity_history].length-1)).each do |i|
+        b[:entity_history][i].delete
+      end
+    end
+    # reset the max frame value
+    @counter.clip
+  end
+end
+
+
+# TODO: stop forward execution if trying to generate new state past the end of the history buffer
+
+
+
+
+
+# Stores the data for time traveling
+# 
+# Data structure for a sequence of images over time.
+# It does not know anything about the specifics
+# of the vertext animation texture system.
+# 
+# writing API:
+#   state = RubyOF::FloatPixels.new
+#   buffer = HistoryBuffer.new
+#   buffer[i] << state
+# reading API
+#   state = RubyOF::FloatPixels.new
+#   buffer = HistoryBuffer.new
+#   buffer[i] >> state
+class HistoryBuffer
+  # ASSUME: data is stored in RubyOF::FloatPixels
+  
+  # TODO: use named arguments, because the positions are extremely arbitrary
+  def initialize(mom=nil, slice_range=nil)
+    if mom
+      @max_num_frames = mom.max_num_frames
+      self.setup(buffer_length: mom.length,
+                 frame_width:   mom.frame_width,
+                 frame_height:  mom.frame_height)
+      slice_range.each do |i|
+        @buffer[i] << mom.buffer[i]
+      end
+    else
+      @max_num_frames = 0
+      @buffer = []
+      @valid = []
+    end
+      
+      # (I know this needs to save entity data, but it may not need to save mesh data. It depends on whether or not all animation frames can fit in VRAM at the same time or not.)
+  end
+  
+  def setup(buffer_length:3600, frame_width:9, frame_height:100)
+    puts "[ #{self.class} ]  setup "
+    
+    @max_num_frames = buffer_length
+    
+    # store data
+    @buffer = Array.new(@max_num_frames)
+    @buffer.size.times do |i|
+      pixels = RubyOF::FloatPixels.new
+      
+      pixels.allocate(frame_width, frame_height)
+      pixels.flip_vertical
+      
+      @buffer[i] = pixels
+    end
+    
+    # create array of booleans to know which images store valid states
+    @valid = Array.new(@buffer.size, false)
+  end
+  
+  def length
+    return @max_num_frames
+  end
+  
+  alias :size :length
+  
+  def frame_width
+    @buffer[0].width
+  end
+  
+  def frame_height
+    @buffer[0].height
+  end
+  
+  # get helper from buffer at a particular index
+  # returns a reference to RubyOF::FloatPixels
+  def [](frame_index)
+    raise IndexError, "Index should be a non-negative integer. (Given #{frame_index.inspect} instead.)" if frame_index.nil?
+    
+    raise "Memory not allocated. Please call #{self.class}#setup first" if self.length == 0
+    
+    raise IndexError, "Index out of bounds. Expected index in the range of 0..#{self.length-1}, but recieved #{frame_index}." unless frame_index.between?(0, self.length-1)
+    
+    
+    return HistoryBufferHelper.new(@buffer, @valid, frame_width, frame_height, frame_index)
+  end
+  
+  # HistoryBuffer can't store the index of the last valid frame any more
+  # the new API has only one interface for reading and writing.
+  # In this way, it is unclear when to increment the 'max' value.
+  
+  
+  # image buffers are guaranteed to be the right size,
+  # (as long as the buffer is allocated)
+  # because of setup()
+  
+  class HistoryBufferHelper
+    def initialize(buffer, valid, frame_width, frame_height, i)
+      @buffer = buffer
+      @valid = valid
+      @i = i
+      
+      @width  = frame_width
+      @height = frame_height
+    end
+    
+    # move data from other to buffer
+    # (write to the buffer)
+    def <<(other)
+      raise "Can only store RubyOF::FloatPixels data in HistoryBuffer" unless other.is_a? RubyOF::FloatPixels
+      
+      other_size  = [other.width, other.height]
+      buffer_size = [@width, @height]
+      raise "Dimensions of provided frame data do not match the size of frames in the buffer. Provided: #{other_size.inspect}; Buffer size: #{buffer_size.inspect}" unless other_size == buffer_size
+      
+      @buffer[@i].copy_from other
+      @valid[@i] = true
+    end
+    
+    # move data from buffer into other
+    # (read from the buffer)
+    def >>(other)
+      # can only read data out of buffer
+      # if the data at that index is valid
+      # (otherwise, it could just be garbage)
+      
+      unless @valid[@i]
+        msg = [
+          "Attempted to read garbage state. State at frame #{@i} was either never saved, or has since been deleted.",
+          "#{@valid.collect{|x| x ? "1" : "0" }.join('') }"
+        ]
+        raise msg.join("\n")
+      end
+      
+      other.copy_from @buffer[@i]
+    end
+    
+    # delete the data the index tracked by this helper object
+    def delete
+      @valid[@i] = false
+    end
+  end
+  
+  
+end
+  # FIXME: recieving index -1
+  # (should I interpret that as distance from the end of the buffer, or what? need to look into the other code on the critical path to figure this out)
+  
+  
+  
+  # OpenFrameworks documentation
+    # use ofPixels::pasteInto(ofPixels &dst, size_t x, size_t y)
+    # 
+    # "Paste the ofPixels object into another ofPixels object at the specified index, copying data from the ofPixels that the method is being called on to the ofPixels object at &dst. If the data being copied doesn't fit into the destination then the image is cropped."
+    
+  
+    # cropTo(...)
+    # void ofPixels::cropTo(ofPixels &toPix, size_t x, size_t y, size_t width, size_t height)
+
+    # This crops the pixels into the ofPixels reference passed in by toPix. at the x and y and with the new width and height. As a word of caution this reallocates memory and can be a bit expensive if done a lot.
+
+
+
+
+
+# 
+# lights / camera
+# 
+
+class LightsCollection
+  def initialize
+    @lights = Array.new
+  end
+  
+  # retrieve light by name. if that name does not exist, used the supplied block to generate a light, and add that light to the list of lights
+  def fetch(light_name)
+    existing_light = @lights.find{ |light|  light.name == light_name }
+    
+    if existing_light.nil?
+      if block_given?
+        new_light = yield light_name
+        @lights << new_light
+        
+        return new_light
+      else
+        raise "ERROR: Did not declare a block for generating new lights."
+      end
+    else
+      return existing_light
+    end
+  end
+  
+  # TODO: implement way to delete lights
+  def delete(light_name)
+    @lights.delete_if{|light| light.name == light_name}
+  end
+  
+  # delete all lights whose names are on this list
+  def gc(list_of_names)
+    @lights
+    .select{ |light|  list_of_names.include? light.name }
+    .each do |light|
+      delete light.name
+    end
+  end
+  
+  include Enumerable
+  def each
+    return enum_for(:each) unless block_given?
+    
+    @lights.each do |light|
+      yield light
+    end
+  end
+  
+  # convert to a hash such that it can be serialized with yaml, json, etc
+  def data_dump
+    data_hash = {
+      'lights' => @lights
+    }
+    return data_hash
+  end
+  
+  # read from a hash (deserialization)
+  def load(data)
+    @lights = data['lights']
+  end
+end
+
+
