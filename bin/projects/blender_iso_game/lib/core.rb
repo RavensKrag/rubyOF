@@ -243,20 +243,6 @@ class Core
     
     
     
-    # material invokes shaders
-    @material = BlenderMaterial.new "OpenEXR vertex animation mat"
-    
-    shader_src_dir = PROJECT_DIR/"bin/glsl"
-    @vert_shader_path = shader_src_dir/"animation_texture.vert"
-    # @frag_shader_path = shader_src_dir/"phong_test.frag"
-    @frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
-    
-    # @material.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
-    # @material.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @material.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
-    # @material.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
-    
-    
     @render_pipeline = OIT_RenderPipeline.new
     
     
@@ -446,11 +432,6 @@ class Core
       # load_world_state()
       
       @first_update = false
-    end
-    
-    @material.load_shaders(@vert_shader_path, @frag_shader_path) do
-      # on reload
-      
     end
     
     @sync.update
@@ -665,208 +646,98 @@ class Core
   
   include RubyOF::Graphics
   def draw
-    
-    
-    
-    # 
-    # setup materials, etc
-    # 
-    # if @first_draw
-      
-    #   @first_draw = false
-      
-    # end
-    
-    
-    
-    
-    # 
-    # set up phases of drawing
-    # 
-    
-    @render_pipeline.draw(@window,
-                          lights:@world.lights,
-                          camera:@world.camera,
-                          material:@material) do |pipeline|
-      
-      # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
-      pipeline.shadow_pass do |lights, shadow_material|
-        # for now, render opaque objects only
-        
-        @world.batches.each do |b|
-          # set uniforms
-          shadow_material.setCustomUniformTexture(
-            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
-          )
-          
-          shadow_material.setCustomUniformTexture(
-            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
-          )
-          
-          shadow_material.setCustomUniformTexture(
-            "entity_tex", b[:entity_data][:texture], 3
-          )
-          
-          shadow_material.setCustomUniform1f(
-            "transparent_pass", 0
-          )
-          
-          # draw using GPU instancing
-          using_material shadow_material do
-            instance_count = b[:entity_data][:pixels].height.to_i
-            b[:geometry].draw_instanced instance_count
-          end
-        end
+    @render_pipeline.draw(@window, @world) do |shadow_casting_light|
+      # Draw visualization of shadow map
+      # in the bottom right corner of the screen
+      shadow_casting_light&.tap do |light|
+        shadow_cam = light.shadow_cam
+        tex = shadow_cam.getShadowMap()
+        # tex.draw_wh(0,0,0, tex.width, tex.height)
+        tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
+        # ^ need to display mesh textures with flipped y,
+        #   but do NOT flip FBOs or render targets
       end
       
       
-      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-      pipeline.opaque_pass do
-        @world.batches.each do |b|
-          # set uniforms
-          @material.setCustomUniformTexture(
-            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
-          )
-          
-          @material.setCustomUniformTexture(
-            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
-          )
-          
-          @material.setCustomUniformTexture(
-            "entity_tex", b[:entity_data][:texture], 3
-          )
-          
-          @material.setCustomUniform1f(
-            "transparent_pass", 0
-          )
-          
-          # draw using GPU instancing
-          using_material @material do
-            instance_count = b[:entity_data][:pixels].height.to_i
-            b[:geometry].draw_instanced instance_count
-          end
-        end
+      
+      # t0 = RubyOF::TimeCounter.now
+      
+      
+      p1 = CP::Vec2.new(500,500)
+      @fonts[:monospace].draw_string("hello world!",
+                                     p1.x, p1.y)
+      
+      
+      
+      p2 = CP::Vec2.new(500,600)
+      if @mouse_pos
         
-        # glCullFace(GL_BACK)
-        # glDisable(GL_CULL_FACE)
+        @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}",
+                                       p2.x, p2.y)
       end
       
-      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-      pipeline.transparent_pass do
-        @world.batches.each do |b|
-          # set uniforms
-          @material.setCustomUniformTexture(
-            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
-          )
-          
-          @material.setCustomUniformTexture(
-            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
-          )
-          
-          @material.setCustomUniformTexture(
-            "entity_tex", b[:entity_data][:texture], 3
-          )
-          
-          @material.setCustomUniform1f(
-            "transparent_pass", 1
-          )
-          
-          # draw using GPU instancing
-          using_material @material do
-            instance_count = b[:entity_data][:pixels].height.to_i
-            b[:geometry].draw_instanced instance_count
-          end
-        end
+      
+      @fonts[:monospace].tap do |f|
         
-        # while time traveling, render the trails of moving objects
-        if @world.transport.time_traveling?
-          
-        end
+        f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
+                                         1178, 846+40)
+        
+        f.draw_string("state #{@world.transport.current_state.class.to_s}",
+                                         1178, 846)
       end
       
-      pipeline.ui_pass do
-        # t0 = RubyOF::TimeCounter.now
+      # @fonts[:monospace].draw_string("history size: #{}",
+                                       # 400, 160)
+      
+      
+      p3 = CP::Vec2.new(646, 846)
+      @fonts[:monospace].tap do |f|
+        f.draw_string("camera", p3.x, p3.y+40*0)
+        f.draw_string("Handglovery", p3.x, p3.y+40*1)
+      
+        f.draw_string("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
         
-        
-        p1 = CP::Vec2.new(500,500)
-        @fonts[:monospace].draw_string("hello world!",
-                                       p1.x, p1.y)
-        
-        
-        
-        p2 = CP::Vec2.new(500,600)
-        if @mouse_pos
-          
-          @fonts[:monospace].draw_string("mouse: #{@mouse_pos.to_s}",
-                                         p2.x, p2.y)
+        dist = @world.camera.position.yield_self do |x|
+          x.to_a[0..1]
+           .map{|x| x*x}
+           .reduce(:+)
+           .yield_self{|x| Math.sqrt(x) }
         end
-        
-        
-        @fonts[:monospace].tap do |f|
-          
-          f.draw_string("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
-                                           1178, 846+40)
-          
-          f.draw_string("state #{@world.transport.current_state.class.to_s}",
-                                           1178, 846)
-        end
-        
-        # @fonts[:monospace].draw_string("history size: #{}",
-                                         # 400, 160)
-        
-        
-        p3 = CP::Vec2.new(646, 846)
-        @fonts[:monospace].tap do |f|
-          f.draw_string("camera", p3.x, p3.y+40*0)
-          f.draw_string("Handglovery", p3.x, p3.y+40*1)
-        
-          f.draw_string("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
-          
-          dist = @world.camera.position.yield_self do |x|
-            x.to_a[0..1]
-             .map{|x| x*x}
-             .reduce(:+)
-             .yield_self{|x| Math.sqrt(x) }
-          end
-          f.draw_string("#{ dist }}", p3.x, p3.y+40*3)
-        end
-        
-        # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
-        
-        
-        # t1 = RubyOF::TimeCounter.now
-        # puts "=> UI    : #{(t1 - t0).to_ms} ms"
-        
-        
-        # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
-        
-        @world.draw_ui( @fonts[:monospace] )
-        
-        
-        # stuff we need to render with this
-          # + a programatically created mesh with triangles to mutate
-          # + a material to hold the vertex and fragment shaders
-          # + vertex shader <---  this is what does the heavy lifting
-          # + frag shader (just load the default one)
-        
-        # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
-        
-        @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
-        if @crash_detected
-          
-          ofPushStyle()
-            ofEnableAlphaBlending()
-            ofSetColor(@crash_color)
-            ofDrawRectangle(0,0,0, @window.width, @window.height)
-          ofPopStyle()
-        end
-        
-        
+        f.draw_string("#{ dist }}", p3.x, p3.y+40*3)
       end
+      
+      # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
+      
+      
+      # t1 = RubyOF::TimeCounter.now
+      # puts "=> UI    : #{(t1 - t0).to_ms} ms"
+      
+      
+      # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+      
+      @world.draw_ui( @fonts[:monospace] )
+      
+      
+      # stuff we need to render with this
+        # + a programatically created mesh with triangles to mutate
+        # + a material to hold the vertex and fragment shaders
+        # + vertex shader <---  this is what does the heavy lifting
+        # + frag shader (just load the default one)
+      
+      # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+      
+      @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+      if @crash_detected
+        
+        ofPushStyle()
+          ofEnableAlphaBlending()
+          ofSetColor(@crash_color)
+          ofDrawRectangle(0,0,0, @window.width, @window.height)
+        ofPopStyle()
+      end
+      
+      
     end
-    
-    
-    
     # t1 = RubyOF::TimeCounter.now
     # puts "=> scene : #{(t1 - t0).to_ms} ms"
     

@@ -15,38 +15,18 @@ class OIT_RenderPipeline
     # ^ materials used to visualize lights a small spheres in space
     # (basically just shows the color and position of each light)
     # (very important for debugging synchronization between RubyOF and blender)
-  end
-  
-  class Helper
-    EMPTY_BLOCK = Proc.new{  }
     
-    def initialize
-      @shadow_pass      = EMPTY_BLOCK
-      @opaque_pass      = EMPTY_BLOCK
-      @transparent_pass = EMPTY_BLOCK
-      @ui_pass          = EMPTY_BLOCK
-    end
     
-    def shadow_pass(&block)
-      @shadow_pass = block
-    end
     
-    def opaque_pass(&block)
-      @opaque_pass = block
-    end
+    # material invokes shaders
+    @material = BlenderMaterial.new "OpenEXR vertex animation mat"
+    # @material.diffuse_color = RubyOF::FloatColor.rgba([1,1,1,1])
+    # @material.specular_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.emissive_color = RubyOF::FloatColor.rgba([0,0,0,0])
+    # @material.ambient_color = RubyOF::FloatColor.rgba([0.2,0.2,0.2,0])
     
-    def transparent_pass(&block)
-      @transparent_pass = block
-    end
     
-    def ui_pass(&block)
-      @ui_pass = block
-    end
-    
-    def get_render_passes
-      return @shadow_pass, @opaque_pass, @transparent_pass, @ui_pass
-    end
-    
+    @compositing_shader = RubyOF::Shader.new
   end
   
   class RenderContext
@@ -54,7 +34,8 @@ class OIT_RenderPipeline
     include Gl
     
     attr_reader :main_fbo, :transparency_fbo
-    attr_reader :tex0, :tex1
+    attr_reader :accumlation_index,    :revealage_index
+    attr_reader :accumulation_tex, :revealage_tex
     attr_reader :fullscreen_quad
     
     def initialize(window)
@@ -89,11 +70,15 @@ class OIT_RenderPipeline
         end
       
       
-      @tex0 = @transparency_fbo.getTexture(0)
-      @tex1 = @transparency_fbo.getTexture(1)
+      
+      @accumlation_index = 0
+      @revealage_index   = 1
+      
+      @accumulation_tex = @transparency_fbo.getTexture(@accumlation_index)
+      @revealage_tex    = @transparency_fbo.getTexture(@revealage_index)
       
       @fullscreen_quad = 
-        @tex0.yield_self{ |texure|
+        @accumulation_tex.yield_self{ |texure|
           RubyOF::CPP_Callbacks.textureToMesh(texure, GLM::Vec3.new(0,0,0))
         }
       
@@ -114,14 +99,14 @@ class OIT_RenderPipeline
   
   include RubyOF::Graphics
   include Gl
-  def draw(window, camera:nil, lights:nil, material:nil, &block)
-    helper = Helper.new
-    block.call(helper)
+  def draw(window, world, &block)
+    ui_pass = block
     
-    passes = helper.get_render_passes
-    @shadow_pass,@opaque_pass,@transparent_pass,@ui_pass = passes
+    # 
+    # setup
+    # 
     
-    
+    @context ||= RenderContext.new(window)
     
     # ofEnableAlphaBlending()
     # # ^ doesn't seem to do anything, at least not right now
@@ -132,29 +117,28 @@ class OIT_RenderPipeline
     # // turn on smooth lighting //
     ofSetSmoothLighting(true)
     
-    ofSetSphereResolution(32) # want higher resoultion than the default 20
-    # ^ this is used to visualize the color and position of the lights
-    
-    
-    
-    # 
-    # setup
-    # 
-    
-    accumTex_i     = 0
-    revealageTex_i = 1
-    
-    @context ||= RenderContext.new(window)
-    
-    @compositing_shader ||= RubyOF::Shader.new
-    
     
     # 
     # update
     # 
     
-    
     (PROJECT_DIR/'bin'/'glsl').tap do |shader_src_dir|
+      # 
+      # 3d rendering uber-material with GPU instancing
+      # 
+      vert_shader_path = shader_src_dir/"animation_texture.vert"
+      
+      # frag_shader_path = shader_src_dir/"phong_test.frag"
+      frag_shader_path = shader_src_dir/"phong_anim_tex.frag"
+      
+      @material.load_shaders(vert_shader_path, frag_shader_path) do
+        # on shader reload
+        
+      end
+      
+      # 
+      # compositing shader for OIT
+      # 
       @compositing_shader.live_load_glsl(
         shader_src_dir/'alpha_composite.vert',
         shader_src_dir/'alpha_composite.frag'
@@ -163,18 +147,83 @@ class OIT_RenderPipeline
       end
     end
     
-    # TODO: fix extent of spotlight shadows.
-      # shadows can extend beyond the edge of the cone of the spotlight, because the shadow camera is really using a frustrum (pyramid) instead of the cone of the spotlight. thus, there are conditions where the shadow sticks out beyond the boundary of the spotlight, which is not physical behavior.
-    
-    
-    # ---------------
-    #   world space
-    # ---------------
-    
     
     # 
     # render shadow maps
     # 
+    world.lights
+    .select{|light| light.casts_shadows? }
+    .each do |light|
+      render_shadow_map(world, light)
+    end
+    
+    # 
+    # render main buffers
+    # (uses shadows)
+    # 
+    
+    # t20 = RubyOF::TimeCounter.now
+    # t21 = RubyOF::TimeCounter.now
+    
+    # setup GL state
+    ofEnableLighting() # // enable lighting //
+    ofEnableDepthTest()
+    
+    world.lights.each{ |light|  light.enable() }
+    
+    shadow_casting_light = world.lights.select{|l| l.casts_shadows? }.first
+    
+      render_opaque_pass(
+        world, shadow_casting_light, @context.main_fbo
+      )
+      
+      blit_framebuffer(:depth_buffer,
+                       @context.main_fbo => @context.transparency_fbo)
+      # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+      
+      render_transparent_pass(
+        world, shadow_casting_light, @context.transparency_fbo
+      )
+    
+    world.lights.each{ |light|  light.disable() }
+    
+    # teardown GL state
+    ofDisableDepthTest()
+    ofDisableLighting()
+    
+    
+    # --- compositing ---
+    
+    @context.main_fbo.draw(0,0)
+    
+    RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+    
+    using_shader @compositing_shader do
+      using_textures @context.accumulation_tex, @context.revealage_tex do
+        @context.fullscreen_quad.draw()
+      end
+    end
+    
+    RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+    
+    
+    
+    # --- user interface, etc ---
+    render_diagetic_ui(world.camera, world.lights) # 3D world space
+    ui_pass.call(shadow_casting_light) # 2D viewport space
+  end
+  
+  private
+  
+  
+  # 
+  # rendering stages
+  # 
+  
+  # render shadow maps using ofxShadowCamera
+  def render_shadow_map(world, light)
+    # TODO: need to handle opaque shadow casters separately from transparent shadow casters. opaque shadow casters merely block light, but transparent shadow casters modify the color of the light while also reducing its intensity.
+    
     
     # if @shadow_material.nil?
     #   @shadow_material = BlenderMaterial.new "OpenEXR vertex animation mat"
@@ -190,181 +239,200 @@ class OIT_RenderPipeline
     
     # Code above is from old style of shadow rendering. Currently, FBOs etc for shadows are contained in ofxShadowCamera. For shaders, we use the normal shaders from the opaque pass. Could potentially use different shaders to only draw depth to save time, but I can't quite figure out how to bind just the depth buffer.
     
-    
-    
-    # 
-    # render shadows using ofxShadowCamera
-    # 
-    
     # puts "shadow simple depth pass"
-    lights
-    .select{|light| light.casts_shadows? }
-    .each do |light|
-      light.update
-      light.shadow_cam.beginDepthPass()
-        ofEnableDepthTest()
-        # @shadow_pass.call(lights, @shadow_material)
-        @opaque_pass.call()
-        ofDisableDepthTest()
-      light.shadow_cam.endDepthPass()
-    end
+    light.update
+    light.shadow_cam.beginDepthPass()
+      ofEnableDepthTest()
+        world.batches.each do |b|
+          # set uniforms
+          @material.setCustomUniformTexture(
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
+          )
+          
+          @material.setCustomUniformTexture(
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
+          )
+          
+          @material.setCustomUniformTexture(
+            "entity_tex", b[:entity_data][:texture], 3
+          )
+          
+          @material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
+          
+          # draw using GPU instancing
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
+          end
+        end
+      ofDisableDepthTest()
+    light.shadow_cam.endDepthPass()
     
     
+    # TODO: fix extent of spotlight shadows.
+      # shadows can extend beyond the edge of the cone of the spotlight, because the shadow camera is really using a frustrum (pyramid) instead of the cone of the spotlight. thus, there are conditions where the shadow sticks out beyond the boundary of the spotlight, which is not physical behavior.
     
-    
+  end
+  
+  
+  # opaque pass and transparent pass as described in the paper below:
+  # 
+  # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
+    # Paper assumes transparency encodes occlusion and demonstrates
+    # how OIT works with colored smoke and clear glass.
     # 
-    # render main buffers
-    # (uses shadows)
-    # 
-    
-    
-    # McGuire, M., & Bavoil, L. (2013). Weighted Blended Order-Independent Transparency. 2(2), 20.
-      # Paper assumes transparency encodes occlusion and demonstrates
-      # how OIT works with colored smoke and clear glass.
-      # 
-      # Follow-up paper in 2016 demonstrates improvements,
-      # including work with colored glass.
-    
-    t20 = RubyOF::TimeCounter.now
-    
-    # 
-    # setup GL state
-    # ofEnableDepthTest()
-    ofEnableLighting() # // enable lighting //
-    ofEnableDepthTest()
-    
-    t21 = RubyOF::TimeCounter.now
-    
-    lights.each{ |light|  light.enable() }
-    
-    
-    shadow_casting_light = lights.select{|l| l.casts_shadows? }.first
-    
-    using_framebuffer @context.main_fbo do |fbo|
+    # Follow-up paper in 2016 demonstrates improvements,
+    # including work with colored glass.
+  
+  def render_opaque_pass(world, shadow_casting_light, opaque_pass_fbo)
+    using_framebuffer opaque_pass_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
       fbo.clearDepthBuffer(1.0) # default is 1.0
       fbo.clearColorBuffer(0, COLOR_ZERO)
       
-      if shadow_casting_light.nil?
-        material.setCustomUniform1f(
-          "u_useShadows", 0
-        )
-      else
-        shadow_casting_light.setShadowUniforms(material)
-      end
-      
-      using_camera camera do
+      using_camera world.camera do
         # puts "light on?: #{@lights[0]&.enabled?}" 
         
-        @opaque_pass.call()
+        if shadow_casting_light.nil?
+          @material.setCustomUniform1f(
+            "u_useShadows", 0
+          )
+        else
+          shadow_casting_light.setShadowUniforms(@material)
+        end
         
-        
-        # visualize lights
-        # render colored spheres to represent lights
-        lights.each do |light|
-          light_pos   = light.position
-          light_color = light.diffuse_color
+        # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+        world.batches.each do |b|
+          # set uniforms
+          @material.setCustomUniformTexture(
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
+          )
           
-          @light_material.tap do |mat|
-            mat.emissive_color = light_color
-            
-            
-            # light.draw
-            mat.begin()
-            ofPushMatrix()
-              ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
-            ofPopMatrix()
-            mat.end()
+          @material.setCustomUniformTexture(
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
+          )
+          
+          @material.setCustomUniformTexture(
+            "entity_tex", b[:entity_data][:texture], 3
+          )
+          
+          @material.setCustomUniform1f(
+            "transparent_pass", 0
+          )
+          
+          # draw using GPU instancing
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
           end
         end
+        
+        # glCullFace(GL_BACK)
+        # glDisable(GL_CULL_FACE)
+        
       end
     end
     
-    
-    blit_framebuffer :depth_buffer, @context.main_fbo => @context.transparency_fbo
-    # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
-    
-    
-    using_framebuffer @context.transparency_fbo do |fbo|
+  end
+  
+  def render_transparent_pass(world, shadow_casting_light, transparent_pass_fbo)
+    using_framebuffer transparent_pass_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
-      fbo.clearColorBuffer(accumTex_i,     COLOR_ZERO)
-      fbo.clearColorBuffer(revealageTex_i, COLOR_ONE)
+      fbo.clearColorBuffer(@context.accumlation_index,  COLOR_ZERO)
+      fbo.clearColorBuffer(@context.revealage_index,    COLOR_ONE)
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
       
       if shadow_casting_light.nil?
-        material.setCustomUniform1f(
+        @material.setCustomUniform1f(
           "u_useShadows", 0
         )
       else
-        shadow_casting_light.setShadowUniforms(material)
+        shadow_casting_light.setShadowUniforms(@material)
       end
       
-      using_camera camera do
-        @transparent_pass.call()
+      # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+      using_camera world.camera do
+        world.batches.each do |b|
+          # set uniforms
+          @material.setCustomUniformTexture(
+            "vert_pos_tex",  b[:mesh_data][:textures][:positions], 1
+          )
+          
+          @material.setCustomUniformTexture(
+            "vert_norm_tex", b[:mesh_data][:textures][:normals], 2
+          )
+          
+          @material.setCustomUniformTexture(
+            "entity_tex", b[:entity_data][:texture], 3
+          )
+          
+          @material.setCustomUniform1f(
+            "transparent_pass", 1
+          )
+          
+          # draw using GPU instancing
+          using_material @material do
+            instance_count = b[:entity_data][:pixels].height.to_i
+            b[:geometry].draw_instanced instance_count
+          end
+        end
+        
+        # while time traveling, render the trails of moving objects
+        if world.transport.time_traveling?
+          
+        end
       end
       
       
       RubyOF::CPP_Callbacks.disableTransparencyBufferBlending()      
     end
     
+  end
+  
+  
+  
+  
+  def render_diagetic_ui(camera, lights)
+    ofSetSphereResolution(32) # want higher resoultion than the default 20
+    # ^ this is used to visualize the color and position of the lights
     
-    lights.each{ |light|  light.disable() }
-    
-    
-    # teardown GL state
-    ofDisableDepthTest()
-    ofDisableLighting()
-    
-    # ----------------
-    #   screen space
-    # ----------------
-    
-    
-    # RubyOF::CPP_Callbacks.clearDepthBuffer()
-    # RubyOF::CPP_Callbacks.depthMask(true)
-    
-    # ofEnableBlendMode(:alpha)
-    
-    
-    
-    # --- compositing ---
-    
-    @context.main_fbo.draw(0,0)
-    
-    
-    RubyOF::CPP_Callbacks.enableScreenspaceBlending()
-    
-    using_shader @compositing_shader do
-      using_textures @context.tex0, @context.tex1 do
-        @context.fullscreen_quad.draw()
+    using_camera camera do
+      # visualize lights
+      # render colored spheres to represent lights
+      
+      # (disable shadows for diagetic UI elements)
+      @material.setCustomUniform1f(
+        "u_useShadows", 0
+      )
+      
+      lights.each do |light|
+        light_pos   = light.position
+        light_color = light.diffuse_color
+        
+        @light_material.tap do |mat|
+          mat.emissive_color = light_color
+          
+          
+          # light.draw
+          mat.begin()
+          ofPushMatrix()
+            ofDrawSphere(light_pos.x, light_pos.y, light_pos.z, 0.1)
+          ofPopMatrix()
+          mat.end()
+        end
       end
     end
-    # draw_fbo_to_screen(@transparency_fbo, accumTex_i, revealageTex_i)
-    # @transparency_fbo.draw(0,0)
-    
-    RubyOF::CPP_Callbacks.disableScreenspaceBlending()
-    
-    
-    
-    # --- user interface, etc ---
-    
-    # Draw visualization of shadow map in the bottom right corner of the screen
-    shadow_casting_light&.tap do |light|
-      shadow_cam = light.shadow_cam
-      tex = shadow_cam.getShadowMap()
-      # tex.draw_wh(0,0,0, tex.width, tex.height)
-      tex.draw_wh(1400,1300,0, 1024/4, 1024/4)
-      # ^ need to display mesh textures with flipped y,
-      #   but do NOT flip FBOs or render targets
-    end
-    
-    @ui_pass.call()
     
   end
   
-  private
   
+  
+  # 
+  # helper methods
+  # 
   
   def blit_framebuffer(buffer_name, hash={})
     src = hash.keys.first
