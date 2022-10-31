@@ -633,11 +633,13 @@ AnimTexManager = reload_class(AnimTexManager)
 
 
 class ResourceManager():
-    def __init__(self):
+    def __init__(self, to_ruby):
         # print("init resource manager", flush=True)
         self.anim_tex_manager = None
         
         self.tex_managers = []
+        
+        self.to_ruby = to_ruby
     
     # scene.my_tool['name_list'] is a List of strings that controls the ordering of the texture sets in the UI. Order is maintained across the 3 collections (described below) by only performing binary swaps to move elements up / down
     
@@ -707,11 +709,13 @@ class ResourceManager():
             self.tex_managers[j] = None
             self.tex_managers[j] = AnimTexManager(scene, name)
         
-        # # print("try to clear texture manager", flush=True)
-        # if self.anim_tex_manager is not None:
-        #     # print("clearing texture manager", flush=True)
-        #     self.anim_tex_manager.clear(scene)
-        #     self.anim_tex_manager = None
+        data = {
+            'type': 'update_geometry_data',
+            'comment': 'delete all batches',
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
     
     
     def load(self, scene):
@@ -818,7 +822,31 @@ class ResourceManager():
         
         self.__debug_print(scene)
         
-        # manager collection
+        
+        # 
+        # send message to game engine that the texture set has been deleted
+        # 
+        tex_manager = self.tex_managers[j]
+        
+        filepaths = tex_manager.get_texture_paths()
+        position_filepath, normal_filepath, entity_filepath = filepaths
+        
+        data = {
+            'type': 'update_geometry_data',
+            'comment': 'delete batch',
+            'name': tex_manager.name,
+            'json_file_path': tex_manager.get_json_path(),
+            'position_tex_path' : position_filepath,
+            'normal_tex_path'   : normal_filepath,
+            'entity_tex_path': entity_filepath,
+        }
+        
+        self.to_ruby.write(json.dumps(data))
+        
+        
+        # 
+        # delete texture set
+        # 
         del self.tex_managers[j]
         
         self.__debug_print(scene)
@@ -933,7 +961,7 @@ class ResourceManager():
         sys.stdout.flush()
     
 
-resource_manager = ResourceManager()
+resource_manager = ResourceManager(to_ruby)
 
 # def anim_texture_manager_singleton(context):
 #     global anim_tex_manager

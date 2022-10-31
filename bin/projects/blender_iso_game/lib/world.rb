@@ -283,13 +283,15 @@ class World
   # 
   
   def_delegators :@batches,
-    :on_full_export,
+    :on_batch_exported,
+    :on_batch_deleted,
+    :on_all_batches_deleted,
     :on_entity_moved,
-    :on_entity_created,
+    :on_entity_deleted,
+    :on_entity_created_with_existing_mesh,
     :on_entity_created_with_new_mesh,
     :on_mesh_edited,
-    :on_material_edited,
-    :on_gc
+    :on_material_edited
   # TODO: when data is reloaded, trigger some appropriate changes to history or something
   
   
