@@ -338,7 +338,7 @@ class BlenderSync
       @world.on_entity_created_with_new_mesh(self, base_dir, message['name'])
       
     when 'created new entity with existing mesh'
-      @world.on_entity_created(self, base_dir, message['name'])
+      @world.on_entity_created_with_existing_mesh(self, base_dir, message['name'])
       
     when 'edit active mesh'
       @world.on_mesh_edited(self, base_dir, message['name'])

@@ -499,57 +499,69 @@ class RenderBatchContainer
     
   end
   
+  # deleting and creating new both edit the entity texture in the same way
   def on_entity_deleted(ipc, texture_dir, collection_name)
-    # TODO: implement this (already hooked up in python and blender sync)
-    @batches.each do |b|
-      batch_dsl(b) do |x|
-        x.entity.disk_to_pixels
-        x.entity.pixels_to_texture
-        x.entity.pixels_to_cache
-        
-        x.json.disk_to_hash
-        
-        # x.mesh.pixels_to_geometry
-      end
-      
-      # b[:entity_history].setup(
-      #   buffer_length: @buffer_length,
-      #   frame_width:   b[:entity_data][:pixels].width,
-      #   frame_height:  b[:entity_data][:pixels].height
-      # )
-    end
-    
-    
-    
-    @world.history.branch
+    self.on_entity_created_with_existing_mesh(ipc, texture_dir, collection_name)
   end
   
-  def on_entity_created(ipc, texture_dir, collection_name)
-    @batches.each do |b|
+  # same as #on_entity_moved, but with different mutation code
+  def on_entity_created_with_existing_mesh(ipc, texture_dir, collection_name)
+    # jump to frame 0
+    @world.transport.pause(ipc) # any -> ReplayingOld
+    @world.transport.seek(ipc, 0)
+    
+    final_frame = @world.transport.final_frame
+    
+    # branch history
+    @world.history.branch # counter.max reset to 0
+    
+    # load new data
+    @batches.find{|b| b.name == collection_name }
+    .tap do |b|
       batch_dsl(b) do |x|
         x.entity.disk_to_pixels
         x.entity.pixels_to_texture
         x.entity.pixels_to_cache
         
         x.json.disk_to_hash
-        
-        # x.mesh.pixels_to_geometry
       end
-      
-      # b[:entity_history].setup(
-      #   buffer_length: @buffer_length,
-      #   frame_width:   b[:entity_data][:pixels].width,
-      #   frame_height:  b[:entity_data][:pixels].height
-      # )
     end
     
     
+    # regenerate space so queries function as expected
+    @world.space.setup()
     
-    @world.history.branch
+    
+    # advance code to the original point
+    while(@world.transport.current_frame < final_frame)
+      # ReplayingOld -> GeneratingNew -> GeneratingNew
+      @world.transport.next_frame(ipc)
+    end
+    
+    # when are entity updates pushed to the GPU?
+    # when is the cache pushed to the texture?
+    # TODO: try to optimize forcasting update speed by only pushing the cache to the final buffer at the end of forcasting, not between every frame, as no one will ever see the stages in-between frames anyway.
+    
+    
+    # resume code execution
+      # actually, don't play from here.
+      # want to be able to "scrub" the position of objects
+      # and see the effects on the output
   end
   
   def on_entity_created_with_new_mesh(ipc, texture_dir, collection_name)
-    @batches.each do |b|
+    # jump to frame 0
+    @world.transport.pause(ipc) # any -> ReplayingOld
+    @world.transport.seek(ipc, 0)
+    
+    final_frame = @world.transport.final_frame
+    
+    # branch history
+    @world.history.branch # counter.max reset to 0
+    
+    # load new data
+    @batches.find{|b| b.name == collection_name }
+    .tap do |b|
       batch_dsl(b) do |x|
         x.mesh.disk_to_pixels
         x.mesh.pixels_to_texture
@@ -560,19 +572,30 @@ class RenderBatchContainer
         
         x.json.disk_to_hash
         
-        # x.mesh.pixels_to_geometry
+        x.mesh.pixels_to_geometry
       end
-      
-      # b[:entity_history].setup(
-      #   buffer_length: @buffer_length,
-      #   frame_width:   b[:entity_data][:pixels].width,
-      #   frame_height:  b[:entity_data][:pixels].height
-      # )
     end
     
     
+    # regenerate space so queries function as expected
+    @world.space.setup()
     
-    @world.history.branch
+    
+    # advance code to the original point
+    while(@world.transport.current_frame < final_frame)
+      # ReplayingOld -> GeneratingNew -> GeneratingNew
+      @world.transport.next_frame(ipc)
+    end
+    
+    # when are entity updates pushed to the GPU?
+    # when is the cache pushed to the texture?
+    # TODO: try to optimize forcasting update speed by only pushing the cache to the final buffer at the end of forcasting, not between every frame, as no one will ever see the stages in-between frames anyway.
+    
+    
+    # resume code execution
+      # actually, don't play from here.
+      # want to be able to "scrub" the position of objects
+      # and see the effects on the output
   end
   
   # note - can't just create new mesh, would have to create a new entity too
@@ -582,20 +605,24 @@ class RenderBatchContainer
   #       Thus, editing geometry does not change the outcome of spatial queries.
   # (later when we have animations: may want to branch state based on animation frame, like checking for active frames during an attack animation)
   def on_mesh_edited(ipc, texture_dir, collection_name)
-    @batches.each do |b|
+    @batches.find{|b| b.name == collection_name }
+    .tap do |b|
       batch_dsl(b) do |x|
         x.mesh.disk_to_pixels
-        x.mesh.pixels_to_texture        
+        x.mesh.pixels_to_texture
+        
+        x.mesh.pixels_to_geometry
       end
     end
     
-    @world.history.branch
+    # @world.history.branch
   end
   
   # update material data (in entity texture) as well as material names (in json)
   # (material only effects apperance; editing should not change history)
   def on_material_edited(ipc, texture_dir, collection_name)
-    @batches.each do |b|
+    @batches.find{|b| b.name == collection_name }
+    .tap do |b|
       batch_dsl(b) do |x|
         x.entity.disk_to_pixels
         x.entity.pixels_to_texture
