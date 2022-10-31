@@ -86,7 +86,7 @@ class OIT_RenderPipeline
   end
   
   
-  def update(window, lights)
+  def on_window_resized(window, lights)
     @context = RenderContext.new(window)
     lights.each{|l| l.update }
     GC.start # force GC to clear old FBO data from RenderContext
