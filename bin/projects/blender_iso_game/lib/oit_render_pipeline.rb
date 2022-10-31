@@ -192,8 +192,9 @@ class OIT_RenderPipeline
     ofDisableLighting()
     
     
-    # --- compositing ---
-    
+    # 
+    # compositing
+    # 
     @context.main_fbo.draw(0,0)
     
     RubyOF::CPP_Callbacks.enableScreenspaceBlending()
@@ -207,8 +208,9 @@ class OIT_RenderPipeline
     RubyOF::CPP_Callbacks.disableScreenspaceBlending()
     
     
-    
-    # --- user interface, etc ---
+    # 
+    # UI rendering
+    # 
     render_diagetic_ui(world.camera, world.lights) # 3D world space
     ui_pass.call(shadow_casting_light) # 2D viewport space
   end
