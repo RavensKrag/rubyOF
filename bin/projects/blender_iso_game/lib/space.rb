@@ -14,6 +14,7 @@ class Space
     @static_entities  = []
     @dynamic_entities = []
     
+    # TODO: encode which collections are dynamic and which are static in some other way. don't want to have the names of the collections hard coded like like.
     @static_collection_names  = ['Tiles']
     @dynamic_collection_names = ['Characters']
   end
