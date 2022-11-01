@@ -1208,6 +1208,13 @@ static ofFloatColor COLOR_ONE  = ofFloatColor(1,1,1,1);
 static int ACCUM_IDX  = 0;
 static int REVEAL_IDX = 1;
 
+struct FooRenderData	{
+	ofTexture *mesh_pos;
+	ofTexture *mesh_norm;
+	ofTexture *entity_tex;
+	ofVboMesh *geometry;
+};
+
 // set uniforms associated with shadow casting light
 inline void foo_bind_shadow_parameters(ofxDynamicMaterial& material, ofxShadowCamera& shadow_cam){
 	material.setCustomUniform1f(
@@ -1234,36 +1241,29 @@ inline void foo_bind_shadow_parameters(ofxDynamicMaterial& material, ofxShadowCa
 }
 
 void foo_render_shadow_map(
-	ofxDynamicMaterial& material, ofxShadowCamera& shadow_cam, Rice::Object batches
+	ofxDynamicMaterial& material, ofxShadowCamera& shadow_cam,
+	FooRenderData* batches, int num_batches
 ){
 	shadow_cam.beginDepthPass();
 		ofEnableDepthTest();
-			int num_batches = from_ruby<int>(batches.call("size"));
-			std::cout << "shadow map: " << num_batches << " batch(es) detected" << std::endl;
+			// std::cout << "shadow map: " << num_batches << " batch(es) detected" << std::endl;
 			for(int i=0; i < num_batches; i++){
-				std::cout << "shadow map: batch " << i << std::endl;
+				// std::cout << "shadow map: batch " << i << std::endl;
 				
-				// extract data from ruby
-				Rice::Object batch = batches.call("[]", i);
+				int instance_count = batches[i].entity_tex->getHeight();
 				
-				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
-				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
-				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
-				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
-				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
-				
-				std::cout << "shadow map: instance count " << instance_count << std::endl;
+				// std::cout << "shadow map: instance count " << instance_count << std::endl;
 				
 				// set uniforms
-				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
-				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
-				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				material.setCustomUniformTexture("vert_pos_tex",  *(batches[i].mesh_pos),   1);
+				material.setCustomUniformTexture("vert_norm_tex", *(batches[i].mesh_norm),  2);
+				material.setCustomUniformTexture("entity_tex",    *(batches[i].entity_tex), 3);
 				
 				material.setCustomUniform1f("transparent_pass", 0);
 				
 				// draw using GPU instancing
 				material.begin();
-					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+					batches[i].geometry->drawInstanced(OF_MESH_FILL, instance_count);
 				material.end();
 			}
 		ofDisableDepthTest();
@@ -1271,9 +1271,9 @@ void foo_render_shadow_map(
 }
 
 void foo_render_opaque_pass(
-	ofFbo& fbo,
-	ofxDynamicMaterial& material, Rice::Object batches,
-	ofxShadowCamera& shadow_cam, ofxCamera &camera
+	ofxDynamicMaterial& material,
+	FooRenderData* batches, int num_batches, ofxShadowCamera& shadow_cam, ofxCamera &camera,
+	ofFbo& fbo
 ){
 	fbo.begin();
 	fbo.activateAllDrawBuffers();
@@ -1282,35 +1282,25 @@ void foo_render_opaque_pass(
       fbo.clearColorBuffer(0, COLOR_ZERO);
       
       camera.begin();
-			foo_bind_shadow_parameters(material, shadow_cam);
-			
 			// # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-			int num_batches = from_ruby<int>(batches.call("size"));
-			std::cout << "opaque pass: " << num_batches << " batch(es) detected" << std::endl;
+			// std::cout << "opaque pass: " << num_batches << " batch(es) detected" << std::endl;
 			for(int i=0; i < num_batches; i++){
-				std::cout << "opaque pass: batch " << i << std::endl;
+				// std::cout << "opaque pass: batch " << i << std::endl;
 				
-				// extract data from ruby
-				Rice::Object batch = batches.call("[]", i);
+				int instance_count = batches[i].entity_tex->getHeight();
 				
-				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
-				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
-				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
-				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
-				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
-				
-				std::cout << "opaque pass: instance count " << instance_count << std::endl;
+				// std::cout << "opaque pass: instance count " << instance_count << std::endl;
 				
 				// set uniforms
-				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
-				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
-				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				material.setCustomUniformTexture("vert_pos_tex",  *(batches[i].mesh_pos),   1);
+				material.setCustomUniformTexture("vert_norm_tex", *(batches[i].mesh_norm),  2);
+				material.setCustomUniformTexture("entity_tex",    *(batches[i].entity_tex), 3);
 				
 				material.setCustomUniform1f("transparent_pass", 0);
 				
 				// draw using GPU instancing
 				material.begin();
-					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+					batches[i].geometry->drawInstanced(OF_MESH_FILL, instance_count);
 				material.end();
 				
 				// glCullFace(GL_BACK);
@@ -1321,9 +1311,9 @@ void foo_render_opaque_pass(
 }
 
 void foo_render_transparent_pass(
-	ofFbo& fbo,
-	ofxDynamicMaterial& material, Rice::Object batches,
-	ofxShadowCamera& shadow_cam, ofxCamera &camera
+	ofxDynamicMaterial& material,
+	FooRenderData* batches, int num_batches, ofxShadowCamera& shadow_cam, ofxCamera &camera,
+	ofFbo& fbo
 ){
 	fbo.begin();
 	fbo.activateAllDrawBuffers();
@@ -1333,35 +1323,27 @@ void foo_render_transparent_pass(
       
       enableTransparencyBufferBlending();
 		camera.begin();
-			foo_bind_shadow_parameters(material, shadow_cam);
-			
 			// # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-			int num_batches = from_ruby<int>(batches.call("size"));
-			std::cout << "transparent pass: " << num_batches << " batch(es) detected" << std::endl;
+			// std::cout << "transparent pass: " << num_batches << " batch(es) detected" << std::endl;
 			for(int i=0; i < num_batches; i++){
-				std::cout << "transparent pass: batch " << i << std::endl;
+				// std::cout << "transparent pass: batch " << i << std::endl;
 				
 				// extract data from ruby
-				Rice::Object batch = batches.call("[]", i);
+				int instance_count = batches[i].entity_tex->getHeight();
 				
-				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
-				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
-				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
-				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
-				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
 				
-				std::cout << "transparent pass: instance count " << instance_count << std::endl;
+				// std::cout << "transparent pass: instance count " << instance_count << std::endl;
 				
 				// set uniforms
-				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
-				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
-				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				material.setCustomUniformTexture("vert_pos_tex",  *(batches[i].mesh_pos),   1);
+				material.setCustomUniformTexture("vert_norm_tex", *(batches[i].mesh_norm),  2);
+				material.setCustomUniformTexture("entity_tex",    *(batches[i].entity_tex), 3);
 				
 				material.setCustomUniform1f("transparent_pass", 1);
 				
 				// draw using GPU instancing
 				material.begin();
-					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+					batches[i].geometry->drawInstanced(OF_MESH_FILL, instance_count);
 				material.end();
 				
 				// # while time traveling, render the trails of moving objects
@@ -1374,14 +1356,14 @@ void foo_render_transparent_pass(
    fbo.end();
 }
 
-void foo_composite(Rice::Object context, ofShader& compositing_shader){
-	ofFbo &main_fbo = from_ruby<ofFbo&>(context.call("main_fbo"));
+void foo_composite(
+	ofShader& compositing_shader,
+	ofFbo &main_fbo, ofFbo &transparent_fbo
+){
+	ofTexture &accumulation_tex = transparent_fbo.getTexture(ACCUM_IDX);
+	ofTexture &revealage_tex    = transparent_fbo.getTexture(REVEAL_IDX);
 	
-	ofTexture &accumulation_tex = from_ruby<ofTexture&>(context.call("accumulation_tex"));
-	ofTexture &revealage_tex    = from_ruby<ofTexture&>(context.call("revealage_tex"));
-	
-	ofMesh &fullscreen_quad = from_ruby<ofMesh&>(context.call("fullscreen_quad"));
-	
+	ofMesh fullscreen_quad = textureToMesh(accumulation_tex, glm::vec3(0,0,0));
 	
 	
 	main_fbo.draw(0,0);
@@ -1404,54 +1386,74 @@ void foo_composite(Rice::Object context, ofShader& compositing_shader){
 
 
 void foo_draw(ofxDynamicMaterial& material, ofShader& compositing_shader,
-              Rice::Object context, ofxShadowCamera& shadow_cam, Rice::Object world,
-				  Rice::Array batches
+              ofxShadowCamera& shadow_cam, ofxCamera& camera,
+				  Rice::Array batches_rb,
+				  ofFbo& main_fbo, ofFbo& trans_fbo
 ){
-	std::cout << "c++ render pipeline" << std::endl;
-	// mSelf.call(world, )
+	// std::cout << "c++ render pipeline" << std::endl;
+	
+	// 
+	// extract data from ruby
+	// 
+	int num_batches = batches_rb.size();
+	
+	FooRenderData* batches = new FooRenderData[num_batches];
+	
+	for(int i=0; i < num_batches; i++){
+		Rice::Object x = batches_rb[i];
+		Rice::Array batch = x;
+		
+		batches[i].mesh_pos   = from_ruby<ofTexture*>(batch[0]);
+		batches[i].mesh_norm  = from_ruby<ofTexture*>(batch[1]);
+		batches[i].entity_tex = from_ruby<ofTexture*>(batch[2]);
+		batches[i].geometry   = from_ruby<ofVboMesh*>(batch[3]);
+	}
 	
 	
 	// 
-	// pull data from ruby
+	// perform rendering
 	// 
-	ofFbo& main_fbo  = from_ruby<ofFbo&>(context.call("main_fbo"));
-	ofFbo& trans_fbo = from_ruby<ofFbo&>(context.call("transparency_fbo"));
 	
-	ofxCamera& camera = from_ruby<ofxCamera&>(world.call("camera").call("to_ofxCamera"));
-	
-	
-	// 
-	// render
-	// 
 	foo_render_shadow_map(
-		material, shadow_cam, batches
+		material, shadow_cam,
+		batches, num_batches
 	);
-	
-	// auto lights = world.call("lights");
 	
 	// # setup GL state
 	ofEnableLighting(); // enable lighting //
 	ofEnableDepthTest();
-	
+		foo_bind_shadow_parameters(
+			material,
+			shadow_cam
+		);
+		
 		foo_render_opaque_pass(
-			main_fbo,
-			material, batches,
-			shadow_cam, camera
+			material,
+			batches, num_batches, shadow_cam, camera,
+			main_fbo
 		);
 		
 		blitFramebuffer(main_fbo, trans_fbo, GL_DEPTH_BUFFER_BIT);
 		
 		foo_render_transparent_pass(
-			trans_fbo,
-			material, batches,
-			shadow_cam, camera
+			material,
+			batches, num_batches, shadow_cam, camera,
+			trans_fbo
 		);
-	
 	// # teardown GL state
 	ofDisableDepthTest();
 	ofDisableLighting();
 	
-	foo_composite(context, compositing_shader);
+	foo_composite(
+		compositing_shader,
+		main_fbo, trans_fbo
+	);
+	
+	
+	// 
+	// clean data
+	// 
+	delete[] batches;
 }
 
 

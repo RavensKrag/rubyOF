@@ -632,6 +632,8 @@ class Core
     @world.update @sync
     # normal update block executes while code is crashed.
     
+    @render_pipeline.update
+    
     # 
     # The World#update block may be skipped, but the state machine etc
     # will continue to update. If the crash is resolved,

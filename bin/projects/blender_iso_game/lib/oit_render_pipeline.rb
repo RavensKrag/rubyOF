@@ -29,6 +29,8 @@ class OIT_RenderPipeline
     @compositing_shader = RubyOF::Shader.new
     
     
+    
+    
   end
   
   def setup
@@ -100,33 +102,7 @@ class OIT_RenderPipeline
   end
   
   
-  
-  COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
-  COLOR_ONE  = RubyOF::FloatColor.rgba([1,1,1,1])
-  
-  include RubyOF::Graphics
-  include Gl
-  def draw(window, world)
-    # 
-    # setup
-    # 
-    
-    @context ||= RenderContext.new(window)
-    
-    # ofEnableAlphaBlending()
-    # # ^ doesn't seem to do anything, at least not right now
-    
-    # ofEnableBlendMode(:alpha)
-    
-    # ofBackground(10, 10, 10, 255);
-    # // turn on smooth lighting //
-    ofSetSmoothLighting(true)
-    
-    
-    # 
-    # update
-    # 
-    
+  def update
     (PROJECT_DIR/'bin'/'glsl').tap do |shader_src_dir|
       # 
       # 3d rendering uber-material with GPU instancing
@@ -151,7 +127,26 @@ class OIT_RenderPipeline
         puts "alpha compositing shaders reloaded"
       end
     end
+  end
+  
+  
+  COLOR_ZERO = RubyOF::FloatColor.rgba([0,0,0,0])
+  COLOR_ONE  = RubyOF::FloatColor.rgba([1,1,1,1])
+  
+  include RubyOF::Graphics
+  include Gl
+  def draw(window, world)
+    @context ||= RenderContext.new(window)
     
+    # ofEnableAlphaBlending()
+    # # ^ doesn't seem to do anything, at least not right now
+    
+    # ofEnableBlendMode(:alpha)
+    
+    # ofBackground(10, 10, 10, 255);
+    # // turn on smooth lighting //
+    ofSetSmoothLighting(true)
+        
     case @render_mode
     when :dynamic
       # 
@@ -224,66 +219,21 @@ class OIT_RenderPipeline
       
         RubyOF::CPP_Callbacks.foo_draw(
           @material, @compositing_shader,
-          @context, shadow_casting_light.shadow_cam, world,
+          shadow_casting_light.shadow_cam, world.camera.to_ofxCamera,
           world.batches.collect{ |b|
             [
               b[:mesh_data][:textures][:positions],
               b[:mesh_data][:textures][:normals],
               b[:entity_data][:texture],
-              b[:entity_data][:pixels].height.to_i,
               b[:geometry].to_mesh
             ]
-          }
+          },
+          @context.main_fbo, @context.transparency_fbo
         )
-        
+      
       world.lights.each{ |light|  light.disable() }
       
-      puts world.batches.size
-      
-      
-      # # puts "shadow simple depth pass"
-      # # light.update
-      # # light.shadow_cam.beginDepthPass()
-      #   # ofEnableDepthTest()
-      #     world.batches.each do |b|
-      #       b[:mesh_data][:textures][:positions]
-      #       b[:mesh_data][:textures][:normals]
-      #       b[:entity_data][:texture]
-      #       # draw using GPU instancing
-            
-      #       b[:entity_data][:pixels].height.to_i
-      #       b[:geometry]
-      #     end
-      # #   ofDisableDepthTest()
-      # # light.shadow_cam.endDepthPass()
-      
-      
-      
-      # # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-      # world.batches.each do |b|
-      #   b[:mesh_data][:textures][:positions]
-      #   b[:mesh_data][:textures][:normals]
-      #   b[:entity_data][:texture]
-        
-      #   b[:entity_data][:pixels].height.to_i
-      #   b[:geometry]
-        
-      # end
-      
-      
-      
-      # # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
-      # world.batches.each do |b|
-      #   b[:mesh_data][:textures][:positions]
-      #   b[:mesh_data][:textures][:normals]
-      #   b[:entity_data][:texture]
-        
-      #   b[:entity_data][:pixels].height.to_i
-      #   b[:geometry]
-        
-      # end
-        
-    
+      # puts world.batches.size
     end
     
     
