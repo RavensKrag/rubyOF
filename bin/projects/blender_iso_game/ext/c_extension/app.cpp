@@ -184,17 +184,6 @@ void rbApp::update(){
 	// ========== add new stuff here ==========
 	
 	
-	// // ofColor picked = mColorPicker_Parameter.get();
-	// // mColorPicker_Color.r = picked.r;
-	// // mColorPicker_Color.g = picked.g;
-	// // mColorPicker_Color.b = picked.b;
-	// // mColorPicker_Color.a = picked.a;
-	
-	
-	// // (This one-line style is cleaner, but I'm not sure if it's faster or not. Seems to be a lot of fluxuation in the framerate this way?)
-	// mColorPicker_Color = mColorPicker_Parameter.get();
-	
-	
 	// --- Track seconds / frame over time to see performance.
 	//     Need a graph, not a single data point, and seconds rather than Hz
 	

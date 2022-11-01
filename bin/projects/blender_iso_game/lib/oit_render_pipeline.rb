@@ -27,6 +27,13 @@ class OIT_RenderPipeline
     
     
     @compositing_shader = RubyOF::Shader.new
+    
+    
+  end
+  
+  def setup
+    # @render_mode = :dynamic # run ruby code
+    @render_mode = :compiled # run C++ code
   end
   
   class RenderContext
@@ -34,8 +41,8 @@ class OIT_RenderPipeline
     include Gl
     
     attr_reader :main_fbo, :transparency_fbo
-    attr_reader :accumlation_index,    :revealage_index
-    attr_reader :accumulation_tex, :revealage_tex
+    attr_reader :accumulation_index, :revealage_index
+    attr_reader :accumulation_tex,   :revealage_tex
     attr_reader :fullscreen_quad
     
     def initialize(window)
@@ -71,10 +78,10 @@ class OIT_RenderPipeline
       
       
       
-      @accumlation_index = 0
+      @accumulation_index = 0
       @revealage_index   = 1
       
-      @accumulation_tex = @transparency_fbo.getTexture(@accumlation_index)
+      @accumulation_tex = @transparency_fbo.getTexture(@accumulation_index)
       @revealage_tex    = @transparency_fbo.getTexture(@revealage_index)
       
       @fullscreen_quad = 
@@ -99,9 +106,7 @@ class OIT_RenderPipeline
   
   include RubyOF::Graphics
   include Gl
-  def draw(window, world, &block)
-    ui_pass = block
-    
+  def draw(window, world)
     # 
     # setup
     # 
@@ -147,72 +152,148 @@ class OIT_RenderPipeline
       end
     end
     
-    
-    # 
-    # render shadow maps
-    # 
-    world.lights
-    .select{|light| light.casts_shadows? }
-    .each do |light|
-      render_shadow_map(world, light)
-    end
-    
-    # 
-    # render main buffers
-    # (uses shadows)
-    # 
-    
-    # t20 = RubyOF::TimeCounter.now
-    # t21 = RubyOF::TimeCounter.now
-    
-    # setup GL state
-    ofEnableLighting() # // enable lighting //
-    ofEnableDepthTest()
-    
-    world.lights.each{ |light|  light.enable() }
-    
-    shadow_casting_light = world.lights.select{|l| l.casts_shadows? }.first
-    
-      render_opaque_pass(
-        world, shadow_casting_light, @context.main_fbo
-      )
+    case @render_mode
+    when :dynamic
+      # 
+      # render shadow maps
+      # 
+      # world.lights
+      # .select{|light| light.casts_shadows? }
+      # .each do |light|
+      #   render_shadow_map(world, light)
+      # end
       
-      blit_framebuffer(:depth_buffer,
-                       @context.main_fbo => @context.transparency_fbo)
-      # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+      shadow_casting_light = world.lights.select{|l| l.casts_shadows? }.first
+      render_shadow_map(world, shadow_casting_light)
       
-      render_transparent_pass(
-        world, shadow_casting_light, @context.transparency_fbo
-      )
-    
-    world.lights.each{ |light|  light.disable() }
-    
-    # teardown GL state
-    ofDisableDepthTest()
-    ofDisableLighting()
-    
-    
-    # 
-    # compositing
-    # 
-    @context.main_fbo.draw(0,0)
-    
-    RubyOF::CPP_Callbacks.enableScreenspaceBlending()
-    
-    using_shader @compositing_shader do
-      using_textures @context.accumulation_tex, @context.revealage_tex do
-        @context.fullscreen_quad.draw()
+      # 
+      # render main buffers
+      # (uses shadows)
+      # 
+      
+      # t20 = RubyOF::TimeCounter.now
+      # t21 = RubyOF::TimeCounter.now
+      
+      # setup GL state
+      ofEnableLighting() # // enable lighting //
+      ofEnableDepthTest()
+      
+      world.lights.each{ |light|  light.enable() }
+      
+      
+        render_opaque_pass(
+          world, shadow_casting_light, @context.main_fbo
+        )
+        
+        blit_framebuffer(:depth_buffer,
+                         @context.main_fbo => @context.transparency_fbo)
+        # RubyOF::CPP_Callbacks.blitDefaultDepthBufferToFbo(fbo)
+        
+        render_transparent_pass(
+          world, shadow_casting_light, @context.transparency_fbo
+        )
+      
+      world.lights.each{ |light|  light.disable() }
+      
+      # teardown GL state
+      ofDisableDepthTest()
+      ofDisableLighting()
+      
+      
+      # 
+      # compositing
+      # 
+      @context.main_fbo.draw(0,0)
+      
+      RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+      
+      using_shader @compositing_shader do
+        using_textures @context.accumulation_tex, @context.revealage_tex do
+          @context.fullscreen_quad.draw()
+        end
       end
-    end
+      
+      RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
+    when :compiled
+      shadow_casting_light = world.lights.select{|l| l.casts_shadows? }.first
+      shadow_casting_light.update()
+      
+      
+      world.lights.each{ |light|  light.enable() }
+      
+        RubyOF::CPP_Callbacks.foo_draw(
+          @material, @compositing_shader,
+          @context, shadow_casting_light.shadow_cam, world,
+          world.batches.collect{ |b|
+            [
+              b[:mesh_data][:textures][:positions],
+              b[:mesh_data][:textures][:normals],
+              b[:entity_data][:texture],
+              b[:entity_data][:pixels].height.to_i,
+              b[:geometry].to_mesh
+            ]
+          }
+        )
+        
+      world.lights.each{ |light|  light.disable() }
+      
+      puts world.batches.size
+      
+      
+      # # puts "shadow simple depth pass"
+      # # light.update
+      # # light.shadow_cam.beginDepthPass()
+      #   # ofEnableDepthTest()
+      #     world.batches.each do |b|
+      #       b[:mesh_data][:textures][:positions]
+      #       b[:mesh_data][:textures][:normals]
+      #       b[:entity_data][:texture]
+      #       # draw using GPU instancing
+            
+      #       b[:entity_data][:pixels].height.to_i
+      #       b[:geometry]
+      #     end
+      # #   ofDisableDepthTest()
+      # # light.shadow_cam.endDepthPass()
+      
+      
+      
+      # # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+      # world.batches.each do |b|
+      #   b[:mesh_data][:textures][:positions]
+      #   b[:mesh_data][:textures][:normals]
+      #   b[:entity_data][:texture]
+        
+      #   b[:entity_data][:pixels].height.to_i
+      #   b[:geometry]
+        
+      # end
+      
+      
+      
+      # # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+      # world.batches.each do |b|
+      #   b[:mesh_data][:textures][:positions]
+      #   b[:mesh_data][:textures][:normals]
+      #   b[:entity_data][:texture]
+        
+      #   b[:entity_data][:pixels].height.to_i
+      #   b[:geometry]
+        
+      # end
+        
     
-    RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+    end
     
     
     # 
     # UI rendering
     # 
     render_diagetic_ui(world.camera, world.lights) # 3D world space
-    ui_pass.call(shadow_casting_light) # 2D viewport space
+    return shadow_casting_light
+      # outer system will render 2D UI in viewport space
+      # returning shadow caster allows for visualization of the shadow camera
   end
   
   private
@@ -342,7 +423,7 @@ class OIT_RenderPipeline
   def render_transparent_pass(world, shadow_casting_light, transparent_pass_fbo)
     using_framebuffer transparent_pass_fbo do |fbo|
       # NOTE: must bind the FBO before you clear it in this way
-      fbo.clearColorBuffer(@context.accumlation_index,  COLOR_ZERO)
+      fbo.clearColorBuffer(@context.accumulation_index,  COLOR_ZERO)
       fbo.clearColorBuffer(@context.revealage_index,    COLOR_ONE)
       
       RubyOF::CPP_Callbacks.enableTransparencyBufferBlending()
@@ -404,11 +485,6 @@ class OIT_RenderPipeline
     using_camera camera do
       # visualize lights
       # render colored spheres to represent lights
-      
-      # (disable shadows for diagetic UI elements)
-      @material.setCustomUniform1f(
-        "u_useShadows", 0
-      )
       
       lights.each do |light|
         light_pos   = light.position

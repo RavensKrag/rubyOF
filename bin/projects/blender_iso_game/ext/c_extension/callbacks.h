@@ -40,17 +40,3 @@ unsigned char ofxMidiMessage__get_byte(ofxMidiMessage &self, int i);
 bool ofxMidiMessage__equality(ofxMidiMessage &self, ofxMidiMessage &other);
 
 
-// NOTE: header will be included in mulitple places, so can't declare the class here, in the kinda sloppy header-only style
-class ColorPickerInterface{
-public:
-	ColorPickerInterface(ofxColorPicker_<unsigned char> *colorPicker);
-	
-	void setColor(ofColor &color);
-	Rice::Data_Object<ofColor> getColorPtr();
-	
-private:
-	ofxColorPicker_<unsigned char>* mColorPicker;
-	
-	Rice::Data_Object<ofColor>* __rb_color_ptr;
-
-};

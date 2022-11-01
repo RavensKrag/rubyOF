@@ -885,54 +885,6 @@ void callgrind_END(){
 
 
 
-// void setColorPickerColor(ofParameter<ofColor_<unsigned char>> &colorParam, ofColor_<unsigned char> & color){
-// 	// colorParam->r = color.r;
-// 	// colorParam->g = color.g;
-// 	// colorParam->b = color.b;
-// 	// colorParam->a = color.a;
-	
-// 	// colorParam->setHex( color.getHex() )
-	
-// 	// colorParam->set(color);
-	
-// 	colorParam = color;
-// }
-
-ColorPickerInterface::ColorPickerInterface(ofxColorPicker_<unsigned char> *colorPicker){
-	mColorPicker = colorPicker;
-	
-}
-
-void ColorPickerInterface::setColor(ofColor &color){
-	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
-	
-	
-	data = color;
-	// ^ ofParameter overloads the = operator, so to set values just use equals 
-	//   (feels really weird to be able to override assignment like this...)
-	
-}
-
-
-// TODO: need to create this object once, and then just return it again and again. wrapping this multiple times is additional overhead that makes things go slow.
-Rice::Data_Object<ofColor> ColorPickerInterface::getColorPtr(){
-	// ofParameter::get() returns reference to the underlying value,
-	// and that is wrapped Rice::Data_Object, which is like a smart pointer.
-	// This creates a ruby object that acts like C++ pointer,
-	// such that changes to this object propagate to C++ automatically.
-	// (because the exact same data is being edited)
-	ofParameter<ofColor_<unsigned char>> &data = static_cast<ofParameter<ofColor_<unsigned char>>&>(mColorPicker->getParameter());
-	
-	Rice::Data_Object<ofColor> rb_color_ptr(
-		&const_cast<ofColor_<unsigned char>&>(data.get()),
-		Rice::Data_Type< ofColor >::klass(),
-		Rice::Default_Mark_Function< ofColor >::mark,
-		Null_Free_Function< ofColor >::free
-	);
-	
-	return rb_color_ptr;
-}
-
 
 
 
@@ -1106,6 +1058,30 @@ void depthMask(bool flag){
 // 
 // WARNING: This function does not save / restore the last used framebuffer
 //          it will revert to the default buffer (buffer 0) after it completes.
+inline void blitFramebuffer(ofFbo& src, ofFbo& dst, GLbitfield mask){
+	
+	// default framebuffer controlled by window is 0
+	// OF documentation notes that a window class might
+	// change this, for instance to use MSAA, but
+	// I think using the default should be fine for now.
+	GLuint default_framebuffer = 0;
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, src.getId());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst.getId());
+	
+	float width  = src.getWidth();
+	float height = src.getHeight();
+	glBlitFramebuffer(0,0,width,height,
+	                  0,0,width,height,
+							mask, GL_NEAREST);
+	
+	
+	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
+	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+}
+
 void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, uint flag){
 	
 	// shared_ptr<ofBaseGLRenderer> renderer = ofGetGLRenderer();
@@ -1130,27 +1106,7 @@ void copyFramebufferByBlit__cpp(ofFbo& src, ofFbo& dst, uint flag){
 		mask = mask | GL_DEPTH_BUFFER_BIT;
 	}
 	
-	
-	// default framebuffer controlled by window is 0
-	// OF documentation notes that a window class might
-	// change this, for instance to use MSAA, but
-	// I think using the default should be fine for now.
-	GLuint default_framebuffer = 0;
-	
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, src.getId());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst.getId());
-	
-	float width  = src.getWidth();
-	float height = src.getHeight();
-	glBlitFramebuffer(0,0,width,height,
-	                  0,0,width,height,
-							mask, GL_NEAREST);
-	
-	
-	// target must be either GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER or GL_FRAMEBUFFER. [..] Calling glBindFramebuffer with target set to GL_FRAMEBUFFER binds framebuffer to both the read and draw framebuffer targets.
-	// src: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindFramebuffer.xhtml
-	
-	glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer);
+	blitFramebuffer(src, dst, mask);
 }
 
 
@@ -1234,6 +1190,278 @@ ofMesh textureToMesh(ofTexture& tex, const glm::vec3 & pos){
 	
 	return mesh;
 }
+
+
+
+
+
+
+
+
+#include "ofxShadowCamera.h"
+#include "ofxDynamicMaterial.h"
+#include "ofxCamera.h"
+
+static ofFloatColor COLOR_ZERO = ofFloatColor(0,0,0,0);
+static ofFloatColor COLOR_ONE  = ofFloatColor(1,1,1,1);
+
+static int ACCUM_IDX  = 0;
+static int REVEAL_IDX = 1;
+
+// set uniforms associated with shadow casting light
+inline void foo_bind_shadow_parameters(ofxDynamicMaterial& material, ofxShadowCamera& shadow_cam){
+	material.setCustomUniform1f(
+		"u_useShadows", 1
+	);
+	material.setCustomUniformMatrix4f(
+		"lightSpaceMatrix", shadow_cam.getLightSpaceMatrix()
+	);
+	material.setCustomUniform1f(
+		"u_shadowWidth", shadow_cam.getWidth()
+	);
+	material.setCustomUniform1f(
+		"u_shadowHeight", shadow_cam.getHeight()
+	);
+	material.setCustomUniform1f(
+		"u_shadowBias", shadow_cam.getBias()
+	);
+	material.setCustomUniform1f(
+		"u_shadowIntensity", shadow_cam.getIntensity()
+	);
+	material.setCustomUniformTexture(
+		"shadow_tex", shadow_cam.getShadowMap(), 4
+	);
+}
+
+void foo_render_shadow_map(
+	ofxDynamicMaterial& material, ofxShadowCamera& shadow_cam, Rice::Object batches
+){
+	shadow_cam.beginDepthPass();
+		ofEnableDepthTest();
+			int num_batches = from_ruby<int>(batches.call("size"));
+			std::cout << "shadow map: " << num_batches << " batch(es) detected" << std::endl;
+			for(int i=0; i < num_batches; i++){
+				std::cout << "shadow map: batch " << i << std::endl;
+				
+				// extract data from ruby
+				Rice::Object batch = batches.call("[]", i);
+				
+				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
+				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
+				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
+				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
+				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
+				
+				std::cout << "shadow map: instance count " << instance_count << std::endl;
+				
+				// set uniforms
+				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
+				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
+				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				
+				material.setCustomUniform1f("transparent_pass", 0);
+				
+				// draw using GPU instancing
+				material.begin();
+					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+				material.end();
+			}
+		ofDisableDepthTest();
+	shadow_cam.endDepthPass();
+}
+
+void foo_render_opaque_pass(
+	ofFbo& fbo,
+	ofxDynamicMaterial& material, Rice::Object batches,
+	ofxShadowCamera& shadow_cam, ofxCamera &camera
+){
+	fbo.begin();
+	fbo.activateAllDrawBuffers();
+      // # NOTE: must bind the FBO before you clear it in this way
+      fbo.clearDepthBuffer(1.0); // # default is 1.0
+      fbo.clearColorBuffer(0, COLOR_ZERO);
+      
+      camera.begin();
+			foo_bind_shadow_parameters(material, shadow_cam);
+			
+			// # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+			int num_batches = from_ruby<int>(batches.call("size"));
+			std::cout << "opaque pass: " << num_batches << " batch(es) detected" << std::endl;
+			for(int i=0; i < num_batches; i++){
+				std::cout << "opaque pass: batch " << i << std::endl;
+				
+				// extract data from ruby
+				Rice::Object batch = batches.call("[]", i);
+				
+				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
+				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
+				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
+				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
+				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
+				
+				std::cout << "opaque pass: instance count " << instance_count << std::endl;
+				
+				// set uniforms
+				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
+				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
+				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				
+				material.setCustomUniform1f("transparent_pass", 0);
+				
+				// draw using GPU instancing
+				material.begin();
+					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+				material.end();
+				
+				// glCullFace(GL_BACK);
+				// glDisable(GL_CULL_FACE);
+			}
+      camera.end();
+	fbo.end();
+}
+
+void foo_render_transparent_pass(
+	ofFbo& fbo,
+	ofxDynamicMaterial& material, Rice::Object batches,
+	ofxShadowCamera& shadow_cam, ofxCamera &camera
+){
+	fbo.begin();
+	fbo.activateAllDrawBuffers();
+      // # NOTE: must bind the FBO before you clear it in this way
+      fbo.clearColorBuffer(ACCUM_IDX,  COLOR_ZERO);
+      fbo.clearColorBuffer(REVEAL_IDX, COLOR_ONE);
+      
+      enableTransparencyBufferBlending();
+		camera.begin();
+			foo_bind_shadow_parameters(material, shadow_cam);
+			
+			// # NOTE: transform matrix for light space set in oit_render_pipeline before any objects are drawn
+			int num_batches = from_ruby<int>(batches.call("size"));
+			std::cout << "transparent pass: " << num_batches << " batch(es) detected" << std::endl;
+			for(int i=0; i < num_batches; i++){
+				std::cout << "transparent pass: batch " << i << std::endl;
+				
+				// extract data from ruby
+				Rice::Object batch = batches.call("[]", i);
+				
+				ofTexture &mesh_pos   = from_ruby<ofTexture&>(batch.call("[]", 0));				
+				ofTexture &mesh_norm  = from_ruby<ofTexture&>(batch.call("[]", 1));
+				ofTexture &entity_tex = from_ruby<ofTexture&>(batch.call("[]", 2));
+				int instance_count    = from_ruby<int>(       batch.call("[]", 3));
+				ofVboMesh &geometry   = from_ruby<ofVboMesh&>(batch.call("[]", 4));
+				
+				std::cout << "transparent pass: instance count " << instance_count << std::endl;
+				
+				// set uniforms
+				material.setCustomUniformTexture("vert_pos_tex",  mesh_pos,   1);
+				material.setCustomUniformTexture("vert_norm_tex", mesh_norm,  2);
+				material.setCustomUniformTexture("entity_tex",    entity_tex, 3);
+				
+				material.setCustomUniform1f("transparent_pass", 1);
+				
+				// draw using GPU instancing
+				material.begin();
+					geometry.drawInstanced(OF_MESH_FILL, instance_count);
+				material.end();
+				
+				// # while time traveling, render the trails of moving objects
+				// if world.transport.time_traveling?
+				// 
+				// end
+			}
+      camera.end();
+      disableTransparencyBufferBlending();
+   fbo.end();
+}
+
+void foo_composite(Rice::Object context, ofShader& compositing_shader){
+	ofFbo &main_fbo = from_ruby<ofFbo&>(context.call("main_fbo"));
+	
+	ofTexture &accumulation_tex = from_ruby<ofTexture&>(context.call("accumulation_tex"));
+	ofTexture &revealage_tex    = from_ruby<ofTexture&>(context.call("revealage_tex"));
+	
+	ofMesh &fullscreen_quad = from_ruby<ofMesh&>(context.call("fullscreen_quad"));
+	
+	
+	
+	main_fbo.draw(0,0);
+	
+	enableScreenspaceBlending();
+	
+	compositing_shader.begin();
+		accumulation_tex.bind(ACCUM_IDX);
+		revealage_tex.bind(REVEAL_IDX);
+		
+		fullscreen_quad.draw();
+		
+		accumulation_tex.unbind(ACCUM_IDX);
+		revealage_tex.unbind(REVEAL_IDX);
+	compositing_shader.end();
+	
+	disableScreenspaceBlending();
+}
+
+
+
+void foo_draw(ofxDynamicMaterial& material, ofShader& compositing_shader,
+              Rice::Object context, ofxShadowCamera& shadow_cam, Rice::Object world,
+				  Rice::Array batches
+){
+	std::cout << "c++ render pipeline" << std::endl;
+	// mSelf.call(world, )
+	
+	
+	// 
+	// pull data from ruby
+	// 
+	ofFbo& main_fbo  = from_ruby<ofFbo&>(context.call("main_fbo"));
+	ofFbo& trans_fbo = from_ruby<ofFbo&>(context.call("transparency_fbo"));
+	
+	ofxCamera& camera = from_ruby<ofxCamera&>(world.call("camera").call("to_ofxCamera"));
+	
+	
+	// 
+	// render
+	// 
+	foo_render_shadow_map(
+		material, shadow_cam, batches
+	);
+	
+	// auto lights = world.call("lights");
+	
+	// # setup GL state
+	ofEnableLighting(); // enable lighting //
+	ofEnableDepthTest();
+	
+		foo_render_opaque_pass(
+			main_fbo,
+			material, batches,
+			shadow_cam, camera
+		);
+		
+		blitFramebuffer(main_fbo, trans_fbo, GL_DEPTH_BUFFER_BIT);
+		
+		foo_render_transparent_pass(
+			trans_fbo,
+			material, batches,
+			shadow_cam, camera
+		);
+	
+	// # teardown GL state
+	ofDisableDepthTest();
+	ofDisableLighting();
+	
+	foo_composite(context, compositing_shader);
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1967,7 +2195,10 @@ void Init_rubyOF_project()
 			                     &enableScreenspaceBlending)
 		.define_module_function("disableScreenspaceBlending",
 			                     &disableScreenspaceBlending)
+			
 		
+		.define_module_function("foo_draw",
+			                     &foo_draw)
 		
 	;
 	
@@ -2126,24 +2357,6 @@ void Init_rubyOF_project()
 	
 	
 	// ofxMidiOut midiOut
-	
-	
-	
-	
-	
-	
-	Data_Type<ColorPickerInterface> rb_c_ofColorPickerInterface =
-		define_class_under<ColorPickerInterface>(rb_mProject, "ColorPicker");
-	
-	rb_c_ofColorPickerInterface
-		// .define_constructor(Constructor<ColorPickerInterface>())
-		// ^ no constructor: can only be created from C++
-		
-		.define_method("color=",       &ColorPickerInterface::setColor)
-		.define_method("getColorPtr",  &ColorPickerInterface::getColorPtr)
-	;
-	
-	
 	
 	
 }
