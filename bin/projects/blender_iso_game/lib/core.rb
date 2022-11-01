@@ -656,10 +656,16 @@ class Core
   
   include RubyOF::Graphics
   def draw
-    shadow_casting_light = @render_pipeline.draw(@window, @world)
-    
-    
-    
+    shadow_casting_light = nil
+    shadow_casting_light = draw_3D()
+    draw_2D(shadow_casting_light)
+  end
+  
+  def draw_3D
+    return @render_pipeline.draw(@window, @world)
+  end
+  
+  def draw_2D(shadow_casting_light)
     # Draw visualization of shadow map
     # in the bottom right corner of the screen
     shadow_casting_light&.tap do |light|
@@ -673,186 +679,184 @@ class Core
     
     
     
-    # # t0 = RubyOF::TimeCounter.now
+    # t0 = RubyOF::TimeCounter.now
     
     
-    # p1 = CP::Vec2.new(500,500)
-    # @screen_text.puts("hello world!", p1.x, p1.y)
+    p1 = CP::Vec2.new(500,500)
+    @screen_text.puts("hello world!", p1.x, p1.y)
     
     
-    # p2 = CP::Vec2.new(500,600)
-    # if @mouse_pos
+    p2 = CP::Vec2.new(500,600)
+    if @mouse_pos
       
-    #   @screen_text.puts("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
+      @screen_text.puts("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
       
-    # end
+    end
     
     
-    # @screen_text.puts("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
-    #   1178, 846+40,)
+    @screen_text.puts("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
+      1178, 846+40,)
     
-    # @screen_text.puts("state #{@world.transport.current_state.class.to_s}",
-    #                   1178, 846)
+    @screen_text.puts("state #{@world.transport.current_state.class.to_s}",
+                      1178, 846)
     
-    # # @fonts[:monospace].draw_string("history size: #{}",
-    #                                  # 400, 160)
+    # @fonts[:monospace].draw_string("history size: #{}",
+                                     # 400, 160)
     
     
-    # p3 = CP::Vec2.new(646, 846)
-    #   @screen_text.puts("camera", p3.x, p3.y+40*0)
-    #   @screen_text.puts("Handglovery", p3.x, p3.y+40*1)
+    p3 = CP::Vec2.new(646, 846)
+      @screen_text.puts("camera", p3.x, p3.y+40*0)
+      @screen_text.puts("Handglovery", p3.x, p3.y+40*1)
     
-    #   @screen_text.puts("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
+      @screen_text.puts("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
       
-    #   dist = @world.camera.position.yield_self do |x|
-    #     x.to_a[0..1]
-    #      .map{|x| x*x}
-    #      .reduce(:+)
-    #      .yield_self{|x| Math.sqrt(x) }
-    #   end
-    #   @screen_text.puts("#{ dist }}", p3.x, p3.y+40*3)
+      dist = @world.camera.position.yield_self do |x|
+        x.to_a[0..1]
+         .map{|x| x*x}
+         .reduce(:+)
+         .yield_self{|x| Math.sqrt(x) }
+      end
+      @screen_text.puts("#{ dist }}", p3.x, p3.y+40*3)
     
-    # # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
-    
-    
-    # # t1 = RubyOF::TimeCounter.now
-    # # puts "=> UI    : #{(t1 - t0).to_ms} ms"
+    # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
     
     
-    # # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
+    # t1 = RubyOF::TimeCounter.now
+    # puts "=> UI    : #{(t1 - t0).to_ms} ms"
+    
+    
+    # @texture_out.draw_wh(500,50,0, @pixels.width, @pixels.height)
     
     
     
-    # @ui_node ||= RubyOF::Node.new
+    @ui_node ||= RubyOF::Node.new
     
-    # channels_per_px = 4
-    # bits_per_channel = 32
-    # bits_per_byte = 8
-    # bytes_per_channel = bits_per_channel / bits_per_byte
-    
-    
-    # # TODO: draw UI in a better way that does not use immediate mode rendering
+    channels_per_px = 4
+    bits_per_channel = 32
+    bits_per_byte = 8
+    bytes_per_channel = bits_per_channel / bits_per_byte
     
     
-    # # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
-    # memory_usage = []
-    # entity_usage = []
-    # @world.batches.each_with_index do |b, i|
-    #   layer_name = b.name
-    #   cache = b[:entity_cache]
-    #   names = b[:names]
+    # TODO: draw UI in a better way that does not use immediate mode rendering
+    
+    
+    # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
+    memory_usage = []
+    entity_usage = []
+    @world.batches.each_with_index do |b, i|
+      layer_name = b.name
+      cache = b[:entity_cache]
+      names = b[:names]
       
-    #   offset = i*(189-70)
+      offset = i*(189-70)
       
-    #   @screen_text.puts("layer: #{layer_name}",
-    #                       450, 68+offset+20)
-      
-      
-    #   current_size = 
-    #     cache.size.times.collect{ |i|
-    #       cache.get_entity i
-    #     }.select{ |x|
-    #       x.active?
-    #     }.size
-      
-    #   @screen_text.puts("entities: #{current_size} / #{cache.size}",
-    #                       450+50, 100+offset+20)
+      @screen_text.puts("layer: #{layer_name}",
+                          450, 68+offset+20)
       
       
+      current_size = 
+        cache.size.times.collect{ |i|
+          cache.get_entity i
+        }.select{ |x|
+          x.active?
+        }.size
       
-    #   max_meshes = names.num_meshes
-      
-    #   num_meshes = 
-    #     max_meshes.times.collect{ |i|
-    #       names.mesh_scanline_to_name(i)
-    #     }.select{ |x|
-    #       x != nil
-    #     }.size + 1
-    #       # Index 0 will always be an empty mesh, so add 1.
-    #       # That way, the size measures how full the texture is.
-      
-      
-    #   @screen_text.puts("meshes: #{num_meshes} / #{max_meshes}",
-    #                       450+50, 133+offset+20)
+      @screen_text.puts("entities: #{current_size} / #{cache.size}",
+                          450+50, 100+offset+20)
       
       
       
-    #   b[:entity_data][:texture].tap do |texture|
-    #     new_height = 100 #
-    #     y_scale = new_height / texture.height
+      max_meshes = names.num_meshes
+      
+      num_meshes = 
+        max_meshes.times.collect{ |i|
+          names.mesh_scanline_to_name(i)
+        }.select{ |x|
+          x != nil
+        }.size + 1
+          # Index 0 will always be an empty mesh, so add 1.
+          # That way, the size measures how full the texture is.
+      
+      
+      @screen_text.puts("meshes: #{num_meshes} / #{max_meshes}",
+                          450+50, 133+offset+20)
+      
+      
+      
+      b[:entity_data][:texture].tap do |texture|
+        new_height = 100 #
+        y_scale = new_height / texture.height
         
-    #     x = 910-20
-    #     y = (68-20)+i*(189-70)+20
+        x = 910-20
+        y = (68-20)+i*(189-70)+20
         
-    #     @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
-    #     @ui_node.position = GLM::Vec3.new(x,y, 1)
-
-    #     @ui_node.transformGL
+        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
+        @ui_node.position = GLM::Vec3.new(x,y, 1)
         
-    #       texture.draw_wh(0,texture.height,0,
-    #                       texture.width, -texture.height)
-
-    #     @ui_node.restoreTransformGL
-    #   end
+        @ui_node.transformGL
+        
+          texture.draw_wh(0,texture.height,0,
+                          texture.width, -texture.height)
+        
+        @ui_node.restoreTransformGL
+      end
       
       
-    #   b[:mesh_data][:textures][:positions].tap do |texture|
-    #     width = [texture.width, 400].min # cap maximum texture width
-    #     x = 970-40
-    #     y = (68+texture.height-20)+i*(189-70)+20
-    #     texture.draw_wh(x,y,0, width, -texture.height)
-    #   end
+      b[:mesh_data][:textures][:positions].tap do |texture|
+        width = [texture.width, 400].min # cap maximum texture width
+        x = 970-40
+        y = (68+texture.height-20)+i*(189-70)+20
+        texture.draw_wh(x,y,0, width, -texture.height)
+      end
       
       
       
-    #   texture = b[:mesh_data][:textures][:positions]
-    #   px = texture.width*texture.height
-    #   x = px*channels_per_px*bytes_per_channel / 1000.0
+      texture = b[:mesh_data][:textures][:positions]
+      px = texture.width*texture.height
+      x = px*channels_per_px*bytes_per_channel / 1000.0
       
-    #   texture = b[:mesh_data][:textures][:normals]
-    #   px = texture.width*texture.height
-    #   y = px*channels_per_px*bytes_per_channel / 1000.0
+      texture = b[:mesh_data][:textures][:normals]
+      px = texture.width*texture.height
+      y = px*channels_per_px*bytes_per_channel / 1000.0
       
-    #   texture = b[:entity_data][:texture]
-    #   px = texture.width*texture.height
-    #   z = px*channels_per_px*bytes_per_channel / 1000.0
+      texture = b[:entity_data][:texture]
+      px = texture.width*texture.height
+      z = px*channels_per_px*bytes_per_channel / 1000.0
       
-    #   size = x+y+z
+      size = x+y+z
       
-    #   @screen_text.puts("mem: #{size} kb",
-    #                       1400-50, 100+offset+20)
-    #   memory_usage << size
-    #   entity_usage << z
-    # end
+      @screen_text.puts("mem: #{size} kb",
+                          1400-50, 100+offset+20)
+      memory_usage << size
+      entity_usage << z
+    end
     
-    # i = memory_usage.length
-    # x = memory_usage.reduce &:+
-    # @screen_text.puts("  total VRAM: #{x} kb",
-    #                     1400-200+27-50, 100+i*(189-70)+20)
-    
-    
-    
-    # z = entity_usage.reduce &:+
-    # @screen_text.puts("  entity texture VRAM: #{z} kb",
-    #                     1400-200+27-50-172, 100+i*(189-70)+20+50)
+    i = memory_usage.length
+    x = memory_usage.reduce &:+
+    @screen_text.puts("  total VRAM: #{x} kb",
+                        1400-200+27-50, 100+i*(189-70)+20)
     
     
-    # # size = @history.buffer_width * @history.buffer_height * @history.max_length
-    # # size = size * channels_per_px * bytes_per_channel
-    # # @screen_text.puts("history memory: #{size/1000.0} kb",
-    # #                     120, 310)
     
-    # # @history
+    z = entity_usage.reduce &:+
+    @screen_text.puts("  entity texture VRAM: #{z} kb",
+                        1400-200+27-50-172, 100+i*(189-70)+20+50)
     
     
+    # size = @history.buffer_width * @history.buffer_height * @history.max_length
+    # size = size * channels_per_px * bytes_per_channel
+    # @screen_text.puts("history memory: #{size/1000.0} kb",
+    #                     120, 310)
+    
+    # @history
     
     
     
     
-    # @screen_text.draw
-    # @screen_text.clear
     
     
+    @screen_text.draw
+    @screen_text.clear
     
     
     
@@ -860,30 +864,31 @@ class Core
     
     
     
-    # # stuff we need to render with this
-    #   # + a programatically created mesh with triangles to mutate
-    #   # + a material to hold the vertex and fragment shaders
-    #   # + vertex shader <---  this is what does the heavy lifting
-    #   # + frag shader (just load the default one)
     
-    # # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
     
-    # @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
-    # if @crash_detected
+    # stuff we need to render with this
+      # + a programatically created mesh with triangles to mutate
+      # + a material to hold the vertex and fragment shaders
+      # + vertex shader <---  this is what does the heavy lifting
+      # + frag shader (just load the default one)
+    
+    # TODO: update serialization code for blender_material etc, as their YAML conversions no longer match the new JSON message format (or maybe I can get rid of that entirely, and just maintain JSON message history??)
+    
+    @crash_color ||= RubyOF::Color.hex_alpha(0xff0000, 20)
+    if @crash_detected
       
-    #   ofPushStyle()
-    #     ofEnableAlphaBlending()
-    #     ofSetColor(@crash_color)
-    #     ofDrawRectangle(0,0,0, @window.width, @window.height)
-    #   ofPopStyle()
-    # end
+      ofPushStyle()
+        ofEnableAlphaBlending()
+        ofSetColor(@crash_color)
+        ofDrawRectangle(0,0,0, @window.width, @window.height)
+      ofPopStyle()
+    end
     
     # t1 = RubyOF::TimeCounter.now
     # puts "=> scene : #{(t1 - t0).to_ms} ms"
     
     
   end
-  
   
   
   
@@ -1020,34 +1025,34 @@ class GlTextPrinter
   end
   
   def draw
-    # @buffer.each do |obj_to_stringify, x,y|
-    #   @font.draw_string(obj_to_stringify.to_s, x,y)
-    # end
+    @buffer.each do |obj_to_stringify, x,y|
+      @font.draw_string(obj_to_stringify.to_s, x,y)
+    end
     
     
-    @font.font_texture.bind
-      @buffer.each do |obj_to_stringify, x,y|
-          ofPushMatrix()
-          ofPushStyle()
-        begin
-          ofTranslate(x,y, 0)
+    # @font.font_texture.bind
+    #   @buffer.each do |obj_to_stringify, x,y|
+    #       ofPushMatrix()
+    #       ofPushStyle()
+    #     begin
+    #       ofTranslate(x,y, 0)
           
-          # ofSetColor(color)
+    #       # ofSetColor(color)
           
-          # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
+    #       # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
           
-          x,y = [0,0]
-          vflip = true
-          string = obj_to_stringify.to_s
-          text_mesh = @font.get_string_mesh(string, x,y, vflip)
-          text_mesh.draw()
-        ensure
-          ofPopStyle()
-          ofPopMatrix()
+    #       x,y = [0,0]
+    #       vflip = true
+    #       string = obj_to_stringify.to_s
+    #       text_mesh = @font.get_string_mesh(string, x,y, vflip)
+    #       text_mesh.draw()
+    #     ensure
+    #       ofPopStyle()
+    #       ofPopMatrix()
           
-        end
-      end
-    @font.font_texture.unbind
+    #     end
+    #   end
+    # @font.font_texture.unbind
   end
 end
 
