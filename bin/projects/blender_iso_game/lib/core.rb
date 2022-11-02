@@ -413,13 +413,6 @@ class Core
   
   # use a structure where Fiber does not need to be regenerated on reload
   def update
-    # @update_scheduler ||= Scheduler.new(self, :on_update, msec(16-4))
-    
-    # # puts ">>>>>>>> update #{RubyOF::Utils.ofGetElapsedTimeMicros}"
-    # @start_time = RubyOF::Utils.ofGetElapsedTimeMicros
-    
-    # # puts "update thread: #{Thread.current.object_id}" 
-    
     # # if SPIKE_PROFILER_ON
     # #   RB_SPIKE_PROFILER.enable
     # # end
@@ -662,7 +655,8 @@ class Core
   end
   
   def draw_3D
-    return @render_pipeline.draw(@window, @world)
+    @world.pre_draw
+    @render_pipeline.draw(@window, @world)
   end
   
   def draw_2D(shadow_casting_light)
@@ -855,14 +849,8 @@ class Core
     
     
     
-    @screen_text.draw
+    # @screen_text.draw
     @screen_text.clear
-    
-    
-    
-    
-    
-    
     
     
     

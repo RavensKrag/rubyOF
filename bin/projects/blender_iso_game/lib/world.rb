@@ -121,6 +121,7 @@ class World
     # TODO: make sure this works as expected when code reloads
   end
   
+  # can be called multiple times per frame
   def update(ipc)
     # ( state transitions are fired automatically by
     #   MyStateMachine#transition_to - no need for an #update method  )
@@ -140,7 +141,10 @@ class World
       #   See History#snapshot and History#load for data flow,
       #   and States::GeneratingNew and States::ReplayingOld for control flow.
     end
-    
+  end
+  
+  # only called once per frame, before the render code starts
+  def pre_draw
     # Move entity data to GPU for rendering:
     # move from batch[:entity_data][:pixels] to batch[:entity_data][:texture]
     # ( pixels -> texture )
