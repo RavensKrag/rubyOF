@@ -184,7 +184,7 @@ class RenderBatch
   end
   
   
-  class BatchGeometry
+  class BatchGeometry    
     def initialize
       @mesh = nil
     end
@@ -195,6 +195,10 @@ class RenderBatch
     
     def draw_instanced(instance_count)
       @mesh.draw_instanced(instance_count)
+    end
+    
+    def to_mesh
+      return @mesh
     end
     
     private
@@ -276,6 +280,17 @@ class RenderBatchContainer
     return @batches.zip(list)
   end
   
+  # intended for use by C++ API, but could be used elsewhere
+  def[](i)
+    return @batches[i]
+  end
+  
+  # intended for use by C++ API, but could be used elsewhere
+  def length
+    return @batches.length
+  end
+  
+  alias :size :length
   
   # 
   # custom interface for this collection

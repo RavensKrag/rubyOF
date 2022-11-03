@@ -41,6 +41,10 @@ class ViewportCamera
     @of_cam.end
   end
   
+  def to_ofxCamera
+    return @of_cam
+  end
+  
   
   VALID_MODES = ['PERSP', 'ORTHO']
   

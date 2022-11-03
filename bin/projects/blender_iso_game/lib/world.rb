@@ -121,6 +121,7 @@ class World
     # TODO: make sure this works as expected when code reloads
   end
   
+  # can be called multiple times per frame
   def update(ipc)
     # ( state transitions are fired automatically by
     #   MyStateMachine#transition_to - no need for an #update method  )
@@ -140,7 +141,10 @@ class World
       #   See History#snapshot and History#load for data flow,
       #   and States::GeneratingNew and States::ReplayingOld for control flow.
     end
-    
+  end
+  
+  # only called once per frame, before the render code starts
+  def pre_draw
     # Move entity data to GPU for rendering:
     # move from batch[:entity_data][:pixels] to batch[:entity_data][:texture]
     # ( pixels -> texture )
@@ -308,136 +312,6 @@ class World
   def load
     
   end
-  
-  # 
-  # ui code
-  # 
-  
-  def draw_ui(ui_font)
-    @ui_node ||= RubyOF::Node.new
-    
-    
-    channels_per_px = 4
-    bits_per_channel = 32
-    bits_per_byte = 8
-    bytes_per_channel = bits_per_channel / bits_per_byte
-    
-    
-    # TODO: draw UI in a better way that does not use immediate mode rendering
-    
-    
-    # TODO: update ui positions so that both mesh data and entity data are inspectable for both dynamic and static entities
-    memory_usage = []
-    entity_usage = []
-    @batches.each_with_index do |b, i|
-      layer_name = b.name
-      cache = b[:entity_cache]
-      names = b[:names]
-      
-      offset = i*(189-70)
-      
-      ui_font.draw_string("layer: #{layer_name}",
-                          450, 68+offset+20)
-      
-      
-      current_size = 
-        cache.size.times.collect{ |i|
-          cache.get_entity i
-        }.select{ |x|
-          x.active?
-        }.size
-      
-      ui_font.draw_string("entities: #{current_size} / #{cache.size}",
-                          450+50, 100+offset+20)
-      
-      
-      
-      max_meshes = names.num_meshes
-      
-      num_meshes = 
-        max_meshes.times.collect{ |i|
-          names.mesh_scanline_to_name(i)
-        }.select{ |x|
-          x != nil
-        }.size + 1
-          # Index 0 will always be an empty mesh, so add 1.
-          # That way, the size measures how full the texture is.
-      
-      
-      ui_font.draw_string("meshes: #{num_meshes} / #{max_meshes}",
-                          450+50, 133+offset+20)
-      
-      
-      
-      b[:entity_data][:texture].tap do |texture|
-        new_height = 100 #
-        y_scale = new_height / texture.height
-        
-        x = 910-20
-        y = (68-20)+i*(189-70)+20
-        
-        @ui_node.scale    = GLM::Vec3.new(1.2, y_scale, 1)
-        @ui_node.position = GLM::Vec3.new(x,y, 1)
-
-        @ui_node.transformGL
-        
-          texture.draw_wh(0,texture.height,0,
-                          texture.width, -texture.height)
-
-        @ui_node.restoreTransformGL
-      end
-      
-      
-      b[:mesh_data][:textures][:positions].tap do |texture|
-        width = [texture.width, 400].min # cap maximum texture width
-        x = 970-40
-        y = (68+texture.height-20)+i*(189-70)+20
-        texture.draw_wh(x,y,0, width, -texture.height)
-      end
-      
-      
-      
-      texture = b[:mesh_data][:textures][:positions]
-      px = texture.width*texture.height
-      x = px*channels_per_px*bytes_per_channel / 1000.0
-      
-      texture = b[:mesh_data][:textures][:normals]
-      px = texture.width*texture.height
-      y = px*channels_per_px*bytes_per_channel / 1000.0
-      
-      texture = b[:entity_data][:texture]
-      px = texture.width*texture.height
-      z = px*channels_per_px*bytes_per_channel / 1000.0
-      
-      size = x+y+z
-      
-      ui_font.draw_string("mem: #{size} kb",
-                          1400-50, 100+offset+20)
-      memory_usage << size
-      entity_usage << z
-    end
-    
-    i = memory_usage.length
-    x = memory_usage.reduce &:+
-    ui_font.draw_string("  total VRAM: #{x} kb",
-                        1400-200+27-50, 100+i*(189-70)+20)
-    
-    
-    
-    z = entity_usage.reduce &:+
-    ui_font.draw_string("  entity texture VRAM: #{z} kb",
-                        1400-200+27-50-172, 100+i*(189-70)+20+50)
-    
-    
-    # size = @history.buffer_width * @history.buffer_height * @history.max_length
-    # size = size * channels_per_px * bytes_per_channel
-    # ui_font.draw_string("history memory: #{size/1000.0} kb",
-    #                     120, 310)
-    
-    # @history
-    
-  end
-  
   
 end
 
