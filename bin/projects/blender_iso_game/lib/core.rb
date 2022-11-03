@@ -200,7 +200,7 @@ class Core
     
     
     
-    @screen_text = GlTextPrinter.new(@fonts[:monospace])
+    @text = TextRenderer.new
     
     
     
@@ -677,32 +677,38 @@ class Core
     
     
     p1 = CP::Vec2.new(500,500)
-    @screen_text.puts("hello world!", p1.x, p1.y)
+    @text.print(@fonts[:monospace], p1.x, p1.y, 
+                "hello world!")
     
     
     p2 = CP::Vec2.new(500,600)
     if @mouse_pos
       
-      @screen_text.puts("mouse: #{@mouse_pos.to_s}", p2.x, p2.y)
+      @text.print(@fonts[:monospace], p2.x, p2.y,
+                  "mouse: #{@mouse_pos.to_s}")
       
     end
     
     
-    @screen_text.puts("frame #{@world.transport.current_frame}/#{@world.transport.final_frame}",
-      1178, 846+40,)
+    @text.print(
+      @fonts[:monospace], 1178, 846+40,
+      "frame #{@world.transport.current_frame}/#{@world.transport.final_frame}"
+    )
     
-    @screen_text.puts("state #{@world.transport.current_state.class.to_s}",
-                      1178, 846)
+    @text.print(@fonts[:monospace], 1178, 846,
+                "state #{@world.transport.current_state.class.to_s}")
     
-    # @fonts[:monospace].draw_string("history size: #{}",
-                                     # 400, 160)
     
     
     p3 = CP::Vec2.new(646, 846)
-      @screen_text.puts("camera", p3.x, p3.y+40*0)
-      @screen_text.puts("Handglovery", p3.x, p3.y+40*1)
+      @text.print(@fonts[:monospace], p3.x, p3.y+40*0,
+                  "camera")
+      
+      @text.print(@fonts[:monospace], p3.x, p3.y+40*1,
+                  "Handglovery")
     
-      @screen_text.puts("#{@world.camera.position.to_s}", p3.x, p3.y+40*2)
+      @text.print(@fonts[:monospace], p3.x, p3.y+40*2,
+                  "#{@world.camera.position.to_s}")
       
       dist = @world.camera.position.yield_self do |x|
         x.to_a[0..1]
@@ -710,7 +716,8 @@ class Core
          .reduce(:+)
          .yield_self{|x| Math.sqrt(x) }
       end
-      @screen_text.puts("#{ dist }}", p3.x, p3.y+40*3)
+      @text.print(@fonts[:monospace], p3.x, p3.y+40*3,
+                  "#{ dist }")
     
     # ^ this debug output demonstrates that the position of the ortho camera is not the same as the position of the perspective camera. hopefully the shadow camera will still work as expected
     
@@ -744,8 +751,8 @@ class Core
       
       offset = i*(189-70)
       
-      @screen_text.puts("layer: #{layer_name}",
-                          450, 68+offset+20)
+      @text.print(@fonts[:monospace], 450, 68+offset+20,
+                  "layer: #{layer_name}")
       
       
       current_size = 
@@ -755,8 +762,8 @@ class Core
           x.active?
         }.size
       
-      @screen_text.puts("entities: #{current_size} / #{cache.size}",
-                          450+50, 100+offset+20)
+      @text.print(@fonts[:monospace], 450+50, 100+offset+20,
+                  "entities: #{current_size} / #{cache.size}")
       
       
       
@@ -772,8 +779,8 @@ class Core
           # That way, the size measures how full the texture is.
       
       
-      @screen_text.puts("meshes: #{num_meshes} / #{max_meshes}",
-                          450+50, 133+offset+20)
+      @text.print(@fonts[:monospace], 450+50, 133+offset+20,
+                  "meshes: #{num_meshes} / #{max_meshes}")
       
       
       
@@ -819,28 +826,28 @@ class Core
       
       size = x+y+z
       
-      @screen_text.puts("mem: #{size} kb",
-                          1400-50, 100+offset+20)
+      @text.print(@fonts[:monospace], 1400-50, 100+offset+20,
+                  "mem: #{size} kb")
       memory_usage << size
       entity_usage << z
     end
     
     i = memory_usage.length
     x = memory_usage.reduce &:+
-    @screen_text.puts("  total VRAM: #{x} kb",
-                        1400-200+27-50, 100+i*(189-70)+20)
+    @text.print(@fonts[:monospace], 1400-200+27-50, 100+i*(189-70)+20,
+                "  total VRAM: #{x} kb")
     
     
     
     z = entity_usage.reduce &:+
-    @screen_text.puts("  entity texture VRAM: #{z} kb",
-                        1400-200+27-50-172, 100+i*(189-70)+20+50)
+    @text.print(@fonts[:monospace], 1400-200+27-50-172, 100+i*(189-70)+20+50,
+                "  entity texture VRAM: #{z} kb")
     
     
     # size = @history.buffer_width * @history.buffer_height * @history.max_length
     # size = size * channels_per_px * bytes_per_channel
-    # @screen_text.puts("history memory: #{size/1000.0} kb",
-    #                     120, 310)
+    # @text.print(@fonts[:monospace], 120, 310,
+    #             "history memory: #{size/1000.0} kb")
     
     # @history
     
@@ -849,8 +856,8 @@ class Core
     
     
     
-    # @screen_text.draw
-    @screen_text.clear
+    @text.draw
+    @text.clear
     
     
     
@@ -994,18 +1001,27 @@ end
 
 
 
-class GlTextPrinter
+class TextRenderer
   include RubyOF::Graphics
   
-  attr_accessor :font
-  
-  def initialize(font)
-    @buffer = []
-    @font = font
+  def initialize
+    @buffer = Hash.new
+    @meshes = Hash.new
+    
+    @shader = RubyOF::Shader.new
+    @shader.live_load_glsl(
+      PROJECT_DIR/'bin'/'glsl'/'truetype_text.vert',
+      PROJECT_DIR/'bin'/'glsl'/'truetype_text.frag'
+    ) do
+      puts "truetype text rendering shader reloaded"
+    end 
   end
   
-  def puts(obj_to_stringify, x,y)
-    @buffer << [obj_to_stringify.to_s, x,y]
+  def print(font, x,y, obj_to_stringify)
+    @buffer[font] ||= []
+    @buffer[font] << [x,y, obj_to_stringify.to_s]
+    
+    @meshes[font] ||= RubyOF::VboMesh.new
   end
   
   def clear
@@ -1013,35 +1029,172 @@ class GlTextPrinter
   end
   
   def draw
-    @buffer.each do |obj_to_stringify, x,y|
-      @font.draw_string(obj_to_stringify.to_s, x,y)
+    # group by font type
+    
+    
+    # font = @buffer.keys.first
+    # x,y, str = @buffer[font].first
+    # font.draw_string(str, x,y)
+    
+    @buffer.each_pair do |font, render_list|
+      # render text
+      
+      
+      # # 
+      # # draw one at a time
+      # # 
+      
+      # render_list.each do |x,y, str|
+      #   font.draw_string(str, x,y)
+      # end
+      
+      
+      
+      # # 
+      # # render using batching v1
+      # # 
+      
+      # using_textures font.font_texture do
+      #   render_list.each do |x,y, str|
+      #     begin
+      #       ofPushStyle()
+      #       # ofSetColor(color)
+            
+      #       # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
+            
+      #       vflip = true
+      #       text_mesh = font.get_string_mesh(str, x,y, vflip)
+      #       text_mesh.draw()
+      #     ensure
+      #       ofPopStyle()
+      #     end
+      #   end
+      # end
+      
+      
+      
+      
+      # # 
+      # # render using batching v2
+      # # 
+      # meshes = 
+      #   render_list.collect do |x,y, str|
+      #     vflip = true
+      #     font.get_string_mesh(str, x,y, vflip)
+      #   end
+      
+      # # p meshes
+      
+      # out = @meshes[font]
+      # out.clear
+      # meshes.each{|x| out.append x }
+      
+      # # p out
+      
+      # font.font_texture.bind
+      #   out.draw()
+      # font.font_texture.unbind
+      
+      
+      
+      
+      
+      
+      
+      
+      # # 
+      # # render using batching v3
+      # # 
+      # out = @meshes[font]
+      # out.clear
+      
+      # render_list.each do |x,y, str|
+      #   vflip = true
+      #   out.append(font.get_string_mesh(str, x,y, vflip))
+      # end
+      
+      # RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+      
+      # @shader.setUniformTexture(
+      #   "trueTypeTexture", font.font_texture, 0
+      # )
+      
+      # using_shader @shader do
+      #   using_textures font.font_texture do
+      #     out.draw()
+      #   end
+      # end
+        
+      # RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      # 
+      # render using batching v4
+      # 
+      out = @meshes[font]
+      out.clear
+      
+      render_list.each do |x,y, str|
+        vflip = true
+        out.append(font.get_string_mesh(str, x,y, vflip))
+      end
+      
+      RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+      
+      @shader.setUniformTexture(
+        "trueTypeTexture", font.font_texture, 0
+      )
+      
+      using_shader @shader do
+        using_textures font.font_texture do
+          out.draw()
+        end
+      end
+        
+      RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
+      
+      
+      
+      
+      
+      # # 
+      # # render using batching v5
+      # # 
+      
+      # RubyOF::CPP_Callbacks.enableScreenspaceBlending()
+      
+      # @shader.setUniformTexture(
+      #   "trueTypeTexture", font.font_texture, 0
+      # )
+      
+      # using_shader @shader do
+      #   using_textures font.font_texture do
+      #     render_list.each do |x,y, str|
+      #       vflip = true
+      #       text_mesh = font.get_string_mesh(str, x,y, vflip)
+      #       text_mesh.draw()
+      #     end
+      #   end
+      # end
+        
+      # RubyOF::CPP_Callbacks.disableScreenspaceBlending()
+      
+      
+      
     end
     
-    
-    # @font.font_texture.bind
-    #   @buffer.each do |obj_to_stringify, x,y|
-    #       ofPushMatrix()
-    #       ofPushStyle()
-    #     begin
-    #       ofTranslate(x,y, 0)
-          
-    #       # ofSetColor(color)
-          
-    #       # ofLoadViewMatrix(const glm::mat4 & m) # <- bound in Graphics.cpp
-          
-    #       x,y = [0,0]
-    #       vflip = true
-    #       string = obj_to_stringify.to_s
-    #       text_mesh = @font.get_string_mesh(string, x,y, vflip)
-    #       text_mesh.draw()
-    #     ensure
-    #       ofPopStyle()
-    #       ofPopMatrix()
-          
-    #     end
-    #   end
-    # @font.font_texture.unbind
   end
+  
+  
 end
 
 

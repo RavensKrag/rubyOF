@@ -954,6 +954,7 @@ void Init_rubyOF_GraphicsAdv(Rice::Module rb_mRubyOF){
       .define_method("draw__cpp",         &ofMesh_draw__cpp)
       
       .define_method("clear",             &ofMesh::clear)
+      .define_method("append",            &ofMesh::append)
       
       .define_method("setMode",           &ofMesh__setMode)
       .define_method("addVertex",         &ofMesh::addVertex)
