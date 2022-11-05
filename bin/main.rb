@@ -45,17 +45,26 @@ def main(project_root)
 	
 	
 	# === Main
-	x = WindowGuard.new # initialize
-
+	
+	# initialize
+	rb_app = WindowGuard.new do
+		yield # initialize RbApp in project main (ruby-only class)
+	end
+	# TODO: rename WindowGuard to something more generic
+	
+	
+	x = Launcher.new rb_app
+	
+	
 	# start up the c++ controled infinite render loop
 	# unless there was an execption thrown during initialization
-	x.show unless x.exception
+	x.show unless rb_app.exception
 	
 	# display any uncaught ruby-level exceptions after safely exiting C++ code
-	unless x.exception.nil?
+	unless rb_app.exception.nil?
 		puts "[GEM_ROOT]/bin/main.rb: Uncaught exeception"
-		# raise x.exception
-		msg = x.exception.full_message
+		# raise rb_app.exception
+		msg = rb_app.exception.full_message
 				.gsub!(GEM_ROOT.to_s, "[GEM_ROOT]")
 	
 		puts msg

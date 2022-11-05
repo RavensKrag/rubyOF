@@ -22,6 +22,8 @@ MAIN_OBJ = self
 
 
 # run the main program
-main(project_root)
+main(project_root) do
+	App.new # App < RbApp (ruby-only class)
+end
 
 
