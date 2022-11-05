@@ -36,7 +36,7 @@ def main(project_root)
 	require (GEM_ROOT / 'lib' / 'rubyOF')
 	
 	puts "Load up the project-specific Ruby code for the window..."
-	require (project_root/'lib'/'window')
+	require (project_root/'lib'/'app')
 	
 	
 	# Load WindowGuard class definition (extends custom Window class)
@@ -53,8 +53,8 @@ def main(project_root)
 	# TODO: rename WindowGuard to something more generic
 	
 	
-	x = Launcher.new rb_app
-	
+	x = RubyOF::Launcher.new(rb_app)
+	p x
 	
 	# start up the c++ controled infinite render loop
 	# unless there was an execption thrown during initialization

@@ -33,7 +33,9 @@ class WindowGuard
 			# puts e
 			# ^ storing first exeception in chain can make errors easier to read
 			puts "=> exception caught"
-			ofExit()
+			RubyOF::Utils.ofExit()
+			# ^ needs to be able to call this here
+			#   where is exit defined now?
 		end
 	end
 end

@@ -217,7 +217,7 @@ Launcher::Launcher(Rice::Object rb_app){
 			Null_Free_Function< ofBaseApp >::free
 		);
 		
-		rb_app.call("setup", rb_cWindow, rb_cApp);
+		rb_app.call("bind", rb_cWindow, rb_cApp);
 	
 	cout << "-- binding complete!\n";
 	

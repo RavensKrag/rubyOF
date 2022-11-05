@@ -9,9 +9,15 @@ class RbApp
     @height = height
   end
   
-  def setup(window_ptr, app_ptr)
+  # called when Launcher is initialized
+  def bind(window_ptr, app_ptr)
     @window = window_ptr
     @app = app_ptr
+  end
+  
+  # called before app starts to execute
+  def setup()
+    
   end
   
   def update

@@ -20,6 +20,10 @@
 // #include "ofFbo.h"
 
 
+void ofWindow__setWindowPosition(ofAppGLFWWindow& window, glm::vec2 &pos){
+	window.setWindowPosition(pos.x, pos.y);
+}
+
 using namespace Rice;
 
 extern "C"
@@ -68,7 +72,7 @@ void Init_rubyOF()
 		define_class_under<ofAppGLFWWindow>(rb_mRubyOF, "Window");
 	
 	rb_cWindow
-		.define_constructor(Constructor<ofAppGLFWWindow>())
+		// .define_constructor(Constructor<ofAppGLFWWindow>())
 		// .define_method("initialize", &Window::initialize)
 		
 		// mouse cursor
@@ -84,7 +88,7 @@ void Init_rubyOF()
 		.define_method("height",              &ofGetHeight)
 		.define_method("title=",              &ofAppGLFWWindow::setWindowTitle)
 		.define_method("position",            &ofAppGLFWWindow::getWindowPosition) // => glm::vec2
-		.define_method("position=",           &ofAppGLFWWindow::setWindowPosition)
+		.define_method("position=",           &ofWindow__setWindowPosition)
 		.define_method("set_window_shape",    &ofAppGLFWWindow::setWindowShape)
 		.define_method("window_size",         &ofAppGLFWWindow::getWindowSize) // => glm::vec2
 		.define_method("screen_size",         &ofAppGLFWWindow::getScreenSize) // => glm::vec2
@@ -100,11 +104,12 @@ void Init_rubyOF()
 		.define_method("clipboard_string",    &ofAppGLFWWindow::getClipboardString)
 	;
 	
+	
 	Data_Type<ofBaseApp> rb_cApp =
 		define_class_under<ofBaseApp>(rb_mRubyOF, "App");
 	
 	rb_cApp
-		.define_constructor(Constructor<ofBaseApp>())
+		// .define_constructor(Constructor<ofBaseApp>())
 		// .define_method("initialize", &Window::initialize)
 		
 		// timing and framerate
@@ -114,11 +119,6 @@ void Init_rubyOF()
 		
 		
 		// exiting the app
-		.define_method("ofExit", &ofExit,
-			(
-				Arg("status") = 0
-			)
-		)
 		.define_method("ofSetEscapeQuitsApp", &ofSetEscapeQuitsApp)
 	;
 	
@@ -219,6 +219,13 @@ void Init_rubyOF()
 		                        &ofGetElapsedTimef)
 		.define_module_function("ofGetFrameNum",
 		                        &ofGetFrameNum)
+		
+		
+		.define_module_function("ofExit", &ofExit,
+			(
+				Arg("status") = 0
+			)
+		)
 	;
 }
 
