@@ -156,14 +156,10 @@ void rubyof_launcher_main(Rice::Object rb_app){
 	}
 	
 	cout << "-- creating openFrameworks app...\n";
-	
 		mApp = appFactory_create(rb_app);
-		
 	cout << "-- app created!\n";
 	
-	
 	cout << "-- binding C++ window and app to RbApp...\n";
-	
 		Rice::Data_Object<ofAppGLFWWindow> rb_cWindow(
 			mWindow.get(),
 			Rice::Data_Type< ofAppGLFWWindow >::klass(),
@@ -179,15 +175,11 @@ void rubyof_launcher_main(Rice::Object rb_app){
 		);
 		
 		rb_app.call("bind", rb_cWindow, rb_cApp);
-	
 	cout << "-- binding complete!\n";
 	
-	
 	cout << "-- run the ofApp\n";
-	
 		// this kicks off the running of my app
 		ofRunApp(mApp);
-		
 	cout << "-- ofApp has finished\n";
 	
 	
