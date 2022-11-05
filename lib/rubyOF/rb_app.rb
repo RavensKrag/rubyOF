@@ -3,10 +3,23 @@ module RubyOF
 
 class RbApp
   attr_reader :width, :height
+  attr_reader :opengl_version_major, :opengl_version_minor
   
-  def initialize(width, height)
-    @width  = width
-    @height = height
+  def initialize(window_size:[100,100], opengl_version:"3.2")
+    # set window size
+    @width, @height = window_size
+    
+    # parse OpenGL version string
+    gl_version = opengl_version.split('.').map{|x| x.to_i }
+    if gl_version.empty? || gl_version.size != 2
+      msg = [
+        "ERROR: Could not parse opengl version string.",
+        "Keyword parameter opengl_version: was specified as #{opengl_version.inspect}. Expected a number like '3.2', encoded as a string, with a single dot between the major version and the minor version. Please correct the version number and try again."
+      ]
+      
+      raise ArgumentError, msg.join("\n")
+    end
+    @opengl_version_major, @opengl_version_minor = gl_version
   end
   
   # called when Launcher is initialized

@@ -47,7 +47,7 @@ class App < RubyOF::RbApp
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    super(w,h)
+    super(window_size:[w,h], opengl_version:"3.2")
     
     
     puts "ruby: App#initialize"

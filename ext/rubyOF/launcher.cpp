@@ -19,6 +19,8 @@ struct Null_Free_Function
 
 
 void rubyof_launcher_main(Rice::Object rb_app){
+	cout << "-- allocating memory\n";
+	
 	ofBaseApp*       mApp    = NULL;
 	// ofAppGLFWWindow* mWindow = NULL;
 	
@@ -26,7 +28,7 @@ void rubyof_launcher_main(Rice::Object rb_app){
 	std::shared_ptr<ofAppGLFWWindow> mWindow = nullptr;
 	
 	
-	cout << "c++: constructor - launcher\n";
+	cout << "-- initializing GLFW\n";
 	
 	// ofAppGlutWindow mWindow;
 	// mWindow = new ofAppGlutWindow();
@@ -62,61 +64,12 @@ void rubyof_launcher_main(Rice::Object rb_app){
 	// ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
 	
 	
-	
-	// 
-	// load simple config file relative to pwd
-	// and use that to set the OpenGL version.
-	// 
-	// + can't use ofxXmlSettings, because that is an addon
-	//   and I can't declare addons for the launcher.
-	// 
-	// + can't set relative to data directory, because launcher
-	//   is shared among many projects and could be compiled separately.
-	// 
-	
-	
-	// default to opengl version 3.2
-	int opengl_version_major = 3;
-	int opengl_version_minor = 2;
-	
-	// read the config file
-	string pwd = ofFilePath::getCurrentWorkingDirectory();
-	cout << pwd << endl;
-	
-	string cfg_path = pwd +"/bin/opengl.cfg";
-	
-	ofFile file;
-	if(ofFile::doesFileExist(cfg_path)){
-		cout << "using opengl config: " << cfg_path << endl;
-		
-		file.open(cfg_path, ofFile::ReadWrite, false);
-		ofBuffer buf = file.readToBuffer();
-		string text = buf.getText();
-		
-		cout << "opengl version: " << text << endl;
-		
-		string delimiter(".");
-		
-		std::size_t found = text.find(delimiter);
-		if(found != std::string::npos){
-			opengl_version_major = std::stoi(text.substr(0,found));
-			opengl_version_minor = std::stoi(text.substr(found+1));
-		}
-		
-		cout << "major: " << opengl_version_major << endl;
-		cout << "minor: " << opengl_version_minor << endl;
-	}else{
-		opengl_version_major = 3;
-		opengl_version_minor = 2;
-	}
-	
-	
-	
 	// Even if an error has been detected, still proceed with
 	// the full initialization. This way, openFrameworks has
 	// a chance to output it's error message.
 	cout << "-- creating GLFW window\n";
 	mWindow = shared_ptr<ofAppGLFWWindow>(new ofAppGLFWWindow());
+	
 	
 	cout << "-- configuring GLFW window\n";
 	// ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
@@ -125,11 +78,18 @@ void rubyof_launcher_main(Rice::Object rb_app){
 		
 		ofInit();
 		auto settings = mWindow->getSettings();
+			settings.windowMode = OF_WINDOW;
+			
+			// set window size
 			int width  = from_ruby<int>(rb_app.call("width"));
 			int height = from_ruby<int>(rb_app.call("height"));
 			
 			settings.setSize(width,height);
-			settings.windowMode = OF_WINDOW;
+			
+			// set opengl version
+			// default to opengl version 3.2 (default specified in rb_app.rb)
+			int opengl_version_major = from_ruby<int>(rb_app.call("opengl_version_major"));
+			int opengl_version_minor = from_ruby<int>(rb_app.call("opengl_version_minor"));
 			
 			settings.setGLVersion(opengl_version_major, opengl_version_minor);
 			
