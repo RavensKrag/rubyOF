@@ -2,8 +2,26 @@
 
 # Wrap the window class in some exception handling code
 # to make up for things that I don't know how to handle with Rice.
-class WindowGuard < Window
+class WindowGuard
 	attr_reader :exception
+	
+	def initialize(&block)
+		@window = block.call
+		
+		
+		# wrap each and every callback method in an exception guard
+		# (also wrap initialize too, because why not)
+		methods = (@window.class.instance_methods - Object.instance_methods) +
+		          [:initialize]
+		
+		methods.each do |method|
+			meta_def method do |*args|
+				exception_guard do
+					@window.send(method, *args)
+				end
+			end
+		end
+	end
 	
 	private
 	
@@ -16,34 +34,6 @@ class WindowGuard < Window
 			# ^ storing first exeception in chain can make errors easier to read
 			puts "=> exception caught"
 			ofExit()
-		end
-	end
-	
-	public
-	
-	# wrap each and every callback method in an exception guard
-	# (also wrap initialize too, because why not)
-	
-	# [
-	# 	:initialize,
-	# 	:setup,
-	# 	:update,
-	# 	:draw,
-	# 	:on_exit,
-	# 	:key_pressed,
-	# 	:key_released,
-	# 	:mouse_moved,
-	# 	:mouse_pressed,
-	# 	:mouse_released,
-	# 	:mouse_dragged
-	# ]
-	methods = (Window.instance_methods - Object.instance_methods) +
-	          [:initialize]
-	methods.each do |method|
-		define_method method do |*args|
-			exception_guard do
-				super(*args)
-			end
 		end
 	end
 end
