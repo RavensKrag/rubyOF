@@ -2,7 +2,7 @@
 
 # Wrap the window class in some exception handling code
 # to make up for things that I don't know how to handle with Rice.
-class WindowGuard
+class ExceptionGuard
 	attr_reader :exception
 	
 	def initialize(&block)
@@ -16,7 +16,7 @@ class WindowGuard
 		
 		methods.each do |method|
 			meta_def method do |*args|
-				exception_guard do
+				guard do
 					@window.send(method, *args)
 				end
 			end
@@ -25,7 +25,7 @@ class WindowGuard
 	
 	private
 	
-	def exception_guard() # &block
+	def guard() # &block
 		begin
 			yield
 		rescue => e

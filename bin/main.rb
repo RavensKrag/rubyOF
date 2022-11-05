@@ -47,10 +47,9 @@ def main(project_root)
 	# === Main
 	
 	# initialize
-	rb_app = WindowGuard.new do
+	rb_app = ExceptionGuard.new do
 		yield # initialize RbApp in project main (ruby-only class)
 	end
-	# TODO: rename WindowGuard to something more generic
 	
 	
 	unless rb_app.exception
