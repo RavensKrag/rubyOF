@@ -120,17 +120,17 @@ class App < RubyOF::RbApp
   def on_exit
     super()
     
-    # puts "ruby project app: on_exit"
-    # @live_code.on_exit
+    puts "ruby project app: on_exit"
+    @live_code.on_exit
     
-    # # --- Save data
-    # pt = self.position()
-    # dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    # --- Save data
+    pt = self.position()
+    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
     
-    # # --- Clear Ruby-level memory
-    # GC.start
+    # --- Clear Ruby-level memory
+    GC.start
     
-    # puts "FINISHED!"
+    puts "FINISHED!"
     
   end
   
