@@ -56,10 +56,8 @@ def main(project_root)
 	unless rb_app.exception
 		# start up the c++ controled infinite render loop
 		# unless there was an execption thrown during initialization
-		x = RubyOF::Launcher.new(rb_app)
-		# x.show 
+		RubyOF::Launcher.run(rb_app) # binds ofWindow and ofApp to rb_app
 	end
-	
 	
 	
 	# display any uncaught ruby-level exceptions after safely exiting C++ code

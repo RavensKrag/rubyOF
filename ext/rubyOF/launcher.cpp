@@ -18,7 +18,14 @@ struct Null_Free_Function
 };
 
 
-Launcher::Launcher(Rice::Object rb_app){
+void rubyof_launcher_main(Rice::Object rb_app){
+	ofBaseApp*       mApp    = NULL;
+	// ofAppGLFWWindow* mWindow = NULL;
+	
+	// ofBaseApp* mApp = nullptr;
+	std::shared_ptr<ofAppGLFWWindow> mWindow = nullptr;
+	
+	
 	cout << "c++: constructor - launcher\n";
 	
 	// ofAppGlutWindow mWindow;
@@ -246,9 +253,7 @@ Launcher::Launcher(Rice::Object rb_app){
 	// can be OF_WINDOW or OF_FULLSCREEN
 	// pass in width and height too:
 	ofRunApp(mApp);
-}
-
-Launcher::~Launcher(){
+	
 	// delete mWindow;
 	// ^ Don't need to delete Window any more, because we're using a smart pointer now
 	
@@ -268,25 +273,9 @@ Launcher::~Launcher(){
 	// You can't use a smart pointer to hold mApp for the same reason:
 	// when the smart pointer falls out of scope,
 	// you trigger a second delete.
-	
-	
-	// delete mApp;
-	// appFactory_delete(mApp);
-	// mApp = NULL;
-	
 }
-
 
 // NOTE: If you explicitly define a method called #initialize, then the C++ constructor wrapper used by Rice will not work correctly. Initialization must happen in the constructor.
-
-
-void Launcher::show(){
-	cout << "c++: Launcher::show()\n";
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
-	ofRunApp(mApp);
-}
 
 // int ofAppGLFWWindow::getCurrentMonitor();
 

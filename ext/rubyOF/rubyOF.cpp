@@ -58,13 +58,11 @@ void Init_rubyOF()
 	
 	
 	
-	Data_Type<Launcher> rb_cLauncher =
-		define_class_under<Launcher>(rb_mRubyOF, "Launcher");
+	Rice::Module rb_cLauncher = 
+		define_module_under(rb_mRubyOF, "Launcher");
 	
 	rb_cLauncher
-		.define_constructor(Constructor<Launcher, Rice::Object>())
-		// .define_method("initialize", &Launcher::initialize)
-		.define_method("show",   &Launcher::show)
+		.define_module_function("run", &rubyof_launcher_main)
 	;
 	
 	
