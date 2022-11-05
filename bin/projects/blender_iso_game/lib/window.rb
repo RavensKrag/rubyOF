@@ -33,7 +33,7 @@ require LIB_DIR/'core.rb'
 PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 
 
-class Window < RubyOF::Window
+class App < RubyOF::RbApp
   include HelperFunctions
   
   attr_reader :cpp_ptr, :cpp_val
@@ -47,19 +47,22 @@ class Window < RubyOF::Window
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    super("RubyOF blender integration", w,h) # half screen
-    self.position = GLM::Vec2.new(x, y)
+    super(w,h)
+    
+    
+    puts "ruby: App#initialize"
+  end
+  
+  def setup(window_ptr, app_ptr)
+    super(window_ptr, app_ptr) # => @window, @app
+    
+    puts "ruby: App#setup (project)"
+    
+    @window.title = "RubyOF blender integration"
+    @window.position = GLM::Vec2.new(x, y)
     
     # ofSetEscapeQuitsApp false
     
-    
-    puts "ruby: Window#initialize"
-  end
-  
-  def setup
-    super()
-    
-    puts "ruby: Window#setup (project)"
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
@@ -116,7 +119,7 @@ class Window < RubyOF::Window
   def on_exit
     super()
     
-    puts "project window: on_exit"
+    puts "ruby project app: on_exit"
     @live_code.on_exit
     
     # --- Save data
