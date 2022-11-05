@@ -248,12 +248,16 @@ void rubyof_launcher_main(Rice::Object rb_app){
 	
 	
 	
-	cout << "c++: Launcher::show()\n";
+	cout << "-- run the ofApp\n";
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN
 	// pass in width and height too:
 	ofRunApp(mApp);
 	
+	
+	
+	
+	cout << "-- clean up memory\n";
 	// delete mWindow;
 	// ^ Don't need to delete Window any more, because we're using a smart pointer now
 	
