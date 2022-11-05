@@ -1543,7 +1543,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad"
+- "/org/gnome/Terminal/screen/5d4ce15e_6054_4f17_af3d_c06409b5f89a"
 "^F": []
 COMPILE.S:
 - cc
@@ -1562,7 +1562,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/ext/oF_apps/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.175"
+- ":1.22642"
 SUFFIXES:
 - ".out"
 - ".a"
