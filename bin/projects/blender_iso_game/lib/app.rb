@@ -124,8 +124,8 @@ class App < RubyOF::RbApp
     @live_code.on_exit
     
     # --- Save data
-    pt = self.position()
-    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    pt = @window.position()
+    dump_yaml [pt.x, pt.y, @window.width, @window.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start
