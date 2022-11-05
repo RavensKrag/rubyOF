@@ -39,8 +39,8 @@ def main(project_root)
 	require (project_root/'lib'/'app')
 	
 	
-	# Load WindowGuard class definition (extends custom Window class)
-	require (GEM_ROOT / 'build' / 'window_guard')
+	# Load ExceptionGuard class definition
+	require (GEM_ROOT / 'build' / 'exception_guard')
 	
 	
 	
