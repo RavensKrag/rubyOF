@@ -54,39 +54,58 @@ void Init_rubyOF()
 	
 	
 	
-	Data_Type<Launcher> rb_cWindow =
-		define_class_under<Launcher>(rb_mRubyOF, "Window");
+	Data_Type<Launcher> rb_cLauncher =
+		define_class_under<Launcher>(rb_mRubyOF, "Launcher");
 	
-	rb_cWindow
-		.define_constructor(Constructor<Launcher, Rice::Object, int, int>())
+	rb_cLauncher
+		.define_constructor(Constructor<Launcher, Rice::Object>())
 		// .define_method("initialize", &Launcher::initialize)
 		.define_method("show",   &Launcher::show)
-		.define_method("ofExit", &ofExit,
-			(
-				Arg("status") = 0
-			)
-		)
-		
-		.define_method("width",       &ofGetWidth)
-		.define_method("height",       &ofGetHeight)
+	;
+	
+	
+	Data_Type<ofAppGLFWWindow> rb_cWindow =
+		define_class_under<ofAppGLFWWindow>(rb_mRubyOF, "Window");
+	
+	rb_cWindow
+		.define_constructor(Constructor<ofAppGLFWWindow>())
+		// .define_method("initialize", &Window::initialize)
 		
 		// mouse cursor
-		.define_method("show_cursor",       &Launcher::showCursor)
-		.define_method("hide_cursor",       &Launcher::hideCursor)
+		.define_method("show_cursor",       &ofAppGLFWWindow::showCursor)
+		.define_method("hide_cursor",       &ofAppGLFWWindow::hideCursor)
 		
 		// fullscreen
-		.define_method("fullscreen",         &Launcher::setFullscreen)
-		.define_method("toggle_fullscreen",  &Launcher::toggleFullscreen)
+		.define_method("fullscreen",         &ofAppGLFWWindow::setFullscreen)
+		.define_method("toggle_fullscreen",  &ofAppGLFWWindow::toggleFullscreen)
 		
 		// window properties
-		.define_method("window_title=",       &Launcher::setWindowTitle)
-		.define_method("position",            &Launcher::getWindowPosition)
-		.define_method("position=",           &Launcher::setWindowPosition)
-		.define_method("set_window_shape",    &Launcher::setWindowShape)
-		.define_method("window_size",         &Launcher::getWindowSize)
-		.define_method("screen_size",         &Launcher::getScreenSize)
-		// .define_method("set_window_icon",     &Launcher::setWindowIcon) // private C++ method
+		.define_method("width",               &ofGetWidth)
+		.define_method("height",              &ofGetHeight)
+		.define_method("title=",              &ofAppGLFWWindow::setWindowTitle)
+		.define_method("position",            &ofAppGLFWWindow::getWindowPosition) // => glm::vec2
+		.define_method("position=",           &ofAppGLFWWindow::setWindowPosition)
+		.define_method("set_window_shape",    &ofAppGLFWWindow::setWindowShape)
+		.define_method("window_size",         &ofAppGLFWWindow::getWindowSize) // => glm::vec2
+		.define_method("screen_size",         &ofAppGLFWWindow::getScreenSize) // => glm::vec2
 		
+		.define_method("set_window_icon",     
+			static_cast< void (ofAppGLFWWindow::*)
+         (const std::string &path)
+         >(&ofAppGLFWWindow::setWindowIcon)
+		)
+		
+		// clipboard support
+		.define_method("clipboard_string=",   &ofAppGLFWWindow::setClipboardString)
+		.define_method("clipboard_string",    &ofAppGLFWWindow::getClipboardString)
+	;
+	
+	Data_Type<ofBaseApp> rb_cApp =
+		define_class_under<ofBaseApp>(rb_mRubyOF, "App");
+	
+	rb_cApp
+		.define_constructor(Constructor<ofBaseApp>())
+		// .define_method("initialize", &Window::initialize)
 		
 		// timing and framerate
 		.define_method("ofGetLastFrameTime", &ofGetLastFrameTime)
@@ -94,11 +113,12 @@ void Init_rubyOF()
 		.define_method("ofSetFrameRate",     &ofSetFrameRate)
 		
 		
-		// clipboard support
-		.define_method("clipboard_string=",   &Launcher::setClipboardString)
-		.define_method("clipboard_string",    &Launcher::getClipboardString)
-		
-		
+		// exiting the app
+		.define_method("ofExit", &ofExit,
+			(
+				Arg("status") = 0
+			)
+		)
 		.define_method("ofSetEscapeQuitsApp", &ofSetEscapeQuitsApp)
 	;
 	

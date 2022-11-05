@@ -16,36 +16,11 @@ class Launcher
 {
 
 public:
-	Launcher(Rice::Object self, int width, int height);
+	Launcher(Rice::Object rb_app);
 	virtual ~Launcher(void);
 	
 	void initialize();
 	void show();
-	
-	
-	
-	void hideCursor();
-	void showCursor();
-	
-	void setFullscreen(bool fullScreen);
-	void toggleFullscreen();
-
-	void setWindowTitle(std::string title);
-	void setWindowPosition(glm::vec2 p);
-	void setWindowShape(int w, int h);
-	
-	void setWindowIcon(const std::string path);
-	
-	glm::vec2 getWindowPosition();
-	glm::vec2 getWindowSize();
-	glm::vec2 getScreenSize();
-	
-	
-	void setClipboardString(const std::string& text);
-	std::string getClipboardString();
-	
-	
-	
 	
 	// NOTE: can't use the 'of' prefix for this interface, because it confuses the C++ compiler / linker when it tries to resolve the member functions of this class vs the original functions.
 	

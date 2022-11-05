@@ -11,7 +11,14 @@
 #include <iostream>
 
 
-Launcher::Launcher(Rice::Object self, int width, int height){
+template<typename T>
+struct Null_Free_Function
+{
+  static void free(T * obj) { }
+};
+
+
+Launcher::Launcher(Rice::Object rb_app){
 	cout << "c++: constructor - launcher\n";
 	
 	// ofAppGlutWindow mWindow;
@@ -111,16 +118,17 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 		
 		ofInit();
 		auto settings = windowPtr->getSettings();
-		settings.setSize(width,height);
-		settings.windowMode = OF_WINDOW;
-		
-		settings.setGLVersion(opengl_version_major, opengl_version_minor);
-		
-		// ^ simply setting the GL version seems to break mouse events? why?
-		// After extensive testing, it appears to be an interaction with imgui.
-		// I don't understand how that works... but ok.
-		
-		
+			int width  = from_ruby<int>(rb_app.call("width"));
+			int height = from_ruby<int>(rb_app.call("height"));
+			
+			settings.setSize(width,height);
+			settings.windowMode = OF_WINDOW;
+			
+			settings.setGLVersion(opengl_version_major, opengl_version_minor);
+			
+			// ^ simply setting the GL version seems to break mouse events? why?
+			// After extensive testing, it appears to be an interaction with imgui.
+			// I don't understand how that works... but ok.
 		ofGetMainLoop()->addWindow(windowPtr);
 		windowPtr->setup(settings);
 	
@@ -187,8 +195,31 @@ Launcher::Launcher(Rice::Object self, int width, int height){
 	
 	
 	cout << "-- creating openFrameworks app...\n";
-	mApp = appFactory_create(self);
+	
+		mApp = appFactory_create(rb_app);
+		
 	cout << "-- app created!\n";
+	
+	
+	cout << "-- binding C++ window and app to RbApp...\n";
+	
+		Rice::Data_Object<ofAppGLFWWindow> rb_cWindow(
+			mWindow,
+			Rice::Data_Type< ofAppGLFWWindow >::klass(),
+			Rice::Default_Mark_Function< ofAppGLFWWindow >::mark,
+			Null_Free_Function< ofAppGLFWWindow >::free
+		);
+		
+		Rice::Data_Object<ofBaseApp> rb_cApp(
+			mApp,
+			Rice::Data_Type< ofBaseApp >::klass(),
+			Rice::Default_Mark_Function< ofBaseApp >::mark,
+			Null_Free_Function< ofBaseApp >::free
+		);
+		
+		rb_app.call("setup", rb_cWindow, rb_cApp);
+	
+	cout << "-- binding complete!\n";
 	
 	// window is the drawing context
 	// app is the thing that holds all the update and render logic
@@ -247,61 +278,6 @@ void Launcher::show(){
 	// pass in width and height too:
 	ofRunApp(mApp);
 }
-
-
-void Launcher::hideCursor(){
-	mWindow->hideCursor();
-}
-
-void Launcher::showCursor(){
-	mWindow->showCursor();
-}
-
-void Launcher::setFullscreen(bool fullScreen){
-	mWindow->setFullscreen(fullScreen);
-}
-
-void Launcher::toggleFullscreen(){
-	mWindow->toggleFullscreen();
-}
-
-void Launcher::setWindowTitle(std::string title){
-	mWindow->setWindowTitle(title);
-}
-
-void Launcher::setWindowPosition(glm::vec2 p){
-	mWindow->setWindowPosition(p.x,p.y);
-}
-
-void Launcher::setWindowShape(int w, int h){
-	mWindow->setWindowShape(w,h);
-}
-
-void Launcher::setWindowIcon(const std::string path){
-	// mWindow->setWindowIcon(path); // this method is private. not sure what to do about that.
-}
-
-
-glm::vec2 Launcher::getWindowPosition(){
-	return mWindow->getWindowPosition();
-}
-
-glm::vec2 Launcher::getWindowSize(){
-	return mWindow->getWindowSize();
-}
-
-glm::vec2 Launcher::getScreenSize(){
-	return mWindow->getScreenSize();
-}
-
-void Launcher::setClipboardString(const std::string& text){
-	mWindow->setClipboardString(text);
-}
-
-std::string Launcher::getClipboardString(){
-	return mWindow->getClipboardString();
-}
-
 
 // int ofAppGLFWWindow::getCurrentMonitor();
 
