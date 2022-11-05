@@ -26,9 +26,9 @@ public:
 	
 protected:
 	ofBaseApp*       mApp    = NULL;
-	ofAppGLFWWindow* mWindow = NULL;
+	// ofAppGLFWWindow* mWindow = NULL;
 	
 	// ofBaseApp* mApp = nullptr;
-	// std::shared_ptr<ofAppBaseWindow> mWindow = nullptr;
+	std::shared_ptr<ofAppGLFWWindow> mWindow = nullptr;
 };
 

@@ -67,52 +67,52 @@ class App < RubyOF::RbApp
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
-    # @core = Core.new(self)
-    # @live_code = LiveCode.new @core, LIB_DIR
+    @core = Core.new(self)
+    @live_code = LiveCode.new @core, LIB_DIR
     
-    # @live_code.setup()
+    @live_code.setup()
   end
   
   def update
     # super()
-    # @live_code.update()
+    @live_code.update()
   end
   
   def draw
     # super()
     
     # puts "draw"
-    # @live_code.draw()
+    @live_code.draw()
   end
   
   
   
-  # # delegate inputs to input handler
-  # INPUT_EVENTS = 
-  # [
-  #   :key_pressed,
-  #   :key_released,
-  #   :mouse_moved,
-  #   :mouse_pressed,
-  #   :mouse_dragged,
-  #   :mouse_released,
-  #   :drag_event,
+  # delegate inputs to input handler
+  INPUT_EVENTS = 
+  [
+    :key_pressed,
+    :key_released,
+    :mouse_moved,
+    :mouse_pressed,
+    :mouse_dragged,
+    :mouse_released,
+    :drag_event,
     
-  #   # :mouse_released,
-  #   # :mouse_scrolled,
-  # ]
-  # INPUT_EVENTS.each do |sym|
-  #   define_method sym do |*args|
-  #     # super(*args)
-  #     # ^ Calls Ruby-defined callback functions, not the C++ ones.
-  #     #   Useful for baseline debugging, but not otherwise necessary
+    # :mouse_released,
+    # :mouse_scrolled,
+  ]
+  INPUT_EVENTS.each do |sym|
+    define_method sym do |*args|
+      # super(*args)
+      # ^ Calls Ruby-defined callback functions, not the C++ ones.
+      #   Useful for baseline debugging, but not otherwise necessary
       
-  #     # @input_queue << [sym, args]
+      # @input_queue << [sym, args]
       
-  #     @live_code.send sym, *args
+      @live_code.send sym, *args
       
-  #   end
-  # end
+    end
+  end
   
   
   

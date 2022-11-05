@@ -53,12 +53,14 @@ def main(project_root)
 	# TODO: rename WindowGuard to something more generic
 	
 	
-	x = RubyOF::Launcher.new(rb_app)
-	p x
+	unless rb_app.exception
+		# start up the c++ controled infinite render loop
+		# unless there was an execption thrown during initialization
+		x = RubyOF::Launcher.new(rb_app)
+		# x.show 
+	end
 	
-	# start up the c++ controled infinite render loop
-	# unless there was an execption thrown during initialization
-	x.show unless rb_app.exception
+	
 	
 	# display any uncaught ruby-level exceptions after safely exiting C++ code
 	unless rb_app.exception.nil?

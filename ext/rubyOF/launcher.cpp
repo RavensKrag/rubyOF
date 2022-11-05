@@ -109,15 +109,15 @@ Launcher::Launcher(Rice::Object rb_app){
 	// the full initialization. This way, openFrameworks has
 	// a chance to output it's error message.
 	cout << "-- creating GLFW window\n";
-	mWindow = new ofAppGLFWWindow();
+	mWindow = shared_ptr<ofAppGLFWWindow>(new ofAppGLFWWindow());
 	
 	cout << "-- configuring GLFW window\n";
 	// ofSetupOpenGL(mWindow, width,height,OF_WINDOW); // <-------- setup the GL context
 		
-		shared_ptr<ofAppGLFWWindow> windowPtr (mWindow);
+		// shared_ptr<ofAppGLFWWindow> windowPtr (mWindow);
 		
 		ofInit();
-		auto settings = windowPtr->getSettings();
+		auto settings = mWindow->getSettings();
 			int width  = from_ruby<int>(rb_app.call("width"));
 			int height = from_ruby<int>(rb_app.call("height"));
 			
@@ -129,8 +129,8 @@ Launcher::Launcher(Rice::Object rb_app){
 			// ^ simply setting the GL version seems to break mouse events? why?
 			// After extensive testing, it appears to be an interaction with imgui.
 			// I don't understand how that works... but ok.
-		ofGetMainLoop()->addWindow(windowPtr);
-		windowPtr->setup(settings);
+		ofGetMainLoop()->addWindow(mWindow);
+		mWindow->setup(settings);
 	
 	
 	
@@ -204,7 +204,7 @@ Launcher::Launcher(Rice::Object rb_app){
 	cout << "-- binding C++ window and app to RbApp...\n";
 	
 		Rice::Data_Object<ofAppGLFWWindow> rb_cWindow(
-			mWindow,
+			mWindow.get(),
 			Rice::Data_Type< ofAppGLFWWindow >::klass(),
 			Rice::Default_Mark_Function< ofAppGLFWWindow >::mark,
 			Null_Free_Function< ofAppGLFWWindow >::free
@@ -238,6 +238,14 @@ Launcher::Launcher(Rice::Object rb_app){
 		// shared_ptr<ofAppGLFWWindow> window =
 		// shared_ptr<ofAppGLFWWindow>(new ofAppGLFWWindow());
 	// and various other types of windows
+	
+	
+	
+	cout << "c++: Launcher::show()\n";
+	// this kicks off the running of my app
+	// can be OF_WINDOW or OF_FULLSCREEN
+	// pass in width and height too:
+	ofRunApp(mApp);
 }
 
 Launcher::~Launcher(){
@@ -265,6 +273,7 @@ Launcher::~Launcher(){
 	// delete mApp;
 	// appFactory_delete(mApp);
 	// mApp = NULL;
+	
 }
 
 
