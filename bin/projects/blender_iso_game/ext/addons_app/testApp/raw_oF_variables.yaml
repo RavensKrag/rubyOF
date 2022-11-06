@@ -453,7 +453,7 @@
 - 'XCURSOR_THEME = breeze_cursors
 
   '
-- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
+- 'SESSION_MANAGER = local/ravensnest:@/tmp/.ICE-unix/2046,unix/ravensnest:/tmp/.ICE-unix/2046
 
   '
 - 'OF_LIBS_OF_COMPILED_PATH = /home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled
@@ -584,7 +584,7 @@
 
   '
 - "remove-dupes-func = \n"
-- 'SSH_AUTH_SOCK = /tmp/ssh-dQbDCfg2uFsZ/agent.1477
+- 'SSH_AUTH_SOCK = /tmp/ssh-tLuxKcMn2KL8/agent.1848
 
   '
 - 'OF_PROJECT_EXCLUSIONS =  /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin
@@ -673,7 +673,7 @@
 - 'PREPROCESS.r = f77    -F
 
   '
-- 'SSH_AGENT_PID = 1590
+- 'SSH_AGENT_PID = 1960
 
   '
 - "INVALID_GLOBAL_ADDONS = \n"
@@ -1040,7 +1040,8 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
   '
-- "rwildcard = \t\t \t\t\t \t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
+- "rwildcard = \t\t \t\t\t \t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
+  \t \t\n"
 - 'WEAVE = weave
 
   '
@@ -1644,7 +1645,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/5d4ce15e_6054_4f17_af3d_c06409b5f89a
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/2a2205dc_4d81_4ecc_9c44_dc6863af9215
 
   '
 - "^F = \n"
@@ -1660,7 +1661,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.22642
+- 'GNOME_TERMINAL_SERVICE = :1.368
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod
@@ -1752,7 +1753,7 @@
 - 'MAKEINFO = makeinfo
 
   '
-- 'MAKE_TERMERR = /dev/pts/2
+- 'MAKE_TERMERR = /dev/pts/1
 
   '
 - 'OBJC = cc

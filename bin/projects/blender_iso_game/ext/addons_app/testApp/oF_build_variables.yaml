@@ -490,7 +490,7 @@ GPG_AGENT_INFO:
 XCURSOR_THEME:
 - breeze_cursors
 SESSION_MANAGER:
-- local/ravensnest:@/tmp/.ICE-unix/1669,unix/ravensnest:/tmp/.ICE-unix/1669
+- local/ravensnest:@/tmp/.ICE-unix/2046,unix/ravensnest:/tmp/.ICE-unix/2046
 OF_LIBS_OF_COMPILED_PATH:
 - "/home/ravenskrag/Desktop/gem_structure/ext/openFrameworks/libs/openFrameworksCompiled"
 COMPILE.mod:
@@ -632,7 +632,7 @@ XDG_SESSION_DESKTOP:
 - KDE
 remove-dupes-func: []
 SSH_AUTH_SOCK:
-- "/tmp/ssh-dQbDCfg2uFsZ/agent.1477"
+- "/tmp/ssh-tLuxKcMn2KL8/agent.1848"
 OF_PROJECT_EXCLUSIONS:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/bin"
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/obj"
@@ -715,7 +715,7 @@ PREPROCESS.r:
 - f77
 - "-F"
 SSH_AGENT_PID:
-- '1590'
+- '1960'
 INVALID_GLOBAL_ADDONS: []
 OF_PROJECT_SOURCE_FILES:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp/src/ofApp.cpp"
@@ -2141,7 +2141,7 @@ COMPILE.C:
 - g++
 - "-c"
 GNOME_TERMINAL_SCREEN:
-- "/org/gnome/Terminal/screen/5d4ce15e_6054_4f17_af3d_c06409b5f89a"
+- "/org/gnome/Terminal/screen/2a2205dc_4d81_4ecc_9c44_dc6863af9215"
 "^F": []
 COMPILE.S:
 - cc
@@ -2160,7 +2160,7 @@ rvm_prefix:
 PROJECT_ROOT:
 - "/home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp"
 GNOME_TERMINAL_SERVICE:
-- ":1.22642"
+- ":1.368"
 SUFFIXES:
 - ".out"
 - ".a"
@@ -2371,7 +2371,7 @@ PROJECT_ADDONS_DATA: []
 MAKEINFO:
 - makeinfo
 MAKE_TERMERR:
-- "/dev/pts/2"
+- "/dev/pts/1"
 OBJC:
 - cc
 PARSED_ADDONS_LIBS_INCLUDES:

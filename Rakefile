@@ -941,14 +941,25 @@ namespace :blender do
 	# (there are also dependencies that need to be installed. check the Blender developer wiki to figure out how to get started. strangely, you need both git (for Blender source) and svn (for dependency libs))
 	desc "Build custom build of Blender with transparent window"
 	task :build do
-		Dir.chdir "#{BLENDER_GIT_DIR}/blender" do
-			run_i "make debug"
+		Dir.chdir "#{BLENDER_GIT_DIR}/build" do
+			# run_i "make update"
+			# run_i "make debug"
+			run_i "make -j4"
+		end
+	end
+	
+	desc "Move built files into execution directory (does not install system-wide)"
+	task :install do
+		Dir.chdir "#{BLENDER_GIT_DIR}/build" do
+			# run_i "make update"
+			# run_i "make debug"
+			run_i "make install"
 		end
 	end
 	
 	desc "Run custom build of Blender with transparent window"
 	task :run do
-		run_i "#{BLENDER_GIT_DIR}/build_linux_debug/bin/blender"
+		run_i "#{BLENDER_GIT_DIR}/build/bin/blender"
 	end
 end
 
