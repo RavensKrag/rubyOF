@@ -52,7 +52,7 @@ def main(project_root)
 	end
 	
 	
-	unless rb_app.exception
+	if rb_app.exception.nil?
 		# start up the c++ controled infinite render loop
 		# unless there was an execption thrown during initialization
 		RubyOF::Launcher.run(rb_app) # binds ofWindow and ofApp to rb_app
