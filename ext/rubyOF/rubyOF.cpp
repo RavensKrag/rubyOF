@@ -87,7 +87,7 @@ void Init_rubyOF()
 		.define_method("title=",              &ofAppGLFWWindow::setWindowTitle)
 		.define_method("position",            &ofAppGLFWWindow::getWindowPosition) // => glm::vec2
 		.define_method("position=",           &ofWindow__setWindowPosition)
-		.define_method("set_window_shape",    &ofAppGLFWWindow::setWindowShape)
+		.define_method("set_shape",           &ofAppGLFWWindow::setWindowShape)
 		.define_method("window_size",         &ofAppGLFWWindow::getWindowSize) // => glm::vec2
 		.define_method("screen_size",         &ofAppGLFWWindow::getScreenSize) // => glm::vec2
 		

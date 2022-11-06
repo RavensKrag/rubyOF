@@ -2,10 +2,10 @@
 class BlenderSync
   MAX_READS = 20
   
-  def initialize(window, world)
+  def initialize(app, world)
     @message_history = BlenderHistory.new
     
-    @window = window
+    @app = app
     @world = world
     
     
@@ -173,7 +173,7 @@ class BlenderSync
       
       w = message['width']
       h = message['height']
-      @window.set_window_shape(w,h)
+      @app.window.set_shape(w,h)
       
       # @camera.aspectRatio = w.to_f/h.to_f
       
@@ -390,7 +390,7 @@ class BlenderSync
       
       # just need to apply inverse of the measured delta to RubyOF windows
       delta = CP::Vec2.new(-2.000, -100.000)*-1
-      @window.position = (blender_pos + delta).to_glm
+      @app.window.position = (blender_pos + delta).to_glm
       
       # NOTE: system can't apply the correct delta if Blender is flush to the left side of the screen. In that case, dx = -8 rather than 0 or 3. Otherwise, this works fine.
       

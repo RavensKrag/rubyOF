@@ -123,8 +123,8 @@ class Core
   
   attr_accessor :sync
   
-  def initialize(window)
-    @window = window
+  def initialize(app)
+    @app = app
   end
   
   def setup
@@ -251,7 +251,7 @@ class Core
     @render_pipeline.setup()
     
     
-    @sync = BlenderSync.new(@window, @world)
+    @sync = BlenderSync.new(@app, @world)
     
   end
   
@@ -389,7 +389,7 @@ class Core
   def window_resized(w,h)
     # puts "generate new camera"
     # @world.camera = ViewportCamera.new
-    @render_pipeline.on_window_resized(@window, @world.lights)
+    @render_pipeline.on_window_resized(@app.window, @world.lights)
   end
   
   
@@ -656,7 +656,7 @@ class Core
   
   def draw_3D
     @world.pre_draw
-    @render_pipeline.draw(@window, @world)
+    @render_pipeline.draw(@app.window, @world)
   end
   
   def draw_2D(shadow_casting_light)
@@ -875,7 +875,7 @@ class Core
       ofPushStyle()
         ofEnableAlphaBlending()
         ofSetColor(@crash_color)
-        ofDrawRectangle(0,0,0, @window.width, @window.height)
+        ofDrawRectangle(0,0,0, @app.window.width, @app.window.height)
       ofPopStyle()
     end
     

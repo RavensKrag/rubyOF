@@ -62,7 +62,7 @@ class App < RubyOF::RbApp
     @window.title = "RubyOF blender integration"
     @window.position = GLM::Vec2.new(x, y)
     
-    # ofSetEscapeQuitsApp false
+    # @app.ofSetEscapeQuitsApp false
     
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)

@@ -5,6 +5,8 @@ class RbApp
   attr_reader :width, :height
   attr_reader :opengl_version_major, :opengl_version_minor
   
+  attr_reader :window, :app
+  
   def initialize(window_size:[100,100], opengl_version:"3.2")
     # set window size
     @width, @height = window_size
