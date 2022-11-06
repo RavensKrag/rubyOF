@@ -14,21 +14,21 @@ using std::endl;
 
 
 
-rbApp::rbApp(Rice::Object self)
+ProjectApp::ProjectApp(Rice::Object rb_app)
 : ofBaseApp()
 {
-	cout << "c++: rbApp constructor\n";
+	cout << "c++: ProjectApp constructor\n";
 	
 	// ofSetupOpenGL(1024,768,OF_WINDOW); // <-------- setup the GL context
-	mSelf = self;
+	mSelf = rb_app;
 }
 
-rbApp::~rbApp(){
+ProjectApp::~ProjectApp(){
 	
 }
 
-void rbApp::setup(){
-	cout << "c++: rbApp::setup\n";
+void ProjectApp::setup(){
+	cout << "c++: ProjectApp::setup\n";
 	
 	ofSetDataPathRoot(DATA_PATH);
 	// ofSetBackgroundAuto(false);  
@@ -179,7 +179,7 @@ void rbApp::setup(){
 	mSelf.call("setup");	
 }
 
-void rbApp::update(){
+void ProjectApp::update(){
 	// ========================================
 	// ========== add new stuff here ==========
 	
@@ -236,7 +236,7 @@ void rbApp::update(){
 	// mDatGui->update();
 }
 
-void rbApp::draw(){
+void ProjectApp::draw(){
 	uint64_t dt, timer_start, timer_end;
 	timer_start = ofGetElapsedTimeMicros();
 	
@@ -449,7 +449,7 @@ void rbApp::draw(){
 	im_gui.end();
 }
 
-void rbApp::exit(){
+void ProjectApp::exit(){
 	// ofApp::exit(); // no parent behavior for exit callback defined
 	cout << "c++: exit\n";
 	
@@ -480,7 +480,7 @@ void rbApp::exit(){
 
 
 //--------------------------------------------------------------
-void rbApp::newMidiMessage(ofxMidiMessage& msg) {
+void ProjectApp::newMidiMessage(ofxMidiMessage& msg) {
 	
 	// add the latest message to the message queue
 	midiMessages.push_back(msg);
@@ -492,7 +492,7 @@ void rbApp::newMidiMessage(ofxMidiMessage& msg) {
 }
 
 //--------------------------------------------------------------
-void rbApp::keyPressed(int key){
+void ProjectApp::keyPressed(int key){
 	// Something seems to be consuming most keyboard events
 	// when the application is started via the Ruby layer in Rake.
 	// 
@@ -525,7 +525,7 @@ void rbApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void rbApp::keyReleased(int key){
+void ProjectApp::keyReleased(int key){
 	ofBaseApp::keyReleased(key);
 	
 	
@@ -539,7 +539,7 @@ void rbApp::keyReleased(int key){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseMoved(int x, int y ){
+void ProjectApp::mouseMoved(int x, int y ){
 	ofBaseApp::mouseMoved(x,y);
 	
 	if (!mUI_InputCapture) {
@@ -548,7 +548,7 @@ void rbApp::mouseMoved(int x, int y ){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseDragged(int x, int y, int button){
+void ProjectApp::mouseDragged(int x, int y, int button){
 	ofBaseApp::mouseDragged(x,y,button);
 	
 	if (!mUI_InputCapture) {
@@ -557,7 +557,7 @@ void rbApp::mouseDragged(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void rbApp::mousePressed(int x, int y, int button){
+void ProjectApp::mousePressed(int x, int y, int button){
 	ofBaseApp::mousePressed(x,y,button);
 	
 	if (!mUI_InputCapture) {
@@ -566,7 +566,7 @@ void rbApp::mousePressed(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseReleased(int x, int y, int button){
+void ProjectApp::mouseReleased(int x, int y, int button){
 	ofBaseApp::mouseReleased(x,y,button);
 	
 	if (!mUI_InputCapture) {
@@ -575,7 +575,7 @@ void rbApp::mouseReleased(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseEntered(int x, int y){
+void ProjectApp::mouseEntered(int x, int y){
 	ofBaseApp::mouseEntered(x,y);
 	
 	if (!mUI_InputCapture) {
@@ -584,7 +584,7 @@ void rbApp::mouseEntered(int x, int y){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseExited(int x, int y){
+void ProjectApp::mouseExited(int x, int y){
 	ofBaseApp::mouseExited(x,y);
 	
 	if (!mUI_InputCapture) {
@@ -593,7 +593,7 @@ void rbApp::mouseExited(int x, int y){
 }
 
 //--------------------------------------------------------------
-void rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
+void ProjectApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
 	ofBaseApp::mouseScrolled(x,y, scrollX, scrollY);
 	
 	if (!mUI_InputCapture) {
@@ -602,14 +602,14 @@ void rbApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
 }
 
 //--------------------------------------------------------------
-void rbApp::windowResized(int w, int h){
+void ProjectApp::windowResized(int w, int h){
 	ofBaseApp::windowResized(w,h);
 	
 	mSelf.call("window_resized", w,h);
 }
 
 //--------------------------------------------------------------
-void rbApp::dragEvent(ofDragInfo dragInfo){
+void ProjectApp::dragEvent(ofDragInfo dragInfo){
 	// NOTE: drag event example works with Nautilus, but not Thunar (GLFW window)
 	
 	// https://github.com/openframeworks/openFrameworks/issues/1862
@@ -644,7 +644,7 @@ void rbApp::dragEvent(ofDragInfo dragInfo){
 }
 
 //--------------------------------------------------------------
-void rbApp::gotMessage(ofMessage msg){
+void ProjectApp::gotMessage(ofMessage msg){
 	ofBaseApp::gotMessage(msg);
 	
 	// mSelf.call("got_message", msg);
@@ -661,7 +661,7 @@ void rbApp::gotMessage(ofMessage msg){
 // to make it easier to disable it.
 // Instead of deleting this, just comment out
 // the RUBYOF_COLOR_PICKER_ENABLED #define in the header
-void rbApp::setup_color_picker_gui(){
+void ProjectApp::setup_color_picker_gui(){
 	gui.setup("", ofxPanelDefaultFilename, 25, 755);
 	// gui.add(mColorPicker_Widget.setup(mPickedColor, width, height));
 	gui.add(mColorPicker_Widget.setup(mColorPicker_Parameter));
@@ -778,7 +778,7 @@ void rbApp::setup_color_picker_gui(){
 // this needs to be toggled along with
 // setup_destroy_color_picker_gui(), 
 // or the program will segfault
-void rbApp::destroy_color_picker_gui(){
+void ProjectApp::destroy_color_picker_gui(){
 	delete mColorPicker_iterface_ptr;
 }
 

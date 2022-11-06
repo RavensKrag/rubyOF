@@ -1040,8 +1040,7 @@
 - 'PARSED_ADDONS_FILTERED_LIBS_SOURCE_PATHS = ./src/ofApp.cpp ./src/main.cpp
 
   '
-- "rwildcard = \t\t \t\t\t \t \t \t \t \t \t\t \t \t \t \t\t\t\t\t \t \t \t \t \t
-  \t \t\n"
+- "rwildcard = \t\t \t\t\t \t \t \t \t \t\t \t \t \t\t\t\t\t \t \t \t \t \t \t \t\n"
 - 'WEAVE = weave
 
   '
@@ -1645,7 +1644,7 @@
 - 'COMPILE.C = g++    -c
 
   '
-- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/b28457cc_0e38_424c_a4f6_c52c95646aad
+- 'GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/5d4ce15e_6054_4f17_af3d_c06409b5f89a
 
   '
 - "^F = \n"
@@ -1661,7 +1660,7 @@
 - 'PROJECT_ROOT = /home/ravenskrag/Desktop/gem_structure/bin/projects/blender_iso_game/ext/addons_app/testApp
 
   '
-- 'GNOME_TERMINAL_SERVICE = :1.175
+- 'GNOME_TERMINAL_SERVICE = :1.22642
 
   '
 - 'SUFFIXES = .out .a .ln .o .c .cc .C .cpp .p .f .F .m .r .y .l .ym .yl .s .S .mod

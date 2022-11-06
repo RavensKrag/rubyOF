@@ -64,8 +64,8 @@ base_path = lib_dir/'rubyOF'
 	'shader',
 	'node',
 	
+	'rb_app',
 	
-	'window',
 	'button_event_codes',
 	'resource_manager'
 ].each do |path|

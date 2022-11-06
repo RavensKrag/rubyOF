@@ -16,9 +16,7 @@ def main(project_root)
 	
 	core_install_location    = root/'lib'/name/"#{name}.so"
 	
-	project_name = ENV['RUBYOF_PROJECT']
-	project_dir  = root/'bin'/'projects'/project_name
-	project_install_location = project_dir/'bin'/'lib'/"#{name}_project.so"
+	project_install_location = project_root/'bin'/'lib'/"#{name}_project.so"
 	
 	puts "Loading c-extension for core..."
 	load_c_extension_lib core_install_location
@@ -38,26 +36,34 @@ def main(project_root)
 	require (GEM_ROOT / 'lib' / 'rubyOF')
 	
 	puts "Load up the project-specific Ruby code for the window..."
-	require (project_root/'lib'/'window')
+	require (project_root/'lib'/'app')
 	
 	
-	# Load WindowGuard class definition (extends custom Window class)
-	require (GEM_ROOT / 'build' / 'window_guard')
+	# Load ExceptionGuard class definition
+	require (GEM_ROOT / 'build' / 'exception_guard')
 	
 	
 	
 	# === Main
-	x = WindowGuard.new # initialize
-
-	# start up the c++ controled infinite render loop
-	# unless there was an execption thrown during initialization
-	x.show unless x.exception
+	
+	# initialize
+	rb_app = ExceptionGuard.new do
+		yield # initialize RbApp in project main (ruby-only class)
+	end
+	
+	
+	if rb_app.exception.nil?
+		# start up the c++ controled infinite render loop
+		# unless there was an execption thrown during initialization
+		RubyOF::Launcher.run(rb_app) # binds ofWindow and ofApp to rb_app
+	end
+	
 	
 	# display any uncaught ruby-level exceptions after safely exiting C++ code
-	unless x.exception.nil?
+	unless rb_app.exception.nil?
 		puts "[GEM_ROOT]/bin/main.rb: Uncaught exeception"
-		# raise x.exception
-		msg = x.exception.full_message
+		# raise rb_app.exception
+		msg = rb_app.exception.full_message
 				.gsub!(GEM_ROOT.to_s, "[GEM_ROOT]")
 	
 		puts msg

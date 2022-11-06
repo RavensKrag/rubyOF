@@ -33,7 +33,7 @@ require LIB_DIR/'core.rb'
 PROJECT_DIR = Pathname.new(__FILE__).expand_path.parent.parent
 
 
-class Window < RubyOF::Window
+class App < RubyOF::RbApp
   include HelperFunctions
   
   attr_reader :cpp_ptr, :cpp_val
@@ -47,19 +47,23 @@ class Window < RubyOF::Window
     window_geometry = YAML.load_file(@window_geometry_file)
     x,y,w,h = *window_geometry
     
-    super("RubyOF blender integration", w,h) # half screen
-    self.position = GLM::Vec2.new(x, y)
-    
-    # ofSetEscapeQuitsApp false
+    super(window_size:[w,h], opengl_version:"3.2")
     
     
-    puts "ruby: Window#initialize"
+    puts "ruby: App#initialize"
   end
   
   def setup
-    super()
+    puts "ruby: App#setup (project)"
     
-    puts "ruby: Window#setup (project)"
+    window_geometry = YAML.load_file(@window_geometry_file)
+    x,y,w,h = *window_geometry
+    
+    @window.title = "RubyOF blender integration"
+    @window.position = GLM::Vec2.new(x, y)
+    
+    # ofSetEscapeQuitsApp false
+    
     
     $nonblocking_error = NonblockingErrorOutput.new($stdout)
     
@@ -116,12 +120,12 @@ class Window < RubyOF::Window
   def on_exit
     super()
     
-    puts "project window: on_exit"
+    puts "ruby project app: on_exit"
     @live_code.on_exit
     
     # --- Save data
-    pt = self.position()
-    dump_yaml [pt.x, pt.y, self.width, self.height] => @window_geometry_file
+    pt = @window.position()
+    dump_yaml [pt.x, pt.y, @window.width, @window.height] => @window_geometry_file
     
     # --- Clear Ruby-level memory
     GC.start

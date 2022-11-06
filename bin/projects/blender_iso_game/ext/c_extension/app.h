@@ -27,11 +27,11 @@
 // #define RUBYOF_COLOR_PICKER_ENABLED
 
 
-class rbApp : public ofBaseApp, public ofxMidiListener {
+class ProjectApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
-		rbApp(Rice::Object);
-		~rbApp();
+		ProjectApp(Rice::Object);
+		~ProjectApp();
 		
 		virtual void setup();
 		virtual void update();

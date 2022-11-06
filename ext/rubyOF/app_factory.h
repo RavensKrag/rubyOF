@@ -9,4 +9,4 @@
 #include "rice/Class.hpp"
 #include "rice/Module.hpp"
 
-ofBaseApp* appFactory_create(Rice::Object self);
+ofBaseApp* appFactory_create(Rice::Object rb_app);
